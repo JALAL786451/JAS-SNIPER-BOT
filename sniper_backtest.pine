@@ -1,11 +1,153 @@
 //@version=5
-strategy("Sniper Test Strategy", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+// =============================================================================
+// JAS SNIPER BOT  —  HTF Trend Filter + Engulfing Entry Model
+// Tuned defaults for XAUUSD (Gold), but every setting is an input.
+// =============================================================================
+strategy(
+     title                = "JAS Sniper Bot — HTF + Engulfing",
+     shorttitle           = "JAS Sniper",
+     overlay              = true,
+     initial_capital      = 10000,
+     currency             = currency.USD,
+     default_qty_type     = strategy.percent_of_equity,
+     default_qty_value    = 10,
+     pyramiding           = 0,
+     calc_on_every_tick   = false,
+     process_orders_on_close = true,
+     commission_type      = strategy.commission.percent,
+     commission_value     = 0.0,
+     slippage             = 2)
 
-longCondition = ta.crossover(ta.sma(close, 14), ta.sma(close, 28))
-shortCondition = ta.crossunder(ta.sma(close, 14), ta.sma(close, 28))
+// -----------------------------------------------------------------------------
+// 1. HIGHER TIMEFRAME TREND FILTER
+// -----------------------------------------------------------------------------
+grpHTF   = "1 · HTF Trend Filter"
+useHTF   = input.bool(true,   "Enable HTF filter",                group = grpHTF)
+htfRes   = input.timeframe("240", "Higher timeframe",             group = grpHTF, tooltip = "Gold works well with 240 (4H) or D while trading 15m/1H.")
+htfEmaLen= input.int(50,      "HTF EMA length", minval = 2,       group = grpHTF)
 
-if (longCondition)
-    strategy.entry("Long", strategy.long)
+// [1] + lookahead_off  ->  uses only CLOSED higher-timeframe bars (no repaint).
+htfEma   = request.security(syminfo.tickerid, htfRes, ta.ema(close, htfEmaLen)[1], lookahead = barmerge.lookahead_off)
+htfClose = request.security(syminfo.tickerid, htfRes, close[1],                    lookahead = barmerge.lookahead_off)
 
-if (shortCondition)
-    strategy.entry("Short", strategy.short)
+htfBull = not useHTF or (not na(htfEma) and htfClose > htfEma)
+htfBear = not useHTF or (not na(htfEma) and htfClose < htfEma)
+
+// -----------------------------------------------------------------------------
+// 2. ENGULFING ENTRY SIGNAL
+// -----------------------------------------------------------------------------
+grpSig      = "2 · Engulfing Signal"
+atrLen      = input.int(14,    "ATR length", minval = 1,                     group = grpSig)
+reqBigger   = input.bool(true, "Body must be bigger than previous body",     group = grpSig)
+minBodyATR  = input.float(0.3, "Min body size (× ATR)", minval = 0, step = 0.1, group = grpSig,
+     tooltip = "Filters out tiny engulfing candles. 0 = off.")
+
+atrVal   = ta.atr(atrLen)
+body     = math.abs(close - open)
+prevBody = math.abs(close[1] - open[1])
+
+bodyOK = (not reqBigger or body > prevBody) and (minBodyATR <= 0 or body >= minBodyATR * atrVal)
+
+bullEngulf = close > open and close[1] < open[1] and close >= open[1] and open <= close[1] and bodyOK
+bearEngulf = close < open and close[1] > open[1] and close <= open[1] and open >= close[1] and bodyOK
+
+// -----------------------------------------------------------------------------
+// 3. RISK MANAGEMENT
+// -----------------------------------------------------------------------------
+grpRisk    = "3 · Risk Management"
+stopMode   = input.string("Swing", "Stop-loss mode", options = ["Swing", "ATR"], group = grpRisk)
+slAtrMult  = input.float(1.5,  "ATR stop multiplier",  minval = 0.1, step = 0.1, group = grpRisk)
+swingBuf   = input.float(0.25, "Swing stop buffer (× ATR)", minval = 0, step = 0.05, group = grpRisk)
+rrTarget   = input.float(2.0,  "Take-profit (R multiple)", minval = 0.1, step = 0.1, group = grpRisk)
+useRiskQty = input.bool(true,  "Size position by % risk",  group = grpRisk)
+riskPct    = input.float(1.0,  "Risk per trade (% equity)", minval = 0.01, step = 0.1, group = grpRisk)
+useBE      = input.bool(true,  "Move stop to breakeven",    group = grpRisk)
+beTrigR    = input.float(1.0,  "Breakeven trigger (R)", minval = 0.1, step = 0.1, group = grpRisk)
+
+// Contracts such that (stop distance × point value × qty) == risked cash.
+f_qty(riskPerUnit) =>
+    float q = na
+    if useRiskQty and riskPerUnit > 0
+        pv = syminfo.pointvalue <= 0 ? 1.0 : syminfo.pointvalue
+        q := (strategy.equity * riskPct / 100.0) / (riskPerUnit * pv)
+    q
+
+// -----------------------------------------------------------------------------
+// 4. SESSION & DATE FILTERS
+// -----------------------------------------------------------------------------
+grpTime    = "4 · Session & Date"
+useSession = input.bool(true, "Trade only inside session", group = grpTime)
+sessStr    = input.session("0700-2000", "Session",         group = grpTime, tooltip = "Default = London + New York overlap window, the liquid hours for Gold.")
+sessTz     = input.string("Europe/London", "Session timezone", group = grpTime)
+startDate  = input.time(timestamp("01 Jan 2020 00:00 +0000"), "Backtest start", group = grpTime)
+endDate    = input.time(timestamp("01 Jan 2030 00:00 +0000"), "Backtest end",   group = grpTime)
+
+inSession = not useSession or not na(time(timeframe.period, sessStr, sessTz))
+inDates   = time >= startDate and time <= endDate
+
+// -----------------------------------------------------------------------------
+// 5. ORDER EXECUTION
+// -----------------------------------------------------------------------------
+var float stopPx   = na
+var float tpPx     = na
+var float initRisk = na
+var bool  beMoved  = false
+
+flat        = strategy.position_size == 0
+canEnter    = inDates and inSession and flat and barstate.isconfirmed
+longSignal  = canEnter and htfBull and bullEngulf
+shortSignal = canEnter and htfBear and bearEngulf
+
+if longSignal
+    float sl = stopMode == "ATR" ? close - atrVal * slAtrMult : math.min(low, low[1]) - atrVal * swingBuf
+    float r  = close - sl
+    if r > 0
+        stopPx   := sl
+        initRisk := r
+        tpPx     := close + r * rrTarget
+        beMoved  := false
+        strategy.entry("Long", strategy.long, qty = f_qty(r))
+
+if shortSignal
+    float sl = stopMode == "ATR" ? close + atrVal * slAtrMult : math.max(high, high[1]) + atrVal * swingBuf
+    float r  = sl - close
+    if r > 0
+        stopPx   := sl
+        initRisk := r
+        tpPx     := close - r * rrTarget
+        beMoved  := false
+        strategy.entry("Short", strategy.short, qty = f_qty(r))
+
+// Manage the open position: optional breakeven, then re-arm the bracket.
+if strategy.position_size > 0 and not na(stopPx)
+    if useBE and not beMoved and high >= strategy.position_avg_price + initRisk * beTrigR
+        stopPx  := strategy.position_avg_price
+        beMoved := true
+    strategy.exit("L-Exit", from_entry = "Long", stop = stopPx, limit = tpPx)
+
+if strategy.position_size < 0 and not na(stopPx)
+    if useBE and not beMoved and low <= strategy.position_avg_price - initRisk * beTrigR
+        stopPx  := strategy.position_avg_price
+        beMoved := true
+    strategy.exit("S-Exit", from_entry = "Short", stop = stopPx, limit = tpPx)
+
+// Flatten anything still open past the backtest end date.
+if not inDates and not flat
+    strategy.close_all(comment = "Out of range")
+
+// -----------------------------------------------------------------------------
+// 6. VISUALS & ALERTS
+// -----------------------------------------------------------------------------
+plot(useHTF ? htfEma : na, "HTF EMA", color = color.new(color.orange, 0), linewidth = 2)
+
+plotshape(longSignal,  title = "Long",  style = shape.triangleup,   location = location.belowbar, color = color.new(color.teal, 0), size = size.tiny)
+plotshape(shortSignal, title = "Short", style = shape.triangledown, location = location.abovebar, color = color.new(color.red,  0), size = size.tiny)
+
+inTrade = strategy.position_size != 0
+plot(inTrade ? stopPx : na, "Stop",   color = color.new(color.red,  0), style = plot.style_linebr)
+plot(inTrade ? tpPx   : na, "Target", color = color.new(color.teal, 0), style = plot.style_linebr)
+
+bgcolor(useSession and not inSession ? color.new(color.gray, 92) : na, title = "Outside session")
+
+alertcondition(longSignal,  "Sniper Long",  "JAS Sniper: bullish engulfing in HTF uptrend")
+alertcondition(shortSignal, "Sniper Short", "JAS Sniper: bearish engulfing in HTF downtrend")
