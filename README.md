@@ -26,7 +26,8 @@ One position at a time — no pyramiding, no averaging down.
 
 | File | Platform | Purpose |
 | --- | --- | --- |
-| `sniper_backtest.pine` | TradingView only | Charting and backtesting |
+| `xauusd_combined_indicator.pine` | TradingView only | Live confluence indicator: EMA bias + SMC structure + FVG on one M15 chart |
+| `sniper_backtest.pine` | TradingView only | Standalone HTF + engulfing backtest strategy |
 | `mql5/JAS_Sniper_EA.mq5` | MetaTrader 5 only | Backtesting and live execution on Exness |
 | `docs/MT5-SETUP.md` | — | Install, login, and Strategy Tester walkthrough (Roman Urdu) |
 
@@ -43,6 +44,27 @@ backtesting at all; that only exists in MT5 desktop and TradingView.
 3. Load **XAUUSD** on a **15m or 1H** chart (the HTF filter expects a lower entry timeframe than 4H).
 4. Open the **Strategy Tester** tab to see the backtest results.
 5. Tune everything from the gear icon → **Settings → Inputs**.
+
+## The combined indicator
+
+`xauusd_combined_indicator.pine` is a Pine v6 **indicator** (not a strategy): it
+draws the picture and fires alerts, it does not backtest. Three modules feed one
+entry rule, and a BUY/SELL only prints when all three agree on the same bar:
+
+| Module | What it contributes |
+| --- | --- |
+| **EMA 20 / 50** | Bias (price cleanly outside the band), the band as dynamic S/R, and the confirmation filter that validates a structure break |
+| **SMC structure** | Swing pivots, BOS vs CHoCH, order blocks, liquidity sweeps — a break needs a *close* through the level, and each level can only break once |
+| **FVG** | 3-candle imbalances with unfilled / partial / filled tracking; gaps sitting inside an order block get a heavier border |
+
+A CHoCH authorises entries for a limited window (default 25 bars). Inside that
+window the signal fires the moment price taps an unfilled FVG in the same
+direction while the EMA bias still agrees. One signal per CHoCH, with a bar
+cooldown on top.
+
+Attach it to **XAUUSD M15**; the status panel warns if the chart is on any other
+timeframe. Module 5 in the source is a deliberately empty extension point — a
+fourth component wires in through two booleans without touching anything above.
 
 ## How to use it — MetaTrader 5
 

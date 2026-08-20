@@ -1,0 +1,455 @@
+//@version=6
+// =============================================================================
+//  JAS SNIPER  —  EMA BIAS + SMC STRUCTURE + FVG
+//  Single-chart confluence tool for XAUUSD on M15.
+//
+//  Three modules feed one entry rule. A BUY/SELL only prints when all three
+//  agree at the same moment:
+//     1. EMA bias      price is cleanly outside the EMA20/EMA50 band
+//     2. SMC structure a confirmed CHoCH in that direction is still fresh
+//     3. FVG           price is tapping an unfilled fair value gap
+//
+//  Module 5 is left empty on purpose — a fourth component drops in there
+//  without touching any of the code above it.
+// =============================================================================
+indicator("JAS Sniper — EMA + SMC + FVG", shorttitle = "JAS Sniper", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 300)
+
+// =============================================================================
+//  INPUTS
+// =============================================================================
+gEMA = "① EMA Bias"
+emaFastLen   = input.int(20, "Fast EMA", minval = 1, group = gEMA)
+emaSlowLen   = input.int(50, "Slow EMA", minval = 1, group = gEMA)
+showEmaBand  = input.bool(true, "Shade the EMA band", group = gEMA)
+showEmaReact = input.bool(true, "Mark reactions off the EMA band", group = gEMA)
+emaTolAtr    = input.float(0.15, "Reaction tolerance (× ATR)", minval = 0.0, step = 0.05, group = gEMA, tooltip = "How close a wick has to come to the band before it counts as a reaction.")
+
+gSMC = "② SMC Structure"
+swingLen      = input.int(10, "Swing lookback", minval = 2, group = gSMC, tooltip = "Bars either side of a pivot. Higher = fewer, more significant swings.")
+showStructure = input.bool(true, "Show BOS / CHoCH", group = gSMC)
+showOB        = input.bool(true, "Show order blocks", group = gSMC)
+obMaxCount    = input.int(6, "Order blocks kept on chart", minval = 1, maxval = 20, group = gSMC)
+obLookback    = input.int(30, "Bars to search back for the OB candle", minval = 3, maxval = 100, group = gSMC)
+showLiq       = input.bool(true, "Show liquidity sweeps", group = gSMC)
+
+gFVG = "③ Fair Value Gaps"
+showFVG      = input.bool(true, "Show FVG zones", group = gFVG)
+fvgMinAtr    = input.float(0.25, "Minimum gap size (× ATR)", minval = 0.0, step = 0.05, group = gFVG, tooltip = "Filters out the micro-gaps that appear constantly on M15 gold.")
+fvgMaxCount  = input.int(12, "FVGs kept on chart", minval = 1, maxval = 40, group = gFVG)
+hideFilledFvg = input.bool(true, "Remove fully filled FVGs", group = gFVG)
+markConfluence = input.bool(true, "Highlight FVG sitting inside an order block", group = gFVG)
+
+gSig = "④ Entry Signals"
+chochValidBars = input.int(25, "CHoCH stays valid for (bars)", minval = 1, group = gSig, tooltip = "A structure break goes stale. After this many bars it no longer authorises an entry.")
+cooldownBars   = input.int(8, "Minimum bars between signals", minval = 0, group = gSig)
+chochGraceBars = input.int(0, "Bars the EMA bias may lag the CHoCH", minval = 0, maxval = 10, group = gSig, tooltip = "0 = strict: the bias must already agree on the break bar itself, otherwise the CHoCH is discarded. Raise to 2-3 if you find valid setups being thrown away because price was still crossing the EMA band when structure broke.")
+onePerChoch    = input.bool(true, "Only one signal per CHoCH", group = gSig)
+confirmOnClose = input.bool(true, "Signal only on closed bars", group = gSig, tooltip = "Off = signals appear intrabar and can disappear again. Keep this on.")
+
+gUI = "Display"
+showPanel = input.bool(true, "Show status panel", group = gUI)
+panelPos  = input.string("Top right", "Panel position", options = ["Top right", "Top left", "Bottom right", "Bottom left"], group = gUI)
+zoneExtend = input.int(6, "Extend zones by (bars)", minval = 0, maxval = 50, group = gUI)
+cBull = input.color(#26a69a, "Bullish", group = gUI, inline = "colors")
+cBear = input.color(#ef5350, "Bearish", group = gUI, inline = "colors")
+cWarn = input.color(#ffa726, "Partial", group = gUI, inline = "colors")
+
+// =============================================================================
+//  TYPES  —  declared up front so every module below can reference them
+// =============================================================================
+// Module 2: an order block zone.
+type OB
+    float top
+    float bot
+    int   left
+    bool  bull
+    bool  mitigated
+    box   bx
+
+// Module 3: a fair value gap. state = 0 untouched, 1 partial, 2 fully filled.
+type FVG
+    float top
+    float bot
+    int   left
+    bool  bull
+    int   state
+    bool  dead
+    box   bx
+
+// =============================================================================
+//  SHARED
+// =============================================================================
+atrVal = ta.atr(14)
+
+var array<OB>  obs  = array.new<OB>()
+var array<FVG> fvgs = array.new<FVG>()
+
+// =============================================================================
+//  MODULE 1  —  EMA BIAS  /  DYNAMIC SUPPORT-RESISTANCE
+//
+//  bias = +1 only when the whole close sits above BOTH EMAs, -1 below both,
+//  0 in between. The 0 state is deliberate: price inside the band is chop and
+//  every downstream module treats it as "no trade".
+// =============================================================================
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+
+emaTop = math.max(emaFast, emaSlow)
+emaBot = math.min(emaFast, emaSlow)
+
+bias = close > emaTop ? 1 : close < emaBot ? -1 : 0
+biasBull = bias == 1
+biasBear = bias == -1
+
+// The band as dynamic S/R: wick pierces the band, body closes back outside it.
+emaTol = atrVal * emaTolAtr
+emaReactBull = biasBull and low <= emaTop + emaTol and low[1] > emaTop[1] + emaTol
+emaReactBear = biasBear and high >= emaBot - emaTol and high[1] < emaBot[1] - emaTol
+
+emaCol = biasBull ? cBull : biasBear ? cBear : color.new(color.gray, 10)
+pFast = plot(emaFast, "EMA 20", color = emaCol, linewidth = 2)
+pSlow = plot(emaSlow, "EMA 50", color = color.new(emaCol, 50), linewidth = 2)
+bandCol = not showEmaBand ? na : emaFast > emaSlow ? color.new(cBull, 90) : color.new(cBear, 90)
+fill(pFast, pSlow, color = bandCol, title = "EMA band")
+
+plotshape(showEmaReact and emaReactBull, "EMA band bounce", style = shape.circle, location = location.belowbar, color = color.new(cBull, 25), size = size.tiny)
+plotshape(showEmaReact and emaReactBear, "EMA band rejection", style = shape.circle, location = location.abovebar, color = color.new(cBear, 25), size = size.tiny)
+
+// =============================================================================
+//  MODULE 2  —  SMC STRUCTURE (swing pivots, BOS / CHoCH, OB, liquidity)
+//
+//  Standard swing-pivot market structure, the same model LuxAlgo-style SMC
+//  indicators use:
+//    - a swing high/low is confirmed by ta.pivothigh / ta.pivotlow
+//    - a break needs a CLOSE through that level, not a wick, and each level
+//      can only be broken once
+//    - break in the same direction as the running trend = BOS
+//      break against it (or from no trend) = CHoCH
+// =============================================================================
+ph = ta.pivothigh(high, swingLen, swingLen)
+pl = ta.pivotlow(low, swingLen, swingLen)
+
+var float swingHigh    = na
+var int   swingHighBar = na
+var bool  shBroken     = true
+var bool  shSwept      = true
+var float swingLow     = na
+var int   swingLowBar  = na
+var bool  slBroken     = true
+var bool  slSwept      = true
+
+if not na(ph)
+    swingHigh    := ph
+    swingHighBar := bar_index - swingLen
+    shBroken     := false
+    shSwept      := false
+
+if not na(pl)
+    swingLow    := pl
+    swingLowBar := bar_index - swingLen
+    slBroken    := false
+    slSwept     := false
+
+var int trend = 0
+bosBull = false
+bosBear = false
+chochBull = false
+chochBear = false
+
+if not na(swingHigh) and not shBroken and close > swingHigh
+    if trend <= 0
+        chochBull := true
+    else
+        bosBull := true
+    trend    := 1
+    shBroken := true
+
+if not na(swingLow) and not slBroken and close < swingLow
+    if trend >= 0
+        chochBear := true
+    else
+        bosBear := true
+    trend    := -1
+    slBroken := true
+
+// A structure break only counts as CONFIRMED when the EMA bias agrees with it.
+chochBullConf = chochBull and biasBull
+chochBearConf = chochBear and biasBear
+brokeUp   = bosBull or chochBull
+brokeDown = bosBear or chochBear
+
+// --- structure drawings -----------------------------------------------------
+if showStructure and brokeUp
+    bool confUp = chochBull ? chochBullConf : biasBull
+    color colUp = confUp ? cBull : color.new(cBull, 55)
+    line.new(swingHighBar, swingHigh, bar_index, swingHigh, color = colUp, style = chochBull ? line.style_solid : line.style_dashed, width = 1)
+    label.new(bar_index, swingHigh, chochBull ? (confUp ? "CHoCH" : "CHoCH?") : "BOS", style = label.style_label_down, color = color.new(colUp, 15), textcolor = color.white, size = size.tiny)
+
+if showStructure and brokeDown
+    bool confDn = chochBear ? chochBearConf : biasBear
+    color colDn = confDn ? cBear : color.new(cBear, 55)
+    line.new(swingLowBar, swingLow, bar_index, swingLow, color = colDn, style = chochBear ? line.style_solid : line.style_dashed, width = 1)
+    label.new(bar_index, swingLow, chochBear ? (confDn ? "CHoCH" : "CHoCH?") : "BOS", style = label.style_label_up, color = color.new(colDn, 15), textcolor = color.white, size = size.tiny)
+
+// --- liquidity sweeps: level pierced by a wick, close rejected back inside ---
+if showLiq and not shSwept and not shBroken and not na(swingHigh) and high > swingHigh and close < swingHigh
+    shSwept := true
+    line.new(swingHighBar, swingHigh, bar_index, swingHigh, color = color.new(cBear, 30), style = line.style_dotted, width = 1)
+    label.new(bar_index, high, "sweep", style = label.style_label_down, color = color.new(cBear, 70), textcolor = cBear, size = size.tiny)
+
+if showLiq and not slSwept and not slBroken and not na(swingLow) and low < swingLow and close > swingLow
+    slSwept := true
+    line.new(swingLowBar, swingLow, bar_index, swingLow, color = color.new(cBull, 30), style = line.style_dotted, width = 1)
+    label.new(bar_index, low, "sweep", style = label.style_label_up, color = color.new(cBull, 70), textcolor = cBull, size = size.tiny)
+
+// --- order blocks: last opposite-colour candle before the breaking impulse ---
+findObOffset(bool bull) =>
+    int found = na
+    int limit = math.min(obLookback, bar_index - 1)
+    if limit >= 1
+        for i = 1 to limit
+            bool opposite = bull ? close[i] < open[i] : close[i] > open[i]
+            if opposite
+                found := i
+                break
+    found
+
+pushOb(bool bull) =>
+    int off = findObOffset(bull)
+    if not na(off)
+        color bg = bull ? color.new(cBull, 84) : color.new(cBear, 84)
+        color bd = bull ? color.new(cBull, 40) : color.new(cBear, 40)
+        box bx = box.new(bar_index - off, high[off], bar_index + zoneExtend, low[off], border_color = bd, bgcolor = bg, border_width = 1)
+        array.push(obs, OB.new(top = high[off], bot = low[off], left = bar_index - off, bull = bull, mitigated = false, bx = bx))
+        if array.size(obs) > obMaxCount
+            OB dropped = array.shift(obs)
+            box.delete(dropped.bx)
+
+if showOB and brokeUp
+    pushOb(true)
+if showOB and brokeDown
+    pushOb(false)
+
+// Keep boxes alive and grey them out once price closes through them.
+if array.size(obs) > 0
+    for i = 0 to array.size(obs) - 1
+        OB o = array.get(obs, i)
+        if not o.mitigated
+            box.set_right(o.bx, bar_index + zoneExtend)
+            bool killed = o.bull ? close < o.bot : close > o.top
+            if killed
+                o.mitigated := true
+                box.set_bgcolor(o.bx, color.new(color.gray, 92))
+                box.set_border_color(o.bx, color.new(color.gray, 60))
+
+// =============================================================================
+//  MODULE 3  —  FAIR VALUE GAPS (3-candle imbalance, current timeframe only)
+//
+//  A bullish FVG exists when low > high[2]: candle 1 ran so hard that the gap
+//  between candle 3's high and candle 1's low was never traded. state tracks
+//  0 = untouched, 1 = partially filled, 2 = fully filled.
+// =============================================================================
+fvgFace(bool bull, int st) =>
+    st == 2 ? color.new(color.gray, 90) : st == 1 ? color.new(cWarn, 84) : bull ? color.new(cBull, 82) : color.new(cBear, 82)
+
+fvgEdge(bool bull, int st) =>
+    st == 2 ? color.new(color.gray, 65) : st == 1 ? color.new(cWarn, 45) : bull ? color.new(cBull, 45) : color.new(cBear, 45)
+
+minGap = atrVal * fvgMinAtr
+bullGap = low > high[2] and close[1] > open[1] and (low - high[2]) >= minGap
+bearGap = high < low[2] and close[1] < open[1] and (low[2] - high) >= minGap
+
+pushFvg(bool bull, float top, float bot) =>
+    box bx = box.new(bar_index - 2, top, bar_index + zoneExtend, bot, border_color = fvgEdge(bull, 0), bgcolor = fvgFace(bull, 0), border_width = 1)
+    array.push(fvgs, FVG.new(top = top, bot = bot, left = bar_index - 2, bull = bull, state = 0, dead = false, bx = bx))
+    if array.size(fvgs) > fvgMaxCount
+        FVG dropped = array.shift(fvgs)
+        if not dropped.dead
+            box.delete(dropped.bx)
+
+if showFVG and bullGap
+    pushFvg(true, low, high[2])
+if showFVG and bearGap
+    pushFvg(false, low[2], high)
+
+// Does this gap sit inside an order block pointing the same way?
+overlapsOb(bool bull, float top, float bot) =>
+    bool hit = false
+    if array.size(obs) > 0
+        for i = 0 to array.size(obs) - 1
+            OB o = array.get(obs, i)
+            if not o.mitigated and o.bull == bull and top >= o.bot and bot <= o.top
+                hit := true
+                break
+    hit
+
+// --- per-bar maintenance: fill tracking, colouring, live-tap detection -------
+inBullFvg = false
+inBearFvg = false
+openFvgCount = 0
+
+if array.size(fvgs) > 0
+    for i = 0 to array.size(fvgs) - 1
+        FVG f = array.get(fvgs, i)
+        if not f.dead
+            int prevState = f.state
+            // A gap cannot be filled or tapped by the bar that created it: the
+            // creation bar's own low IS the upper edge of a bullish gap. Fill
+            // tracking therefore only starts on the following bar.
+            bool matured = bar_index - f.left > 2
+            if matured
+                if f.bull
+                    if low <= f.bot
+                        f.state := 2
+                    else if low <= f.top and f.state == 0
+                        f.state := 1
+                else
+                    if high >= f.top
+                        f.state := 2
+                    else if high >= f.bot and f.state == 0
+                        f.state := 1
+
+            if f.state == 2 and hideFilledFvg
+                box.delete(f.bx)
+                f.dead := true
+            else
+                box.set_right(f.bx, bar_index + zoneExtend)
+                if f.state != prevState
+                    box.set_bgcolor(f.bx, fvgFace(f.bull, f.state))
+                    box.set_border_color(f.bx, fvgEdge(f.bull, f.state))
+                if markConfluence and f.state < 2 and overlapsOb(f.bull, f.top, f.bot)
+                    box.set_border_width(f.bx, 2)
+                    box.set_border_color(f.bx, f.bull ? cBull : cBear)
+
+            if not f.dead and f.state < 2
+                openFvgCount += 1
+                if matured and low <= f.top and high >= f.bot
+                    if f.bull
+                        inBullFvg := true
+                    else
+                        inBearFvg := true
+
+// =============================================================================
+//  MODULE 4  —  ENTRY CONFLUENCE
+//
+//  A CHoCH authorises entries for a limited window. Inside that window the
+//  entry fires the moment price taps an unfilled FVG in the same direction
+//  while the EMA bias still agrees.
+// =============================================================================
+var int pendingDir  = 0
+var int pendingBar  = na
+var int chochDir    = 0
+var int chochBarIdx = na
+
+if chochBull
+    pendingDir := 1
+    pendingBar := bar_index
+if chochBear
+    pendingDir := -1
+    pendingBar := bar_index
+
+// Promote a pending break to a confirmed one the moment the EMA bias agrees,
+// as long as that happens inside the grace window. Then drop the pending state
+// so a single break can never authorise two entries.
+if pendingDir != 0 and not na(pendingBar)
+    if bar_index - pendingBar > chochGraceBars
+        pendingDir := 0
+    else if pendingDir == 1 and biasBull
+        chochDir    := 1
+        chochBarIdx := bar_index
+        pendingDir  := 0
+    else if pendingDir == -1 and biasBear
+        chochDir    := -1
+        chochBarIdx := bar_index
+        pendingDir  := 0
+
+int chochAge = na(chochBarIdx) ? na : bar_index - chochBarIdx
+chochFresh = not na(chochAge) and chochAge <= chochValidBars
+chochBullActive = chochFresh and chochDir == 1
+chochBearActive = chochFresh and chochDir == -1
+
+// ---- extension point for the 4th component --------------------------------
+// Compute the new module above this line, expose it as two booleans, then set
+// useModule4 to true. Nothing else in the entry rule has to change.
+useModule4  = false
+module4Bull = true
+module4Bear = true
+// ---------------------------------------------------------------------------
+
+legsBull = (biasBull ? 1 : 0) + (chochBullActive ? 1 : 0) + (inBullFvg ? 1 : 0)
+legsBear = (biasBear ? 1 : 0) + (chochBearActive ? 1 : 0) + (inBearFvg ? 1 : 0)
+
+rawBuy  = biasBull and chochBullActive and inBullFvg and (not useModule4 or module4Bull)
+rawSell = biasBear and chochBearActive and inBearFvg and (not useModule4 or module4Bear)
+
+var int lastSignalBar  = na
+var int signalledChoch = na
+
+barReady   = confirmOnClose ? barstate.isconfirmed : true
+cooldownOk = na(lastSignalBar) or (bar_index - lastSignalBar) >= cooldownBars
+chochUnused = not onePerChoch or na(signalledChoch) or signalledChoch != chochBarIdx
+
+buySignal  = rawBuy and barReady and cooldownOk and chochUnused
+sellSignal = rawSell and barReady and cooldownOk and chochUnused
+
+if buySignal or sellSignal
+    lastSignalBar  := bar_index
+    signalledChoch := chochBarIdx
+
+plotshape(buySignal, "BUY signal", style = shape.labelup, location = location.belowbar, color = cBull, text = "BUY", textcolor = color.white, size = size.small)
+plotshape(sellSignal, "SELL signal", style = shape.labeldown, location = location.abovebar, color = cBear, text = "SELL", textcolor = color.white, size = size.small)
+
+alertcondition(buySignal, "JAS Sniper — BUY", "JAS Sniper BUY on {{ticker}} {{interval}} — EMA bias, CHoCH and FVG aligned at {{close}}")
+alertcondition(sellSignal, "JAS Sniper — SELL", "JAS Sniper SELL on {{ticker}} {{interval}} — EMA bias, CHoCH and FVG aligned at {{close}}")
+alertcondition(buySignal or sellSignal, "JAS Sniper — any signal", "JAS Sniper signal on {{ticker}} {{interval}} at {{close}}")
+
+// =============================================================================
+//  MODULE 5  —  RESERVED
+//  The fourth component goes here. Keep it self-contained, then wire it into
+//  the extension point in Module 4.
+// =============================================================================
+
+// =============================================================================
+//  STATUS PANEL
+// =============================================================================
+panelAnchor = panelPos == "Top right" ? position.top_right : panelPos == "Top left" ? position.top_left : panelPos == "Bottom right" ? position.bottom_right : position.bottom_left
+var table panel = table.new(panelAnchor, 2, 6, bgcolor = color.new(#0e1116, 15), frame_color = color.new(color.gray, 55), frame_width = 1, border_color = color.new(color.gray, 80), border_width = 1)
+
+tick(bool ok) =>
+    ok ? "✓ " : "✗ "
+
+if showPanel and barstate.islast
+    string biasTxt = biasBull ? "BULLISH" : biasBear ? "BEARISH" : "NEUTRAL (in band)"
+    color  biasCol = biasBull ? cBull : biasBear ? cBear : color.gray
+
+    string strucTxt = trend == 1 ? "Uptrend" : trend == -1 ? "Downtrend" : "Undefined"
+    color  strucCol = trend == 1 ? cBull : trend == -1 ? cBear : color.gray
+
+    string chochTxt = chochBullActive ? "BULL · " + str.tostring(chochAge) + " bars ago" : chochBearActive ? "BEAR · " + str.tostring(chochAge) + " bars ago" : na(chochBarIdx) ? "none yet" : "expired"
+    color  chochCol = chochBullActive ? cBull : chochBearActive ? cBear : color.gray
+
+    string fvgTxt = inBullFvg and inBearFvg ? "tapping both" : inBullFvg ? "tapping BULL zone" : inBearFvg ? "tapping BEAR zone" : str.tostring(openFvgCount) + " open · none tapped"
+    color  fvgCol = inBullFvg ? cBull : inBearFvg ? cBear : color.gray
+
+    bool   leadBull = legsBull >= legsBear
+    int    legs     = leadBull ? legsBull : legsBear
+    string side     = leadBull ? "long" : "short"
+    string entryTxt = legs == 3 ? (leadBull ? "▲ BUY — all 3 aligned" : "▼ SELL — all 3 aligned") : tick(leadBull ? biasBull : biasBear) + "EMA  " + tick(leadBull ? chochBullActive : chochBearActive) + "CHoCH  " + tick(leadBull ? inBullFvg : inBearFvg) + "FVG"
+    color  entryCol = legs == 3 ? (leadBull ? cBull : cBear) : color.new(color.gray, 10)
+    string entryHdr = legs == 3 ? "ENTRY" : "Entry (" + str.tostring(legs) + "/3 " + side + ")"
+
+    string tfTxt = timeframe.period == "15" ? "M15" : timeframe.period + " ⚠"
+    color  tfCol = timeframe.period == "15" ? color.new(color.gray, 20) : cWarn
+
+    table.cell(panel, 0, 0, "JAS SNIPER", text_color = color.white, text_size = size.small, bgcolor = color.new(#1f2937, 20), text_halign = text.align_left)
+    table.cell(panel, 1, 0, tfTxt, text_color = tfCol, text_size = size.small, bgcolor = color.new(#1f2937, 20), text_halign = text.align_right)
+    table.cell(panel, 0, 1, "EMA bias", text_color = color.new(color.gray, 15), text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 1, biasTxt, text_color = biasCol, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 2, "Structure", text_color = color.new(color.gray, 15), text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 2, strucTxt, text_color = strucCol, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 3, "CHoCH", text_color = color.new(color.gray, 15), text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 3, chochTxt, text_color = chochCol, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 4, "FVG", text_color = color.new(color.gray, 15), text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 4, fvgTxt, text_color = fvgCol, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 5, entryHdr, text_color = color.new(color.gray, 15), text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 5, entryTxt, text_color = entryCol, text_size = size.small, text_halign = text.align_right)
