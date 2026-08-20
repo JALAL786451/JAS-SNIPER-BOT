@@ -112,8 +112,8 @@ pSlow = plot(emaSlow, "EMA 50", color = color.new(emaCol, 50), linewidth = 2)
 bandCol = not showEmaBand ? na : emaFast > emaSlow ? color.new(cBull, 90) : color.new(cBear, 90)
 fill(pFast, pSlow, color = bandCol, title = "EMA band")
 
-plotshape(showEmaReact and emaReactBull, "EMA band bounce", style = shape.circle, location = location.belowbar, color = color.new(cBull, 25), size = size.tiny)
-plotshape(showEmaReact and emaReactBear, "EMA band rejection", style = shape.circle, location = location.abovebar, color = color.new(cBear, 25), size = size.tiny)
+plotshape(showEmaReact and emaReactBull, "EMA band bounce", style = shape.circle, location = location.belowbar, color = color.new(cBull, 25), size = size.tiny, display = display.pane)
+plotshape(showEmaReact and emaReactBear, "EMA band rejection", style = shape.circle, location = location.abovebar, color = color.new(cBear, 25), size = size.tiny, display = display.pane)
 
 // =============================================================================
 //  MODULE 2  —  SMC STRUCTURE (swing pivots, BOS / CHoCH, OB, liquidity)
@@ -396,8 +396,8 @@ if buySignal or sellSignal
     lastSignalBar  := bar_index
     signalledChoch := chochBarIdx
 
-plotshape(buySignal, "BUY signal", style = shape.labelup, location = location.belowbar, color = cBull, text = "BUY", textcolor = color.white, size = size.small)
-plotshape(sellSignal, "SELL signal", style = shape.labeldown, location = location.abovebar, color = cBear, text = "SELL", textcolor = color.white, size = size.small)
+plotshape(buySignal, "BUY signal", style = shape.labelup, location = location.belowbar, color = cBull, text = "BUY", textcolor = color.white, size = size.small, display = display.pane)
+plotshape(sellSignal, "SELL signal", style = shape.labeldown, location = location.abovebar, color = cBear, text = "SELL", textcolor = color.white, size = size.small, display = display.pane)
 
 alertcondition(buySignal, "JAS Sniper — BUY", "JAS Sniper BUY on {{ticker}} {{interval}} — EMA bias, CHoCH and FVG aligned at {{close}}")
 alertcondition(sellSignal, "JAS Sniper — SELL", "JAS Sniper SELL on {{ticker}} {{interval}} — EMA bias, CHoCH and FVG aligned at {{close}}")
