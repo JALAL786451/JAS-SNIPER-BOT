@@ -35,9 +35,9 @@ input color  ColBuy         = clrLime;              // BUY ka rang
 input color  ColSell        = clrTomato;            // SELL ka rang
 input color  ColText        = clrWhite;             // Panel text ka rang
 input int    PanelX         = 12;                   // Panel — kinare se doori
-input int    PanelY         = 24;                   // Panel — upar se doori
-input int    FontSize       = 9;                    // Font size
-input string FontName       = "Consolas";           // Font
+input int    PanelY         = 28;                   // Panel — upar se doori
+input int    FontSize       = 14;                   // Font size (bara = zyada bara)
+input string FontName       = "Consolas Bold";      // Font ("Arial Bold" bhi chalega)
 
 //--- object names
 #define PFX  "JASPANEL_"
