@@ -1,0 +1,230 @@
+//@version=6
+// ══════════════════════════════════════════════════════════════════════════
+//  XAUUSD MTF Wick / FVG Scalper  v2  —  SELF-ADJUSTING        [ STRATEGY ]
+// ══════════════════════════════════════════════════════════════════════════
+//
+//  Ye "xauusd_scalper_v2.pine" (indicator) ka STRATEGY version hai.
+//  Logic bilkul same hai — farq sirf itna ke ye Strategy Tester mein
+//  backtest ho sakta hai: win rate, profit factor, drawdown sab dikhega.
+//
+//  Chart 1M par rakhein.
+//
+//  LOGIC:
+//      15M ki pichli candle ke wick / FVG   ->  zone     (YELLOW box)
+//      Price zone mein wapas aaye           ->  retest
+//      15M + 5M dono MA20/MA50 se confirm   ->  trend
+//      1M ka unfilled wick touch + rejection close  ->  ENTRY
+//      Exit: fixed SL (zone ke paar) aur TP = SL x Risk:Reward
+//
+//  ZAROORI — backtest ko honest rakhne ke liye:
+//      Properties tab mein Commission aur Slippage zaroor set karein.
+//      1M scalping par spread/commission ignore karein to results jhoot bolte hain.
+//
+// ══════════════════════════════════════════════════════════════════════════
+
+strategy("XAUUSD Scalper v2 [auto] — Strategy", overlay = true,
+     max_boxes_count        = 50,
+     max_lines_count        = 100,
+     max_labels_count       = 100,
+     max_bars_back          = 300,
+     initial_capital        = 10000,
+     default_qty_type       = strategy.percent_of_equity,
+     default_qty_value      = 10,
+     process_orders_on_close = true,
+     calc_on_every_tick      = false,
+     slippage                = 2,
+     commission_type         = strategy.commission.percent,
+     commission_value        = 0.01)
+
+// ─────────────────────────────  SIRF 3 SETTINGS  ──────────────────────────
+
+sens = input.string("Balanced", "1. Sensitivity",
+     options  = ["Conservative", "Balanced", "Aggressive"],
+     tooltip  = "Conservative = kam magar saaf signals. Aggressive = zyada signals magar shor bhi zyada.")
+
+rr = input.float(2.0, "2. Risk : Reward", minval = 0.5, maxval = 5.0, step = 0.1,
+     tooltip  = "TP = SL ka itna guna. 2.0 ka matlab: 1 haar ke muqable 2 jeet.")
+
+sessMode = input.string("London + NY", "3. Session filter",
+     options  = ["Off", "London only", "NY only", "London + NY"],
+     tooltip  = "Sirf in sessions mein trade lein.")
+
+// ───────────────────────  BACKTEST-ONLY SETTINGS  ─────────────────────────
+
+grpBT      = "Backtest"
+riskPct    = input.float(1.0,  "Risk per trade (% equity)", minval = 0.1, maxval = 10.0, step = 0.1, group = grpBT,
+     tooltip = "Har trade par equity ka kitna % risk. Position size khud calculate hoti hai.")
+useDates   = input.bool(false, "Date range filter", group = grpBT)
+startDate  = input.time(timestamp("01 Jan 2024 00:00 +0000"), "Start", group = grpBT)
+endDate    = input.time(timestamp("01 Jan 2030 00:00 +0000"), "End",   group = grpBT)
+oneAtATime = input.bool(true,  "Ek waqt mein sirf 1 trade", group = grpBT)
+
+dateOk = not useDates or (time >= startDate and time <= endDate)
+
+// ─────────────────────  SENSITIVITY -> KHUD KE THRESHOLDS  ────────────────
+
+wickFactor = sens == "Conservative" ? 0.80 : sens == "Aggressive" ? 0.30 : 0.50
+rejFactor  = sens == "Conservative" ? 1.20 : sens == "Aggressive" ? 0.50 : 0.80
+maxAge     = sens == "Conservative" ? 60   : sens == "Aggressive" ? 120  : 90
+
+// ─────────────────────────────  HTF DATA (15M)  ───────────────────────────
+// [1] lagaya hai taake sirf CONFIRMED 15M candle use ho -> repaint nahi hota.
+
+[h15, l15, o15, c15, h15old, l15old, atr15, ma20_15, ma50_15] = request.security(
+     syminfo.tickerid, "15",
+     [high[1], low[1], open[1], close[1], high[3], low[3], ta.atr(14)[1], ta.sma(close, 20)[1], ta.sma(close, 50)[1]],
+     lookahead = barmerge.lookahead_off)
+
+[ma20_5, ma50_5] = request.security(
+     syminfo.tickerid, "5",
+     [ta.sma(close, 20)[1], ta.sma(close, 50)[1]],
+     lookahead = barmerge.lookahead_off)
+
+atrC = ta.atr(14)
+
+// ──────────────────────────────  FILTERS  ─────────────────────────────────
+
+bullTrend = ma20_15 > ma50_15 and ma20_5 > ma50_5
+bearTrend = ma20_15 < ma50_15 and ma20_5 < ma50_5
+
+inLondon = not na(time(timeframe.period, "0800-1700", "Europe/London"))
+inNY     = not na(time(timeframe.period, "0800-1700", "America/New_York"))
+
+sessOk = switch sessMode
+    "Off"          => true
+    "London only"  => inLondon
+    "NY only"      => inNY
+    => inLondon or inNY
+
+// ═══════════════════════════════  ZONE ENGINE  ════════════════════════════
+
+type Zone
+    float top
+    float bot
+    bool  isBull
+    int   born
+    box   bx
+    bool  dead
+
+var array<Zone> zones = array.new<Zone>()
+
+drawZone(float top, float bot, bool isBull, string kind) =>
+    bg  = isBull ? color.new(color.yellow, 88) : color.new(color.blue, 88)
+    brd = isBull ? color.new(color.orange, 35) : color.new(color.blue, 35)
+    bx  = box.new(bar_index, top, bar_index + 1, bot,
+         border_color = brd, border_width = 1, bgcolor = bg,
+         text = kind + (isBull ? " ▲ BUY zone" : " ▼ SELL zone"),
+         text_size = size.tiny, text_color = color.new(color.gray, 20),
+         text_halign = text.align_left, text_valign = text.align_top)
+    array.push(zones, Zone.new(top, bot, isBull, bar_index, bx, false))
+
+newBar15 = timeframe.change("15")
+
+if newBar15 and not na(atr15) and atr15 > 0
+    bodyTop  = math.max(o15, c15)
+    bodyBot  = math.min(o15, c15)
+    lowWick  = bodyBot - l15
+    highWick = h15 - bodyTop
+
+    if lowWick >= atr15 * wickFactor
+        drawZone(bodyBot, l15, true, "15M WICK")
+    if highWick >= atr15 * wickFactor
+        drawZone(h15, bodyTop, false, "15M WICK")
+    if l15 > h15old and (l15 - h15old) >= atr15 * wickFactor * 0.5
+        drawZone(l15, h15old, true, "15M FVG")
+    if h15 < l15old and (l15old - h15) >= atr15 * wickFactor * 0.5
+        drawZone(l15old, h15, false, "15M FVG")
+
+if array.size(zones) > 0
+    for i = array.size(zones) - 1 to 0
+        z = array.get(zones, i)
+        broke = z.isBull ? close < z.bot - atrC * 0.10 : close > z.top + atrC * 0.10
+        old   = bar_index - z.born > maxAge
+        if z.dead or broke or old
+            box.delete(z.bx)
+            array.remove(zones, i)
+        else
+            box.set_right(z.bx, bar_index + 1)
+
+// ═════════════════════════════  ENTRY ENGINE  ═════════════════════════════
+
+body      = math.abs(close - open)
+lowerWick = math.min(open, close) - low
+upperWick = high - math.max(open, close)
+
+var float pendEntry = na
+var float pendSL    = na
+var float pendTP    = na
+
+longSig  = false
+shortSig = false
+
+flat = strategy.position_size == 0
+canTrade = dateOk and sessOk and (not oneAtATime or flat)
+
+if array.size(zones) > 0 and canTrade
+    for i = 0 to array.size(zones) - 1
+        z = array.get(zones, i)
+
+        if z.isBull and bullTrend and not longSig
+            touched = low <= z.top and low >= z.bot - atrC * 0.30
+            closeOk = close > z.top and close > open
+            rejOk   = lowerWick >= body * rejFactor and lowerWick > 0
+            if touched and closeOk and rejOk
+                sl = z.bot - atrC * 0.25
+                if close > sl
+                    longSig   := true
+                    pendEntry := close
+                    pendSL    := sl
+                    pendTP    := close + (close - sl) * rr
+                    z.dead    := true
+
+        if not z.isBull and bearTrend and not shortSig
+            touched = high >= z.bot and high <= z.top + atrC * 0.30
+            closeOk = close < z.bot and close < open
+            rejOk   = upperWick >= body * rejFactor and upperWick > 0
+            if touched and closeOk and rejOk
+                sl = z.top + atrC * 0.25
+                if close < sl
+                    shortSig  := true
+                    pendEntry := close
+                    pendSL    := sl
+                    pendTP    := close - (sl - close) * rr
+                    z.dead    := true
+
+// ══════════════════════════  POSITION SIZING  ════════════════════════════
+// Har trade par equity ka `riskPct` % risk. Stop jitna door, size utni chhoti.
+
+calcQty(float entry, float sl) =>
+    stopDist = math.abs(entry - sl)
+    riskCash = strategy.equity * riskPct / 100.0
+    stopDist > 0 ? math.max(riskCash / stopDist, 0.0) : 0.0
+
+// ═══════════════════════════  ORDERS  ═════════════════════════════════════
+
+if longSig
+    q = calcQty(pendEntry, pendSL)
+    if q > 0
+        strategy.entry("Long", strategy.long, qty = q)
+        strategy.exit("Long X", from_entry = "Long", stop = pendSL, limit = pendTP)
+
+if shortSig
+    q = calcQty(pendEntry, pendSL)
+    if q > 0
+        strategy.entry("Short", strategy.short, qty = q)
+        strategy.exit("Short X", from_entry = "Short", stop = pendSL, limit = pendTP)
+
+// ══════════════════════════════  DRAWING  ═════════════════════════════════
+
+plotshape(longSig,  title = "BUY",  style = shape.labelup,   location = location.belowbar,
+     color = color.new(color.green, 0), textcolor = color.white, text = "BUY",  size = size.small)
+plotshape(shortSig, title = "SELL", style = shape.labeldown, location = location.abovebar,
+     color = color.new(color.red, 0),   textcolor = color.white, text = "SELL", size = size.small)
+
+plot(ma20_15, "15M MA20", color = color.new(color.teal, 30), linewidth = 2)
+plot(ma50_15, "15M MA50", color = color.new(color.teal, 60), linewidth = 2)
+plot(ma20_5,  "5M MA20",  color = color.new(color.aqua, 55), linewidth = 1)
+plot(ma50_5,  "5M MA50",  color = color.new(color.aqua, 75), linewidth = 1)
+
+bgcolor(bullTrend and sessOk ? color.new(color.green, 96) : bearTrend and sessOk ? color.new(color.red, 96) : na,
+     title = "Trend tint")

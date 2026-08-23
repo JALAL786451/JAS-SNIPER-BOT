@@ -1,0 +1,605 @@
+//@version=5
+indicator("SMC Coach — Pro (SCALP 1H + MTF Dashboard 1m→1W + Supertrend)",
+     overlay=true, max_labels_count=500, max_lines_count=500, max_boxes_count=300, dynamic_requests=true)
+
+// ---------------- TF helper ----------------
+is1H = (timeframe.isminutes and timeframe.multiplier == 60) or (str.upper(timeframe.period) == "60") or (str.upper(timeframe.period) == "1H")
+
+// ============== Inputs ==============
+pivotLR       = input.int(3,  "Pivot L/R (swings)", minval=1)
+maxZones      = input.int(10, "Keep last N zones", minval=2, maxval=200)
+zonePadATR    = input.float(0.15, "Zone padding (x ATR)", minval=0, step=0.01)
+
+showFVG       = input.bool(true,  "FVG (current bar only)")
+showLGB       = input.bool(true,  "LGB (current bar only)")
+showSR        = input.bool(true,  "S/R shading (light)")
+
+// --- Entry + strictness (SCALP defaults)
+entryMode = input.string("Confirm + (FVG or LGB)", "Entry Mode", options=[
+     "Touch only","Confirm (Touch+Struct+Trend)","Confirm + (FVG or LGB)"])
+structLookback         = input.int(3,  "Structure lookback bars", minval=1, maxval=20)
+useCloseTouch          = input.bool(false, "Zone touch: require CLOSE inside zone")
+confirmMomo            = input.bool(false, "Confirm FVG/LGB on 1H close")
+confirmSignalsOnClose  = input.bool(true,  "Show Buy/Sell only after bar close (no repaint)")
+
+// Trend + ADX
+emaFastLen    = input.int(20, "EMA fast", minval=2)
+emaSlowLen    = input.int(50, "EMA slow", minval=3)
+useAdx        = input.bool(true, "Use ADX filter")
+adxLen        = input.int(14, "ADX DI length", minval=2)
+adxSmooth     = input.int(14, "ADX smoothing", minval=1)
+adxMin        = input.float(18, "ADX min", step=0.5, minval=1)
+strictTrendClose = input.bool(false, "Trend needs price above/below EMA fast")
+
+// HTF
+enableHTF     = input.bool(true, "Use HTF confluence (4H/1D)")
+htfAgreeMode  = input.string("Either", "HTF agree", options=["Both","Either"])
+useClosedHTF  = input.bool(true, "HTF: use closed candles")
+
+// DXY
+useDXY        = input.bool(true, "Use DXY filter")
+dxyTF         = input.string("", "DXY TF (blank = chart TF)")
+
+// ---- Momentum / Breakout entries
+enableBreakout   = input.bool(true,  "Enable Momentum/Breakout entries")
+brkBufATR        = input.float(0.10, "Breakout buffer (x ATR)", step=0.01, minval=0.0)
+impulseATR       = input.float(0.95, "Impulse bar ≥ ATR *", step=0.05, minval=0.5)
+enableEMARetest  = input.bool(true,  "Continuation: EMA retest entry")
+emaRetestWhich   = input.string("EMA20", "Retest EMA", options=["EMA20","EMA50"])
+emaRetestTol     = input.float(0.45, "Retest tolerance (x ATR)", step=0.01, minval=0.0)
+retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1, maxval=50)
+
+// ----- Supertrend add-on -----
+groupST       = "Supertrend (optional)"
+enableST      = input.bool(true,  "Enable Supertrend", group=groupST)
+useSTFilter   = input.bool(true,  "Use ST as extra filter (Buy needs ST Up, Sell needs ST Down)", group=groupST)
+stShowPlots   = input.bool(true,  "Plot ST lines", group=groupST)
+stShowSignals = input.bool(true,  "Show ST Buy/Sell labels", group=groupST)
+stPeriod      = input.int(10, "ATR Period", minval=1, group=groupST)
+stMult        = input.float(3.0, "ATR Multiplier", step=0.1, group=groupST)
+stSrc         = input.source(hl2, "ST Source", group=groupST)
+stUseATR      = input.bool(true, "Use ta.atr() (else SMA(TR))", group=groupST)
+
+// ---------- Dashboard gate knobs ----------
+gateUseAdx     = input.bool(false, "Dash gates: use ADX filter")
+gateAdxMin     = input.float(14,   "Dash gates: ADX min", step=0.5)
+gateNeedClose  = input.bool(false, "Dash gates: need price above/below EMA20")
+gateMinSepATR  = input.float(0.01, "Dash gates: min EMA20/50 sep (ATR x)", step=0.01)
+gateAtrLen     = input.int(14,     "Dash gates: ATR length", minval=1)
+gateUseClosed  = input.bool(true,  "Dashboard uses CLOSED candles")
+
+// Panels
+showTeacher   = input.bool(true,  "Show Teacher panel")
+showLegend    = input.bool(true,  "Show Legend panel")
+showRows      = input.bool(false, "Legend: extra TF rows (5/15/30/4H/1D)")
+teacherPos    = input.string("Top Right", "Teacher position", options=["Top Right","Top Left","Bottom Right","Bottom Left"])
+legendPos     = input.string("Top Left",  "Legend position", options=["Top Right","Top Left","Bottom Right","Bottom Left"])
+panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=100)
+panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6)
+panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"])
+
+// Debug
+showDebug     = input.bool(false, "DEBUG heartbeat")
+
+// ============== Helpers/Colors ==============
+var string reason = ""
+var string missB  = ""
+var string missS  = ""
+
+f_size(s)=> s=="Tiny"?size.tiny:s=="Small"?size.small:s=="Normal"?size.normal:size.large
+PFS = f_size(panelFont)
+f_pos(s)=> s=="Top Left"?position.top_left:s=="Top Right"?position.top_right:s=="Bottom Left"?position.bottom_left:position.bottom_right
+f_lbl(st)=> st==1?"UT":st==-1?"DT":"NT"
+
+atr   = ta.atr(14)
+atr1  = ta.atr(1)
+minTk = syminfo.mintick
+
+// ---- PACK SCALES ----
+var int SCALE_TREND = 1000000
+var int SCALE_PRESS = 1000
+
+colBull   = color.new(color.green, 0)
+colBear   = color.new(color.red,   0)
+colSRBull = color.new(color.lime,  0)
+colSRBear = color.new(color.red,   0)
+bgPanel  = color.new(color.white, panelTrans)
+bgPanel2 = color.new(color.white, math.max(panelTrans-5,0))
+
+// ADX helper
+f_adx(len, smooth)=>
+    [_p,_m,_adx] = ta.dmi(len, smooth)
+    _adx
+
+// TF label
+f_labTF(_tf)=>
+    _tf=="W"?"1W":_tf=="D"?"1D":_tf=="240"?"4H":_tf=="120"?"2H":_tf=="60"?"1H":_tf=="30"?"30m":_tf=="15"?"15m":_tf=="5"?"5m":_tf=="3"?"3m":_tf=="1"?"1m":_tf
+
+// ---------- Supertrend ----------
+var int stTrend = 1
+stATRsrc = stUseATR ? ta.atr(stPeriod) : ta.sma(ta.tr(true), stPeriod)
+stUp  = stSrc - (stMult * stATRsrc)
+stUp1 = nz(stUp[1], stUp)
+stUp  := close[1] > stUp1 ? math.max(stUp, stUp1) : stUp
+stDn  = stSrc + (stMult * stATRsrc)
+stDn1 = nz(stDn[1], stDn)
+stDn  := close[1] < stDn1 ? math.min(stDn, stDn1) : stDn
+stTrend := nz(stTrend[1], stTrend)
+stTrend := stTrend == -1 and close > stDn1 ? 1 : stTrend == 1 and close < stUp1 ? -1 : stTrend
+stBuySig  = enableST and stTrend == 1 and stTrend[1] == -1
+stSellSig = enableST and stTrend == -1 and stTrend[1] == 1
+
+plot(enableST and stShowPlots and stTrend == 1 ? stUp : na, title="ST Up",  style=plot.style_linebr, linewidth=2, color=color.new(color.green, 0))
+plot(enableST and stShowPlots and stTrend == -1 ? stDn : na, title="ST Dn", style=plot.style_linebr, linewidth=2, color=color.new(color.red, 0))
+plotshape((enableST and stShowSignals) ? (stBuySig ? stUp : na) : na,  title="ST Buy",  text="ST Buy",  style=shape.labelup,   location=location.absolute, color=color.new(color.green,0), textcolor=color.white, size=size.tiny)
+plotshape((enableST and stShowSignals) ? (stSellSig ? stDn : na) : na, title="ST Sell", text="ST Sell", style=shape.labeldown, location=location.absolute, color=color.new(color.red,0),   textcolor=color.white, size=size.tiny)
+
+// ---------- MTF line (safe) ----------
+mtfBlock() =>
+    f  = ta.ema(close, emaFastLen)
+    s  = ta.ema(close, emaSlowLen)
+    st = f > s and close > f ? "UT" : f < s and close < f ? "DT" : "NT"
+    bullFVG = bar_index > 2 and (low  > high[2])
+    bearFVG = bar_index > 2 and (high <  low [2])
+    fvgtxt  = bullFVG ? "F↑" : bearFVG ? "F↓" : "F-"
+    l_up   = high > high[1] and close < high[1]
+    l_dn   = low  < low [1] and close > low [1]
+    lgbtxt = l_up ? "L↑" : l_dn ? "L↓" : "L-"
+    ph     = ta.pivothigh(high, 5, 5)
+    pl     = ta.pivotlow (low,  5, 5)
+    lastPh = ta.valuewhen(not na(ph), ph, 0)
+    lastPl = ta.valuewhen(not na(pl), pl, 0)
+    dzT    = not na(lastPl) and low  <= lastPl
+    szT    = not na(lastPh) and high >= lastPh
+    srtxt  = dzT ? "DZ" : szT ? "SZ" : "SR-"
+    st + "  |  " + fvgtxt + "  |  " + lgbtxt + "  |  " + srtxt
+
+mtfLine(_tf) => request.security(syminfo.tickerid, _tf, mtfBlock(), barmerge.gaps_off, barmerge.lookahead_off)
+
+// ============== Swings + BOS/CHOCH ==============
+ph = ta.pivothigh(high, pivotLR, pivotLR)
+pl = ta.pivotlow (low,  pivotLR, pivotLR)
+
+var float lastHi = na
+var float lastLo = na
+var int   lastHiIdx = na
+var int   lastLoIdx = na
+
+if not na(ph)
+    lastHi    := ph
+    lastHiIdx := bar_index - pivotLR
+if not na(pl)
+    lastLo    := pl
+    lastLoIdx := bar_index - pivotLR
+
+f_breakAbove(_ref, useClose)=>
+    na(_ref) ? false : ((useClose?close:high) > _ref)
+f_breakBelow(_ref, useClose)=>
+    na(_ref) ? false : ((useClose?close:low)  < _ref)
+
+useCloseBreak = true
+aboveHi = f_breakAbove(lastHi, useCloseBreak)
+belowLo = f_breakBelow(lastLo, useCloseBreak)
+
+var int  trendStruct = 0
+var bool bosUp=false, bosDn=false, chochUp=false, chochDn=false
+bosUp:=false, bosDn:=false, chochUp:=false, chochDn:=false
+if aboveHi
+    if trendStruct == -1
+        chochUp := true
+        trendStruct := 1
+    else
+        bosUp := true
+        trendStruct := 1
+if belowLo
+    if trendStruct == 1
+        chochDn := true
+        trendStruct := -1
+    else
+        bosDn := true
+        trendStruct := -1
+
+bsUp = ta.barssince(bosUp or chochUp)
+bsDn = ta.barssince(bosDn or chochDn)
+recentUpStruct   = not na(bsUp) and bsUp <= structLookback
+recentDownStruct = not na(bsDn) and bsDn <= structLookback
+
+// ============== Zones ==============
+var box[]  zBoxes = array.new_box()
+var bool[] zIsSup = array.new_bool()
+var line[] zLines = array.new_line()
+
+newZone(_idx,_price,_isSupport)=>
+    pad = atr * zonePadATR
+    top = _price + pad
+    bot = _price - pad
+    col = _isSupport?colSRBull:colSRBear
+    fill= color.new(_isSupport?color.lime:color.red, 86)
+    b = box.new(_idx, top, bar_index, bot, xloc=xloc.bar_index, bgcolor=fill, border_color=color.new(col,70))
+    l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=col, width=2)
+    array.push(zBoxes, b), array.push(zIsSup, _isSupport), array.push(zLines, l)
+
+if bosUp and not na(lastLoIdx) and showSR
+    newZone(lastLoIdx, lastLo, true)
+if bosDn and not na(lastHiIdx) and showSR
+    newZone(lastHiIdx, lastHi, false)
+
+// ---- Zone invalidation: toota hua zone hatao (accuracy) ----
+// Support zone tab tak zinda jab tak price uske neeche band na ho.
+// Resistance zone tab tak zinda jab tak price uske upar band na ho.
+if array.size(zBoxes) > 0
+    for i = array.size(zBoxes) - 1 to 0
+        _b     = array.get(zBoxes, i)
+        _isSup = array.get(zIsSup, i)
+        _broke = _isSup ? close < box.get_bottom(_b) : close > box.get_top(_b)
+        if _broke
+            box.delete(array.get(zBoxes, i))
+            line.delete(array.get(zLines, i))
+            array.remove(zBoxes, i)
+            array.remove(zIsSup, i)
+            array.remove(zLines, i)
+
+while array.size(zBoxes) > maxZones
+    box.delete(array.shift(zBoxes))
+    array.shift(zIsSup)
+while array.size(zLines) > maxZones
+    line.delete(array.shift(zLines))
+
+f_lastZone(_isSupport)=>
+    box ret = na
+    _n = array.size(zBoxes)
+    if _n > 0
+        for i = _n - 1 to 0
+            if array.get(zIsSup, i) == _isSupport
+                ret := array.get(zBoxes, i)
+                break
+    ret
+
+// ============== Current-bar FVG/LGB ==============
+var box fvgBox = na
+var label lgbLbl = na
+var bool FVG_up=false, FVG_dn=false, LGB_up=false, LGB_dn=false
+FVG_up := false
+FVG_dn := false
+LGB_up := false
+LGB_dn := false
+
+if showFVG
+    if not barstate.islast and not na(fvgBox)
+        box.delete(fvgBox)
+        fvgBox := na
+    bullGap = bar_index > 2 and (low  > high[2])
+    bearGap = bar_index > 2 and (high < low[2])
+    FVG_up := bullGap
+    FVG_dn := bearGap
+    if barstate.islast
+        if bullGap
+            fvgBox := box.new(bar_index-2, high[2], bar_index, low,  xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+        if bearGap
+            fvgBox := box.new(bar_index-2, low [2], bar_index, high, xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+
+if showLGB
+    if not barstate.islast and not na(lgbLbl)
+        label.delete(lgbLbl)
+        lgbLbl := na
+    sweepBuy  = not na(lastHi) and high > lastHi and close < lastHi
+    sweepSell = not na(lastLo) and low  < lastLo and close > lastLo
+    LGB_up := sweepBuy
+    LGB_dn := sweepSell
+    if barstate.islast
+        if sweepBuy
+            lgbLbl := label.new(bar_index, lastHi, "LGB↑", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_down, color=color.new(color.red,0),  textcolor=color.white, size=size.tiny)
+        if sweepSell
+            lgbLbl := label.new(bar_index, lastLo, "LGB↓", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_up,   color=color.new(color.lime,0), textcolor=color.black, size=size.tiny)
+
+// ============== Trend (EMA/ADX) + Pressure% ==============
+emaF = ta.ema(close, emaFastLen)
+emaS = ta.ema(close, emaSlowLen)
+adxV = useAdx ? f_adx(adxLen, adxSmooth) : na
+
+longOK  = (emaF > emaS) and (strictTrendClose ? close > emaF : true) and (useAdx ? adxV >= adxMin : true)
+shortOK = (emaF < emaS) and (strictTrendClose ? close < emaF : true) and (useAdx ? adxV >= adxMin : true)
+trendState = longOK ? 1 : shortOK ? -1 : 0
+
+plot(emaF, title="EMA fast", color=color.new(color.aqua, 0))
+plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 0))
+
+dist  = (emaF - emaS) / math.max(atr, minTk)
+slope = ((emaF - emaF[1]) - (emaS - emaS[1])) / math.max(atr, minTk)
+sig(x) => 1.0 / (1.0 + math.exp(-x))
+pressBuy  = math.round(100 * sig(0.75 * dist + 0.25 * slope))
+pressSell = 100 - pressBuy
+pressCol  = pressBuy > 55 ? color.new(color.lime, 0) : pressBuy < 45 ? color.new(color.red, 0) : color.new(color.gray, 0)
+
+// =========== DXY filter ===========
+// DXY filter sirf Gold par lagta hai (XAU/GOLD ke sath ulta chalta hai).
+// Kisi aur symbol par ye filter apne aap band — warna ghalat gate lagta.
+isGoldSym   = str.contains(str.upper(syminfo.ticker), "XAU") or str.contains(str.upper(syminfo.ticker), "GOLD")
+applyDXY    = useDXY and isGoldSym
+dxySeriesTF = (str.length(dxyTF) == 0 ? timeframe.period : dxyTF)
+dxyClose    = applyDXY ? request.security("TVC:DXY", dxySeriesTF, close, barmerge.gaps_off, barmerge.lookahead_off) : na
+dxyDir      = applyDXY and not na(dxyClose) ? (ta.ema(dxyClose, 8) - ta.ema(dxyClose, 21)) : na
+passDXYLong  = not applyDXY or (not na(dxyDir) and dxyDir < 0)
+passDXYShort = not applyDXY or (not na(dxyDir) and dxyDir > 0)
+
+// ============== HTF Confluence (4H & 1D) ==============
+dirHTF(_tf)=>
+    _f = request.security(syminfo.tickerid, _tf, ta.ema(close, emaFastLen), barmerge.gaps_off, barmerge.lookahead_off)
+    _s = request.security(syminfo.tickerid, _tf, ta.ema(close, emaSlowLen), barmerge.gaps_off, barmerge.lookahead_off)
+    _a = useAdx ? request.security(syminfo.tickerid, _tf, f_adx(adxLen, adxSmooth), barmerge.gaps_off, barmerge.lookahead_off) : na
+    _c = request.security(syminfo.tickerid, _tf, close,                      barmerge.gaps_off, barmerge.lookahead_off)
+    if useClosedHTF
+        _f := _f[1]
+        _s := _s[1]
+        _c := _c[1]
+        if useAdx
+            _a := _a[1]
+    _long  = _f>_s and (strictTrendClose ? _c>_f : true) and (useAdx ? _a>=adxMin : true)
+    _short = _f<_s and (strictTrendClose ? _c<_f : true) and (useAdx ? _a>=adxMin : true)
+    _long ? 1 : _short ? -1 : 0
+
+st4h = enableHTF ? dirHTF("240") : 0
+std  = enableHTF ? dirHTF("D")   : 0
+needBoth    = (htfAgreeMode=="Both")
+agreeLong   = (st4h==1?1:0) + (std==1?1:0)
+agreeShort  = (st4h==-1?1:0) + (std==-1?1:0)
+passHTFLong  = not enableHTF or (needBoth ? (agreeLong==2)  : (agreeLong>=1))
+passHTFShort = not enableHTF or (needBoth ? (agreeShort==2) : (agreeShort>=1))
+
+// ============== Touch helpers ==============
+touchSup()=>
+    b = f_lastZone(true)
+    if na(b)
+        false
+    else
+        top = box.get_top(b), bot = box.get_bottom(b)
+        useCloseTouch ? (close>=bot and close<=top) : (high>=bot and low<=top)
+
+touchRes()=>
+    b = f_lastZone(false)
+    if na(b)
+        false
+    else
+        top = box.get_top(b), bot = box.get_bottom(b)
+        useCloseTouch ? (close>=bot and close<=top) : (high>=bot and low<=top)
+
+// ============== Base Signals ==============
+longTouch  = touchSup()
+shortTouch = touchRes()
+
+needMomo = entryMode=="Confirm + (FVG or LGB)"
+momoUp_rt = (FVG_up or LGB_dn)
+momoDn_rt = (FVG_dn or LGB_up)
+momoUp    = confirmMomo ? (momoUp_rt and barstate.isconfirmed) : momoUp_rt
+momoDn    = confirmMomo ? (momoDn_rt and barstate.isconfirmed) : momoDn_rt
+
+baseBuy  = entryMode=="Touch only" ? longTouch : (longTouch and recentUpStruct and trendState==1)
+baseSell = entryMode=="Touch only" ? shortTouch: (shortTouch and recentDownStruct and trendState==-1)
+
+sigBuy  = (entryMode=="Confirm (Touch+Struct+Trend)" ? baseBuy  : entryMode=="Touch only" ? baseBuy  : (baseBuy  and needMomo and momoUp))  and passHTFLong  and passDXYLong
+sigSell = (entryMode=="Confirm (Touch+Struct+Trend)" ? baseSell : entryMode=="Touch only" ? baseSell : (baseSell and needMomo and momoDn)) and passHTFShort and passDXYShort
+
+sigBuyFinal  = confirmSignalsOnClose ? (sigBuy  and barstate.isconfirmed) : sigBuy
+sigSellFinal = confirmSignalsOnClose ? (sigSell and barstate.isconfirmed) : sigSell
+
+// ===== Momentum / Breakout =====
+brkUpRaw = enableBreakout and recentUpStruct and trendState==1 and not na(lastHi) and close > (lastHi + atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_up or LGB_dn)
+brkDnRaw = enableBreakout and recentDownStruct and trendState==-1 and not na(lastLo) and close < (lastLo - atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_dn or LGB_up)
+
+emaRef = emaRetestWhich=="EMA50" ? emaS : emaF
+sinceUp = bsUp
+sinceDn = bsDn
+retestUpRaw = enableBreakout and enableEMARetest and trendState==1  and recentUpStruct   and (not na(sinceUp) and sinceUp <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close > emaRef and close > open
+retestDnRaw = enableBreakout and enableEMARetest and trendState==-1 and recentDownStruct and (not na(sinceDn) and sinceDn <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close < emaRef and close < open
+
+mbBuyRaw  = (brkUpRaw or retestUpRaw)  and passHTFLong  and passDXYLong
+mbSellRaw = (brkDnRaw or retestDnRaw) and passHTFShort and passDXYShort
+mbBuy  = confirmSignalsOnClose ? (mbBuyRaw  and barstate.isconfirmed) : mbBuyRaw
+mbSell = confirmSignalsOnClose ? (mbSellRaw and barstate.isconfirmed) : mbSellRaw
+
+// ===== Supertrend filter apply =====
+passSTLong  = (not (enableST and useSTFilter)) or stTrend == 1
+passSTShort = (not (enableST and useSTFilter)) or stTrend == -1
+
+// Final signals (base OR momentum) + ST filter
+sigBuyTotal  = (sigBuyFinal  or mbBuy)  and passSTLong
+sigSellTotal = (sigSellFinal or mbSell) and passSTShort
+
+plotshape(sigBuyTotal,  title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
+plotshape(sigSellTotal, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+
+// ============== Teacher Panel (RIGHT) ==============
+var table tTbl = na
+if showTeacher and barstate.islast
+    rows = panelPad + 5
+    if na(tTbl)
+        tTbl := table.new(f_pos(teacherPos), 1, rows)
+    else
+        table.clear(tTbl, 0, 0, 0, rows - 1)
+    if panelPad > 0
+        for r = 0 to panelPad - 1
+            table.cell(tTbl, 0, r, "", bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+    r0 = panelPad
+
+    presetTxt = "Preset: SCALP 1H" + (is1H ? "" : "  (Tip: use 1H)")
+    stateTxt = sigBuyTotal ? "BUY ✅" : sigSellTotal ? "SELL ✅" : "WAIT"
+    table.cell(tTbl, 0, r0 + 0, "TEACHER | " + timeframe.period + " — " + stateTxt + "  ["+entryMode+"]  |  " + presetTxt,
+               bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+    table.cell(tTbl, 0, r0 + 1,
+               "PRESSURE (EMA20/50):  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%",
+               bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
+
+    // reset only
+    reason := "", missB := "", missS := ""
+
+    stTxt = enableST ? (" | ST: " + (stTrend==1?"UP":"DN")) : ""
+
+    if sigBuyTotal or sigSellTotal
+        if sigBuyTotal
+            if sigBuyFinal
+                reason := "DZ touch: " + (longTouch ? "YES" : "NO") +
+                          " | Trend: " + f_lbl(trendState) +
+                          " | B↑/C↑: " + (recentUpStruct ? "YES" : "NO") +
+                          " | FVG↑: " + (FVG_up ? "YES" : "NO") +
+                          " | LGB↓: " + (LGB_dn ? "YES" : "NO") + stTxt
+            else
+                reason := "Momentum/Breakout → " + (brkUpRaw ? "Breakout+Impulse" : "EMA retest") +
+                          " | Trend: " + f_lbl(trendState) +
+                          " | B↑/C↑: YES" + stTxt
+        else
+            if sigSellFinal
+                reason := "SZ touch: " + (shortTouch ? "YES" : "NO") +
+                          " | Trend: " + f_lbl(trendState) +
+                          " | B↓/C↓: " + (recentDownStruct ? "YES" : "NO") +
+                          " | FVG↓: " + (FVG_dn ? "YES" : "NO") +
+                          " | LGB↑: " + (LGB_up ? "YES" : "NO") + stTxt
+            else
+                reason := "Momentum/Breakout → " + (brkDnRaw ? "Breakout+Impulse" : "EMA retest") +
+                          " | Trend: " + f_lbl(trendState) +
+                          " | B↓/C↓: YES" + stTxt
+        table.cell(tTbl, 0, r0 + 2, reason, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        htfTxt = "HTF 4H/D: " + (enableHTF ? (f_lbl(st4h) + " / " + f_lbl(std)) : "-") +
+                 " | Gate L/S: " + (passHTFLong ? "Y" : "N") + "/" + (passHTFShort ? "Y" : "N") +
+                 (useClosedHTF ? " (closed)" : " (rt)")
+        table.cell(tTbl, 0, r0 + 3, htfTxt, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+    else
+        if not longTouch
+            missB += "• DZ touch\n"
+        if trendState != 1
+            missB += "• Trend UT\n"
+        if not recentUpStruct
+            missB += "• B↑/C↑ (recent)\n"
+        if entryMode=="Confirm + (FVG or LGB)" and not (FVG_up or LGB_dn)
+            missB += "• FVG↑ or LGB↓\n"
+        if enableHTF and not passHTFLong
+            missB += "• HTF long gate\n"
+        if enableST and useSTFilter and stTrend != 1
+            missB += "• ST Up\n"
+
+        if not shortTouch
+            missS += "• SZ touch\n"
+        if trendState != -1
+            missS += "• Trend DT\n"
+        if not recentDownStruct
+            missS += "• B↓/C↓ (recent)\n"
+        if entryMode=="Confirm + (FVG or LGB)" and not (FVG_dn or LGB_up)
+            missS += "• FVG↓ or LGB↑\n"
+        if enableHTF and not passHTFShort
+            missS += "• HTF short gate\n"
+        if enableST and useSTFilter and stTrend != -1
+            missS += "• ST Down\n"
+        table.cell(tTbl, 0, r0 + 2, "BUY missing:\n"  + (missB == "" ? "• Same bar align nahi hui\n" : missB),
+                   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        table.cell(tTbl, 0, r0 + 3, "SELL missing:\n" + (missS == "" ? "• Same bar align nahi hui\n" : missS),
+                   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+
+// ------------------- PACK & DECODE (for legend rows) -------------------
+f_hasBit(n, k) =>
+    int(math.floor(n / math.pow(2, k))) % 2 == 1
+
+f_decodePacked(_v) =>
+    _x     = nz(_v, 2 * SCALE_TREND + 50 * SCALE_PRESS)
+    _stVal = int(math.floor(_x / SCALE_TREND))
+    _rem   = _x - _stVal * SCALE_TREND
+    _press = int(math.floor(_rem / SCALE_PRESS))
+    _bits  = _rem - _press * SCALE_PRESS
+    _st    = _stVal == 3 ? 1 : _stVal == 1 ? -1 : 0
+    [_st,
+     f_hasBit(_bits, 0),  // lg
+     f_hasBit(_bits, 1),  // sg
+     f_hasBit(_bits, 2),  // fu
+     f_hasBit(_bits, 3),  // fd
+     f_hasBit(_bits, 4),  // lu
+     f_hasBit(_bits, 5),  // ld
+     _press]
+
+// Single-call pack in TF-context
+f_tfPacked() =>
+    _f    = ta.ema(close, emaFastLen)
+    _s    = ta.ema(close, emaSlowLen)
+    _a    = f_adx(adxLen, adxSmooth)
+    _atrG = ta.atr(gateAtrLen)
+    _atrP = ta.atr(14)
+    _sepOK  = math.abs(_f - _s) >= nz(_atrG, 1.0) * gateMinSepATR
+    _gLong  = nz(_f > _s) and (gateNeedClose ? close > _f : true) and (gateUseAdx ? nz(_a, 0) >= gateAdxMin : true) and _sepOK
+    _gShort = nz(_f < _s) and (gateNeedClose ? close < _f : true) and (gateUseAdx ? nz(_a, 0) >= gateAdxMin : true) and _sepOK
+    _st     = _gLong ? 1 : _gShort ? -1 : 0
+    _has2  = not na(high[2]) and not na(low[2])
+    _fvgUp = _has2 and (low  > high[2])
+    _fvgDn = _has2 and (high <  low [2])
+    _hiRef = ta.highest(high, pivotLR)
+    _loRef = ta.lowest (low,  pivotLR)
+    _lgbUp = high > _hiRef and close < _hiRef
+    _lgbDn = low  < _loRef and close > _loRef
+    _den   = math.max(nz(_atrP, 1.0), math.max(minTk, 1e-10))
+    _f1    = nz(_f[1], _f)
+    _s1    = nz(_s[1], _s)
+    _dist  = (_f - _s) / _den
+    _slope = ((_f - _f1) - (_s - _s1)) / _den
+    _pressBuy = int(math.round(100 * (1.0 / (1.0 + math.exp(-(0.75*_dist + 0.25*_slope))))))
+    _bits = (_gLong?1:0) + (_gShort?2:0) + (_fvgUp?4:0) + (_fvgDn?8:0) + (_lgbUp?16:0) + (_lgbDn?32:0)
+    (_st + 2) * SCALE_TREND + _pressBuy * SCALE_PRESS + _bits
+
+// ============== Legend + Dashboard (LEFT) ==============
+var table lTbl = na
+if showLegend and barstate.islast
+    string[] tfsDash = array.from("1","3","5","15","30","60","120","240","D","W")
+    rowsL = panelPad + 3 + (showRows ? 5 : 0) + (1 + array.size(tfsDash))
+    if na(lTbl)
+        lTbl := table.new(f_pos(legendPos), 1, rowsL)
+    else
+        table.clear(lTbl, 0, 0, 0, rowsL - 1)
+
+    if panelPad > 0
+        for r = 0 to panelPad - 1
+            table.cell(lTbl, 0, r, "", bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+
+    rL = panelPad
+    table.cell(lTbl, 0, rL + 0, "LEGEND | " + timeframe.period, bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+    _sum1 = "PRESSURE:  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%"
+    table.cell(lTbl, 0, rL + 1, _sum1, bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
+    _sum2 = "Trend: " + f_lbl(trendState) + " | BOS/CHOCH: " + (bosUp ? "B↑ " : "") + (bosDn ? "B↓ " : "") + (chochUp ? "C↑ " : "") + (chochDn ? "C↓ " : "")
+    table.cell(lTbl, 0, rL + 2, _sum2, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+
+    if showRows
+        base = rL + 3
+        table.cell(lTbl, 0, base + 0, "5m   →  " + mtfLine("5"),   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        table.cell(lTbl, 0, base + 1, "15m  →  " + mtfLine("15"),  bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        table.cell(lTbl, 0, base + 2, "30m  →  " + mtfLine("30"),  bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        table.cell(lTbl, 0, base + 3, "4H   →  " + mtfLine("240"), bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        table.cell(lTbl, 0, base + 4, "1D   →  " + mtfLine("D"),   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        rL := base + 5
+    else
+        rL := rL + 3
+
+    _hdr = "DASHBOARD (" + (gateUseClosed ? "closed" : "live") + "): EMA20/50"
+    _hdr += (gateUseAdx ? (" + ADX≥" + str.tostring(gateAdxMin)) : "")
+    _hdr += " | sepATR×" + str.tostring(gateMinSepATR) + "  |  FVG/LGB current bar"
+    table.cell(lTbl, 0, rL, _hdr, bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+
+    // rows (robust: closed fallback to live)
+    for i = 0 to array.size(tfsDash) - 1
+        _tf = array.get(tfsDash, i)
+        _live   = request.security(syminfo.tickerid, _tf, f_tfPacked(), barmerge.gaps_off, barmerge.lookahead_off)
+        _closed = _live[1]
+        _packed = gateUseClosed ? nz(_closed, _live) : _live
+        [st, lg, sg, fu, fd, lu, ld, pBuy] = f_decodePacked(_packed)
+
+        _fvgTxt = fu ? "↑" : fd ? "↓" : "-"
+        _lgbTxt = lu ? "↑" : ld ? "↓" : "-"
+        _pSell  = 100 - pBuy
+
+        _row = f_labTF(_tf) + " → " + f_lbl(st) +
+              " | L:" + (lg ? "Y" : "N") + " S:" + (sg ? "Y" : "N") +
+              " | FVG:" + _fvgTxt +
+              " | LGB:" + _lgbTxt +
+              " | PRESS:" + str.tostring(pBuy) + "/" + str.tostring(_pSell) + "%"
+
+        _col = lg ? color.new(color.lime, 0) : sg ? color.new(color.red, 0) : color.new(color.gray, 0)
+        table.cell(lTbl, 0, rL + 1 + i, _row, bgcolor=bgPanel, text_color=_col, text_size=PFS)
+
+// ============== Debug ==============
+if showDebug and barstate.islast
+    label.new(bar_index, high, (is1H ? "RUN OK (1H)" : "RUN OK (" + timeframe.period + ")"),
+         xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_down,
+         color=color.new(color.orange,0), textcolor=color.black, size=size.tiny)
