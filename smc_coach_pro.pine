@@ -20,7 +20,7 @@ entryMode = input.string("Confirm + (FVG or LGB)", "Entry Mode", options=[
 structLookback         = input.int(3,  "Structure lookback bars", minval=1, maxval=20)
 useCloseTouch          = input.bool(false, "Zone touch: require CLOSE inside zone")
 confirmMomo            = input.bool(false, "Confirm FVG/LGB on 1H close")
-confirmSignalsOnClose  = input.bool(false, "Show Buy/Sell only after 1H close")
+confirmSignalsOnClose  = input.bool(true,  "Show Buy/Sell only after bar close (no repaint)")
 
 // Trend + ADX
 emaFastLen    = input.int(20, "EMA fast", minval=2)
@@ -224,6 +224,21 @@ if bosUp and not na(lastLoIdx) and showSR
 if bosDn and not na(lastHiIdx) and showSR
     newZone(lastHiIdx, lastHi, false)
 
+// ---- Zone invalidation: toota hua zone hatao (accuracy) ----
+// Support zone tab tak zinda jab tak price uske neeche band na ho.
+// Resistance zone tab tak zinda jab tak price uske upar band na ho.
+if array.size(zBoxes) > 0
+    for i = array.size(zBoxes) - 1 to 0
+        _b     = array.get(zBoxes, i)
+        _isSup = array.get(zIsSup, i)
+        _broke = _isSup ? close < box.get_bottom(_b) : close > box.get_top(_b)
+        if _broke
+            box.delete(array.get(zBoxes, i))
+            line.delete(array.get(zLines, i))
+            array.remove(zBoxes, i)
+            array.remove(zIsSup, i)
+            array.remove(zLines, i)
+
 while array.size(zBoxes) > maxZones
     box.delete(array.shift(zBoxes))
     array.shift(zIsSup)
@@ -297,11 +312,15 @@ pressSell = 100 - pressBuy
 pressCol  = pressBuy > 55 ? color.new(color.lime, 0) : pressBuy < 45 ? color.new(color.red, 0) : color.new(color.gray, 0)
 
 // =========== DXY filter ===========
+// DXY filter sirf Gold par lagta hai (XAU/GOLD ke sath ulta chalta hai).
+// Kisi aur symbol par ye filter apne aap band — warna ghalat gate lagta.
+isGoldSym   = str.contains(str.upper(syminfo.ticker), "XAU") or str.contains(str.upper(syminfo.ticker), "GOLD")
+applyDXY    = useDXY and isGoldSym
 dxySeriesTF = (str.length(dxyTF) == 0 ? timeframe.period : dxyTF)
-dxyClose    = useDXY ? request.security("TVC:DXY", dxySeriesTF, close, barmerge.gaps_off, barmerge.lookahead_off) : na
-dxyDir      = useDXY and not na(dxyClose) ? (ta.ema(dxyClose, 8) - ta.ema(dxyClose, 21)) : na
-passDXYLong  = not useDXY or (not na(dxyDir) and dxyDir < 0)
-passDXYShort = not useDXY or (not na(dxyDir) and dxyDir > 0)
+dxyClose    = applyDXY ? request.security("TVC:DXY", dxySeriesTF, close, barmerge.gaps_off, barmerge.lookahead_off) : na
+dxyDir      = applyDXY and not na(dxyClose) ? (ta.ema(dxyClose, 8) - ta.ema(dxyClose, 21)) : na
+passDXYLong  = not applyDXY or (not na(dxyDir) and dxyDir < 0)
+passDXYShort = not applyDXY or (not na(dxyDir) and dxyDir > 0)
 
 // ============== HTF Confluence (4H & 1D) ==============
 dirHTF(_tf)=>
