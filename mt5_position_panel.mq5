@@ -103,7 +103,7 @@ void BuildLabels()
       ObjectSetInteger(0, nm, OBJPROP_SELECTABLE,false);
       ObjectSetInteger(0, nm, OBJPROP_HIDDEN,    true);
       ObjectSetInteger(0, nm, OBJPROP_BACK,      false);
-      ObjectSetString(0,  nm, OBJPROP_TEXT,      "");
+      ObjectSetString(0,  nm, OBJPROP_TEXT,      " ");   // space, warna MT5 "Label" dikha deta hai
      }
   }
 //+------------------------------------------------------------------+
@@ -218,7 +218,7 @@ void Refresh()
 
    SetRow(3, StringFormat("NET        lots %6.2f", netLots), ColText);
 
-   SetRow(4, "", ColText);
+   SetRow(4, " ", ColText);   // khali line (space), warna "Label" nazar aata hai
 
    if(haveBE)
      {
