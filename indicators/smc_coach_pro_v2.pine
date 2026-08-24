@@ -354,6 +354,28 @@ f_lastZoneIdx(_isSupport)=>
 supIdx = f_lastZoneIdx(true)
 resIdx = f_lastZoneIdx(false)
 
+// Pine does NOT short-circuit `and`/`or` or the ternary operator: every branch
+// is evaluated. So `_i >= 0 ? array.get(a, _i) : na` still runs array.get(a, -1)
+// and throws on bar 0 while the zone arrays are still empty. Every read of a
+// zone array has to go through these bounds-checked accessors instead.
+f_zoneValid(_i) =>
+    bool ok = false
+    if _i >= 0
+        ok := _i < array.size(zBoxes)
+    ok
+
+f_zoneTop(_i) =>
+    float r = na
+    if f_zoneValid(_i)
+        r := box.get_top(array.get(zBoxes, _i))
+    r
+
+f_zoneBot(_i) =>
+    float r = na
+    if f_zoneValid(_i)
+        r := box.get_bottom(array.get(zBoxes, _i))
+    r
+
 // ============================================================================
 //  FVG / LGB (current bar)
 // ============================================================================
@@ -468,16 +490,24 @@ passHTFShort = not enableHTF or (needBoth ? (agreeShort==2) : (agreeShort>=1))
 // ============================================================================
 f_touch(_i)=>
     bool res = false
-    if _i >= 0
-        _b   = array.get(zBoxes, _i)
-        _top = box.get_top(_b)
-        _bot = box.get_bottom(_b)
+    if f_zoneValid(_i)
+        _top = f_zoneTop(_i)
+        _bot = f_zoneBot(_i)
         res := useCloseTouch ? (close>=_bot and close<=_top) : (high>=_bot and low<=_top)
     res
 
 // The current touch is already counted, so a first-time test reads zTouch == 1.
-f_zoneFresh(_i)=> _i >= 0 and array.get(zTouch, _i) <= freshMaxTouch + 1
-f_zoneUnused(_i)=> not onePerZone or _i < 0 or array.get(zSig, _i) == 0
+f_zoneFresh(_i)=>
+    bool res = false
+    if f_zoneValid(_i)
+        res := array.get(zTouch, _i) <= freshMaxTouch + 1
+    res
+
+f_zoneUnused(_i)=>
+    bool res = true
+    if onePerZone and f_zoneValid(_i)
+        res := array.get(zSig, _i) == 0
+    res
 
 longTouch  = f_touch(supIdx)
 shortTouch = f_touch(resIdx)
@@ -564,7 +594,7 @@ coolOK = na(lastSigBar) or (bar_index - lastSigBar) >= cooldownBars
 // ============================================================================
 f_slLong() =>
     _sw    = ta.lowest(low, slSwingLook)
-    _zb    = supIdx >= 0 ? box.get_bottom(array.get(zBoxes, supIdx)) : na
+    _zb    = f_zoneBot(supIdx)
     _anchor = math.min(nz(_zb, _sw), _sw)
     _byATR  = close - atr * slAtrMult
     _byZone = nz(_zb, _sw) - atr * slBufATR
@@ -576,7 +606,7 @@ f_slLong() =>
 
 f_slShort() =>
     _sw    = ta.highest(high, slSwingLook)
-    _zt    = resIdx >= 0 ? box.get_top(array.get(zBoxes, resIdx)) : na
+    _zt    = f_zoneTop(resIdx)
     _anchor = math.max(nz(_zt, _sw), _sw)
     _byATR  = close + atr * slAtrMult
     _byZone = nz(_zt, _sw) + atr * slBufATR
@@ -594,8 +624,8 @@ planSLs    = f_slShort()
 planRs     = planSLs - planEntryS
 
 // A long is rejected if the nearest opposing zone sits inside TP1 (no room).
-resTop  = resIdx >= 0 ? box.get_top(array.get(zBoxes, resIdx))    : na
-supBot  = supIdx >= 0 ? box.get_bottom(array.get(zBoxes, supIdx)) : na
+resTop  = f_zoneTop(resIdx)
+supBot  = f_zoneBot(supIdx)
 roomBuy  = planRb > 0 and (na(resTop) or resTop <= planEntryB or (resTop - planEntryB) >= planRb * minRRzone)
 roomSell = planRs > 0 and (na(supBot) or supBot >= planEntryS or (planEntryS - supBot) >= planRs * minRRzone)
 
@@ -604,9 +634,9 @@ sigSellTotal = xSell and coolOK and roomSell
 
 if sigBuyTotal or sigSellTotal
     lastSigBar := bar_index
-    if sigBuyTotal and supIdx >= 0
+    if sigBuyTotal and f_zoneValid(supIdx)
         array.set(zSig, supIdx, array.get(zSig, supIdx) + 1)
-    if sigSellTotal and resIdx >= 0
+    if sigSellTotal and f_zoneValid(resIdx)
         array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
 
 plotshape(sigBuyTotal,  title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
