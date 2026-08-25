@@ -36,6 +36,44 @@ Jalal wants every change applied in ONE batch, not piecemeal.
 
 ---
 
+---
+
+# MT5 Position Panel — Change Requests (pending)
+
+Artifact: https://claude.ai/code/artifact/fd5e297c-37bf-4b13-b3ee-48cd0c6470ff
+Source of truth: `mt5/mt5_position_panel.mq5`
+
+### 4. "BREAKEVEN — buy aur sell barabar hain" shows with ZERO positions
+- Location: `mt5/mt5_position_panel.mq5` line ~233 (`else` branch of `if(haveBE)`)
+- `haveBE = (MathAbs(netLots) > 0.0000001)` is false in TWO different situations,
+  and both fall into the same `else`:
+  - no positions open at all (`found == 0`)  ← the confusing one
+  - buy lots == sell lots, both > 0 (a real full hedge)  ← message is correct here
+- Fix direction: split the branch.
+  `found == 0` -> "koi position khuli nahi"; true hedge -> keep current wording.
+
+### 5. Breakeven price ignores swap and commission
+- `be = (buyNot - selNot) / netLots` (line ~199) is purely price-weighted.
+- But `pl = POSITION_PROFIT + POSITION_SWAP` (line ~172) — so the P/L rows carry
+  swap while the BE line does not, and commission is in neither.
+- Result: the gold BE line drifts away from the true zero point the longer a
+  basket is held. Jalal wants this panel accurate, so BE should be cost-aware.
+
+### 6. Near-flat hedge throws the BE line off the chart
+- As `netLots` approaches 0, `(buyNot - selNot) / netLots` runs to +/- infinity.
+- e.g. buy 1.00 @ 4600 vs sell 0.99 @ 4590 -> net 0.01 -> BE ~ 5590, far off chart.
+- Mathematically right, visually useless and alarming.
+- Fix direction: below a minimum |netLots| threshold, hide the line and print a
+  plain warning row instead of a wild number.
+
+### 7. Panel needs to be readable/teachable when positions ARE open
+- Jalal understands the buy/sell lots rows; the rest is unclear, and it gets
+  confusing once several positions are running.
+- Fix direction: clearer row labels, and show *what to do* (kitni lots add/minus
+  karni hain to flatten or to reach a target), not just raw numbers.
+
+---
+
 ## More to come
 Jalal will add further items before anything is applied.
 
