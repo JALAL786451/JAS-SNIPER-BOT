@@ -86,6 +86,32 @@ Source of truth: `mt5/mt5_position_panel.mq5`
   purani saved settings rakhta hai. Ya to settings mein khud 495 karein, ya
   indicator hata kar naya add karein.
 
+---
+
+# JAS Sniper EA (bot) — v1 banaya gaya, 26 Aug
+
+File: `mt5/jas_sniper_ea.mq5`  (797 lines)
+
+Faisle jo Jalal ne mujh per chhore ("koi tarjeeh nahi"):
+- **Mode = SEMI** — bot signal deta hai aur lot size nikalta hai, magar order
+  tab jata hai jab Jalal chart per button dabaye. Wajah: MT5 ka interface abhi
+  seekh raha hai; AUTO mein galti us waqt pata chalti jab nuqsan ho chuka ho.
+- **Risk 2%** — $495 per 1% = $4.95, aur 0.01 lot ki majboori ki wajah se
+  zyadatar setups us se barh jate. 2% (~$10) qabil-e-amal hai.
+- **DemoOnly = true** — live account per EA khud se chalega hi nahi jab tak
+  Jalal ye setting khud band na kare.
+
+Ahem: lot size ka hisaab broker ke asal specs se hota hai
+(`SYMBOL_TRADE_TICK_VALUE`, `TICK_SIZE`, `VOLUME_MIN/STEP`). Is liye cent (USC)
+aur standard dono per theek chalta hai — aur agar sab se choti lot bhi risk ki
+had se barh jaye to bot trade **nahi** leta, panel per wajah likh deta hai.
+
+## Abhi baqi hai
+- [ ] Demo per compile aur test — abhi tak sirf likha gaya hai, chalaya nahi
+- [ ] Strategy Tester per chala kar natije dekhna
+- [ ] Pine wali FVG / LGB / zone logic EA mein nahi hai — v1 mein sirf
+      structure (BOS), EMA trend, ADX, HTF aur score gate hai
+
 ## More to come
 Jalal will add further items before anything is applied.
 

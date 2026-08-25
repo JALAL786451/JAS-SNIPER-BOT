@@ -53,6 +53,7 @@ saaf kahe ke ab kar do**. Bin kahe koi file na badlein.
 | File | Kya hai |
 |---|---|
 | `indicators/smc_coach_pro_v2.pine` | TradingView SMC indicator (Pine v5) |
+| `mt5/jas_sniper_ea.mq5` | MT5 bot (Expert Advisor) — ALERT / SEMI / AUTO |
 | `mt5/mt5_position_panel.mq5` | MT5 live position + breakeven panel |
 | `sniper_backtest.pine` | Purana backtest script |
 | `CHANGE-REQUESTS.md` | Farmaishein — jama ho rahi hain, abhi lagai nahi gayin |
