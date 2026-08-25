@@ -23,7 +23,12 @@ publish karein jis mein:
 Terminal mein code ka dher na daalein aur sirf file path bata kar na chhorein.
 Jalal ise TradingView ya MetaEditor mein paste karta hai — copy button laazmi hai.
 
-Mojooda misalein isi tarz per bani hain:
+**Copy karne ke liye hamesha Sniper File Vault istemal karein** — usi mein taza
+code hota hai:
+https://claude.ai/code/artifact/ab86eceb-0d6e-4577-8af7-112f521012b0
+
+Ye do purane page isi tarz per bane hain, magar in per code purana ho sakta hai.
+Inhein tab update karein jab saari pending tabdeeliyan aik saath lagayi jayen:
 - SMC Coach Pro v2 — https://claude.ai/code/artifact/5f57e7a1-7bd1-4a2d-a4b8-1bf2fa008612
 - XAUUSD Scalper Scripts — https://claude.ai/code/artifact/fd5e297c-37bf-4b13-b3ee-48cd0c6470ff
 
@@ -55,4 +60,5 @@ saaf kahe ke ab kar do**. Bin kahe koi file na badlein.
 ## Guides
 
 - MT5 Demo Lab — https://claude.ai/code/artifact/923cbc5b-3f94-4ad1-8900-f6b8bff6321e
-- Sniper File Vault (dono files, one-click copy) — https://claude.ai/code/artifact/ab86eceb-0d6e-4577-8af7-112f521012b0
+- Sniper File Vault (dono files, one-click copy — TAZA) — https://claude.ai/code/artifact/ab86eceb-0d6e-4577-8af7-112f521012b0
+- SL aur TP kahan lagayen — https://claude.ai/code/artifact/7742beb0-b6af-4988-941e-e173c7d6eedd
