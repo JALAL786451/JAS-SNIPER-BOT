@@ -55,3 +55,4 @@ saaf kahe ke ab kar do**. Bin kahe koi file na badlein.
 ## Guides
 
 - MT5 Demo Lab — https://claude.ai/code/artifact/923cbc5b-3f94-4ad1-8900-f6b8bff6321e
+- Sniper File Vault (dono files, one-click copy) — https://claude.ai/code/artifact/ab86eceb-0d6e-4577-8af7-112f521012b0
