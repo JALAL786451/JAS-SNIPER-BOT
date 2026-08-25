@@ -74,6 +74,18 @@ Source of truth: `mt5/mt5_position_panel.mq5`
 
 ---
 
+### 8. Account size 1000 -> 495  [LAGA DIYA GAYA — 26 Aug]
+- `indicators/smc_coach_pro_v2.pine` line 126
+- Tha:  `acctSize = input.float(1000, "Account size", step=100, minval=1, group=gRisk)`
+- Ab:   `acctSize = input.float(495,  "Account size ($)", step=5, minval=1, group=gRisk)`
+- Wajah: asal balance 49,549.66 USC = $495.50 (cent account). 1000 per lot size
+  tqreeban dugna aa raha tha.
+- Label mein `($)` isliye lagaya ke MT5 ka USC number (49,549) yahan galti se
+  na daal diya jaye — ye khana dollars maangta hai, cents nahi.
+- Note: TradingView per jo indicator pehle se chart per laga hua hai, woh apni
+  purani saved settings rakhta hai. Ya to settings mein khud 495 karein, ya
+  indicator hata kar naya add karein.
+
 ## More to come
 Jalal will add further items before anything is applied.
 
