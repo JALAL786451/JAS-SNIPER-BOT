@@ -72,7 +72,7 @@ input bool   UseScore               = true;      // Score se signal rokein
 input int    MinScore               = 60;        // Kam az kam score (0-100)
 
 // ---- Guards ----
-input double MaxSpreadPoints        = 60;        // Spread is se zyada ho to na trade kare
+input double MaxSpreadPoints        = 400;       // Spread is se zyada ho to na trade kare
 input int    CooldownBars           = 5;         // Do signals ke darmiyan bars
 input bool   UseSession             = true;      // Sirf chuni hui sessions mein
 input int    SessionStartHour       = 7;         // Session shuru (server time)
