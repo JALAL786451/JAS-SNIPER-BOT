@@ -117,3 +117,48 @@ Jalal will add further items before anything is applied.
 
 - [ ] …
 - [ ] …
+
+---
+
+# Demo setup — 26 Aug ka kaam
+
+## Ho gaya
+- Demo account: **472540009 / Exness-MT5Trial16 / Demo / Hedge**, balance ~$1,014 USD
+  (Exness demo per **Standard Cent nahi milta** — sirf Standard. MT5 ke andar se demo
+  banta bhi nahi, Exness ki website se banana parta hai.)
+- Demo per gold ka symbol **`XAUUSDm`** hai, `XAUUSDc` nahi. Real account per `XAUUSDc`.
+- `mt5_position_panel` aur `jas_sniper_ea` dono compile — 0 errors.
+- Dono chart per lage, bot SEMI mode mein "Setup ka intezaar..." dikha raha tha.
+- `MaxSpreadPoints` 60 se **400** kiya — gold ka aam spread 260 points hota hai,
+  60 per bot har signal chhorh deta.
+
+## Aik gotcha jo bohot waqt le gaya
+MetaEditor ne `jas_sniper_ea` ki files `MQL5\` ki jarh mein bana di thin,
+`MQL5\Experts\` ke andar nahi. Isi liye MT5 ke Navigator mein nazar nahi aa rahi thi.
+Files haath se `Experts` folder mein le jane per masla hal ho gaya.
+**Aage bhi naya EA banate waqt ye jaga tasdeeq kar lena.**
+
+## Abhi ruka hua hai — Strategy Tester
+Tester ke Symbol / Period / Date / Modelling ke khane **band (greyed)** hain,
+click ka koi asar nahi. Optimization ko `Disabled` kiya, MT5 restart kiya,
+Navigator se `Test` bhi chalaya — koi farq nahi.
+
+Tester khud symbol chart se uthata hai, aur abhi us mein **`XAUUSDm`** phansa hua hai.
+
+### Kal ka pehla kaam — shayad 4 click mein ho jaye
+`XAUUSDm` ka data **demo account** per hai. To:
+1. Demo account (472540009) mein wapis login karein
+2. `Ctrl+R` → Strategy Tester → **Inputs** tab
+3. `Andaz` = **AUTO** karein  ← SEMI tester mein kaam nahi karta,
+   kyunke wahan chart ke button dabane wala koi nahi hota
+4. `Sirf demo account per chale` = **false** karein (tester ke liye)
+5. **Start**
+
+### Agar phir bhi khane band rahen
+- Tester Settings mein right-click → koi Reset option?
+- Help → Check for Updates (MT5 ka naya build)
+- `tester.ini` / tester ki settings reset karna
+
+## Abhi baqi
+- [ ] Strategy Tester chala kar natije dekhna
+- [ ] Panel per khali `Label` likha aa raha hai (rows 4 aur 9) — cosmetic, theek karna hai
