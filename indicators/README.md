@@ -24,10 +24,11 @@ quality score karta hai, aur chart history par apni performance khud track karta
 | Aqua / Fuchsia line | EMA20 / EMA50 |
 | Green/Red step line | Supertrend |
 | `Buy` / `Sell` triangle | Final signal (saare filters pass) |
+| **Green box** | Profit area — Entry se TP3 tak |
+| **Red box** | Risk area — Entry se SL tak |
 | Blue line | Entry |
-| Red dashed line | Stop Loss |
-| Green lines | TP1 (solid), TP2/TP3 (dotted) |
-| Right side label | Trade plan: Entry, SL, TP1/2/3, score, units |
+| Green dashed / dotted lines | TP1 / TP2, profit box ke andar |
+| Right side label | Trade plan: Entry, SL, TP1/2/3, score, units, R:R |
 | **TEACHER** panel | Signal kyun bana — ya kya missing hai |
 | **LEGEND** panel | 1m → 1W dashboard: har TF ka trend, FVG, LGB, pressure |
 | **TRACKER** panel | Ab tak ki hit-rate aur expectancy (R) |
@@ -115,6 +116,56 @@ approx units aa jayengi. Formula: `units = (account × risk%) / (entry − SL)`.
 
 > Aap ka broker/lot conversion alag ho sakta hai. Ye raw units hain — gold par
 > 1 unit = 1 oz, forex par base currency units. Apna lot size khud verify karein.
+
+---
+
+## 5b. Trade Drawing aur Signal Timeframe
+
+### Trade chart par draw hota hai
+
+Group **13 · Trade Drawing**. Har signal par TradingView ke "Long Position" tool
+jaisa box banta hai:
+
+- **Green box** = Entry se TP3 tak (profit area)
+- **Red box** = Entry se SL tak (risk area)
+- Andar TP1 (dashed) aur TP2 (dotted) lines
+- Daayein label mein: Entry, SL, TP1/2/3, score, R:R, aur position size
+
+| Setting | Kaam |
+|---|---|
+| `Box width (bars)` | Box kitne bars daayein tak jaye — default 40 |
+| `Keep last N trade drawings` | Purane trades chart par rakhne hain — default 6 |
+| `Profit / Loss box transparency` | 0 = solid, 100 = invisible |
+| `Hide Buy/Sell triangles` | Sirf boxes chahiye to ON karein |
+
+Purane wale line-style plan (`showRisk`) ab tab hi chalta hai jab **Trade Drawing OFF** ho.
+Dono ek sath nahi — chart bhar jata hai.
+
+### Kis timeframe se trade lena hai
+
+Group **14 · Signal Timeframe** → `Take trades from`.
+
+Default **Chart** hai — yani jis TF par aap ho, ussi se signals aayenge (purana behaviour).
+
+Agar aap `240` ya `D` chun lein, to:
+
+- Poora signal engine **us TF par** chalega — zones, BOS/CHOCH, FVG/LGB, Supertrend, score, SL/TP
+- Trade **aap ke current chart par** draw hoga, chahe aap 1m par khare hon
+- Teacher panel header par likha aayega `Signals from 4H`
+- Alert message mein bhi wahi TF aayega
+
+Yani aap 1m chart par zoom karke entry ka waqt dekh sakte hain, jabke trade ka
+faisla 4H ya 1D se aa raha ho.
+
+> **Ek baat samajh lein:** MTF mode mein "BUY missing / SELL missing" wali list
+> ab bhi **chart TF** ki hai, signal TF ki nahi. Panel is par saaf likh deta hai.
+> Ye jaan boojh kar rakha hai — us se aap ko dono TF ka farq nazar aata hai.
+
+**Technical note:** MTF engine ek alag, self-contained function hai. Wajah ye hai ke
+`request.security` ke paar boxes aur arrays nahi ja sakte — is liye MTF version
+zones ko `var float` prices ke tor par rakhta hai, boxes ke tor par nahi. Signal logic
+bilkul wahi hai; sirf zone ka andaruni hisaab halka hai (age-limit nahi, sirf touch
+count aur mitigation).
 
 ---
 

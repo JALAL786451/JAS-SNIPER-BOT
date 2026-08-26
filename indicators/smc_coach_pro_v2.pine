@@ -151,6 +151,20 @@ panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6, grou
 panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"], group=gPanel)
 showDebug     = input.bool(false, "DEBUG heartbeat", group=gPanel)
 
+gDraw = "13 · Trade Drawing"
+showTradeBox   = input.bool(true,  "Draw trade on chart (Entry / SL / TP boxes)", group=gDraw)
+boxBars        = input.int(40, "Box width (bars to the right)", minval=5, maxval=300, group=gDraw)
+keepTrades     = input.int(6,  "Keep last N trade drawings", minval=1, maxval=30, group=gDraw)
+boxProfitTr    = input.int(84, "Profit box transparency", minval=0, maxval=100, group=gDraw)
+boxLossTr      = input.int(84, "Loss box transparency",   minval=0, maxval=100, group=gDraw)
+showTPLines    = input.bool(true, "TP1 / TP2 lines inside profit box", group=gDraw)
+showBoxLabel   = input.bool(true, "Label with prices and R:R", group=gDraw)
+hideTriangles  = input.bool(false, "Hide Buy/Sell triangles (boxes only)", group=gDraw)
+
+gSigTF = "14 · Signal Timeframe"
+sigTF = input.string("Chart", "Take trades from",
+         options=["Chart","1","3","5","15","30","60","120","240","D","W"], group=gSigTF)
+
 // ============================================================================
 //  HELPERS / COLORS
 // ============================================================================
@@ -616,6 +630,161 @@ f_slShort() =>
     _far   = close + atr * maxSLatr
     math.min(math.max(_base, _near), _far)
 
+// ============================================================================
+//  MTF SIGNAL ENGINE
+//  A self-contained copy of the signal logic that survives request.security:
+//  it holds zones as plain prices in `var` floats instead of boxes, because
+//  drawing objects and arrays cannot cross a security boundary. Everything the
+//  chart needs comes back as one tuple, and the trade is drawn on the chart.
+//  Note: uses hl2 for Supertrend rather than the stSrc input — an input.source
+//  always resolves against the chart series, never the requested timeframe.
+// ============================================================================
+f_mtfPlan() =>
+    _atr = ta.atr(14)
+    _ef  = ta.ema(close, emaFastLen)
+    _es  = ta.ema(close, emaSlowLen)
+    _adx = f_adx(adxLen, adxSmooth)
+    _tr  = ta.tr(true)
+    _pad = _atr * zonePadATR
+
+    // --- swings
+    _phv = ta.pivothigh(high, pivotLR, pivotLR)
+    _plv = ta.pivotlow (low,  pivotLR, pivotLR)
+    var float _hi = na
+    var float _lo = na
+    if not na(_phv)
+        _hi := _phv
+    if not na(_plv)
+        _lo := _plv
+
+    // --- BOS / CHOCH, registered once per break
+    _ab = not na(_hi) and close > _hi
+    _bl = not na(_lo) and close < _lo
+    var int _tstr = 0
+    _bosU = _ab and not _ab[1]
+    _bosD = _bl and not _bl[1]
+    if _bosU
+        _tstr := 1
+    if _bosD
+        _tstr := -1
+    _bsU  = ta.barssince(_bosU)
+    _bsD  = ta.barssince(_bosD)
+    _recU = not na(_bsU) and _bsU <= structLookback
+    _recD = not na(_bsD) and _bsD <= structLookback
+
+    // --- zones as prices, with touch count and mitigation
+    var float _dz  = na
+    var float _sz  = na
+    var int   _dzT = 0
+    var int   _szT = 0
+    if _bosU and not na(_lo)
+        _dz  := _lo
+        _dzT := 0
+    if _bosD and not na(_hi)
+        _sz  := _hi
+        _szT := 0
+    _inDz = not na(_dz) and high >= _dz - _pad and low <= _dz + _pad
+    _inSz = not na(_sz) and high >= _sz - _pad and low <= _sz + _pad
+    if _inDz and not _inDz[1]
+        _dzT := _dzT + 1
+    if _inSz and not _inSz[1]
+        _szT := _szT + 1
+    if not na(_dz) and (close < _dz - _pad or _dzT > zoneMaxTouch)
+        _dz := na
+    if not na(_sz) and (close > _sz + _pad or _szT > zoneMaxTouch)
+        _sz := na
+
+    // --- trend
+    _lOK   = _ef > _es and (strictTrendClose ? close > _ef : true) and (useAdx ? _adx >= adxMin : true)
+    _sOK   = _ef < _es and (strictTrendClose ? close < _ef : true) and (useAdx ? _adx >= adxMin : true)
+    _trend = _lOK ? 1 : _sOK ? -1 : 0
+
+    // --- FVG / liquidity sweep
+    _fvgU = not na(high[2]) and low  > high[2]
+    _fvgD = not na(low[2])  and high < low[2]
+    _lgbU = not na(_hi) and high > _hi and close < _hi
+    _lgbD = not na(_lo) and low  < _lo and close > _lo
+
+    // --- supertrend
+    var int _stD = 1
+    _sAtr = stUseATR ? ta.atr(stPeriod) : ta.sma(ta.tr(true), stPeriod)
+    _sUp  = hl2 - stMult * _sAtr
+    _sUp1 = nz(_sUp[1], _sUp)
+    _sUp := close[1] > _sUp1 ? math.max(_sUp, _sUp1) : _sUp
+    _sDn  = hl2 + stMult * _sAtr
+    _sDn1 = nz(_sDn[1], _sDn)
+    _sDn := close[1] < _sDn1 ? math.min(_sDn, _sDn1) : _sDn
+    _stD := _stD == -1 and close > _sDn1 ? 1 : _stD == 1 and close < _sUp1 ? -1 : _stD
+
+    // --- volume / regime
+    _vMA   = ta.sma(volume, volLen)
+    _rv    = (na(volume) or na(_vMA) or _vMA == 0) ? na : volume / _vMA
+    _volOK = not useVol or na(_rv) or _rv >= volMin
+    _rng   = ta.highest(high, chopLook) - ta.lowest(low, chopLook)
+    _regOK = not useChop or na(_rng) or _rng >= _atr * chopMinATR
+
+    // --- entries
+    _tDz   = useCloseTouch ? (not na(_dz) and close >= _dz - _pad and close <= _dz + _pad) : _inDz
+    _tSz   = useCloseTouch ? (not na(_sz) and close >= _sz - _pad and close <= _sz + _pad) : _inSz
+    _baseB = entryMode == "Touch only" ? _tDz : (_tDz and _recU and _trend == 1)
+    _baseS = entryMode == "Touch only" ? _tSz : (_tSz and _recD and _trend == -1)
+    _zoneB = entryMode == "Confirm + (FVG or LGB)" ? (_baseB and (_fvgU or _lgbD)) : _baseB
+    _zoneS = entryMode == "Confirm + (FVG or LGB)" ? (_baseS and (_fvgD or _lgbU)) : _baseS
+
+    _brkB = enableBreakout and _recU and _trend == 1 and not na(_hi) and close > _hi + _atr * brkBufATR and (_tr >= _atr * impulseATR or _fvgU or _lgbD)
+    _brkS = enableBreakout and _recD and _trend == -1 and not na(_lo) and close < _lo - _atr * brkBufATR and (_tr >= _atr * impulseATR or _fvgD or _lgbU)
+    _eRef = emaRetestWhich == "EMA50" ? _es : _ef
+    _rtB  = enableBreakout and enableEMARetest and _trend == 1 and _recU and (not na(_bsU) and _bsU <= retestWindow) and math.abs(close - _eRef) <= _atr * emaRetestTol and close > _eRef and close > open
+    _rtS  = enableBreakout and enableEMARetest and _trend == -1 and _recD and (not na(_bsD) and _bsD <= retestWindow) and math.abs(close - _eRef) <= _atr * emaRetestTol and close < _eRef and close < open
+
+    _stOKB = (not (enableST and useSTFilter)) or _stD == 1
+    _stOKS = (not (enableST and useSTFilter)) or _stD == -1
+    _rawB  = (_zoneB or _brkB or _rtB) and _volOK and _regOK and _stOKB
+    _rawS  = (_zoneS or _brkS or _rtS) and _volOK and _regOK and _stOKS
+
+    // --- score points, HTF weight is added on the chart side
+    _adxOK = nz(_adx, 0) >= adxMin
+    _frshB = not na(_dz) and _dzT <= freshMaxTouch + 1
+    _frshS = not na(_sz) and _szT <= freshMaxTouch + 1
+    _rvOK  = not na(_rv) and _rv >= volMin
+    _ptsB  = (_trend == 1 ? wTrend : 0) + (_recU ? wStruct : 0) + ((_fvgU or _lgbD) ? wMomo : 0) + (_stD == 1 ? wST : 0) + (_adxOK ? wAdx : 0) + (_frshB ? wZone : 0) + (_rvOK ? wVol : 0)
+    _ptsS  = (_trend == -1 ? wTrend : 0) + (_recD ? wStruct : 0) + ((_fvgD or _lgbU) ? wMomo : 0) + (_stD == -1 ? wST : 0) + (_adxOK ? wAdx : 0) + (_frshS ? wZone : 0) + (_rvOK ? wVol : 0)
+
+    // --- stops, same clamping as the chart-side risk engine
+    _swL = ta.lowest(low, slSwingLook)
+    _swH = ta.highest(high, slSwingLook)
+    _zEdgeL = na(_dz) ? _swL : _dz - _pad
+    _zEdgeS = na(_sz) ? _swH : _sz + _pad
+    _slB = slMode == "ATR only" ? close - _atr * slAtrMult : slMode == "Zone edge" ? _zEdgeL - _atr * slBufATR : math.min(_zEdgeL, _swL) - _atr * slBufATR
+    _slS = slMode == "ATR only" ? close + _atr * slAtrMult : slMode == "Zone edge" ? _zEdgeS + _atr * slBufATR : math.max(_zEdgeS, _swH) + _atr * slBufATR
+    _slB := math.max(math.min(_slB, close - _atr * minSLatr), close - _atr * maxSLatr)
+    _slS := math.min(math.max(_slS, close + _atr * minSLatr), close + _atr * maxSLatr)
+
+    // --- room to TP1 and cooldown
+    _rB    = close - _slB
+    _rS    = _slS - close
+    _roomB = _rB > 0 and (na(_sz) or _sz <= close or (_sz - close) >= _rB * minRRzone)
+    _roomS = _rS > 0 and (na(_dz) or _dz >= close or (close - _dz) >= _rS * minRRzone)
+    var int _lastSig = na
+    _cool = na(_lastSig) or (bar_index - _lastSig) >= cooldownBars
+
+    _fB  = _rawB and _roomB and _cool
+    _fS  = _rawS and _roomS and _cool
+    _tie = _ptsB > _ptsS ? 1 : _ptsS > _ptsB ? -1 : 0
+    _dir = _fB and not _fS ? 1 : _fS and not _fB ? -1 : _fB and _fS ? _tie : 0
+    if _dir != 0
+        _lastSig := bar_index
+
+    // --- hand back the previous completed bar when signals must be closed
+    _oDir = confirmSignalsOnClose ? nz(_dir[1], 0) : _dir
+    _oEnt = confirmSignalsOnClose ? close[1] : close
+    _oSL  = confirmSignalsOnClose ? (nz(_dir[1], 0) == 1 ? _slB[1] : _slS[1]) : (_dir == 1 ? _slB : _slS)
+    _oPts = confirmSignalsOnClose ? (nz(_dir[1], 0) == 1 ? _ptsB[1] : _ptsS[1]) : (_dir == 1 ? _ptsB : _ptsS)
+    _oTr  = confirmSignalsOnClose ? nz(_trend[1], 0) : _trend
+    _oSt  = confirmSignalsOnClose ? nz(_stD[1], 1) : _stD
+    _oAdx = confirmSignalsOnClose ? nz(_adx[1], 0) : nz(_adx, 0)
+    [_oDir, _oEnt, _oSL, _oPts, _oTr, _oSt, _oAdx]
+
 planEntryB = close
 planSLb    = f_slLong()
 planRb     = planEntryB - planSLb
@@ -639,8 +808,94 @@ if sigBuyTotal or sigSellTotal
     if sigSellTotal and f_zoneValid(resIdx)
         array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
 
-plotshape(sigBuyTotal,  title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
-plotshape(sigSellTotal, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+// ============================================================================
+//  SIGNAL TIMEFRAME — chart engine, or the MTF engine on a chosen timeframe
+// ============================================================================
+sigTFres = sigTF == "Chart" ? timeframe.period : sigTF
+mtfOn    = sigTF != "Chart" and sigTFres != timeframe.period
+sigTFtxt = mtfOn ? f_labTF(sigTFres) : timeframe.period
+
+[mDir, mEnt, mSL, mPts, mTrend, mStD, mAdx] = request.security(syminfo.tickerid, sigTFres, f_mtfPlan(), barmerge.gaps_off, barmerge.lookahead_off)
+
+// request.security repeats a value for every chart bar inside one HTF bar, so
+// only the transition counts as a fresh signal.
+mNew  = mtfOn and nz(mDir, 0) != 0 and nz(mDir[1], 0) != nz(mDir, 0)
+mBuy  = mNew and nz(mDir, 0) == 1  and passHTFLong  and passDXYLong  and sessOK
+mSell = mNew and nz(mDir, 0) == -1 and passHTFShort and passDXYShort and sessOK
+
+wMaxAll = wTrend + wStruct + wMomo + wHTF + wST + wAdx + wZone + wVol
+htfPtsL = agreeLong  == 2 ? wHTF : agreeLong  == 1 ? int(wHTF / 2) : 0
+htfPtsS = agreeShort == 2 ? wHTF : agreeShort == 1 ? int(wHTF / 2) : 0
+mScoreB = wMaxAll > 0 ? int(math.round(100.0 * (nz(mPts, 0) + htfPtsL) / wMaxAll)) : 0
+mScoreS = wMaxAll > 0 ? int(math.round(100.0 * (nz(mPts, 0) + htfPtsS) / wMaxAll)) : 0
+
+// Everything user-facing from here on uses these two.
+finalBuy  = mtfOn ? (mBuy  and (not useScore or mScoreB >= minScore)) : sigBuyTotal
+finalSell = mtfOn ? (mSell and (not useScore or mScoreS >= minScore)) : sigSellTotal
+
+drawDir   = finalBuy ? 1 : finalSell ? -1 : 0
+drawEntry = mtfOn ? nz(mEnt, close) : close
+drawSL    = mtfOn ? mSL : (finalBuy ? planSLb : planSLs)
+drawScore = mtfOn ? (finalBuy ? mScoreB : mScoreS) : (finalBuy ? scoreBuy : scoreSell)
+drawR     = math.abs(drawEntry - drawSL)
+drawTP1   = drawDir == 1 ? drawEntry + drawR * tp1R : drawEntry - drawR * tp1R
+drawTP2   = drawDir == 1 ? drawEntry + drawR * tp2R : drawEntry - drawR * tp2R
+drawTP3   = drawDir == 1 ? drawEntry + drawR * tp3R : drawEntry - drawR * tp3R
+
+plotshape(finalBuy  and not hideTriangles, title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
+plotshape(finalSell and not hideTriangles, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+
+// ============================================================================
+//  TRADE DRAWING — profit box (entry → TP3), loss box (entry → SL)
+// ============================================================================
+var box[]   dBoxP = array.new_box()
+var box[]   dBoxL = array.new_box()
+var line[]  dLnE  = array.new_line()
+var line[]  dLn1  = array.new_line()
+var line[]  dLn2  = array.new_line()
+var label[] dLbl  = array.new_label()
+
+f_trimDraw() =>
+    while array.size(dBoxP) > keepTrades
+        box.delete(array.shift(dBoxP))
+    while array.size(dBoxL) > keepTrades
+        box.delete(array.shift(dBoxL))
+    while array.size(dLnE) > keepTrades
+        line.delete(array.shift(dLnE))
+    while array.size(dLn1) > keepTrades
+        line.delete(array.shift(dLn1))
+    while array.size(dLn2) > keepTrades
+        line.delete(array.shift(dLn2))
+    while array.size(dLbl) > keepTrades
+        label.delete(array.shift(dLbl))
+    array.size(dBoxP)
+
+if showTradeBox and drawDir != 0 and drawR > 0
+    _x1   = bar_index
+    _x2   = bar_index + boxBars
+    _isL  = drawDir == 1
+    _pTop = _isL ? drawTP3 : drawEntry
+    _pBot = _isL ? drawEntry : drawTP3
+    _lTop = _isL ? drawEntry : drawSL
+    _lBot = _isL ? drawSL : drawEntry
+    _cP   = color.new(color.green, boxProfitTr)
+    _cL   = color.new(color.red,   boxLossTr)
+    array.push(dBoxP, box.new(_x1, _pTop, _x2, _pBot, xloc=xloc.bar_index, bgcolor=_cP, border_color=color.new(color.green, 50)))
+    array.push(dBoxL, box.new(_x1, _lTop, _x2, _lBot, xloc=xloc.bar_index, bgcolor=_cL, border_color=color.new(color.red, 50)))
+    array.push(dLnE, line.new(_x1, drawEntry, _x2, drawEntry, xloc=xloc.bar_index, color=color.new(color.blue, 0), width=2))
+    if showTPLines
+        array.push(dLn1, line.new(_x1, drawTP1, _x2, drawTP1, xloc=xloc.bar_index, color=color.new(color.green, 25), width=1, style=line.style_dashed))
+        array.push(dLn2, line.new(_x1, drawTP2, _x2, drawTP2, xloc=xloc.bar_index, color=color.new(color.green, 45), width=1, style=line.style_dotted))
+    if showBoxLabel
+        _units = drawR > 0 ? (acctSize * riskPct / 100.0) / drawR : na
+        _txt = (_isL ? "LONG" : "SHORT") + "  " + sigTFtxt + "   Score " + str.tostring(drawScore) + "/100" +
+               "\nEntry " + f_px(drawEntry) + "     SL " + f_px(drawSL) +
+               "\nTP1 " + f_px(drawTP1) + "  ·  TP2 " + f_px(drawTP2) + "  ·  TP3 " + f_px(drawTP3) +
+               "\nRisk " + f_px(drawR) + " / unit    R:R up to 1:" + str.tostring(tp3R, "#.#") +
+               "\nSize @ " + str.tostring(riskPct, "#.##") + "% ≈ " + str.tostring(_units, "#.####") + " units"
+        _cBg = color.new(_isL ? color.teal : color.purple, 12)
+        array.push(dLbl, label.new(_x2, drawEntry, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_cBg, textcolor=color.white, size=size.tiny))
+    f_trimDraw()
 
 // ============================================================================
 //  VIRTUAL TRADE TRACKER (live hit-rate / expectancy)
@@ -728,11 +983,11 @@ if tDir != 0
         tDir := 0
 
 // --- open a new virtual trade on signal
-if (sigBuyTotal or sigSellTotal) and tDir == 0
-    _dir = sigBuyTotal ? 1 : -1
+if (finalBuy or finalSell) and tDir == 0
+    _dir = finalBuy ? 1 : -1
     tDir   := _dir
-    tEntry := close
-    tSL    := _dir==1 ? planSLb : planSLs
+    tEntry := drawEntry
+    tSL    := drawSL
     tSL0   := tSL
     tR     := math.abs(tEntry - tSL)
     tTP1   := _dir==1 ? tEntry + tR*tp1R : tEntry - tR*tp1R
@@ -743,7 +998,7 @@ if (sigBuyTotal or sigSellTotal) and tDir == 0
     hit2   := false
     hit3   := false
     nTrades += 1
-    if showRisk
+    if showRisk and not showTradeBox
         line.delete(lnE)
         line.delete(lnS)
         line.delete(lnT1)
@@ -757,7 +1012,7 @@ if (sigBuyTotal or sigSellTotal) and tDir == 0
         lnT2  := line.new(bar_index, tTP2,   bar_index + 30, tTP2,   color=_colT, width=1, style=line.style_dotted)
         lnT3  := line.new(bar_index, tTP3,   bar_index + 30, tTP3,   color=_colT, width=1, style=line.style_dotted)
         _units = tR > 0 ? (acctSize * riskPct / 100.0) / tR : na
-        _txt = (_dir==1 ? "LONG" : "SHORT") + "  Score " + str.tostring(_dir==1 ? scoreBuy : scoreSell) + "/100" +
+        _txt = (_dir==1 ? "LONG" : "SHORT") + "  " + sigTFtxt + "  Score " + str.tostring(drawScore) + "/100" +
                "\nEntry " + f_px(tEntry) + "   SL " + f_px(tSL) +
                "\nTP1 " + f_px(tTP1) + " (" + str.tostring(tp1R,"#.#") + "R)" +
                "\nTP2 " + f_px(tTP2) + " (" + str.tostring(tp2R,"#.#") + "R)" +
@@ -767,7 +1022,7 @@ if (sigBuyTotal or sigSellTotal) and tDir == 0
         lbPlan := label.new(bar_index + 30, tEntry, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_colBg, textcolor=color.white, size=size.tiny)
 
 // keep the plan lines following price to the right while the trade is open
-if showRisk and tDir != 0 and barstate.islast and not na(lnE)
+if showRisk and not showTradeBox and tDir != 0 and barstate.islast and not na(lnE)
     line.set_x2(lnE,  bar_index + 15)
     line.set_x2(lnS,  bar_index + 15)
     line.set_x2(lnT1, bar_index + 15)
@@ -781,23 +1036,16 @@ expR    = nTrades > 0 ? sumR / nTrades : na
 // ============================================================================
 //  ALERTS
 // ============================================================================
-if sigBuyTotal
-    alert("BUY " + syminfo.ticker + " " + timeframe.period +
-          " | Entry " + f_px(planEntryB) + " | SL " + f_px(planSLb) +
-          " | TP1 " + f_px(planEntryB + planRb*tp1R) +
-          " | TP2 " + f_px(planEntryB + planRb*tp2R) +
-          " | TP3 " + f_px(planEntryB + planRb*tp3R) +
-          " | Score " + str.tostring(scoreBuy), alert.freq_once_per_bar_close)
-if sigSellTotal
-    alert("SELL " + syminfo.ticker + " " + timeframe.period +
-          " | Entry " + f_px(planEntryS) + " | SL " + f_px(planSLs) +
-          " | TP1 " + f_px(planEntryS - planRs*tp1R) +
-          " | TP2 " + f_px(planEntryS - planRs*tp2R) +
-          " | TP3 " + f_px(planEntryS - planRs*tp3R) +
-          " | Score " + str.tostring(scoreSell), alert.freq_once_per_bar_close)
+if finalBuy or finalSell
+    alert((finalBuy ? "BUY " : "SELL ") + syminfo.ticker + " " + sigTFtxt +
+          " | Entry " + f_px(drawEntry) + " | SL " + f_px(drawSL) +
+          " | TP1 " + f_px(drawTP1) +
+          " | TP2 " + f_px(drawTP2) +
+          " | TP3 " + f_px(drawTP3) +
+          " | Score " + str.tostring(drawScore), alert.freq_once_per_bar_close)
 
-alertcondition(sigBuyTotal,  "SMC Coach BUY",  "SMC Coach: BUY signal")
-alertcondition(sigSellTotal, "SMC Coach SELL", "SMC Coach: SELL signal")
+alertcondition(finalBuy,  "SMC Coach BUY",  "SMC Coach: BUY signal")
+alertcondition(finalSell, "SMC Coach SELL", "SMC Coach: SELL signal")
 alertcondition(stBuySig,     "Supertrend UP",  "Supertrend flipped UP")
 alertcondition(stSellSig,    "Supertrend DOWN","Supertrend flipped DOWN")
 
@@ -820,20 +1068,26 @@ if showTeacher and barstate.islast
             table.cell(tTbl, 0, r, "", bgcolor=bgPanel, text_color=color.black, text_size=PFS)
     r0 = panelPad
 
-    presetTxt = "Preset: SCALP 1H" + (is1H ? "" : "  (Tip: use 1H)")
-    stateTxt  = sigBuyTotal ? "BUY ✅" : sigSellTotal ? "SELL ✅" : "WAIT"
-    table.cell(tTbl, 0, r0 + 0, "TEACHER | " + timeframe.period + " — " + stateTxt + "  ["+entryMode+"]  |  " + presetTxt,
+    presetTxt = mtfOn ? ("Signals from " + sigTFtxt) : ("Preset: SCALP 1H" + (is1H ? "" : "  (Tip: use 1H)"))
+    stateTxt  = finalBuy ? "BUY ✅" : finalSell ? "SELL ✅" : "WAIT"
+    table.cell(tTbl, 0, r0 + 0, "TEACHER | chart " + timeframe.period + " — " + stateTxt + "  ["+entryMode+"]  |  " + presetTxt,
                bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+    scoreLine = mtfOn ? ("SCORE (" + sigTFtxt + ")  B " + str.tostring(mScoreB) + " / S " + str.tostring(mScoreS)) : ("SCORE  B " + str.tostring(scoreBuy) + " / S " + str.tostring(scoreSell))
     table.cell(tTbl, 0, r0 + 1,
                "PRESSURE  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%" +
-               "     SCORE  B " + str.tostring(scoreBuy) + " / S " + str.tostring(scoreSell) + "  (min " + str.tostring(minScore) + ")",
+               "     " + scoreLine + "  (min " + str.tostring(minScore) + ")",
                bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
 
     reason := "", missB := "", missS := ""
     stTxt = enableST ? (" | ST: " + (stTrend==1?"UP":"DN")) : ""
 
-    if sigBuyTotal or sigSellTotal
-        if sigBuyTotal
+    if finalBuy or finalSell
+        if mtfOn
+            reason := "Signal from " + sigTFtxt + "  |  Trend: " + f_lbl(mTrend) +
+                      "  |  ST: " + (mStD == 1 ? "UP" : "DN") +
+                      "  |  ADX " + str.tostring(nz(mAdx, 0), "#.#") +
+                      "  |  chart TF sirf context ke liye hai"
+        else if finalBuy
             reason := (zoneBuyRaw ? "DZ zone entry" : brkUpRaw ? "Breakout+Impulse" : "EMA retest") +
                       " | Trend: " + f_lbl(trendState) +
                       " | B↑/C↑: " + (recentUpStruct ? "YES" : "NO") +
@@ -846,15 +1100,10 @@ if showTeacher and barstate.islast
                       " | FVG↓: " + (FVG_dn ? "Y" : "N") +
                       " | LGB↑: " + (LGB_up ? "Y" : "N") + stTxt
         table.cell(tTbl, 0, r0 + 2, reason, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        _e  = sigBuyTotal ? planEntryB : planEntryS
-        _sl = sigBuyTotal ? planSLb    : planSLs
-        _r  = sigBuyTotal ? planRb     : planRs
-        _t1 = sigBuyTotal ? _e + _r*tp1R : _e - _r*tp1R
-        _t3 = sigBuyTotal ? _e + _r*tp3R : _e - _r*tp3R
         table.cell(tTbl, 0, r0 + 3,
-                   "PLAN  Entry " + f_px(_e) + "  SL " + f_px(_sl) +
-                   "  TP1 " + f_px(_t1) + "  TP3 " + f_px(_t3) +
-                   "  |  Risk " + str.tostring(riskPct,"#.##") + "%  (" + f_px(_r) + " / unit)",
+                   "PLAN  Entry " + f_px(drawEntry) + "  SL " + f_px(drawSL) +
+                   "  TP1 " + f_px(drawTP1) + "  TP3 " + f_px(drawTP3) +
+                   "  |  Risk " + str.tostring(riskPct,"#.##") + "%  (" + f_px(drawR) + " / unit)",
                    bgcolor=bgPanel, text_color=color.black, text_size=PFS)
     else
         if not longTouch and not momoBuyRaw
@@ -903,9 +1152,12 @@ if showTeacher and barstate.islast
         if not volOK
             missS += "• Low volume\n"
 
-        table.cell(tTbl, 0, r0 + 2, "BUY missing:\n"  + (missB == "" ? "• Same bar align nahi hui\n" : missB),
+        // These lists always describe the CHART timeframe. With a separate
+        // signal timeframe selected they are context, not the firing reason.
+        missHdr = mtfOn ? (" (chart " + timeframe.period + ", signals " + sigTFtxt + ")") : ""
+        table.cell(tTbl, 0, r0 + 2, "BUY missing" + missHdr + ":\n"  + (missB == "" ? "• Same bar align nahi hui\n" : missB),
                    bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        table.cell(tTbl, 0, r0 + 3, "SELL missing:\n" + (missS == "" ? "• Same bar align nahi hui\n" : missS),
+        table.cell(tTbl, 0, r0 + 3, "SELL missing" + missHdr + ":\n" + (missS == "" ? "• Same bar align nahi hui\n" : missS),
                    bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
     htfTxt = "HTF 4H/D: " + (enableHTF ? (f_lbl(st4h) + " / " + f_lbl(std)) : "-") +
