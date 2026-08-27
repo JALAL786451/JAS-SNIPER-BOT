@@ -140,6 +140,7 @@ gTest = "11 · Backtest window"
 useDateRange  = input.bool(false, "Limit backtest to a date range", group=gTest)
 startDate     = input.time(timestamp("01 Jan 2024 00:00 +0000"), "Start", group=gTest)
 endDate       = input.time(timestamp("01 Jan 2027 00:00 +0000"), "End", group=gTest)
+closeAtEnd    = input.bool(true, "Close any open position at end of test", group=gTest)
 
 gPanel = "12 · Display"
 showPanel     = input.bool(true,  "Show status panel", group=gPanel)
@@ -568,6 +569,14 @@ if goLong
         sBar   := bar_index
         sScore := scoreBuy
         lastSigBar := bar_index
+        // Protection is attached to the entry order itself. The exit block
+        // below only runs once strategy.position_size is non-zero, which is
+        // one bar after the fill — that left the entry bar with no stop.
+        if tp1Pct > 0
+            strategy.exit("L-TP1", from_entry="L", qty_percent=tp1Pct, limit=sTP1)
+        if tp2Pct > 0
+            strategy.exit("L-TP2", from_entry="L", qty_percent=tp2Pct, limit=sTP2)
+        strategy.exit("L-RUN", from_entry="L", limit=sTP3, stop=sSL)
         if f_zoneValid(supIdx)
             array.set(zSig, supIdx, array.get(zSig, supIdx) + 1)
 
@@ -586,6 +595,12 @@ if goShort
         sBar   := bar_index
         sScore := scoreSell
         lastSigBar := bar_index
+        // Same as the long side: the stop rides in with the entry order.
+        if tp1Pct > 0
+            strategy.exit("S-TP1", from_entry="S", qty_percent=tp1Pct, limit=sTP1)
+        if tp2Pct > 0
+            strategy.exit("S-TP2", from_entry="S", qty_percent=tp2Pct, limit=sTP2)
+        strategy.exit("S-RUN", from_entry="S", limit=sTP3, stop=sSL)
         if f_zoneValid(resIdx)
             array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
 
@@ -593,12 +608,6 @@ if goShort
 //  EXITS — TP1 / TP2 partials, breakeven, optional trail, optional time stop
 // ============================================================================
 if strategy.position_size > 0 and not na(sSL)
-    if high >= sTP1
-        sT1 := true
-        if beAfterTP1
-            sBE := true
-    if high >= sTP2
-        sT2 := true
     _sl = sSL
     if sBE
         _sl := math.max(_sl, sEntry)
@@ -613,16 +622,20 @@ if strategy.position_size > 0 and not na(sSL)
     if tp2Pct > 0 and not sT2
         strategy.exit("L-TP2", from_entry="L", qty_percent=tp2Pct, limit=sTP2)
     strategy.exit("L-RUN", from_entry="L", limit=sTP3, stop=_sl)
+    // The touch flags are updated only AFTER the orders for this bar are on
+    // the book. Setting them first suppressed the very order that was meant
+    // to fill at that touch: the position moved to breakeven having banked
+    // nothing at TP1.
+    if high >= sTP1
+        sT1 := true
+        if beAfterTP1
+            sBE := true
+    if high >= sTP2
+        sT2 := true
     if maxBarsInTrade > 0 and not na(sBar) and (bar_index - sBar) >= maxBarsInTrade
         strategy.close("L", comment="time stop")
 
 if strategy.position_size < 0 and not na(sSL)
-    if low <= sTP1
-        sT1 := true
-        if beAfterTP1
-            sBE := true
-    if low <= sTP2
-        sT2 := true
     _sl = sSL
     if sBE
         _sl := math.min(_sl, sEntry)
@@ -634,8 +647,24 @@ if strategy.position_size < 0 and not na(sSL)
     if tp2Pct > 0 and not sT2
         strategy.exit("S-TP2", from_entry="S", qty_percent=tp2Pct, limit=sTP2)
     strategy.exit("S-RUN", from_entry="S", limit=sTP3, stop=_sl)
+    // Flags after the orders — see the long side.
+    if low <= sTP1
+        sT1 := true
+        if beAfterTP1
+            sBE := true
+    if low <= sTP2
+        sT2 := true
     if maxBarsInTrade > 0 and not na(sBar) and (bar_index - sBar) >= maxBarsInTrade
         strategy.close("S", comment="time stop")
+
+// ============================================================================
+//  END OF TEST — flatten, so the headline stats describe the same trades
+// ============================================================================
+// An open position at the last bar is excluded from profit factor and win
+// rate but still counted in total P&L and max drawdown. That is how a run can
+// report PF 13.75 at a net loss. Closing it puts every number on one basis.
+if closeAtEnd and barstate.islast and strategy.position_size != 0
+    strategy.close_all(comment="end of test")
 
 // ============================================================================
 //  TRADE DRAWING
