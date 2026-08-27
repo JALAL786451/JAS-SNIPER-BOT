@@ -1,0 +1,692 @@
+//@version=5
+// ============================================================================
+//  SMC COACH — STRATEGY v1   (backtest version of SMC Coach Pro v2)
+//
+//  Signal engine indicator ke barabar hai: zones (BOS/CHOCH), FVG/LGB,
+//  Supertrend, EMA/ADX trend, HTF confluence, confluence score, aur wahi
+//  risk engine (structure/ATR stop + TP1/TP2/TP3 R-multiples).
+//
+//  Indicator se farq sirf ye hai:
+//    - virtual tracker nikaal diya — Strategy Tester wo kaam khud karta hai
+//    - 1m→1W dashboard nikaal diya — backtest tez chalta hai
+//    - signals ab strategy.entry / strategy.exit chalate hain
+//
+//  Commission, slippage aur initial capital yahan hardcoded NAHI hain —
+//  wo Strategy Tester ke "Properties" tab se set karein. Ye zaroori hai,
+//  warna natije jhoote acche aayenge.
+// ============================================================================
+strategy("SMC Coach — Strategy v1",
+     overlay                 = true,
+     initial_capital         = 1000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     commission_type         = strategy.commission.percent,
+     commission_value        = 0.0,
+     slippage                = 0,
+     process_orders_on_close = true,
+     calc_on_every_tick      = false,
+     max_labels_count        = 500,
+     max_lines_count         = 500,
+     max_boxes_count         = 500,
+     dynamic_requests        = true)
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+gStruct = "1 · Structure & Zones"
+pivotLR       = input.int(3,  "Pivot L/R (swings)", minval=1, group=gStruct)
+maxZones      = input.int(10, "Keep last N zones", minval=2, maxval=100, group=gStruct)
+zonePadATR    = input.float(0.15, "Zone padding (x ATR)", minval=0, step=0.01, group=gStruct)
+zoneMaxTouch  = input.int(2, "Kill zone after N touches", minval=1, maxval=10, group=gStruct)
+zoneMaxAge    = input.int(300, "Kill zone after N bars", minval=20, group=gStruct)
+freshMaxTouch = input.int(0, "\"Fresh\" zone = touches <= N", minval=0, maxval=5, group=gStruct)
+useCloseBreak = input.bool(true, "BOS/CHOCH needs CLOSE beyond swing", group=gStruct)
+showSR        = input.bool(true,  "Draw S/R zones", group=gStruct)
+
+gEntry = "2 · Entry Logic"
+entryMode = input.string("Confirm + (FVG or LGB)", "Entry Mode", options=[
+     "Touch only","Confirm (Touch+Struct+Trend)","Confirm + (FVG or LGB)"], group=gEntry)
+structLookback = input.int(3,  "Structure lookback bars", minval=1, maxval=20, group=gEntry)
+useCloseTouch  = input.bool(false, "Zone touch: require CLOSE inside zone", group=gEntry)
+cooldownBars   = input.int(5, "Cooldown bars between signals", minval=0, maxval=100, group=gEntry)
+onePerZone     = input.bool(true, "Max one signal per zone", group=gEntry)
+tradeLongs     = input.bool(true, "Take LONG signals", group=gEntry)
+tradeShorts    = input.bool(true, "Take SHORT signals", group=gEntry)
+
+gTrend = "3 · Trend / Momentum"
+emaFastLen    = input.int(20, "EMA fast", minval=2, group=gTrend)
+emaSlowLen    = input.int(50, "EMA slow", minval=3, group=gTrend)
+useAdx        = input.bool(true, "Use ADX filter", group=gTrend)
+adxLen        = input.int(14, "ADX DI length", minval=2, group=gTrend)
+adxSmooth     = input.int(14, "ADX smoothing", minval=1, group=gTrend)
+adxMin        = input.float(18, "ADX min", step=0.5, minval=1, group=gTrend)
+strictTrendClose = input.bool(false, "Trend needs price above/below EMA fast", group=gTrend)
+
+gFilter = "4 · Context Filters"
+enableHTF     = input.bool(true, "Use HTF confluence (4H/1D)", group=gFilter)
+htfAgreeMode  = input.string("Either", "HTF agree", options=["Both","Either"], group=gFilter)
+useDXY        = input.bool(true, "Use DXY filter (Gold only)", group=gFilter)
+useVol        = input.bool(true,  "Relative volume filter", group=gFilter)
+volLen        = input.int(20, "Volume MA length", minval=2, group=gFilter)
+volMin        = input.float(0.8, "Min relative volume", step=0.05, minval=0.1, group=gFilter)
+useChop       = input.bool(true,  "Skip choppy / compressed regime", group=gFilter)
+chopLook      = input.int(20, "Chop lookback", minval=5, group=gFilter)
+chopMinATR    = input.float(2.5, "Min range (x ATR) to trade", step=0.1, minval=0.5, group=gFilter)
+
+gSess = "5 · Sessions (Killzones)"
+useSession    = input.bool(false, "Trade only inside selected sessions", group=gSess)
+sessTZ        = input.string("UTC", "Session timezone", group=gSess)
+sessA_on      = input.bool(false, "Asia",   inline="sa", group=gSess)
+sessA         = input.session("0000-0600", "", inline="sa", group=gSess)
+sessL_on      = input.bool(true,  "London", inline="sl", group=gSess)
+sessL         = input.session("0700-1100", "", inline="sl", group=gSess)
+sessN_on      = input.bool(true,  "New York", inline="sn", group=gSess)
+sessN         = input.session("1200-1600", "", inline="sn", group=gSess)
+
+gBreak = "6 · Momentum / Breakout entries"
+enableBreakout   = input.bool(true,  "Enable Momentum/Breakout entries", group=gBreak)
+brkBufATR        = input.float(0.10, "Breakout buffer (x ATR)", step=0.01, minval=0.0, group=gBreak)
+impulseATR       = input.float(0.95, "Impulse bar >= ATR *", step=0.05, minval=0.5, group=gBreak)
+enableEMARetest  = input.bool(true,  "Continuation: EMA retest entry", group=gBreak)
+emaRetestWhich   = input.string("EMA20", "Retest EMA", options=["EMA20","EMA50"], group=gBreak)
+emaRetestTol     = input.float(0.45, "Retest tolerance (x ATR)", step=0.01, minval=0.0, group=gBreak)
+retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1, maxval=50, group=gBreak)
+
+groupST       = "7 · Supertrend"
+enableST      = input.bool(true,  "Enable Supertrend", group=groupST)
+useSTFilter   = input.bool(true,  "Use ST as extra filter", group=groupST)
+stShowPlots   = input.bool(false, "Plot ST lines", group=groupST)
+stPeriod      = input.int(10, "ATR Period", minval=1, group=groupST)
+stMult        = input.float(3.0, "ATR Multiplier", step=0.1, group=groupST)
+stUseATR      = input.bool(true, "Use ta.atr() (else SMA(TR))", group=groupST)
+
+gScore = "8 · Confluence Score"
+useScore      = input.bool(true, "Gate signals by score", group=gScore)
+minScore      = input.int(60, "Minimum score to fire (0-100)", minval=0, maxval=100, group=gScore)
+wTrend        = input.int(20, "Weight: EMA trend",     minval=0, maxval=40, group=gScore)
+wStruct       = input.int(15, "Weight: BOS/CHOCH",     minval=0, maxval=40, group=gScore)
+wMomo         = input.int(15, "Weight: FVG / LGB",     minval=0, maxval=40, group=gScore)
+wHTF          = input.int(20, "Weight: HTF alignment", minval=0, maxval=40, group=gScore)
+wST           = input.int(10, "Weight: Supertrend",    minval=0, maxval=40, group=gScore)
+wAdx          = input.int(10, "Weight: ADX strength",  minval=0, maxval=40, group=gScore)
+wZone         = input.int(5,  "Weight: Fresh zone",    minval=0, maxval=40, group=gScore)
+wVol          = input.int(5,  "Weight: Volume",        minval=0, maxval=40, group=gScore)
+
+gRisk = "9 · Risk Engine"
+slMode        = input.string("Structure + ATR buffer", "Stop mode",
+                 options=["Structure + ATR buffer","ATR only","Zone edge"], group=gRisk)
+slSwingLook   = input.int(10, "Structure lookback for stop", minval=2, maxval=50, group=gRisk)
+slBufATR      = input.float(0.25, "Stop buffer (x ATR)", step=0.05, minval=0.0, group=gRisk)
+slAtrMult     = input.float(1.50, "ATR-only stop (x ATR)", step=0.1, minval=0.2, group=gRisk)
+minSLatr      = input.float(0.60, "Min stop distance (x ATR)", step=0.05, minval=0.1, group=gRisk)
+maxSLatr      = input.float(3.50, "Max stop distance (x ATR)", step=0.1, minval=0.5, group=gRisk)
+tp1R          = input.float(1.0, "TP1 (R)", step=0.1, minval=0.2, group=gRisk)
+tp2R          = input.float(2.0, "TP2 (R)", step=0.1, minval=0.2, group=gRisk)
+tp3R          = input.float(3.0, "TP3 (R)", step=0.1, minval=0.2, group=gRisk)
+minRRzone     = input.float(1.2, "Reject signal if TP1 blocked below R", step=0.1, minval=0.0, group=gRisk)
+
+gExec = "10 · Position & Exits"
+riskPct       = input.float(1.0, "Risk per trade (% of equity)", step=0.1, minval=0.01, maxval=10, group=gExec)
+tp1Pct        = input.float(50, "TP1: close % of position", step=5, minval=0, maxval=90, group=gExec)
+tp2Pct        = input.float(25, "TP2: close % of position", step=5, minval=0, maxval=90, group=gExec)
+beAfterTP1    = input.bool(true, "Move stop to breakeven after TP1", group=gExec)
+useTrail      = input.bool(false, "Trail stop after TP2 (x ATR)", group=gExec)
+trailATR      = input.float(1.5, "Trail distance (x ATR)", step=0.1, minval=0.2, group=gExec)
+maxBarsInTrade = input.int(0, "Force exit after N bars (0 = off)", minval=0, maxval=500, group=gExec)
+
+gTest = "11 · Backtest window"
+useDateRange  = input.bool(false, "Limit backtest to a date range", group=gTest)
+startDate     = input.time(timestamp("01 Jan 2024 00:00 +0000"), "Start", group=gTest)
+endDate       = input.time(timestamp("01 Jan 2027 00:00 +0000"), "End", group=gTest)
+
+gPanel = "12 · Display"
+showPanel     = input.bool(true,  "Show status panel", group=gPanel)
+showTradeBox  = input.bool(true,  "Draw Entry/SL/TP boxes", group=gPanel)
+boxBars       = input.int(40, "Box width (bars)", minval=5, maxval=200, group=gPanel)
+keepTrades    = input.int(6, "Keep last N boxes", minval=1, maxval=30, group=gPanel)
+panelPos      = input.string("Top Right", "Panel position", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_pos(s)=> s=="Top Left"?position.top_left:s=="Top Right"?position.top_right:s=="Bottom Left"?position.bottom_left:position.bottom_right
+f_lbl(st)=> st==1?"UT":st==-1?"DT":"NT"
+f_px(x) => str.tostring(x, format.mintick)
+
+atr   = ta.atr(14)
+atr1  = ta.tr(true)
+minTk = syminfo.mintick
+
+f_adx(len, smooth)=>
+    [_p,_m,_adx] = ta.dmi(len, smooth)
+    _adx
+
+inWindow = not useDateRange or (time >= startDate and time <= endDate)
+
+// ============================================================================
+//  SUPERTREND
+// ============================================================================
+var int stTrend = 1
+stATRsrc = stUseATR ? ta.atr(stPeriod) : ta.sma(ta.tr(true), stPeriod)
+stUp  = hl2 - (stMult * stATRsrc)
+stUp1 = nz(stUp[1], stUp)
+stUp  := close[1] > stUp1 ? math.max(stUp, stUp1) : stUp
+stDn  = hl2 + (stMult * stATRsrc)
+stDn1 = nz(stDn[1], stDn)
+stDn  := close[1] < stDn1 ? math.min(stDn, stDn1) : stDn
+stTrend := nz(stTrend[1], stTrend)
+stTrend := stTrend == -1 and close > stDn1 ? 1 : stTrend == 1 and close < stUp1 ? -1 : stTrend
+
+plot(enableST and stShowPlots and stTrend == 1 ? stUp : na, title="ST Up",  style=plot.style_linebr, linewidth=2, color=color.new(color.green, 0))
+plot(enableST and stShowPlots and stTrend == -1 ? stDn : na, title="ST Dn", style=plot.style_linebr, linewidth=2, color=color.new(color.red, 0))
+
+// ============================================================================
+//  SWINGS + BOS / CHOCH
+// ============================================================================
+ph = ta.pivothigh(high, pivotLR, pivotLR)
+pl = ta.pivotlow (low,  pivotLR, pivotLR)
+
+var float lastHi = na
+var float lastLo = na
+var int   lastHiIdx = na
+var int   lastLoIdx = na
+
+if not na(ph)
+    lastHi    := ph
+    lastHiIdx := bar_index - pivotLR
+if not na(pl)
+    lastLo    := pl
+    lastLoIdx := bar_index - pivotLR
+
+f_breakAbove(_ref, useClose)=> na(_ref) ? false : ((useClose?close:high) > _ref)
+f_breakBelow(_ref, useClose)=> na(_ref) ? false : ((useClose?close:low)  < _ref)
+
+aboveHi = f_breakAbove(lastHi, useCloseBreak)
+belowLo = f_breakBelow(lastLo, useCloseBreak)
+
+var int  trendStruct = 0
+var bool bosUp=false, bosDn=false, chochUp=false, chochDn=false
+bosUp:=false, bosDn:=false, chochUp:=false, chochDn:=false
+
+brokeUp = aboveHi and not aboveHi[1]
+brokeDn = belowLo and not belowLo[1]
+
+if brokeUp
+    if trendStruct == -1
+        chochUp := true
+    else
+        bosUp := true
+    trendStruct := 1
+if brokeDn
+    if trendStruct == 1
+        chochDn := true
+    else
+        bosDn := true
+    trendStruct := -1
+
+bsUp = ta.barssince(bosUp or chochUp)
+bsDn = ta.barssince(bosDn or chochDn)
+recentUpStruct   = not na(bsUp) and bsUp <= structLookback
+recentDownStruct = not na(bsDn) and bsDn <= structLookback
+
+// ============================================================================
+//  ZONES
+// ============================================================================
+var box[]  zBoxes = array.new_box()
+var line[] zLines = array.new_line()
+var bool[] zIsSup = array.new_bool()
+var int[]  zTouch = array.new_int()
+var int[]  zBorn  = array.new_int()
+var int[]  zSig   = array.new_int()
+
+f_zoneKill(i) =>
+    box.delete(array.get(zBoxes, i))
+    line.delete(array.get(zLines, i))
+    array.remove(zBoxes, i)
+    array.remove(zLines, i)
+    array.remove(zIsSup, i)
+    array.remove(zTouch, i)
+    array.remove(zBorn,  i)
+    array.remove(zSig,   i)
+
+newZone(_idx,_price,_isSupport)=>
+    pad  = atr * zonePadATR
+    col  = _isSupport ? color.new(color.lime,0) : color.new(color.red,0)
+    fill = color.new(_isSupport?color.lime:color.red, 88)
+    b = box.new(_idx, _price + pad, bar_index, _price - pad, xloc=xloc.bar_index, bgcolor=fill, border_color=color.new(col,75))
+    l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=col, width=1)
+    array.push(zBoxes, b)
+    array.push(zLines, l)
+    array.push(zIsSup, _isSupport)
+    array.push(zTouch, 0)
+    array.push(zBorn,  bar_index)
+    array.push(zSig,   0)
+
+if (bosUp or chochUp) and not na(lastLoIdx) and showSR
+    newZone(lastLoIdx, lastLo, true)
+if (bosDn or chochDn) and not na(lastHiIdx) and showSR
+    newZone(lastHiIdx, lastHi, false)
+
+if array.size(zBoxes) > 0
+    for i = array.size(zBoxes) - 1 to 0
+        _b     = array.get(zBoxes, i)
+        _isSup = array.get(zIsSup, i)
+        _top   = box.get_top(_b)
+        _bot   = box.get_bottom(_b)
+        box.set_right(_b, bar_index + 1)
+        _inside     = high >= _bot and low <= _top
+        _insidePrev = high[1] >= _bot and low[1] <= _top
+        if _inside and not _insidePrev
+            array.set(zTouch, i, array.get(zTouch, i) + 1)
+        _broke = _isSup ? close < _bot : close > _top
+        _stale = (bar_index - array.get(zBorn, i)) > zoneMaxAge
+        _spent = array.get(zTouch, i) > zoneMaxTouch
+        if _broke or _stale or _spent
+            f_zoneKill(i)
+
+while array.size(zBoxes) > maxZones
+    f_zoneKill(0)
+
+f_lastZoneIdx(_isSupport)=>
+    int ret = -1
+    _n = array.size(zBoxes)
+    if _n > 0
+        for i = _n - 1 to 0
+            if array.get(zIsSup, i) == _isSupport
+                ret := i
+                break
+    ret
+
+supIdx = f_lastZoneIdx(true)
+resIdx = f_lastZoneIdx(false)
+
+// Pine `and`/`or`/ternary short-circuit nahi karte — har branch chalta hai.
+// Is liye har array read bounds-checked accessor se guzarta hai.
+f_zoneValid(_i) =>
+    bool ok = false
+    if _i >= 0
+        ok := _i < array.size(zBoxes)
+    ok
+
+f_zoneTop(_i) =>
+    float r = na
+    if f_zoneValid(_i)
+        r := box.get_top(array.get(zBoxes, _i))
+    r
+
+f_zoneBot(_i) =>
+    float r = na
+    if f_zoneValid(_i)
+        r := box.get_bottom(array.get(zBoxes, _i))
+    r
+
+// ============================================================================
+//  FVG / LGB
+// ============================================================================
+FVG_up = bar_index > 2 and (low  > high[2])
+FVG_dn = bar_index > 2 and (high < low[2])
+LGB_up = not na(lastHi) and high > lastHi and close < lastHi
+LGB_dn = not na(lastLo) and low  < lastLo and close > lastLo
+
+// ============================================================================
+//  TREND / ADX
+// ============================================================================
+emaF = ta.ema(close, emaFastLen)
+emaS = ta.ema(close, emaSlowLen)
+adxV = f_adx(adxLen, adxSmooth)
+
+longOK  = (emaF > emaS) and (strictTrendClose ? close > emaF : true) and (useAdx ? adxV >= adxMin : true)
+shortOK = (emaF < emaS) and (strictTrendClose ? close < emaF : true) and (useAdx ? adxV >= adxMin : true)
+trendState = longOK ? 1 : shortOK ? -1 : 0
+
+plot(emaF, title="EMA fast", color=color.new(color.aqua, 40))
+plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 40))
+
+// ============================================================================
+//  FILTERS
+// ============================================================================
+volMA  = ta.sma(volume, volLen)
+relVol = (na(volume) or na(volMA) or volMA == 0) ? na : volume / volMA
+volOK  = not useVol or na(relVol) or relVol >= volMin
+
+rngLook  = ta.highest(high, chopLook) - ta.lowest(low, chopLook)
+isChop   = not na(rngLook) and rngLook < atr * chopMinATR
+regimeOK = not useChop or not isChop
+
+f_inSess(_on, _s) => _on and not na(time(timeframe.period, _s, sessTZ))
+sessAnyOn = sessA_on or sessL_on or sessN_on
+inSess    = f_inSess(sessA_on, sessA) or f_inSess(sessL_on, sessL) or f_inSess(sessN_on, sessN)
+sessOK    = not useSession or not sessAnyOn or inSess
+
+isGoldSym   = str.contains(str.upper(syminfo.ticker), "XAU") or str.contains(str.upper(syminfo.ticker), "GOLD")
+applyDXY    = useDXY and isGoldSym
+dxyClose    = applyDXY ? request.security("TVC:DXY", timeframe.period, close, barmerge.gaps_off, barmerge.lookahead_off) : na
+dxyDir      = applyDXY and not na(dxyClose) ? (ta.ema(dxyClose, 8) - ta.ema(dxyClose, 21)) : na
+passDXYLong  = not applyDXY or (not na(dxyDir) and dxyDir < 0)
+passDXYShort = not applyDXY or (not na(dxyDir) and dxyDir > 0)
+
+// ============================================================================
+//  HTF CONFLUENCE — shift inside the requested context (non-repaint)
+// ============================================================================
+f_htfDir() =>
+    _f = ta.ema(close, emaFastLen)
+    _s = ta.ema(close, emaSlowLen)
+    _a = f_adx(adxLen, adxSmooth)
+    _c = close
+    _fx = _f[1]
+    _sx = _s[1]
+    _ax = _a[1]
+    _cx = _c[1]
+    _long  = _fx>_sx and (strictTrendClose ? _cx>_fx : true) and (useAdx ? nz(_ax,0)>=adxMin : true)
+    _short = _fx<_sx and (strictTrendClose ? _cx<_fx : true) and (useAdx ? nz(_ax,0)>=adxMin : true)
+    _long ? 1 : _short ? -1 : 0
+
+st4h = enableHTF ? int(nz(request.security(syminfo.tickerid, "240", f_htfDir(), barmerge.gaps_off, barmerge.lookahead_off), 0)) : 0
+std  = enableHTF ? int(nz(request.security(syminfo.tickerid, "D",   f_htfDir(), barmerge.gaps_off, barmerge.lookahead_off), 0)) : 0
+
+needBoth     = (htfAgreeMode=="Both")
+agreeLong    = (st4h==1?1:0) + (std==1?1:0)
+agreeShort   = (st4h==-1?1:0) + (std==-1?1:0)
+passHTFLong  = not enableHTF or (needBoth ? (agreeLong==2)  : (agreeLong>=1))
+passHTFShort = not enableHTF or (needBoth ? (agreeShort==2) : (agreeShort>=1))
+
+// ============================================================================
+//  TOUCH + SIGNALS
+// ============================================================================
+f_touch(_i)=>
+    bool res = false
+    if f_zoneValid(_i)
+        _top = f_zoneTop(_i)
+        _bot = f_zoneBot(_i)
+        res := useCloseTouch ? (close>=_bot and close<=_top) : (high>=_bot and low<=_top)
+    res
+
+f_zoneFresh(_i)=>
+    bool res = false
+    if f_zoneValid(_i)
+        res := array.get(zTouch, _i) <= freshMaxTouch + 1
+    res
+
+f_zoneUnused(_i)=>
+    bool res = true
+    if onePerZone and f_zoneValid(_i)
+        res := array.get(zSig, _i) == 0
+    res
+
+longTouch  = f_touch(supIdx)
+shortTouch = f_touch(resIdx)
+
+momoUp = FVG_up or LGB_dn
+momoDn = FVG_dn or LGB_up
+
+baseBuy  = entryMode=="Touch only" ? longTouch : (longTouch and recentUpStruct and trendState==1)
+baseSell = entryMode=="Touch only" ? shortTouch: (shortTouch and recentDownStruct and trendState==-1)
+
+zoneBuyRaw  = (entryMode=="Confirm + (FVG or LGB)" ? (baseBuy  and momoUp) : baseBuy)  and f_zoneUnused(supIdx)
+zoneSellRaw = (entryMode=="Confirm + (FVG or LGB)" ? (baseSell and momoDn) : baseSell) and f_zoneUnused(resIdx)
+
+brkUpRaw = enableBreakout and recentUpStruct and trendState==1 and not na(lastHi) and close > (lastHi + atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_up or LGB_dn)
+brkDnRaw = enableBreakout and recentDownStruct and trendState==-1 and not na(lastLo) and close < (lastLo - atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_dn or LGB_up)
+
+emaRef  = emaRetestWhich=="EMA50" ? emaS : emaF
+retestUpRaw = enableBreakout and enableEMARetest and trendState==1  and recentUpStruct   and (not na(bsUp) and bsUp <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close > emaRef and close > open
+retestDnRaw = enableBreakout and enableEMARetest and trendState==-1 and recentDownStruct and (not na(bsDn) and bsDn <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close < emaRef and close < open
+
+momoBuyRaw  = brkUpRaw or retestUpRaw
+momoSellRaw = brkDnRaw or retestDnRaw
+
+// ============================================================================
+//  SCORE
+// ============================================================================
+adxStrong = nz(adxV, 0) >= adxMin
+f_score(_dir) =>
+    _okTrend  = _dir == 1 ? (trendState == 1)  : (trendState == -1)
+    _okStruct = _dir == 1 ? recentUpStruct     : recentDownStruct
+    _okMomo   = _dir == 1 ? momoUp             : momoDn
+    _okST     = _dir == 1 ? (stTrend == 1)     : (stTrend == -1)
+    _okZone   = f_zoneFresh(_dir == 1 ? supIdx : resIdx)
+    _okVol    = not na(relVol) and relVol >= volMin
+    _htf      = _dir == 1 ? agreeLong : agreeShort
+    _pts      = 0
+    _pts := _pts + (_okTrend  ? wTrend  : 0)
+    _pts := _pts + (_okStruct ? wStruct : 0)
+    _pts := _pts + (_okMomo   ? wMomo   : 0)
+    _pts := _pts + (_htf == 2 ? wHTF : _htf == 1 ? int(wHTF / 2) : 0)
+    _pts := _pts + (_okST     ? wST     : 0)
+    _pts := _pts + (adxStrong ? wAdx    : 0)
+    _pts := _pts + (_okZone   ? wZone   : 0)
+    _pts := _pts + (_okVol    ? wVol    : 0)
+    _wMax = wTrend + wStruct + wMomo + wHTF + wST + wAdx + wZone + wVol
+    _wMax > 0 ? int(math.round(100.0 * _pts / _wMax)) : 0
+
+scoreBuy  = f_score(1)
+scoreSell = f_score(-1)
+
+// ============================================================================
+//  RISK ENGINE
+// ============================================================================
+f_slLong() =>
+    _sw     = ta.lowest(low, slSwingLook)
+    _zb     = f_zoneBot(supIdx)
+    _anchor = math.min(nz(_zb, _sw), _sw)
+    _byATR  = close - atr * slAtrMult
+    _byZone = nz(_zb, _sw) - atr * slBufATR
+    _byStr  = _anchor - atr * slBufATR
+    _base   = slMode == "ATR only" ? _byATR : slMode == "Zone edge" ? _byZone : _byStr
+    _near   = close - atr * minSLatr
+    _far    = close - atr * maxSLatr
+    math.max(math.min(_base, _near), _far)
+
+f_slShort() =>
+    _sw     = ta.highest(high, slSwingLook)
+    _zt     = f_zoneTop(resIdx)
+    _anchor = math.max(nz(_zt, _sw), _sw)
+    _byATR  = close + atr * slAtrMult
+    _byZone = nz(_zt, _sw) + atr * slBufATR
+    _byStr  = _anchor + atr * slBufATR
+    _base   = slMode == "ATR only" ? _byATR : slMode == "Zone edge" ? _byZone : _byStr
+    _near   = close + atr * minSLatr
+    _far    = close + atr * maxSLatr
+    math.min(math.max(_base, _near), _far)
+
+planSLb = f_slLong()
+planSLs = f_slShort()
+planRb  = close - planSLb
+planRs  = planSLs - close
+
+resTop  = f_zoneTop(resIdx)
+supBot  = f_zoneBot(supIdx)
+roomBuy  = planRb > 0 and (na(resTop) or resTop <= close or (resTop - close) >= planRb * minRRzone)
+roomSell = planRs > 0 and (na(supBot) or supBot >= close or (close - supBot) >= planRs * minRRzone)
+
+// ============================================================================
+//  FINAL SIGNALS
+// ============================================================================
+ctxLong  = passHTFLong  and passDXYLong  and volOK and regimeOK and sessOK and ((not (enableST and useSTFilter)) or stTrend == 1)
+ctxShort = passHTFShort and passDXYShort and volOK and regimeOK and sessOK and ((not (enableST and useSTFilter)) or stTrend == -1)
+
+scoreOKb = not useScore or scoreBuy  >= minScore
+scoreOKs = not useScore or scoreSell >= minScore
+
+rawBuy  = (zoneBuyRaw  or momoBuyRaw)  and ctxLong  and scoreOKb and roomBuy  and tradeLongs
+rawSell = (zoneSellRaw or momoSellRaw) and ctxShort and scoreOKs and roomSell and tradeShorts
+
+xBuy  = rawBuy  and (not rawSell or scoreBuy  > scoreSell)
+xSell = rawSell and (not rawBuy  or scoreSell > scoreBuy)
+
+var int lastSigBar = na
+coolOK = na(lastSigBar) or (bar_index - lastSigBar) >= cooldownBars
+
+flat    = strategy.position_size == 0
+goLong  = xBuy  and coolOK and flat and inWindow and barstate.isconfirmed
+goShort = xSell and coolOK and flat and inWindow and barstate.isconfirmed
+
+// ============================================================================
+//  POSITION SIZING — risk % of equity, derived from the stop distance
+// ============================================================================
+f_qty(_riskDist) =>
+    float q = 0.0
+    if _riskDist > 0
+        _money = strategy.equity * riskPct / 100.0
+        q := _money / _riskDist
+    q
+
+// ============================================================================
+//  ENTRIES
+// ============================================================================
+var float sEntry = na
+var float sSL    = na
+var float sTP1   = na
+var float sTP2   = na
+var float sTP3   = na
+var bool  sBE    = false
+var bool  sT1    = false
+var bool  sT2    = false
+var int   sBar   = na
+var int   sScore = 0
+
+if goLong
+    _q = f_qty(planRb)
+    if _q > 0
+        strategy.entry("L", strategy.long, qty=_q)
+        sEntry := close
+        sSL    := planSLb
+        sTP1   := close + planRb * tp1R
+        sTP2   := close + planRb * tp2R
+        sTP3   := close + planRb * tp3R
+        sBE    := false
+        sT1    := false
+        sT2    := false
+        sBar   := bar_index
+        sScore := scoreBuy
+        lastSigBar := bar_index
+        if f_zoneValid(supIdx)
+            array.set(zSig, supIdx, array.get(zSig, supIdx) + 1)
+
+if goShort
+    _q = f_qty(planRs)
+    if _q > 0
+        strategy.entry("S", strategy.short, qty=_q)
+        sEntry := close
+        sSL    := planSLs
+        sTP1   := close - planRs * tp1R
+        sTP2   := close - planRs * tp2R
+        sTP3   := close - planRs * tp3R
+        sBE    := false
+        sT1    := false
+        sT2    := false
+        sBar   := bar_index
+        sScore := scoreSell
+        lastSigBar := bar_index
+        if f_zoneValid(resIdx)
+            array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
+
+// ============================================================================
+//  EXITS — TP1 / TP2 partials, breakeven, optional trail, optional time stop
+// ============================================================================
+if strategy.position_size > 0 and not na(sSL)
+    if high >= sTP1
+        sT1 := true
+        if beAfterTP1
+            sBE := true
+    if high >= sTP2
+        sT2 := true
+    _sl = sSL
+    if sBE
+        _sl := math.max(_sl, sEntry)
+    if useTrail and sT2
+        _sl := math.max(_sl, close - atr * trailATR)
+    sSL := _sl
+    // Partial targets carry no stop and are issued only until they fill —
+    // re-issuing a filled qty_percent order would take another slice of the
+    // reduced position. The runner carries the stop for the whole remainder.
+    if tp1Pct > 0 and not sT1
+        strategy.exit("L-TP1", from_entry="L", qty_percent=tp1Pct, limit=sTP1)
+    if tp2Pct > 0 and not sT2
+        strategy.exit("L-TP2", from_entry="L", qty_percent=tp2Pct, limit=sTP2)
+    strategy.exit("L-RUN", from_entry="L", limit=sTP3, stop=_sl)
+    if maxBarsInTrade > 0 and not na(sBar) and (bar_index - sBar) >= maxBarsInTrade
+        strategy.close("L", comment="time stop")
+
+if strategy.position_size < 0 and not na(sSL)
+    if low <= sTP1
+        sT1 := true
+        if beAfterTP1
+            sBE := true
+    if low <= sTP2
+        sT2 := true
+    _sl = sSL
+    if sBE
+        _sl := math.min(_sl, sEntry)
+    if useTrail and sT2
+        _sl := math.min(_sl, close + atr * trailATR)
+    sSL := _sl
+    if tp1Pct > 0 and not sT1
+        strategy.exit("S-TP1", from_entry="S", qty_percent=tp1Pct, limit=sTP1)
+    if tp2Pct > 0 and not sT2
+        strategy.exit("S-TP2", from_entry="S", qty_percent=tp2Pct, limit=sTP2)
+    strategy.exit("S-RUN", from_entry="S", limit=sTP3, stop=_sl)
+    if maxBarsInTrade > 0 and not na(sBar) and (bar_index - sBar) >= maxBarsInTrade
+        strategy.close("S", comment="time stop")
+
+// ============================================================================
+//  TRADE DRAWING
+// ============================================================================
+var box[]   dBoxP = array.new_box()
+var box[]   dBoxL = array.new_box()
+var line[]  dLnE  = array.new_line()
+var label[] dLbl  = array.new_label()
+
+f_trimDraw() =>
+    while array.size(dBoxP) > keepTrades
+        box.delete(array.shift(dBoxP))
+    while array.size(dBoxL) > keepTrades
+        box.delete(array.shift(dBoxL))
+    while array.size(dLnE) > keepTrades
+        line.delete(array.shift(dLnE))
+    while array.size(dLbl) > keepTrades
+        label.delete(array.shift(dLbl))
+    array.size(dBoxP)
+
+drewDir = goLong ? 1 : goShort ? -1 : 0
+if showTradeBox and drewDir != 0 and not na(sSL)
+    _isL  = drewDir == 1
+    _x1   = bar_index
+    _x2   = bar_index + boxBars
+    _pTop = _isL ? sTP3 : sEntry
+    _pBot = _isL ? sEntry : sTP3
+    _lTop = _isL ? sEntry : sSL
+    _lBot = _isL ? sSL : sEntry
+    array.push(dBoxP, box.new(_x1, _pTop, _x2, _pBot, xloc=xloc.bar_index, bgcolor=color.new(color.green, 86), border_color=color.new(color.green, 55)))
+    array.push(dBoxL, box.new(_x1, _lTop, _x2, _lBot, xloc=xloc.bar_index, bgcolor=color.new(color.red, 86), border_color=color.new(color.red, 55)))
+    array.push(dLnE, line.new(_x1, sEntry, _x2, sEntry, xloc=xloc.bar_index, color=color.new(color.blue, 0), width=2))
+    _txt = (_isL ? "LONG" : "SHORT") + "  " + str.tostring(sScore) + "/100\n" + f_px(sEntry) + "  SL " + f_px(sSL)
+    array.push(dLbl, label.new(_x2, sEntry, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=color.new(_isL?color.teal:color.purple, 15), textcolor=color.white, size=size.tiny))
+    f_trimDraw()
+
+plotshape(goLong,  title="Long",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny)
+plotshape(goShort, title="Short", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny)
+
+// ============================================================================
+//  STATUS PANEL
+// ============================================================================
+var table pTbl = na
+if showPanel and barstate.islast
+    if na(pTbl)
+        pTbl := table.new(f_pos(panelPos), 1, 5)
+    else
+        table.clear(pTbl, 0, 0, 0, 4)
+    bg  = color.new(color.white, 92)
+    bg2 = color.new(color.white, 86)
+    _state = strategy.position_size > 0 ? "LONG open" : strategy.position_size < 0 ? "SHORT open" : "flat"
+    table.cell(pTbl, 0, 0, "SMC COACH — STRATEGY  |  " + timeframe.period + "  |  " + _state, bgcolor=bg2, text_color=color.black, text_size=size.small)
+    table.cell(pTbl, 0, 1, "SCORE  B " + str.tostring(scoreBuy) + " / S " + str.tostring(scoreSell) + "   (min " + str.tostring(minScore) + ")   |   Trend " + f_lbl(trendState) + "   ADX " + str.tostring(nz(adxV,0), "#.#"),
+               bgcolor=bg, text_color=color.black, text_size=size.small)
+    table.cell(pTbl, 0, 2, "HTF 4H/D: " + f_lbl(st4h) + " / " + f_lbl(std) + "   |   Zones " + str.tostring(array.size(zBoxes)) + "   |   RelVol " + (na(relVol) ? "-" : str.tostring(relVol, "#.##")),
+               bgcolor=bg, text_color=color.black, text_size=size.small)
+    _pf = strategy.grossloss > 0 ? strategy.grossprofit / strategy.grossloss : na
+    table.cell(pTbl, 0, 3, "Trades " + str.tostring(strategy.closedtrades) + "   |   Net " + str.tostring(strategy.netprofit, "#.##") + "   |   PF " + (na(_pf) ? "-" : str.tostring(_pf, "#.##")),
+               bgcolor=bg, text_color=strategy.netprofit >= 0 ? color.new(color.green,0) : color.new(color.red,0), text_size=size.small)
+    _openTxt = strategy.position_size == 0 ? "No open position" : ("Entry " + f_px(sEntry) + "   SL " + f_px(sSL) + "   TP3 " + f_px(sTP3) + (sT1 ? "  [TP1]" : "") + (sBE ? " [BE]" : "") + (sT2 ? " [TP2]" : ""))
+    table.cell(pTbl, 0, 4, _openTxt, bgcolor=bg, text_color=color.black, text_size=size.small)
