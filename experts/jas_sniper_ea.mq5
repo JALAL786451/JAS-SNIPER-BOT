@@ -83,8 +83,8 @@ input bool   UseScore               = true;      // Score se signal rokein
 input int    MinScore               = 60;        // Kam az kam score (0-100)
 
 input group "=== Guards ==="
-input double MaxSpreadPoints        = 60;        // Spread is se zyada ho to na trade kare
-input int    MaxSlippagePoints      = 30;        // Zyada se zyada slippage
+input double MaxSpreadPoints        = 500;       // Spread is se zyada ho to na trade kare (3-digit gold: 500 = $0.50)
+input int    MaxSlippagePoints      = 200;       // Zyada se zyada slippage (3-digit gold: 200 = $0.20)
 input int    CooldownBars           = 5;         // Do signals ke darmiyan bars
 input bool   UseSession             = true;      // Sirf chuni hui sessions mein
 input int    SessionStartHour       = 7;         // Session shuru (server time)
@@ -982,7 +982,7 @@ void DrawPanel()
    else
       SetLabel(3, "Setup ka intezaar...", clrSilver);
 
-   SetLabel(4, g_msg, clrSilver);
+   SetLabel(4, (g_msg == "" ? " " : g_msg), clrSilver);
    ChartRedraw();
   }
 
