@@ -135,6 +135,7 @@ beAfterTP1    = input.bool(true, "Move stop to breakeven after TP1", group=gExec
 useTrail      = input.bool(false, "Trail stop after TP2 (x ATR)", group=gExec)
 trailATR      = input.float(1.5, "Trail distance (x ATR)", step=0.1, minval=0.2, group=gExec)
 maxBarsInTrade = input.int(0, "Force exit after N bars (0 = off)", minval=0, maxval=500, group=gExec)
+hardStopPct   = input.float(3.0, "Emergency close if a trade loses more than % of equity (0 = off)", step=0.5, minval=0, maxval=100, group=gExec)
 
 gTest = "11 · Backtest window"
 useDateRange  = input.bool(false, "Limit backtest to a date range", group=gTest)
@@ -656,6 +657,18 @@ if strategy.position_size < 0 and not na(sSL)
         sT2 := true
     if maxBarsInTrade > 0 and not na(sBar) and (bar_index - sBar) >= maxBarsInTrade
         strategy.close("S", comment="time stop")
+
+// ============================================================================
+//  HARD STOP — a floor that does not depend on an order reaching the book
+// ============================================================================
+// Every stop above is a resting order: it protects only if it was accepted and
+// stays accepted. This one is a market close evaluated in code on every bar, so
+// a position that is bleeding gets shut regardless of what happened to its
+// orders. It should never fire in a healthy run — if it does, the trade log
+// says so, and that is the signal that a stop is not reaching the book.
+closedEq = strategy.initial_capital + strategy.netprofit
+if hardStopPct > 0 and strategy.position_size != 0 and closedEq > 0 and strategy.openprofit < -(closedEq * hardStopPct / 100.0)
+    strategy.close_all(comment="hard stop")
 
 // ============================================================================
 //  END OF TEST — flatten, so the headline stats describe the same trades
