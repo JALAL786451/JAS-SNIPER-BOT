@@ -128,6 +128,7 @@ minRRzone     = input.float(1.2, "Reject signal if TP1 blocked below R", step=0.
 
 gExec = "10 · Position & Exits"
 riskPct       = input.float(1.0, "Risk per trade (% of equity)", step=0.1, minval=0.01, maxval=10, group=gExec)
+maxLeverage   = input.float(5.0, "Max position value (x equity)", step=0.5, minval=0.1, maxval=100, group=gExec)
 tp1Pct        = input.float(50, "TP1: close % of position", step=5, minval=0, maxval=90, group=gExec)
 tp2Pct        = input.float(25, "TP2: close % of position", step=5, minval=0, maxval=90, group=gExec)
 beAfterTP1    = input.bool(true, "Move stop to breakeven after TP1", group=gExec)
@@ -525,11 +526,17 @@ goShort = xSell and coolOK and flat and inWindow and barstate.isconfirmed
 // ============================================================================
 //  POSITION SIZING — risk % of equity, derived from the stop distance
 // ============================================================================
+// Risk-derived size, capped by notional value. Without the cap a very tight
+// stop divides into an enormous quantity — on old low-priced gold data that
+// built a position worth many times the account, which is where a $161
+// drawdown came from against only $2.88 of realised losses.
 f_qty(_riskDist) =>
     float q = 0.0
-    if _riskDist > 0
+    if _riskDist > 0 and close > 0
         _money = strategy.equity * riskPct / 100.0
         q := _money / _riskDist
+        _maxQ = (strategy.equity * maxLeverage) / close
+        q := math.min(q, _maxQ)
     q
 
 // ============================================================================
