@@ -1,0 +1,236 @@
+//@version=5
+// ==========================================================================
+//  JAS SNIPER v2.1 — Pine backtest mirror of jas_sniper_ea_v21.mq5
+//  EA ki logic waisi hi: EMA 20/50 trend + pivot BOS + EMA retest + ADX
+//  + H4/D1 confluence + score gate, ATR-based SL, TP1/TP2/TP3 partials.
+//  NOTE: chart settings mein "Recalculate on every tick" BAND rakhein,
+//        warna signal repaint karega (EA bhi closed bar per dekhta hai).
+// ==========================================================================
+strategy("JAS Sniper v2.1 (EA mirror)", overlay=true,
+     initial_capital       = 1000,
+     default_qty_type      = strategy.percent_of_equity,
+     default_qty_value     = 10,
+     pyramiding            = 0,
+     calc_on_every_tick    = false,
+     process_orders_on_close= false)
+
+// ================================ Inputs ==================================
+gR = "Risk"
+useRiskSizing = input.bool(true,  "Risk % se lot nikaalo", group=gR)
+riskPct       = input.float(1.0,  "Risk %", minval=0.1, step=0.1, group=gR)
+
+gS = "Stop / Target"
+atrLen     = input.int(14,     "ATR period",            group=gS)
+slBufAtr   = input.float(0.25, "SL buffer x ATR",  step=0.05, group=gS)
+minSlAtr   = input.float(0.60, "Min SL x ATR",     step=0.05, group=gS)
+maxSlAtr   = input.float(3.50, "Max SL x ATR",     step=0.05, group=gS)
+slLookback = input.int(10,     "SL swing lookback",     group=gS)
+tp1R       = input.float(1.0,  "TP1 (R)", step=0.1, group=gS)
+tp2R       = input.float(2.0,  "TP2 (R)", step=0.1, group=gS)
+tp3R       = input.float(3.0,  "TP3 (R)", step=0.1, group=gS)
+tp1Pct     = input.float(50,   "TP1 close %",           group=gS)
+tp2Pct     = input.float(50,   "TP2 close % (baqi ka)", group=gS)
+beAfterTp1 = input.bool(true,  "TP1 ke baad breakeven", group=gS)
+
+gT = "Structure / Trend"
+pivotLR    = input.int(3,      "Pivot left/right", group=gT)
+structLB   = input.int(6,      "Struct lookback",  group=gT)
+emaFastLen = input.int(20,     "EMA fast",         group=gT)
+emaSlowLen = input.int(50,     "EMA slow",         group=gT)
+useAdx     = input.bool(true,  "ADX filter",       group=gT)
+adxLen     = input.int(14,     "ADX period",       group=gT)
+adxMin     = input.float(18.0, "ADX min",          group=gT)
+
+gH = "HTF confluence"
+useHtf    = input.bool(true,        "HTF filter",             group=gH)
+htf1      = input.timeframe("240",  "HTF 1",                  group=gH)
+htf2      = input.timeframe("D",    "HTF 2",                  group=gH)
+bothAgree = input.bool(true,        "Dono HTF agree karein",  group=gH)
+
+gC = "Score gate"
+useScore = input.bool(true, "Score gate on", group=gC)
+minScore = input.int(70,    "Min score",     group=gC)
+
+gG = "Guards"
+cooldownBars = input.int(5,     "Cooldown bars",       group=gG)
+useSession   = input.bool(true, "Session filter",      group=gG)
+sessStart    = input.int(8,     "Session start hour",  group=gG)
+sessEnd      = input.int(20,    "Session end hour",    group=gG)
+blockFriLate = input.bool(true, "Friday late block",   group=gG)
+friCutoff    = input.int(18,    "Friday cutoff hour",  group=gG)
+blockWeekend = input.bool(true, "Weekend block",       group=gG)
+
+// ============================= Indicators =================================
+emaF = ta.ema(close, emaFastLen)
+emaS = ta.ema(close, emaSlowLen)
+atr  = ta.atr(atrLen)
+[diP, diM, adxVal] = ta.dmi(adxLen, adxLen)
+
+// HTF bias — [1] se last CLOSED htf bar, taake repaint na ho
+htfBias(tf) =>
+    request.security(syminfo.tickerid, tf,
+         (ta.ema(close, emaFastLen) > ta.ema(close, emaSlowLen) ?  1 :
+          ta.ema(close, emaFastLen) < ta.ema(close, emaSlowLen) ? -1 : 0)[1],
+         lookahead = barmerge.lookahead_off)
+
+b1raw = htfBias(htf1)
+b2raw = htfBias(htf2)
+b1 = useHtf ? b1raw : 0
+b2 = useHtf ? b2raw : 0
+
+int htf = 0
+if useHtf
+    htf := bothAgree ?
+         (b1 ==  1 and b2 ==  1 ?  1 : b1 == -1 and b2 == -1 ? -1 : 0) :
+         (b1 + b2 > 0 ? 1 : b1 + b2 < 0 ? -1 : 0)
+
+// ============================ Swings / BOS ================================
+ph = ta.pivothigh(high, pivotLR, pivotLR)
+pl = ta.pivotlow (low,  pivotLR, pivotLR)
+
+var float swHigh    = na
+var int   swHighBar = na
+var float swLow     = na
+var int   swLowBar  = na
+
+if not na(ph)
+    swHigh    := ph
+    swHighBar := bar_index - pivotLR
+if not na(pl)
+    swLow    := pl
+    swLowBar := bar_index - pivotLR
+
+barsSinceH = na(swHighBar) ? na : bar_index - swHighBar
+barsSinceL = na(swLowBar)  ? na : bar_index - swLowBar
+
+bool bosUp = false
+if not na(swHigh) and not na(barsSinceH)
+    int n = math.min(structLB, math.max(1, barsSinceH))
+    for i = 0 to n - 1
+        if close[i] > swHigh
+            bosUp := true
+            break
+
+bool bosDn = false
+if not na(swLow) and not na(barsSinceL)
+    int n = math.min(structLB, math.max(1, barsSinceL))
+    for i = 0 to n - 1
+        if close[i] < swLow
+            bosDn := true
+            break
+
+// ========================= Trend / retest / fresh =========================
+tol      = 0.45 * atr
+retestUp = low  <= emaF + tol and close > emaF
+retestDn = high >= emaF - tol and close < emaF
+trendUp  = emaF > emaS
+trendDn  = emaF < emaS
+freshUp  = not na(barsSinceL) and barsSinceL <= 40
+freshDn  = not na(barsSinceH) and barsSinceH <= 40
+
+// ================================ Score ===================================
+scoreFor(dirIn, bos, momo, fresh) =>
+    int s = 0
+    s := s + (((dirIn > 0 and trendUp) or (dirIn < 0 and trendDn)) ? 20 : 0)
+    s := s + (bos   ? 15 : 0)
+    s := s + (momo  ? 15 : 0)
+    s := s + ((htf == dirIn and htf != 0) ? 20 : 0)
+    s := s + (useAdx ? (adxVal >= adxMin ? 15 : 0) : 15)
+    s := s + (fresh ? 15 : 0)
+    math.min(s, 100)
+
+scoreL = scoreFor( 1, bosUp, retestUp, freshUp)
+scoreS = scoreFor(-1, bosDn, retestDn, freshDn)
+
+// =============================== Filters ==================================
+adxOk     = not useAdx or adxVal >= adxMin
+weekendOk = not blockWeekend or (dayofweek != dayofweek.saturday and dayofweek != dayofweek.sunday)
+friOk     = not blockFriLate or not (dayofweek == dayofweek.friday and hour >= friCutoff)
+sessOk    = not useSession or (sessStart <= sessEnd ?
+                 (hour >= sessStart and hour < sessEnd) :
+                 (hour >= sessStart or  hour < sessEnd))
+timeOk    = weekendOk and friOk and sessOk
+
+htfOkUp = not useHtf or htf ==  1
+htfOkDn = not useHtf or htf == -1
+
+okL = trendUp and bosUp and retestUp and htfOkUp and adxOk and (not useScore or scoreL >= minScore)
+okS = trendDn and bosDn and retestDn and htfOkDn and adxOk and (not useScore or scoreS >= minScore)
+
+// ============================== SL distance ===============================
+lowRaw  = ta.lowest(low,  slLookback) - slBufAtr * atr
+highRaw = ta.highest(high, slLookback) + slBufAtr * atr
+dLong   = math.min(math.max(math.abs(close - lowRaw),  minSlAtr * atr), maxSlAtr * atr)
+dShort  = math.min(math.max(math.abs(close - highRaw), minSlAtr * atr), maxSlAtr * atr)
+
+// =============================== Entries ==================================
+var int   lastSigBar = -10000
+var float entryPx    = na
+var float stopPx     = na
+var float t1         = na
+var float t2         = na
+var float t3         = na
+var float initQty    = na
+var bool  beHit      = false
+
+canTrade = strategy.position_size == 0 and timeOk and (bar_index - lastSigBar) >= cooldownBars
+
+if canTrade and (okL or okS)
+    isLong = okL
+    d      = isLong ? dLong : dShort
+    entryPx := close
+    stopPx  := isLong ? close - d          : close + d
+    t1      := isLong ? close + d * tp1R   : close - d * tp1R
+    t2      := isLong ? close + d * tp2R   : close - d * tp2R
+    t3      := isLong ? close + d * tp3R   : close - d * tp3R
+    beHit   := false
+    lastSigBar := bar_index
+
+    float q = na
+    if useRiskSizing
+        q := (strategy.equity * riskPct / 100.0) / d
+
+    if isLong
+        strategy.entry("L", strategy.long,  qty = q)
+    else
+        strategy.entry("S", strategy.short, qty = q)
+
+// ========================== Manage open position ==========================
+if strategy.position_size != 0
+    if na(initQty)
+        initQty := math.abs(strategy.position_size)
+
+    longPos = strategy.position_size > 0
+
+    if beAfterTp1 and not beHit
+        if (longPos and high >= t1) or (not longPos and low <= t1)
+            beHit := true
+
+    curStop = beHit ? entryPx : stopPx
+    q1 = initQty * tp1Pct / 100.0
+    q2 = initQty * (100.0 - tp1Pct) / 100.0 * tp2Pct / 100.0
+
+    if longPos
+        strategy.exit("TP1", from_entry="L", qty=q1, limit=t1, stop=curStop)
+        strategy.exit("TP2", from_entry="L", qty=q2, limit=t2, stop=curStop)
+        strategy.exit("TP3", from_entry="L",         limit=t3, stop=curStop)
+    else
+        strategy.exit("TP1", from_entry="S", qty=q1, limit=t1, stop=curStop)
+        strategy.exit("TP2", from_entry="S", qty=q2, limit=t2, stop=curStop)
+        strategy.exit("TP3", from_entry="S",         limit=t3, stop=curStop)
+else
+    initQty := na
+    beHit   := false
+
+// ================================ Plots ===================================
+plot(emaF, "EMA fast", color.new(color.orange, 0))
+plot(emaS, "EMA slow", color.new(color.blue,   0))
+
+inPos = strategy.position_size != 0
+plot(inPos ? (beHit ? entryPx : stopPx) : na, "SL",  color.new(color.red,   0), style=plot.style_linebr)
+plot(inPos ? t1 : na, "TP1", color.new(color.lime,  0), style=plot.style_linebr)
+plot(inPos ? t2 : na, "TP2", color.new(color.green, 0), style=plot.style_linebr)
+plot(inPos ? t3 : na, "TP3", color.new(color.teal,  0), style=plot.style_linebr)
+
+plotshape(canTrade and okL, "BUY",  shape.triangleup,   location.belowbar, color.new(color.lime, 0), size=size.tiny)
+plotshape(canTrade and okS, "SELL", shape.triangledown, location.abovebar, color.new(color.red,  0), size=size.tiny)
