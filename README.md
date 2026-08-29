@@ -43,6 +43,25 @@ until you set it to `false` yourself.
 - Spread price mein compare hoti hai (`MaxSpreadPrice`), points mein nahi —
   gold ke 2/3-digit quotes ke liye safe.
 
+### v2.11 — chhote account ka TP1 fix
+
+Pehle agar lot itni choti thi ke TP1 per hissa band nahi ho sakta tha (part
+`VOLUME_MIN` se kam, ya bacha hua hissa `VOLUME_MIN` se kam), tab bhi EA TP1
+ko "hit" gin leta tha aur SL breakeven per le jaata tha. Nateeja: min-lot
+account per har trade +1R per BE ban kar khatam ho jaati thi, munafa kuch
+bhi nahi.
+
+Ab:
+
+- Hissa band na ho sake to TP1 skip — `g_hit1` set nahi hota aur breakeven
+  bhi nahi lagta. Position TP2/TP3 tak chalti hai.
+- Aisi position `g_noScaleOut` se mark hoti hai (GlobalVariable `nopart` mein
+  save, restart safe). Panel per TP1 ka status `RUN` dikhta hai.
+- TP2 per bhi hissa mumkin na ho to `g_hit2` set ho jaata hai sirf is liye ke
+  `TrailAfterTp2` chalu ho jaye — poori runner position bila protection na rahe.
+- `PositionClosePartial` fail ho (server error) to ab `g_hit1` set nahi hota;
+  agle tick per dobara koshish hoti hai, 2 second ki throttle ke saath.
+
 ### Key inputs
 
 | Input | Default | Note |

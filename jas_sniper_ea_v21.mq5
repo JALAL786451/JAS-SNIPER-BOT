@@ -15,11 +15,17 @@
 //|    - Attach wale bar per signal nahi                             |
 //|    - Spread points nahi, price (gold-safe)                       |
 //|                                                                  |
+//|  v2.11:                                                          |
+//|    - Chhoti lot per TP1 ab sirf BE nahi banta: agar hissa band   |
+//|      nahi ho sakta to TP1 skip, trade TP2/TP3 tak chalti hai     |
+//|    - TP2 per bhi hissa na ban sake to trail chalu (runner safe)  |
+//|    - Partial fail per dobara koshish, 2 sec ki throttle ke saath |
+//|                                                                  |
 //|  YE EA HEDGE YA AVERAGE KAR HI NAHI SAKTA.                       |
 //|  DemoOnly default true. LIVE se pehle false karein.              |
 //+------------------------------------------------------------------+
 #property copyright "JAS Sniper"
-#property version   "2.10"
+#property version   "2.11"
 #property strict
 
 #include <Trade\Trade.mqh>
@@ -116,7 +122,6 @@ bool     g_skipFirstBar  = true;
 
 bool     g_pending       = false;
 int      g_pendDir       = 0;
-double   g_pendEntry = 0, g_pendSl = 0, g_pendTp1 = 0, g_pendTp2 = 0, g_pendTp3 = 0;
 double   g_pendLots      = 0;
 int      g_pendScore     = 0;
 int      g_pendBar       = 0;
@@ -124,6 +129,8 @@ int      g_pendBar       = 0;
 ulong    g_ticket        = 0;
 double   g_tp1 = 0, g_tp2 = 0, g_tp3 = 0, g_entry = 0, g_riskDist = 0;
 bool     g_hit1 = false, g_hit2 = false;
+bool     g_noScaleOut    = false;   // broker ki min lot se hissa band nahi ho sakta
+datetime g_lastPartialTry = 0;      // partial fail per spam rokne ke liye
 
 int      g_day            = -1;          // YYYYMMDD
 double   g_dayStartEquity = 0;
@@ -179,6 +186,7 @@ void PersistTrade()
    GvSet("risk",   g_riskDist);
    GvSet("hit1",   g_hit1 ? 1.0 : 0.0);
    GvSet("hit2",   g_hit2 ? 1.0 : 0.0);
+   GvSet("nopart", g_noScaleOut ? 1.0 : 0.0);
   }
 
 void ClearTradePersist()
@@ -187,6 +195,7 @@ void ClearTradePersist()
    GvSet("tp1", 0); GvSet("tp2", 0); GvSet("tp3", 0);
    GvSet("entry", 0); GvSet("risk", 0);
    GvSet("hit1", 0); GvSet("hit2", 0);
+   GvSet("nopart", 0);
   }
 
 int TodayYmd()
@@ -424,6 +433,7 @@ bool CloseAllOurs()
      }
    g_ticket = 0;
    g_hit1 = false; g_hit2 = false;
+   g_noScaleOut = false; g_lastPartialTry = 0;
    g_tp1 = 0; g_tp2 = 0; g_tp3 = 0; g_riskDist = 0;
    ClearTradePersist();
    return(ok);
@@ -741,12 +751,14 @@ bool AdoptPosition()
          g_tp2      = GvGet("tp2", 0);
          g_tp3      = GvGet("tp3", tpNow);
          g_riskDist = GvGet("risk", 0);
-         g_hit1     = (GvGet("hit1", 0) > 0.5);
-         g_hit2     = (GvGet("hit2", 0) > 0.5);
+         g_hit1       = (GvGet("hit1", 0) > 0.5);
+         g_hit2       = (GvGet("hit2", 0) > 0.5);
+         g_noScaleOut = (GvGet("nopart", 0) > 0.5);
          if(g_entry <= 0.0) g_entry = GvGet("entry", g_entry);
         }
       else
         {
+         g_noScaleOut = false;
          g_tp3 = tpNow;
          if(slNow > 0.0)
            {
@@ -817,12 +829,42 @@ bool SafeModify(const double newSl, const double newTp)
    return(trade.PositionModify(g_ticket, sl, NormalizeDouble(newTp, d)));
   }
 
+//--- is volume per Tp*ClosePercent ka hissa band ho sakta hai ya nahi
+bool CanScaleOut(const double vol, const double percent, double &part)
+  {
+   double volStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+   double volMin  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+   if(volStep <= 0.0) { part = 0.0; return(false); }
+
+   part = NormalizeDouble(MathFloor(vol * percent / 100.0 / volStep + 0.0000001) * volStep,
+                          VolDigits());
+   return(part >= volMin && (vol - part) >= volMin);
+  }
+
+//--- partial close ki koshish. Fail ho to false — agli koshish 2 sec baad.
+bool TryPartial(const double part, const string tag)
+  {
+   datetime now = TimeCurrent();
+   if(g_lastPartialTry != 0 && (now - g_lastPartialTry) < 2) return(false);
+   g_lastPartialTry = now;
+
+   if(trade.PositionClosePartial(g_ticket, part))
+     {
+      PrintFormat("%s — %s lots band.", tag, DoubleToString(part, VolDigits()));
+      return(true);
+     }
+   PrintFormat("%s partial nahi hua (%s) — agli koshish 2 sec baad.",
+               tag, trade.ResultRetcodeDescription());
+   return(false);
+  }
+
 void ManageOpenPosition()
   {
    if(g_ticket == 0) return;
    if(!PositionSelectByTicket(g_ticket))
      {
       g_ticket = 0; g_hit1 = false; g_hit2 = false;
+      g_noScaleOut = false; g_lastPartialTry = 0;
       g_tp1 = 0; g_tp2 = 0; g_tp3 = 0; g_riskDist = 0;
       ClearTradePersist();
       return;
@@ -836,52 +878,65 @@ void ManageOpenPosition()
                  ? SymbolInfoDouble(_Symbol, SYMBOL_BID)
                  : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
 
-   double volStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-   double volMin  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
-   int    vd      = VolDigits();
+   int vd = VolDigits();
 
-   if(!g_hit1 && g_tp1 > 0.0)
+   //--- TP1: sirf tab hi "hit" ginte hain jab hissa waqai band hua ho.
+   //--- Chhoti lot per hissa mumkin nahi to TP1 aur BE dono skip —
+   //--- warna har trade TP1 per breakeven ban kar khatam ho jaati thi.
+   if(!g_hit1 && !g_noScaleOut && g_tp1 > 0.0)
      {
       bool reached = (type == POSITION_TYPE_BUY) ? (cur >= g_tp1) : (cur <= g_tp1);
       if(reached)
         {
-         double part = NormalizeDouble(
-                          MathFloor(vol * Tp1ClosePercent / 100.0 / volStep + 0.0000001) * volStep, vd);
-         if(part >= volMin && (vol - part) >= volMin)
+         double part = 0.0;
+         if(!CanScaleOut(vol, Tp1ClosePercent, part))
            {
-            if(trade.PositionClosePartial(g_ticket, part))
-               PrintFormat("TP1 — %s lots band.", DoubleToString(part, vd));
+            g_noScaleOut = true;
+            PersistTrade();
+            g_msg = "Lot choti — TP1 hissa mumkin nahi, trade TP2/TP3 tak chalegi.";
+            PrintFormat("TP1 partial mumkin nahi (vol %s, min %s) — BE skip, trade chalti rahegi.",
+                        DoubleToString(vol, vd),
+                        DoubleToString(SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), vd));
            }
-         g_hit1 = true;
-         PersistTrade();
-
-         if(BreakevenAfterTp1)
+         else if(TryPartial(part, "TP1"))
            {
-            double be = TrueBE(type, open);
-            if(SafeModify(be, curTp))
-               Print("SL true-breakeven per aa gaya (spread+buffer).");
-            else
-               Print("Breakeven abhi nahi lag saka (price stop level ke qareeb hai).");
+            g_hit1 = true;
+            PersistTrade();
+
+            if(BreakevenAfterTp1)
+              {
+               double be = TrueBE(type, open);
+               if(SafeModify(be, curTp))
+                  Print("SL true-breakeven per aa gaya (spread+buffer).");
+               else
+                  Print("Breakeven abhi nahi lag saka (price stop level ke qareeb hai).");
+              }
            }
         }
      }
 
-   if(g_hit1 && !g_hit2 && g_tp2 > 0.0)
+   //--- TP2: g_noScaleOut wali position bhi yahan aati hai. Wahan hissa
+   //--- phir bhi band nahi hoga, magar trail chalu ho jaye taake poori
+   //--- runner position bila protection na chalti rahe.
+   if((g_hit1 || g_noScaleOut) && !g_hit2 && g_tp2 > 0.0)
      {
       bool reached = (type == POSITION_TYPE_BUY) ? (cur >= g_tp2) : (cur <= g_tp2);
       if(reached)
         {
          if(!PositionSelectByTicket(g_ticket)) return;
          vol = PositionGetDouble(POSITION_VOLUME);
-         double part = NormalizeDouble(
-                          MathFloor(vol * Tp2ClosePercent / 100.0 / volStep + 0.0000001) * volStep, vd);
-         if(part >= volMin && (vol - part) >= volMin)
+         double part = 0.0;
+         if(!CanScaleOut(vol, Tp2ClosePercent, part))
            {
-            if(trade.PositionClosePartial(g_ticket, part))
-               PrintFormat("TP2 — %s lots band.", DoubleToString(part, vd));
+            g_hit2 = true;
+            PersistTrade();
+            Print("TP2 partial mumkin nahi — poori position runner, trail chalu.");
            }
-         g_hit2 = true;
-         PersistTrade();
+         else if(TryPartial(part, "TP2"))
+           {
+            g_hit2 = true;
+            PersistTrade();
+           }
         }
      }
 
@@ -902,7 +957,7 @@ void ManageOpenPosition()
      }
   }
 
-void RecheckFillRisk(const int dir)
+void RecheckFillRisk()
   {
    if(g_ticket == 0 || !PositionSelectByTicket(g_ticket)) return;
    double open = PositionGetDouble(POSITION_PRICE_OPEN);
@@ -953,10 +1008,11 @@ void OpenTrade(const int dir, const double lots,
      }
 
    g_hit1 = false; g_hit2 = false;
+   g_noScaleOut = false; g_lastPartialTry = 0;
    g_dayTrades++;
    PersistRuntime();
    PersistTrade();
-   RecheckFillRisk(dir);
+   RecheckFillRisk();
 
    g_msg = StringFormat("Trade khuli — %s %s lots", (dir > 0 ? "BUY" : "SELL"),
                         DoubleToString(lots, VolDigits()));
@@ -1003,6 +1059,7 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
    if(g_ticket == pid)
      {
       g_ticket = 0; g_hit1 = false; g_hit2 = false;
+      g_noScaleOut = false; g_lastPartialTry = 0;
       g_tp1 = 0; g_tp2 = 0; g_tp3 = 0; g_riskDist = 0;
       ClearTradePersist();
      }
@@ -1145,7 +1202,8 @@ void DrawPanel()
       SetLabel(3, "RUKA HUA — din ki had lag gayi", clrTomato);
    else if(g_ticket != 0)
       SetLabel(3, StringFormat("Position khuli  |  TP1 %s %s  TP2 %s",
-                               DoubleToString(g_tp1, _Digits), (g_hit1 ? "OK" : "  "),
+                               DoubleToString(g_tp1, _Digits),
+                               (g_hit1 ? "OK" : (g_noScaleOut ? "RUN" : "-")),
                                (g_hit2 ? "OK" : "-")), clrAqua);
    else if(g_pending)
       SetLabel(3, StringFormat("SIGNAL  %s  score %d  —  button dabayen",
@@ -1260,11 +1318,6 @@ void OnTick()
      {
       g_pending   = true;
       g_pendDir   = dir;
-      g_pendEntry = entry;
-      g_pendSl    = sl;
-      g_pendTp1   = tp1;
-      g_pendTp2   = tp2;
-      g_pendTp3   = tp3;
       g_pendLots  = lots;
       g_pendScore = score;
       g_pendBar   = g_barCounter;
