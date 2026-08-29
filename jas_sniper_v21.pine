@@ -17,7 +17,6 @@ strategy("JAS Sniper v2.1 (EA mirror)", overlay=true,
      pyramiding             = 0,
      calc_on_every_tick     = false,              // signal repaint na ho
      process_orders_on_close= false,              // fill agle bar ke open par (EA jaisa)
-     use_bar_magnifier      = true,               // intrabar SL/TP order (Premium plan)
      margin_long            = 0,
      margin_short           = 0)
 
@@ -278,10 +277,10 @@ var table pnl_t = table.new(position.top_right, 2, 10, border_width=1,
      frame_color=color.new(color.gray, 40), frame_width=1)
 
 if showPanel and barstate.islast
-    winPct = nTrades > 0 ? nWins * 100.0 / nTrades : 0.0
-    pf     = grossLoss > 0 ? grossWin / grossLoss : na
-    avgR   = nTrades > 0 ? sumR / nTrades : 0.0
-    netPct = strategy.initial_capital > 0 ? strategy.netprofit / strategy.initial_capital * 100.0 : 0.0
+    float winPct = nTrades > 0 ? nWins * 100.0 / nTrades : 0.0
+    float pf     = grossLoss > 0 ? grossWin / grossLoss : na
+    float avgR   = nTrades > 0 ? sumR / nTrades : 0.0
+    float netPct = strategy.initial_capital > 0 ? strategy.netprofit / strategy.initial_capital * 100.0 : 0.0
     good   = color.new(#1B7A4A, 0)
     bad    = color.new(#B03030, 0)
     hdr    = color.new(#1E2630, 10)
