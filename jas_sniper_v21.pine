@@ -37,6 +37,8 @@ tp3R       = input.float(3.0,  "TP3 (R)", step=0.1, group=gS)
 tp1Pct     = input.float(50,   "TP1 close %",           group=gS)
 tp2Pct     = input.float(50,   "TP2 close % (baqi ka)", group=gS)
 beAfterTp1 = input.bool(true,  "TP1 ke baad breakeven", group=gS)
+trailOn    = input.bool(true,  "TP2 ke baad trail",     group=gS)
+trailAtr   = input.float(1.50, "Trail x ATR", step=0.1, group=gS)
 
 gT = "Structure / Trend"
 pivotLR    = input.int(3,      "Pivot left/right", group=gT)
@@ -181,6 +183,8 @@ var float t2         = na
 var float t3         = na
 var float initQty    = na
 var bool  beHit      = false
+var bool  t2Hit      = false
+var float trailStop  = na
 
 // --- per-ENTRY stats (TradingView har partial ko alag trade ginta hai,
 // --- ye counters asli trades ginte hain) ---
@@ -208,6 +212,8 @@ if canTrade and (okL or okS)
     t2      := isLong ? close + d * tp2R   : close - d * tp2R
     t3      := isLong ? close + d * tp3R   : close - d * tp3R
     beHit   := false
+    t2Hit   := false
+    trailStop  := na
     lastSigBar := bar_index
     riskDist   := d
     riskMoney  := na
@@ -235,7 +241,19 @@ if strategy.position_size != 0
         if (longPos and high >= t1) or (not longPos and low <= t1)
             beHit := true
 
-    curStop = beHit ? entryPx : stopPx
+    //--- TP2 chhoo liya? phir SL 1.5 x ATR peeche chalta hai (EA jaisa)
+    if not t2Hit
+        if (longPos and high >= t2) or (not longPos and low <= t2)
+            t2Hit := true
+
+    if t2Hit and trailOn and atr > 0
+        float tr = longPos ? close - trailAtr * atr : close + trailAtr * atr
+        trailStop := na(trailStop) ? tr : (longPos ? math.max(trailStop, tr) : math.min(trailStop, tr))
+
+    float curStop = beHit ? entryPx : stopPx
+    if not na(trailStop)
+        curStop := longPos ? math.max(curStop, trailStop) : math.min(curStop, trailStop)
+
     q1 = initQty * tp1Pct / 100.0
     q2 = initQty * (100.0 - tp1Pct) / 100.0 * tp2Pct / 100.0
 
@@ -248,8 +266,10 @@ if strategy.position_size != 0
         strategy.exit("TP2", from_entry="S", qty=q2, limit=t2, stop=curStop)
         strategy.exit("TP3", from_entry="S",         limit=t3, stop=curStop)
 else
-    initQty := na
-    beHit   := false
+    initQty   := na
+    beHit     := false
+    t2Hit     := false
+    trailStop := na
 
 // ========================= Trade closed: hisaab ===========================
 if strategy.position_size == 0 and strategy.position_size[1] != 0 and not na(netAtEntry)
