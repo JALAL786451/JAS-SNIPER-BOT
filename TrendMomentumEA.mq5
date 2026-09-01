@@ -15,9 +15,17 @@
 //|   - Attach wale bar par turant trade nahi khulti                 |
 //|   - SL/TP broker ki minimum distance se check hote hain          |
 //|   - Filling mode + slippage set, aur trading-allowed check       |
+//|                                                                  |
+//|  v1.02 (XAUUSDm backtest ke baad defaults theek kiye, logic wahi):|
+//|   - SL 300 -> 3000 points, TP 450 -> 4500. Exness ka XAUUSDm      |
+//|     3-digit hai: 300 points sirf $0.30 banta tha jab ke spread    |
+//|     hi $0.26 tha — stop spread se sirf 4 cent bara. 8 mahine ke   |
+//|     test mein us se PF 0.69 aaya; 3000/4500 par PF 0.99.          |
+//|   - Volume spike 1.5 -> 2.5, taake sirf strong moves par entry ho |
+//|     (861 trades bohot zyada thin, har trade spread deti hai).     |
 //+------------------------------------------------------------------+
 #property copyright "Built per user spec"
-#property version   "1.01"
+#property version   "1.02"
 #property strict
 
 #include <Trade\Trade.mqh>
@@ -26,8 +34,8 @@ CTrade trade;
 //--------------------------- INPUT PARAMETERS ------------------------
 input group "=== Trade Basics ==="
 input double InpLotSize            = 0.01;    // Fixed lot size
-input int    InpSL_Points          = 300;     // Stop Loss in points
-input int    InpTP_Points          = 450;     // Take Profit in points (>= 1.5x SL suggested)
+input int    InpSL_Points          = 3000;    // Stop Loss in points (3-digit gold: 3000 = $3.00)
+input int    InpTP_Points          = 4500;    // Take Profit in points (>= 1.5x SL suggested)
 input int    InpSlippagePoints     = 50;      // Max allowed slippage (points)
 input int    InpMagicNumber        = 20260901;// Magic number
 
@@ -37,7 +45,7 @@ input ENUM_TIMEFRAMES InpTrendTF   = PERIOD_M15; // Timeframe used for trend bia
 
 input group "=== Momentum / Volume Confirmation ==="
 input int    InpVolLookback        = 20;      // Bars used to compute average tick volume
-input double InpVolSpikeMultiplier = 1.5;     // Current volume must exceed avg * this multiplier
+input double InpVolSpikeMultiplier = 2.5;     // Current volume must exceed avg * this multiplier
 input double InpMinBodyPercent     = 60.0;    // Candle body must be >= this % of its full range
 input ENUM_TIMEFRAMES InpEntryTF   = PERIOD_M5;  // Timeframe used for entry confirmation
 
