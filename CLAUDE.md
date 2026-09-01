@@ -14,6 +14,7 @@ toward backtesting and demo before live trading.
 | `jas_sniper_v21.pine` | Pine v5 mirror of the above, for TradingView backtests |
 | `TrendMomentumEA.mq5` | TrendMomentumEA v1.01 — EMA trend + tick-volume momentum |
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
+| `smc_coach_pro_v2.pine` | SMC Coach Pro v2 — TradingView indicator (zones, BOS/CHOCH, FVG/LGB, HTF, score, Teacher panel). Unrelated to the EAs |
 | `tools/` | Windows compile and backtest automation |
 
 ## Hard rules for these EAs
