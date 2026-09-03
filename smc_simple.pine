@@ -5,8 +5,9 @@
 //  Sirf CHAAR cheezein chart par:
 //    1. Support / Resistance zones  (hare aur laal boxes)
 //    2. FVG — fair value gap        (halke grey boxes, bharne par khud mit-te)
-//    3. Liquidity Grab              ("LG" label — jhoota break jo wapas aa gaya)
-//    4. BUY / SELL signal           (teer + Entry / SL / TP1 / TP2)
+//    3. Liquidity Grab              (shaded hissa + "LG" label)
+//    4. BUY / SELL signal           (teer + Entry / SL / TP1 / TP2, aur halat:
+//                                    chal raha hai / SL laga / TP mil gaya)
 //
 //  JO IS MEIN NAHI HAI (jaan boojh kar):
 //    - Koi RSI / Stochastic / overbought-oversold
@@ -59,8 +60,11 @@ showPanel = input.bool(true, "Chhota panel dikhayen", group = g5)
 g6 = "6 · Rang"
 cSup  = input.color(color.new(color.teal,   80), "Support zone",   group = g6)
 cRes  = input.color(color.new(color.red,    80), "Resistance zone", group = g6)
-cFvgU = input.color(color.new(color.teal,   88), "FVG bullish",    group = g6)
-cFvgD = input.color(color.new(color.red,    88), "FVG bearish",    group = g6)
+cFvgU = input.color(color.new(color.blue,   80), "FVG bullish",    group = g6)
+cFvgD = input.color(color.new(color.orange, 80), "FVG bearish",    group = g6)
+cLgUp = input.color(color.new(color.red,    75), "Liquidity grab upar",  group = g6)
+cLgDn = input.color(color.new(color.teal,   75), "Liquidity grab neeche", group = g6)
+cEma  = input.color(color.new(color.black,  0), "EMA line",       group = g6)
 cBuy  = input.color(color.new(color.teal,    0), "BUY",            group = g6)
 cSell = input.color(color.new(color.red,     0), "SELL",           group = g6)
 
@@ -71,7 +75,7 @@ atr = ta.atr(atrLen)
 ema = ta.ema(close, emaLen)
 f_px(x) => str.tostring(x, format.mintick)
 
-plot(useTrend ? ema : na, "EMA", color = color.new(color.orange, 40), linewidth = 1)
+plot(useTrend ? ema : na, "EMA", color = cEma, linewidth = 2)
 
 // ============================================================================
 //  1 · ZONES (pivot high = resistance, pivot low = support)
@@ -146,12 +150,12 @@ bool fvgUp = bar_index > 2 and low  > high[2]
 bool fvgDn = bar_index > 2 and high < low[2]
 
 if showFVG and fvgUp
-    box nb = box.new(bar_index - 2, low, bar_index + 5, high[2], xloc = xloc.bar_index, bgcolor = cFvgU, border_color = color.new(color.teal, 70))
+    box nb = box.new(bar_index - 2, low, bar_index + 5, high[2], xloc = xloc.bar_index, bgcolor = cFvgU, border_color = color.new(color.blue, 40), text = "FVG", text_size = size.tiny, text_color = color.new(color.blue, 0), text_halign = text.align_left, text_valign = text.align_center)
     array.push(fBox, nb)
     array.push(fBull, true)
 
 if showFVG and fvgDn
-    box nb = box.new(bar_index - 2, low[2], bar_index + 5, high, xloc = xloc.bar_index, bgcolor = cFvgD, border_color = color.new(color.red, 70))
+    box nb = box.new(bar_index - 2, low[2], bar_index + 5, high, xloc = xloc.bar_index, bgcolor = cFvgD, border_color = color.new(color.orange, 40), text = "FVG", text_size = size.tiny, text_color = color.new(color.orange, 0), text_halign = text.align_left, text_valign = text.align_center)
     array.push(fBox, nb)
     array.push(fBull, false)
 
@@ -184,16 +188,23 @@ bool grabUp = not na(lastPH) and high > lastPH and close < lastPH   // upar ka j
 bool grabDn = not na(lastPL) and low  < lastPL and close > lastPL   // neeche ka jhoota break -> bullish
 
 var label[] lgLbls = array.new_label()
+var box[]   lgBoxs = array.new_box()
 
+// Grab ka shaded hissa = joh level tora gaya us se le kar wick ke sire tak.
+// Yehi wo jagah hai jahan se stops uthaye gaye.
 if showLGB and grabUp and barstate.isconfirmed
+    array.push(lgBoxs, box.new(bar_index - 1, high, bar_index + 3, lastPH, xloc = xloc.bar_index, bgcolor = cLgUp, border_color = color.new(color.red, 40)))
     array.push(lgLbls, label.new(bar_index, high, "LG", xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_label_down, color = color.new(color.red, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: upar stops liye, wapas neeche band hui"))
 
 if showLGB and grabDn and barstate.isconfirmed
+    array.push(lgBoxs, box.new(bar_index - 1, lastPL, bar_index + 3, low, xloc = xloc.bar_index, bgcolor = cLgDn, border_color = color.new(color.teal, 40)))
     array.push(lgLbls, label.new(bar_index, low, "LG", xloc = xloc.bar_index, yloc = yloc.belowbar, style = label.style_label_up, color = color.new(color.teal, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: neeche stops liye, wapas upar band hui"))
 
-// sirf aakhri chand LG labels rakho, baqi mita do
+// sirf aakhri chand LG rakho, baqi mita do
 while array.size(lgLbls) > lgMax
     label.delete(array.shift(lgLbls))
+while array.size(lgBoxs) > lgMax
+    box.delete(array.shift(lgBoxs))
 
 // ============================================================================
 //  4 · BUY / SELL SIGNAL
@@ -225,6 +236,11 @@ var float   sTP2    = na
 var line[]  planLn  = array.new_line()
 var label[] planLb  = array.new_label()
 var label   sigLbl  = na
+var int     sDir    = 0        // 1 = buy, -1 = sell, 0 = koi nahi
+var int     sBar    = na       // signal kis bar par bana
+var bool    sLive   = false    // abhi chal raha hai?
+var bool    sTp1Hit = false
+var string  sStat   = ""       // halat ka matn
 
 if sigBuy or sigSell
     lastSigBar := bar_index
@@ -235,8 +251,13 @@ if sigBuy or sigSell
         label.delete(array.shift(planLb))
 
     color sc = sigBuy ? cBuy : cSell
-    sideTx := sigBuy ? "BUY" : "SELL"
-    sEntry := close
+    sideTx  := sigBuy ? "BUY" : "SELL"
+    sDir    := sigBuy ? 1 : -1
+    sBar    := bar_index
+    sLive   := true
+    sTp1Hit := false
+    sStat   := "CHAL RAHA HAI"
+    sEntry  := close
 
     float anchor = sigBuy ? (na(supHit) ? low : math.min(low, supHit)) : (na(resHit) ? high : math.max(high, resHit))
     sSL  := sigBuy ? (anchor - slBuf * atr) : (anchor + slBuf * atr)
@@ -265,6 +286,28 @@ if sigBuy or sigSell
 
     alert(sideTx + " — " + syminfo.ticker + " " + timeframe.period + " | Entry " + f_px(sEntry) + " | SL " + f_px(sSL) + " | TP1 " + f_px(sTP1) + " | TP2 " + f_px(sTP2), alert.freq_once_per_bar_close)
 
+// --- signal ke baad har bar: dekho SL laga, TP laga, ya abhi chal raha hai
+if sLive and not (sigBuy or sigSell)
+    bool slHit  = sDir > 0 ? (low  <= sSL)  : (high >= sSL)
+    bool tp2Hit = sDir > 0 ? (high >= sTP2) : (low  <= sTP2)
+    bool tp1Hit = sDir > 0 ? (high >= sTP1) : (low  <= sTP1)
+    if tp1Hit
+        sTp1Hit := true
+    if slHit
+        sLive := false
+        sStat := sTp1Hit ? "KHATAM — TP1 ke baad SL" : "KHATAM — SL laga"
+    else if tp2Hit
+        sLive := false
+        sStat := "KHATAM — TP2 mil gaya"
+    else
+        sStat := sTp1Hit ? "CHAL RAHA HAI (TP1 mil chuka)" : "CHAL RAHA HAI"
+    // khatam hone par plan ki lines hata do, chart saaf rahe
+    if not sLive
+        while array.size(planLn) > 0
+            line.delete(array.shift(planLn))
+        while array.size(planLb) > 0
+            label.delete(array.shift(planLb))
+
 plotshape(showArrow and sigBuy,  title = "BUY",  style = shape.triangleup,   location = location.belowbar, color = cBuy,  size = size.tiny)
 plotshape(showArrow and sigSell, title = "SELL", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.tiny)
 
@@ -278,11 +321,12 @@ if showPanel and barstate.islast
     else
         table.clear(t, 0, 0, 0, 2)
     color bg = color.new(color.white, 90)
-    string r1 = sideTx == "" ? "Abhi koi signal nahi" : ("Aakhri signal: " + sideTx)
-    string r2 = sideTx == "" ? "Zone / grab ka intezaar" : ("Entry " + f_px(sEntry) + "   SL " + f_px(sSL))
-    string r3 = sideTx == "" ? "" : ("TP1 " + f_px(sTP1) + "   TP2 " + f_px(sTP2))
+    string ageTx = na(sBar) ? "" : (str.tostring(bar_index - sBar) + " candle purana")
+    string r1 = sideTx == "" ? "Abhi koi signal nahi" : ("Aakhri signal: " + sideTx + "   (" + ageTx + ")")
+    string r2 = sideTx == "" ? "Zone / grab ka intezaar" : sStat
+    string r3 = sideTx == "" ? "" : ("Entry " + f_px(sEntry) + "   SL " + f_px(sSL) + "   TP1 " + f_px(sTP1) + "   TP2 " + f_px(sTP2))
     table.cell(t, 0, 0, r1, bgcolor = bg, text_color = sideTx == "BUY" ? cBuy : sideTx == "SELL" ? cSell : color.gray, text_size = size.normal)
-    table.cell(t, 0, 1, r2, bgcolor = bg, text_color = color.black, text_size = size.small)
+    table.cell(t, 0, 1, r2, bgcolor = bg, text_color = sLive ? (sDir > 0 ? cBuy : cSell) : color.gray, text_size = size.normal)
     table.cell(t, 0, 2, r3, bgcolor = bg, text_color = color.black, text_size = size.small)
 
 // ============================================================================
