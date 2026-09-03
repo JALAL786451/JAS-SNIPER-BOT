@@ -8,7 +8,7 @@
 //    3. Liquidity Grab              (shaded hissa + "LG" label)
 //    4. BUY / SELL signal           (teer + Entry / SL / TP1 / TP2, aur halat:
 //                                    chal raha hai / SL laga / TP mil gaya)
-//  Saath mein MA 20 / 100 / 200 (safed) — sirf dekhne ke liye, signal in se
+//  Saath mein MA 20 / 100 / 200 — sirf dekhne ke liye, signal in se
 //  nahi banta. Signal ka trend filter alag EMA(50) hai (kaali line).
 //
 //  JO IS MEIN NAHI HAI (jaan boojh kar):
@@ -76,9 +76,11 @@ maType   = input.string("EMA", "MA ki qism", options = ["EMA", "SMA"], group = g
 ma1Len   = input.int(20,  "MA 1 length", minval = 2, group = g7)
 ma2Len   = input.int(100, "MA 2 length", minval = 2, group = g7)
 ma3Len   = input.int(200, "MA 3 length", minval = 2, group = g7)
-cMa1     = input.color(color.new(color.white, 0),  "MA 20 rang",  group = g7)
-cMa2     = input.color(color.new(color.white, 25), "MA 100 rang", group = g7)
-cMa3     = input.color(color.new(color.white, 45), "MA 200 rang", group = g7)
+// Chart ka background safed hai, is liye safed lines nazar nahi aatin.
+// Teen alag rang rakhe hain; dark chart par inhen safed kar sakte hain.
+cMa1     = input.color(color.new(color.purple, 0), "MA 20 rang",  group = g7)
+cMa2     = input.color(color.new(color.maroon, 0), "MA 100 rang", group = g7)
+cMa3     = input.color(color.new(color.gray,   0), "MA 200 rang", group = g7)
 showMaTag = input.bool(true, "Har MA par us ka naam likhen", group = g7)
 
 // ============================================================================
@@ -90,7 +92,7 @@ f_px(x) => str.tostring(x, format.mintick)
 
 plot(useTrend ? ema : na, "EMA (trend filter)", color = cEma, linewidth = 2)
 
-// --- MA 20 / 100 / 200. Teeno safed hain, is liye mota'i se farq rakha hai:
+// --- MA 20 / 100 / 200. Rang alag alag, aur mota'i bhi alag:
 //     20 patli, 100 darmiyani, 200 sab se moti. Naam bhi saath likha aata hai.
 f_ma(_len) => maType == "SMA" ? ta.sma(close, _len) : ta.ema(close, _len)
 float ma1 = f_ma(ma1Len)
