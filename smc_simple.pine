@@ -18,6 +18,7 @@
 //  Signal ka usool (bohot seedha):
 //    BUY  = (support zone ko chua  YA  neeche liquidity grab hui)
 //           + candle bullish band hui  + (chahen to) EMA se upar
+//           + (chahen to) bara timeframe bhi UP ho
 //    SELL = ulta.
 //    Entry us candle ka close, SL zone/grab ke neeche + buffer, TP 1R aur 2R.
 //
@@ -48,6 +49,13 @@ useTrend  = input.bool(true, "EMA trend filter chalu", group = g4)
 emaLen    = input.int(50, "EMA length", minval = 5, group = g4)
 minBodyPc = input.float(45.0, "Signal candle ka body kam se kam (%)", step = 5.0, minval = 0.0, maxval = 100.0, group = g4)
 coolBars  = input.int(8, "Do signals ke darmiyan kam se kam bars", minval = 0, group = g4)
+
+// Bara timeframe (HTF) ki direction. Isse chota (chart ka) TF sirf usi taraf
+// signal deta hai — jaise 1H par sirf BUY jab 4H bhi UP ho. Yehi "do
+// timeframe" ka usool hai: bara TF sirf direction, chota TF sirf entry.
+useHtf   = input.bool(false, "Higher-timeframe filter chalu", group = g4)
+htfTF    = input.timeframe("240", "Bara timeframe (misal: 240 = 4H, D = 1 din)", group = g4)
+htfEmaLen = input.int(50, "HTF EMA length", minval = 5, group = g4)
 
 g5 = "5 · Trade plan"
 atrLen   = input.int(14, "ATR length", minval = 2, group = g5)
@@ -100,6 +108,17 @@ ema = ta.ema(close, emaLen)
 f_px(x) => str.tostring(x, format.mintick)
 
 plot(useTrend ? ema : na, "EMA (trend filter)", color = cEma, linewidth = 2)
+
+// --- HTF direction: EMA vs close par usi bare TF par, non-repainting
+// (band hui candle ka data leta hai). 1 = UP, -1 = DOWN, 0 = pata nahi.
+f_htfDir() =>
+    _c = request.security(syminfo.tickerid, htfTF, close[1], lookahead = barmerge.lookahead_off)
+    _e = request.security(syminfo.tickerid, htfTF, ta.ema(close, htfEmaLen)[1], lookahead = barmerge.lookahead_off)
+    _c > _e ? 1 : _c < _e ? -1 : 0
+
+int htfDir = useHtf ? f_htfDir() : 0
+bool htfOKb = not useHtf or htfDir == 1
+bool htfOKs = not useHtf or htfDir == -1
 
 // --- MA 20 / 100 / 200. Rang alag alag, aur mota'i bhi alag:
 //     20 patli, 100 darmiyani, 200 sab se moti. Naam bhi saath likha aata hai.
@@ -289,8 +308,8 @@ bool trendOKs = not useTrend or close < ema
 var int lastSigBar = na
 bool coolOK = na(lastSigBar) or (bar_index - lastSigBar) >= coolBars
 
-bool rawBuy  = (not na(supHit) or grabDn) and bullBar and trendOKb
-bool rawSell = (not na(resHit) or grabUp) and bearBar and trendOKs
+bool rawBuy  = (not na(supHit) or grabDn) and bullBar and trendOKb and htfOKb
+bool rawSell = (not na(resHit) or grabUp) and bearBar and trendOKs and htfOKs
 
 bool sigBuy  = rawBuy  and not rawSell and coolOK and barstate.isconfirmed
 bool sigSell = rawSell and not rawBuy  and coolOK and barstate.isconfirmed
@@ -384,9 +403,9 @@ plotshape(showArrow and sigSell, title = "SELL", style = shape.triangledown, loc
 var table t = na
 if showPanel and barstate.islast
     if na(t)
-        t := table.new(position.bottom_right, 1, 3, border_width = 1)
+        t := table.new(position.bottom_right, 1, 4, border_width = 1)
     else
-        table.clear(t, 0, 0, 0, 2)
+        table.clear(t, 0, 0, 0, 3)
     color bg = color.new(color.white, 90)
     string ageTx = na(sBar) ? "" : (str.tostring(bar_index - sBar) + " candle purana")
     string r1 = sideTx == "" ? "Abhi koi signal nahi" : ("Aakhri signal: " + sideTx + "   (" + ageTx + ")")
@@ -395,6 +414,9 @@ if showPanel and barstate.islast
     table.cell(t, 0, 0, r1, bgcolor = bg, text_color = sideTx == "BUY" ? cBuy : sideTx == "SELL" ? cSell : color.gray, text_size = size.normal)
     table.cell(t, 0, 1, r2, bgcolor = bg, text_color = sLive ? (sDir > 0 ? cBuy : cSell) : color.gray, text_size = size.normal)
     table.cell(t, 0, 2, r3, bgcolor = bg, text_color = color.black, text_size = size.small)
+    // Bara timeframe kya keh raha hai — aur us ka matlab kya hai
+    string r4 = not useHtf ? "HTF filter band (har taraf ke signal aayenge)" : (htfTF + " trend: " + (htfDir == 1 ? "UP — sirf BUY milenge" : htfDir == -1 ? "DOWN — sirf SELL milenge" : "saaf nahi — koi signal nahi"))
+    table.cell(t, 0, 3, r4, bgcolor = bg, text_color = not useHtf ? color.gray : (htfDir == 1 ? cBuy : htfDir == -1 ? cSell : color.gray), text_size = size.small)
 
 // ============================================================================
 //  ALERTS
