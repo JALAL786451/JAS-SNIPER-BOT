@@ -8,8 +8,8 @@
 //    3. Liquidity Grab              (shaded hissa + "LG" label)
 //    4. BUY / SELL signal           (teer + Entry / SL / TP1 / TP2, aur halat:
 //                                    chal raha hai / SL laga / TP mil gaya)
-//  Saath mein MA 20 / 100 / 200 — sirf dekhne ke liye, signal in se
-//  nahi banta. Signal ka trend filter alag EMA(50) hai (kaali line).
+//  Saath mein MA 20 / 100 / 200 aur Bollinger Bands — sirf dekhne ke liye,
+//  signal in se nahi banta. Signal ka trend filter alag EMA(50) hai (kaali).
 //
 //  JO IS MEIN NAHI HAI (jaan boojh kar):
 //    - Koi RSI / Stochastic / overbought-oversold
@@ -83,6 +83,15 @@ cMa2     = input.color(color.new(color.maroon, 0), "MA 100 rang", group = g7)
 cMa3     = input.color(color.new(color.gray,   0), "MA 200 rang", group = g7)
 showMaTag = input.bool(true, "Har MA par us ka naam likhen", group = g7)
 
+g8 = "8 · Bollinger Bands"
+showBB  = input.bool(true, "Bollinger Bands dikhayen", group = g8)
+bbLen   = input.int(20, "BB length", minval = 2, group = g8)
+bbMult  = input.float(2.0, "BB standard deviation", step = 0.1, minval = 0.5, group = g8)
+bbFill  = input.bool(true, "Bands ke darmiyan halka rang bharen", group = g8)
+cBbMid  = input.color(color.new(color.blue,  40), "BB beech ki line", group = g8)
+cBbBand = input.color(color.new(color.blue,  20), "BB upar/neeche ki lines", group = g8)
+cBbFill = input.color(color.new(color.blue,  93), "BB ke andar ka rang", group = g8)
+
 // ============================================================================
 //  BUNYADI HISAAB
 // ============================================================================
@@ -118,6 +127,22 @@ if showMAs and showMaTag and barstate.islast
         mTag3 := label.new(bar_index + 3, ma3, str.tostring(ma3Len), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(color.gray, 30), textcolor = color.white, size = size.tiny)
     else
         label.set_xy(mTag3, bar_index + 3, ma3)
+
+// ============================================================================
+//  BOLLINGER BANDS — beech ki SMA aur us se upar/neeche 2 standard deviation.
+//  Bands sikurr jayen = market thandi (bara move aane wala ho sakta hai),
+//  bands phail jayen = market garam. Ye sirf dekhne ke liye hain; signal in
+//  se nahi banta.
+// ============================================================================
+float bbBasis = ta.sma(close, bbLen)
+float bbDev   = bbMult * ta.stdev(close, bbLen)
+float bbUpper = bbBasis + bbDev
+float bbLower = bbBasis - bbDev
+
+pBbU = plot(showBB ? bbUpper : na, "BB upper",  color = cBbBand, linewidth = 1)
+pBbL = plot(showBB ? bbLower : na, "BB lower",  color = cBbBand, linewidth = 1)
+plot(showBB ? bbBasis : na, "BB middle", color = cBbMid, linewidth = 1, style = plot.style_line)
+fill(pBbU, pBbL, color = (showBB and bbFill) ? cBbFill : na, title = "BB fill")
 
 // ============================================================================
 //  1 · ZONES (pivot high = resistance, pivot low = support)
