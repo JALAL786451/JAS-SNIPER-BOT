@@ -10,8 +10,9 @@
 //
 //  Har reversal pattern ke liye:
 //    - Neckline khinchti hai (H&S mein tirchi bhi ho sakti hai)
-//    - Breakout hone par "CONFIRMED" label + alert
-//    - Measured target (pattern ki oonchai neckline se aage naapi hui)
+//    - Neckline tootne par poora trade plan: BUY/SELL, Entry, SL, TP, R:R
+//      (SL pattern ke sire se zara aage, TP measured target par)
+//    - Teen lines chart par: neeli ENTRY, laal SL, hari TP
 //
 //  ZAROORI: pivot (swing) pivRight bars baad confirm hota hai, is liye
 //  pattern hamesha thora sa BAAD mein nazar aata hai. Ye repaint se bachne
@@ -45,7 +46,11 @@ gC = "4 · Confirmation"
 expireBars = input.int(60, "Itne bars mein confirm na ho to pattern cancel", minval = 5, group = gC)
 useClose   = input.bool(true, "Neckline break sirf CLOSE se gina jaye", group = gC)
 
-gD = "5 · Display"
+gR = "5 · Trade plan (SL / TP)"
+slBufATR = input.float(0.25, "SL, pattern ke sire se itna aage (x ATR)", step = 0.05, minval = 0.0, group = gR)
+showPlan = input.bool(true, "BUY/SELL plan box aur Entry/SL/TP lines dikhayen", group = gR)
+
+gD = "6 · Display"
 showTarget = input.bool(true,  "Measured target line dikhayen", group = gD)
 showPoints = input.bool(true,  "Pattern ke points par labels", group = gD)
 showPanel  = input.bool(true,  "Info panel dikhayen", group = gD)
@@ -154,8 +159,13 @@ var float   patHeight = na       // pattern ki oonchai (target ke liye)
 var int     patBar    = na       // kab mila
 var bool    patDone   = false    // breakout ho chuka?
 var float   patTgt    = na
+var float   patExt    = na       // pattern ka sira (top ki choti / bottom ka talwa) — SL isi se aage lagta hai
+var float   patEntry  = na
+var float   patSL     = na
 var line[]  patLines  = array.new_line()
 var label[] patLbls   = array.new_label()
+var line[]  planLines = array.new_line()
+var label[] planLbls  = array.new_label()
 var line    tgtLine   = na
 var label   tgtLbl    = na
 
@@ -182,6 +192,7 @@ float  dNeckP  = na
 int    dNeckB  = na
 float  dNeckS  = na
 float  dHeight = na
+float  dExt    = na
 
 if newPivot
     // ---------------- Double Top ----------------
@@ -200,6 +211,7 @@ if newPivot
                 dNeckB  := f_bar(1)
                 dNeckS  := 0.0
                 dHeight := math.avg(a, b) - m
+                dExt    := math.max(a, b)
 
     // ---------------- Double Bottom ----------------
     if useDT and f_cnt() >= 3 and dName == ""
@@ -216,6 +228,7 @@ if newPivot
                 dNeckB  := f_bar(1)
                 dNeckS  := 0.0
                 dHeight := m - math.avg(a, b)
+                dExt    := math.min(a, b)
 
     // ---------------- Head & Shoulders ----------------
     // pivots: [4] LS(high) [3] low [2] head(high) [1] low [0] RS(high)
@@ -239,6 +252,7 @@ if newPivot
                 dNeckB  := b2
                 dNeckS  := slope
                 dHeight := hd - (n1 + slope * (f_bar(2) - b1))
+                dExt    := hd
 
     // ---------------- Inverse Head & Shoulders ----------------
     if useHS and f_cnt() >= 5 and dName == ""
@@ -261,6 +275,7 @@ if newPivot
                 dNeckB  := b2
                 dNeckS  := slope
                 dHeight := (n1 + slope * (f_bar(2) - b1)) - hd
+                dExt    := hd
 
 // ============================================================================
 //  NAYA PATTERN MILA -> purana mita kar naya draw karo
@@ -270,6 +285,10 @@ if dName != ""
         line.delete(array.shift(patLines))
     while array.size(patLbls) > 0
         label.delete(array.shift(patLbls))
+    while array.size(planLines) > 0
+        line.delete(array.shift(planLines))
+    while array.size(planLbls) > 0
+        label.delete(array.shift(planLbls))
     if not na(tgtLine)
         line.delete(tgtLine)
         tgtLine := na
@@ -283,9 +302,12 @@ if dName != ""
     patNeckB  := dNeckB
     patNeckS  := dNeckS
     patHeight := dHeight
+    patExt    := dExt
     patBar    := bar_index
     patDone   := false
     patTgt    := na
+    patEntry  := na
+    patSL     := na
     justFound := true
 
     color pc = patDir > 0 ? colBull : colBear
@@ -331,13 +353,33 @@ if patName != "" and not patDone and not na(neckNow)
         patTgt  := patDir > 0 ? (neckNow + patHeight) : (neckNow - patHeight)
         color pc = patDir > 0 ? colBull : colBear
 
-        array.push(patLbls, label.new(bar_index, close, "CONFIRMED\n" + patName + "\nTarget " + f_px(patTgt), xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar, style = patDir > 0 ? label.style_label_up : label.style_label_down, color = pc, textcolor = color.white, size = size.small))
+        // --- trade plan: entry abhi ka bhao, SL pattern ke sire se aage, TP measured target
+        patEntry := close
+        patSL    := patDir > 0 ? (patExt - slBufATR * atr) : (patExt + slBufATR * atr)
+        string side = patDir > 0 ? "BUY" : "SELL"
+        float  risk = math.abs(patEntry - patSL)
+        float  rew  = math.abs(patTgt - patEntry)
+        string rrTx = risk > 0 ? str.tostring(rew / risk, "#.##") : "-"
 
-        if showTarget
+        array.push(patLbls, label.new(bar_index, close, side + " — " + patName + "\nEntry " + f_px(patEntry) + "\nSL " + f_px(patSL) + "\nTP " + f_px(patTgt) + "\nR:R  1 : " + rrTx, xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar, style = patDir > 0 ? label.style_label_up : label.style_label_down, color = pc, textcolor = color.white, size = size.normal))
+
+        // Entry / SL / TP ki teen lines — taake nazar se hi pata chale kahan se kahan tak
+        if showPlan
+            line eL = line.new(bar_index, patEntry, bar_index + 40, patEntry, xloc = xloc.bar_index, color = color.new(color.blue, 0), width = 2)
+            line sL = line.new(bar_index, patSL,    bar_index + 40, patSL,    xloc = xloc.bar_index, color = colBear, width = 2, style = line.style_dashed)
+            line tL = line.new(bar_index, patTgt,   bar_index + 40, patTgt,   xloc = xloc.bar_index, color = colBull, width = 2, style = line.style_dashed)
+            array.push(planLines, eL)
+            array.push(planLines, sL)
+            array.push(planLines, tL)
+            array.push(planLbls, label.new(bar_index + 40, patEntry, "ENTRY " + f_px(patEntry), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(color.blue, 20), textcolor = color.white, size = size.small))
+            array.push(planLbls, label.new(bar_index + 40, patSL, "SL " + f_px(patSL), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colBear, 20), textcolor = color.white, size = size.small))
+            array.push(planLbls, label.new(bar_index + 40, patTgt, "TP " + f_px(patTgt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colBull, 20), textcolor = color.white, size = size.small))
+
+        if showTarget and not showPlan
             tgtLine := line.new(bar_index, patTgt, bar_index + 40, patTgt, xloc = xloc.bar_index, color = pc, width = 1, style = line.style_dotted)
             tgtLbl  := label.new(bar_index + 40, patTgt, "Target " + f_px(patTgt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(pc, 30), textcolor = color.white, size = size.tiny)
 
-        alert(patName + " CONFIRMED — " + syminfo.ticker + " " + timeframe.period + " | break " + f_px(neckNow) + " | target " + f_px(patTgt), alert.freq_once_per_bar_close)
+        alert(side + " — " + patName + " CONFIRMED " + syminfo.ticker + " " + timeframe.period + " | Entry " + f_px(patEntry) + " | SL " + f_px(patSL) + " | TP " + f_px(patTgt) + " | R:R 1:" + rrTx, alert.freq_once_per_bar_close)
 
 // miyaad khatam — confirm nahi hua to pattern hata do
 if patName != "" and not patDone and not na(patBar)
@@ -346,6 +388,10 @@ if patName != "" and not patDone and not na(patBar)
             line.delete(array.shift(patLines))
         while array.size(patLbls) > 0
             label.delete(array.shift(patLbls))
+        while array.size(planLines) > 0
+            line.delete(array.shift(planLines))
+        while array.size(planLbls) > 0
+            label.delete(array.shift(planLbls))
         patName := ""
         patDir  := 0
 
@@ -478,22 +524,26 @@ if triName != "" and triBrk == 0
 var table pTbl = na
 if showPanel and barstate.islast
     if na(pTbl)
-        pTbl := table.new(f_pos(panelPos), 1, 4, border_width = 1)
+        pTbl := table.new(f_pos(panelPos), 1, 5, border_width = 1)
     else
-        table.clear(pTbl, 0, 0, 0, 3)
+        table.clear(pTbl, 0, 0, 0, 4)
 
     color bgc = color.new(color.white, 92)
 
     table.cell(pTbl, 0, 0, "AUTO CHART PATTERNS  |  " + timeframe.period, bgcolor = color.new(color.white, 88), text_color = color.black, text_size = size.small)
 
-    string row1 = patName == "" ? "Reversal pattern: koi nahi" : ("Reversal: " + patName + (patDone ? "  ✅ CONFIRMED" : "  ⏳ intezaar (neckline break)"))
-    table.cell(pTbl, 0, 1, row1, bgcolor = bgc, text_color = patName == "" ? color.gray : (patDir > 0 ? colBull : colBear), text_size = size.small)
+    // Sab se ahem line: abhi karna kya hai
+    string row1 = patName == "" ? "SIGNAL: koi nahi — intezaar" : (patDone ? ((patDir > 0 ? "SIGNAL: BUY" : "SIGNAL: SELL") + "  (" + patName + ")") : ("Ban raha hai: " + patName + " — abhi entry nahi"))
+    table.cell(pTbl, 0, 1, row1, bgcolor = bgc, text_color = patName == "" ? color.gray : (patDir > 0 ? colBull : colBear), text_size = size.normal)
 
-    string row2 = patName == "" ? "—" : ("Neckline " + f_px(f_neckAt(bar_index)) + (patDone and not na(patTgt) ? "   Target " + f_px(patTgt) : "   Target: break ke baad"))
+    string row2 = (patName != "" and patDone and not na(patSL)) ? ("Entry " + f_px(patEntry) + "    SL " + f_px(patSL) + "    TP " + f_px(patTgt)) : (patName == "" ? "—" : ("Entry tab jab neckline " + f_px(f_neckAt(bar_index)) + " tootay"))
     table.cell(pTbl, 0, 2, row2, bgcolor = bgc, text_color = color.black, text_size = size.small)
 
-    string row3 = triName == "" ? "Triangle/Wedge: koi nahi" : ("Shape: " + triName + (triBrk == 1 ? "  ↑ break" : triBrk == -1 ? "  ↓ break" : "  (andar hai)"))
-    table.cell(pTbl, 0, 3, row3, bgcolor = bgc, text_color = triName == "" ? color.gray : color.black, text_size = size.small)
+    string row3 = (patName != "" and patDone and not na(patSL)) ? ("Risk " + f_px(math.abs(patEntry - patSL)) + "   Reward " + f_px(math.abs(patTgt - patEntry))) : ("Neckline " + (patName == "" ? "—" : f_px(f_neckAt(bar_index))))
+    table.cell(pTbl, 0, 3, row3, bgcolor = bgc, text_color = color.black, text_size = size.small)
+
+    string row4 = triName == "" ? "Shape: koi nahi" : ("Shape: " + triName + (triBrk == 1 ? "  ↑ break" : triBrk == -1 ? "  ↓ break" : "  (andar hai)"))
+    table.cell(pTbl, 0, 4, row4, bgcolor = bgc, text_color = triName == "" ? color.gray : color.black, text_size = size.small)
 
 // ============================================================================
 //  ALERT CONDITIONS (TradingView ke alert menu ke liye)
