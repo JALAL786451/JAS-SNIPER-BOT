@@ -28,16 +28,17 @@ indicator("SMC Simple — Zones + FVG + Liquidity Grab", overlay = true, max_box
 // ============================================================================
 g1 = "1 · Zones (support / resistance)"
 pivLen    = input.int(5, "Swing (pivot) bars", minval = 2, group = g1)
-zoneMax   = input.int(6, "Kitne zones chart par rahen", minval = 1, maxval = 20, group = g1)
+zoneMax   = input.int(4, "Kitne zones chart par rahen", minval = 1, maxval = 20, group = g1)
 zonePad   = input.float(0.25, "Zone ki mota'i (x ATR)", step = 0.05, minval = 0.05, group = g1)
 showZones = input.bool(true, "Zones dikhayen", group = g1)
 
 g2 = "2 · FVG (fair value gap)"
 showFVG = input.bool(true, "FVG dikhayen", group = g2)
-fvgMax  = input.int(6, "Kitne FVG chart par rahen", minval = 1, maxval = 20, group = g2)
+fvgMax  = input.int(3, "Kitne FVG chart par rahen", minval = 1, maxval = 20, group = g2)
 
 g3 = "3 · Liquidity Grab"
 showLGB = input.bool(true, "Liquidity grab ka label dikhayen", group = g3)
+lgMax   = input.int(2, "Kitne LG labels chart par rahen (purane khud mit jayenge)", minval = 1, maxval = 20, group = g3)
 
 g4 = "4 · BUY / SELL signal"
 useTrend  = input.bool(true, "EMA trend filter chalu", group = g4)
@@ -51,6 +52,8 @@ slBuf    = input.float(0.35, "SL buffer (x ATR)", step = 0.05, minval = 0.0, gro
 tp1R     = input.float(1.0, "TP1 (R)", step = 0.1, minval = 0.2, group = g5)
 tp2R     = input.float(2.0, "TP2 (R)", step = 0.1, minval = 0.2, group = g5)
 showPlan = input.bool(true, "Entry / SL / TP lines dikhayen", group = g5)
+onlyLast = input.bool(true, "SIRF aakhri signal chart par rakhen (purane mita dein)", group = g5)
+showArrow = input.bool(true, "Purane signals ke chhote teer rehne dein", group = g5)
 showPanel = input.bool(true, "Chhota panel dikhayen", group = g5)
 
 g6 = "6 · Rang"
@@ -180,11 +183,17 @@ if not na(pl)
 bool grabUp = not na(lastPH) and high > lastPH and close < lastPH   // upar ka jhoota break -> bearish
 bool grabDn = not na(lastPL) and low  < lastPL and close > lastPL   // neeche ka jhoota break -> bullish
 
+var label[] lgLbls = array.new_label()
+
 if showLGB and grabUp and barstate.isconfirmed
-    label.new(bar_index, high, "LG", xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_label_down, color = color.new(color.red, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: upar stops liye, wapas neeche band hui")
+    array.push(lgLbls, label.new(bar_index, high, "LG", xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_label_down, color = color.new(color.red, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: upar stops liye, wapas neeche band hui"))
 
 if showLGB and grabDn and barstate.isconfirmed
-    label.new(bar_index, low, "LG", xloc = xloc.bar_index, yloc = yloc.belowbar, style = label.style_label_up, color = color.new(color.teal, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: neeche stops liye, wapas upar band hui")
+    array.push(lgLbls, label.new(bar_index, low, "LG", xloc = xloc.bar_index, yloc = yloc.belowbar, style = label.style_label_up, color = color.new(color.teal, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: neeche stops liye, wapas upar band hui"))
+
+// sirf aakhri chand LG labels rakho, baqi mita do
+while array.size(lgLbls) > lgMax
+    label.delete(array.shift(lgLbls))
 
 // ============================================================================
 //  4 · BUY / SELL SIGNAL
@@ -215,6 +224,7 @@ var float   sTP1    = na
 var float   sTP2    = na
 var line[]  planLn  = array.new_line()
 var label[] planLb  = array.new_label()
+var label   sigLbl  = na
 
 if sigBuy or sigSell
     lastSigBar := bar_index
@@ -235,7 +245,9 @@ if sigBuy or sigSell
     sTP2 := sigBuy ? (sEntry + r * tp2R) : (sEntry - r * tp2R)
 
     string why = sigBuy ? (not na(supHit) ? "support zone" : "liquidity grab") : (not na(resHit) ? "resistance zone" : "liquidity grab")
-    label.new(bar_index, close, sideTx + "  (" + why + ")\nEntry " + f_px(sEntry) + "\nSL " + f_px(sSL) + "\nTP1 " + f_px(sTP1) + "\nTP2 " + f_px(sTP2), xloc = xloc.bar_index, yloc = sigBuy ? yloc.belowbar : yloc.abovebar, style = sigBuy ? label.style_label_up : label.style_label_down, color = sc, textcolor = color.white, size = size.normal)
+    if onlyLast and not na(sigLbl)
+        label.delete(sigLbl)
+    sigLbl := label.new(bar_index, close, sideTx + "  (" + why + ")\nEntry " + f_px(sEntry) + "\nSL " + f_px(sSL) + "\nTP1 " + f_px(sTP1) + "\nTP2 " + f_px(sTP2), xloc = xloc.bar_index, yloc = sigBuy ? yloc.belowbar : yloc.abovebar, style = sigBuy ? label.style_label_up : label.style_label_down, color = sc, textcolor = color.white, size = size.normal)
 
     if showPlan
         line l1 = line.new(bar_index, sEntry, bar_index + 30, sEntry, xloc = xloc.bar_index, color = color.new(color.blue, 0), width = 2)
@@ -253,8 +265,8 @@ if sigBuy or sigSell
 
     alert(sideTx + " — " + syminfo.ticker + " " + timeframe.period + " | Entry " + f_px(sEntry) + " | SL " + f_px(sSL) + " | TP1 " + f_px(sTP1) + " | TP2 " + f_px(sTP2), alert.freq_once_per_bar_close)
 
-plotshape(sigBuy,  title = "BUY",  style = shape.triangleup,   location = location.belowbar, color = cBuy,  size = size.small)
-plotshape(sigSell, title = "SELL", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.small)
+plotshape(showArrow and sigBuy,  title = "BUY",  style = shape.triangleup,   location = location.belowbar, color = cBuy,  size = size.tiny)
+plotshape(showArrow and sigSell, title = "SELL", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.tiny)
 
 // ============================================================================
 //  CHHOTA PANEL — sirf teen line
