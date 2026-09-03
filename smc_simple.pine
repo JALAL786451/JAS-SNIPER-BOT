@@ -15,11 +15,14 @@
 //    - Koi RSI / Stochastic / overbought-oversold
 //    - Koi score panel, koi multi-timeframe dashboard, koi teacher panel
 //
-//  Signal ka usool (bohot seedha):
-//    BUY  = (support zone ko chua  YA  neeche liquidity grab hui)
+//  Signal ka usool — chaar mein se koi ek rasta + candle ka rukh:
+//    BUY  = (support zone chua  YA  neeche liquidity grab  YA  swing high
+//            toota  YA  MA20 par wapas aa kar palta)
 //           + candle bullish band hui  + (chahen to) EMA se upar
 //           + (chahen to) bara timeframe bhi UP ho
 //    SELL = ulta.
+//    Pehle do rasty "pullback" wale hain (price level par wapas aaye), aakhri
+//    do "continuation" wale — jab market seedhi ek taraf bhaage.
 //    Entry us candle ka close, SL zone/grab ke neeche + buffer, TP 1R aur 2R.
 //
 //  Zones aur grabs pivot par bante hain, jo pivot bars baad pakke hote hain —
@@ -53,6 +56,14 @@ coolBars  = input.int(8, "Do signals ke darmiyan kam se kam bars", minval = 0, g
 // Bara timeframe (HTF) ki direction. Isse chota (chart ka) TF sirf usi taraf
 // signal deta hai — jaise 1H par sirf BUY jab 4H bhi UP ho. Yehi "do
 // timeframe" ka usool hai: bara TF sirf direction, chota TF sirf entry.
+// Trend ke saath chalne wali entry (continuation). Zone/grab wali logic sirf
+// tab chalti hai jab price level par wapas aaye — jab market seedhi ek taraf
+// bhaage to wo khaali reh jati hai. Ye do rasty us khali jagah ko bharte hain.
+useBreak  = input.bool(true,  "Continuation: swing high/low tootne par entry", group = g4)
+brkBufAtr = input.float(0.10, "Break buffer (x ATR)", step = 0.05, minval = 0.0, group = g4)
+useRetest = input.bool(true,  "Continuation: MA20 par wapas aa kar palatne par entry", group = g4)
+retestAtr = input.float(0.50, "MA20 se kitna qareeb (x ATR)", step = 0.05, minval = 0.05, group = g4)
+
 useHtf   = input.bool(false, "Higher-timeframe filter chalu", group = g4)
 htfTF    = input.timeframe("240", "Bara timeframe (misal: 240 = 4H, D = 1 din)", group = g4)
 htfEmaLen = input.int(50, "HTF EMA length", minval = 5, group = g4)
@@ -308,8 +319,21 @@ bool trendOKs = not useTrend or close < ema
 var int lastSigBar = na
 bool coolOK = na(lastSigBar) or (bar_index - lastSigBar) >= coolBars
 
-bool rawBuy  = (not na(supHit) or grabDn) and bullBar and trendOKb and htfOKb
-bool rawSell = (not na(resHit) or grabUp) and bearBar and trendOKs and htfOKs
+// --- Continuation 1: pichli swing high/low tootna (breakout)
+bool brkUp = useBreak and not na(lastPH) and close > lastPH + brkBufAtr * atr
+bool brkDn = useBreak and not na(lastPL) and close < lastPL - brkBufAtr * atr
+
+// --- Continuation 2: trend mein price MA20 tak wapas aaya aur wahan se palta
+bool retUp = useRetest and showMAs and close > ma1 and math.abs(low  - ma1) <= retestAtr * atr
+bool retDn = useRetest and showMAs and close < ma1 and math.abs(high - ma1) <= retestAtr * atr
+
+// Chaar rasty: support/resistance zone, liquidity grab, breakout, MA20 retest.
+// Har rasty ke liye candle ka rukh aur (chahen to) trend filter phir bhi zaroori.
+bool trigBuy  = not na(supHit) or grabDn or brkUp or retUp
+bool trigSell = not na(resHit) or grabUp or brkDn or retDn
+
+bool rawBuy  = trigBuy  and bullBar and trendOKb and htfOKb
+bool rawSell = trigSell and bearBar and trendOKs and htfOKs
 
 bool sigBuy  = rawBuy  and not rawSell and coolOK and barstate.isconfirmed
 bool sigSell = rawSell and not rawBuy  and coolOK and barstate.isconfirmed
@@ -345,13 +369,14 @@ if sigBuy or sigSell
     sStat   := "CHAL RAHA HAI"
     sEntry  := close
 
-    float anchor = sigBuy ? (na(supHit) ? low : math.min(low, supHit)) : (na(resHit) ? high : math.max(high, resHit))
+    // Zone wali entry mein SL zone ke paar, warna is candle ke wick ke paar.
+    float anchor = sigBuy ? (na(supHit) ? math.min(low, low[1]) : math.min(low, supHit)) : (na(resHit) ? math.max(high, high[1]) : math.max(high, resHit))
     sSL  := sigBuy ? (anchor - slBuf * atr) : (anchor + slBuf * atr)
     float r = math.abs(sEntry - sSL)
     sTP1 := sigBuy ? (sEntry + r * tp1R) : (sEntry - r * tp1R)
     sTP2 := sigBuy ? (sEntry + r * tp2R) : (sEntry - r * tp2R)
 
-    string why = sigBuy ? (not na(supHit) ? "support zone" : "liquidity grab") : (not na(resHit) ? "resistance zone" : "liquidity grab")
+    string why = sigBuy ? (not na(supHit) ? "support zone" : grabDn ? "liquidity grab" : brkUp ? "breakout" : "MA20 retest") : (not na(resHit) ? "resistance zone" : grabUp ? "liquidity grab" : brkDn ? "breakdown" : "MA20 retest")
     if onlyLast and not na(sigLbl)
         label.delete(sigLbl)
     sigLbl := label.new(bar_index, close, sideTx + "  (" + why + ")\nEntry " + f_px(sEntry) + "\nSL " + f_px(sSL) + "\nTP1 " + f_px(sTP1) + "\nTP2 " + f_px(sTP2), xloc = xloc.bar_index, yloc = sigBuy ? yloc.belowbar : yloc.abovebar, style = sigBuy ? label.style_label_up : label.style_label_down, color = sc, textcolor = color.white, size = size.normal)
