@@ -18,8 +18,7 @@
 //  ki qeemat hai — jo indicator turant pattern dikhate hain wo aksar baad
 //  mein apna faisla badal dete hain.
 // ============================================================================
-indicator("Auto Chart Patterns — JAS v1", overlay = true,
-     max_lines_count = 500, max_labels_count = 500)
+indicator("Auto Chart Patterns — JAS v1", overlay = true, max_lines_count = 500, max_labels_count = 500)
 
 // ============================================================================
 //  INPUTS
@@ -50,8 +49,7 @@ gD = "5 · Display"
 showTarget = input.bool(true,  "Measured target line dikhayen", group = gD)
 showPoints = input.bool(true,  "Pattern ke points par labels", group = gD)
 showPanel  = input.bool(true,  "Info panel dikhayen", group = gD)
-panelPos   = input.string("Bottom Left", "Panel ki jagah",
-     options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gD)
+panelPos   = input.string("Bottom Left", "Panel ki jagah", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gD)
 colBull = input.color(color.new(color.teal,   0), "Bullish rang", group = gD)
 colBear = input.color(color.new(color.red,    0), "Bearish rang", group = gD)
 colNeut = input.color(color.new(color.gray,  30), "Neutral rang", group = gD)
@@ -141,9 +139,7 @@ if showZig and newPivot
         line.delete(array.shift(zzL))
     if array.size(pvP) > 1
         for i = 1 to array.size(pvP) - 1
-            line ln = line.new(array.get(pvB, i - 1), array.get(pvP, i - 1),
-                               array.get(pvB, i),     array.get(pvP, i),
-                               xloc = xloc.bar_index, color = colNeut, width = 1)
+            line ln = line.new(array.get(pvB, i - 1), array.get(pvP, i - 1), array.get(pvB, i),     array.get(pvP, i), xloc = xloc.bar_index, color = colNeut, width = 1)
             array.push(zzL, ln)
 
 // ============================================================================
@@ -297,15 +293,13 @@ if dName != ""
     // pattern ke points ko jorne wali lines
     int pts = (patName == "Head & Shoulders" or patName == "Inverse Head & Shoulders") ? 5 : 3
     for i = 1 to pts - 1
-        line ln = line.new(f_bar(i), f_price(i), f_bar(i - 1), f_price(i - 1),
-                           xloc = xloc.bar_index, color = pc, width = 2)
+        line ln = line.new(f_bar(i), f_price(i), f_bar(i - 1), f_price(i - 1), xloc = xloc.bar_index, color = pc, width = 2)
         array.push(patLines, ln)
 
     // neckline (dono taraf thori si barhi hui)
     int   nb1 = f_bar(pts - 1)
     int   nb2 = bar_index + 20
-    line nl = line.new(nb1, f_neckAt(nb1), nb2, f_neckAt(nb2),
-                       xloc = xloc.bar_index, color = pc, width = 1, style = line.style_dashed)
+    line nl = line.new(nb1, f_neckAt(nb1), nb2, f_neckAt(nb2), xloc = xloc.bar_index, color = pc, width = 1, style = line.style_dashed)
     array.push(patLines, nl)
 
     // points par chhote labels
@@ -319,14 +313,9 @@ if dName != ""
             array.push(patLbls, label.new(f_bar(0), f_price(0), "2", xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar, style = patDir > 0 ? label.style_label_up : label.style_label_down, color = pc, textcolor = color.white, size = size.tiny))
 
     // naam ka label
-    array.push(patLbls, label.new(f_bar(0), f_price(0),
-         patName + "  (" + (patDir > 0 ? "bullish" : "bearish") + ")",
-         xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar,
-         style = patDir > 0 ? label.style_label_up : label.style_label_down,
-         color = color.new(pc, 20), textcolor = color.white, size = size.small))
+    array.push(patLbls, label.new(f_bar(0), f_price(0), patName + "  (" + (patDir > 0 ? "bullish" : "bearish") + ")", xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar, style = patDir > 0 ? label.style_label_up : label.style_label_down, color = color.new(pc, 20), textcolor = color.white, size = size.small))
 
-    alert(patName + " bana — " + syminfo.ticker + " " + timeframe.period +
-          " | neckline " + f_px(f_neckAt(bar_index)), alert.freq_once_per_bar_close)
+    alert(patName + " bana — " + syminfo.ticker + " " + timeframe.period + " | neckline " + f_px(f_neckAt(bar_index)), alert.freq_once_per_bar_close)
 
 // ============================================================================
 //  CONFIRMATION: neckline break
@@ -342,23 +331,13 @@ if patName != "" and not patDone and not na(neckNow)
         patTgt  := patDir > 0 ? (neckNow + patHeight) : (neckNow - patHeight)
         color pc = patDir > 0 ? colBull : colBear
 
-        array.push(patLbls, label.new(bar_index, close,
-             "CONFIRMED\n" + patName + "\nTarget " + f_px(patTgt),
-             xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar,
-             style = patDir > 0 ? label.style_label_up : label.style_label_down,
-             color = pc, textcolor = color.white, size = size.small))
+        array.push(patLbls, label.new(bar_index, close, "CONFIRMED\n" + patName + "\nTarget " + f_px(patTgt), xloc = xloc.bar_index, yloc = patDir > 0 ? yloc.belowbar : yloc.abovebar, style = patDir > 0 ? label.style_label_up : label.style_label_down, color = pc, textcolor = color.white, size = size.small))
 
         if showTarget
-            tgtLine := line.new(bar_index, patTgt, bar_index + 40, patTgt,
-                                xloc = xloc.bar_index, color = pc, width = 1, style = line.style_dotted)
-            tgtLbl  := label.new(bar_index + 40, patTgt, "Target " + f_px(patTgt),
-                                 xloc = xloc.bar_index, yloc = yloc.price,
-                                 style = label.style_label_left, color = color.new(pc, 30),
-                                 textcolor = color.white, size = size.tiny)
+            tgtLine := line.new(bar_index, patTgt, bar_index + 40, patTgt, xloc = xloc.bar_index, color = pc, width = 1, style = line.style_dotted)
+            tgtLbl  := label.new(bar_index + 40, patTgt, "Target " + f_px(patTgt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(pc, 30), textcolor = color.white, size = size.tiny)
 
-        alert(patName + " CONFIRMED — " + syminfo.ticker + " " + timeframe.period +
-              " | break " + f_px(neckNow) + " | target " + f_px(patTgt),
-              alert.freq_once_per_bar_close)
+        alert(patName + " CONFIRMED — " + syminfo.ticker + " " + timeframe.period + " | break " + f_px(neckNow) + " | target " + f_px(patTgt), alert.freq_once_per_bar_close)
 
 // miyaad khatam — confirm nahi hua to pattern hata do
 if patName != "" and not patDone and not na(patBar)
@@ -467,16 +446,10 @@ if useTri and newPivot and f_cnt() >= 4
             if not na(triLbl)
                 label.delete(triLbl)
 
-            triUL := line.new(hb1, h1, hb2, h2, xloc = xloc.bar_index,
-                              color = colBear, width = 1, extend = extend.right)
-            triLL := line.new(lb1, l1, lb2, l2, xloc = xloc.bar_index,
-                              color = colBull, width = 1, extend = extend.right)
-            triLbl := label.new(bar_index, high, triName, xloc = xloc.bar_index,
-                                yloc = yloc.abovebar, style = label.style_label_down,
-                                color = color.new(colNeut, 20), textcolor = color.white,
-                                size = size.small)
-            alert(triName + " bana — " + syminfo.ticker + " " + timeframe.period,
-                  alert.freq_once_per_bar_close)
+            triUL := line.new(hb1, h1, hb2, h2, xloc = xloc.bar_index, color = colBear, width = 1, extend = extend.right)
+            triLL := line.new(lb1, l1, lb2, l2, xloc = xloc.bar_index, color = colBull, width = 1, extend = extend.right)
+            triLbl := label.new(bar_index, high, triName, xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_label_down, color = color.new(colNeut, 20), textcolor = color.white, size = size.small)
+            alert(triName + " bana — " + syminfo.ticker + " " + timeframe.period, alert.freq_once_per_bar_close)
 
 // triangle/wedge ka breakout
 float triUpNow = na
@@ -491,19 +464,13 @@ if triName != "" and triBrk == 0
     if not na(triUpNow) and close > triUpNow
         triBrk     := 1
         justBrkUp  := true
-        label.new(bar_index, low, triName + "\nBREAKOUT ↑", xloc = xloc.bar_index,
-                  yloc = yloc.belowbar, style = label.style_label_up,
-                  color = colBull, textcolor = color.white, size = size.small)
-        alert(triName + " BREAKOUT UP — " + syminfo.ticker + " " + timeframe.period +
-              " | " + f_px(close), alert.freq_once_per_bar_close)
+        label.new(bar_index, low, triName + "\nBREAKOUT ↑", xloc = xloc.bar_index, yloc = yloc.belowbar, style = label.style_label_up, color = colBull, textcolor = color.white, size = size.small)
+        alert(triName + " BREAKOUT UP — " + syminfo.ticker + " " + timeframe.period + " | " + f_px(close), alert.freq_once_per_bar_close)
     else if not na(triLoNow) and close < triLoNow
         triBrk    := -1
         justBrkDn := true
-        label.new(bar_index, high, triName + "\nBREAKDOWN ↓", xloc = xloc.bar_index,
-                  yloc = yloc.abovebar, style = label.style_label_down,
-                  color = colBear, textcolor = color.white, size = size.small)
-        alert(triName + " BREAKDOWN — " + syminfo.ticker + " " + timeframe.period +
-              " | " + f_px(close), alert.freq_once_per_bar_close)
+        label.new(bar_index, high, triName + "\nBREAKDOWN ↓", xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_label_down, color = colBear, textcolor = color.white, size = size.small)
+        alert(triName + " BREAKDOWN — " + syminfo.ticker + " " + timeframe.period + " | " + f_px(close), alert.freq_once_per_bar_close)
 
 // ============================================================================
 //  INFO PANEL
@@ -517,25 +484,16 @@ if showPanel and barstate.islast
 
     color bgc = color.new(color.white, 92)
 
-    table.cell(pTbl, 0, 0, "AUTO CHART PATTERNS  |  " + timeframe.period,
-               bgcolor = color.new(color.white, 88), text_color = color.black, text_size = size.small)
+    table.cell(pTbl, 0, 0, "AUTO CHART PATTERNS  |  " + timeframe.period, bgcolor = color.new(color.white, 88), text_color = color.black, text_size = size.small)
 
-    string row1 = patName == "" ? "Reversal pattern: koi nahi" :
-                   ("Reversal: " + patName + (patDone ? "  ✅ CONFIRMED" : "  ⏳ intezaar (neckline break)"))
-    table.cell(pTbl, 0, 1, row1, bgcolor = bgc,
-               text_color = patName == "" ? color.gray : (patDir > 0 ? colBull : colBear),
-               text_size = size.small)
+    string row1 = patName == "" ? "Reversal pattern: koi nahi" : ("Reversal: " + patName + (patDone ? "  ✅ CONFIRMED" : "  ⏳ intezaar (neckline break)"))
+    table.cell(pTbl, 0, 1, row1, bgcolor = bgc, text_color = patName == "" ? color.gray : (patDir > 0 ? colBull : colBear), text_size = size.small)
 
-    string row2 = patName == "" ? "—" :
-                   ("Neckline " + f_px(f_neckAt(bar_index)) +
-                    (patDone and not na(patTgt) ? "   Target " + f_px(patTgt) : "   Target: break ke baad"))
+    string row2 = patName == "" ? "—" : ("Neckline " + f_px(f_neckAt(bar_index)) + (patDone and not na(patTgt) ? "   Target " + f_px(patTgt) : "   Target: break ke baad"))
     table.cell(pTbl, 0, 2, row2, bgcolor = bgc, text_color = color.black, text_size = size.small)
 
-    string row3 = triName == "" ? "Triangle/Wedge: koi nahi" :
-                   ("Shape: " + triName +
-                    (triBrk == 1 ? "  ↑ break" : triBrk == -1 ? "  ↓ break" : "  (andar hai)"))
-    table.cell(pTbl, 0, 3, row3, bgcolor = bgc,
-               text_color = triName == "" ? color.gray : color.black, text_size = size.small)
+    string row3 = triName == "" ? "Triangle/Wedge: koi nahi" : ("Shape: " + triName + (triBrk == 1 ? "  ↑ break" : triBrk == -1 ? "  ↓ break" : "  (andar hai)"))
+    table.cell(pTbl, 0, 3, row3, bgcolor = bgc, text_color = triName == "" ? color.gray : color.black, text_size = size.small)
 
 // ============================================================================
 //  ALERT CONDITIONS (TradingView ke alert menu ke liye)
@@ -545,3 +503,4 @@ alertcondition(justConfirmed and patDir ==  1,   "Bullish confirm",      "Auto C
 alertcondition(justConfirmed and patDir == -1,   "Bearish confirm",      "Auto Chart Patterns: bearish pattern confirm")
 alertcondition(justBrkUp,                        "Triangle breakout up", "Auto Chart Patterns: shape se upar breakout")
 alertcondition(justBrkDn,                        "Triangle breakdown",   "Auto Chart Patterns: shape se neeche breakdown")
+
