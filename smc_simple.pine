@@ -1,0 +1,282 @@
+//@version=5
+// ============================================================================
+//  SMC SIMPLE — Zones + FVG + Liquidity Grab + Buy/Sell
+//
+//  Sirf CHAAR cheezein chart par:
+//    1. Support / Resistance zones  (hare aur laal boxes)
+//    2. FVG — fair value gap        (halke grey boxes, bharne par khud mit-te)
+//    3. Liquidity Grab              ("LG" label — jhoota break jo wapas aa gaya)
+//    4. BUY / SELL signal           (teer + Entry / SL / TP1 / TP2)
+//
+//  JO IS MEIN NAHI HAI (jaan boojh kar):
+//    - Koi RSI / Stochastic / overbought-oversold
+//    - Koi score panel, koi multi-timeframe dashboard, koi teacher panel
+//
+//  Signal ka usool (bohot seedha):
+//    BUY  = (support zone ko chua  YA  neeche liquidity grab hui)
+//           + candle bullish band hui  + (chahen to) EMA se upar
+//    SELL = ulta.
+//    Entry us candle ka close, SL zone/grab ke neeche + buffer, TP 1R aur 2R.
+//
+//  Zones aur grabs pivot par bante hain, jo pivot bars baad pakke hote hain —
+//  is liye zone thora baad mein nazar aata hai, magar baad mein badalta nahi.
+// ============================================================================
+indicator("SMC Simple — Zones + FVG + Liquidity Grab", overlay = true, max_boxes_count = 200, max_lines_count = 200, max_labels_count = 300)
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+g1 = "1 · Zones (support / resistance)"
+pivLen    = input.int(5, "Swing (pivot) bars", minval = 2, group = g1)
+zoneMax   = input.int(6, "Kitne zones chart par rahen", minval = 1, maxval = 20, group = g1)
+zonePad   = input.float(0.25, "Zone ki mota'i (x ATR)", step = 0.05, minval = 0.05, group = g1)
+showZones = input.bool(true, "Zones dikhayen", group = g1)
+
+g2 = "2 · FVG (fair value gap)"
+showFVG = input.bool(true, "FVG dikhayen", group = g2)
+fvgMax  = input.int(6, "Kitne FVG chart par rahen", minval = 1, maxval = 20, group = g2)
+
+g3 = "3 · Liquidity Grab"
+showLGB = input.bool(true, "Liquidity grab ka label dikhayen", group = g3)
+
+g4 = "4 · BUY / SELL signal"
+useTrend  = input.bool(true, "EMA trend filter chalu", group = g4)
+emaLen    = input.int(50, "EMA length", minval = 5, group = g4)
+minBodyPc = input.float(45.0, "Signal candle ka body kam se kam (%)", step = 5.0, minval = 0.0, maxval = 100.0, group = g4)
+coolBars  = input.int(8, "Do signals ke darmiyan kam se kam bars", minval = 0, group = g4)
+
+g5 = "5 · Trade plan"
+atrLen   = input.int(14, "ATR length", minval = 2, group = g5)
+slBuf    = input.float(0.35, "SL buffer (x ATR)", step = 0.05, minval = 0.0, group = g5)
+tp1R     = input.float(1.0, "TP1 (R)", step = 0.1, minval = 0.2, group = g5)
+tp2R     = input.float(2.0, "TP2 (R)", step = 0.1, minval = 0.2, group = g5)
+showPlan = input.bool(true, "Entry / SL / TP lines dikhayen", group = g5)
+showPanel = input.bool(true, "Chhota panel dikhayen", group = g5)
+
+g6 = "6 · Rang"
+cSup  = input.color(color.new(color.teal,   80), "Support zone",   group = g6)
+cRes  = input.color(color.new(color.red,    80), "Resistance zone", group = g6)
+cFvgU = input.color(color.new(color.teal,   88), "FVG bullish",    group = g6)
+cFvgD = input.color(color.new(color.red,    88), "FVG bearish",    group = g6)
+cBuy  = input.color(color.new(color.teal,    0), "BUY",            group = g6)
+cSell = input.color(color.new(color.red,     0), "SELL",           group = g6)
+
+// ============================================================================
+//  BUNYADI HISAAB
+// ============================================================================
+atr = ta.atr(atrLen)
+ema = ta.ema(close, emaLen)
+f_px(x) => str.tostring(x, format.mintick)
+
+plot(useTrend ? ema : na, "EMA", color = color.new(color.orange, 40), linewidth = 1)
+
+// ============================================================================
+//  1 · ZONES (pivot high = resistance, pivot low = support)
+// ============================================================================
+var box[]  zBox = array.new_box()
+var bool[] zSup = array.new_bool()
+
+ph = ta.pivothigh(high, pivLen, pivLen)
+pl = ta.pivotlow (low,  pivLen, pivLen)
+
+if showZones and not na(ph)
+    float pad = atr * zonePad
+    box nb = box.new(bar_index - pivLen, ph + pad, bar_index + 5, ph - pad, xloc = xloc.bar_index, bgcolor = cRes, border_color = color.new(color.red, 55))
+    array.push(zBox, nb)
+    array.push(zSup, false)
+
+if showZones and not na(pl)
+    float pad = atr * zonePad
+    box nb = box.new(bar_index - pivLen, pl + pad, bar_index + 5, pl - pad, xloc = xloc.bar_index, bgcolor = cSup, border_color = color.new(color.teal, 55))
+    array.push(zBox, nb)
+    array.push(zSup, true)
+
+// zone ko aage barhao; toot jaye to hata do
+if array.size(zBox) > 0
+    for i = array.size(zBox) - 1 to 0
+        box  b   = array.get(zBox, i)
+        bool sup = array.get(zSup, i)
+        box.set_right(b, bar_index + 5)
+        bool broken = sup ? (close < box.get_bottom(b)) : (close > box.get_top(b))
+        if broken
+            box.delete(b)
+            array.remove(zBox, i)
+            array.remove(zSup, i)
+
+while array.size(zBox) > zoneMax
+    box.delete(array.shift(zBox))
+    array.shift(zSup)
+
+// is bar zone ko chua? — chua to us zone ka kinara wapas do (SL ke liye)
+f_supBottom() =>
+    float r = na
+    if array.size(zBox) > 0
+        for i = 0 to array.size(zBox) - 1
+            if array.get(zSup, i)
+                box b = array.get(zBox, i)
+                if low <= box.get_top(b) and high >= box.get_bottom(b)
+                    r := box.get_bottom(b)
+                    break
+    r
+
+f_resTop() =>
+    float r = na
+    if array.size(zBox) > 0
+        for i = 0 to array.size(zBox) - 1
+            if not array.get(zSup, i)
+                box b = array.get(zBox, i)
+                if low <= box.get_top(b) and high >= box.get_bottom(b)
+                    r := box.get_top(b)
+                    break
+    r
+
+float supHit = f_supBottom()
+float resHit = f_resTop()
+
+// ============================================================================
+//  2 · FVG — teen candle ka khali gap, bharne par khud mit jata hai
+// ============================================================================
+var box[]  fBox  = array.new_box()
+var bool[] fBull = array.new_bool()
+
+bool fvgUp = bar_index > 2 and low  > high[2]
+bool fvgDn = bar_index > 2 and high < low[2]
+
+if showFVG and fvgUp
+    box nb = box.new(bar_index - 2, low, bar_index + 5, high[2], xloc = xloc.bar_index, bgcolor = cFvgU, border_color = color.new(color.teal, 70))
+    array.push(fBox, nb)
+    array.push(fBull, true)
+
+if showFVG and fvgDn
+    box nb = box.new(bar_index - 2, low[2], bar_index + 5, high, xloc = xloc.bar_index, bgcolor = cFvgD, border_color = color.new(color.red, 70))
+    array.push(fBox, nb)
+    array.push(fBull, false)
+
+if array.size(fBox) > 0
+    for i = array.size(fBox) - 1 to 0
+        box  b  = array.get(fBox, i)
+        bool bu = array.get(fBull, i)
+        box.set_right(b, bar_index + 5)
+        bool filled = bu ? (low <= box.get_bottom(b)) : (high >= box.get_top(b))
+        if filled
+            box.delete(b)
+            array.remove(fBox, i)
+            array.remove(fBull, i)
+
+while array.size(fBox) > fvgMax
+    box.delete(array.shift(fBox))
+    array.shift(fBull)
+
+// ============================================================================
+//  3 · LIQUIDITY GRAB — pichli choti/talwa tor kar wapas andar aa jana
+// ============================================================================
+var float lastPH = na
+var float lastPL = na
+if not na(ph)
+    lastPH := ph
+if not na(pl)
+    lastPL := pl
+
+bool grabUp = not na(lastPH) and high > lastPH and close < lastPH   // upar ka jhoota break -> bearish
+bool grabDn = not na(lastPL) and low  < lastPL and close > lastPL   // neeche ka jhoota break -> bullish
+
+if showLGB and grabUp and barstate.isconfirmed
+    label.new(bar_index, high, "LG", xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_label_down, color = color.new(color.red, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: upar stops liye, wapas neeche band hui")
+
+if showLGB and grabDn and barstate.isconfirmed
+    label.new(bar_index, low, "LG", xloc = xloc.bar_index, yloc = yloc.belowbar, style = label.style_label_up, color = color.new(color.teal, 25), textcolor = color.white, size = size.tiny, tooltip = "Liquidity grab: neeche stops liye, wapas upar band hui")
+
+// ============================================================================
+//  4 · BUY / SELL SIGNAL
+// ============================================================================
+float rng  = high - low
+float body = math.abs(close - open)
+bool  bodyOK = rng > 0 and (body / rng * 100.0) >= minBodyPc
+
+bool bullBar = close > open and bodyOK
+bool bearBar = close < open and bodyOK
+
+bool trendOKb = not useTrend or close > ema
+bool trendOKs = not useTrend or close < ema
+
+var int lastSigBar = na
+bool coolOK = na(lastSigBar) or (bar_index - lastSigBar) >= coolBars
+
+bool rawBuy  = (not na(supHit) or grabDn) and bullBar and trendOKb
+bool rawSell = (not na(resHit) or grabUp) and bearBar and trendOKs
+
+bool sigBuy  = rawBuy  and not rawSell and coolOK and barstate.isconfirmed
+bool sigSell = rawSell and not rawBuy  and coolOK and barstate.isconfirmed
+
+var string  sideTx  = ""
+var float   sEntry  = na
+var float   sSL     = na
+var float   sTP1    = na
+var float   sTP2    = na
+var line[]  planLn  = array.new_line()
+var label[] planLb  = array.new_label()
+
+if sigBuy or sigSell
+    lastSigBar := bar_index
+
+    while array.size(planLn) > 0
+        line.delete(array.shift(planLn))
+    while array.size(planLb) > 0
+        label.delete(array.shift(planLb))
+
+    color sc = sigBuy ? cBuy : cSell
+    sideTx := sigBuy ? "BUY" : "SELL"
+    sEntry := close
+
+    float anchor = sigBuy ? (na(supHit) ? low : math.min(low, supHit)) : (na(resHit) ? high : math.max(high, resHit))
+    sSL  := sigBuy ? (anchor - slBuf * atr) : (anchor + slBuf * atr)
+    float r = math.abs(sEntry - sSL)
+    sTP1 := sigBuy ? (sEntry + r * tp1R) : (sEntry - r * tp1R)
+    sTP2 := sigBuy ? (sEntry + r * tp2R) : (sEntry - r * tp2R)
+
+    string why = sigBuy ? (not na(supHit) ? "support zone" : "liquidity grab") : (not na(resHit) ? "resistance zone" : "liquidity grab")
+    label.new(bar_index, close, sideTx + "  (" + why + ")\nEntry " + f_px(sEntry) + "\nSL " + f_px(sSL) + "\nTP1 " + f_px(sTP1) + "\nTP2 " + f_px(sTP2), xloc = xloc.bar_index, yloc = sigBuy ? yloc.belowbar : yloc.abovebar, style = sigBuy ? label.style_label_up : label.style_label_down, color = sc, textcolor = color.white, size = size.normal)
+
+    if showPlan
+        line l1 = line.new(bar_index, sEntry, bar_index + 30, sEntry, xloc = xloc.bar_index, color = color.new(color.blue, 0), width = 2)
+        line l2 = line.new(bar_index, sSL,    bar_index + 30, sSL,    xloc = xloc.bar_index, color = cSell, width = 2, style = line.style_dashed)
+        line l3 = line.new(bar_index, sTP1,   bar_index + 30, sTP1,   xloc = xloc.bar_index, color = cBuy,  width = 1, style = line.style_dashed)
+        line l4 = line.new(bar_index, sTP2,   bar_index + 30, sTP2,   xloc = xloc.bar_index, color = cBuy,  width = 1, style = line.style_dotted)
+        array.push(planLn, l1)
+        array.push(planLn, l2)
+        array.push(planLn, l3)
+        array.push(planLn, l4)
+        array.push(planLb, label.new(bar_index + 30, sEntry, "ENTRY " + f_px(sEntry), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(color.blue, 25), textcolor = color.white, size = size.small))
+        array.push(planLb, label.new(bar_index + 30, sSL, "SL " + f_px(sSL), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(cSell, 25), textcolor = color.white, size = size.small))
+        array.push(planLb, label.new(bar_index + 30, sTP1, "TP1 " + f_px(sTP1), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(cBuy, 25), textcolor = color.white, size = size.small))
+        array.push(planLb, label.new(bar_index + 30, sTP2, "TP2 " + f_px(sTP2), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(cBuy, 45), textcolor = color.white, size = size.small))
+
+    alert(sideTx + " — " + syminfo.ticker + " " + timeframe.period + " | Entry " + f_px(sEntry) + " | SL " + f_px(sSL) + " | TP1 " + f_px(sTP1) + " | TP2 " + f_px(sTP2), alert.freq_once_per_bar_close)
+
+plotshape(sigBuy,  title = "BUY",  style = shape.triangleup,   location = location.belowbar, color = cBuy,  size = size.small)
+plotshape(sigSell, title = "SELL", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.small)
+
+// ============================================================================
+//  CHHOTA PANEL — sirf teen line
+// ============================================================================
+var table t = na
+if showPanel and barstate.islast
+    if na(t)
+        t := table.new(position.bottom_right, 1, 3, border_width = 1)
+    else
+        table.clear(t, 0, 0, 0, 2)
+    color bg = color.new(color.white, 90)
+    string r1 = sideTx == "" ? "Abhi koi signal nahi" : ("Aakhri signal: " + sideTx)
+    string r2 = sideTx == "" ? "Zone / grab ka intezaar" : ("Entry " + f_px(sEntry) + "   SL " + f_px(sSL))
+    string r3 = sideTx == "" ? "" : ("TP1 " + f_px(sTP1) + "   TP2 " + f_px(sTP2))
+    table.cell(t, 0, 0, r1, bgcolor = bg, text_color = sideTx == "BUY" ? cBuy : sideTx == "SELL" ? cSell : color.gray, text_size = size.normal)
+    table.cell(t, 0, 1, r2, bgcolor = bg, text_color = color.black, text_size = size.small)
+    table.cell(t, 0, 2, r3, bgcolor = bg, text_color = color.black, text_size = size.small)
+
+// ============================================================================
+//  ALERTS
+// ============================================================================
+alertcondition(sigBuy,  "BUY signal",     "SMC Simple: BUY signal")
+alertcondition(sigSell, "SELL signal",    "SMC Simple: SELL signal")
+alertcondition(grabUp,  "Liquidity grab upar",   "SMC Simple: upar liquidity grab")
+alertcondition(grabDn,  "Liquidity grab neeche", "SMC Simple: neeche liquidity grab")
