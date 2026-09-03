@@ -68,6 +68,26 @@ powershell -File tools\backtest.ps1 -Expert TrendMomentumEA -Inputs "InpSL_Point
 
 Change one input at a time, so a change in the result can be attributed.
 
+## The user's actual setup (found the hard way — don't re-derive this)
+
+Broker is Exness, demo account, symbol `XAUUSDm`, **3 digits** (1 point =
+$0.001) and the spread sits around **$0.26**. So a points-based distance is
+ten times smaller than it looks: the old `InpSL_Points = 300` was a $0.30
+stop against a $0.26 spread, which is why an eight-month tester run came out
+at profit factor 0.69. TrendMomentumEA v1.02 defaults now use 3000/4500.
+
+**Two MT5 data folders exist on that machine.** MetaEditor and MetaTrader do
+not always point at the same one, so a file compiled from the folder
+MetaEditor shows can be invisible to the running terminal. The only
+reliable way to reach the right one is MetaTrader's own **File → Open Data
+Folder**; anything reached from MetaEditor's navigator may be the other one.
+
+MT5 also caches an EA's tester inputs under its file name, and "Defaults"
+reloads them from the compiled `.ex5`, not from the source. If the Inputs
+tab keeps showing stale values after a recompile, check that the `.ex5`
+under the terminal's own `MQL5\Experts` actually rebuilt; renaming the file
+sidesteps the cache entirely.
+
 ## Points vs digits
 
 `InpSL_Points` and similar are in points, and a point depends on the symbol's
