@@ -131,3 +131,22 @@ and a restricted network: `mql5.com`, `tradingview.com` and the Debian package
 mirrors are all blocked, so MQL5 cannot be compiled and Pine cannot be run
 there. In that case say so plainly instead of implying the code was verified,
 and review the source by hand.
+
+## Why a signal appears on 1M but not on 1H (asked more than once)
+
+`sigBuy`/`sigSell` in `smc_simple.pine` are gated on `barstate.isconfirmed`, so
+a signal only exists once the chart's candle has closed. On 1M that is a
+one-minute wait; on 1H it is up to an hour, and on 4H up to four. A live
+candle that currently looks like a huge bearish bar is not a signal yet, and
+may not be one when it closes.
+
+Do not remove that gate to make higher timeframes fire sooner. Without it the
+signal repaints — it can appear mid-candle and vanish when the candle closes
+green — and every backtest number in this file was produced from closed bars,
+so they would no longer describe the script.
+
+Two settings scale with the timeframe for the same reason: `coolBars = 8` is
+eight minutes on 1M and eight hours on 1H, and `pivLen = 5` means a new swing
+is confirmed five bars later, i.e. five hours on 1H. Fewer signals on a higher
+timeframe is the intended behaviour: the validated 4H run took 275 trades in
+about three years, roughly one every four days.
