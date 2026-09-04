@@ -18,6 +18,7 @@ toward backtesting and demo before live trading.
 | `auto_chart_patterns.pine` | Auto Chart Patterns — TradingView indicator (double top/bottom, H&S, triangle/wedge/channel, neckline + measured target). Unrelated to the EAs |
 | `smc_simple.pine` | SMC Simple — stripped-down TradingView indicator: S/R zones, FVG, liquidity grab, Buy/Sell with Entry/SL/TP. No oscillators, no dashboards. Unrelated to the EAs |
 | `smc_simple_strategy.pine` | Strategy version of `smc_simple.pine` — same logic, but places orders so TradingView's Strategy Tester can report on it. Unrelated to the EAs |
+| `forward_test_log.md` | Demo forward test record — every signal and its outcome, filled in as they happen |
 | `tools/` | Windows compile and backtest automation |
 
 ## Hard rules for these EAs
