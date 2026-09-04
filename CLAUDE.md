@@ -96,6 +96,34 @@ digits. On a 3-digit gold feed, 300 points is $0.30 — tight enough that the
 broker rejects the order. Always check `SYMBOL_DIGITS` and
 `SYMBOL_TRADE_STOPS_LEVEL` before trusting a points-based distance.
 
+## smc_simple_strategy backtest results (XAUUSD, OANDA, TradingView)
+
+Eight tests, one variable at a time, commission 0.30 and slippage 3 set in
+Properties. Three of the eight made things worse, which is the point — the
+settings below were not reached by accepting every change.
+
+| Change | Profit factor | Verdict |
+|---|---|---|
+| Baseline: cooldown 8, TP1 50% | 1.108 | thin |
+| Cooldown 8 → 20 | 1.097 | worse, reverted |
+| TP1 50% → 0% | 1.124 | better |
+| Cooldown 8 + TP1 0% | 1.174 | better still |
+| HTF filter on (240) | 1.152 | worse, reverted |
+| 2H instead of 1H | 1.332 | better |
+| 4H, Jan 2023 – Sep 2026 | 1.217 | **the one that matters** |
+
+The 4H run is the only one covering three years, so it is the only result not
+fitted to the 2025-26 gold rally, and it holds at 1.217 with a 13.56% drawdown
+over 275 trades. Settings: 4H chart, cooldown 8, TP1 partial 0, HTF filter off.
+
+Two findings worth keeping. Cutting trade count did not improve quality, so
+the edge is uniformly thin rather than diluted by junk signals. And in the
+first run BUY made +4,327 while SELL lost -878 — gold trended up throughout,
+so a long-only version would backtest beautifully and fail the moment the
+trend turned. That is the curve-fit to refuse.
+
+Not validated forward yet. Demo before live.
+
 ## What cannot be done in a cloud session
 
 Claude Code running on claude.ai/code is a Linux container with no MetaTrader
