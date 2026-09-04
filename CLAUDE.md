@@ -113,6 +113,27 @@ settings below were not reached by accepting every change.
 | 2H instead of 1H | 1.332 | better |
 | 4H, Jan 2023 – Sep 2026 | 1.217 | **the one that matters** |
 
+Two later runs, kept for the lessons rather than the numbers:
+
+| Change | Profit factor | Period | Verdict |
+|---|---|---|---|
+| 1W chart | 1.594 | Jan 1833 – Aug 2026 | discard, see below |
+| 5M chart | 1.122 | Aug 10 – Sep 5 2026 | too short to use |
+
+The weekly run's 1.594 is the best profit factor in this file and the least
+trustworthy. Gold was price-fixed at $20.67 until 1933 and $35.00 until 1971,
+so most of those 193 years contain no tradeable market at all, and the float
+after 1971 is one enormous one-way move that flatters any trend system. The
+fixed commission also means the same $0.30 is 1.5% of a trade in 1900 and
+0.007% of one today. A high profit factor from the wrong era is worth less
+than a low one from the right era.
+
+The 5M run is the honest answer to "does the edge survive on a low
+timeframe": 1.122 over 639 trades, with costs set about 2.3x higher than the
+real spread. It suggests the edge does not vanish. It proves nothing, because
+TradingView's free plan only serves about four weeks of 5M history, and 639
+trades from one month all share that month's character.
+
 The 4H run is the only one covering three years, so it is the only result not
 fitted to the 2025-26 gold rally, and it holds at 1.217 with a 13.56% drawdown
 over 275 trades. Settings: 4H chart, cooldown 8, TP1 partial 0, HTF filter off.
@@ -124,6 +145,26 @@ so a long-only version would backtest beautifully and fail the moment the
 trend turned. That is the curve-fit to refuse.
 
 Not validated forward yet. Demo before live.
+
+## Account size decides the timeframe, not preference
+
+Stop distances measured from the script's own signals, against what a 1%
+risk per trade requires at Exness's 0.01 lot minimum (1 ounce, so risk in
+dollars equals the stop in dollars):
+
+| TF | Stop | Account needed for 1% risk |
+|---|---|---|
+| 5M | ~$4 (estimated from ATR) | $400 |
+| 15M | ~$8 (estimated from ATR) | $800 |
+| 1H | $90.27 (measured) | $9,000 |
+| 4H | $90.39 (measured) | $9,000 |
+| D | $180.48 (measured) | $18,000 |
+
+So the validated 4H configuration cannot be traded on a small account: at
+$500 its stop is 18% of the account, and the minimum lot cannot be made
+smaller. A small account is forced onto low timeframes, which is exactly
+where the evidence is thinnest. That tension is real and should not be
+papered over by trading a 4H signal at a size the account cannot carry.
 
 ## What cannot be done in a cloud session
 
