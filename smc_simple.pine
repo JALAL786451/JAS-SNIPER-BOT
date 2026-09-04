@@ -89,6 +89,15 @@ cEma  = input.color(color.new(color.black,  0), "EMA line",       group = g6)
 cBuy  = input.color(color.new(color.teal,    0), "BUY",            group = g6)
 cSell = input.color(color.new(color.red,     0), "SELL",           group = g6)
 
+g8 = "8 · Volume / dabao panel (sirf dekhne ke liye)"
+// Ye panel signal ko HAATH NAHI LAGATA. Ye sirf batata hai ke bare
+// timeframe par harkat kitni thi aur candle ke andar kis ka zor tha.
+// Jab tak ise backtest se nahi parkha jata, is par trade na karein.
+showVP  = input.bool(true, "Volume / dabao panel dikhayen", group = g8)
+vpLen   = input.int(20, "Kitni candles ka ausat", minval = 5, group = g8)
+vpTf1   = input.timeframe("D",   "Bara timeframe 1", group = g8)
+vpTf2   = input.timeframe("240", "Bara timeframe 2", group = g8)
+
 g7 = "7 · MA 20"
 // Sirf ek MA. Ye sajawat nahi — "MA20 par wapas aa kar palatna" wali entry
 // isi se naapi jati hai. Line chhupa dene se wo entry band nahi hoti.
@@ -399,6 +408,74 @@ if showPanel and barstate.islast
     // Bara timeframe kya keh raha hai — aur us ka matlab kya hai
     string r4 = not useHtf ? "HTF filter band (har taraf ke signal aayenge)" : (htfTF + " trend: " + (htfDir == 1 ? "UP — sirf BUY milenge" : htfDir == -1 ? "DOWN — sirf SELL milenge" : "saaf nahi — koi signal nahi"))
     table.cell(t, 0, 3, r4, bgcolor = bg, text_color = not useHtf ? color.gray : (htfDir == 1 ? cBuy : htfDir == -1 ? cSell : color.gray), text_size = size.small)
+
+
+// ============================================================================
+//  VOLUME / DABAO PANEL — sirf mushahide ke liye, signal is se nahi banta
+//
+//  Do cheezein naapi jati hain:
+//
+//  1. VOLUME — pichli MUKAMMAL candle ka volume, us se pehli 20 candles ke
+//     ausat se kitna guna. Chalti hui candle ka volume istemal NAHI karte:
+//     wo din bhar barhta rehta hai, is liye subah "kam" aur shaam "zyada"
+//     dikhta — ye jhoot hota.
+//
+//  2. DABAO — candle apni range mein kahan band hui. Upar band = kharidaron
+//     ka zor, neeche band = bechne walon ka. Ye ratio hai, cumulative nahi,
+//     is liye chalti candle par bhi dekha ja sakta hai — magar wo abhi badal
+//     sakta hai. Panel mein use "live" likha hai.
+//
+//  XAUUSD ka volume asli exchange volume NAHI hai — ye tick count hai, yani
+//  qeemat kitni baar badli. Asli gold volume COMEX futures (GC1!) mein hai.
+//  Is liye is panel ko ishara samjhen, saboot nahi.
+// ============================================================================
+f_vpStats() =>
+    // Har series pehle bana lete hain, phir [1] se pichli mukammal candle
+    // ki qeemat lete hain. Function call par seedha [1] lagana Pine mein
+    // hamesha nahi chalta, is liye ye do qadam.
+    float _pos   = (high - low) > 0 ? (close - low) / (high - low) : 0.5
+    float _avgS  = ta.sma(volume, vpLen)
+    float _numS  = math.sum(volume * _pos, vpLen)
+    float _denS  = math.sum(volume, vpLen)
+
+    // [1] = pichli MUKAMMAL candle. Volume ka moqabla usi se munsifana hai.
+    float _vPrev = volume[1]
+    float _vAvg  = _avgS[1]
+    float _num   = _numS[1]
+    float _den   = _denS[1]
+
+    float _ratio = (na(_vAvg) or _vAvg <= 0) ? na : _vPrev / _vAvg
+    float _avgP  = (na(_den)  or _den  <= 0) ? na : _num / _den * 100.0
+    float _live  = _pos * 100.0            // chalti candle — abhi badal sakta hai
+    [_ratio, _live, _avgP]
+
+[v1r, v1l, v1a] = request.security(syminfo.tickerid, vpTf1, f_vpStats(), lookahead = barmerge.lookahead_off)
+[v2r, v2l, v2a] = request.security(syminfo.tickerid, vpTf2, f_vpStats(), lookahead = barmerge.lookahead_off)
+
+f_volTx(_r) => na(_r) ? "—" : str.tostring(_r, "#.0#") + "x " + (_r >= 1.5 ? "(bohot zyada)" : _r >= 1.0 ? "(zyada)" : _r >= 0.6 ? "(mamooli)" : "(sust)")
+f_prsTx(_p) => na(_p) ? "—" : str.tostring(_p, "#") + "%  " + (_p >= 65 ? "kharidar" : _p <= 35 ? "bechne wale" : "barabar")
+f_prsCol(_p) => na(_p) ? color.gray : _p >= 65 ? cBuy : _p <= 35 ? cSell : color.gray
+
+var table vt = na
+if showVP and barstate.islast
+    if na(vt)
+        vt := table.new(position.top_right, 4, 3, border_width = 1)
+    color hbg = color.new(color.gray, 80)
+    color rbg = color.new(color.white, 88)
+    table.cell(vt, 0, 0, "TF",          bgcolor = hbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 1, 0, "Volume",      bgcolor = hbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 2, 0, "Dabao (live)", bgcolor = hbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 3, 0, str.tostring(vpLen) + " ka dabao", bgcolor = hbg, text_color = color.black, text_size = size.small)
+
+    table.cell(vt, 0, 1, vpTf1, bgcolor = rbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 1, 1, f_volTx(v1r), bgcolor = rbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 2, 1, f_prsTx(v1l), bgcolor = rbg, text_color = f_prsCol(v1l), text_size = size.small)
+    table.cell(vt, 3, 1, f_prsTx(v1a), bgcolor = rbg, text_color = f_prsCol(v1a), text_size = size.small)
+
+    table.cell(vt, 0, 2, vpTf2, bgcolor = rbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 1, 2, f_volTx(v2r), bgcolor = rbg, text_color = color.black, text_size = size.small)
+    table.cell(vt, 2, 2, f_prsTx(v2l), bgcolor = rbg, text_color = f_prsCol(v2l), text_size = size.small)
+    table.cell(vt, 3, 2, f_prsTx(v2a), bgcolor = rbg, text_color = f_prsCol(v2a), text_size = size.small)
 
 // ============================================================================
 //  ALERTS
