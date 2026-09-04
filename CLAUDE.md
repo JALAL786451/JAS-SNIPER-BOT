@@ -150,3 +150,26 @@ eight minutes on 1M and eight hours on 1H, and `pivLen = 5` means a new swing
 is confirmed five bars later, i.e. five hours on 1H. Fewer signals on a higher
 timeframe is the intended behaviour: the validated 4H run took 275 trades in
 about three years, roughly one every four days.
+
+## TradingView candles do not match the broker's, and cannot be made to
+
+Signals are developed and backtested on `OANDA:XAUUSD`; the user trades
+Exness `XAUUSDm`. Exness is not on TradingView, so the two feeds can never be
+made identical. Two separate effects produce the mismatch, and the user has
+already noticed it as "the same candle is blue here and red on my phone":
+
+1. **Different feed.** OANDA and Exness quote slightly different prices, so
+   open and close can land on opposite sides of each other.
+2. **Different candle boundaries.** MT5 aligns intraday candles to the
+   broker's server midnight (Exness is GMT+3); TradingView aligns forex
+   candles to its own session start. On 1H and below the hour lines coincide
+   and the effect is small. On 4H and 1D the two charts are cutting different
+   spans of time, so one can be up while the other is down for the same hours.
+
+Setting the TradingView timezone to UTC+3 removes most of the boundary
+effect. The feed difference stays. So an entry, SL or TP price that the
+indicator prints will not be exactly reachable on the broker, and a level can
+be hit on one chart and not the other. Measuring that gap is one of the real
+reasons to forward test on demo before risking money.
+
+When the user reports a discrepancy, compare OHLC numbers, not candle colours.
