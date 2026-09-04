@@ -20,12 +20,25 @@ win rate; so is a run of three wins.
 
 | Setting | Value |
 |---|---|
-| Timeframe | 4H (1H also being watched) |
+| Timeframe | **15M** (changed from 4H — see below) |
 | Cooldown bars | 8 |
 | TP1 partial | 0 |
 | HTF filter | OFF |
 | Date filter | OFF |
 | Feed | OANDA:XAUUSD |
+| Account this is sized for | $500, 0.01 lot, about 1.6% risk per trade |
+
+The timeframe moved from 4H to 15M on 2026-09-05, not because 15M tested
+better in isolation but because 4H is unreachable: its stop is about $90, so
+1% risk needs a $9,000 account. Forward testing a configuration the account
+cannot trade would measure nothing anyone can act on.
+
+15M earned the move on evidence, not convenience. Its profit factor is 1.292
+over 647 trades, and the settings it ran were chosen on 1H and 4H and carried
+over unchanged, which makes 15M an out-of-sample check on those choices.
+BUY made +2,893.68 and SELL +2,891.28 — within $2.40 of each other, so the
+edge is not a bet on the direction gold happened to travel. Against that, the
+whole sample is three months, and no more 15M history is available to test.
 
 ## Trades
 
