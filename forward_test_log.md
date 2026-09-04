@@ -44,6 +44,7 @@ stop column is what their own chart implies, not what they said.
 |---|---|---|---|---|---|---|---|
 | A | 2026-09-04 | 15M chart | BUY | ~4406 | ~4340 | 4520 | open |
 | B | 2026-09-04 | 1D chart | BUY | ~4484 | ~4240 | 4565 | open |
+| C | 2026-09-04 | 15M chart | BUY limit 4430 | 4430 | 4417 (stated) | ~4470 | pending fill |
 
 ## Observations to revisit later, not to act on now
 
@@ -54,6 +55,12 @@ stop column is what their own chart implies, not what they said.
 - Both losses happened in the same whipsaw: gold fell about $90 and took
   back about $50 within a day. Breakout systems lose on both sides of that.
   This is a known weakness, already priced into the 1.217.
+- Call C is the only one of the three whose author stated a stop, so it is
+  the only one that can be scored honestly. Its stop is $13 against a day
+  whose range was $155 — about 8% of it. At 1% account risk that sizes to
+  0.07 lot, seven times the 1H signal's size. The dollar risk is the same by
+  construction; what changes is how often it is lost. A tight stop is not a
+  small risk, it is a frequent one.
 - Daily signals carry stops around $180. On a $10,000 account at 1% risk
   that is 0.0055 lot, below Exness's 0.01 minimum. **Daily is not tradeable
   on this account size** — the smallest allowed position is already 2% risk.
