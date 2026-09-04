@@ -119,6 +119,7 @@ Two later runs, kept for the lessons rather than the numbers:
 |---|---|---|---|
 | 1W chart | 1.594 | Jan 1833 – Aug 2026 | discard, see below |
 | 5M chart | 1.122 | Aug 10 – Sep 5 2026 | too short to use |
+| 15M chart | 1.292 | Jun 1 – Sep 5 2026 | best fit for a small account |
 
 The weekly run's 1.594 is the best profit factor in this file and the least
 trustworthy. Gold was price-fixed at $20.67 until 1933 and $35.00 until 1971,
@@ -133,6 +134,16 @@ timeframe": 1.122 over 639 trades, with costs set about 2.3x higher than the
 real spread. It suggests the edge does not vanish. It proves nothing, because
 TradingView's free plan only serves about four weeks of 5M history, and 639
 trades from one month all share that month's character.
+
+Across timeframes the profit factor falls away at the bottom: 1.122 on 5M
+against 1.292 on 15M and 1.217 on 4H. That is what per-trade cost does to a
+thin edge — 5M takes about 24 trades a day and pays the spread on every one.
+5M is not worth pursuing. 15M takes about 7 a day, which a person can
+actually follow, and its stop of roughly $8 is 1.6% of a $500 account, so it
+is the only tested timeframe a small account can carry at a sane risk.
+
+Its three months all sit inside a rising gold market, so the long/short
+split still has to be checked before it means anything.
 
 The 4H run is the only one covering three years, so it is the only result not
 fitted to the 2025-26 gold rally, and it holds at 1.217 with a 13.56% drawdown
