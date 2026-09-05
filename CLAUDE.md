@@ -20,6 +20,7 @@ toward backtesting and demo before live trading.
 | `smc_simple_strategy.pine` | Strategy version of `smc_simple.pine` — same logic, but places orders so TradingView's Strategy Tester can report on it. Unrelated to the EAs |
 | `forward_test_log.md` | Demo forward test record — every signal and its outcome, filled in as they happen |
 | `tools/` | Windows compile and backtest automation |
+| `docs/mt5_steps.md` | Step-by-step MT5/MetaEditor workflow in Roman Urdu — folder locations, compile, tester, and the traps that cost hours |
 
 ## Hard rules for these EAs
 
