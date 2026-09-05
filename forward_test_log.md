@@ -58,6 +58,7 @@ stop column is what their own chart implies, not what they said.
 | A | 2026-09-04 | 15M chart | BUY | ~4406 | ~4340 | 4520 | open |
 | B | 2026-09-04 | 1D chart | BUY | ~4484 | ~4240 | 4565 | open |
 | C | 2026-09-04 | 15M chart | BUY limit 4430 | 4430 | 4417 (stated) | ~4470 | pending fill |
+| D | 2026-09-05 | **the user's own call** | UP | ~4429.83 | 4282.63 (proposed) | 4697.105 | open, deadline 2026-09-19 |
 
 ## Observations to revisit later, not to act on now
 
@@ -68,6 +69,12 @@ stop column is what their own chart implies, not what they said.
 - Both losses happened in the same whipsaw: gold fell about $90 and took
   back about $50 within a day. Breakout systems lose on both sides of that.
   This is a known weakness, already priced into the 1.217.
+- Call D is the user's own first prediction: gold takes out the 4,697.105
+  high. Written down with a level that makes it wrong (a break of 4,282.625)
+  and a date, because without both it is not checkable. The deadline matters
+  more than it looks: gold has trended up for three years, so "it eventually
+  makes a new high" is close to always true given unlimited time, and a
+  prediction that cannot fail teaches nothing about the person who made it.
 - Call C is the only one of the three whose author stated a stop, so it is
   the only one that can be scored honestly. Its stop is $13 against a day
   whose range was $155 — about 8% of it. At 1% account risk that sizes to
