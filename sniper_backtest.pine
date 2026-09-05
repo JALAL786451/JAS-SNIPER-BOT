@@ -1,63 +1,8 @@
 //@version=5
 strategy("Sniper Test Strategy", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
 
-// ============================================================
-// Timeframe based swing (pivot) logic
-// The middle candle is confirmed as a swing point only when it
-// stays the highest / lowest against N candles on its LEFT and
-// N candles on its RIGHT.
-//
-//   1D  -> 1 left, 1 right
-//   4H  -> 2 left, 2 right
-//   3H  -> 2 left, 2 right
-//   2H  -> 4 left, 4 right
-//   1H  -> 8 left, 8 right
-//
-// Any other timeframe falls back to `defaultWing`.
-// ============================================================
-
-defaultWing = input.int(2, "Fallback candles each side", minval = 1)
-showLabels  = input.bool(true, "Show swing labels")
-
-// Current chart timeframe expressed in minutes
-tfMinutes = timeframe.in_seconds(timeframe.period) / 60
-
-wing =
-     tfMinutes == 1440 ? 1 :   // 1D
-     tfMinutes == 240  ? 2 :   // 4H
-     tfMinutes == 180  ? 2 :   // 3H
-     tfMinutes == 120  ? 4 :   // 2H
-     tfMinutes == 60   ? 8 :   // 1H
-     defaultWing
-
-// ta.pivothigh / ta.pivotlow return the value of the middle candle,
-// offset `wing` bars back, once the right hand candles have closed.
-pivotHigh = ta.pivothigh(high, wing, wing)
-pivotLow  = ta.pivotlow(low,  wing, wing)
-
-swingHigh = not na(pivotHigh)
-swingLow  = not na(pivotLow)
-
-// Last confirmed swing levels
-var float lastSwingHigh = na
-var float lastSwingLow  = na
-if swingHigh
-    lastSwingHigh := pivotHigh
-if swingLow
-    lastSwingLow := pivotLow
-
-// Plot the middle candle of each confirmed pattern
-plotshape(showLabels and swingHigh, title = "Swing High", style = shape.triangledown, location = location.abovebar, color = color.red,  size = size.tiny, offset = -wing)
-plotshape(showLabels and swingLow,  title = "Swing Low",  style = shape.triangleup,  location = location.belowbar, color = color.green, size = size.tiny, offset = -wing)
-
-plot(lastSwingHigh, "Last Swing High", color = color.new(color.red, 40),   style = plot.style_linebr)
-plot(lastSwingLow,  "Last Swing Low",  color = color.new(color.green, 40), style = plot.style_linebr)
-
-// ============================================================
-// Entries: break of the last confirmed swing level
-// ============================================================
-longCondition  = not na(lastSwingHigh) and ta.crossover(close, lastSwingHigh)
-shortCondition = not na(lastSwingLow)  and ta.crossunder(close, lastSwingLow)
+longCondition = ta.crossover(ta.sma(close, 14), ta.sma(close, 28))
+shortCondition = ta.crossunder(ta.sma(close, 14), ta.sma(close, 28))
 
 if (longCondition)
     strategy.entry("Long", strategy.long)

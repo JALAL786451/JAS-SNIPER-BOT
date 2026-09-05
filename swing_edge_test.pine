@@ -1,0 +1,160 @@
+//@version=5
+indicator("Swing Edge Test — rule vs random", overlay = true, max_labels_count = 200)
+
+// ============================================================
+// MAQSAD
+//
+// Sawal: "beech wali candle, dono taraf N candles" wala rule
+// koi asli cheez pakadta hai, ya sirf arithmetic hai?
+//
+// Ye script us ka faisla nahi karta. Ye sirf ginti karta hai
+// aur do numbers saath saath rakhta hai:
+//
+//   RULE     = pivot confirm hone ke baad kitni dafa level ne
+//              agle N bars tak price ko roka
+//   BASELINE = wohi test, un bars par jahan koi pivot nahi tha
+//
+// Agar RULE aur BASELINE qareeb qareeb barabar hain, to rule
+// ne kuch nahi kiya. Sirf calculation thi.
+// Agar RULE clearly ooncha hai, tab baat karne layak hai.
+// ============================================================
+
+// ---------- Timeframe se candles per side ----------
+useAuto     = input.bool(true,  "Timeframe se khud wing chunein")
+manualWing  = input.int(2, "Manual candles per side", minval = 1, maxval = 50)
+holdBars    = input.int(10, "Kitne bars tak level ko test karein", minval = 1)
+showMarks   = input.bool(true, "Chart par pivots dikhayein")
+
+tfMinutes = timeframe.in_seconds(timeframe.period) / 60
+
+autoWing =
+     tfMinutes == 1440 ? 1 :   // 1D
+     tfMinutes == 240  ? 2 :   // 4H
+     tfMinutes == 180  ? 2 :   // 3H
+     tfMinutes == 120  ? 4 :   // 2H
+     tfMinutes == 60   ? 8 :   // 1H
+     2                         // baqi sab
+
+wing = useAuto ? autoWing : manualWing
+
+// ---------- Pivot detection ----------
+// Confirm hone par ye us candle ki value deta hai jo `wing`
+// bars peechay thi. Yani beech wali candle.
+ph = ta.pivothigh(high, wing, wing)
+pl = ta.pivotlow(low,  wing, wing)
+
+if showMarks
+    if not na(ph)
+        label.new(bar_index - wing, high[wing], "H", style = label.style_label_down, color = color.new(color.red, 30),   textcolor = color.white, size = size.tiny)
+    if not na(pl)
+        label.new(bar_index - wing, low[wing],  "L", style = label.style_label_up,   color = color.new(color.green, 30), textcolor = color.white, size = size.tiny)
+
+// ============================================================
+// TEST
+//
+// Ek pivot jo `holdBars` bars pehle confirm hua tha, use
+// ab judge kiya ja sakta hai kyunke uske baad ke saare bars
+// aa chuke hain.
+//
+// HELD  = price ne us level ko toda nahi
+// BROKE = price ne toot diya
+// ============================================================
+
+// Sabse ooncha / neecha, sirf un bars mein jo confirmation
+// ke BAAD aaye. Ye look-ahead bias se bachne ke liye zaroori hai.
+futureHigh = ta.highest(high, holdBars)
+futureLow  = ta.lowest(low,  holdBars)
+
+// Pivot jo holdBars bars pehle confirm hua
+oldPH = ph[holdBars]
+oldPL = pl[holdBars]
+
+var int ruleHighTotal = 0
+var int ruleHighHeld  = 0
+var int ruleLowTotal  = 0
+var int ruleLowHeld   = 0
+
+if not na(oldPH)
+    ruleHighTotal += 1
+    if futureHigh <= oldPH
+        ruleHighHeld += 1
+
+if not na(oldPL)
+    ruleLowTotal += 1
+    if futureLow >= oldPL
+        ruleLowHeld += 1
+
+// ------------------------------------------------------------
+// BASELINE / CONTROL
+//
+// Bilkul wohi test, magar un bars par jahan pivot NAHI bana.
+// Yani ek aam candle ka high uthao aur poocho ki agle holdBars
+// bars ne use toda ya nahi.
+//
+// Ye woh number hai jo batata hai ki market khud kitni dafa
+// aise level ko "respect" kar leta hai, bina kisi rule ke.
+// ------------------------------------------------------------
+
+// Woh bar jo holdBars + wing peechay hai — wahi position jahan
+// pivot ki middle candle hoti, lekin yahan pivot nahi bana.
+ctrlHigh = high[holdBars + wing]
+ctrlLow  = low[holdBars + wing]
+
+isCtrl = na(oldPH) and na(oldPL) and bar_index > holdBars + wing + 5
+
+var int baseHighTotal = 0
+var int baseHighHeld  = 0
+var int baseLowTotal  = 0
+var int baseLowHeld   = 0
+
+if isCtrl
+    baseHighTotal += 1
+    if futureHigh <= ctrlHigh
+        baseHighHeld += 1
+    baseLowTotal += 1
+    if futureLow >= ctrlLow
+        baseLowHeld += 1
+
+// ---------- Percentages ----------
+pct(part, whole) => whole == 0 ? 0.0 : 100.0 * part / whole
+
+ruleHighPct = pct(ruleHighHeld, ruleHighTotal)
+ruleLowPct  = pct(ruleLowHeld,  ruleLowTotal)
+baseHighPct = pct(baseHighHeld, baseHighTotal)
+baseLowPct  = pct(baseLowHeld,  baseLowTotal)
+
+edgeHigh = ruleHighPct - baseHighPct
+edgeLow  = ruleLowPct  - baseLowPct
+
+// ---------- Results table ----------
+var table t = table.new(position.top_right, 4, 8, border_width = 1)
+
+edgeColor(e) => e > 5 ? color.new(color.green, 20) : e < -5 ? color.new(color.red, 20) : color.new(color.gray, 20)
+
+if barstate.islast
+    table.cell(t, 0, 0, "Swing Edge Test", bgcolor = color.new(color.blue, 20), text_color = color.white, text_size = size.small)
+    table.cell(t, 1, 0, "Rule",     bgcolor = color.new(color.blue, 20), text_color = color.white, text_size = size.small)
+    table.cell(t, 2, 0, "Baseline", bgcolor = color.new(color.blue, 20), text_color = color.white, text_size = size.small)
+    table.cell(t, 3, 0, "Farq",     bgcolor = color.new(color.blue, 20), text_color = color.white, text_size = size.small)
+
+    table.cell(t, 0, 1, "Swing High held %", text_size = size.small)
+    table.cell(t, 1, 1, str.tostring(ruleHighPct, "#.0") + "%", text_size = size.small)
+    table.cell(t, 2, 1, str.tostring(baseHighPct, "#.0") + "%", text_size = size.small)
+    table.cell(t, 3, 1, str.tostring(edgeHigh, "+#.0") + "%", bgcolor = edgeColor(edgeHigh), text_size = size.small)
+
+    table.cell(t, 0, 2, "Swing Low held %", text_size = size.small)
+    table.cell(t, 1, 2, str.tostring(ruleLowPct, "#.0") + "%", text_size = size.small)
+    table.cell(t, 2, 2, str.tostring(baseLowPct, "#.0") + "%", text_size = size.small)
+    table.cell(t, 3, 2, str.tostring(edgeLow, "+#.0") + "%", bgcolor = edgeColor(edgeLow), text_size = size.small)
+
+    table.cell(t, 0, 3, "Sample (high / low)", text_size = size.small)
+    table.cell(t, 1, 3, str.tostring(ruleHighTotal) + " / " + str.tostring(ruleLowTotal), text_size = size.small)
+    table.cell(t, 2, 3, str.tostring(baseHighTotal), text_size = size.small)
+    table.cell(t, 3, 3, "", text_size = size.small)
+
+    table.cell(t, 0, 5, "Timeframe", text_size = size.small)
+    table.cell(t, 1, 5, timeframe.period, text_size = size.small)
+    table.cell(t, 0, 6, "Candles per side", text_size = size.small)
+    table.cell(t, 1, 6, str.tostring(wing), text_size = size.small)
+    table.cell(t, 0, 7, "Hold bars", text_size = size.small)
+    table.cell(t, 1, 7, str.tostring(holdBars), text_size = size.small)
