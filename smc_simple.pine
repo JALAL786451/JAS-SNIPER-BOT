@@ -137,6 +137,12 @@ riskPct   = input.float(1.0, "Har trade par risk (% account)", step = 0.25, minv
 contrSize = input.float(100.0, "1 lot mein kitni units (gold = 100 ounce)", step = 1.0, minval = 0.01, group = g9)
 minLot    = input.float(0.01, "Broker ka sab se chhota lot", step = 0.01, minval = 0.001, group = g9)
 showStats = input.bool(true, "Live scorecard dikhayen (jeet / haar / PF)", group = g9)
+// Strategy version TP1 ke baad SL ko breakeven par le aati hai. Scorecard bhi
+// wohi hisaab kare, warna dono alag nateeja denge — aur wo farq strategy ka
+// nahi, do alag ginti ka hota hai.
+beAfterTp1 = input.bool(true, "TP1 ke baad SL breakeven par (strategy jaisa)", group = g9)
+statsUseDt = input.bool(false, "Scorecard sirf ek tareekh ke baad se ginen", group = g9)
+statsFrom  = input.time(timestamp("05 Sep 2026 00:00 +0000"), "Scorecard kis din se", group = g9)
 
 g10 = "10 · Extra filter (SAB DEFAULT BAND — ek waqt mein ek chalayen)"
 // In mein se koi bhi on karne se signal badal jayenge. Us ke baad purana
@@ -389,8 +395,10 @@ var string  sStat   = ""       // halat ka matn
 // version hai: bina strategy chalaye, seedha chart par.
 var int   nWin  = 0
 var int   nLoss = 0
+var int   nBE   = 0            // TP1 ke baad breakeven — na jeet na haar
 var float grossW = 0.0
 var float grossL = 0.0
+var bool  sCount = false       // ye signal scorecard mein ginna hai ya nahi
 
 if sigBuy or sigSell
     lastSigBar := bar_index
@@ -406,6 +414,7 @@ if sigBuy or sigSell
     sBar    := bar_index
     sLive   := true
     sTp1Hit := false
+    sCount  := not statsUseDt or time >= statsFrom
     sStat   := "CHAL RAHA HAI"
     sEntry  := close
     sSL     := sigBuy ? preSlB : preSlS
@@ -440,21 +449,31 @@ if sigBuy or sigSell
 //     ye nahi pata chalta ke pehle kaun chhua, aur khud ko fayda de kar ginna
 //     record ko jhoota bana deta hai.
 if sLive and not (sigBuy or sigSell)
-    bool slHit  = sDir > 0 ? (low  <= sSL)  : (high >= sSL)
-    bool tp2Hit = sDir > 0 ? (high >= sTP2) : (low  <= sTP2)
-    bool tp1Hit = sDir > 0 ? (high >= sTP1) : (low  <= sTP1)
+    // Chalta hua stop: TP1 lag chukne ke baad wo entry par aa jata hai, bilkul
+    // waise jaise strategy karti hai. sTp1Hit is bar se PEHLE ki halat hai —
+    // ek hi candle mein TP1 aur wapasi ho jaye to hum khud ko riayat nahi dete.
+    bool wasBE  = sTp1Hit and beAfterTp1
+    float effSL = wasBE ? sEntry : sSL
+    bool slHit  = sDir > 0 ? (low  <= effSL) : (high >= effSL)
+    bool tp2Hit = sDir > 0 ? (high >= sTP2)  : (low  <= sTP2)
+    bool tp1Hit = sDir > 0 ? (high >= sTP1)  : (low  <= sTP1)
     if tp1Hit
         sTp1Hit := true
     if slHit
         sLive := false
-        sStat := sTp1Hit ? "KHATAM — TP1 ke baad SL" : "KHATAM — SL laga"
-        nLoss += 1
-        grossL += 1.0
+        sStat := wasBE ? "KHATAM — breakeven (TP1 ke baad)" : "KHATAM — SL laga"
+        if sCount
+            if wasBE
+                nBE += 1
+            else
+                nLoss += 1
+                grossL += 1.0
     else if tp2Hit
         sLive := false
         sStat := "KHATAM — TP2 mil gaya"
-        nWin += 1
-        grossW += tp2R
+        if sCount
+            nWin += 1
+            grossW += tp2R
     else
         sStat := sTp1Hit ? "CHAL RAHA HAI (TP1 mil chuka)" : "CHAL RAHA HAI"
     // khatam hone par plan ki lines hata do, chart saaf rahe
@@ -492,9 +511,9 @@ bool  tooBig    = not na(minLotRsk) and minLotRsk > riskAmt
 var table t = na
 if showPanel and barstate.islast
     if na(t)
-        t := table.new(position.bottom_right, 1, 9, border_width = 1)
+        t := table.new(position.bottom_right, 1, 10, border_width = 1)
     else
-        table.clear(t, 0, 0, 0, 8)
+        table.clear(t, 0, 0, 0, 9)
 
     string ageTx = na(sBar) ? "" : (str.tostring(bar_index - sBar) + " candle purana")
     string r1 = sideTx == "" ? "Abhi koi signal nahi" : ("Aakhri signal: " + sideTx + "   (" + ageTx + ")")
@@ -518,11 +537,13 @@ if showPanel and barstate.islast
         row += 3
 
     if showStats
-        int    done = nWin + nLoss
+        int    done = nWin + nLoss + nBE
         float  pf   = grossL > 0 ? grossW / grossL : na
         float  wr   = done > 0 ? nWin * 100.0 / done : na
-        string s1 = done == 0 ? "Scorecard: abhi koi trade khatam nahi hui" : ("Scorecard: " + str.tostring(nWin) + " jeet / " + str.tostring(nLoss) + " haar   (" + str.tostring(wr, "#") + "%)   PF " + (na(pf) ? "—" : str.tostring(pf, "#.##")))
-        table.cell(t, 0, row, s1, bgcolor = panelBg, text_color = na(pf) ? panelDim : (pf >= 1.0 ? cBuy : cSell), text_size = size.small)
+        string sc1 = done == 0 ? "Scorecard: abhi koi trade khatam nahi hui" : ("Scorecard " + timeframe.period + ": " + str.tostring(nWin) + " jeet / " + str.tostring(nLoss) + " haar / " + str.tostring(nBE) + " breakeven   (" + str.tostring(wr, "#") + "%)   PF " + (na(pf) ? "—" : str.tostring(pf, "#.##")))
+        string sc2 = statsUseDt ? "Scorecard shuru: " + str.format("{0,date,dd MMM yyyy}", statsFrom) : "Scorecard: poore chart ka (forward nahi)"
+        table.cell(t, 0, row, sc1, bgcolor = panelBg, text_color = na(pf) ? panelDim : (pf >= 1.0 ? cBuy : cSell), text_size = size.small)
+        table.cell(t, 0, row + 1, sc2, bgcolor = panelBg, text_color = panelDim, text_size = size.small)
 
 // ============================================================================
 //  VOLUME / DABAO PANEL — sirf mushahide ke liye, signal is se nahi banta
