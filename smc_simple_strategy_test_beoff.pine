@@ -1,5 +1,20 @@
 //@version=5
 // ============================================================================
+//  ONE-OFF TEST FILE — sirf ek sawal ka jawab dene ke liye:
+//
+//  "beAfterTp1" (TP1 chhoo lene ke baad SL breakeven par le aana) ka default
+//  hamesha ON raha hai, har us test mein jo CLAUDE.md mein likha hai —
+//  isay kabhi alag se ON/OFF kar ke nahi parkha gaya, jabke "ek waqt mein ek
+//  variable" hamara apna usool hai. Ye file sirf isi ek variable ko OFF karti
+//  hai, baqi sab bilkul wohi jo asal `smc_simple_strategy.pine` mein hai.
+//
+//  ISTEMAL: ise 15M chart par asal wale ki jagah ek dafa paste karein, wahi
+//  arsa (Jun 1 – Sep 5 2026) chalayein, PF / trades / DD / Long vs Short note
+//  kar lein. Koi setting badalne ki zaroorat nahi — beAfterTp1 yahan pehle se
+//  OFF hai. Nateeja dekh lene ke baad ise HATA DEIN aur wapas asal
+//  `smc_simple_strategy.pine` ya `smc_simple.pine` (demo forward test wali)
+//  chart par laga dein — ye test file forward test ke liye NAHI hai.
+// ============================================================================
 //  SMC SIMPLE — STRATEGY VERSION (backtest ke liye)
 //
 //  Yehi wo logic hai jo smc_simple.pine (indicator) mein hai — bilkul wahi
@@ -39,7 +54,7 @@
 // nateeja jhoota acha aaya. Ab naya paste karne par bhi cost shamil rahega.
 // (Properties tab mein in ka number ab bhi nazar aayega aur wahan se badla
 // ja sakta hai — bas ab default sahi hai, ghalat nahi.)
-strategy("SMC Simple STRATEGY — Zones + FVG + Grab + Continuation", overlay = true, max_boxes_count = 200, max_lines_count = 200, max_labels_count = 300, initial_capital = 10000, default_qty_type = strategy.fixed, default_qty_value = 1, commission_type = strategy.commission.cash_per_contract, commission_value = 0.30, slippage = 3, calc_on_every_tick = false, process_orders_on_close = true)
+strategy("SMC Simple STRATEGY — TEST beAfterTp1 OFF", overlay = true, max_boxes_count = 200, max_lines_count = 200, max_labels_count = 300, initial_capital = 10000, default_qty_type = strategy.fixed, default_qty_value = 1, commission_type = strategy.commission.cash_per_contract, commission_value = 0.30, slippage = 3, calc_on_every_tick = false, process_orders_on_close = true)
 
 // ============================================================================
 //  INPUTS
@@ -95,7 +110,8 @@ fromDate  = input.time(timestamp("01 Jan 2025 00:00 +0000"), "Shuru", group = g8
 toDate    = input.time(timestamp("01 Jan 2027 00:00 +0000"), "Khatam", group = g8)
 riskPct   = input.float(1.0, "Har trade par risk (% equity)", step = 0.25, minval = 0.05, group = g8)
 tp1Part   = input.int(50, "TP1 par kitna hissa band karein (%)", minval = 0, maxval = 100, group = g8)
-beAfterTp1 = input.bool(true, "TP1 ke baad SL ko breakeven par le aayen", group = g8)
+// Is test file mein jaan boojh kar OFF — yehi is file ka poora maqsad hai.
+beAfterTp1 = input.bool(false, "TP1 ke baad SL ko breakeven par le aayen", group = g8)
 
 g6 = "6 · Rang"
 cSup  = input.color(color.new(color.teal,   80), "Support zone",   group = g6)

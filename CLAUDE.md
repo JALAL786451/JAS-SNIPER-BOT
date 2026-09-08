@@ -19,6 +19,7 @@ toward backtesting and demo before live trading.
 | `smc_simple.pine` | SMC Simple — stripped-down TradingView indicator: S/R zones, FVG, liquidity grab, Buy/Sell with Entry/SL/TP. No oscillators, no dashboards. Unrelated to the EAs |
 | `smc_simple_strategy.pine` | Strategy version of `smc_simple.pine` — same logic, but places orders so TradingView's Strategy Tester can report on it. Unrelated to the EAs |
 | `forward_test_log.md` | Demo forward test record — every signal and its outcome, filled in as they happen |
+| `smc_simple_strategy_test_beoff.pine` | One-off test copy of the strategy with `beAfterTp1` forced off — see the campaign caveat below |
 | `tools/` | Windows compile and backtest automation |
 | `docs/mt5_steps.md` | Step-by-step MT5/MetaEditor workflow in Roman Urdu — folder locations, compile, tester, and the traps that cost hours |
 
@@ -157,6 +158,30 @@ so a long-only version would backtest beautifully and fail the moment the
 trend turned. That is the curve-fit to refuse.
 
 Not validated forward yet. Demo before live.
+
+## An untested variable found by code review, not by running a test
+
+A manual read of `smc_simple_strategy.pine` (Claude cannot run TradingView in
+this container, so this was reading, not testing) found that `beAfterTp1`
+defaults to `true` and moves the *entire* position's stop to breakeven once
+price touches the TP1 level — even with `tp1Part = 0`, where no shares are
+actually taken off there. Every run in the table above used this default
+without anyone isolating it, which breaks the "one variable at a time"
+discipline the rest of this campaign followed. Part of the gain credited to
+"TP1 partial 0%" may really be this breakeven mechanic, or some mix of both.
+
+`smc_simple_strategy_test_beoff.pine` is a one-off copy with only that one
+input's default flipped to `false`, everything else identical, commission and
+slippage already baked in. Run it once on the same 15M / Jun 1 – Sep 5 2026
+window, compare PF/trades/drawdown/long-vs-short against the 1.292 recorded
+above, then discard it — it is not the file to use for forward testing.
+
+Also fixed in the same pass: `smc_simple_strategy.pine` used to default to
+zero commission and slippage, relying on the Properties tab being set by
+hand every time the script was pasted fresh — which happened once already
+(the TP1 partial default reset to 50%, silently, on a repaste). Commission
+0.30 and slippage 3 are now hardcoded into the `strategy()` declaration
+itself, so a fresh paste can no longer silently backtest at zero cost.
 
 ## Account size decides the timeframe, not preference
 
