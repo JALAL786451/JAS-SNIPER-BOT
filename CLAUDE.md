@@ -176,6 +176,15 @@ slippage already baked in. Run it once on the same 15M / Jun 1 – Sep 5 2026
 window, compare PF/trades/drawdown/long-vs-short against the 1.292 recorded
 above, then discard it — it is not the file to use for forward testing.
 
+**Run, and resolved.** `beAfterTp1 = false` on the same 15M / Jun 1 – Sep 5
+2026 window gave PF 1.158 over 664 trades (DD 12.19%), against 1.292 over 647
+trades (DD 12.52%) with it left on. Turning it off made the result worse, not
+better, so the suspicion above does not hold: `beAfterTp1 = true` is doing
+real, separate work, not just borrowing credit that belonged to `tp1Part =
+0%`. The 1.292 result stands as tested rather than merely assumed. A parallel
+run of the same test on 1D produced PF 29.491 from 3 trades — meaningless
+from a sample that size, ignored rather than reported as a finding.
+
 Also fixed in the same pass: `smc_simple_strategy.pine` used to default to
 zero commission and slippage, relying on the Properties tab being set by
 hand every time the script was pasted fresh — which happened once already
