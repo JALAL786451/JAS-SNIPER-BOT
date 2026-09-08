@@ -141,7 +141,9 @@ showStats = input.bool(true, "Live scorecard dikhayen (jeet / haar / PF)", group
 // wohi hisaab kare, warna dono alag nateeja denge — aur wo farq strategy ka
 // nahi, do alag ginti ka hota hai.
 beAfterTp1 = input.bool(true, "TP1 ke baad SL breakeven par (strategy jaisa)", group = g9)
-statsUseDt = input.bool(false, "Scorecard sirf ek tareekh ke baad se ginen", group = g9)
+// Default ON hai — warna naya paste karne par scorecard poori history gin
+// leta hai, jaise ek dafa ho chuka aur ghalat fehmi hui.
+statsUseDt = input.bool(true, "Scorecard sirf ek tareekh ke baad se ginen", group = g9)
 statsFrom  = input.time(timestamp("05 Sep 2026 00:00 +0000"), "Scorecard kis din se", group = g9)
 
 g10 = "10 · Extra filter (SAB DEFAULT BAND — ek waqt mein ek chalayen)"
