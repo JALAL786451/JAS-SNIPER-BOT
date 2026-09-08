@@ -8,12 +8,15 @@
 //  variable" hamara apna usool hai. Ye file sirf isi ek variable ko OFF karti
 //  hai, baqi sab bilkul wohi jo asal `smc_simple_strategy.pine` mein hai.
 //
-//  ISTEMAL: ise 15M chart par asal wale ki jagah ek dafa paste karein, wahi
-//  arsa (Jun 1 – Sep 5 2026) chalayein, PF / trades / DD / Long vs Short note
-//  kar lein. Koi setting badalne ki zaroorat nahi — beAfterTp1 yahan pehle se
-//  OFF hai. Nateeja dekh lene ke baad ise HATA DEIN aur wapas asal
-//  `smc_simple_strategy.pine` ya `smc_simple.pine` (demo forward test wali)
-//  chart par laga dein — ye test file forward test ke liye NAHI hai.
+//  ISTEMAL: 15M chart par asal wale ki jagah ek dafa paste karein aur bas
+//  "Add to chart" — kuch bhi setting mein jana nahi paray ga:
+//    - Arsa Jun 1 – Sep 5 2026 pehle se set hai (wahi jis se PF 1.292 aaya)
+//    - Commission 0.30 aur slippage 3 pehle se declaration mein hain
+//    - beAfterTp1 pehle se OFF hai
+//  PF / trades / DD / Long vs Short note kar lein. Nateeja dekh lene ke baad
+//  ISE HATA DEIN aur wapas asal `smc_simple_strategy.pine` ya `smc_simple.pine`
+//  (demo forward test wali) chart par laga dein — ye test file forward test
+//  ke liye NAHI hai, sirf is ek moqabla ke liye hai.
 // ============================================================================
 //  SMC SIMPLE — STRATEGY VERSION (backtest ke liye)
 //
@@ -105,9 +108,11 @@ showArrow = input.bool(true, "Purane signals ke chhote teer rehne dein", group =
 showPanel = input.bool(true, "Chhota panel dikhayen", group = g5)
 
 g8 = "8 · Backtest settings"
-useDates  = input.bool(false, "Sirf ek arse ka test karein", group = g8)
-fromDate  = input.time(timestamp("01 Jan 2025 00:00 +0000"), "Shuru", group = g8)
-toDate    = input.time(timestamp("01 Jan 2027 00:00 +0000"), "Khatam", group = g8)
+// Is test ka poora maqsad 15M ke Jun-Sep run (PF 1.292) se moqabla karna hai,
+// is liye wahi arsa yahan pehle se set hai — koi setting chhoona nahi paregi.
+useDates  = input.bool(true, "Sirf ek arse ka test karein", group = g8)
+fromDate  = input.time(timestamp("01 Jun 2026 00:00 +0000"), "Shuru", group = g8)
+toDate    = input.time(timestamp("05 Sep 2026 00:00 +0000"), "Khatam", group = g8)
 riskPct   = input.float(1.0, "Har trade par risk (% equity)", step = 0.25, minval = 0.05, group = g8)
 tp1Part   = input.int(50, "TP1 par kitna hissa band karein (%)", minval = 0, maxval = 100, group = g8)
 // Is test file mein jaan boojh kar OFF — yehi is file ka poora maqsad hai.
