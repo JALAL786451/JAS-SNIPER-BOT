@@ -22,7 +22,7 @@ P0 = "0 - Baseline (as first run)"
 P1 = "1 - Price stop"
 P2 = "2 - Price stop + 1.00 target"
 P3 = "3 - Price stop + 1.00 target + NO hedging"
-P4 = "4 - Price stop + 1.00 target + hedge target 8.80"
+P4 = "4 - Close stop + 1.00 target + hedge target 3.00"
 PC = "Custom (use settings below)"
 
 preset = input.string(P0, "PRESET - change this first",
@@ -47,6 +47,15 @@ useTF3 = input.bool(true,      "Use TF3",             group = grpTF)
 tf3    = input.timeframe("15", "TF3",                 group = grpTF)
 useTF4 = input.bool(false,     "Use TF4",             group = grpTF)
 tf4    = input.timeframe("60", "TF4",                 group = grpTF)
+
+grpE = "Entry rule - the control test"
+// "Coin flip" ignores every signal and enters at random. With the same
+// target and stop it should score almost exactly the "needed" win rate,
+// because that number IS the random-walk rate. If the real signal cannot
+// beat the coin flip, the signal is adding nothing and no amount of exit
+// tuning will help.
+entryMode = input.string("Signal (trend + FVG/LGB)", "Entry rule",
+    options = ["Signal (trend + FVG/LGB)", "Trend only", "Coin flip (control)"], group = grpE)
 
 grpM = "Money (only used on Custom)"
 lotSize    = input.float(0.01, "Lot size",                     step = 0.01, group = grpM)
@@ -96,10 +105,13 @@ else if preset == P3
     basketTgt := 0.0
     basketMax := 10.0
 else if preset == P4
-    priceStop := true
+    // The price stop turned out to fire far more often and cost more in
+    // total, so this keeps the close stop. The hedge target comes from the
+    // measured basket win rate rather than the earlier stale figure.
+    priceStop := false
     profitTgt := 1.00
     hedgeOn   := true
-    basketTgt := 8.80
+    basketTgt := 3.00
     basketMax := 10.0
 
 // ------------------------------------------------------- signal calculation
@@ -210,12 +222,15 @@ if barstate.isconfirmed
 
     // ---------- no position: look for an entry
     if origDir == 0
-        if trend == 1 and momoUp
+        coin    = math.random(0.0, 1.0, 20260909) > 0.5
+        wantBuy  = entryMode == "Coin flip (control)" ? coin : entryMode == "Trend only" ? trend == 1 : (trend == 1 and momoUp)
+        wantSell = entryMode == "Coin flip (control)" ? not coin : entryMode == "Trend only" ? trend == -1 : (trend == -1 and momoDn)
+        if wantBuy
             origDir   := 1
             origEntry := close
             origLots  := lotSize
             mkLabel("BUY", color.new(color.teal, 20))
-        else if trend == -1 and momoDn
+        else if wantSell
             origDir   := -1
             origEntry := close
             origLots  := lotSize
@@ -325,29 +340,31 @@ if showTable and barstate.islast
     vCol     = winRate >= needRate ? color.new(color.green, 30) : color.new(color.red, 30)
     pos      = tblPos == "top_right" ? position.top_right : tblPos == "middle_right" ? position.middle_right : tblPos == "bottom_left" ? position.bottom_left : position.bottom_right
 
-    var table t = table.new(pos, 2, 11, border_width = 1)
+    var table t = table.new(pos, 2, 12, border_width = 1)
     table.cell(t, 0, 0, "PRESET", bgcolor = color.new(color.blue, 40), text_color = color.white)
     table.cell(t, 1, 0, preset,   bgcolor = color.new(color.blue, 40), text_color = color.white)
-    table.cell(t, 0, 1, "Target / Stop / type")
-    table.cell(t, 1, 1, str.tostring(profitTgt, "#.##") + " / " + str.tostring(slDist, "#.##") + " / " + (priceStop ? "price" : "close"))
-    table.cell(t, 0, 2, "Hedge / target / floor")
-    table.cell(t, 1, 2, (hedgeOn ? "on" : "OFF") + " / " + str.tostring(basketTgt, "#.##") + " / " + str.tostring(basketMax, "#.##"))
-    table.cell(t, 0, 3, "Signals now (TF)")
-    table.cell(t, 1, 3, "bull " + tfMark(bull1, bull2, bull3, bull4) + "  bear " + tfMark(bear1, bear2, bear3, bear4) + "  sw " + tfMark(sbuy1 or ssell1, sbuy2 or ssell2, sbuy3 or ssell3, sbuy4 or ssell4))
-    table.cell(t, 0, 4, "Open now")
-    table.cell(t, 1, 4, (origDir == 0 ? "flat" : (origDir == 1 ? "BUY " : "SELL ") + str.tostring(origPnl, "#.##")) + (hedgeDir == 0 ? "" : " + hedge " + str.tostring(hedgePnl, "#.##")))
-    table.cell(t, 0, 5, "Wins / Stops / avg loss")
-    table.cell(t, 1, 5, str.tostring(nNormalTP) + " / " + str.tostring(nStopped) + " / " + str.tostring(avgLoss, "#.##"))
-    table.cell(t, 0, 6, "Holds / Hedges")
-    table.cell(t, 1, 6, str.tostring(nHold) + " / " + str.tostring(nHedge))
-    table.cell(t, 0, 7, "Basket win / loss")
-    table.cell(t, 1, 7, str.tostring(nBasketTP) + " / " + str.tostring(nBasketSL))
+    table.cell(t, 0, 1, "Entry rule")
+    table.cell(t, 1, 1, entryMode)
+    table.cell(t, 0, 2, "Target / Stop / type")
+    table.cell(t, 1, 2, str.tostring(profitTgt, "#.##") + " / " + str.tostring(slDist, "#.##") + " / " + (priceStop ? "price" : "close"))
+    table.cell(t, 0, 3, "Hedge / target / floor")
+    table.cell(t, 1, 3, (hedgeOn ? "on" : "OFF") + " / " + str.tostring(basketTgt, "#.##") + " / " + str.tostring(basketMax, "#.##"))
+    table.cell(t, 0, 4, "Signals now (TF)")
+    table.cell(t, 1, 4, "bull " + tfMark(bull1, bull2, bull3, bull4) + "  bear " + tfMark(bear1, bear2, bear3, bear4) + "  sw " + tfMark(sbuy1 or ssell1, sbuy2 or ssell2, sbuy3 or ssell3, sbuy4 or ssell4))
+    table.cell(t, 0, 5, "Open now")
+    table.cell(t, 1, 5, (origDir == 0 ? "flat" : (origDir == 1 ? "BUY " : "SELL ") + str.tostring(origPnl, "#.##")) + (hedgeDir == 0 ? "" : " + hedge " + str.tostring(hedgePnl, "#.##")))
+    table.cell(t, 0, 6, "Wins / Stops / avg loss")
+    table.cell(t, 1, 6, str.tostring(nNormalTP) + " / " + str.tostring(nStopped) + " / " + str.tostring(avgLoss, "#.##"))
+    table.cell(t, 0, 7, "Holds / Hedges")
+    table.cell(t, 1, 7, str.tostring(nHold) + " / " + str.tostring(nHedge))
+    table.cell(t, 0, 8, "Basket win / loss")
+    table.cell(t, 1, 8, str.tostring(nBasketTP) + " / " + str.tostring(nBasketSL))
     // The row that decides everything: with this target and this average
     // loss, the win rate has to clear the needed figure or nothing else
     // matters. It is arithmetic, not opinion.
-    table.cell(t, 0, 8, "Win rate / needed", bgcolor = vCol, text_color = color.white)
-    table.cell(t, 1, 8, str.tostring(winRate, "#.#") + "% / " + str.tostring(needRate, "#.#") + "%  " + verdict, bgcolor = vCol, text_color = color.white)
-    table.cell(t, 0, 9, "Normal / Hedging $", text_color = color.yellow)
-    table.cell(t, 1, 9, str.tostring(normalNet, "#.##") + "  /  " + str.tostring(hedgeNet, "#.##"), text_color = color.yellow)
-    table.cell(t, 0, 10, "TOTAL $", bgcolor = color.new(color.gray, 40), text_color = color.white)
-    table.cell(t, 1, 10, str.tostring(normalNet + hedgeNet, "#.##"), bgcolor = color.new(color.gray, 40), text_color = color.white)
+    table.cell(t, 0, 9, "Win rate / needed", bgcolor = vCol, text_color = color.white)
+    table.cell(t, 1, 9, str.tostring(winRate, "#.#") + "% / " + str.tostring(needRate, "#.#") + "%  " + verdict, bgcolor = vCol, text_color = color.white)
+    table.cell(t, 0, 10, "Normal / Hedging $", text_color = color.yellow)
+    table.cell(t, 1, 10, str.tostring(normalNet, "#.##") + "  /  " + str.tostring(hedgeNet, "#.##"), text_color = color.yellow)
+    table.cell(t, 0, 11, "TOTAL $", bgcolor = color.new(color.gray, 40), text_color = color.white)
+    table.cell(t, 1, 11, str.tostring(normalNet + hedgeNet, "#.##"), bgcolor = color.new(color.gray, 40), text_color = color.white)
