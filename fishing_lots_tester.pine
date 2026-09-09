@@ -15,9 +15,9 @@
 // Pick "Custom" to drive every setting yourself.
 
 // Bumped on every change so a screenshot says which file was running.
-VER = "v5"
+VER = "v6"
 
-indicator("Fishing Lots - Hold vs Hedge Tester v5", overlay = true,
+indicator("Fishing Lots - Hold vs Hedge Tester v6", overlay = true,
           max_labels_count = 500, max_lines_count = 500)
 
 // ---------------------------------------------------------------- presets
@@ -26,10 +26,11 @@ P1 = "1 - Price stop"
 P2 = "2 - Price stop + 1.00 target"
 P3 = "3 - Price stop + 1.00 target + NO hedging"
 P4 = "4 - Close stop + 1.00 target + hedge target 3.00"
+P5 = "5 - HEDGE TEST: coin flip + basket target 3.00"
 PC = "Custom (use settings below)"
 
 preset = input.string(P0, "PRESET - change this first",
-                      options = [P0, P1, P2, P3, P4, PC], group = "Preset")
+                      options = [P0, P1, P2, P3, P4, P5, PC], group = "Preset")
 
 grpT = "Trend"
 fastLen  = input.int(20,    "Fast EMA",       group = grpT)
@@ -75,6 +76,7 @@ showLabels = input.bool(true, "Show decision labels", group = grpV)
 showTable  = input.bool(true, "Show state table",     group = grpV)
 
 // A preset overrides the money settings. Custom leaves them alone.
+string effEntry = entryMode
 float profitTgt = inProfitT
 float slDist    = inSlDist
 bool  priceStop = inPriceStp
@@ -105,6 +107,18 @@ else if preset == P3
     profitTgt := 1.00
     hedgeOn   := false
     basketTgt := 0.0
+    basketMax := 10.0
+else if preset == P5
+    // Isolates the hedge from the entry entirely. Entries are random, so
+    // whatever the basket earns is the hedge's own doing and not an artefact
+    // of the signal. The target comes from the measured breakeven, near 1.50,
+    // set to 3.00 to leave room once the higher target converts some wins
+    // into losses.
+    effEntry  := "Coin flip (control)"
+    priceStop := false
+    profitTgt := 0.50
+    hedgeOn   := true
+    basketTgt := 3.00
     basketMax := 10.0
 else if preset == P4
     // The price stop turned out to fire far more often and cost more in
@@ -225,8 +239,8 @@ if barstate.isconfirmed
     // ---------- no position: look for an entry
     if origDir == 0
         coin    = math.random(0.0, 1.0, 20260909) > 0.5
-        wantBuy  = entryMode == "Coin flip (control)" ? coin : entryMode == "Trend only" ? trend == 1 : (trend == 1 and momoUp)
-        wantSell = entryMode == "Coin flip (control)" ? not coin : entryMode == "Trend only" ? trend == -1 : (trend == -1 and momoDn)
+        wantBuy  = effEntry == "Coin flip (control)" ? coin : effEntry == "Trend only" ? trend == 1 : (trend == 1 and momoUp)
+        wantSell = effEntry == "Coin flip (control)" ? not coin : effEntry == "Trend only" ? trend == -1 : (trend == -1 and momoDn)
         if wantBuy
             origDir   := 1
             origEntry := close
@@ -346,7 +360,7 @@ if showTable and barstate.islast
     table.cell(t, 0, 0, "PRESET  " + VER, bgcolor = color.new(color.blue, 40), text_color = color.white)
     table.cell(t, 1, 0, preset,   bgcolor = color.new(color.blue, 40), text_color = color.white)
     table.cell(t, 0, 1, "Entry rule")
-    table.cell(t, 1, 1, entryMode)
+    table.cell(t, 1, 1, effEntry)
     table.cell(t, 0, 2, "Target / Stop / type")
     table.cell(t, 1, 2, str.tostring(profitTgt, "#.##") + " / " + str.tostring(slDist, "#.##") + " / " + (priceStop ? "price" : "close"))
     table.cell(t, 0, 3, "Hedge / target / floor")
