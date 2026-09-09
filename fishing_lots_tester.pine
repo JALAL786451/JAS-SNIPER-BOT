@@ -15,9 +15,9 @@
 // Pick "Custom" to drive every setting yourself.
 
 // Bumped on every change so a screenshot says which file was running.
-VER = "v7"
+VER = "v8"
 
-indicator("Fishing Lots - Hold vs Hedge Tester v7", overlay = true,
+indicator("Fishing Lots - Hold vs Hedge Tester v8", overlay = true,
           max_labels_count = 500, max_lines_count = 500)
 
 // ---------------------------------------------------------------- presets
@@ -229,6 +229,17 @@ var int   nBasketSL  = 0
 var int   nNormalTP  = 0
 var int   nStopped   = 0
 
+// A second, parallel account that takes the SAME entries but NEVER hedges.
+// Comparing runs against each other never worked, because each run loads a
+// different slice of history. Running both accounts over the same bars in
+// the same pass removes that entirely.
+var int   shDir   = 0
+var float shEntry = na
+var float shLots  = 0.0
+var float shNet   = 0.0
+var int   shWins  = 0
+var int   shStops = 0
+
 mkLabel(txt, col) =>
     if showLabels
         label.new(bar_index, high, txt, style = label.style_label_down,
@@ -241,19 +252,20 @@ basket   = origPnl + hedgePnl
 momoUp = anyBull or anySSell
 momoDn = anyBear or anySBuy
 
+coinG     = math.random(0.0, 1.0, 20260909) > 0.5
+wantBuyG  = effEntry == "Coin flip (control)" ? coinG : effEntry == "Trend only" ? trend == 1 : (trend == 1 and momoUp)
+wantSellG = effEntry == "Coin flip (control)" ? not coinG : effEntry == "Trend only" ? trend == -1 : (trend == -1 and momoDn)
+
 if barstate.isconfirmed
 
     // ---------- no position: look for an entry
     if origDir == 0
-        coin    = math.random(0.0, 1.0, 20260909) > 0.5
-        wantBuy  = effEntry == "Coin flip (control)" ? coin : effEntry == "Trend only" ? trend == 1 : (trend == 1 and momoUp)
-        wantSell = effEntry == "Coin flip (control)" ? not coin : effEntry == "Trend only" ? trend == -1 : (trend == -1 and momoDn)
-        if wantBuy
+        if wantBuyG
             origDir   := 1
             origEntry := close
             origLots  := lotSize
             mkLabel("BUY", color.new(color.teal, 20))
-        else if wantSell
+        else if wantSellG
             origDir   := -1
             origEntry := close
             origLots  := lotSize
@@ -343,6 +355,34 @@ if barstate.isconfirmed
                 nHedge     := nHedge + 1
                 mkLabel("HEDGE " + str.tostring(hedgeLots, "#.##"), color.new(color.blue, 10))
 
+    // ---------- the same entries, never hedged
+    if shDir == 0
+        if wantBuyG
+            shDir   := 1
+            shEntry := close
+            shLots  := lotSize
+        else if wantSellG
+            shDir   := -1
+            shEntry := close
+            shLots  := lotSize
+    else
+        shPnl    = (close - shEntry) * shDir * shLots * 100.0 - costOf(shLots)
+        shNeed   = profitTgt + costOf(shLots)
+        shTgtP   = shDir == 1 ? shEntry + shNeed / (shLots * 100.0) : shEntry - shNeed / (shLots * 100.0)
+        shStopP  = shDir == 1 ? shEntry - slDist : shEntry + slDist
+        shTpHit  = shDir == 1 ? high >= shTgtP : low <= shTgtP
+        shStpHit = shDir == 1 ? close <= shStopP : close >= shStopP
+        if shTpHit
+            shNet  := shNet + profitTgt
+            shWins := shWins + 1
+            shDir  := 0
+            shLots := 0.0
+        else if shStpHit
+            shNet   := shNet + shPnl
+            shStops := shStops + 1
+            shDir   := 0
+            shLots  := 0.0
+
 // ------------------------------------------------------------------ visuals
 plot(emaFast, "Fast EMA", color = color.new(color.aqua, 0),   linewidth = 1)
 plot(emaSlow, "Slow EMA", color = color.new(color.orange, 0), linewidth = 1)
@@ -364,7 +404,7 @@ if showTable and barstate.islast
     vCol     = total > 0 ? color.new(color.green, 30) : color.new(color.red, 30)
     pos      = tblPos == "top_right" ? position.top_right : tblPos == "middle_right" ? position.middle_right : tblPos == "bottom_left" ? position.bottom_left : position.bottom_right
 
-    var table t = table.new(pos, 2, 12, border_width = 1)
+    var table t = table.new(pos, 2, 14, border_width = 1)
     table.cell(t, 0, 0, "PRESET  " + VER, bgcolor = color.new(color.blue, 40), text_color = color.white)
     table.cell(t, 1, 0, preset,   bgcolor = color.new(color.blue, 40), text_color = color.white)
     table.cell(t, 0, 1, "Entry rule")
@@ -390,5 +430,12 @@ if showTable and barstate.islast
     table.cell(t, 1, 9, str.tostring(winRate, "#.#") + "% / " + str.tostring(needRate, "#.#") + "%")
     table.cell(t, 0, 10, "Normal / Hedging $", text_color = color.yellow)
     table.cell(t, 1, 10, str.tostring(normalNet, "#.##") + "  /  " + str.tostring(hedgeNet, "#.##"), text_color = color.yellow)
-    table.cell(t, 0, 11, "TOTAL $", bgcolor = vCol, text_color = color.white)
+    table.cell(t, 0, 11, "TOTAL, hedging ON", bgcolor = vCol, text_color = color.white)
     table.cell(t, 1, 11, str.tostring(total, "#.##") + "   " + verdict, bgcolor = vCol, text_color = color.white)
+    // The same entries with no hedging at all, run over the same bars in the
+    // same pass, so the two are directly comparable for once.
+    table.cell(t, 0, 12, "Same entries, NO hedging", bgcolor = color.new(color.gray, 40), text_color = color.white)
+    table.cell(t, 1, 12, str.tostring(shNet, "#.##") + "   (" + str.tostring(shWins) + "W/" + str.tostring(shStops) + "L)", bgcolor = color.new(color.gray, 40), text_color = color.white)
+    hCol = total > shNet ? color.new(color.green, 30) : color.new(color.red, 30)
+    table.cell(t, 0, 13, "Did hedging help?", bgcolor = hCol, text_color = color.white)
+    table.cell(t, 1, 13, (total > shNet ? "HELPED by " : "HURT by ") + str.tostring(math.abs(total - shNet), "#.##"), bgcolor = hCol, text_color = color.white)
