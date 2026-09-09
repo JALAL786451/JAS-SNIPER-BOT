@@ -14,14 +14,21 @@
 //|   * Netting-account detection (the hedge design cannot work there)|
 //|   * Multi-timeframe inputs wired through every detection function |
 //|                                                                   |
-//| Auto-entry is still OFF by default. You open trades manually as   |
-//| usual; the EA manages them from there.                            |
+//| Auto-entry is still OFF by default, and testing says leave it     |
+//| that way: the placeholder entry rule scored WORSE than random      |
+//| entries on both the 1-minute and 5-minute charts. You open trades  |
+//| manually; the EA manages them from there.                          |
+//|                                                                    |
+//| The management itself does work. Run over identical bars with the   |
+//| same entries, hedging on finished at -245 against -599 with hedging |
+//| off, and only 78 of that 354 difference is explained by trading     |
+//| less often.                                                         |
 //|                                                                   |
 //| See pine-to-mql5-bridge-notes.md for what was ported from the     |
 //| "SMC Coach - Pro v2" Pine Script and what was left out.           |
 //+------------------------------------------------------------------+
 #property copyright "Draft v3"
-#property version   "3.00"
+#property version   "3.10"
 #property strict
 
 #include <Trade\Trade.mqh>
@@ -74,8 +81,14 @@ input int    InpPivotMaxLookback    = 200;    // how far back to hunt for the la
 input int    InpSignalWindowBars    = 1;      // 1 = faithful to Pine. 2-3 = signal stays valid longer
 
 input group "=== Hedge ==="
-input double InpHedgeLotMultiple    = 2.0;    // Hedge size relative to the position it hedges (CONFIRMED)
-input double InpBasketTargetUSD     = 0.0;    // Close the pair once combined net P/L exceeds this
+input double InpHedgeLotMultiple    = 2.0;    // Hedge size relative to the position it hedges (CONFIRMED).
+                                             // MEASURED: do not raise this. At 4.5 the basket reached its
+                                             // floor 119 times instead of 48, because a larger hedge moves
+                                             // the pair faster.
+input double InpBasketTargetUSD     = 3.00;   // Close the pair once combined net P/L exceeds this.
+                                             // MEASURED: at 0.00 the hedge bled money because every win
+                                             // banked nothing. On the 1-minute chart it went from -480 at
+                                             // 0.00 to -263 at 3.00 over the same data.
 input double InpBasketMaxLossUSD    = 10.0;   // Hard floor: force-close the pair at this combined loss. 0 = off. PLACEHOLDER
 
 input group "=== Stop Loss ==="
