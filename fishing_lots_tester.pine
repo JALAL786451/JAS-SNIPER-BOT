@@ -46,6 +46,7 @@ profitTgt   = input.float(0.50, "Profit target per lot ($)",   step = 0.05, grou
 basketTgt   = input.float(0.0,  "Basket target ($)",           step = 0.05, group = grpM)
 basketMax   = input.float(10.0, "Basket max loss ($, 0 = off)",step = 1.0,  group = grpM)
 slDist      = input.float(3.0,  "Stop distance ($ of price)",  step = 0.1,  group = grpM)
+priceStop   = input.bool(false, "Stop fills at the price, not the candle close", group = grpM)
 commPerLot  = input.float(7.0,  "Commission per 1.00 lot, round turn ($)", step = 0.5, group = grpM)
 
 grpV = "Display"
@@ -141,6 +142,7 @@ var int    nBasketTP = 0
 var int    nBasketSL = 0
 var int    nNormalTP = 0
 var int    nStopped  = 0
+var float  lossSum   = 0.0
 
 mkLabel(txt, col) =>
     if showLabels
@@ -209,9 +211,26 @@ if barstate.isconfirmed
         grossNeed = profitTgt + costOf(origLots)
         tgtPrice  = origDir == 1 ? origEntry + grossNeed / (origLots * 100.0) : origEntry - grossNeed / (origLots * 100.0)
         tpHit     = origDir == 1 ? high >= tgtPrice : low <= tgtPrice
-        // The stop is candle-close based in the EA, so it stays close based.
-        stopHit   = origDir == 1 ? close <= origEntry - slDist : close >= origEntry + slDist
-        if tpHit
+        // Two stop styles, because they cost very different amounts.
+        // Candle close: the EA waits for the bar to close, so the loss is
+        // whatever that close gives, which can be far past the stop level.
+        // Price: a normal broker stop, so the loss is capped at the distance.
+        stopPrice   = origDir == 1 ? origEntry - slDist : origEntry + slDist
+        stopTouched = origDir == 1 ? low <= stopPrice : high >= stopPrice
+        stopClosed  = origDir == 1 ? close <= stopPrice : close >= stopPrice
+        stopHit     = priceStop ? stopTouched : stopClosed
+        cappedLoss  = -slDist * origLots * 100.0 - costOf(origLots)
+        bookStop    = priceStop ? cappedLoss : origPnl
+        // With a price stop both the target and the stop can be touched in
+        // one bar and the order is unknowable, so the loss is taken first.
+        if priceStop and stopTouched
+            realized := realized + bookStop
+            lossSum  := lossSum + bookStop
+            nStopped := nStopped + 1
+            mkLabel("STOP " + str.tostring(bookStop, "#.##"), color.new(color.red, 30))
+            origDir  := 0
+            origLots := 0.0
+        else if tpHit
             realized  := realized + profitTgt
             nNormalTP := nNormalTP + 1
             mkLabel("TP " + str.tostring(profitTgt, "#.##"), color.new(color.green, 30))
@@ -231,9 +250,10 @@ if barstate.isconfirmed
                 nHedge     := nHedge + 1
                 mkLabel("HEDGE " + str.tostring(hedgeLots, "#.##"), color.new(color.blue, 10))
         else if stopHit
-            realized := realized + origPnl
+            realized := realized + bookStop
+            lossSum  := lossSum + bookStop
             nStopped := nStopped + 1
-            mkLabel("STOP " + str.tostring(origPnl, "#.##"), color.new(color.red, 30))
+            mkLabel("STOP " + str.tostring(bookStop, "#.##"), color.new(color.red, 30))
             origDir  := 0
             origLots := 0.0
 
@@ -249,7 +269,7 @@ plot(hedgeDir != 0 ? hedgeEntry : na, "Hedge entry",
 tfMark(a, b, c, d) => (a ? "1" : "") + (b ? "2" : "") + (c ? "3" : "") + (d ? "4" : "")
 
 if showTable and barstate.islast
-    var table t = table.new(position.top_right, 2, 12, border_width = 1)
+    var table t = table.new(position.top_right, 2, 13, border_width = 1)
     table.cell(t, 0, 0, "State",           bgcolor = color.new(color.gray, 70), text_color = color.white)
     table.cell(t, 1, 0, "",                bgcolor = color.new(color.gray, 70))
     table.cell(t, 0, 1, "Trend")
@@ -273,4 +293,6 @@ if showTable and barstate.islast
     table.cell(t, 0, 10, "Holds / Hedges")
     table.cell(t, 1, 10, str.tostring(nHold) + " / " + str.tostring(nHedge))
     table.cell(t, 0, 11, "TP / BskTP / BskSL / SL")
+    table.cell(t, 0, 12, "Avg loss per stop")
+    table.cell(t, 1, 12, nStopped > 0 ? str.tostring(lossSum / nStopped, "#.##") : "-")
     table.cell(t, 1, 11, str.tostring(nNormalTP) + " / " + str.tostring(nBasketTP) + " / " + str.tostring(nBasketSL) + " / " + str.tostring(nStopped))
