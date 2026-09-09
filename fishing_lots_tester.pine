@@ -15,9 +15,9 @@
 // Pick "Custom" to drive every setting yourself.
 
 // Bumped on every change so a screenshot says which file was running.
-VER = "v6"
+VER = "v7"
 
-indicator("Fishing Lots - Hold vs Hedge Tester v6", overlay = true,
+indicator("Fishing Lots - Hold vs Hedge Tester v7", overlay = true,
           max_labels_count = 500, max_lines_count = 500)
 
 // ---------------------------------------------------------------- presets
@@ -81,6 +81,7 @@ float profitTgt = inProfitT
 float slDist    = inSlDist
 bool  priceStop = inPriceStp
 bool  hedgeOn   = inHedgeOn
+float hedgeMultE = hedgeMult
 float basketTgt = inBasketT
 float basketMax = inBasketX
 
@@ -90,24 +91,28 @@ if preset == P0
     hedgeOn   := true
     basketTgt := 0.0
     basketMax := 10.0
+    hedgeMultE := 2.0
 else if preset == P1
     priceStop := true
     profitTgt := 0.50
     hedgeOn   := true
     basketTgt := 0.0
     basketMax := 10.0
+    hedgeMultE := 2.0
 else if preset == P2
     priceStop := true
     profitTgt := 1.00
     hedgeOn   := true
     basketTgt := 0.0
     basketMax := 10.0
+    hedgeMultE := 2.0
 else if preset == P3
     priceStop := true
     profitTgt := 1.00
     hedgeOn   := false
     basketTgt := 0.0
     basketMax := 10.0
+    hedgeMultE := 2.0
 else if preset == P5
     // Isolates the hedge from the entry entirely. Entries are random, so
     // whatever the basket earns is the hedge's own doing and not an artefact
@@ -120,6 +125,7 @@ else if preset == P5
     hedgeOn   := true
     basketTgt := 3.00
     basketMax := 10.0
+    hedgeMultE := 2.0
 else if preset == P4
     // The price stop turned out to fire far more often and cost more in
     // total, so this keeps the close stop. The hedge target comes from the
@@ -129,6 +135,7 @@ else if preset == P4
     hedgeOn   := true
     basketTgt := 3.00
     basketMax := 10.0
+    hedgeMultE := 2.0
 
 // ------------------------------------------------------- signal calculation
 // Returns the four booleans for whatever timeframe this runs in, already
@@ -332,7 +339,7 @@ if barstate.isconfirmed
                 // Nothing favourable left anywhere. Real trend change.
                 hedgeDir   := -origDir
                 hedgeEntry := close
-                hedgeLots  := origLots * hedgeMult
+                hedgeLots  := origLots * hedgeMultE
                 nHedge     := nHedge + 1
                 mkLabel("HEDGE " + str.tostring(hedgeLots, "#.##"), color.new(color.blue, 10))
 
@@ -352,8 +359,9 @@ if showTable and barstate.islast
     avgLoss  = nStopped > 0 ? -lossSum / nStopped : 0.0
     winRate  = (nNormalTP + nStopped) > 0 ? nNormalTP / (nNormalTP + nStopped) * 100.0 : 0.0
     needRate = (avgLoss + profitTgt) > 0 ? avgLoss / (avgLoss + profitTgt) * 100.0 : 0.0
-    verdict  = winRate >= needRate ? "CAN WIN" : "CANNOT WIN"
-    vCol     = winRate >= needRate ? color.new(color.green, 30) : color.new(color.red, 30)
+    total    = normalNet + hedgeNet
+    verdict  = total > 0 ? "MAKES MONEY" : "LOSES MONEY"
+    vCol     = total > 0 ? color.new(color.green, 30) : color.new(color.red, 30)
     pos      = tblPos == "top_right" ? position.top_right : tblPos == "middle_right" ? position.middle_right : tblPos == "bottom_left" ? position.bottom_left : position.bottom_right
 
     var table t = table.new(pos, 2, 12, border_width = 1)
@@ -364,7 +372,7 @@ if showTable and barstate.islast
     table.cell(t, 0, 2, "Target / Stop / type")
     table.cell(t, 1, 2, str.tostring(profitTgt, "#.##") + " / " + str.tostring(slDist, "#.##") + " / " + (priceStop ? "price" : "close"))
     table.cell(t, 0, 3, "Hedge / target / floor")
-    table.cell(t, 1, 3, (hedgeOn ? "on" : "OFF") + " / " + str.tostring(basketTgt, "#.##") + " / " + str.tostring(basketMax, "#.##"))
+    table.cell(t, 1, 3, (hedgeOn ? "on x" + str.tostring(hedgeMultE, "#.#") : "OFF") + " / " + str.tostring(basketTgt, "#.##") + " / " + str.tostring(basketMax, "#.##"))
     table.cell(t, 0, 4, "Signals now (TF)")
     table.cell(t, 1, 4, "bull " + tfMark(bull1, bull2, bull3, bull4) + "  bear " + tfMark(bear1, bear2, bear3, bear4) + "  sw " + tfMark(sbuy1 or ssell1, sbuy2 or ssell2, sbuy3 or ssell3, sbuy4 or ssell4))
     table.cell(t, 0, 5, "Open now")
@@ -378,9 +386,9 @@ if showTable and barstate.islast
     // The row that decides everything: with this target and this average
     // loss, the win rate has to clear the needed figure or nothing else
     // matters. It is arithmetic, not opinion.
-    table.cell(t, 0, 9, "Win rate / needed", bgcolor = vCol, text_color = color.white)
-    table.cell(t, 1, 9, str.tostring(winRate, "#.#") + "% / " + str.tostring(needRate, "#.#") + "%  " + verdict, bgcolor = vCol, text_color = color.white)
+    table.cell(t, 0, 9, "Win rate / needed (unhedged only)")
+    table.cell(t, 1, 9, str.tostring(winRate, "#.#") + "% / " + str.tostring(needRate, "#.#") + "%")
     table.cell(t, 0, 10, "Normal / Hedging $", text_color = color.yellow)
     table.cell(t, 1, 10, str.tostring(normalNet, "#.##") + "  /  " + str.tostring(hedgeNet, "#.##"), text_color = color.yellow)
-    table.cell(t, 0, 11, "TOTAL $", bgcolor = color.new(color.gray, 40), text_color = color.white)
-    table.cell(t, 1, 11, str.tostring(normalNet + hedgeNet, "#.##"), bgcolor = color.new(color.gray, 40), text_color = color.white)
+    table.cell(t, 0, 11, "TOTAL $", bgcolor = vCol, text_color = color.white)
+    table.cell(t, 1, 11, str.tostring(total, "#.##") + "   " + verdict, bgcolor = vCol, text_color = color.white)
