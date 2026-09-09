@@ -15,9 +15,9 @@
 // Pick "Custom" to drive every setting yourself.
 
 // Bumped on every change so a screenshot says which file was running.
-VER = "v8"
+VER = "v9"
 
-indicator("Fishing Lots - Hold vs Hedge Tester v8", overlay = true,
+indicator("Fishing Lots - Hold vs Hedge Tester v9", overlay = true,
           max_labels_count = 500, max_lines_count = 500)
 
 // ---------------------------------------------------------------- presets
@@ -66,7 +66,18 @@ inProfitT  = input.float(0.50, "Profit target per trade ($)",  step = 0.05, grou
 inSlDist   = input.float(3.0,  "Stop distance ($ of price)",   step = 0.1,  group = grpM)
 inPriceStp = input.bool(false, "Stop fills at the price, not the candle close", group = grpM)
 inHedgeOn  = input.bool(true,  "Hedging enabled",              group = grpM)
-hedgeMult  = input.float(2.0,  "Hedge multiple",               step = 0.5,  group = grpM)
+hedgeMult  = input.float(2.0,  "Hedge multiple (Double style only)", step = 0.5, group = grpM)
+
+grpH = "Hedge style"
+// EQUAL: the hedge matches the trade, so the combined result stops moving
+// completely. The loss is frozen, not recovered, and it cannot get worse
+// either, so no floor is needed. The bot then waits for the chart to say
+// which side to keep and closes the other one.
+// DOUBLE: the hedge is larger, so the pair keeps moving and the loss can be
+// recovered, but it can also deepen. That is what the floor was for.
+hedgeStyle = input.string("Equal - freeze, then drop one leg", "Style", options = ["Equal - freeze, then drop one leg", "Double - reverse and add"], group = grpH)
+unwindBars = input.int(60, "Give up and close both after N bars", minval = 5, group = grpH)
+carryLoss  = input.bool(true, "Survivor must also win back the dropped leg's loss", group = grpH)
 inBasketT  = input.float(0.0,  "Basket target ($)",            step = 0.5,  group = grpM)
 inBasketX  = input.float(10.0, "Basket max loss ($, 0 = off)", step = 1.0,  group = grpM)
 commPerLot = input.float(7.0,  "Commission per 1.00 lot, round turn ($)", step = 0.5, group = grpM)
@@ -81,7 +92,8 @@ float profitTgt = inProfitT
 float slDist    = inSlDist
 bool  priceStop = inPriceStp
 bool  hedgeOn   = inHedgeOn
-float hedgeMultE = hedgeMult
+bool  equalStyle = hedgeStyle == "Equal - freeze, then drop one leg"
+float hedgeMultE = equalStyle ? 1.0 : hedgeMult
 float basketTgt = inBasketT
 float basketMax = inBasketX
 
@@ -91,28 +103,28 @@ if preset == P0
     hedgeOn   := true
     basketTgt := 0.0
     basketMax := 10.0
-    hedgeMultE := 2.0
+    hedgeMultE := equalStyle ? 1.0 : 2.0
 else if preset == P1
     priceStop := true
     profitTgt := 0.50
     hedgeOn   := true
     basketTgt := 0.0
     basketMax := 10.0
-    hedgeMultE := 2.0
+    hedgeMultE := equalStyle ? 1.0 : 2.0
 else if preset == P2
     priceStop := true
     profitTgt := 1.00
     hedgeOn   := true
     basketTgt := 0.0
     basketMax := 10.0
-    hedgeMultE := 2.0
+    hedgeMultE := equalStyle ? 1.0 : 2.0
 else if preset == P3
     priceStop := true
     profitTgt := 1.00
     hedgeOn   := false
     basketTgt := 0.0
     basketMax := 10.0
-    hedgeMultE := 2.0
+    hedgeMultE := equalStyle ? 1.0 : 2.0
 else if preset == P5
     // Isolates the hedge from the entry entirely. Entries are random, so
     // whatever the basket earns is the hedge's own doing and not an artefact
@@ -125,7 +137,7 @@ else if preset == P5
     hedgeOn   := true
     basketTgt := 3.00
     basketMax := 10.0
-    hedgeMultE := 2.0
+    hedgeMultE := equalStyle ? 1.0 : 2.0
 else if preset == P4
     // The price stop turned out to fire far more often and cost more in
     // total, so this keeps the close stop. The hedge target comes from the
@@ -135,7 +147,7 @@ else if preset == P4
     hedgeOn   := true
     basketTgt := 3.00
     basketMax := 10.0
-    hedgeMultE := 2.0
+    hedgeMultE := equalStyle ? 1.0 : 2.0
 
 // ------------------------------------------------------- signal calculation
 // Returns the four booleans for whatever timeframe this runs in, already
@@ -240,6 +252,14 @@ var float shNet   = 0.0
 var int   shWins  = 0
 var int   shStops = 0
 
+// Chain bookkeeping for the equal-hedge style.
+var float carried   = 0.0    // realised result of the leg that was dropped
+var bool  chainNow  = false  // this position came out of a hedged pair
+var int   hedgeBar  = 0
+var int   nDropHdg  = 0      // dropped the hedge, kept the original
+var int   nDropOrig = 0      // dropped the original, kept the hedge
+var int   nTimeout  = 0
+
 mkLabel(txt, col) =>
     if showLabels
         label.new(bar_index, high, txt, style = label.style_label_down,
@@ -271,44 +291,82 @@ if barstate.isconfirmed
             origLots  := lotSize
             mkLabel("SELL", color.new(color.maroon, 20))
 
-    // ---------- chained pair: one combined decision, never leg by leg
-    // The EA re-checks the basket on every tick, so the target and the floor
-    // can both be reached INSIDE a bar. The combined result moves in a
-    // straight line with price, so the exact price for each is solved for and
-    // compared against the bar's own high and low.
+    // ---------- a hedged pair
     else if hedgeDir != 0
-        slope = (origDir * origLots + hedgeDir * hedgeLots) * 100.0
-        inter = (-origEntry * origDir * origLots - hedgeEntry * hedgeDir * hedgeLots) * 100.0 - costOf(origLots) - costOf(hedgeLots)
-        pTgt  = slope != 0 ? (basketTgt - inter) / slope : na
-        pStop = slope != 0 ? (-basketMax - inter) / slope : na
-        tgtTouched  = slope != 0 and (slope > 0 ? high >= pTgt : low <= pTgt)
-        stopTouched = slope != 0 and basketMax > 0 and (slope > 0 ? low <= pStop : high >= pStop)
-        // When one bar reaches both, which came first is unknowable, so the
-        // loss is taken first and the test never flatters itself.
-        if stopTouched
-            hedgeNet  := hedgeNet - basketMax
-            nBasketSL := nBasketSL + 1
-            mkLabel("BASKET STOP " + str.tostring(-basketMax, "#.##"), color.new(color.red, 10))
-            origDir   := 0
-            hedgeDir  := 0
-            origLots  := 0.0
-            hedgeLots := 0.0
-        else if tgtTouched
-            hedgeNet  := hedgeNet + basketTgt
-            nBasketTP := nBasketTP + 1
-            mkLabel("BASKET TP " + str.tostring(basketTgt, "#.##"), color.new(color.green, 10))
-            origDir   := 0
-            hedgeDir  := 0
-            origLots  := 0.0
-            hedgeLots := 0.0
+        if equalStyle
+            // EQUAL HEDGE. The combined result is frozen: it cannot recover
+            // and it cannot deepen, so there is nothing to stop out. The pair
+            // is a pause button, and the chart decides which side to keep.
+            favOrig  = favourReason(origDir)  != ""
+            favHedge = favourReason(hedgeDir) != ""
+            if favOrig
+                // The original's own direction is showing again. Drop the
+                // hedge and let the original run on.
+                carried  := carried + hedgePnl
+                nDropHdg := nDropHdg + 1
+                mkLabel("DROP HEDGE " + str.tostring(hedgePnl, "#.##"), color.new(color.purple, 20))
+                hedgeDir  := 0
+                hedgeLots := 0.0
+            else if favHedge
+                // The new direction has confirmed instead. Take the original's
+                // loss and let the hedge become the live trade.
+                carried   := carried + origPnl
+                nDropOrig := nDropOrig + 1
+                mkLabel("DROP ORIGINAL " + str.tostring(origPnl, "#.##"), color.new(color.olive, 20))
+                origDir   := hedgeDir
+                origEntry := hedgeEntry
+                origLots  := hedgeLots
+                hedgeDir  := 0
+                hedgeLots := 0.0
+            else if bar_index - hedgeBar > unwindBars
+                // Neither side ever spoke. Take the frozen loss and move on.
+                hedgeNet := hedgeNet + basket
+                nTimeout := nTimeout + 1
+                mkLabel("TIMEOUT " + str.tostring(basket, "#.##"), color.new(color.gray, 20))
+                origDir   := 0
+                hedgeDir  := 0
+                origLots  := 0.0
+                hedgeLots := 0.0
+                carried   := 0.0
+                chainNow  := false
+        else
+            // DOUBLE HEDGE. The pair keeps moving, so it needs a target and a
+            // floor. Both can be reached inside a bar, so the exact price for
+            // each is solved for and compared against the bar's high and low.
+            slope = (origDir * origLots + hedgeDir * hedgeLots) * 100.0
+            inter = (-origEntry * origDir * origLots - hedgeEntry * hedgeDir * hedgeLots) * 100.0 - costOf(origLots) - costOf(hedgeLots)
+            pTgt  = slope != 0 ? (basketTgt - inter) / slope : na
+            pStop = slope != 0 ? (-basketMax - inter) / slope : na
+            tgtTouched  = slope != 0 and (slope > 0 ? high >= pTgt : low <= pTgt)
+            stopTouched = slope != 0 and basketMax > 0 and (slope > 0 ? low <= pStop : high >= pStop)
+            if stopTouched
+                hedgeNet  := hedgeNet - basketMax
+                nBasketSL := nBasketSL + 1
+                mkLabel("BASKET STOP " + str.tostring(-basketMax, "#.##"), color.new(color.red, 10))
+                origDir   := 0
+                hedgeDir  := 0
+                origLots  := 0.0
+                hedgeLots := 0.0
+                chainNow  := false
+            else if tgtTouched
+                hedgeNet  := hedgeNet + basketTgt
+                nBasketTP := nBasketTP + 1
+                mkLabel("BASKET TP " + str.tostring(basketTgt, "#.##"), color.new(color.green, 10))
+                origDir   := 0
+                hedgeDir  := 0
+                origLots  := 0.0
+                hedgeLots := 0.0
+                chainNow  := false
 
-    // ---------- single position
-    // Order matters and mirrors the EA: profit is checked on every tick, the
-    // stop is its own separate check, and only then is hedging considered.
-    // An earlier version skipped the stop whenever it decided to hold, which
-    // let held trades dodge losses the EA would really have taken.
+    // ---------- a single position
+    // Order mirrors the EA: profit is checked every tick, the stop is its own
+    // separate check, and only then is hedging considered.
     else
-        grossNeed = profitTgt + costOf(origLots)
+        // A survivor from a hedged pair carries the dropped leg's loss, so its
+        // target is raised by that amount and the chain as a whole can still
+        // finish in profit. That is the point of hedging in the first place.
+        effTarget = profitTgt + (carryLoss ? math.max(0.0, -carried) : 0.0)
+        grossNeed = effTarget + costOf(origLots)
         tgtPrice  = origDir == 1 ? origEntry + grossNeed / (origLots * 100.0) : origEntry - grossNeed / (origLots * 100.0)
         tpHit     = origDir == 1 ? high >= tgtPrice : low <= tgtPrice
 
@@ -319,39 +377,52 @@ if barstate.isconfirmed
         cappedLoss  = -slDist * origLots * 100.0 - costOf(origLots)
         bookStop    = priceStop ? cappedLoss : origPnl
 
-        // With a price stop the target and the stop can both be touched in one
-        // bar, so the loss is assumed first.
         if priceStop and stopTouched
-            normalNet := normalNet + bookStop
-            lossSum   := lossSum + bookStop
-            nStopped  := nStopped + 1
+            if chainNow
+                hedgeNet := hedgeNet + bookStop + carried
+            else
+                normalNet := normalNet + bookStop
+                lossSum   := lossSum + bookStop
+                nStopped  := nStopped + 1
             mkLabel("STOP " + str.tostring(bookStop, "#.##"), color.new(color.red, 30))
             origDir  := 0
             origLots := 0.0
+            carried  := 0.0
+            chainNow := false
         else if tpHit
-            normalNet := normalNet + profitTgt
-            nNormalTP := nNormalTP + 1
-            mkLabel("TP " + str.tostring(profitTgt, "#.##"), color.new(color.green, 30))
+            if chainNow
+                hedgeNet := hedgeNet + effTarget + carried
+            else
+                normalNet := normalNet + profitTgt
+                nNormalTP := nNormalTP + 1
+            mkLabel("TP " + str.tostring(effTarget, "#.##"), color.new(color.green, 30))
             origDir  := 0
             origLots := 0.0
+            carried  := 0.0
+            chainNow := false
         else if stopHit
-            normalNet := normalNet + bookStop
-            lossSum   := lossSum + bookStop
-            nStopped  := nStopped + 1
+            if chainNow
+                hedgeNet := hedgeNet + bookStop + carried
+            else
+                normalNet := normalNet + bookStop
+                lossSum   := lossSum + bookStop
+                nStopped  := nStopped + 1
             mkLabel("STOP " + str.tostring(bookStop, "#.##"), color.new(color.red, 30))
             origDir  := 0
             origLots := 0.0
-        else if origPnl < 0 and ((origDir == 1 and trend == -1) or (origDir == -1 and trend == 1))
+            carried  := 0.0
+            chainNow := false
+        else if origPnl < 0 and ((origDir == 1 and trend == -1) or (origDir == -1 and trend == 1)) and not chainNow
             reason = favourReason(origDir)
             if reason != ""
-                // The drawdown is explained by a grab or gap elsewhere. Wait.
                 nHold := nHold + 1
                 mkLabel("HOLD: " + reason, color.new(color.orange, 30))
             else if hedgeOn
-                // Nothing favourable left anywhere. Real trend change.
                 hedgeDir   := -origDir
                 hedgeEntry := close
                 hedgeLots  := origLots * hedgeMultE
+                hedgeBar   := bar_index
+                chainNow   := true
                 nHedge     := nHedge + 1
                 mkLabel("HEDGE " + str.tostring(hedgeLots, "#.##"), color.new(color.blue, 10))
 
@@ -411,8 +482,8 @@ if showTable and barstate.islast
     table.cell(t, 1, 1, effEntry)
     table.cell(t, 0, 2, "Target / Stop / type")
     table.cell(t, 1, 2, str.tostring(profitTgt, "#.##") + " / " + str.tostring(slDist, "#.##") + " / " + (priceStop ? "price" : "close"))
-    table.cell(t, 0, 3, "Hedge / target / floor")
-    table.cell(t, 1, 3, (hedgeOn ? "on x" + str.tostring(hedgeMultE, "#.#") : "OFF") + " / " + str.tostring(basketTgt, "#.##") + " / " + str.tostring(basketMax, "#.##"))
+    table.cell(t, 0, 3, "Hedge style")
+    table.cell(t, 1, 3, hedgeOn ? (equalStyle ? "EQUAL x1, drop a leg, give up after " + str.tostring(unwindBars) + " bars" : "DOUBLE x" + str.tostring(hedgeMultE, "#.#") + ", target " + str.tostring(basketTgt, "#.##") + " floor " + str.tostring(basketMax, "#.##")) : "OFF")
     table.cell(t, 0, 4, "Signals now (TF)")
     table.cell(t, 1, 4, "bull " + tfMark(bull1, bull2, bull3, bull4) + "  bear " + tfMark(bear1, bear2, bear3, bear4) + "  sw " + tfMark(sbuy1 or ssell1, sbuy2 or ssell2, sbuy3 or ssell3, sbuy4 or ssell4))
     table.cell(t, 0, 5, "Open now")
@@ -421,8 +492,8 @@ if showTable and barstate.islast
     table.cell(t, 1, 6, str.tostring(nNormalTP) + " / " + str.tostring(nStopped) + " / " + str.tostring(avgLoss, "#.##"))
     table.cell(t, 0, 7, "Holds / Hedges")
     table.cell(t, 1, 7, str.tostring(nHold) + " / " + str.tostring(nHedge))
-    table.cell(t, 0, 8, "Basket win / loss")
-    table.cell(t, 1, 8, str.tostring(nBasketTP) + " / " + str.tostring(nBasketSL))
+    table.cell(t, 0, 8, equalStyle ? "Dropped hedge / orig / timeout" : "Basket win / loss")
+    table.cell(t, 1, 8, equalStyle ? str.tostring(nDropHdg) + " / " + str.tostring(nDropOrig) + " / " + str.tostring(nTimeout) : str.tostring(nBasketTP) + " / " + str.tostring(nBasketSL))
     // The row that decides everything: with this target and this average
     // loss, the win rate has to clear the needed figure or nothing else
     // matters. It is arithmetic, not opinion.
