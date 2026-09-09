@@ -1,0 +1,256 @@
+//@version=5
+// Fishing Lots - Hold vs Hedge Tester
+//
+// This mirrors the decision logic inside FishingLotsEA_v3.mq5 so the
+// hold-vs-hedge behaviour can be SEEN on a TradingView chart before the EA
+// ever touches a demo account.
+//
+// IMPORTANT LIMITATION, please read:
+// Pine cannot hold a long and a short at the same time. A strategy() here is
+// netting, so entering a 2x short against an open long would just close the
+// long and leave a 1x short. That is not a hedge and would test nothing.
+// So this is an INDICATOR that tracks VIRTUAL positions in its own variables
+// and does its own money maths. What it proves is the DECISION logic: where
+// it holds, where it hedges, and what the pair would have been worth.
+// It does not prove fills, slippage, spread, or broker behaviour. Those still
+// need the MetaTrader Strategy Tester.
+
+indicator("Fishing Lots - Hold vs Hedge Tester", overlay = true,
+          max_labels_count = 500, max_lines_count = 500)
+
+// ---------------------------------------------------------------- inputs
+grpT = "Trend"
+fastLen  = input.int(20,   "Fast EMA",        group = grpT)
+slowLen  = input.int(50,   "Slow EMA",        group = grpT)
+useADX   = input.bool(false,"Use ADX filter", group = grpT)
+adxLen   = input.int(14,   "ADX length",      group = grpT)
+adxMin   = input.float(18.0,"ADX minimum",    group = grpT)
+
+grpS = "FVG / Liquidity grab"
+pivotLR  = input.int(3, "Pivot left/right", minval = 1, group = grpS)
+sigWindow= input.int(1, "Signal stays live for N bars", minval = 1, maxval = 10, group = grpS)
+
+grpTF = "Scan timeframes"
+tf1      = input.timeframe("",    "TF1 (blank = chart)", group = grpTF)
+useTF2   = input.bool(true,       "Use TF2",             group = grpTF)
+tf2      = input.timeframe("5",   "TF2",                 group = grpTF)
+useTF3   = input.bool(true,       "Use TF3",             group = grpTF)
+tf3      = input.timeframe("15",  "TF3",                 group = grpTF)
+useTF4   = input.bool(false,      "Use TF4",             group = grpTF)
+tf4      = input.timeframe("60",  "TF4",                 group = grpTF)
+
+grpM = "Money"
+lotSize     = input.float(0.01, "Lot size",                    step = 0.01, group = grpM)
+hedgeMult   = input.float(2.0,  "Hedge multiple",              step = 0.5,  group = grpM)
+profitTgt   = input.float(0.50, "Profit target per lot ($)",   step = 0.05, group = grpM)
+basketTgt   = input.float(0.0,  "Basket target ($)",           step = 0.05, group = grpM)
+basketMax   = input.float(10.0, "Basket max loss ($, 0 = off)",step = 1.0,  group = grpM)
+slDist      = input.float(3.0,  "Stop distance ($ of price)",  step = 0.1,  group = grpM)
+commPerLot  = input.float(7.0,  "Commission per 1.00 lot, round turn ($)", step = 0.5, group = grpM)
+
+grpV = "Display"
+showLabels = input.bool(true, "Show decision labels", group = grpV)
+showTable  = input.bool(true, "Show state table",    group = grpV)
+
+// ------------------------------------------------------- signal calculation
+// Returns the four booleans for whatever timeframe this runs in, already
+// shifted to the LAST CLOSED bar so nothing repaints.
+calcSignals() =>
+    ph = ta.pivothigh(high, pivotLR, pivotLR)
+    pl = ta.pivotlow(low,  pivotLR, pivotLR)
+    var float lastHi = na
+    var float lastLo = na
+    if not na(ph)
+        lastHi := ph
+    if not na(pl)
+        lastLo := pl
+    bull  = low > high[2]
+    bear  = high < low[2]
+    sBuy  = not na(lastHi) and high > lastHi and close < lastHi
+    sSell = not na(lastLo) and low  < lastLo and close > lastLo
+    [bull[1], bear[1], sBuy[1], sSell[1]]
+
+// request.security must be called unconditionally, so all four always run and
+// the enable flags mask the results afterwards.
+[b1, be1, sb1, ss1] = request.security(syminfo.tickerid, tf1, calcSignals(), lookahead = barmerge.lookahead_off)
+[b2, be2, sb2, ss2] = request.security(syminfo.tickerid, tf2, calcSignals(), lookahead = barmerge.lookahead_off)
+[b3, be3, sb3, ss3] = request.security(syminfo.tickerid, tf3, calcSignals(), lookahead = barmerge.lookahead_off)
+[b4, be4, sb4, ss4] = request.security(syminfo.tickerid, tf4, calcSignals(), lookahead = barmerge.lookahead_off)
+
+// Widen each signal across the chosen window of bars.
+holdBars(src) =>
+    out = false
+    for i = 0 to sigWindow - 1
+        out := out or src[i]
+    out
+
+bull1  = holdBars(b1)
+bear1  = holdBars(be1)
+sbuy1  = holdBars(sb1)
+ssell1 = holdBars(ss1)
+bull2  = useTF2 and holdBars(b2)
+bear2  = useTF2 and holdBars(be2)
+sbuy2  = useTF2 and holdBars(sb2)
+ssell2 = useTF2 and holdBars(ss2)
+bull3  = useTF3 and holdBars(b3)
+bear3  = useTF3 and holdBars(be3)
+sbuy3  = useTF3 and holdBars(sb3)
+ssell3 = useTF3 and holdBars(ss3)
+bull4  = useTF4 and holdBars(b4)
+bear4  = useTF4 and holdBars(be4)
+sbuy4  = useTF4 and holdBars(sb4)
+ssell4 = useTF4 and holdBars(ss4)
+
+anyBull  = bull1  or bull2  or bull3  or bull4
+anyBear  = bear1  or bear2  or bear3  or bear4
+anySBuy  = sbuy1  or sbuy2  or sbuy3  or sbuy4
+anySSell = ssell1 or ssell2 or ssell3 or ssell4
+
+// Names the timeframe responsible, which is the whole point of scanning more
+// than one: a loss caused by a grab on another timeframe is NOT a trend change.
+favourReason(dir) =>
+    string r = ""
+    if dir > 0
+        r := ssell1 ? "sell sweep on TF1" : bull1 ? "bull FVG on TF1" : ssell2 ? "sell sweep on TF2" : bull2 ? "bull FVG on TF2" : ssell3 ? "sell sweep on TF3" : bull3 ? "bull FVG on TF3" : ssell4 ? "sell sweep on TF4" : bull4 ? "bull FVG on TF4" : ""
+    else
+        r := sbuy1 ? "buy sweep on TF1" : bear1 ? "bear FVG on TF1" : sbuy2 ? "buy sweep on TF2" : bear2 ? "bear FVG on TF2" : sbuy3 ? "buy sweep on TF3" : bear3 ? "bear FVG on TF3" : sbuy4 ? "buy sweep on TF4" : bear4 ? "bear FVG on TF4" : ""
+    r
+
+// ------------------------------------------------------------------ trend
+emaFast = ta.ema(close, fastLen)
+emaSlow = ta.ema(close, slowLen)
+[_dip, _dim, adxVal] = ta.dmi(adxLen, adxLen)
+adxOK = not useADX or adxVal >= adxMin
+trend = not adxOK ? 0 : emaFast > emaSlow ? 1 : emaFast < emaSlow ? -1 : 0
+
+// --------------------------------------------------------- virtual account
+// Gold: one lot is 100 ounces, so 0.01 lot moves $1 per $1 of price.
+pnlOf(dir, entry, lots) => (close - entry) * dir * lots * 100.0
+costOf(lots) => lots * commPerLot
+
+var int    origDir   = 0
+var float  origEntry = na
+var float  origLots  = 0.0
+var int    hedgeDir  = 0
+var float  hedgeEntry= na
+var float  hedgeLots = 0.0
+var float  realized  = 0.0
+var int    nHold     = 0
+var int    nHedge    = 0
+var int    nBasketTP = 0
+var int    nBasketSL = 0
+var int    nNormalTP = 0
+var int    nStopped  = 0
+
+mkLabel(txt, col) =>
+    if showLabels
+        label.new(bar_index, high, txt, style = label.style_label_down,
+                  color = col, textcolor = color.white, size = size.small)
+
+origPnl  = origDir  != 0 ? pnlOf(origDir,  origEntry,  origLots)  - costOf(origLots)  : 0.0
+hedgePnl = hedgeDir != 0 ? pnlOf(hedgeDir, hedgeEntry, hedgeLots) - costOf(hedgeLots) : 0.0
+basket   = origPnl + hedgePnl
+
+// Entry rule, mirroring the EA's optional auto-entry: trend plus a gap or grab.
+momoUp = anyBull or anySSell
+momoDn = anyBear or anySBuy
+
+if barstate.isconfirmed
+    // ---------- no position: look for an entry
+    if origDir == 0
+        if trend == 1 and momoUp
+            origDir   := 1
+            origEntry := close
+            origLots  := lotSize
+            mkLabel("BUY", color.new(color.teal, 20))
+        else if trend == -1 and momoDn
+            origDir   := -1
+            origEntry := close
+            origLots  := lotSize
+            mkLabel("SELL", color.new(color.maroon, 20))
+
+    // ---------- chained pair: one combined decision, never leg by leg
+    else if hedgeDir != 0
+        if basket > basketTgt
+            realized  := realized + basket
+            nBasketTP := nBasketTP + 1
+            mkLabel("BASKET TP " + str.tostring(basket, "#.##"), color.new(color.green, 10))
+            origDir   := 0
+            hedgeDir  := 0
+            origLots  := 0.0
+            hedgeLots := 0.0
+        else if basketMax > 0 and basket <= -basketMax
+            realized  := realized + basket
+            nBasketSL := nBasketSL + 1
+            mkLabel("BASKET STOP " + str.tostring(basket, "#.##"), color.new(color.red, 10))
+            origDir   := 0
+            hedgeDir  := 0
+            origLots  := 0.0
+            hedgeLots := 0.0
+
+    // ---------- single position: take profit, hold, hedge, or stop
+    else
+        stopHit = origDir == 1 ? close <= origEntry - slDist : close >= origEntry + slDist
+        if origPnl >= profitTgt
+            realized  := realized + origPnl
+            nNormalTP := nNormalTP + 1
+            mkLabel("TP " + str.tostring(origPnl, "#.##"), color.new(color.green, 30))
+            origDir  := 0
+            origLots := 0.0
+        else if origPnl < 0 and ((origDir == 1 and trend == -1) or (origDir == -1 and trend == 1))
+            reason = favourReason(origDir)
+            if reason != ""
+                // The drawdown is explained by a grab or gap elsewhere. Wait.
+                nHold := nHold + 1
+                mkLabel("HOLD: " + reason, color.new(color.orange, 30))
+            else
+                // Nothing favourable left anywhere. Real trend change.
+                hedgeDir   := -origDir
+                hedgeEntry := close
+                hedgeLots  := origLots * hedgeMult
+                nHedge     := nHedge + 1
+                mkLabel("HEDGE " + str.tostring(hedgeLots, "#.##"), color.new(color.blue, 10))
+        else if stopHit
+            realized := realized + origPnl
+            nStopped := nStopped + 1
+            mkLabel("STOP " + str.tostring(origPnl, "#.##"), color.new(color.red, 30))
+            origDir  := 0
+            origLots := 0.0
+
+// ------------------------------------------------------------------ visuals
+plot(emaFast, "Fast EMA", color = color.new(color.aqua, 0),  linewidth = 1)
+plot(emaSlow, "Slow EMA", color = color.new(color.orange, 0), linewidth = 1)
+
+plot(origDir != 0 ? origEntry : na, "Original entry",
+     color = color.new(color.teal, 0), style = plot.style_linebr, linewidth = 2)
+plot(hedgeDir != 0 ? hedgeEntry : na, "Hedge entry",
+     color = color.new(color.blue, 0), style = plot.style_linebr, linewidth = 2)
+
+tfMark(a, b, c, d) => (a ? "1" : "") + (b ? "2" : "") + (c ? "3" : "") + (d ? "4" : "")
+
+if showTable and barstate.islast
+    var table t = table.new(position.top_right, 2, 12, border_width = 1)
+    table.cell(t, 0, 0, "State",           bgcolor = color.new(color.gray, 70), text_color = color.white)
+    table.cell(t, 1, 0, "",                bgcolor = color.new(color.gray, 70))
+    table.cell(t, 0, 1, "Trend")
+    table.cell(t, 1, 1, trend == 1 ? "UP" : trend == -1 ? "DOWN" : "unclear")
+    table.cell(t, 0, 2, "Bull FVG on TF")
+    table.cell(t, 1, 2, tfMark(bull1, bull2, bull3, bull4))
+    table.cell(t, 0, 3, "Bear FVG on TF")
+    table.cell(t, 1, 3, tfMark(bear1, bear2, bear3, bear4))
+    table.cell(t, 0, 4, "Buy sweep on TF")
+    table.cell(t, 1, 4, tfMark(sbuy1, sbuy2, sbuy3, sbuy4))
+    table.cell(t, 0, 5, "Sell sweep on TF")
+    table.cell(t, 1, 5, tfMark(ssell1, ssell2, ssell3, ssell4))
+    table.cell(t, 0, 6, "Original")
+    table.cell(t, 1, 6, origDir == 0 ? "flat" : (origDir == 1 ? "BUY " : "SELL ") + str.tostring(origPnl, "#.##"))
+    table.cell(t, 0, 7, "Hedge")
+    table.cell(t, 1, 7, hedgeDir == 0 ? "none" : (hedgeDir == 1 ? "BUY " : "SELL ") + str.tostring(hedgePnl, "#.##"))
+    table.cell(t, 0, 8, "Basket now")
+    table.cell(t, 1, 8, hedgeDir == 0 ? "-" : str.tostring(basket, "#.##"))
+    table.cell(t, 0, 9, "Realized $")
+    table.cell(t, 1, 9, str.tostring(realized, "#.##"))
+    table.cell(t, 0, 10, "Holds / Hedges")
+    table.cell(t, 1, 10, str.tostring(nHold) + " / " + str.tostring(nHedge))
+    table.cell(t, 0, 11, "TP / BskTP / BskSL / SL")
+    table.cell(t, 1, 11, str.tostring(nNormalTP) + " / " + str.tostring(nBasketTP) + " / " + str.tostring(nBasketSL) + " / " + str.tostring(nStopped))

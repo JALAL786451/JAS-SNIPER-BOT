@@ -38,23 +38,40 @@ the trader actually reads the chart. Worth testing both ways on demo.
 
 ## Multi-timeframe
 
+This is not a single higher-timeframe pairing. It is a scan across several
+timeframes at once, and the reason matters.
+
+A losing trade is frequently not a trend change at all. The trend is intact and
+price is pulling back because a liquidity grab or a gap fired on some OTHER
+timeframe. Wait it out and the original flow resumes. So the question the EA
+asks is not "does the higher timeframe agree" but "is there any timeframe that
+explains this drawdown as a pullback".
+
+The rule that follows:
+
+- A favourable signal on ANY scanned timeframe means hold. The drawdown has an
+  explanation that is not a trend change.
+- Only when the trend has flipped AND no favourable signal remains anywhere is
+  the trend change the real explanation. That is the hedge case.
+
 Every detection function takes an explicit `ENUM_TIMEFRAMES`. MQL5's `iHigh`,
 `iLow` and `iClose` accept a timeframe natively, so unlike Pine there is no
 need for `request.security()` and bit-packing to read another timeframe.
 
-Three timeframe inputs are wired through:
-
 | Input | Controls |
 |---|---|
 | `InpTrendTF` | the EMA trend and the ADX filter |
-| `InpSignalTF` | FVG and liquidity-grab detection |
+| `InpScanTF1` to `InpScanTF4` | the timeframes scanned for FVG and liquidity grabs |
 | `InpStructureTF` | the optional higher-timeframe agreement gate |
 
-All three default to `PERIOD_CURRENT`, and `InpUseHTFGate` defaults to off, so
-out of the box the EA behaves exactly like a single-timeframe build. **Which
-timeframe should pair with which is still unspecified and needs the trader's
-input.** The plumbing is in place so that decision costs a settings change
-rather than a code change.
+Defaults scan the chart timeframe plus 5-minute and 15-minute, with 1-hour
+available but off. Each timeframe is recomputed only when it prints a new bar,
+which is also why a higher timeframe naturally holds its signal for longer. A
+15-minute grab stays live for the full fifteen minutes, which is exactly the
+"wait, and the flow resumes" behaviour.
+
+Every hold is logged with the timeframe and signal responsible, so a demo
+review can show which timeframe caused each decision.
 
 ## Hold versus hedge
 
@@ -169,10 +186,27 @@ Be careful not to read every default as a settled decision.
 | `InpBasketMaxLossUSD` 10.00 | placeholder, added as a safety requirement |
 | `InpSlippagePoints` 30 | placeholder, tune if orders get rejected |
 
+## Testing on TradingView
+
+`fishing_lots_tester.pine` mirrors the same decision logic so the behaviour can
+be seen on a chart before the EA touches a demo account.
+
+It has to be an indicator, not a strategy. Pine is netting: entering a 2x short
+against an open long closes the long and leaves a 1x short, which is not a
+hedge and would test nothing. So the tester tracks virtual positions in its own
+variables and does its own money arithmetic, marking each decision on the chart
+and keeping a running state table.
+
+What it proves is the decision logic: where it holds, where it hedges, which
+timeframe caused each hold, and what the pair would have been worth. What it
+cannot prove is fills, spread, slippage or broker behaviour. Those still need
+the MetaTrader Strategy Tester.
+
+It is also the practical way to capture the confirmed-hedge example that has
+never been seen live.
+
 ## Still open
 
-- **Which timeframe pairs with which.** The multi-timeframe plumbing is built
-  and defaults to neutral, but the actual pairing is still the trader's call.
 - **The Exness demo account's execution mode**, instant or market, which
   decides the filling mode. `SetTypeFillingBySymbol` picks it automatically,
   but this should still be confirmed against the real account.

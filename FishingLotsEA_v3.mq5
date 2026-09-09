@@ -45,9 +45,21 @@ input ulong  InpSlippagePoints      = 30;     // Max deviation in points - tune 
 
 input group "=== Timeframes (multi-timeframe wiring) ==="
 input ENUM_TIMEFRAMES InpTrendTF      = PERIOD_CURRENT; // EMA trend timeframe
-input ENUM_TIMEFRAMES InpSignalTF     = PERIOD_CURRENT; // FVG / liquidity-grab timeframe
 input ENUM_TIMEFRAMES InpStructureTF  = PERIOD_CURRENT; // Higher timeframe used by the gate below
 input bool   InpUseHTFGate          = false;  // true = a hedge also needs the structure TF to agree
+
+input group "=== FVG / LGB scan timeframes ==="
+// A losing trade is often NOT a trend change. It is a pullback caused by a
+// liquidity grab or a gap on some OTHER timeframe, after which the original
+// flow resumes. So the scan runs across several timeframes at once, and a
+// favourable signal on ANY of them means hold rather than hedge.
+input ENUM_TIMEFRAMES InpScanTF1      = PERIOD_CURRENT; // always scanned
+input bool            InpUseScanTF2   = true;
+input ENUM_TIMEFRAMES InpScanTF2      = PERIOD_M5;
+input bool            InpUseScanTF3   = true;
+input ENUM_TIMEFRAMES InpScanTF3      = PERIOD_M15;
+input bool            InpUseScanTF4   = false;
+input ENUM_TIMEFRAMES InpScanTF4      = PERIOD_H1;
 
 input group "=== Trend ==="
 input int    InpFastEMA             = 20;
@@ -95,7 +107,7 @@ int      hStructSlow = INVALID_HANDLE;
 
 bool     gInitFailed          = false;
 datetime gLastBarTime         = 0;
-datetime gLastSignalBarTime   = 0;
+#define MAX_SCAN_TF 4
 
 bool     gWaitPullbackBuy     = false;
 bool     gWaitPullbackSell    = false;
@@ -105,11 +117,15 @@ int      gDayStartDay         = -1;
 int      gDayStartMonth       = -1;
 int      gDayStartYear        = -1;
 
-//--- Cached signal state, recomputed once per signal-timeframe bar.
-bool     gSigBullFVG   = false;
-bool     gSigBearFVG   = false;
-bool     gSigSweepBuy  = false;
-bool     gSigSweepSell = false;
+//--- Cached signal state, one slot per scanned timeframe. Each slot is
+//--- recomputed only when that timeframe prints a new bar.
+ENUM_TIMEFRAMES gScanTF[MAX_SCAN_TF];
+datetime gScanLastBar[MAX_SCAN_TF];
+bool     gScanBullFVG[MAX_SCAN_TF];
+bool     gScanBearFVG[MAX_SCAN_TF];
+bool     gScanSweepBuy[MAX_SCAN_TF];
+bool     gScanSweepSell[MAX_SCAN_TF];
+int      gScanCount = 0;
 
 //--- Chain map, rebuilt from live positions every tick.
 ulong    gChainHedge[];     // hedge ticket
@@ -192,6 +208,7 @@ int OnInit()
       }
    }
 
+   BuildScanList();
    ResetDailyBaseline();
 
    LogAlways("--------------------------------------------------");
@@ -199,7 +216,10 @@ int OnInit()
    LogAlways(StringFormat("Symbol      : %s", _Symbol));
    LogAlways(StringFormat("Chart TF    : %s", EnumToString((ENUM_TIMEFRAMES)Period())));
    LogAlways(StringFormat("Trend TF    : %s", EnumToString(InpTrendTF)));
-   LogAlways(StringFormat("Signal TF   : %s", EnumToString(InpSignalTF)));
+   string tfList = "";
+   for(int i = 0; i < gScanCount; i++)
+      tfList += (i > 0 ? ", " : "") + EnumToString(gScanTF[i]);
+   LogAlways(StringFormat("Scan TFs    : %s", tfList));
    LogAlways(StringFormat("Structure TF: %s (gate %s)",
                           EnumToString(InpStructureTF), InpUseHTFGate ? "ON" : "OFF"));
    LogAlways(StringFormat("Volume cap  : %.2f   Daily loss cap: %.2f",
@@ -485,33 +505,101 @@ bool LGB_SweepSell(ENUM_TIMEFRAMES tf, int shift, double lastLo)
 //| Signal refresh. The pivot hunt walks up to 200 bars, so it runs   |
 //| once per signal-timeframe bar rather than on every tick.          |
 //+------------------------------------------------------------------+
+void BuildScanList()
+{
+   gScanCount = 0;
+
+   gScanTF[gScanCount++] = InpScanTF1;
+   if(InpUseScanTF2 && gScanCount < MAX_SCAN_TF) gScanTF[gScanCount++] = InpScanTF2;
+   if(InpUseScanTF3 && gScanCount < MAX_SCAN_TF) gScanTF[gScanCount++] = InpScanTF3;
+   if(InpUseScanTF4 && gScanCount < MAX_SCAN_TF) gScanTF[gScanCount++] = InpScanTF4;
+
+   for(int i = 0; i < MAX_SCAN_TF; i++)
+   {
+      gScanLastBar[i]   = 0;
+      gScanBullFVG[i]   = false;
+      gScanBearFVG[i]   = false;
+      gScanSweepBuy[i]  = false;
+      gScanSweepSell[i] = false;
+   }
+}
+
 void RefreshSignalsIfNeeded()
 {
-   datetime t = iTime(_Symbol, InpSignalTF, 0);
-   if(t == 0 || t == gLastSignalBarTime) return;
-   gLastSignalBarTime = t;
-
-   double lastHi = LastPivotHigh(InpSignalTF, InpPivotLR, InpPivotMaxLookback);
-   double lastLo = LastPivotLow (InpSignalTF, InpPivotLR, InpPivotMaxLookback);
-
-   gSigBullFVG   = false;
-   gSigBearFVG   = false;
-   gSigSweepBuy  = false;
-   gSigSweepSell = false;
-
    int window = MathMax(1, InpSignalWindowBars);
 
-   for(int s = 1; s <= window; s++)
+   for(int i = 0; i < gScanCount; i++)
    {
-      if(BullFVG(InpSignalTF, s))                  gSigBullFVG   = true;
-      if(BearFVG(InpSignalTF, s))                  gSigBearFVG   = true;
-      if(LGB_SweepBuy (InpSignalTF, s, lastHi))    gSigSweepBuy  = true;
-      if(LGB_SweepSell(InpSignalTF, s, lastLo))    gSigSweepSell = true;
-   }
+      ENUM_TIMEFRAMES tf = gScanTF[i];
 
-   if(gSigBullFVG || gSigBearFVG || gSigSweepBuy || gSigSweepSell)
-      Log(StringFormat("Signals refreshed: bullFVG=%d bearFVG=%d sweepBuy=%d sweepSell=%d",
-                       gSigBullFVG, gSigBearFVG, gSigSweepBuy, gSigSweepSell));
+      // Each timeframe is recomputed only when IT prints a new bar. That is
+      // also why a higher timeframe naturally holds its signal for longer:
+      // a 15-minute grab stays live for the whole 15 minutes, which is the
+      // "wait, and the original flow resumes" behaviour.
+      datetime t = iTime(_Symbol, tf, 0);
+      if(t == 0 || t == gScanLastBar[i]) continue;
+      gScanLastBar[i] = t;
+
+      double lastHi = LastPivotHigh(tf, InpPivotLR, InpPivotMaxLookback);
+      double lastLo = LastPivotLow (tf, InpPivotLR, InpPivotMaxLookback);
+
+      bool bull = false, bear = false, sBuy = false, sSell = false;
+
+      for(int sh = 1; sh <= window; sh++)
+      {
+         if(BullFVG(tf, sh))               bull  = true;
+         if(BearFVG(tf, sh))               bear  = true;
+         if(LGB_SweepBuy (tf, sh, lastHi)) sBuy  = true;
+         if(LGB_SweepSell(tf, sh, lastLo)) sSell = true;
+      }
+
+      gScanBullFVG[i]   = bull;
+      gScanBearFVG[i]   = bear;
+      gScanSweepBuy[i]  = sBuy;
+      gScanSweepSell[i] = sSell;
+
+      if(bull || bear || sBuy || sSell)
+         Log(StringFormat("%s signals: bullFVG=%d bearFVG=%d sweepBuy=%d sweepSell=%d",
+                          EnumToString(tf), bull, bear, sBuy, sSell));
+   }
+}
+
+//--- Aggregates. A signal on ANY scanned timeframe counts.
+bool AnyBullFVG()   { for(int i=0;i<gScanCount;i++) if(gScanBullFVG[i])   return true; return false; }
+bool AnyBearFVG()   { for(int i=0;i<gScanCount;i++) if(gScanBearFVG[i])   return true; return false; }
+bool AnySweepBuy()  { for(int i=0;i<gScanCount;i++) if(gScanSweepBuy[i])  return true; return false; }
+bool AnySweepSell() { for(int i=0;i<gScanCount;i++) if(gScanSweepSell[i]) return true; return false; }
+
+// True when some timeframe is showing a signal that favours this direction,
+// which is the reason to sit through the drawdown instead of hedging it.
+// The reason string names WHICH timeframe, so the log shows why it held.
+bool FavourableSignal(long posType, string &reason)
+{
+   reason = "";
+
+   for(int i = 0; i < gScanCount; i++)
+   {
+      bool   hit  = false;
+      string what = "";
+
+      if(posType == POSITION_TYPE_BUY)
+      {
+         if(gScanSweepSell[i])    { hit = true; what = "sell-side sweep"; }
+         else if(gScanBullFVG[i]) { hit = true; what = "bull FVG"; }
+      }
+      else
+      {
+         if(gScanSweepBuy[i])     { hit = true; what = "buy-side sweep"; }
+         else if(gScanBearFVG[i]) { hit = true; what = "bear FVG"; }
+      }
+
+      if(hit)
+      {
+         reason = StringFormat("%s on %s", what, EnumToString(gScanTF[i]));
+         return true;
+      }
+   }
+   return false;
 }
 
 //+------------------------------------------------------------------+
@@ -827,19 +915,23 @@ void CheckHedgeDecisions()
 
       if(!trendFlipped) continue;
 
-      // A sweep or FVG back in OUR favour means the dip looks temporary.
-      bool favourable =
-         (type == POSITION_TYPE_BUY  && (gSigSweepSell || gSigBullFVG)) ||
-         (type == POSITION_TYPE_SELL && (gSigSweepBuy  || gSigBearFVG));
-
-      if(favourable)
+      // A sweep or FVG back in OUR favour, on ANY scanned timeframe, means
+      // the drawdown is a pullback rather than a trend change. Hold.
+      string why = "";
+      if(FavourableSignal(type, why))
       {
          Log(StringFormat(
-            "HOLD #%I64u (%.2f): trend flipped but a favourable signal is live "
-            "(sweepSell=%d bullFVG=%d sweepBuy=%d bearFVG=%d)",
-            ticket, pl, gSigSweepSell, gSigBullFVG, gSigSweepBuy, gSigBearFVG));
+            "HOLD #%I64u (%.2f): trend flipped on %s, but %s is still live. "
+            "Treating this as a pullback, not a trend change.",
+            ticket, pl, EnumToString(InpTrendTF), why));
          continue;
       }
+
+      // Nothing favourable left anywhere: the grab or gap has finished and
+      // the trend change is the real explanation. This is the hedge case.
+      Log(StringFormat(
+         "HEDGE CASE #%I64u (%.2f): trend flipped and no favourable signal "
+         "remains on any scanned timeframe.", ticket, pl));
 
       // Optional higher-timeframe agreement before committing to a hedge.
       if(InpUseHTFGate && structure != 0 && structure != trend)
@@ -921,10 +1013,10 @@ void OpenHedgeFor(ulong originalTicket, double originalVolume, long originalType
 bool PullbackConfirmed(bool forBuy)
 {
    double ema     = BufferValue(hFastEMA, 1);
-   double closeC1 = iClose(_Symbol, InpSignalTF, 1);
-   double openC1  = iOpen (_Symbol, InpSignalTF, 1);
-   double lowC1   = iLow  (_Symbol, InpSignalTF, 1);
-   double highC1  = iHigh (_Symbol, InpSignalTF, 1);
+   double closeC1 = iClose(_Symbol, InpScanTF1, 1);
+   double openC1  = iOpen (_Symbol, InpScanTF1, 1);
+   double lowC1   = iLow  (_Symbol, InpScanTF1, 1);
+   double highC1  = iHigh (_Symbol, InpScanTF1, 1);
 
    if(ema == 0.0 || closeC1 == 0.0) return false;
 
@@ -955,8 +1047,8 @@ void CheckAutoEntry()
       if(structure != 0 && structure != trend) return;
    }
 
-   bool momoUp = gSigBullFVG || gSigSweepSell;
-   bool momoDn = gSigBearFVG || gSigSweepBuy;
+   bool momoUp = AnyBullFVG() || AnySweepSell();
+   bool momoDn = AnyBearFVG() || AnySweepBuy();
 
    if(trend == 1 && momoUp)
    {
