@@ -15,9 +15,9 @@
 // Pick "Custom" to drive every setting yourself.
 
 // Bumped on every change so a screenshot says which file was running.
-VER = "v4"
+VER = "v5"
 
-indicator("Fishing Lots - Hold vs Hedge Tester v4", overlay = true,
+indicator("Fishing Lots - Hold vs Hedge Tester v5", overlay = true,
           max_labels_count = 500, max_lines_count = 500)
 
 // ---------------------------------------------------------------- presets
@@ -57,8 +57,7 @@ grpE = "Entry rule - the control test"
 // because that number IS the random-walk rate. If the real signal cannot
 // beat the coin flip, the signal is adding nothing and no amount of exit
 // tuning will help.
-entryMode = input.string("Signal (trend + FVG/LGB)", "Entry rule",
-    options = ["Signal (trend + FVG/LGB)", "Trend only", "Coin flip (control)"], group = grpE)
+entryMode = input.string("Signal (trend + FVG/LGB)", "Entry rule", options = ["Signal (trend + FVG/LGB)", "Trend only", "Coin flip (control)"], group = grpE)
 
 grpM = "Money (only used on Custom)"
 lotSize    = input.float(0.01, "Lot size",                     step = 0.01, group = grpM)
