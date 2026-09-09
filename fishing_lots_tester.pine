@@ -170,19 +170,31 @@ if barstate.isconfirmed
             mkLabel("SELL", color.new(color.maroon, 20))
 
     // ---------- chained pair: one combined decision, never leg by leg
+    // The EA re-checks the basket on every tick, so both the target and the
+    // floor can be reached INSIDE a bar. The combined result moves in a
+    // straight line with price, so the exact price for each is solved for
+    // and then compared against the bar's own high and low.
     else if hedgeDir != 0
-        if basket > basketTgt
-            realized  := realized + basket
-            nBasketTP := nBasketTP + 1
-            mkLabel("BASKET TP " + str.tostring(basket, "#.##"), color.new(color.green, 10))
+        slope = (origDir * origLots + hedgeDir * hedgeLots) * 100.0
+        inter = (-origEntry * origDir * origLots - hedgeEntry * hedgeDir * hedgeLots) * 100.0 - costOf(origLots) - costOf(hedgeLots)
+        pTgt  = slope != 0 ? (basketTgt - inter) / slope : na
+        pStop = slope != 0 ? (-basketMax - inter) / slope : na
+        tgtTouched  = slope != 0 and (slope > 0 ? high >= pTgt  : low  <= pTgt)
+        stopTouched = slope != 0 and basketMax > 0 and (slope > 0 ? low <= pStop : high >= pStop)
+        // If a bar reached both, which came first is unknowable. The loss is
+        // assumed first, so the test never flatters itself.
+        if stopTouched
+            realized  := realized - basketMax
+            nBasketSL := nBasketSL + 1
+            mkLabel("BASKET STOP " + str.tostring(-basketMax, "#.##"), color.new(color.red, 10))
             origDir   := 0
             hedgeDir  := 0
             origLots  := 0.0
             hedgeLots := 0.0
-        else if basketMax > 0 and basket <= -basketMax
-            realized  := realized + basket
-            nBasketSL := nBasketSL + 1
-            mkLabel("BASKET STOP " + str.tostring(basket, "#.##"), color.new(color.red, 10))
+        else if tgtTouched
+            realized  := realized + basketTgt
+            nBasketTP := nBasketTP + 1
+            mkLabel("BASKET TP " + str.tostring(basketTgt, "#.##"), color.new(color.green, 10))
             origDir   := 0
             hedgeDir  := 0
             origLots  := 0.0
@@ -190,11 +202,19 @@ if barstate.isconfirmed
 
     // ---------- single position: take profit, hold, hedge, or stop
     else
-        stopHit = origDir == 1 ? close <= origEntry - slDist : close >= origEntry + slDist
-        if origPnl >= profitTgt
-            realized  := realized + origPnl
+        // The EA checks profit on every tick, so the target is reached inside
+        // the bar, at the target and not at whatever the bar happened to
+        // close at. Booking the bar's close instead would credit large
+        // favourable swings the EA would never have held on to.
+        grossNeed = profitTgt + costOf(origLots)
+        tgtPrice  = origDir == 1 ? origEntry + grossNeed / (origLots * 100.0) : origEntry - grossNeed / (origLots * 100.0)
+        tpHit     = origDir == 1 ? high >= tgtPrice : low <= tgtPrice
+        // The stop is candle-close based in the EA, so it stays close based.
+        stopHit   = origDir == 1 ? close <= origEntry - slDist : close >= origEntry + slDist
+        if tpHit
+            realized  := realized + profitTgt
             nNormalTP := nNormalTP + 1
-            mkLabel("TP " + str.tostring(origPnl, "#.##"), color.new(color.green, 30))
+            mkLabel("TP " + str.tostring(profitTgt, "#.##"), color.new(color.green, 30))
             origDir  := 0
             origLots := 0.0
         else if origPnl < 0 and ((origDir == 1 and trend == -1) or (origDir == -1 and trend == 1))
