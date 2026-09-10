@@ -186,10 +186,19 @@ closed trades, reads:
 | first target hit rate | 54.2% |
 | expectancy | +0.41 R per trade |
 
-Positive expectancy. Stated honestly, 59 trades is a small sample and it is
-measured over whatever history the chart had loaded rather than forward, so
-it is evidence rather than proof. But it is real evidence, and it points the
-opposite way from my finding.
+Positive expectancy, and measured on the FIXED script. That was checked
+rather than assumed: the screenshot's dashboard header reads "BOARD gates
+(closed): EMA20/50 | sepATR | FVG/LGB/SR: live bar", and that wording exists
+only in v2.1. The pre-fix file says "DASHBOARD (closed)" there, and the
+"FVG/LGB/SR: live bar" half is itself one of the fixes, added so the header
+states which columns read the live bar and which read the closed one.
+
+So the ten bugs were already out when these numbers were produced.
+
+Two honest limits remain. Fifty nine trades is a small sample. And it is
+measured across whatever history the chart had loaded rather than forward,
+so it is a backtest on that window. Evidence, not proof. But it is real
+evidence, and it points the opposite way from my finding.
 
 The correct statement is that the signal has not been tested here yet. The
 thing that failed the coin-flip comparison was my simplification of it.
