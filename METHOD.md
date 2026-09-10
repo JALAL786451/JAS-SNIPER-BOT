@@ -4,6 +4,55 @@ Captured 10 September from live screenshots and the trader's own account of
 what he does and why. This replaces every earlier guess. Where something is
 still unspecified it says so rather than filling the gap.
 
+## Why this method at all, in the trader's own reasoning
+
+This is his own question, one nobody had asked him, and the answer is the
+foundation the rest of it stands on.
+
+About a year and a half of trading, with a seven month gap in the middle.
+
+His reasoning runs like this. The market is international and millions are
+trading it at the same moment. Almost all of them use the same three or
+four well known approaches, and liquidity, fair value gaps and reversals
+are the important parts of those. So trading is a calculation game, and
+what decides the outcome is whose calculation works faster, because the
+market already holds every timeframe and every pip of the data.
+
+From which he draws the conclusion the whole method rests on: **your
+technique has to be different from everyone else's.**
+
+And then the specific edge he believes he has, stated plainly:
+
+> my lots are small and carry no stop loss and no take profit, and the big
+> players hunting liquidity do not care about my small lot
+
+That is the heart of it. A stop loss is a resting order that can be hunted.
+A large position is worth hunting. He has neither. He is deliberately too
+small and too quiet to be worth anyone's attention, and he treats that
+invisibility as the edge rather than as a limitation. He says fair value
+gaps give him the same benefit.
+
+He fishes on top of all of this, and he calculates while he fishes.
+
+**Where the method costs him.** The platform can show the combined weight
+of the lots, how many 0.01 sells against how many buys, but reading it and
+working it out takes him three or four seconds. During the ordinary fishing
+that is fine. The moment a reversal traps him, calculation suddenly matters
+enormously and those seconds are expensive.
+
+He also describes a specific fear response. After four or five fishing
+trades in the same direction a large reversal arrives, in his words, to
+scare him. He answers it by leaving a gap in the fishing, waiting for the
+reversal, and then using that direction too.
+
+But often he gets trapped anyway, and then he has to make himself far more
+careful to manage the chart.
+
+**Which is exactly why he wants the EA.** Not to replace his judgement. To
+do the calculating at machine speed, because a bot computes instantly, and
+because every candle is being driven by a system far stronger than any one
+participant.
+
 ## The account, and why it matters
 
 Exness cent account, balances shown in USC where one USC is one US cent.
