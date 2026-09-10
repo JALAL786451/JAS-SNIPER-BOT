@@ -341,3 +341,43 @@ screenshot alone cannot say which.
 Neither can it say, from the Closed tab alone: how long the basket was held,
 how deep it went before the reversal, or whether the 4374.481 buy was a
 fishing lot or a recovery lot. Those need the Open tab or the equity curve.
+
+## Which timeframe to execute on, settled with his own numbers
+
+A question he had carried since he started trading and never got a
+satisfying answer to. He felt 1H was right and could never say why.
+
+He ran the script's virtual tracker across four timeframes on 10 September,
+changing nothing but the timeframe. All numbers are his, off his own chart.
+
+| TF | trades | win rate | R per trade | total R |
+|---|---|---|---|---|
+| 1M | 36 | 58.3% | 0.08 | 3 |
+| 5M | 28 | 46.4% | 0.32 | 9 |
+| 15M | 32 | 53.1% | 0.28 | 9 |
+| **1H** | **59** | **54.2%** | **0.41** | **24** |
+
+His instinct was right. 1H has the highest expectancy per trade, the
+highest total, and the largest sample of the four.
+
+**The finding that matters most is the one that looks backwards.** The
+1-minute chart has the HIGHEST win rate of all four at 58.3 percent, and
+the LOWEST expectancy at 0.08 R. It wins more often and pays five times
+less per trade. That is the cost argument made visible: a fixed cost of
+about 0.52 in gold movement is a large share of a 1-minute candle and a
+small share of a 1-hour one. Winning often and earning nothing is exactly
+what a low timeframe offers, and it is why low timeframes feel good and
+measure badly.
+
+**One thing these four screenshots cannot settle.** Expectancy per trade is
+comparable across them; trades per day is not, because each chart loads a
+different span of history. If a timeframe produced far more setups per day
+it could still win on total return despite a lower figure per trade. To
+answer that, the date range loaded by each chart is needed alongside the
+trade count.
+
+**What it does not overturn.** He fishes on 1 minute and consults 1 minute
+to 1 week when a lot goes three dollars down. That split is right, and this
+result sharpens it rather than contradicting it: the execution can stay
+fast, but the judgement carries more weight the higher up it is read, and
+the numbers say the weight is real.
