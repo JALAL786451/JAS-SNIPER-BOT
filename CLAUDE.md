@@ -14,13 +14,21 @@ toward backtesting and demo before live trading.
 | `jas_sniper_v21.pine` | Pine v5 mirror of the above, for TradingView backtests |
 | `TrendMomentumEA.mq5` | TrendMomentumEA v1.01 — EMA trend + tick-volume momentum |
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
+| `indicators/smc_coach_pro_v2.pine` | SMC Coach Pro v2.1 — zones, BOS/CHOCH, risk engine, MTF dashboard |
 | `tools/` | Windows compile and backtest automation |
+| `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |
+| `SAWAL-LIST.md` | The question list he answers by number, in Roman Urdu |
 
 ## Hard rules for these EAs
 
 Never add grid, martingale, hedging, or position averaging to any EA here
 unless the user asks for it explicitly and by name in the current session.
 Every EA holds at most one position at a time.
+
+This rule is about the EAs in this repo. It is not a judgement on the user's
+own Fishing Lots method, which is a laddered, hedged, stop-less basket by
+design and is documented in `METHOD.md`. Keep the two apart: describe his
+method faithfully, and still do not graft it onto these EAs unasked.
 
 Never widen a risk limit (risk percent, daily loss cap, max trades, drawdown
 cap) on your own initiative. Those defaults are deliberate.

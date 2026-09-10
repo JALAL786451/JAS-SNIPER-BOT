@@ -78,30 +78,10 @@ take the fish, cast again.
 
 ### Lot size is not fixed at 0.01
 
-Correction, from a closed-trade list on the evening of 10 September. Lots of
-0.02 and 0.10 appear alongside the 0.01 ones. A 0.10 lot moves ten USC for
-every dollar gold moves, ten times the base size.
-
-That day's example, all closed in one action at 4370.298:
-
-| side | lot | entry | result |
-|---|---|---|---|
-| sell | 0.02 | 4363.407 | -14.30 |
-| buy | 0.10 | 4362.951 | +73.50 |
-| buy | 0.10 | 4370.163 | +1.40 |
-| buy | 0.10 | 4374.481 | -41.80 |
-| buy | 0.10 | 4366.963 | +33.40 |
-
-Four buys totalling 0.40 lots, entries spread across 11.53 dollars of
-price, average entry 4368.640, closed 1.658 above that average. Bought on
-the way down, held, closed the set once price came back through the
-average. The day finished at +740.00 USC against +6.50 USC at breakfast.
-
-What this changes is the risk arithmetic rather than the method. At 0.40
-lots the book moves 40 USC per dollar of gold, so a hundred dollar run
-against it is about eight percent of the account. Every earlier estimate in
-this project assumed 0.01 throughout and was therefore ten times too
-comfortable.
+Lots of 0.02 and 0.10 appear alongside the 0.01 ones. A 0.10 lot moves ten
+USC for every dollar gold moves. See the worked example at the end of this
+document for a basket run entirely at that size, and question 59 on the
+question list, which asks him directly whether 0.10 is now normal.
 
 ## Phase 2 — Trouble arrives
 
@@ -299,3 +279,56 @@ remaining side is naked again. If the reversal was a false one, the book is
 exposed with no protection and the whole cycle restarts from worse.
 
 Both windows are measurable. Neither has been measured yet.
+
+## Worked example — one closed basket, 10 September
+
+The first live basket captured with its exact numbers, from the Exness app's
+Closed tab. It is Phase 6 into Phase 1: the whole book taken out together on a
+combined positive.
+
+| Side | Lot | Open | Close | Result |
+|---|---|---|---|---|
+| Buy  | 0.10 | 4362.951 | 4370.298 | +73.50 USC |
+| Buy  | 0.10 | 4366.963 | 4370.298 | +33.40 USC |
+| Buy  | 0.10 | 4370.163 | 4370.298 |  +1.40 USC |
+| Buy  | 0.10 | 4374.481 | 4370.298 | -41.80 USC |
+| Sell | 0.02 | 4363.407 | 4370.558 | -14.30 USC |
+
+Net of these five legs: **+52.20 USC**. Day total on the same screen:
+**+740.00 USC**, so this basket is one of several that day.
+
+What the numbers show, beyond what was already written down:
+
+- **The buys are a ladder, not one entry.** 4362.951 / 4366.963 / 4370.163 /
+  4374.481 — spacing 4.01, 3.20, 4.32 dollars. So the gap between added lots
+  sits around **$3 to $4.30**, which is the first measured value for a spacing
+  that "What is NOT yet defined" listed as unknown. Note it is close to the
+  three-dollar mark that Phase 2 names as the point where a single lot's loss
+  makes him start looking.
+- **All four buys close at one price, 4370.298.** That is Close All on the
+  basket, not four separate exits. The basket is the unit that is managed and
+  the unit that is closed — a single leg being red at exit (-41.80 on the
+  4374.481 buy) is irrelevant as long as the combination is positive.
+- **The counter-leg is closed at a loss to release the rest.** The 0.02 sell
+  from 4363.407 is taken out at -14.30 while the buys are taken out at +108.30
+  gross. This is exactly the Phase 6 unwind, and it is the first time the cost
+  of it has been measured: about 27% of the basket's gross profit went on the
+  counter-leg.
+- **The counter-leg is a fifth the size of a buy leg** (0.02 against 0.10),
+  and it closes 0.26 higher than the buys (4370.558 vs 4370.298), i.e. one
+  spread later — a separate click, moments after.
+
+**One thing here does not match the method as recorded above.** The rest of
+this document says the lots are 0.01 and that being small is the edge: "my
+lots are small and carry no stop loss and no take profit, and the big players
+hunting liquidity do not care about my small lot". This basket runs **0.10 per
+buy leg, ten times that**, with a 0.02 counter-leg. On a cent account 0.10 lot
+is 10 USC per dollar of gold, so a $10 adverse move on four such legs is 400
+USC. Whether 0.10 is now the normal fishing lot, or this was a deliberately
+larger session, changes both the equity arithmetic and the "too small to be
+worth hunting" premise. It is an open question, not a correction — the
+screenshot alone cannot say which.
+
+Neither can it say, from the Closed tab alone: how long the basket was held,
+how deep it went before the reversal, or whether the 4374.481 buy was a
+fishing lot or a recovery lot. Those need the Open tab or the equity curve.

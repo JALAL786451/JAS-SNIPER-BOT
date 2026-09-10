@@ -15,12 +15,45 @@
 //   - Virtual trade tracker -> live hit-rate / expectancy stats on chart
 //   - alert() with dynamic Entry/SL/TP payload + alertcondition() hooks
 //
-//  Teacher-panel fix (this patch):
+//  Teacher-panel fix (earlier patch):
 //   - "BUY/SELL missing" list ab teen aur gates check karti hai jo pehle
 //     chhupe hue the: candle band (bar not closed), one-signal-per-zone,
 //     aur TP1 tak room (opposing zone bohot qareeb). Pehle in teeno mein se
 //     koi bhi block karta to panel sirf generic "Same bar align nahi hui"
 //     dikhata tha — ab exact wajah dikhti hai.
+//
+//  v2.1 bug-fix pass (this patch):
+//   1. Dashboard LGB column could NEVER light up. The sweep reference was
+//      ta.highest(high, N), which includes the bar being tested, so
+//      "high > highest(high, N)" is impossible. The reference now excludes
+//      that bar and uses the same confirmed swing (pivot) as the chart labels.
+//   2. Dashboard FVG/LGB read the same bar the chart draws them on. Before,
+//      the closed-candle setting shifted them one HTF bar back, so a 4H row
+//      said "-" while an LGB label sat on the live 4H candle. Trend gates
+//      (L/S) still use closed candles; the header now says which is which.
+//   3. The optional 5/15/30/4H/1D rows came from a second, differently
+//      defined copy of the logic (hard-coded pivot 5, high>high[1] sweep).
+//      They now decode the same packed value as the dashboard.
+//   4. Display toggles no longer change signal logic: "Draw S/R zones" and
+//      the FVG/LGB switches only control drawing now. Turning them off used
+//      to stop zone creation / FVG / LGB detection outright, which silently
+//      disabled the "Confirm + (FVG or LGB)" entry mode and the score.
+//   5. FVG box and LGB label leaked one object per live bar (the delete only
+//      ran on historical bars, which never re-run once the chart is live).
+//   6. Zone entries had their own structure window added. A demand zone is
+//      created BY a BOS and retested many bars later, so requiring the BOS
+//      within structLookback (3) bars of the touch killed nearly every
+//      zone entry.
+//   7. A breakout / EMA-retest signal used to burn the zone's
+//      one-signal-per-zone slot even though it did not come from the zone.
+//   8. The TP1 room test used the FAR edge of the opposing zone and mishandled
+//      a zone straddling entry; it now measures to the nearest edge ahead.
+//   9. Entry/SL/TP plan is drawn for every signal, not only when the virtual
+//      tracker happened to be flat; "Track virtual results" now actually
+//      gates tracking (open trades are still managed to completion).
+//  10. Buy and Sell with an equal score cancelled each other silently; the
+//      tie is now broken by trend/Supertrend, and the Teacher panel reports
+//      both the tie and the DXY gate, which it never mentioned before.
 // ============================================================================
 indicator("SMC Coach — Pro v2 (Zones + Risk Engine + MTF Dashboard)",
      overlay = true, max_labels_count = 500, max_lines_count = 500,
@@ -47,7 +80,8 @@ showLGB       = input.bool(true,  "LGB / liquidity sweep (current bar only)", gr
 gEntry = "2 · Entry Logic"
 entryMode = input.string("Confirm + (FVG or LGB)", "Entry Mode", options=[
      "Touch only","Confirm (Touch+Struct+Trend)","Confirm + (FVG or LGB)"], group=gEntry)
-structLookback         = input.int(3,  "Structure lookback bars", minval=1, maxval=20, group=gEntry)
+structLookback         = input.int(3,  "Structure lookback bars (breakout/retest)", minval=1, maxval=20, group=gEntry)
+zoneStructLook         = input.int(30, "Zone entry: structure lookback bars", minval=1, maxval=200, group=gEntry)
 useCloseTouch          = input.bool(false, "Zone touch: require CLOSE inside zone", group=gEntry)
 confirmMomo            = input.bool(false, "Confirm FVG/LGB on bar close", group=gEntry)
 confirmSignalsOnClose  = input.bool(true,  "Signals only after bar close (no repaint)", group=gEntry)
@@ -144,12 +178,13 @@ gateAdxMin     = input.float(14,   "Dash gates: ADX min", step=0.5, group=gDash)
 gateNeedClose  = input.bool(false, "Dash gates: need price above/below EMA20", group=gDash)
 gateMinSepATR  = input.float(0.01, "Dash gates: min EMA20/50 sep (ATR x)", step=0.01, group=gDash)
 gateAtrLen     = input.int(14,     "Dash gates: ATR length", minval=1, group=gDash)
-gateUseClosed  = input.bool(true,  "Dashboard uses CLOSED candles", group=gDash)
+gateUseClosed  = input.bool(true,  "Dashboard gates (L/S) use CLOSED candles", group=gDash)
+dashMomoLive   = input.bool(true,  "Dashboard FVG/LGB from the LIVE bar (match chart)", group=gDash)
 
 gPanel = "12 · Panels"
 showTeacher   = input.bool(true,  "Show Teacher panel", group=gPanel)
 showLegend    = input.bool(true,  "Show Legend / Dashboard", group=gPanel)
-showRows      = input.bool(false, "Legend: extra TF rows (5/15/30/4H/1D)", group=gPanel)
+showRows      = input.bool(false, "Legend: extra TF rows (5/15/30/4H/1D + DZ/SZ)", group=gPanel)
 teacherPos    = input.string("Top Right", "Teacher position", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 legendPos     = input.string("Top Left",  "Legend position",  options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 statsPos      = input.string("Bottom Right", "Stats position", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
@@ -174,8 +209,6 @@ minTk = syminfo.mintick
 var int SCALE_TREND = 1000000
 var int SCALE_PRESS = 1000
 
-colBull   = color.new(color.green, 0)
-colBear   = color.new(color.red,   0)
 colSRBull = color.new(color.lime,  0)
 colSRBear = color.new(color.red,   0)
 bgPanel   = color.new(color.white, panelTrans)
@@ -209,29 +242,11 @@ plot(enableST and stShowPlots and stTrend == -1 ? stDn : na, title="ST Dn", styl
 plotshape((enableST and stShowSignals) ? (stBuySig ? stUp : na) : na,  title="ST Buy",  text="ST",  style=shape.labelup,   location=location.absolute, color=color.new(color.green,0), textcolor=color.white, size=size.tiny)
 plotshape((enableST and stShowSignals) ? (stSellSig ? stDn : na) : na, title="ST Sell", text="ST", style=shape.labeldown, location=location.absolute, color=color.new(color.red,0),   textcolor=color.white, size=size.tiny)
 
-// ============================================================================
-//  MTF text line (legend extra rows)
-// ============================================================================
-mtfBlock() =>
-    f  = ta.ema(close, emaFastLen)
-    s  = ta.ema(close, emaSlowLen)
-    st = f > s and close > f ? "UT" : f < s and close < f ? "DT" : "NT"
-    bullFVG = bar_index > 2 and (low  > high[2])
-    bearFVG = bar_index > 2 and (high <  low [2])
-    fvgtxt  = bullFVG ? "F↑" : bearFVG ? "F↓" : "F-"
-    l_up   = high > high[1] and close < high[1]
-    l_dn   = low  < low [1] and close > low [1]
-    lgbtxt = l_up ? "L↑" : l_dn ? "L↓" : "L-"
-    ph     = ta.pivothigh(high, 5, 5)
-    pl     = ta.pivotlow (low,  5, 5)
-    lastPh = ta.valuewhen(not na(ph), ph, 0)
-    lastPl = ta.valuewhen(not na(pl), pl, 0)
-    dzT    = not na(lastPl) and low  <= lastPl
-    szT    = not na(lastPh) and high >= lastPh
-    srtxt  = dzT ? "DZ" : szT ? "SZ" : "SR-"
-    st + "  |  " + fvgtxt + "  |  " + lgbtxt + "  |  " + srtxt
-
-mtfLine(_tf) => request.security(syminfo.tickerid, _tf, mtfBlock(), barmerge.gaps_off, barmerge.lookahead_off)
+// The legend's optional extra rows used to run their own copy of this logic
+// (hard-coded pivot 5/5, a high>high[1] "sweep", a trend that always demanded
+// close beyond the EMA). Three definitions of the same thing disagreed with
+// each other and with the chart, so those rows now decode f_tfPacked() too —
+// see the LEGEND section.
 
 // ============================================================================
 //  SWINGS + BOS / CHOCH
@@ -304,14 +319,19 @@ f_zoneKill(i) =>
     array.remove(zBorn,  i)
     array.remove(zSig,   i)
 
+// showSR only controls whether the zone is VISIBLE. Zones are always created
+// and tracked, otherwise unticking "Draw S/R zones" silently switched off every
+// zone entry, the freshness score and the TP1 room test.
 newZone(_idx,_price,_isSupport)=>
     pad  = atr * zonePadATR
     top  = _price + pad
     bot  = _price - pad
     col  = _isSupport?colSRBull:colSRBear
-    fill = color.new(_isSupport?color.lime:color.red, 86)
-    b = box.new(_idx, top, bar_index, bot, xloc=xloc.bar_index, bgcolor=fill, border_color=color.new(col,70))
-    l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=col, width=2)
+    fill = showSR ? color.new(_isSupport?color.lime:color.red, 86) : color.new(color.gray, 100)
+    bcol = showSR ? color.new(col, 70) : color.new(col, 100)
+    lcol = showSR ? col : color.new(col, 100)
+    b = box.new(_idx, top, bar_index, bot, xloc=xloc.bar_index, bgcolor=fill, border_color=bcol)
+    l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=lcol, width=2)
     array.push(zBoxes, b)
     array.push(zLines, l)
     array.push(zIsSup, _isSupport)
@@ -321,9 +341,9 @@ newZone(_idx,_price,_isSupport)=>
 
 // A demand zone is born at the low that produced an upside break (BOS or CHOCH),
 // a supply zone at the high that produced a downside break.
-if (bosUp or chochUp) and not na(lastLoIdx) and showSR
+if (bosUp or chochUp) and not na(lastLoIdx)
     newZone(lastLoIdx, lastLo, true)
-if (bosDn or chochDn) and not na(lastHiIdx) and showSR
+if (bosDn or chochDn) and not na(lastHiIdx)
     newZone(lastHiIdx, lastHi, false)
 
 // --- maintain: extend, count touches, invalidate broken / stale / exhausted
@@ -388,39 +408,32 @@ f_zoneBot(_i) =>
 // ============================================================================
 var box   fvgBox = na
 var label lgbLbl = na
-var bool FVG_up=false, FVG_dn=false, LGB_up=false, LGB_dn=false
-FVG_up := false
-FVG_dn := false
-LGB_up := false
-LGB_dn := false
 
-if showFVG
-    if not barstate.islast and not na(fvgBox)
-        box.delete(fvgBox)
-        fvgBox := na
-    bullGap = bar_index > 2 and (low  > high[2])
-    bearGap = bar_index > 2 and (high < low[2])
-    FVG_up := bullGap
-    FVG_dn := bearGap
-    if barstate.islast
-        if bullGap
-            fvgBox := box.new(bar_index-2, high[2], bar_index, low,  xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
-        if bearGap
-            fvgBox := box.new(bar_index-2, low [2], bar_index, high, xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+// Detection ALWAYS runs — showFVG / showLGB are drawing switches. Computing
+// these inside "if showFVG" left FVG_up/FVG_dn false when the box was hidden,
+// which disabled the "Confirm + (FVG or LGB)" entry mode and the momentum
+// points in the score.
+FVG_up = bar_index > 2 and (low  > high[2])
+FVG_dn = bar_index > 2 and (high < low [2])
+LGB_up = not na(lastHi) and high > lastHi and close < lastHi   // sweep of buy-side liquidity
+LGB_dn = not na(lastLo) and low  < lastLo and close > lastLo   // sweep of sell-side liquidity
 
-if showLGB
-    if not barstate.islast and not na(lgbLbl)
-        label.delete(lgbLbl)
-        lgbLbl := na
-    sweepBuy  = not na(lastHi) and high > lastHi and close < lastHi
-    sweepSell = not na(lastLo) and low  < lastLo and close > lastLo
-    LGB_up := sweepBuy
-    LGB_dn := sweepSell
-    if barstate.islast
-        if sweepBuy
-            lgbLbl := label.new(bar_index, lastHi, "LGB↑", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_down, color=color.new(color.red,0),  textcolor=color.white, size=size.tiny)
-        if sweepSell
-            lgbLbl := label.new(bar_index, lastLo, "LGB↓", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_up,   color=color.new(color.lime,0), textcolor=color.black, size=size.tiny)
+// Drawing: current bar only. The previous object is deleted first — the old
+// code only deleted on `not barstate.islast` bars, which never execute again
+// once the chart is live, so every new live bar leaked one box / one label.
+if barstate.islast
+    box.delete(fvgBox)
+    fvgBox := na
+    if showFVG and FVG_up
+        fvgBox := box.new(bar_index-2, high[2], bar_index, low,  xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+    else if showFVG and FVG_dn
+        fvgBox := box.new(bar_index-2, low [2], bar_index, high, xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+    label.delete(lgbLbl)
+    lgbLbl := na
+    if showLGB and LGB_up
+        lgbLbl := label.new(bar_index, lastHi, "LGB↑", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_down, color=color.new(color.red,0),  textcolor=color.white, size=size.tiny)
+    else if showLGB and LGB_dn
+        lgbLbl := label.new(bar_index, lastLo, "LGB↓", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_up,   color=color.new(color.lime,0), textcolor=color.black, size=size.tiny)
 
 // ============================================================================
 //  TREND / ADX / PRESSURE
@@ -522,14 +535,20 @@ shortTouch = f_touch(resIdx)
 // ============================================================================
 //  BASE + MOMENTUM SIGNALS
 // ============================================================================
-needMomo  = entryMode=="Confirm + (FVG or LGB)"
 momoUp_rt = (FVG_up or LGB_dn)
 momoDn_rt = (FVG_dn or LGB_up)
 momoUp    = confirmMomo ? (momoUp_rt and barstate.isconfirmed) : momoUp_rt
 momoDn    = confirmMomo ? (momoDn_rt and barstate.isconfirmed) : momoDn_rt
 
-baseBuy  = entryMode=="Touch only" ? longTouch : (longTouch and recentUpStruct and trendState==1)
-baseSell = entryMode=="Touch only" ? shortTouch: (shortTouch and recentDownStruct and trendState==-1)
+// A demand zone is CREATED by an up-break and is retested many bars later, so
+// asking for that break within structLookback (3) bars of the touch killed
+// almost every zone entry. Zone entries get their own, wider window; the
+// breakout / EMA-retest paths keep the tight one.
+zoneUpStruct   = not na(bsUp) and bsUp <= zoneStructLook
+zoneDownStruct = not na(bsDn) and bsDn <= zoneStructLook
+
+baseBuy  = entryMode=="Touch only" ? longTouch : (longTouch and zoneUpStruct and trendState==1)
+baseSell = entryMode=="Touch only" ? shortTouch: (shortTouch and zoneDownStruct and trendState==-1)
 
 zoneBuyRaw  = (entryMode=="Confirm + (FVG or LGB)" ? (baseBuy  and momoUp) : baseBuy)  and f_zoneUnused(supIdx)
 zoneSellRaw = (entryMode=="Confirm + (FVG or LGB)" ? (baseSell and momoDn) : baseSell) and f_zoneUnused(resIdx)
@@ -588,9 +607,12 @@ rawSell = (zoneSellRaw or momoSellRaw) and ctxShort and scoreOKs
 cBuy  = confirmSignalsOnClose ? (rawBuy  and barstate.isconfirmed) : rawBuy
 cSell = confirmSignalsOnClose ? (rawSell and barstate.isconfirmed) : rawSell
 
-// mutual exclusion: never both on the same bar
-xBuy  = cBuy  and (not cSell or scoreBuy  > scoreSell)
-xSell = cSell and (not cBuy  or scoreSell > scoreBuy)
+// Mutual exclusion: never both on the same bar. On an exact score tie the old
+// code dropped BOTH signals without a word; the tie is now broken by the EMA
+// trend, then by Supertrend, and only a true 0/0 tie suppresses the bar.
+tieDir = trendState != 0 ? trendState : (enableST ? stTrend : 0)
+xBuy  = cBuy  and (not cSell or scoreBuy  > scoreSell or (scoreBuy == scoreSell and tieDir ==  1))
+xSell = cSell and (not cBuy  or scoreSell > scoreBuy  or (scoreSell == scoreBuy and tieDir == -1))
 
 // cooldown
 var int lastSigBar = na
@@ -631,19 +653,33 @@ planSLs    = f_slShort()
 planRs     = planSLs - planEntryS
 
 // A long is rejected if the nearest opposing zone sits inside TP1 (no room).
+// The obstacle is the NEAREST edge of that zone that is still ahead of entry:
+// the old test used the far edge (zone top for a long), which under-measured a
+// zone right above price and mis-read a zone straddling the entry.
 resTop  = f_zoneTop(resIdx)
+resBot  = f_zoneBot(resIdx)
+supTop  = f_zoneTop(supIdx)
 supBot  = f_zoneBot(supIdx)
-roomBuy  = planRb > 0 and (na(resTop) or resTop <= planEntryB or (resTop - planEntryB) >= planRb * minRRzone)
-roomSell = planRs > 0 and (na(supBot) or supBot >= planEntryS or (planEntryS - supBot) >= planRs * minRRzone)
+float obsUp = na
+float obsDn = na
+if not na(resBot)
+    obsUp := resBot > planEntryB ? resBot : (resTop > planEntryB ? resTop : obsUp)
+if not na(supTop)
+    obsDn := supTop < planEntryS ? supTop : (supBot < planEntryS ? supBot : obsDn)
+roomBuy  = planRb > 0 and (na(obsUp) or (obsUp - planEntryB) >= planRb * minRRzone)
+roomSell = planRs > 0 and (na(obsDn) or (planEntryS - obsDn) >= planRs * minRRzone)
 
 sigBuyTotal  = xBuy  and coolOK and roomBuy
 sigSellTotal = xSell and coolOK and roomSell
 
+// Only a ZONE entry consumes the zone's one-signal-per-zone slot. A breakout or
+// EMA-retest signal used to burn the demand/supply zone it never traded, so the
+// next genuine touch of that zone was silently blocked.
 if sigBuyTotal or sigSellTotal
     lastSigBar := bar_index
-    if sigBuyTotal and f_zoneValid(supIdx)
+    if sigBuyTotal and zoneBuyRaw and f_zoneValid(supIdx)
         array.set(zSig, supIdx, array.get(zSig, supIdx) + 1)
-    if sigSellTotal and f_zoneValid(resIdx)
+    if sigSellTotal and zoneSellRaw and f_zoneValid(resIdx)
         array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
 
 plotshape(sigBuyTotal,  title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
@@ -655,7 +691,6 @@ plotshape(sigSellTotal, title="Sell", style=shape.triangledown, location=locatio
 var int   tDir    = 0
 var float tEntry  = na
 var float tSL     = na
-var float tSL0    = na
 var float tR      = na
 var float tTP1    = na
 var float tTP2    = na
@@ -734,13 +769,47 @@ if tDir != 0
     if _closed
         tDir := 0
 
-// --- open a new virtual trade on signal
-if (sigBuyTotal or sigSellTotal) and tDir == 0
+// --- draw the Entry / SL / TP plan for EVERY signal
+// (this used to live inside the tracker's "open a trade" block, so a signal
+//  fired while a virtual trade was still open — or with tracking off — printed
+//  an arrow with no plan at all)
+if (sigBuyTotal or sigSellTotal) and showRisk
+    _dir   = sigBuyTotal ? 1 : -1
+    _pe    = close
+    _psl   = _dir == 1 ? planSLb : planSLs
+    _pr    = math.abs(_pe - _psl)
+    _pt1   = _dir == 1 ? _pe + _pr*tp1R : _pe - _pr*tp1R
+    _pt2   = _dir == 1 ? _pe + _pr*tp2R : _pe - _pr*tp2R
+    _pt3   = _dir == 1 ? _pe + _pr*tp3R : _pe - _pr*tp3R
+    line.delete(lnE)
+    line.delete(lnS)
+    line.delete(lnT1)
+    line.delete(lnT2)
+    line.delete(lnT3)
+    label.delete(lbPlan)
+    _colT  = color.new(color.green, 0)
+    lnE   := line.new(bar_index, _pe,  bar_index + 30, _pe,  color=color.new(color.blue, 0), width=2)
+    lnS   := line.new(bar_index, _psl, bar_index + 30, _psl, color=color.new(color.red, 0),  width=2, style=line.style_dashed)
+    lnT1  := line.new(bar_index, _pt1, bar_index + 30, _pt1, color=_colT, width=1)
+    lnT2  := line.new(bar_index, _pt2, bar_index + 30, _pt2, color=_colT, width=1, style=line.style_dotted)
+    lnT3  := line.new(bar_index, _pt3, bar_index + 30, _pt3, color=_colT, width=1, style=line.style_dotted)
+    _units = _pr > 0 ? (acctSize * riskPct / 100.0) / _pr : na
+    _txt = (_dir==1 ? "LONG" : "SHORT") + "  Score " + str.tostring(_dir==1 ? scoreBuy : scoreSell) + "/100" +
+           "\nEntry " + f_px(_pe) + "   SL " + f_px(_psl) +
+           "\nTP1 " + f_px(_pt1) + " (" + str.tostring(tp1R,"#.#") + "R)" +
+           "\nTP2 " + f_px(_pt2) + " (" + str.tostring(tp2R,"#.#") + "R)" +
+           "\nTP3 " + f_px(_pt3) + " (" + str.tostring(tp3R,"#.#") + "R)" +
+           "\nRisk " + str.tostring(riskPct,"#.##") + "%  ≈ " + str.tostring(_units, "#.####") + " units"
+    _colBg = color.new(_dir == 1 ? color.teal : color.purple, 15)
+    lbPlan := label.new(bar_index + 30, _pe, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_colBg, textcolor=color.white, size=size.tiny)
+
+// --- open a new virtual trade on signal (only while tracking is on; a trade
+//     opened earlier is still managed above, so nothing can get stranded)
+if (sigBuyTotal or sigSellTotal) and tDir == 0 and useTracker
     _dir = sigBuyTotal ? 1 : -1
     tDir   := _dir
     tEntry := close
     tSL    := _dir==1 ? planSLb : planSLs
-    tSL0   := tSL
     tR     := math.abs(tEntry - tSL)
     tTP1   := _dir==1 ? tEntry + tR*tp1R : tEntry - tR*tp1R
     tTP2   := _dir==1 ? tEntry + tR*tp2R : tEntry - tR*tp2R
@@ -750,31 +819,10 @@ if (sigBuyTotal or sigSellTotal) and tDir == 0
     hit2   := false
     hit3   := false
     nTrades += 1
-    if showRisk
-        line.delete(lnE)
-        line.delete(lnS)
-        line.delete(lnT1)
-        line.delete(lnT2)
-        line.delete(lnT3)
-        label.delete(lbPlan)
-        _colT  = color.new(color.green, 0)
-        lnE   := line.new(bar_index, tEntry, bar_index + 30, tEntry, color=color.new(color.blue, 0), width=2)
-        lnS   := line.new(bar_index, tSL,    bar_index + 30, tSL,    color=color.new(color.red, 0),  width=2, style=line.style_dashed)
-        lnT1  := line.new(bar_index, tTP1,   bar_index + 30, tTP1,   color=_colT, width=1)
-        lnT2  := line.new(bar_index, tTP2,   bar_index + 30, tTP2,   color=_colT, width=1, style=line.style_dotted)
-        lnT3  := line.new(bar_index, tTP3,   bar_index + 30, tTP3,   color=_colT, width=1, style=line.style_dotted)
-        _units = tR > 0 ? (acctSize * riskPct / 100.0) / tR : na
-        _txt = (_dir==1 ? "LONG" : "SHORT") + "  Score " + str.tostring(_dir==1 ? scoreBuy : scoreSell) + "/100" +
-               "\nEntry " + f_px(tEntry) + "   SL " + f_px(tSL) +
-               "\nTP1 " + f_px(tTP1) + " (" + str.tostring(tp1R,"#.#") + "R)" +
-               "\nTP2 " + f_px(tTP2) + " (" + str.tostring(tp2R,"#.#") + "R)" +
-               "\nTP3 " + f_px(tTP3) + " (" + str.tostring(tp3R,"#.#") + "R)" +
-               "\nRisk " + str.tostring(riskPct,"#.##") + "%  ≈ " + str.tostring(_units, "#.####") + " units"
-        _colBg = color.new(_dir == 1 ? color.teal : color.purple, 15)
-        lbPlan := label.new(bar_index + 30, tEntry, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_colBg, textcolor=color.white, size=size.tiny)
 
-// keep the plan lines following price to the right while the trade is open
-if showRisk and tDir != 0 and barstate.islast and not na(lnE)
+// keep the plan lines following price to the right while the plan is live
+// (with tracking off there is no position to close, so the last plan stays)
+if showRisk and barstate.islast and not na(lnE) and (tDir != 0 or not useTracker)
     line.set_x2(lnE,  bar_index + 15)
     line.set_x2(lnS,  bar_index + 15)
     line.set_x2(lnT1, bar_index + 15)
@@ -874,6 +922,8 @@ if showTeacher and barstate.islast
             missB += "• FVG↑ or LGB↓\n"
         if enableHTF and not passHTFLong
             missB += "• HTF long gate\n"
+        if applyDXY and not passDXYLong
+            missB += "• DXY filter (gold)\n"
         if enableST and useSTFilter and stTrend != 1
             missB += "• ST Up\n"
         if useScore and scoreBuy < minScore
@@ -886,13 +936,15 @@ if showTeacher and barstate.islast
             missB += "• Choppy range\n"
         if not volOK
             missB += "• Low volume\n"
-        // --- pehle chhupi hui teen gates — ab yahan bhi report hoti hain ---
-        if onePerZone and (zoneBuyRaw==false) and not f_zoneUnused(supIdx) and (longTouch or momoBuyRaw)
+        // --- pehle chhupi hui gates — ab yahan bhi report hoti hain ---
+        if onePerZone and longTouch and not f_zoneUnused(supIdx)
             missB += "• Zone se pehle hi signal ban chuka (one-per-zone)\n"
         if planRb > 0 and not roomBuy
             missB += "• TP1 tak room nahi (opposing zone qareeb hai)\n"
         if confirmSignalsOnClose and not barstate.isconfirmed and rawBuy
             missB += "• Candle abhi band nahi hui — close ka intezaar\n"
+        if cBuy and not xBuy
+            missB += "• Same bar par Sell ka score barabar/behtar tha (tie)\n"
 
         if not shortTouch and not momoSellRaw
             missS += "• SZ touch / breakdown\n"
@@ -904,6 +956,8 @@ if showTeacher and barstate.islast
             missS += "• FVG↓ or LGB↑\n"
         if enableHTF and not passHTFShort
             missS += "• HTF short gate\n"
+        if applyDXY and not passDXYShort
+            missS += "• DXY filter (gold)\n"
         if enableST and useSTFilter and stTrend != -1
             missS += "• ST Down\n"
         if useScore and scoreSell < minScore
@@ -916,13 +970,15 @@ if showTeacher and barstate.islast
             missS += "• Choppy range\n"
         if not volOK
             missS += "• Low volume\n"
-        // --- pehle chhupi hui teen gates — ab yahan bhi report hoti hain ---
-        if onePerZone and (zoneSellRaw==false) and not f_zoneUnused(resIdx) and (shortTouch or momoSellRaw)
+        // --- pehle chhupi hui gates — ab yahan bhi report hoti hain ---
+        if onePerZone and shortTouch and not f_zoneUnused(resIdx)
             missS += "• Zone se pehle hi signal ban chuka (one-per-zone)\n"
         if planRs > 0 and not roomSell
             missS += "• TP1 tak room nahi (opposing zone qareeb hai)\n"
         if confirmSignalsOnClose and not barstate.isconfirmed and rawSell
             missS += "• Candle abhi band nahi hui — close ka intezaar\n"
+        if cSell and not xSell
+            missS += "• Same bar par Buy ka score barabar/behtar tha (tie)\n"
 
         table.cell(tTbl, 0, r0 + 2, "BUY missing:\n"  + (missB == "" ? "• Same bar align nahi hui\n" : missB),
                    bgcolor=bgPanel, text_color=color.black, text_size=PFS)
@@ -937,7 +993,7 @@ if showTeacher and barstate.islast
              " | Sess " + (sessOK ? "OK" : "OFF")
     table.cell(tTbl, 0, r0 + 4, htfTxt, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
-    openTxt = tDir == 0 ? "No open virtual trade" :
+    openTxt = tDir == 0 ? (useTracker ? "No open virtual trade" : "Virtual tracking OFF") :
               (tDir==1?"LONG":"SHORT") + " open @ " + f_px(tEntry) +
               "  SL " + f_px(tSL) + (hit1 ? "  ✓TP1" : "") + (hit2 ? " ✓TP2" : "") + (hit3 ? " ✓TP3" : "") +
               "  |  bars " + str.tostring(bar_index - tBar)
@@ -977,51 +1033,66 @@ f_decodePacked(_v) =>
     _press = int(math.floor(_rem / SCALE_PRESS))
     _bits  = _rem - _press * SCALE_PRESS
     _st    = _stVal == 3 ? 1 : _stVal == 1 ? -1 : 0
+    // bits: 0 L-gate, 1 S-gate, 2 FVG↑, 3 FVG↓, 4 LGB↑, 5 LGB↓, 6 DZ touch, 7 SZ touch
     [_st, f_hasBit(_bits,0), f_hasBit(_bits,1), f_hasBit(_bits,2),
-          f_hasBit(_bits,3), f_hasBit(_bits,4), f_hasBit(_bits,5), _press]
+          f_hasBit(_bits,3), f_hasBit(_bits,4), f_hasBit(_bits,5),
+          f_hasBit(_bits,6), f_hasBit(_bits,7), _press]
 
-// packed in TF context; the closed-candle shift happens INSIDE the context
-f_tfPacked(_useClosed) =>
+// Packed in the requested TF's context; every shift happens INSIDE that context,
+// so [1] means "previous bar of THAT timeframe" (v1 shifted chart bars).
+//   _useClosed -> trend gates read the last CLOSED bar (non-repainting)
+//   _momoLive  -> FVG / LGB / zone touch read the bar the chart draws them on
+f_tfPacked(_useClosed, _momoLive) =>
     _f    = ta.ema(close, emaFastLen)
     _s    = ta.ema(close, emaSlowLen)
     _a    = f_adx(adxLen, adxSmooth)
     _atrG = ta.atr(gateAtrLen)
     _atrP = ta.atr(14)
-    _h    = high
-    _l    = low
-    _c    = close
-    _hiRef = ta.highest(high, pivotLR)
-    _loRef = ta.lowest (low,  pivotLR)
-    // closed-candle shift happens here, inside the requested TF's own context,
-    // so [1] means "previous bar of THAT timeframe" (v1 shifted chart bars).
+    // same confirmed swings the chart uses for its LGB labels
+    _phv  = ta.pivothigh(high, pivotLR, pivotLR)
+    _plv  = ta.pivotlow (low,  pivotLR, pivotLR)
+    _swHi = ta.valuewhen(not na(_phv), _phv, 0)
+    _swLo = ta.valuewhen(not na(_plv), _plv, 0)
+    // --- trend gates
     _fx    = _useClosed ? _f[1]    : _f
     _sx    = _useClosed ? _s[1]    : _s
     _ax    = _useClosed ? _a[1]    : _a
-    _cx    = _useClosed ? _c[1]    : _c
+    _cx    = _useClosed ? close[1] : close
     _f1    = _useClosed ? nz(_f[2], _fx) : nz(_f[1], _fx)
     _s1    = _useClosed ? nz(_s[2], _sx) : nz(_s[1], _sx)
     _atrGx = _useClosed ? _atrG[1] : _atrG
     _atrPx = _useClosed ? _atrP[1] : _atrP
-    _hx    = _useClosed ? _h[1]    : _h
-    _lx    = _useClosed ? _l[1]    : _l
-    _h2    = _useClosed ? _h[3]    : _h[2]
-    _l2    = _useClosed ? _l[3]    : _l[2]
-    _hiR   = _useClosed ? _hiRef[1]: _hiRef
-    _loR   = _useClosed ? _loRef[1]: _loRef
+    // --- momentum / structure read-out (live bar by default, so a row can never
+    //     say "-" while an FVG box or LGB label sits on that same candle)
+    _mc    = _momoLive ? false : _useClosed
+    _hm    = _mc ? high[1]  : high
+    _lm    = _mc ? low[1]   : low
+    _cm    = _mc ? close[1] : close
+    _h2    = _mc ? high[3]  : high[2]
+    _l2    = _mc ? low[3]   : low[2]
+    _swHiM = _mc ? _swHi[1] : _swHi
+    _swLoM = _mc ? _swLo[1] : _swLo
     _sepOK  = math.abs(_fx - _sx) >= nz(_atrGx, 1.0) * gateMinSepATR
     _gLong  = nz(_fx > _sx) and (gateNeedClose ? _cx > _fx : true) and (gateUseAdx ? nz(_ax, 0) >= gateAdxMin : true) and _sepOK
     _gShort = nz(_fx < _sx) and (gateNeedClose ? _cx < _fx : true) and (gateUseAdx ? nz(_ax, 0) >= gateAdxMin : true) and _sepOK
     _st     = _gLong ? 1 : _gShort ? -1 : 0
     _has2   = not na(_h2) and not na(_l2)
-    _fvgUp  = _has2 and (_lx > _h2)
-    _fvgDn  = _has2 and (_hx < _l2)
-    _lgbUp  = _hx > _hiR and _cx < _hiR
-    _lgbDn  = _lx < _loR and _cx > _loR
+    _fvgUp  = _has2 and (_lm > _h2)
+    _fvgDn  = _has2 and (_hm < _l2)
+    // Liquidity sweep = take out the last confirmed swing and close back inside
+    // it — the chart's own LGB definition. The old test compared the bar against
+    // ta.highest(high, pivotLR), which INCLUDES that bar, so "high > highest"
+    // was never true and the LGB column was permanently "-".
+    _lgbUp  = not na(_swHiM) and _hm > _swHiM and _cm < _swHiM
+    _lgbDn  = not na(_swLoM) and _lm < _swLoM and _cm > _swLoM
+    _dzT    = not na(_swLoM) and _lm <= _swLoM
+    _szT    = not na(_swHiM) and _hm >= _swHiM
     _den    = math.max(nz(_atrPx, 1.0), math.max(minTk, 1e-10))
     _dist   = (_fx - _sx) / _den
     _slope  = ((_fx - _f1) - (_sx - _s1)) / _den
     _pressBuy = int(math.round(100 * (1.0 / (1.0 + math.exp(-(0.75*_dist + 0.25*_slope))))))
-    _bits = (_gLong?1:0) + (_gShort?2:0) + (_fvgUp?4:0) + (_fvgDn?8:0) + (_lgbUp?16:0) + (_lgbDn?32:0)
+    _bits = (_gLong?1:0) + (_gShort?2:0) + (_fvgUp?4:0) + (_fvgDn?8:0) +
+             (_lgbUp?16:0) + (_lgbDn?32:0) + (_dzT?64:0) + (_szT?128:0)
     (_st + 2) * SCALE_TREND + _pressBuy * SCALE_PRESS + _bits
 
 // ============================================================================
@@ -1044,39 +1115,50 @@ if showLegend and barstate.islast
     table.cell(lTbl, 0, rL + 0, "LEGEND | " + timeframe.period, bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
     table.cell(lTbl, 0, rL + 1, "PRESSURE:  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%",
                bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
-    _bosTxt = (bosUp ? "B↑ " : "") + (bosDn ? "B↓ " : "") + (chochUp ? "C↑ " : "") + (chochDn ? "C↓ " : "")
+    _bosRaw = (bosUp ? "B↑ " : "") + (bosDn ? "B↓ " : "") + (chochUp ? "C↑ " : "") + (chochDn ? "C↓ " : "")
+    _bosTxt = _bosRaw == "" ? "-" : _bosRaw
     _sum2 = "Trend: " + f_lbl(trendState) + " | BOS/CHOCH: " + _bosTxt + " | Zones: " + str.tostring(array.size(zBoxes))
     table.cell(lTbl, 0, rL + 2, _sum2, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
     if showRows
         base = rL + 3
-        table.cell(lTbl, 0, base + 0, "5m   →  " + mtfLine("5"),   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        table.cell(lTbl, 0, base + 1, "15m  →  " + mtfLine("15"),  bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        table.cell(lTbl, 0, base + 2, "30m  →  " + mtfLine("30"),  bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        table.cell(lTbl, 0, base + 3, "4H   →  " + mtfLine("240"), bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        table.cell(lTbl, 0, base + 4, "1D   →  " + mtfLine("D"),   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        string[] tfsExtra = array.from("5","15","30","240","D")
+        for j = 0 to array.size(tfsExtra) - 1
+            _tfe = array.get(tfsExtra, j)
+            _pke = request.security(syminfo.tickerid, _tfe, f_tfPacked(gateUseClosed, dashMomoLive), barmerge.gaps_off, barmerge.lookahead_off)
+            [est, elg, esg, efu, efd, elu, eld, edz, esz, epr] = f_decodePacked(_pke)
+            _etxt = f_labTF(_tfe) + "  →  " + f_lbl(est) +
+                     "  |  F" + (efu ? "↑" : efd ? "↓" : "-") +
+                     "  |  L" + (elu ? "↑" : eld ? "↓" : "-") +
+                     "  |  " + (edz ? "DZ" : esz ? "SZ" : "SR-") +
+                     "  |  " + str.tostring(epr) + "/" + str.tostring(100 - epr) + "%"
+            _ecol = elg ? color.new(color.lime, 0) : esg ? color.new(color.red, 0) : color.new(color.gray, 0)
+            table.cell(lTbl, 0, base + j, _etxt, bgcolor=bgPanel, text_color=_ecol, text_size=PFS)
         rL := base + 5
     else
         rL := rL + 3
 
-    _hdr = "DASHBOARD (" + (gateUseClosed ? "closed" : "live") + "): EMA20/50"
+    _hdr = "DASHBOARD gates (" + (gateUseClosed ? "closed" : "live") + "): EMA20/50"
     _hdr += (gateUseAdx ? (" + ADX≥" + str.tostring(gateAdxMin)) : "")
-    _hdr += " | sepATR×" + str.tostring(gateMinSepATR) + "  |  FVG/LGB current bar"
+    _hdr += " | sepATR×" + str.tostring(gateMinSepATR)
+    _hdr += "  |  FVG/LGB/SR: " + (dashMomoLive ? "live bar" : "closed bar")
     table.cell(lTbl, 0, rL, _hdr, bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
 
     for i = 0 to array.size(tfsDash) - 1
         _tf     = array.get(tfsDash, i)
-        _packed = request.security(syminfo.tickerid, _tf, f_tfPacked(gateUseClosed), barmerge.gaps_off, barmerge.lookahead_off)
-        [st, lg, sg, fu, fd, lu, ld, pBuy] = f_decodePacked(_packed)
+        _packed = request.security(syminfo.tickerid, _tf, f_tfPacked(gateUseClosed, dashMomoLive), barmerge.gaps_off, barmerge.lookahead_off)
+        [st, lg, sg, fu, fd, lu, ld, dz, sz, pBuy] = f_decodePacked(_packed)
 
         _fvgTxt = fu ? "↑" : fd ? "↓" : "-"
         _lgbTxt = lu ? "↑" : ld ? "↓" : "-"
+        _srTxt  = dz ? "DZ" : sz ? "SZ" : "-"
         _pSell  = 100 - pBuy
 
         _row = f_labTF(_tf) + " → " + f_lbl(st) +
               " | L:" + (lg ? "Y" : "N") + " S:" + (sg ? "Y" : "N") +
               " | FVG:" + _fvgTxt +
               " | LGB:" + _lgbTxt +
+              " | SR:" + _srTxt +
               " | PRESS:" + str.tostring(pBuy) + "/" + str.tostring(_pSell) + "%"
 
         _col = lg ? color.new(color.lime, 0) : sg ? color.new(color.red, 0) : color.new(color.gray, 0)
