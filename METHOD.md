@@ -142,6 +142,52 @@ that gold reliably provides sooner or later.
 The trader's own summary: because it is gold, controlling equity against it
 is a must, and it takes constant attention.
 
+## What the EA is actually for
+
+Not judgement. Endurance.
+
+The trader already has a panel on his MT5 chart showing breakeven and the
+combined weight of the lots, so the arithmetic that used to cost him three
+or four seconds now costs under one. That problem is solved. The remaining
+problem is a different kind entirely.
+
+His own words for it: hand it to the one who never tires.
+
+Look at what the method asks of a person. A frozen book has to be held,
+sometimes for weeks, without touching it. Through that whole time the
+temptation is to interfere, and the fear is that this time the reversal
+never comes. A human gets tired, gets scared, and acts. A bot holds the
+position for a month with exactly the same indifference it had in the
+first minute.
+
+He puts it more sharply than that:
+
+> the trading platform is itself a bot, and only a bot can face it, and
+> that too over weeks
+
+So the machine's contribution is not that it is cleverer than him. It is
+that it does not get tired, does not get frightened, and does not get
+bored. Those are the three things that cost a discretionary trader money
+during a long wait, and they are exactly the three a program does not have.
+
+### What that demands from the design
+
+**Manual control is not a fallback, it is a feature.** He wants to be able
+to stop the automatic side, set something by hand, and then hand it back,
+without restarting anything and without the bot fighting him for control.
+Any design where taking over means switching the EA off is the wrong
+design.
+
+**The transfer is gradual, not a switch.** He intends to move himself onto
+the bot piece by piece, watching until he trusts each piece, rather than
+handing over everything at once. So each part has to be independently
+switchable.
+
+**He wants to watch without tension, and take notes.** While the bot runs
+he wants to see anything it does that goes against his method, so it can be
+corrected. That means the EA has to say out loud what it is doing and why,
+not merely do it.
+
 ## What is mechanical and could be automated
 
 - Never setting a stop loss or a take profit on any order
