@@ -169,6 +169,51 @@ that gold reliably provides sooner or later.
 The trader's own summary: because it is gold, controlling equity against it
 is a must, and it takes constant attention.
 
+## A correction I owe: the signal was never tested
+
+Earlier in this project the Pine tester reported that the entry signal
+performed worse than a coin flip, on both the one-minute and five-minute
+charts, and that finding was stated firmly. It was wrong, and it was wrong
+because of what was actually being measured.
+
+What I tested was my own port: an EMA 20 against 50 read, a three-candle
+fair value gap, and a pivot-based liquidity sweep. Three conditions.
+
+What the real script requires before it will take a trade, listed by its own
+Teacher panel under "BUY missing":
+
+- demand zone touch or breakout
+- trend up
+- a recent break of structure or change of character
+- an up fair value gap or an up liquidity grab
+- the dollar index filter
+- Supertrend up
+- a confluence score of at least 60, where it was showing 30
+- room to the first target, refused when an opposing zone sits too close
+
+Eight gates, not three. The score gate alone rejects most setups. My port
+had no score gate at all, so it took every weak setup the real script would
+have thrown away. A version that accepts everything scoring badly against
+one that accepts only the best is not a test of the idea.
+
+And the script keeps its own record. The virtual tracker on the chart, which
+computes expectancy as the sum of R multiples divided by the number of
+closed trades, reads:
+
+| measure | value |
+|---|---|
+| tracked trades | 59 |
+| first target hit rate | 54.2% |
+| expectancy | +0.41 R per trade |
+
+Positive expectancy. Stated honestly, 59 trades is a small sample and it is
+measured over whatever history the chart had loaded rather than forward, so
+it is evidence rather than proof. But it is real evidence, and it points the
+opposite way from my finding.
+
+The correct statement is that the signal has not been tested here yet. The
+thing that failed the coin-flip comparison was my simplification of it.
+
 ## What the EA is actually for
 
 Not judgement. Endurance.
