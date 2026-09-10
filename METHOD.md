@@ -76,6 +76,33 @@ fees. Then read the moving averages again and repeat.
 This is the normal state and it is where the name comes from. Cast a line,
 take the fish, cast again.
 
+### Lot size is not fixed at 0.01
+
+Correction, from a closed-trade list on the evening of 10 September. Lots of
+0.02 and 0.10 appear alongside the 0.01 ones. A 0.10 lot moves ten USC for
+every dollar gold moves, ten times the base size.
+
+That day's example, all closed in one action at 4370.298:
+
+| side | lot | entry | result |
+|---|---|---|---|
+| sell | 0.02 | 4363.407 | -14.30 |
+| buy | 0.10 | 4362.951 | +73.50 |
+| buy | 0.10 | 4370.163 | +1.40 |
+| buy | 0.10 | 4374.481 | -41.80 |
+| buy | 0.10 | 4366.963 | +33.40 |
+
+Four buys totalling 0.40 lots, entries spread across 11.53 dollars of
+price, average entry 4368.640, closed 1.658 above that average. Bought on
+the way down, held, closed the set once price came back through the
+average. The day finished at +740.00 USC against +6.50 USC at breakfast.
+
+What this changes is the risk arithmetic rather than the method. At 0.40
+lots the book moves 40 USC per dollar of gold, so a hundred dollar run
+against it is about eight percent of the account. Every earlier estimate in
+this project assumed 0.01 throughout and was therefore ten times too
+comfortable.
+
 ## Phase 2 — Trouble arrives
 
 After three or four lots in the same direction a reversal hits.
