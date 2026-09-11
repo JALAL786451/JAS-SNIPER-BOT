@@ -65,6 +65,8 @@ showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
 nearATR    = input.float(0.80, "Level ke qareeb = (x ATR) ke andar", minval = 0.1, step = 0.1, group = gIdea)
 stopATR    = input.float(0.60, "SL level se aage (x ATR)", minval = 0.1, step = 0.1, group = gIdea)
 minRR      = input.float(1.5,  "Minimum RR", minval = 0.2, step = 0.1, group = gIdea)
+useAtrTgt  = input.bool(true, "Target ke liye level na ho to ATR se target banao", group = gIdea)
+atrTgtMult = input.float(2.0, "ATR target (x ATR)", minval = 0.5, step = 0.5, group = gIdea)
 ideaBars   = input.int(40, "Idea box kitne bars aage", minval = 5, group = gIdea)
 markHist   = input.bool(false, "Purane setups par bhi nishaan lagao (sirf seekhne ke liye)", group = gIdea)
 panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gIdea)
@@ -166,7 +168,9 @@ f_lvAdd(_price) =>
     array.push(lvLine,  _l)
     array.push(lvPrice, _price)
     array.push(lvIsRes, _res)
-    array.push(lvTouch, 0)
+    // Jo swing is level ko banata hai wo khud pehla test hai. Counter 0 se
+    // shuru karne par har naya level "x0" dikhata tha, jo ghalat tha.
+    array.push(lvTouch, 1)
 
 ph = ta.pivothigh(high, pvLen, pvLen)
 pl = ta.pivotlow (low,  pvLen, pvLen)
@@ -267,6 +271,11 @@ distR = na(nearR) ? na : nearR - close
 distS = na(nearS) ? na : close - nearS
 atR   = not na(distR) and distR <= atr * nearATR
 atS   = not na(distS) and distS <= atr * nearATR
+// "Qareeb" aur "level PAR" ek cheez nahi. Qareeb hone par order LIMIT hai —
+// us qeemat par abhi sauda nahi ho sakta. Sirf level par khare hone par hi
+// market order ka matlab banta hai, warna panel ghalat-fehmi paida karta hai.
+onR   = not na(distR) and distR <= atr * 0.15
+onS   = not na(distS) and distS <= atr * 0.15
 
 // ---------------------------------------------------------------- the idea
 // Do halatein, dono numbers ke sath:
@@ -275,17 +284,26 @@ atS   = not na(distS) and distS <= atr * nearATR
 // Pehle plan banta hai (bias + do level), phir dekha jaata hai ke price level
 // par hai ya nahi. Isi liye ab panel khaali nahi rehta: jab trade nahi hai,
 // tab bhi likha hota hai ke kis qeemat ka intezaar hai.
-planSell = ribDn and not ribThin and not na(nearR) and not na(nearS)
-planBuy  = ribUp and not ribThin and not na(nearS) and not na(nearR)
+// Jab price record ke sabse nichle (ya sabse uoonche) kinare par ho, to target
+// ke liye koi level bacha hi nahi hota — aur yehi wo waqt hota hai jab move
+// sabse tez hoti hai. Pehle engine yahan chup ho jata tha. Ab target ATR se
+// bana leta hai aur panel saaf likhta hai ke ye level nahi, ATR ka andaza hai.
+sTgtAtr = useAtrTgt and na(nearS)
+bTgtAtr = useAtrTgt and na(nearR)
+sTgtPx  = not na(nearS) ? nearS : (sTgtAtr ? close - atr * atrTgtMult : na)
+bTgtPx  = not na(nearR) ? nearR : (bTgtAtr ? close + atr * atrTgtMult : na)
+
+planSell = ribDn and not ribThin and not na(nearR) and not na(sTgtPx)
+planBuy  = ribUp and not ribThin and not na(nearS) and not na(bTgtPx)
 
 sEntry = planSell ? nearR : na
 sStop  = planSell ? nearR + atr * stopATR : na
-sTgt   = planSell ? nearS : na
+sTgt   = planSell ? sTgtPx : na
 sRR    = planSell and (sStop - sEntry) > 0 ? (sEntry - sTgt) / (sStop - sEntry) : na
 
 bEntry = planBuy ? nearS : na
 bStop  = planBuy ? nearS - atr * stopATR : na
-bTgt   = planBuy ? nearR : na
+bTgt   = planBuy ? bTgtPx : na
 bRR    = planBuy and (bEntry - bStop) > 0 ? (bTgt - bEntry) / (bEntry - bStop) : na
 
 sRROK = planSell and not na(sRR) and sRR >= minRR
@@ -324,8 +342,12 @@ if showIdea and barstate.islast
         _c    = _sell ? colRes : colSup
         ideaBox := box.new(bar_index, _e, bar_index + ideaBars, _t, xloc = xloc.bar_index, bgcolor = color.new(_c, _live ? 82 : 92), border_color = color.new(_c, _live ? 30 : 55), border_style = _live ? line.style_solid : line.style_dotted)
         ideaSL  := line.new(bar_index, _sl, bar_index + ideaBars, _sl, xloc = xloc.bar_index, color = color.new(_c, _live ? 0 : 40), width = 1, style = line.style_dashed)
-        _head = _live ? ((_sell ? "SELL" : "BUY") + " ABHI") : ("INTEZAAR — " + (_sell ? "SELL" : "BUY") + " jab price " + f_px(_e) + " par aaye")
-        _txt  = _head + "\n" + f_px(_e) + "  se  " + f_px(_t) + "  tak" + "\nSL " + f_px(_sl) + "     RR 1:" + str.tostring(_rr, "#.#")
+        _onLvl = _sell ? onR : onS
+        _dist  = _sell ? distR : distS
+        _side  = _sell ? "SELL" : "BUY"
+        _head  = _live and _onLvl ? _side + " ABHI (market)" : _live ? _side + " LIMIT " + f_px(_e) + "  —  abhi " + f_px(_dist) + " door" : "INTEZAAR — " + _side + " jab price " + f_px(_e) + " par aaye"
+        _tgtKind = (_sell ? sTgtAtr : bTgtAtr) ? "  (ATR target — level nahi)" : ""
+        _txt  = _head + "\n" + f_px(_e) + "  se  " + f_px(_t) + "  tak" + _tgtKind + "\nSL " + f_px(_sl) + "     RR 1:" + str.tostring(_rr, "#.#")
         ideaLbl := label.new(bar_index + ideaBars, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, _live ? 10 : 35), textcolor = color.white, size = PFL)
 
 // ---------------------------------------------------------------- panel
@@ -347,16 +369,16 @@ if showIdea and barstate.islast
     if useTimeLen and effBase <= 2
         _hdr := _hdr + "\n! Ye waqt is chart ke liye bohot chhota hai — minute barhayein ya BARS mode par jayein"
     table.cell(pTbl, 0, 0, _hdr, bgcolor = _bg2, text_color = color.black, text_size = PF)
-    _rTxt = na(nearR) ? "R  —  koi nahi" : "R  " + f_px(nearR) + "    " + str.tostring(nearRt) + " touch    " + f_px(distR) + " door"
-    _sTxt = na(nearS) ? "S  —  koi nahi" : "S  " + f_px(nearS) + "    " + str.tostring(nearSt) + " touch    " + f_px(distS) + " door"
+    _rTxt = na(nearR) ? "R  —  upar koi pivot nahi (record ka sabse ooncha ilaqa)" : "R  " + f_px(nearR) + "    " + str.tostring(nearRt) + " touch    " + f_px(distR) + " door"
+    _sTxt = na(nearS) ? "S  —  neeche koi pivot nahi (record ka sabse nichla ilaqa)" : "S  " + f_px(nearS) + "    " + str.tostring(nearSt) + " touch    " + f_px(distS) + " door"
     table.cell(pTbl, 0, 1, _rTxt, bgcolor = _bg, text_color = colRes, text_size = PF)
     table.cell(pTbl, 0, 2, _sTxt, bgcolor = _bg, text_color = colSup, text_size = PF)
 
     _idea = "PLAN: abhi koi nahi"
     if sellOK
-        _idea := "ABHI SELL:  " + f_px(sEntry) + "  →  " + f_px(sTgt) + "     SL " + f_px(sStop) + "     RR 1:" + str.tostring(sRR, "#.#")
+        _idea := (onR ? "ABHI SELL (market):  " : "SELL LIMIT " + f_px(sEntry) + " par (abhi " + f_px(distR) + " door):  ") + f_px(sEntry) + "  →  " + f_px(sTgt) + "     SL " + f_px(sStop) + "     RR 1:" + str.tostring(sRR, "#.#")
     else if buyOK
-        _idea := "ABHI BUY:  " + f_px(bEntry) + "  →  " + f_px(bTgt) + "     SL " + f_px(bStop) + "     RR 1:" + str.tostring(bRR, "#.#")
+        _idea := (onS ? "ABHI BUY (market):  " : "BUY LIMIT " + f_px(bEntry) + " par (abhi " + f_px(distS) + " door):  ") + f_px(bEntry) + "  →  " + f_px(bTgt) + "     SL " + f_px(bStop) + "     RR 1:" + str.tostring(bRR, "#.#")
     else if sellWait
         _idea := "INTEZAAR:  price " + f_px(sEntry) + " tak upar aaye → SELL → " + f_px(sTgt) + "     SL " + f_px(sStop) + "     RR 1:" + str.tostring(sRR, "#.#")
     else if buyWait
@@ -364,11 +386,16 @@ if showIdea and barstate.islast
     table.cell(pTbl, 0, 3, _idea, bgcolor = _bg2, text_color = sellOK or sellWait ? colRes : buyOK or buyWait ? colSup : color.black, text_size = PF)
 
     // agar level toot gaya to agla padaav — dono taraf ke numbers
+    // Khaali taraf ka matlab samjhana zaroori hai: level "ghayab" nahi hua, wahan
+    // chart ke record mein pivot bana hi nahi. Aise mein ATR ka andaza dete hain.
+    _atrDn = f_px(close - atr * atrTgtMult)
+    _atrUp = f_px(close + atr * atrTgtMult)
     _brk = ""
     if not na(nearS)
-        _brk := _brk + "Agar S " + f_px(nearS) + " toota → " + (na(farS) ? "neeche koi level nahi" : "agla " + f_px(farS))
+        _brk := _brk + "Agar S " + f_px(nearS) + " toota → " + (na(farS) ? "record mein neeche pivot nahi, ATR andaza " + _atrDn : "agla " + f_px(farS))
     if not na(nearR)
-        _brk := (_brk == "" ? "" : _brk + "     |     ") + "Agar R " + f_px(nearR) + " toota → " + (na(farR) ? "upar koi level nahi" : "agla " + f_px(farR))
+        _brk := (_brk == "" ? "" : _brk + "     |     ") + "Agar R " + f_px(nearR) + " toota → " + (na(farR) ? "record mein upar pivot nahi, ATR andaza " + _atrUp : "agla " + f_px(farR))
+    _brk := _brk + "     |     Levels: " + str.tostring(array.size(lvPrice)) + "/" + str.tostring(maxLevels)
     table.cell(pTbl, 0, 4, _brk == "" ? "Koi level nahi bana abhi" : _brk, bgcolor = _bg, text_color = color.black, text_size = PF)
 
     // wajah — kyun ban rahi hai, ya kyun nahi ban rahi
@@ -378,14 +405,16 @@ if showIdea and barstate.islast
     else if buyOK
         _why := "Wajah: ribbon UPAR + price support par + upar resistance tak jagah hai."
     else if sellWait
-        _why := "Wajah: ribbon NEECHE hai, plan tayyar hai — bas price abhi R se " + f_px(distR) + " door hai. Wahan pohche to sell."
+        _why := "Wajah: ribbon NEECHE hai, plan tayyar hai — bas price abhi R se " + f_px(distR) + " door hai. Wahan pohche to sell." + (sTgtAtr ? "  (target level se nahi, ATR se bana hai)" : "")
     else if buyWait
-        _why := "Wajah: ribbon UPAR hai, plan tayyar hai — bas price abhi S se " + f_px(distS) + " door hai. Wahan pohche to buy."
+        _why := "Wajah: ribbon UPAR hai, plan tayyar hai — bas price abhi S se " + f_px(distS) + " door hai. Wahan pohche to buy." + (bTgtAtr ? "  (target level se nahi, ATR se bana hai)" : "")
     else
         if ribThin
             _why := _why + "• Ribbon patla hai (bias flat) — abhi kisi taraf bharosa nahi\n"
-        if na(nearR) or na(nearS)
-            _why := _why + "• Dono taraf level nahi hain (entry ya target nadarad)\n"
+        if na(nearR) and ribDn
+            _why := _why + "• Sell ke liye entry chahiye (R), magar upar koi pivot nahi\n"
+        if na(nearS) and ribUp
+            _why := _why + "• Buy ke liye entry chahiye (S), magar neeche koi pivot nahi\n"
         if planSell and not sRROK
             _why := _why + "• Sell ka plan tha magar RR 1:" + str.tostring(sRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ") — target bohot qareeb hai\n"
         if planBuy and not bRROK
