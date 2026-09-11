@@ -15,6 +15,7 @@ toward backtesting and demo before live trading.
 | `TrendMomentumEA.mq5` | TrendMomentumEA v1.01 — EMA trend + tick-volume momentum |
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
 | `indicators/smc_coach_pro_v2.pine` | SMC Coach Pro v2.1 — zones, BOS/CHOCH, risk engine, MTF dashboard |
+| `indicators/trend_ribbon_levels.pine` | Trend Ribbon + Levels — 10-MA gradient ribbon and pivot S/R lines |
 | `tools/` | Windows compile and backtest automation |
 | `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |
 | `SAWAL-LIST.md` | The question list he answers by number, in Roman Urdu |

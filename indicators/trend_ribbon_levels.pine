@@ -1,0 +1,152 @@
+//@version=5
+// ============================================================================
+//  TREND RIBBON + LEVELS
+//  Built from the visuals of a published LuxAlgo chart, not from its source
+//  (that script is protected and its code is not visible). Two independent
+//  parts, each switchable:
+//
+//   1. RIBBON — ten moving averages of increasing length, filled band by band.
+//      Every band takes its own colour from its own pair, so a reversal turns
+//      the ribbon over gradually from the fast edge instead of flipping whole.
+//
+//   2. LEVELS — horizontal support / resistance drawn at confirmed pivot highs
+//      and lows and carried to the right, either for a fixed number of bars or
+//      until price closes through them.
+// ============================================================================
+indicator("Trend Ribbon + Levels", overlay = true, max_lines_count = 500)
+
+// ---------------------------------------------------------------- inputs
+gRib = "1 · Ribbon"
+showRibbon = input.bool(true,  "Show ribbon", group = gRib)
+maType     = input.string("EMA", "MA type", options = ["EMA","SMA","WMA","RMA","HMA"], group = gRib)
+ribSrc     = input.source(close, "Source", group = gRib)
+baseLen    = input.int(20, "First length", minval = 1, group = gRib)
+lenStep    = input.int(10, "Length step",  minval = 1, group = gRib)
+ribCount   = input.int(10, "How many MAs", minval = 2, maxval = 10, group = gRib)
+colUp      = input.color(color.new(#00c853, 0), "Up",   inline = "rc", group = gRib)
+colDn      = input.color(color.new(#d50000, 0), "Down", inline = "rc", group = gRib)
+transpIn   = input.int(55, "Fill transparency: inner", minval = 0, maxval = 100, group = gRib)
+transpOut  = input.int(88, "Fill transparency: outer", minval = 0, maxval = 100, group = gRib)
+showLines  = input.bool(false, "Draw the MA lines themselves", group = gRib)
+bandOwnCol = input.bool(true,  "Colour each band by its own pair", group = gRib)
+
+gLvl = "2 · Levels"
+showLevels = input.bool(true, "Show levels", group = gLvl)
+pvLen      = input.int(15, "Pivot L/R", minval = 1, group = gLvl)
+useHi      = input.bool(true, "From pivot highs", inline = "ls", group = gLvl)
+useLo      = input.bool(true, "From pivot lows",  inline = "ls", group = gLvl)
+lvlMode    = input.string("Extend until broken", "Length", options = ["Extend until broken","Fixed bars"], group = gLvl)
+extBars    = input.int(60, "Fixed bars / minimum length", minval = 1, group = gLvl)
+onBreak    = input.string("Freeze", "When price closes through", options = ["Freeze","Delete","Grey out"], group = gLvl)
+maxLevels  = input.int(20, "Keep last N levels", minval = 1, maxval = 60, group = gLvl)
+colRes     = input.color(color.new(#00e676, 0), "High level", inline = "lc", group = gLvl)
+colSup     = input.color(color.new(#00e676, 0), "Low level",  inline = "lc", group = gLvl)
+colDead    = input.color(color.new(#787b86, 40), "Broken", inline = "lc", group = gLvl)
+lvlWidth   = input.int(2, "Line width", minval = 1, maxval = 5, group = gLvl)
+
+// ---------------------------------------------------------------- ribbon
+f_ma(_t, _src, _len) => _t == "SMA" ? ta.sma(_src, _len) : _t == "WMA" ? ta.wma(_src, _len) : _t == "RMA" ? ta.rma(_src, _len) : _t == "HMA" ? ta.hma(_src, _len) : ta.ema(_src, _len)
+
+// A plot count cannot be a variable in Pine, so all ten exist and the ones
+// past ribCount are fed na, which draws nothing and fills nothing.
+f_lvlLen(_i) => baseLen + _i * lenStep
+f_on(_i)     => showRibbon and _i < ribCount
+
+m1  = f_on(0) ? f_ma(maType, ribSrc, f_lvlLen(0)) : na
+m2  = f_on(1) ? f_ma(maType, ribSrc, f_lvlLen(1)) : na
+m3  = f_on(2) ? f_ma(maType, ribSrc, f_lvlLen(2)) : na
+m4  = f_on(3) ? f_ma(maType, ribSrc, f_lvlLen(3)) : na
+m5  = f_on(4) ? f_ma(maType, ribSrc, f_lvlLen(4)) : na
+m6  = f_on(5) ? f_ma(maType, ribSrc, f_lvlLen(5)) : na
+m7  = f_on(6) ? f_ma(maType, ribSrc, f_lvlLen(6)) : na
+m8  = f_on(7) ? f_ma(maType, ribSrc, f_lvlLen(7)) : na
+m9  = f_on(8) ? f_ma(maType, ribSrc, f_lvlLen(8)) : na
+m10 = f_on(9) ? f_ma(maType, ribSrc, f_lvlLen(9)) : na
+
+// Slowest MA that is actually switched on — the ribbon's own trend reference.
+mSlow = not na(m10) ? m10 : not na(m9) ? m9 : not na(m8) ? m8 : not na(m7) ? m7 : not na(m6) ? m6 : not na(m5) ? m5 : not na(m4) ? m4 : not na(m3) ? m3 : m2
+ribUp = m1 > mSlow
+
+// Band colour: its own pair when asked for (gradual turn), else whole ribbon.
+f_bandCol(_a, _b, _i) => color.new(bandOwnCol ? (_a > _b ? colUp : colDn) : (ribUp ? colUp : colDn), int(math.round(transpIn + (transpOut - transpIn) * _i / 8.0)))
+
+lineCol = showLines ? color.new(ribUp ? colUp : colDn, 25) : color.new(color.gray, 100)
+p1  = plot(m1,  "MA 1",  color = lineCol, linewidth = 1)
+p2  = plot(m2,  "MA 2",  color = lineCol, linewidth = 1)
+p3  = plot(m3,  "MA 3",  color = lineCol, linewidth = 1)
+p4  = plot(m4,  "MA 4",  color = lineCol, linewidth = 1)
+p5  = plot(m5,  "MA 5",  color = lineCol, linewidth = 1)
+p6  = plot(m6,  "MA 6",  color = lineCol, linewidth = 1)
+p7  = plot(m7,  "MA 7",  color = lineCol, linewidth = 1)
+p8  = plot(m8,  "MA 8",  color = lineCol, linewidth = 1)
+p9  = plot(m9,  "MA 9",  color = lineCol, linewidth = 1)
+p10 = plot(m10, "MA 10", color = lineCol, linewidth = 1)
+
+fill(p1, p2,  color = f_bandCol(m1, m2,  0), title = "Band 1")
+fill(p2, p3,  color = f_bandCol(m2, m3,  1), title = "Band 2")
+fill(p3, p4,  color = f_bandCol(m3, m4,  2), title = "Band 3")
+fill(p4, p5,  color = f_bandCol(m4, m5,  3), title = "Band 4")
+fill(p5, p6,  color = f_bandCol(m5, m6,  4), title = "Band 5")
+fill(p6, p7,  color = f_bandCol(m6, m7,  5), title = "Band 6")
+fill(p7, p8,  color = f_bandCol(m7, m8,  6), title = "Band 7")
+fill(p8, p9,  color = f_bandCol(m8, m9,  7), title = "Band 8")
+fill(p9, p10, color = f_bandCol(m9, m10, 8), title = "Band 9")
+
+// ---------------------------------------------------------------- levels
+var line[]  lvLine   = array.new_line()
+var float[] lvPrice  = array.new_float()
+var bool[]  lvIsRes  = array.new_bool()
+var bool[]  lvLive   = array.new_bool()
+var int[]   lvBorn   = array.new_int()
+
+f_lvKill(_i) =>
+    line.delete(array.get(lvLine, _i))
+    array.remove(lvLine,  _i)
+    array.remove(lvPrice, _i)
+    array.remove(lvIsRes, _i)
+    array.remove(lvLive,  _i)
+    array.remove(lvBorn,  _i)
+
+f_lvAdd(_price, _isRes) =>
+    _x1 = bar_index - pvLen
+    _l  = line.new(_x1, _price, _x1 + extBars, _price, xloc = xloc.bar_index, color = _isRes ? colRes : colSup, width = lvlWidth)
+    array.push(lvLine,  _l)
+    array.push(lvPrice, _price)
+    array.push(lvIsRes, _isRes)
+    array.push(lvLive,  true)
+    array.push(lvBorn,  _x1)
+
+ph = ta.pivothigh(high, pvLen, pvLen)
+pl = ta.pivotlow (low,  pvLen, pvLen)
+
+if showLevels and useHi and not na(ph)
+    f_lvAdd(ph, true)
+if showLevels and useLo and not na(pl)
+    f_lvAdd(pl, false)
+
+// carry live levels to the right and retire the ones price has closed through
+if array.size(lvLine) > 0
+    for i = array.size(lvLine) - 1 to 0
+        _ln    = array.get(lvLine, i)
+        _px    = array.get(lvPrice, i)
+        _isRes = array.get(lvIsRes, i)
+        _live  = array.get(lvLive, i)
+        if _live
+            _broke = _isRes ? close > _px : close < _px
+            if _broke
+                array.set(lvLive, i, false)
+                if onBreak == "Delete"
+                    f_lvKill(i)
+                else if onBreak == "Grey out"
+                    line.set_color(_ln, colDead)
+            else if lvlMode == "Extend until broken"
+                line.set_x2(_ln, math.max(bar_index + 1, array.get(lvBorn, i) + extBars))
+
+while array.size(lvLine) > maxLevels
+    f_lvKill(0)
+
+// ---------------------------------------------------------------- alerts
+ribFlipUp = ribUp and not ribUp[1]
+ribFlipDn = not ribUp and ribUp[1]
+alertcondition(ribFlipUp, "Ribbon turns up",   "Trend Ribbon flipped UP")
+alertcondition(ribFlipDn, "Ribbon turns down", "Trend Ribbon flipped DOWN")
