@@ -27,8 +27,14 @@
 indicator("Trend Ribbon + Levels", overlay = true, max_lines_count = 500, max_boxes_count = 100, max_labels_count = 100)
 
 // ---------------------------------------------------------------- inputs
-gRib = "1 · Ribbon (bias)"
-showRibbon = input.bool(true,  "Show ribbon", group = gRib)
+gRib = "1 · Trend lines (bias)"
+showRibbon = input.bool(true,  "Trend dikhao", group = gRib)
+dispMode   = input.string("MA lines (2)", "Shakl", options = ["MA lines (2)","MA lines (sab)","Ribbon (shaded)"], group = gRib)
+fastLen    = input.int(20, "2-line: fast MA", minval = 1, group = gRib)
+slowLen    = input.int(50, "2-line: slow MA", minval = 2, group = gRib)
+colFast    = input.color(color.new(#00bcd4, 0), "Fast", inline = "mc", group = gRib)
+colSlow    = input.color(color.new(#e040fb, 0), "Slow", inline = "mc", group = gRib)
+maWidth    = input.int(2, "MA line width", minval = 1, maxval = 4, group = gRib)
 maType     = input.string("EMA", "MA type", options = ["EMA","SMA","WMA","RMA","HMA"], group = gRib)
 ribSrc     = input.source(close, "Source", group = gRib)
 lenMode    = input.string("Bars (tay shuda)", "Length kaise tay ho", options = ["Bars (tay shuda)","Waqt (timeframe se khud badle)"], group = gRib)
@@ -102,6 +108,10 @@ f_ma(_t, _src, _len) => _t == "SMA" ? ta.sma(_src, _len) : _t == "WMA" ? ta.wma(
 tfMin = timeframe.in_seconds() / 60.0
 f_barsFromMins(_m) => math.max(2, int(math.round(_m / math.max(tfMin, 0.0001))))
 useTimeLen = lenMode == "Waqt (timeframe se khud badle)"
+useTwo     = dispMode == "MA lines (2)"
+// Do-line shakl mein ribbon ki lengths se koi wasta nahi — sirf fast aur slow.
+eff2Fast = useTimeLen ? f_barsFromMins(fastMins) : fastLen
+eff2Slow = useTimeLen ? math.max(f_barsFromMins(slowMins), eff2Fast + 1) : slowLen
 effBase = useTimeLen ? f_barsFromMins(fastMins) : baseLen
 effLast = useTimeLen ? math.max(f_barsFromMins(slowMins), effBase + 1) : baseLen + (ribCount - 1) * lenStep
 effStep = useTimeLen ? math.max(1, int(math.round((effLast - effBase) / math.max(ribCount - 1, 1)))) : lenStep
@@ -109,7 +119,7 @@ effStep = useTimeLen ? math.max(1, int(math.round((effLast - effBase) / math.max
 // A plot count cannot be a variable in Pine, so all ten exist and the ones
 // past ribCount are fed na, which draws nothing and fills nothing.
 f_lvlLen(_i) => effBase + _i * effStep
-f_on(_i)     => showRibbon and _i < ribCount
+f_on(_i)     => showRibbon and not useTwo and _i < ribCount
 
 m1  = f_on(0) ? f_ma(maType, ribSrc, f_lvlLen(0)) : na
 m2  = f_on(1) ? f_ma(maType, ribSrc, f_lvlLen(1)) : na
@@ -122,17 +132,32 @@ m8  = f_on(7) ? f_ma(maType, ribSrc, f_lvlLen(7)) : na
 m9  = f_on(8) ? f_ma(maType, ribSrc, f_lvlLen(8)) : na
 m10 = f_on(9) ? f_ma(maType, ribSrc, f_lvlLen(9)) : na
 
+// Do saaf lines — yehi default shakl hai. Rang SMC Coach jaisa hi rakha gaya
+// hai (fast aqua, slow fuchsia) taake dono script ek tarah parhi jayein.
+maF2 = showRibbon and useTwo ? f_ma(maType, ribSrc, eff2Fast) : na
+maS2 = showRibbon and useTwo ? f_ma(maType, ribSrc, eff2Slow) : na
+plot(maF2, "MA fast", color = color.new(colFast, 0), linewidth = maWidth)
+plot(maS2, "MA slow", color = color.new(colSlow, 0), linewidth = maWidth)
+
 // Slowest MA that is actually switched on — the ribbon's own trend reference.
 mSlow = not na(m10) ? m10 : not na(m9) ? m9 : not na(m8) ? m8 : not na(m7) ? m7 : not na(m6) ? m6 : not na(m5) ? m5 : not na(m4) ? m4 : not na(m3) ? m3 : m2
-ribUp = not na(m1) and not na(mSlow) and m1 > mSlow
-ribDn = not na(m1) and not na(mSlow) and m1 < mSlow
-// Ribbon patla ho to bias "flat" — is waqt level bounce bharosemand nahi.
-ribThin = not na(m1) and not na(mSlow) and math.abs(m1 - mSlow) < atr * 0.25
+
+// Bias wahin se aata hai jo shakl chuni gayi hai: do lines, ya ribbon ke
+// sabse tez aur sabse sust kinare.
+biasFast = useTwo ? maF2 : m1
+biasSlow = useTwo ? maS2 : mSlow
+ribUp = not na(biasFast) and not na(biasSlow) and biasFast > biasSlow
+ribDn = not na(biasFast) and not na(biasSlow) and biasFast < biasSlow
+// Faasla patla ho to bias "flat" — is waqt level bounce bharosemand nahi.
+ribThin = not na(biasFast) and not na(biasSlow) and math.abs(biasFast - biasSlow) < atr * 0.25
 biasTxt = ribThin ? "FLAT" : ribUp ? "UPAR" : ribDn ? "NEECHE" : "-"
 
 f_bandCol(_a, _b, _i) => color.new(bandOwnCol ? (_a > _b ? colUp : colDn) : (ribUp ? colUp : colDn), int(math.round(transpIn + (transpOut - transpIn) * _i / 8.0)))
 
-lineCol = showLines ? color.new(ribUp ? colUp : colDn, 25) : color.new(color.gray, 100)
+showFill = dispMode == "Ribbon (shaded)"
+showAll  = dispMode == "MA lines (sab)"
+lineCol = (showAll or (showFill and showLines)) ? color.new(ribUp ? colUp : colDn, 25) : color.new(color.gray, 100)
+f_fillCol(_a, _b, _i) => showFill ? f_bandCol(_a, _b, _i) : color.new(color.gray, 100)
 p1  = plot(m1,  "MA 1",  color = lineCol, linewidth = 1)
 p2  = plot(m2,  "MA 2",  color = lineCol, linewidth = 1)
 p3  = plot(m3,  "MA 3",  color = lineCol, linewidth = 1)
@@ -144,15 +169,15 @@ p8  = plot(m8,  "MA 8",  color = lineCol, linewidth = 1)
 p9  = plot(m9,  "MA 9",  color = lineCol, linewidth = 1)
 p10 = plot(m10, "MA 10", color = lineCol, linewidth = 1)
 
-fill(p1, p2,  color = f_bandCol(m1, m2,  0), title = "Band 1")
-fill(p2, p3,  color = f_bandCol(m2, m3,  1), title = "Band 2")
-fill(p3, p4,  color = f_bandCol(m3, m4,  2), title = "Band 3")
-fill(p4, p5,  color = f_bandCol(m4, m5,  3), title = "Band 4")
-fill(p5, p6,  color = f_bandCol(m5, m6,  4), title = "Band 5")
-fill(p6, p7,  color = f_bandCol(m6, m7,  5), title = "Band 6")
-fill(p7, p8,  color = f_bandCol(m7, m8,  6), title = "Band 7")
-fill(p8, p9,  color = f_bandCol(m8, m9,  7), title = "Band 8")
-fill(p9, p10, color = f_bandCol(m9, m10, 8), title = "Band 9")
+fill(p1, p2,  color = f_fillCol(m1, m2,  0), title = "Band 1")
+fill(p2, p3,  color = f_fillCol(m2, m3,  1), title = "Band 2")
+fill(p3, p4,  color = f_fillCol(m3, m4,  2), title = "Band 3")
+fill(p4, p5,  color = f_fillCol(m4, m5,  3), title = "Band 4")
+fill(p5, p6,  color = f_fillCol(m5, m6,  4), title = "Band 5")
+fill(p6, p7,  color = f_fillCol(m6, m7,  5), title = "Band 6")
+fill(p7, p8,  color = f_fillCol(m7, m8,  6), title = "Band 7")
+fill(p8, p9,  color = f_fillCol(m8, m9,  7), title = "Band 8")
+fill(p9, p10, color = f_fillCol(m9, m10, 8), title = "Band 9")
 
 // ---------------------------------------------------------------- levels
 var line[]  lvLine  = array.new_line()
@@ -367,12 +392,14 @@ if showIdea and barstate.islast
     _bg2 = color.new(color.white, 80)
     // Header khud bata deta hai ke ribbon kitna WAQT naap rahi hai — yehi cheez
     // har chart par badal jaati hai aur aksar nazar nahi aati.
-    _slowBars = effBase + (ribCount - 1) * effStep
-    _hdr = "RIBBON + LEVELS  |  " + timeframe.period + "      BIAS: " + biasTxt
-    _hdr := _hdr + "\n" + maType + " " + str.tostring(effBase) + " → " + str.tostring(_slowBars) + " bars   =   " + f_dur(effBase * tfMin) + " → " + f_dur(_slowBars * tfMin)
+    _fastBars = useTwo ? eff2Fast : effBase
+    _slowBars = useTwo ? eff2Slow : effBase + (ribCount - 1) * effStep
+    _sep = useTwo ? "  /  " : " → "
+    _hdr = "TREND + LEVELS  |  " + timeframe.period + "      BIAS: " + biasTxt
+    _hdr := _hdr + "\n" + maType + " " + str.tostring(_fastBars) + _sep + str.tostring(_slowBars) + " bars   =   " + f_dur(_fastBars * tfMin) + _sep + f_dur(_slowBars * tfMin)
     // WAQT mode is chart par itna chhota par gaya ke MA be-maani ho gayi — ye
     // chup-chaap nahi hona chahiye, warna ribbon shor dikhane lagti hai.
-    if useTimeLen and effBase <= 2
+    if useTimeLen and _fastBars <= 2
         _hdr := _hdr + "\n! Ye waqt is chart ke liye bohot chhota hai — minute barhayein ya BARS mode par jayein"
     table.cell(pTbl, 0, 0, _hdr, bgcolor = _bg2, text_color = color.black, text_size = PF)
     _rTxt = na(nearR) ? "R  —  upar koi pivot nahi (record ka sabse ooncha ilaqa)" : "R  " + f_px(nearR) + "    " + str.tostring(nearRt) + " touch    " + f_px(distR) + " door"
