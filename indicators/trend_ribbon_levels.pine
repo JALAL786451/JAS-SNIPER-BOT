@@ -59,6 +59,12 @@ gFvg = "3 · FVG (khaali jagah)"
 showFVG    = input.bool(true, "Show fair value gaps", group = gFvg)
 fvgMinATR  = input.float(0.25, "Ignore gaps smaller than (x ATR)", minval = 0, step = 0.05, group = gFvg)
 fvgKeep    = input.int(6, "Keep last N gaps", minval = 1, maxval = 20, group = gFvg)
+// FVG ka apna rang. Pehle ye levels aur idea box jaisa hi green/red tha, is
+// liye teen alag cheezein ek jaisi dikhti thin. Ab neela/narangi, aur box par
+// naam bhi likha hota hai.
+colFvgUp   = input.color(color.new(#00b0ff, 0), "FVG upar wala", inline = "fc", group = gFvg)
+colFvgDn   = input.color(color.new(#ff9100, 0), "FVG neeche wala", inline = "fc", group = gFvg)
+fvgLabel   = input.bool(true, "Box par \"FVG\" likho", group = gFvg)
 
 gIdea = "4 · Trade idea"
 showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
@@ -212,9 +218,9 @@ gapUp = bar_index > 2 and low > high[2] and (low - high[2]) >= atr * fvgMinATR
 gapDn = bar_index > 2 and high < low[2] and (low[2] - high) >= atr * fvgMinATR
 
 if showFVG and gapUp
-    array.push(fvgBox, box.new(bar_index - 2, low, bar_index + 1, high[2], xloc = xloc.bar_index, bgcolor = color.new(colUp, 88), border_color = color.new(colUp, 60)))
+    array.push(fvgBox, box.new(bar_index - 2, low, bar_index + 1, high[2], xloc = xloc.bar_index, bgcolor = color.new(colFvgUp, 88), border_color = color.new(colFvgUp, 55), text = fvgLabel ? "FVG ↑" : "", text_color = color.new(colFvgUp, 0), text_size = size.tiny, text_halign = text.align_left, text_valign = text.align_center))
 if showFVG and gapDn
-    array.push(fvgBox, box.new(bar_index - 2, low[2], bar_index + 1, high, xloc = xloc.bar_index, bgcolor = color.new(colDn, 88), border_color = color.new(colDn, 60)))
+    array.push(fvgBox, box.new(bar_index - 2, low[2], bar_index + 1, high, xloc = xloc.bar_index, bgcolor = color.new(colFvgDn, 88), border_color = color.new(colFvgDn, 55), text = fvgLabel ? "FVG ↓" : "", text_color = color.new(colFvgDn, 0), text_size = size.tiny, text_halign = text.align_left, text_valign = text.align_center))
 
 // gap bharne par mit jaata hai — khaali gap hi magnet hai, bhara hua nahi
 if array.size(fvgBox) > 0
