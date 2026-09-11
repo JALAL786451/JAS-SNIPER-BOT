@@ -47,6 +47,7 @@ pvLen      = input.int(15, "Pivot L/R", minval = 1, group = gLvl)
 maxLevels  = input.int(16, "Keep last N levels", minval = 2, maxval = 60, group = gLvl)
 breakATR   = input.float(0.10, "Break needs close beyond by (x ATR)", minval = 0, step = 0.05, group = gLvl)
 showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
+hideFarATR = input.float(15, "Itne ATR se door wale levels chhupao (0 = sab dikhao)", minval = 0, step = 1, group = gLvl)
 colRes     = input.color(color.new(#d50000, 0), "Resistance (upar)", group = gLvl)
 colSup     = input.color(color.new(#00c853, 0), "Support (neeche)",  group = gLvl)
 lvlWidth   = input.int(2, "Line width", minval = 1, maxval = 5, group = gLvl)
@@ -62,12 +63,17 @@ nearATR    = input.float(0.80, "Level ke qareeb = (x ATR) ke andar", minval = 0.
 stopATR    = input.float(0.60, "SL level se aage (x ATR)", minval = 0.1, step = 0.1, group = gIdea)
 minRR      = input.float(1.5,  "Minimum RR", minval = 0.2, step = 0.1, group = gIdea)
 ideaBars   = input.int(40, "Idea box kitne bars aage", minval = 5, group = gIdea)
-markHist   = input.bool(true, "Purane setups par nishaan lagao", group = gIdea)
+markHist   = input.bool(false, "Purane setups par bhi nishaan lagao (sirf seekhne ke liye)", group = gIdea)
 panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gIdea)
+panelFont  = input.string("Normal", "Panel font", options = ["Small","Normal","Large","Huge"], group = gIdea)
 
 // ---------------------------------------------------------------- helpers
 f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
 f_px(x)  => str.tostring(x, format.mintick)
+f_fs(s)  => s == "Small" ? size.small : s == "Normal" ? size.normal : s == "Large" ? size.large : size.huge
+f_fsLbl(s) => s == "Small" ? size.tiny : s == "Normal" ? size.small : s == "Large" ? size.normal : size.large
+PF  = f_fs(panelFont)
+PFL = f_fsLbl(panelFont)
 atr = ta.atr(14)
 
 // ---------------------------------------------------------------- ribbon
@@ -171,7 +177,8 @@ if array.size(lvLine) > 0
             _now := true
         if _now != _was
             array.set(lvIsRes, i, _now)
-            line.set_color(_ln, _now ? colRes : colSup)
+        _far = hideFarATR > 0 and math.abs(_px - close) > atr * hideFarATR
+        line.set_color(_ln, _far ? color.new(color.gray, 100) : (_now ? colRes : colSup))
 
 while array.size(lvLine) > maxLevels
     f_lvKill(0)
@@ -222,29 +229,53 @@ if array.size(lvPrice) > 0
                 nearS  := _px
                 nearSt := _tc
 
+// Doosra level, nearest ke bhi aage — "agar ye toot gaya to aage kya" ke liye.
+var float farR = na
+var float farS = na
+farR := na
+farS := na
+if array.size(lvPrice) > 0
+    for i = 0 to array.size(lvPrice) - 1
+        _px = array.get(lvPrice, i)
+        if not na(nearR) and _px > nearR
+            if na(farR) or _px < farR
+                farR := _px
+        if not na(nearS) and _px < nearS
+            if na(farS) or _px > farS
+                farS := _px
+
 distR = na(nearR) ? na : nearR - close
 distS = na(nearS) ? na : close - nearS
 atR   = not na(distR) and distR <= atr * nearATR
 atS   = not na(distS) and distS <= atr * nearATR
 
 // ---------------------------------------------------------------- the idea
-// SELL: ribbon neeche + price resistance par + neeche target ke liye support.
-// BUY : ribbon upar  + price support par    + upar  target ke liye resistance.
-sellSetup = ribDn and not ribThin and atR and not na(nearS)
-buySetup  = ribUp and not ribThin and atS and not na(nearR)
+// Do halatein, dono numbers ke sath:
+//   ABHI     — price level par hai, trade ab ban rahi hai
+//   INTEZAAR — plan tayyar hai magar price abhi level tak nahi pohcha
+// Pehle plan banta hai (bias + do level), phir dekha jaata hai ke price level
+// par hai ya nahi. Isi liye ab panel khaali nahi rehta: jab trade nahi hai,
+// tab bhi likha hota hai ke kis qeemat ka intezaar hai.
+planSell = ribDn and not ribThin and not na(nearR) and not na(nearS)
+planBuy  = ribUp and not ribThin and not na(nearS) and not na(nearR)
 
-sEntry = sellSetup ? nearR : na
-sStop  = sellSetup ? nearR + atr * stopATR : na
-sTgt   = sellSetup ? nearS : na
-sRR    = sellSetup and (sStop - sEntry) > 0 ? (sEntry - sTgt) / (sStop - sEntry) : na
+sEntry = planSell ? nearR : na
+sStop  = planSell ? nearR + atr * stopATR : na
+sTgt   = planSell ? nearS : na
+sRR    = planSell and (sStop - sEntry) > 0 ? (sEntry - sTgt) / (sStop - sEntry) : na
 
-bEntry = buySetup ? nearS : na
-bStop  = buySetup ? nearS - atr * stopATR : na
-bTgt   = buySetup ? nearR : na
-bRR    = buySetup and (bEntry - bStop) > 0 ? (bTgt - bEntry) / (bEntry - bStop) : na
+bEntry = planBuy ? nearS : na
+bStop  = planBuy ? nearS - atr * stopATR : na
+bTgt   = planBuy ? nearR : na
+bRR    = planBuy and (bEntry - bStop) > 0 ? (bTgt - bEntry) / (bEntry - bStop) : na
 
-sellOK = sellSetup and not na(sRR) and sRR >= minRR
-buyOK  = buySetup  and not na(bRR) and bRR >= minRR
+sRROK = planSell and not na(sRR) and sRR >= minRR
+bRROK = planBuy  and not na(bRR) and bRR >= minRR
+
+sellOK   = sRROK and atR
+buyOK    = bRROK and atS
+sellWait = sRROK and not atR
+buyWait  = bRROK and not atS
 
 plotshape(markHist and sellOK and not sellOK[1] ? high : na, title = "Sell setup", style = shape.triangledown, location = location.absolute, color = colRes, size = size.tiny, text = "S")
 plotshape(markHist and buyOK  and not buyOK[1]  ? low  : na, title = "Buy setup",  style = shape.triangleup,   location = location.absolute, color = colSup, size = size.tiny, text = "B")
@@ -263,55 +294,77 @@ if showIdea and barstate.islast
     ideaBox := na
     ideaSL  := na
     ideaLbl := na
-    if sellOK or buyOK
-        _e   = sellOK ? sEntry : bEntry
-        _t   = sellOK ? sTgt   : bTgt
-        _sl  = sellOK ? sStop  : bStop
-        _rr  = sellOK ? sRR    : bRR
-        _c   = sellOK ? colRes : colSup
-        ideaBox := box.new(bar_index, _e, bar_index + ideaBars, _t, xloc = xloc.bar_index, bgcolor = color.new(_c, 85), border_color = color.new(_c, 40))
-        ideaSL  := line.new(bar_index, _sl, bar_index + ideaBars, _sl, xloc = xloc.bar_index, color = color.new(_c, 0), width = 1, style = line.style_dashed)
-        _txt = (sellOK ? "SELL " : "BUY ") + f_px(_e) + " se " + f_px(_t) + " tak" + "\nSL " + f_px(_sl) + "   RR 1:" + str.tostring(_rr, "#.#")
-        ideaLbl := label.new(bar_index + ideaBars, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, 10), textcolor = color.white, size = size.small)
+    _live = sellOK or buyOK
+    _plan = sellWait or buyWait
+    if _live or _plan
+        _sell = sellOK or sellWait
+        _e    = _sell ? sEntry : bEntry
+        _t    = _sell ? sTgt   : bTgt
+        _sl   = _sell ? sStop  : bStop
+        _rr   = _sell ? sRR    : bRR
+        _c    = _sell ? colRes : colSup
+        ideaBox := box.new(bar_index, _e, bar_index + ideaBars, _t, xloc = xloc.bar_index, bgcolor = color.new(_c, _live ? 82 : 92), border_color = color.new(_c, _live ? 30 : 55), border_style = _live ? line.style_solid : line.style_dotted)
+        ideaSL  := line.new(bar_index, _sl, bar_index + ideaBars, _sl, xloc = xloc.bar_index, color = color.new(_c, _live ? 0 : 40), width = 1, style = line.style_dashed)
+        _head = _live ? ((_sell ? "SELL" : "BUY") + " ABHI") : ("INTEZAAR — " + (_sell ? "SELL" : "BUY") + " jab price " + f_px(_e) + " par aaye")
+        _txt  = _head + "\n" + f_px(_e) + "  se  " + f_px(_t) + "  tak" + "\nSL " + f_px(_sl) + "     RR 1:" + str.tostring(_rr, "#.#")
+        ideaLbl := label.new(bar_index + ideaBars, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, _live ? 10 : 35), textcolor = color.white, size = PFL)
 
-// ---------------------------------------------------------------- panel: kyun / kyun nahi
+// ---------------------------------------------------------------- panel
 var table pTbl = na
 if showIdea and barstate.islast
     if na(pTbl)
-        pTbl := table.new(f_pos(panelPos), 1, 5, border_width = 1)
+        pTbl := table.new(f_pos(panelPos), 1, 6, border_width = 1)
     else
-        table.clear(pTbl, 0, 0, 0, 4)
-    _bg  = color.new(color.white, 92)
-    _bg2 = color.new(color.white, 86)
-    table.cell(pTbl, 0, 0, "RIBBON + LEVELS  |  " + timeframe.period + "   Bias: " + biasTxt, bgcolor = _bg2, text_color = color.black, text_size = size.small)
-    _rTxt = na(nearR) ? "R: koi nahi" : "R " + f_px(nearR) + "  (" + str.tostring(nearRt) + " touch, " + f_px(distR) + " door)"
-    _sTxt = na(nearS) ? "S: koi nahi" : "S " + f_px(nearS) + "  (" + str.tostring(nearSt) + " touch, " + f_px(distS) + " door)"
-    table.cell(pTbl, 0, 1, _rTxt, bgcolor = _bg, text_color = colRes, text_size = size.small)
-    table.cell(pTbl, 0, 2, _sTxt, bgcolor = _bg, text_color = colSup, text_size = size.small)
-    _idea = sellOK ? "IDEA: SELL " + f_px(sEntry) + " → " + f_px(sTgt) + "   SL " + f_px(sStop) + "   RR 1:" + str.tostring(sRR, "#.#") : buyOK ? "IDEA: BUY " + f_px(bEntry) + " → " + f_px(bTgt) + "   SL " + f_px(bStop) + "   RR 1:" + str.tostring(bRR, "#.#") : "IDEA: abhi koi nahi"
-    table.cell(pTbl, 0, 3, _idea, bgcolor = _bg2, text_color = sellOK ? colRes : buyOK ? colSup : color.black, text_size = size.small)
-    // wajah — yehi cheez v1.0 mein nahi thi
+        table.clear(pTbl, 0, 0, 0, 5)
+    _bg  = color.new(color.white, 90)
+    _bg2 = color.new(color.white, 80)
+    table.cell(pTbl, 0, 0, "RIBBON + LEVELS  |  " + timeframe.period + "      BIAS: " + biasTxt, bgcolor = _bg2, text_color = color.black, text_size = PF)
+    _rTxt = na(nearR) ? "R  —  koi nahi" : "R  " + f_px(nearR) + "    " + str.tostring(nearRt) + " touch    " + f_px(distR) + " door"
+    _sTxt = na(nearS) ? "S  —  koi nahi" : "S  " + f_px(nearS) + "    " + str.tostring(nearSt) + " touch    " + f_px(distS) + " door"
+    table.cell(pTbl, 0, 1, _rTxt, bgcolor = _bg, text_color = colRes, text_size = PF)
+    table.cell(pTbl, 0, 2, _sTxt, bgcolor = _bg, text_color = colSup, text_size = PF)
+
+    _idea = "PLAN: abhi koi nahi"
+    if sellOK
+        _idea := "ABHI SELL:  " + f_px(sEntry) + "  →  " + f_px(sTgt) + "     SL " + f_px(sStop) + "     RR 1:" + str.tostring(sRR, "#.#")
+    else if buyOK
+        _idea := "ABHI BUY:  " + f_px(bEntry) + "  →  " + f_px(bTgt) + "     SL " + f_px(bStop) + "     RR 1:" + str.tostring(bRR, "#.#")
+    else if sellWait
+        _idea := "INTEZAAR:  price " + f_px(sEntry) + " tak upar aaye → SELL → " + f_px(sTgt) + "     SL " + f_px(sStop) + "     RR 1:" + str.tostring(sRR, "#.#")
+    else if buyWait
+        _idea := "INTEZAAR:  price " + f_px(bEntry) + " tak neeche aaye → BUY → " + f_px(bTgt) + "     SL " + f_px(bStop) + "     RR 1:" + str.tostring(bRR, "#.#")
+    table.cell(pTbl, 0, 3, _idea, bgcolor = _bg2, text_color = sellOK or sellWait ? colRes : buyOK or buyWait ? colSup : color.black, text_size = PF)
+
+    // agar level toot gaya to agla padaav — dono taraf ke numbers
+    _brk = ""
+    if not na(nearS)
+        _brk := _brk + "Agar S " + f_px(nearS) + " toota → " + (na(farS) ? "neeche koi level nahi" : "agla " + f_px(farS))
+    if not na(nearR)
+        _brk := (_brk == "" ? "" : _brk + "     |     ") + "Agar R " + f_px(nearR) + " toota → " + (na(farR) ? "upar koi level nahi" : "agla " + f_px(farR))
+    table.cell(pTbl, 0, 4, _brk == "" ? "Koi level nahi bana abhi" : _brk, bgcolor = _bg, text_color = color.black, text_size = PF)
+
+    // wajah — kyun ban rahi hai, ya kyun nahi ban rahi
     _why = ""
     if sellOK
         _why := "Wajah: ribbon NEECHE + price resistance par + neeche support khaali hai."
     else if buyOK
         _why := "Wajah: ribbon UPAR + price support par + upar resistance tak jagah hai."
+    else if sellWait
+        _why := "Wajah: ribbon NEECHE hai, plan tayyar hai — bas price abhi R se " + f_px(distR) + " door hai. Wahan pohche to sell."
+    else if buyWait
+        _why := "Wajah: ribbon UPAR hai, plan tayyar hai — bas price abhi S se " + f_px(distS) + " door hai. Wahan pohche to buy."
     else
         if ribThin
-            _why := _why + "• Ribbon patla hai (bias flat) — bounce bharosemand nahi\n"
-        if not atR and not atS
-            _why := _why + "• Price kisi level ke qareeb nahi (qareeb = " + str.tostring(nearATR, "#.##") + " x ATR)\n"
-        if ribDn and atS and not atR
-            _why := _why + "• Ribbon neeche hai magar price SUPPORT par khara hai — girte market mein support se buy nahi\n"
-        if ribUp and atR and not atS
-            _why := _why + "• Ribbon upar hai magar price RESISTANCE par hai — charhte market mein resistance se sell nahi\n"
-        if sellSetup and not sellOK
-            _why := _why + "• Sell ban raha tha magar RR 1:" + str.tostring(sRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ")\n"
-        if buySetup and not buyOK
-            _why := _why + "• Buy ban raha tha magar RR 1:" + str.tostring(bRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ")\n"
+            _why := _why + "• Ribbon patla hai (bias flat) — abhi kisi taraf bharosa nahi\n"
+        if na(nearR) or na(nearS)
+            _why := _why + "• Dono taraf level nahi hain (entry ya target nadarad)\n"
+        if planSell and not sRROK
+            _why := _why + "• Sell ka plan tha magar RR 1:" + str.tostring(sRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ") — target bohot qareeb hai\n"
+        if planBuy and not bRROK
+            _why := _why + "• Buy ka plan tha magar RR 1:" + str.tostring(bRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ")\n"
         if _why == ""
-            _why := "• Koi wajah nahi bani — level, bias aur RR ek sath align nahi hue\n"
-    table.cell(pTbl, 0, 4, _why, bgcolor = _bg, text_color = color.black, text_size = size.small, text_halign = text.align_left)
+            _why := "• Bias, level aur RR ek sath align nahi hue\n"
+    table.cell(pTbl, 0, 5, _why, bgcolor = _bg, text_color = color.black, text_size = PF, text_halign = text.align_left)
 
 // ---------------------------------------------------------------- nearest R/S labels
 var label labR = na
@@ -322,6 +375,6 @@ if showTouch and barstate.islast
     labR := na
     labS := na
     if not na(nearR)
-        labR := label.new(bar_index + 2, nearR, "R " + f_px(nearR) + "  ×" + str.tostring(nearRt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colRes, 20), textcolor = color.white, size = size.tiny)
+        labR := label.new(bar_index + 2, nearR, "R " + f_px(nearR) + "   x" + str.tostring(nearRt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colRes, 20), textcolor = color.white, size = PFL)
     if not na(nearS)
-        labS := label.new(bar_index + 2, nearS, "S " + f_px(nearS) + "  ×" + str.tostring(nearSt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colSup, 20), textcolor = color.white, size = size.tiny)
+        labS := label.new(bar_index + 2, nearS, "S " + f_px(nearS) + "   x" + str.tostring(nearSt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colSup, 20), textcolor = color.white, size = PFL)
