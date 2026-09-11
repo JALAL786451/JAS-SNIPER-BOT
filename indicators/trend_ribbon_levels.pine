@@ -31,8 +31,11 @@ gRib = "1 · Ribbon (bias)"
 showRibbon = input.bool(true,  "Show ribbon", group = gRib)
 maType     = input.string("EMA", "MA type", options = ["EMA","SMA","WMA","RMA","HMA"], group = gRib)
 ribSrc     = input.source(close, "Source", group = gRib)
-baseLen    = input.int(20, "First length", minval = 1, group = gRib)
-lenStep    = input.int(10, "Length step",  minval = 1, group = gRib)
+lenMode    = input.string("Bars (tay shuda)", "Length kaise tay ho", options = ["Bars (tay shuda)","Waqt (timeframe se khud badle)"], group = gRib)
+baseLen    = input.int(20, "BARS mode: first length", minval = 1, group = gRib)
+lenStep    = input.int(10, "BARS mode: length step",  minval = 1, group = gRib)
+fastMins   = input.int(20,  "WAQT mode: sabse tez MA (minute)", minval = 1, group = gRib)
+slowMins   = input.int(110, "WAQT mode: sabse sust MA (minute)", minval = 2, group = gRib)
 ribCount   = input.int(10, "How many MAs", minval = 2, maxval = 10, group = gRib)
 colUp      = input.color(color.new(#00c853, 0), "Up",   inline = "rc", group = gRib)
 colDn      = input.color(color.new(#d50000, 0), "Down", inline = "rc", group = gRib)
@@ -71,6 +74,7 @@ panelFont  = input.string("Normal", "Panel font", options = ["Small","Normal","L
 f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
 f_px(x)  => str.tostring(x, format.mintick)
 f_fs(s)  => s == "Small" ? size.small : s == "Normal" ? size.normal : s == "Large" ? size.large : size.huge
+f_dur(_mins) => _mins < 60 ? str.tostring(math.round(_mins)) + "m" : _mins < 1440 ? str.tostring(math.floor(_mins / 60)) + "h " + str.tostring(math.round(_mins % 60)) + "m" : str.tostring(math.floor(_mins / 1440)) + "d " + str.tostring(math.floor((_mins % 1440) / 60)) + "h"
 f_fsLbl(s) => s == "Small" ? size.tiny : s == "Normal" ? size.small : s == "Large" ? size.normal : size.large
 PF  = f_fs(panelFont)
 PFL = f_fsLbl(panelFont)
@@ -79,9 +83,24 @@ atr = ta.atr(14)
 // ---------------------------------------------------------------- ribbon
 f_ma(_t, _src, _len) => _t == "SMA" ? ta.sma(_src, _len) : _t == "WMA" ? ta.wma(_src, _len) : _t == "RMA" ? ta.rma(_src, _len) : _t == "HMA" ? ta.hma(_src, _len) : ta.ema(_src, _len)
 
+// MA ki length "bars" mein hoti hai, aur ek bar ka waqt timeframe se badalta
+// hai. Isi liye EMA 20 — 1m par 20 minute, magar 1h par 20 GHANTE naapti hai.
+// Do tareeqe, dono yahan mojood hain:
+//   BARS  — number wahi rehta hai, naapa gaya waqt TF ke sath badalta hai
+//   WAQT  — naapa gaya waqt wahi rehta hai, number TF ke sath khud badalta hai
+// WAQT mode mein 1m par 20/110 minute ka matlab 20/110 bars, jabke 5m par
+// wahi 4/22 bars ban jaate hain — yani ribbon har chart par ek hi cheez naapti
+// hai. (Yehi wo baat hai jo "1m par MA100/200" wale sawal ke peeche hai.)
+tfMin = timeframe.in_seconds() / 60.0
+f_barsFromMins(_m) => math.max(2, int(math.round(_m / math.max(tfMin, 0.0001))))
+useTimeLen = lenMode == "Waqt (timeframe se khud badle)"
+effBase = useTimeLen ? f_barsFromMins(fastMins) : baseLen
+effLast = useTimeLen ? math.max(f_barsFromMins(slowMins), effBase + 1) : baseLen + (ribCount - 1) * lenStep
+effStep = useTimeLen ? math.max(1, int(math.round((effLast - effBase) / math.max(ribCount - 1, 1)))) : lenStep
+
 // A plot count cannot be a variable in Pine, so all ten exist and the ones
 // past ribCount are fed na, which draws nothing and fills nothing.
-f_lvlLen(_i) => baseLen + _i * lenStep
+f_lvlLen(_i) => effBase + _i * effStep
 f_on(_i)     => showRibbon and _i < ribCount
 
 m1  = f_on(0) ? f_ma(maType, ribSrc, f_lvlLen(0)) : na
@@ -318,7 +337,16 @@ if showIdea and barstate.islast
         table.clear(pTbl, 0, 0, 0, 5)
     _bg  = color.new(color.white, 90)
     _bg2 = color.new(color.white, 80)
-    table.cell(pTbl, 0, 0, "RIBBON + LEVELS  |  " + timeframe.period + "      BIAS: " + biasTxt, bgcolor = _bg2, text_color = color.black, text_size = PF)
+    // Header khud bata deta hai ke ribbon kitna WAQT naap rahi hai — yehi cheez
+    // har chart par badal jaati hai aur aksar nazar nahi aati.
+    _slowBars = effBase + (ribCount - 1) * effStep
+    _hdr = "RIBBON + LEVELS  |  " + timeframe.period + "      BIAS: " + biasTxt
+    _hdr := _hdr + "\n" + maType + " " + str.tostring(effBase) + " → " + str.tostring(_slowBars) + " bars   =   " + f_dur(effBase * tfMin) + " → " + f_dur(_slowBars * tfMin)
+    // WAQT mode is chart par itna chhota par gaya ke MA be-maani ho gayi — ye
+    // chup-chaap nahi hona chahiye, warna ribbon shor dikhane lagti hai.
+    if useTimeLen and effBase <= 2
+        _hdr := _hdr + "\n! Ye waqt is chart ke liye bohot chhota hai — minute barhayein ya BARS mode par jayein"
+    table.cell(pTbl, 0, 0, _hdr, bgcolor = _bg2, text_color = color.black, text_size = PF)
     _rTxt = na(nearR) ? "R  —  koi nahi" : "R  " + f_px(nearR) + "    " + str.tostring(nearRt) + " touch    " + f_px(distR) + " door"
     _sTxt = na(nearS) ? "S  —  koi nahi" : "S  " + f_px(nearS) + "    " + str.tostring(nearSt) + " touch    " + f_px(distS) + " door"
     table.cell(pTbl, 0, 1, _rTxt, bgcolor = _bg, text_color = colRes, text_size = PF)
