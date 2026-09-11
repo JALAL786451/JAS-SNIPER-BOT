@@ -24,7 +24,7 @@
 //  Note: ye SMC Coach Pro v2 ki jagah nahi hai. Wo zones, BOS/CHOCH, score aur
 //  virtual tracking karta hai. Ye halka, nazar wala tool hai.
 // ============================================================================
-indicator("Trend Ribbon + Levels", overlay = true, max_lines_count = 500, max_boxes_count = 100, max_labels_count = 100)
+indicator("Trend Ribbon + Levels", overlay = true, max_lines_count = 500, max_boxes_count = 100, max_labels_count = 100, dynamic_requests = true)
 
 // ---------------------------------------------------------------- inputs
 gRib = "1 · Trend lines (bias)"
@@ -71,6 +71,13 @@ fvgKeep    = input.int(6, "Keep last N gaps", minval = 1, maxval = 20, group = g
 colFvgUp   = input.color(color.new(#00b0ff, 0), "FVG upar wala", inline = "fc", group = gFvg)
 colFvgDn   = input.color(color.new(#ff9100, 0), "FVG neeche wala", inline = "fc", group = gFvg)
 fvgLabel   = input.bool(true, "Box par \"FVG\" likho", group = gFvg)
+
+gLeg = "5 · Legend (sab timeframes)"
+showLegend = input.bool(true, "Legend dikhao", group = gLeg)
+legendPos  = input.string("Top Left", "Legend jagah", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gLeg)
+legMinSep  = input.float(0.05, "Trend maana jaye jab MA faasla (x ATR) se zyada ho", minval = 0, step = 0.01, group = gLeg)
+legMomoLive = input.bool(true, "FVG/LGB live candle se (chart jaisa)", group = gLeg)
+legClosed  = input.bool(true, "Trend closed candle se (repaint nahi)", group = gLeg)
 
 gIdea = "4 · Trade idea"
 showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
@@ -153,6 +160,10 @@ ribThin = not na(biasFast) and not na(biasSlow) and math.abs(biasFast - biasSlow
 biasTxt = ribThin ? "FLAT" : ribUp ? "UPAR" : ribDn ? "NEECHE" : "-"
 
 f_bandCol(_a, _b, _i) => color.new(bandOwnCol ? (_a > _b ? colUp : colDn) : (ribUp ? colUp : colDn), int(math.round(transpIn + (transpOut - transpIn) * _i / 8.0)))
+
+// Legend chart wali hi MA jodi parhta hai, is liye bar-counts yahan se aate hain.
+legFastBars = useTwo ? eff2Fast : effBase
+legSlowBars = useTwo ? eff2Slow : effBase + (ribCount - 1) * effStep
 
 showFill = dispMode == "Ribbon (shaded)"
 showAll  = dispMode == "MA lines (sab)"
@@ -468,3 +479,103 @@ if showTouch and barstate.islast
         labR := label.new(bar_index + 2, nearR, "R " + f_px(nearR) + "   x" + str.tostring(nearRt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colRes, 20), textcolor = color.white, size = PFL)
     if not na(nearS)
         labS := label.new(bar_index + 2, nearS, "S " + f_px(nearS) + "   x" + str.tostring(nearSt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colSup, 20), textcolor = color.white, size = PFL)
+
+// ============================================================================
+//  LEGEND — har timeframe ek nazar mein
+//
+//  Har TF ke liye alag alag request.security bhejna mehanga aur dohrav hai, is
+//  liye SMC Coach wala hi tareeqa: saara jawab ek hi number mein pack karke
+//  aata hai (trend + pressure + 8 bits), aur yahan khol liya jaata hai.
+//
+//  Ahem: yahan wahi tareef istemal hoti hai jo chart par lagi hai — wahi MA
+//  jodi, wahi Pivot L/R, wahi FVG size filter. Is liye legend ki row aur chart
+//  ka nishaan kabhi ek doosre ko jhutla nahi sakte.
+// ============================================================================
+var int SCALE_TREND = 1000000
+var int SCALE_PRESS = 1000
+
+f_labTF(_tf) => _tf == "W" ? "1W" : _tf == "D" ? "1D" : _tf == "240" ? "4H" : _tf == "180" ? "3H" : _tf == "120" ? "2H" : _tf == "60" ? "1H" : _tf == "30" ? "30m" : _tf == "15" ? "15m" : _tf == "5" ? "5m" : _tf == "1" ? "1m" : _tf
+f_lbl(_st)  => _st == 1 ? "UT" : _st == -1 ? "DT" : "NT"
+f_hasBit(_n, _k) => int(math.floor(_n / math.pow(2, _k))) % 2 == 1
+
+f_decode(_v) =>
+    _x     = nz(_v, 2 * SCALE_TREND + 50 * SCALE_PRESS)
+    _stVal = int(math.floor(_x / SCALE_TREND))
+    _rem   = _x - _stVal * SCALE_TREND
+    _press = int(math.floor(_rem / SCALE_PRESS))
+    _bits  = _rem - _press * SCALE_PRESS
+    _st    = _stVal == 3 ? 1 : _stVal == 1 ? -1 : 0
+    // bits: 0 up-gate, 1 down-gate, 2 FVG UP, 3 FVG DN, 4 LGB UP, 5 LGB DN, 6 DZ, 7 SZ
+    [_st, f_hasBit(_bits, 0), f_hasBit(_bits, 1), f_hasBit(_bits, 2), f_hasBit(_bits, 3), f_hasBit(_bits, 4), f_hasBit(_bits, 5), f_hasBit(_bits, 6), f_hasBit(_bits, 7), _press]
+
+// Ye poora hisab us TF ke apne context mein chalta hai, is liye [1] ka matlab
+// "us TF ki pichhli candle" hota hai — chart ki nahi.
+f_pack(_useClosed, _momoLive) =>
+    _tfm  = timeframe.in_seconds() / 60.0
+    _lf   = useTimeLen ? math.max(2, int(math.round(fastMins / math.max(_tfm, 0.0001)))) : legFastBars
+    _ls   = useTimeLen ? math.max(_lf + 1, int(math.round(slowMins / math.max(_tfm, 0.0001)))) : legSlowBars
+    _f    = f_ma(maType, close, _lf)
+    _s    = f_ma(maType, close, _ls)
+    _a    = ta.atr(14)
+    _phv  = ta.pivothigh(high, pvLen, pvLen)
+    _plv  = ta.pivotlow (low,  pvLen, pvLen)
+    _swHi = ta.valuewhen(not na(_phv), _phv, 0)
+    _swLo = ta.valuewhen(not na(_plv), _plv, 0)
+    _fx   = _useClosed ? _f[1] : _f
+    _sx   = _useClosed ? _s[1] : _s
+    _ax   = _useClosed ? _a[1] : _a
+    _f1   = _useClosed ? nz(_f[2], _fx) : nz(_f[1], _fx)
+    _s1   = _useClosed ? nz(_s[2], _sx) : nz(_s[1], _sx)
+    _mc   = _momoLive ? false : _useClosed
+    _hm   = _mc ? high[1]  : high
+    _lm   = _mc ? low[1]   : low
+    _cm   = _mc ? close[1] : close
+    _h2   = _mc ? high[3]  : high[2]
+    _l2   = _mc ? low[3]   : low[2]
+    _swHiM = _mc ? _swHi[1] : _swHi
+    _swLoM = _mc ? _swLo[1] : _swLo
+    _den   = math.max(nz(_ax, 1.0), math.max(syminfo.mintick, 1e-10))
+    _sepOK = math.abs(_fx - _sx) >= _den * legMinSep
+    _up    = nz(_fx > _sx) and _sepOK
+    _dn    = nz(_fx < _sx) and _sepOK
+    _st    = _up ? 1 : _dn ? -1 : 0
+    _has2  = not na(_h2) and not na(_l2)
+    _fvgUp = _has2 and (_lm > _h2) and (_lm - _h2) >= _den * fvgMinATR
+    _fvgDn = _has2 and (_hm < _l2) and (_l2 - _hm) >= _den * fvgMinATR
+    // LGB = pichhla confirmed swing toot kar wapas andar band hona
+    _lgbUp = not na(_swHiM) and _hm > _swHiM and _cm < _swHiM
+    _lgbDn = not na(_swLoM) and _lm < _swLoM and _cm > _swLoM
+    _dzT   = not na(_swLoM) and _lm <= _swLoM
+    _szT   = not na(_swHiM) and _hm >= _swHiM
+    _dist  = (_fx - _sx) / _den
+    _slope = ((_fx - _f1) - (_sx - _s1)) / _den
+    _pBuy  = int(math.round(100 * (1.0 / (1.0 + math.exp(-(0.75 * _dist + 0.25 * _slope))))))
+    _bits  = (_up ? 1 : 0) + (_dn ? 2 : 0) + (_fvgUp ? 4 : 0) + (_fvgDn ? 8 : 0) +
+              (_lgbUp ? 16 : 0) + (_lgbDn ? 32 : 0) + (_dzT ? 64 : 0) + (_szT ? 128 : 0)
+    (_st + 2) * SCALE_TREND + _pBuy * SCALE_PRESS + _bits
+
+var table legTbl = na
+if showLegend and barstate.islast
+    string[] tfs = array.from("1","5","15","30","60","120","180","240","D","W")
+    if na(legTbl)
+        legTbl := table.new(f_pos(legendPos), 1, 1 + array.size(tfs), border_width = 1)
+    else
+        table.clear(legTbl, 0, 0, 0, array.size(tfs))
+    _bgh = color.new(color.white, 80)
+    _bgr = color.new(color.white, 90)
+    // WAQT mode mein har TF apne bars khud nikalta hai, is liye header bars ke
+    // bajaye minute likhta hai — warna ye sirf chart wale TF ka sach hota.
+    _hd  = useTimeLen ? "LEGEND  |  " + maType + " " + str.tostring(fastMins) + "/" + str.tostring(slowMins) + " min" : "LEGEND  |  " + maType + " " + str.tostring(legFastBars) + "/" + str.tostring(legSlowBars) + " bars"
+    _hd := _hd + "   |   FVG/LGB " + (legMomoLive ? "live" : "closed") + "   |   trend " + (legClosed ? "closed" : "live")
+    table.cell(legTbl, 0, 0, _hd, bgcolor = _bgh, text_color = color.black, text_size = PF)
+    for i = 0 to array.size(tfs) - 1
+        _tf  = array.get(tfs, i)
+        _pk  = request.security(syminfo.tickerid, _tf, f_pack(legClosed, legMomoLive), barmerge.gaps_off, barmerge.lookahead_off)
+        [lst, lup, ldn, lfu, lfd, llu, lld, ldz, lsz, lpb] = f_decode(_pk)
+        _row = f_labTF(_tf) + "  " + f_lbl(lst)
+        _row := _row + "   B " + str.tostring(lpb) + "% / S " + str.tostring(100 - lpb) + "%"
+        _row := _row + "   " + (ldz ? "DZ" : lsz ? "SZ" : "--")
+        _row := _row + "   FVG " + (lfu ? "UP" : lfd ? "DN" : "-")
+        _row := _row + "   LGB " + (llu ? "UP" : lld ? "DN" : "-")
+        _col = lup ? color.new(colSup, 0) : ldn ? color.new(colRes, 0) : color.new(color.gray, 0)
+        table.cell(legTbl, 0, 1 + i, _row, bgcolor = _bgr, text_color = _col, text_size = PF)
