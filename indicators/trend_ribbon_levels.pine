@@ -1,22 +1,33 @@
 //@version=5
 // ============================================================================
-//  TREND RIBBON + LEVELS
-//  Built from the visuals of a published LuxAlgo chart, not from its source
-//  (that script is protected and its code is not visible). Two independent
-//  parts, each switchable:
+//  TREND RIBBON + LEVELS  —  v1.1
 //
-//   1. RIBBON — ten moving averages of increasing length, filled band by band.
-//      Every band takes its own colour from its own pair, so a reversal turns
-//      the ribbon over gradually from the fast edge instead of flipping whole.
+//  v1.0 sirf khoobsoorat drawing thi: rukh aur lakeerein, magar koi faisla
+//  nahi. v1.1 mein teen cheezein add hui hain jo isay padhne laayak banati
+//  hain:
 //
-//   2. LEVELS — horizontal support / resistance drawn at confirmed pivot highs
-//      and lows and carried to the right, either for a fixed number of bars or
-//      until price closes through them.
+//   1. ROLE — har level ab red (resistance, price ke UPAR) ya green (support,
+//      price ke NEECHE) hai, aur break hone par rang palat jaata hai. Tuti hui
+//      resistance khud-ba-khud support ban jaati hai, jaisa chart par hota hai.
+//
+//   2. KAHAN SE KAHAN TAK — engine sabse qareebi R aur S dhoondta hai aur
+//      screen par ek box khinchta hai: entry se target tak, SL alag lakeer.
+//      RR bhi likha hota hai. Yani "sell 4360 se 4336 tak" saaf nazar aata hai.
+//
+//   3. KYUN / KYUN NAHI — panel Roman Urdu mein wajah likhta hai. Agar trade
+//      nahi ban rahi to wajah likhta hai (price kisi level se door hai, ya RR
+//      chhota hai, ya ribbon flat hai). Yehi cheez v1.0 mein bilkul nahi thi.
+//
+//  Ribbon ka kaam sirf ek hai: BIAS. Level ka kaam: ENTRY aur TARGET. Dono
+//  milte hain to hi idea banta hai.
+//
+//  Note: ye SMC Coach Pro v2 ki jagah nahi hai. Wo zones, BOS/CHOCH, score aur
+//  virtual tracking karta hai. Ye halka, nazar wala tool hai.
 // ============================================================================
-indicator("Trend Ribbon + Levels", overlay = true, max_lines_count = 500)
+indicator("Trend Ribbon + Levels", overlay = true, max_lines_count = 500, max_boxes_count = 100, max_labels_count = 100)
 
 // ---------------------------------------------------------------- inputs
-gRib = "1 · Ribbon"
+gRib = "1 · Ribbon (bias)"
 showRibbon = input.bool(true,  "Show ribbon", group = gRib)
 maType     = input.string("EMA", "MA type", options = ["EMA","SMA","WMA","RMA","HMA"], group = gRib)
 ribSrc     = input.source(close, "Source", group = gRib)
@@ -30,19 +41,34 @@ transpOut  = input.int(88, "Fill transparency: outer", minval = 0, maxval = 100,
 showLines  = input.bool(false, "Draw the MA lines themselves", group = gRib)
 bandOwnCol = input.bool(true,  "Colour each band by its own pair", group = gRib)
 
-gLvl = "2 · Levels"
+gLvl = "2 · Levels (entry / target)"
 showLevels = input.bool(true, "Show levels", group = gLvl)
 pvLen      = input.int(15, "Pivot L/R", minval = 1, group = gLvl)
-useHi      = input.bool(true, "From pivot highs", inline = "ls", group = gLvl)
-useLo      = input.bool(true, "From pivot lows",  inline = "ls", group = gLvl)
-lvlMode    = input.string("Extend until broken", "Length", options = ["Extend until broken","Fixed bars"], group = gLvl)
-extBars    = input.int(60, "Fixed bars / minimum length", minval = 1, group = gLvl)
-onBreak    = input.string("Freeze", "When price closes through", options = ["Freeze","Delete","Grey out"], group = gLvl)
-maxLevels  = input.int(20, "Keep last N levels", minval = 1, maxval = 60, group = gLvl)
-colRes     = input.color(color.new(#00e676, 0), "High level", inline = "lc", group = gLvl)
-colSup     = input.color(color.new(#00e676, 0), "Low level",  inline = "lc", group = gLvl)
-colDead    = input.color(color.new(#787b86, 40), "Broken", inline = "lc", group = gLvl)
+maxLevels  = input.int(16, "Keep last N levels", minval = 2, maxval = 60, group = gLvl)
+breakATR   = input.float(0.10, "Break needs close beyond by (x ATR)", minval = 0, step = 0.05, group = gLvl)
+showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
+colRes     = input.color(color.new(#d50000, 0), "Resistance (upar)", group = gLvl)
+colSup     = input.color(color.new(#00c853, 0), "Support (neeche)",  group = gLvl)
 lvlWidth   = input.int(2, "Line width", minval = 1, maxval = 5, group = gLvl)
+
+gFvg = "3 · FVG (khaali jagah)"
+showFVG    = input.bool(true, "Show fair value gaps", group = gFvg)
+fvgMinATR  = input.float(0.25, "Ignore gaps smaller than (x ATR)", minval = 0, step = 0.05, group = gFvg)
+fvgKeep    = input.int(6, "Keep last N gaps", minval = 1, maxval = 20, group = gFvg)
+
+gIdea = "4 · Trade idea"
+showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
+nearATR    = input.float(0.80, "Level ke qareeb = (x ATR) ke andar", minval = 0.1, step = 0.1, group = gIdea)
+stopATR    = input.float(0.60, "SL level se aage (x ATR)", minval = 0.1, step = 0.1, group = gIdea)
+minRR      = input.float(1.5,  "Minimum RR", minval = 0.2, step = 0.1, group = gIdea)
+ideaBars   = input.int(40, "Idea box kitne bars aage", minval = 5, group = gIdea)
+markHist   = input.bool(true, "Purane setups par nishaan lagao", group = gIdea)
+panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gIdea)
+
+// ---------------------------------------------------------------- helpers
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_px(x)  => str.tostring(x, format.mintick)
+atr = ta.atr(14)
 
 // ---------------------------------------------------------------- ribbon
 f_ma(_t, _src, _len) => _t == "SMA" ? ta.sma(_src, _len) : _t == "WMA" ? ta.wma(_src, _len) : _t == "RMA" ? ta.rma(_src, _len) : _t == "HMA" ? ta.hma(_src, _len) : ta.ema(_src, _len)
@@ -65,9 +91,12 @@ m10 = f_on(9) ? f_ma(maType, ribSrc, f_lvlLen(9)) : na
 
 // Slowest MA that is actually switched on — the ribbon's own trend reference.
 mSlow = not na(m10) ? m10 : not na(m9) ? m9 : not na(m8) ? m8 : not na(m7) ? m7 : not na(m6) ? m6 : not na(m5) ? m5 : not na(m4) ? m4 : not na(m3) ? m3 : m2
-ribUp = m1 > mSlow
+ribUp = not na(m1) and not na(mSlow) and m1 > mSlow
+ribDn = not na(m1) and not na(mSlow) and m1 < mSlow
+// Ribbon patla ho to bias "flat" — is waqt level bounce bharosemand nahi.
+ribThin = not na(m1) and not na(mSlow) and math.abs(m1 - mSlow) < atr * 0.25
+biasTxt = ribThin ? "FLAT" : ribUp ? "UPAR" : ribDn ? "NEECHE" : "-"
 
-// Band colour: its own pair when asked for (gradual turn), else whole ribbon.
 f_bandCol(_a, _b, _i) => color.new(bandOwnCol ? (_a > _b ? colUp : colDn) : (ribUp ? colUp : colDn), int(math.round(transpIn + (transpOut - transpIn) * _i / 8.0)))
 
 lineCol = showLines ? color.new(ribUp ? colUp : colDn, 25) : color.new(color.gray, 100)
@@ -93,60 +122,206 @@ fill(p8, p9,  color = f_bandCol(m8, m9,  7), title = "Band 8")
 fill(p9, p10, color = f_bandCol(m9, m10, 8), title = "Band 9")
 
 // ---------------------------------------------------------------- levels
-var line[]  lvLine   = array.new_line()
-var float[] lvPrice  = array.new_float()
-var bool[]  lvIsRes  = array.new_bool()
-var bool[]  lvLive   = array.new_bool()
-var int[]   lvBorn   = array.new_int()
+var line[]  lvLine  = array.new_line()
+var float[] lvPrice = array.new_float()
+var bool[]  lvIsRes = array.new_bool()
+var int[]   lvTouch = array.new_int()
 
 f_lvKill(_i) =>
     line.delete(array.get(lvLine, _i))
     array.remove(lvLine,  _i)
     array.remove(lvPrice, _i)
     array.remove(lvIsRes, _i)
-    array.remove(lvLive,  _i)
-    array.remove(lvBorn,  _i)
+    array.remove(lvTouch, _i)
 
-f_lvAdd(_price, _isRes) =>
-    _x1 = bar_index - pvLen
-    _l  = line.new(_x1, _price, _x1 + extBars, _price, xloc = xloc.bar_index, color = _isRes ? colRes : colSup, width = lvlWidth)
+f_lvAdd(_price) =>
+    _x1  = bar_index - pvLen
+    _res = _price > close
+    _l   = line.new(_x1, _price, bar_index + 1, _price, xloc = xloc.bar_index, color = _res ? colRes : colSup, width = lvlWidth)
     array.push(lvLine,  _l)
     array.push(lvPrice, _price)
-    array.push(lvIsRes, _isRes)
-    array.push(lvLive,  true)
-    array.push(lvBorn,  _x1)
+    array.push(lvIsRes, _res)
+    array.push(lvTouch, 0)
 
 ph = ta.pivothigh(high, pvLen, pvLen)
 pl = ta.pivotlow (low,  pvLen, pvLen)
 
-if showLevels and useHi and not na(ph)
-    f_lvAdd(ph, true)
-if showLevels and useLo and not na(pl)
-    f_lvAdd(pl, false)
+if showLevels and not na(ph)
+    f_lvAdd(ph)
+if showLevels and not na(pl)
+    f_lvAdd(pl)
 
-// carry live levels to the right and retire the ones price has closed through
+// Har bar: lakeer aage barhao, touch ginno, aur role (R/S) price ki position se
+// tay karo. Break hone par lakeer marti nahi — uska rang palat jaata hai, kyunke
+// tooti hui resistance agli baar support ka kaam karti hai.
 if array.size(lvLine) > 0
     for i = array.size(lvLine) - 1 to 0
-        _ln    = array.get(lvLine, i)
-        _px    = array.get(lvPrice, i)
-        _isRes = array.get(lvIsRes, i)
-        _live  = array.get(lvLive, i)
-        if _live
-            _broke = _isRes ? close > _px : close < _px
-            if _broke
-                array.set(lvLive, i, false)
-                if onBreak == "Delete"
-                    f_lvKill(i)
-                else if onBreak == "Grey out"
-                    line.set_color(_ln, colDead)
-            else if lvlMode == "Extend until broken"
-                line.set_x2(_ln, math.max(bar_index + 1, array.get(lvBorn, i) + extBars))
+        _ln  = array.get(lvLine, i)
+        _px  = array.get(lvPrice, i)
+        _was = array.get(lvIsRes, i)
+        line.set_x2(_ln, bar_index + 1)
+        _touching     = high >= _px and low <= _px
+        _touchingPrev = high[1] >= _px and low[1] <= _px
+        if _touching and not _touchingPrev
+            array.set(lvTouch, i, array.get(lvTouch, i) + 1)
+        _now = _was
+        if _was and close > _px + atr * breakATR
+            _now := false
+        if not _was and close < _px - atr * breakATR
+            _now := true
+        if _now != _was
+            array.set(lvIsRes, i, _now)
+            line.set_color(_ln, _now ? colRes : colSup)
 
 while array.size(lvLine) > maxLevels
     f_lvKill(0)
 
-// ---------------------------------------------------------------- alerts
-ribFlipUp = ribUp and not ribUp[1]
-ribFlipDn = not ribUp and ribUp[1]
-alertcondition(ribFlipUp, "Ribbon turns up",   "Trend Ribbon flipped UP")
-alertcondition(ribFlipDn, "Ribbon turns down", "Trend Ribbon flipped DOWN")
+// ---------------------------------------------------------------- FVG
+var box[] fvgBox = array.new_box()
+gapUp = bar_index > 2 and low > high[2] and (low - high[2]) >= atr * fvgMinATR
+gapDn = bar_index > 2 and high < low[2] and (low[2] - high) >= atr * fvgMinATR
+
+if showFVG and gapUp
+    array.push(fvgBox, box.new(bar_index - 2, low, bar_index + 1, high[2], xloc = xloc.bar_index, bgcolor = color.new(colUp, 88), border_color = color.new(colUp, 60)))
+if showFVG and gapDn
+    array.push(fvgBox, box.new(bar_index - 2, low[2], bar_index + 1, high, xloc = xloc.bar_index, bgcolor = color.new(colDn, 88), border_color = color.new(colDn, 60)))
+
+// gap bharne par mit jaata hai — khaali gap hi magnet hai, bhara hua nahi
+if array.size(fvgBox) > 0
+    for i = array.size(fvgBox) - 1 to 0
+        _b = array.get(fvgBox, i)
+        box.set_right(_b, bar_index + 1)
+        _age = bar_index - box.get_left(_b)
+        if _age > 2 and low <= box.get_top(_b) and high >= box.get_bottom(_b)
+            box.delete(_b)
+            array.remove(fvgBox, i)
+
+while array.size(fvgBox) > fvgKeep
+    box.delete(array.get(fvgBox, 0))
+    array.remove(fvgBox, 0)
+
+// ---------------------------------------------------------------- nearest R / S
+var float nearR = na
+var float nearS = na
+var int   nearRt = 0
+var int   nearSt = 0
+nearR  := na
+nearS  := na
+nearRt := 0
+nearSt := 0
+if array.size(lvPrice) > 0
+    for i = 0 to array.size(lvPrice) - 1
+        _px = array.get(lvPrice, i)
+        _tc = array.get(lvTouch, i)
+        if _px > close
+            if na(nearR) or _px < nearR
+                nearR  := _px
+                nearRt := _tc
+        if _px < close
+            if na(nearS) or _px > nearS
+                nearS  := _px
+                nearSt := _tc
+
+distR = na(nearR) ? na : nearR - close
+distS = na(nearS) ? na : close - nearS
+atR   = not na(distR) and distR <= atr * nearATR
+atS   = not na(distS) and distS <= atr * nearATR
+
+// ---------------------------------------------------------------- the idea
+// SELL: ribbon neeche + price resistance par + neeche target ke liye support.
+// BUY : ribbon upar  + price support par    + upar  target ke liye resistance.
+sellSetup = ribDn and not ribThin and atR and not na(nearS)
+buySetup  = ribUp and not ribThin and atS and not na(nearR)
+
+sEntry = sellSetup ? nearR : na
+sStop  = sellSetup ? nearR + atr * stopATR : na
+sTgt   = sellSetup ? nearS : na
+sRR    = sellSetup and (sStop - sEntry) > 0 ? (sEntry - sTgt) / (sStop - sEntry) : na
+
+bEntry = buySetup ? nearS : na
+bStop  = buySetup ? nearS - atr * stopATR : na
+bTgt   = buySetup ? nearR : na
+bRR    = buySetup and (bEntry - bStop) > 0 ? (bTgt - bEntry) / (bEntry - bStop) : na
+
+sellOK = sellSetup and not na(sRR) and sRR >= minRR
+buyOK  = buySetup  and not na(bRR) and bRR >= minRR
+
+plotshape(markHist and sellOK and not sellOK[1] ? high : na, title = "Sell setup", style = shape.triangledown, location = location.absolute, color = colRes, size = size.tiny, text = "S")
+plotshape(markHist and buyOK  and not buyOK[1]  ? low  : na, title = "Buy setup",  style = shape.triangleup,   location = location.absolute, color = colSup, size = size.tiny, text = "B")
+
+alertcondition(sellOK and not sellOK[1], "Sell idea", "Trend Ribbon: SELL idea ban gaya")
+alertcondition(buyOK  and not buyOK[1],  "Buy idea",  "Trend Ribbon: BUY idea ban gaya")
+
+var box   ideaBox = na
+var line  ideaSL  = na
+var label ideaLbl = na
+
+if showIdea and barstate.islast
+    box.delete(ideaBox)
+    line.delete(ideaSL)
+    label.delete(ideaLbl)
+    ideaBox := na
+    ideaSL  := na
+    ideaLbl := na
+    if sellOK or buyOK
+        _e   = sellOK ? sEntry : bEntry
+        _t   = sellOK ? sTgt   : bTgt
+        _sl  = sellOK ? sStop  : bStop
+        _rr  = sellOK ? sRR    : bRR
+        _c   = sellOK ? colRes : colSup
+        ideaBox := box.new(bar_index, _e, bar_index + ideaBars, _t, xloc = xloc.bar_index, bgcolor = color.new(_c, 85), border_color = color.new(_c, 40))
+        ideaSL  := line.new(bar_index, _sl, bar_index + ideaBars, _sl, xloc = xloc.bar_index, color = color.new(_c, 0), width = 1, style = line.style_dashed)
+        _txt = (sellOK ? "SELL " : "BUY ") + f_px(_e) + " se " + f_px(_t) + " tak" + "\nSL " + f_px(_sl) + "   RR 1:" + str.tostring(_rr, "#.#")
+        ideaLbl := label.new(bar_index + ideaBars, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, 10), textcolor = color.white, size = size.small)
+
+// ---------------------------------------------------------------- panel: kyun / kyun nahi
+var table pTbl = na
+if showIdea and barstate.islast
+    if na(pTbl)
+        pTbl := table.new(f_pos(panelPos), 1, 5, border_width = 1)
+    else
+        table.clear(pTbl, 0, 0, 0, 4)
+    _bg  = color.new(color.white, 92)
+    _bg2 = color.new(color.white, 86)
+    table.cell(pTbl, 0, 0, "RIBBON + LEVELS  |  " + timeframe.period + "   Bias: " + biasTxt, bgcolor = _bg2, text_color = color.black, text_size = size.small)
+    _rTxt = na(nearR) ? "R: koi nahi" : "R " + f_px(nearR) + "  (" + str.tostring(nearRt) + " touch, " + f_px(distR) + " door)"
+    _sTxt = na(nearS) ? "S: koi nahi" : "S " + f_px(nearS) + "  (" + str.tostring(nearSt) + " touch, " + f_px(distS) + " door)"
+    table.cell(pTbl, 0, 1, _rTxt, bgcolor = _bg, text_color = colRes, text_size = size.small)
+    table.cell(pTbl, 0, 2, _sTxt, bgcolor = _bg, text_color = colSup, text_size = size.small)
+    _idea = sellOK ? "IDEA: SELL " + f_px(sEntry) + " → " + f_px(sTgt) + "   SL " + f_px(sStop) + "   RR 1:" + str.tostring(sRR, "#.#") : buyOK ? "IDEA: BUY " + f_px(bEntry) + " → " + f_px(bTgt) + "   SL " + f_px(bStop) + "   RR 1:" + str.tostring(bRR, "#.#") : "IDEA: abhi koi nahi"
+    table.cell(pTbl, 0, 3, _idea, bgcolor = _bg2, text_color = sellOK ? colRes : buyOK ? colSup : color.black, text_size = size.small)
+    // wajah — yehi cheez v1.0 mein nahi thi
+    _why = ""
+    if sellOK
+        _why := "Wajah: ribbon NEECHE + price resistance par + neeche support khaali hai."
+    else if buyOK
+        _why := "Wajah: ribbon UPAR + price support par + upar resistance tak jagah hai."
+    else
+        if ribThin
+            _why := _why + "• Ribbon patla hai (bias flat) — bounce bharosemand nahi\n"
+        if not atR and not atS
+            _why := _why + "• Price kisi level ke qareeb nahi (qareeb = " + str.tostring(nearATR, "#.##") + " x ATR)\n"
+        if ribDn and atS and not atR
+            _why := _why + "• Ribbon neeche hai magar price SUPPORT par khara hai — girte market mein support se buy nahi\n"
+        if ribUp and atR and not atS
+            _why := _why + "• Ribbon upar hai magar price RESISTANCE par hai — charhte market mein resistance se sell nahi\n"
+        if sellSetup and not sellOK
+            _why := _why + "• Sell ban raha tha magar RR 1:" + str.tostring(sRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ")\n"
+        if buySetup and not buyOK
+            _why := _why + "• Buy ban raha tha magar RR 1:" + str.tostring(bRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ")\n"
+        if _why == ""
+            _why := "• Koi wajah nahi bani — level, bias aur RR ek sath align nahi hue\n"
+    table.cell(pTbl, 0, 4, _why, bgcolor = _bg, text_color = color.black, text_size = size.small, text_halign = text.align_left)
+
+// ---------------------------------------------------------------- nearest R/S labels
+var label labR = na
+var label labS = na
+if showTouch and barstate.islast
+    label.delete(labR)
+    label.delete(labS)
+    labR := na
+    labS := na
+    if not na(nearR)
+        labR := label.new(bar_index + 2, nearR, "R " + f_px(nearR) + "  ×" + str.tostring(nearRt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colRes, 20), textcolor = color.white, size = size.tiny)
+    if not na(nearS)
+        labS := label.new(bar_index + 2, nearS, "S " + f_px(nearS) + "  ×" + str.tostring(nearSt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colSup, 20), textcolor = color.white, size = size.tiny)
