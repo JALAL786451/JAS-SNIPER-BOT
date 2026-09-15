@@ -72,12 +72,20 @@ colFvgUp   = input.color(color.new(#00b0ff, 0), "FVG upar wala", inline = "fc", 
 colFvgDn   = input.color(color.new(#ff9100, 0), "FVG neeche wala", inline = "fc", group = gFvg)
 fvgLabel   = input.bool(true, "Box par \"FVG\" likho", group = gFvg)
 
+gLgb = "3b · LGB (liquidity sweep)"
+showLGBd   = input.bool(true, "LGB chart par dikhao", group = gLgb)
+lgbBoxOn   = input.bool(true, "Sweep ka box bhi banao", group = gLgb)
+lgbKeep    = input.int(6, "Keep last N sweeps", minval = 1, maxval = 20, group = gLgb)
+colLgb     = input.color(color.new(#ffd600, 0), "LGB rang", group = gLgb)
+
 gLeg = "5 · Legend (sab timeframes)"
 showLegend = input.bool(true, "Legend dikhao", group = gLeg)
-legendPos  = input.string("Top Left", "Legend jagah", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gLeg)
+legendPos  = input.string("Middle Left", "Legend jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gLeg)
 legMinSep  = input.float(0.05, "Trend maana jaye jab MA faasla (x ATR) se zyada ho", minval = 0, step = 0.01, group = gLeg)
 legMomoLive = input.bool(true, "FVG/LGB live candle se (chart jaisa)", group = gLeg)
 legClosed  = input.bool(true, "Trend closed candle se (repaint nahi)", group = gLeg)
+showTotals = input.bool(true, "TOTAL buy/sell % (sab TF ka nichor)", group = gLeg)
+totalsPos  = input.string("Middle Right", "TOTAL jagah", options = ["Top Right","Middle Right","Bottom Right","Top Left","Middle Left","Bottom Left"], group = gLeg)
 
 gIdea = "4 · Trade idea"
 showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
@@ -86,13 +94,17 @@ stopATR    = input.float(0.60, "SL level se aage (x ATR)", minval = 0.1, step = 
 minRR      = input.float(1.5,  "Minimum RR", minval = 0.2, step = 0.1, group = gIdea)
 useAtrTgt  = input.bool(true, "Target ke liye level na ho to ATR se target banao", group = gIdea)
 atrTgtMult = input.float(2.0, "ATR target (x ATR)", minval = 0.5, step = 0.5, group = gIdea)
-ideaBars   = input.int(40, "Idea box kitne bars aage", minval = 5, group = gIdea)
+ideaBars   = input.int(20, "Idea box kitne bars aage", minval = 5, group = gIdea)
 markHist   = input.bool(false, "Purane setups par bhi nishaan lagao (sirf seekhne ke liye)", group = gIdea)
-panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top Left","Bottom Right","Bottom Left"], group = gIdea)
+panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gIdea)
 panelFont  = input.string("Normal", "Panel font", options = ["Small","Normal","Large","Huge"], group = gIdea)
+// Panel ka background pehle 90% transparent tha — candles aur lines aar-paar
+// dikh kar text kha jaati thin. Ab default thos hai.
+panelTrsp  = input.int(10, "Panel/legend background transparency", minval = 0, maxval = 100, group = gIdea)
+ideaLblOff = input.int(2, "Idea label kitne bars aage", minval = 0, maxval = 30, group = gIdea)
 
 // ---------------------------------------------------------------- helpers
-f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : s == "Middle Left" ? position.middle_left : s == "Middle Right" ? position.middle_right : s == "Top Center" ? position.top_center : s == "Bottom Center" ? position.bottom_center : position.bottom_right
 f_px(x)  => str.tostring(x, format.mintick)
 f_fs(s)  => s == "Small" ? size.small : s == "Normal" ? size.normal : s == "Large" ? size.large : size.huge
 f_dur(_mins) => _mins < 60 ? str.tostring(math.round(_mins)) + "m" : _mins < 1440 ? str.tostring(math.floor(_mins / 60)) + "h " + str.tostring(math.round(_mins % 60)) + "m" : str.tostring(math.floor(_mins / 1440)) + "d " + str.tostring(math.floor((_mins % 1440) / 60)) + "h"
@@ -272,6 +284,43 @@ while array.size(fvgBox) > fvgKeep
     box.delete(array.get(fvgBox, 0))
     array.remove(fvgBox, 0)
 
+// ---------------------------------------------------------------- LGB (sweep)
+// FVG ka apna box tha magar LGB ka chart par koi nishaan hi nahi tha — sirf
+// legend mein likha aata tha. Ab sweep bhi nazar aata hai: jis swing ki
+// liquidity li gayi us par label, aur (chahein to) us wick ka box.
+var box[]   lgbBx  = array.new_box()
+var label[] lgbLb  = array.new_label()
+
+swHi = ta.valuewhen(not na(ph), ph, 0)
+swLo = ta.valuewhen(not na(pl), pl, 0)
+// UP = upar ki liquidity li aur wapas andar band (bearish nishani)
+// DN = neeche ki liquidity li aur wapas andar band (bullish nishani)
+lgbUpRaw = not na(swHi) and high > swHi and close < swHi
+lgbDnRaw = not na(swLo) and low  < swLo and close > swLo
+// Lagataar candles agar usi swing ke upar poke karti rahen to ye har bar sach
+// hota hai — ek hi sweep ke chaar label ban jaate. Sirf pehli par nishaan.
+lgbUpC = lgbUpRaw and not lgbUpRaw[1]
+lgbDnC = lgbDnRaw and not lgbDnRaw[1]
+
+if showLGBd and (lgbUpC or lgbDnC)
+    _lvl = lgbUpC ? swHi : swLo
+    _ext = lgbUpC ? high : low
+    _txt = lgbUpC ? "LGB ↑" : "LGB ↓"
+    _sty = lgbUpC ? label.style_label_down : label.style_label_up
+    if lgbBoxOn
+        array.push(lgbBx, box.new(bar_index - 1, math.max(_lvl, _ext), bar_index + 1, math.min(_lvl, _ext), xloc = xloc.bar_index, bgcolor = color.new(colLgb, 80), border_color = color.new(colLgb, 40)))
+    array.push(lgbLb, label.new(bar_index, _ext, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = _sty, color = color.new(colLgb, 15), textcolor = color.black, size = PFL))
+
+while array.size(lgbBx) > lgbKeep
+    box.delete(array.get(lgbBx, 0))
+    array.remove(lgbBx, 0)
+while array.size(lgbLb) > lgbKeep
+    label.delete(array.get(lgbLb, 0))
+    array.remove(lgbLb, 0)
+
+alertcondition(lgbUpC, "LGB up", "Upar ki liquidity li gayi (LGB up)")
+alertcondition(lgbDnC, "LGB down", "Neeche ki liquidity li gayi (LGB down)")
+
 // ---------------------------------------------------------------- nearest R / S
 var float nearR = na
 var float nearS = na
@@ -390,7 +439,10 @@ if showIdea and barstate.islast
         _head  = _live and _onLvl ? _side + " ABHI (market)" : _live ? _side + " LIMIT " + f_px(_e) + "  —  abhi " + f_px(_dist) + " door" : "INTEZAAR — " + _side + " jab price " + f_px(_e) + " par aaye"
         _tgtKind = (_sell ? sTgtAtr : bTgtAtr) ? "  (ATR target — level nahi)" : ""
         _txt  = _head + "\n" + f_px(_e) + "  se  " + f_px(_t) + "  tak" + _tgtKind + "\nSL " + f_px(_sl) + "     RR 1:" + str.tostring(_rr, "#.#")
-        ideaLbl := label.new(bar_index + ideaBars, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, _live ? 10 : 35), textcolor = color.white, size = PFL)
+        // Label pehle box ke aakhir (40 bars aage) lagta tha, is liye har TF par
+        // price se door chala jata tha. Ab candles ke foran baad khadi khaali
+        // jagah mein lagta hai.
+        ideaLbl := label.new(bar_index + ideaLblOff, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, _live ? 10 : 25), textcolor = color.white, size = PFL)
 
 // ---------------------------------------------------------------- panel
 var table pTbl = na
@@ -399,8 +451,8 @@ if showIdea and barstate.islast
         pTbl := table.new(f_pos(panelPos), 1, 6, border_width = 1)
     else
         table.clear(pTbl, 0, 0, 0, 5)
-    _bg  = color.new(color.white, 90)
-    _bg2 = color.new(color.white, 80)
+    _bg  = color.new(color.white, panelTrsp)
+    _bg2 = color.new(color.white, math.max(panelTrsp - 8, 0))
     // Header khud bata deta hai ke ribbon kitna WAQT naap rahi hai — yehi cheez
     // har chart par badal jaati hai aur aksar nazar nahi aati.
     _fastBars = useTwo ? eff2Fast : effBase
@@ -555,19 +607,27 @@ f_pack(_useClosed, _momoLive) =>
     (_st + 2) * SCALE_TREND + _pBuy * SCALE_PRESS + _bits
 
 var table legTbl = na
-if showLegend and barstate.islast
+var table totTbl = na
+if (showLegend or showTotals) and barstate.islast
     string[] tfs = array.from("1","5","15","30","60","120","180","240","D","W")
-    if na(legTbl)
-        legTbl := table.new(f_pos(legendPos), 1, 1 + array.size(tfs), border_width = 1)
-    else
-        table.clear(legTbl, 0, 0, 0, array.size(tfs))
-    _bgh = color.new(color.white, 80)
-    _bgr = color.new(color.white, 90)
+    if showLegend
+        if na(legTbl)
+            legTbl := table.new(f_pos(legendPos), 1, 1 + array.size(tfs), border_width = 1)
+        else
+            table.clear(legTbl, 0, 0, 0, array.size(tfs))
+    _bgh = color.new(color.white, math.max(panelTrsp - 8, 0))
+    _bgr = color.new(color.white, panelTrsp)
+    // sab TF ka nichor — yehi TOTAL row banata hai
+    float _sumP = 0.0
+    int _cnt = 0
+    int _nUp = 0
+    int _nDn = 0
     // WAQT mode mein har TF apne bars khud nikalta hai, is liye header bars ke
     // bajaye minute likhta hai — warna ye sirf chart wale TF ka sach hota.
     _hd  = useTimeLen ? "LEGEND  |  " + maType + " " + str.tostring(fastMins) + "/" + str.tostring(slowMins) + " min" : "LEGEND  |  " + maType + " " + str.tostring(legFastBars) + "/" + str.tostring(legSlowBars) + " bars"
     _hd := _hd + "   |   FVG/LGB " + (legMomoLive ? "live" : "closed") + "   |   trend " + (legClosed ? "closed" : "live")
-    table.cell(legTbl, 0, 0, _hd, bgcolor = _bgh, text_color = color.black, text_size = PF)
+    if showLegend
+        table.cell(legTbl, 0, 0, _hd, bgcolor = _bgh, text_color = color.black, text_size = PF)
     for i = 0 to array.size(tfs) - 1
         _tf  = array.get(tfs, i)
         _pk  = request.security(syminfo.tickerid, _tf, f_pack(legClosed, legMomoLive), barmerge.gaps_off, barmerge.lookahead_off)
@@ -578,4 +638,22 @@ if showLegend and barstate.islast
         _row := _row + "   FVG " + (lfu ? "UP" : lfd ? "DN" : "-")
         _row := _row + "   LGB " + (llu ? "UP" : lld ? "DN" : "-")
         _col = lup ? color.new(colSup, 0) : ldn ? color.new(colRes, 0) : color.new(color.gray, 0)
-        table.cell(legTbl, 0, 1 + i, _row, bgcolor = _bgr, text_color = _col, text_size = PF)
+        _sumP := _sumP + lpb
+        _cnt  := _cnt + 1
+        _nUp  := _nUp + (lup ? 1 : 0)
+        _nDn  := _nDn + (ldn ? 1 : 0)
+        if showLegend
+            table.cell(legTbl, 0, 1 + i, _row, bgcolor = _bgr, text_color = _col, text_size = PF)
+
+    // TOTAL — dason timeframes ka ausat, right side par apni chhoti table mein
+    if showTotals
+        if na(totTbl)
+            totTbl := table.new(f_pos(totalsPos), 1, 3, border_width = 1)
+        else
+            table.clear(totTbl, 0, 0, 0, 2)
+        _tBuy  = _cnt > 0 ? int(math.round(_sumP / _cnt)) : 50
+        _tSell = 100 - _tBuy
+        _tCol  = _tBuy > 55 ? color.new(colSup, 0) : _tBuy < 45 ? color.new(colRes, 0) : color.new(color.gray, 0)
+        table.cell(totTbl, 0, 0, "TOTAL  1m → 1W", bgcolor = _bgh, text_color = color.black, text_size = PF)
+        table.cell(totTbl, 0, 1, "BUY " + str.tostring(_tBuy) + "%   |   SELL " + str.tostring(_tSell) + "%", bgcolor = _bgr, text_color = _tCol, text_size = PF)
+        table.cell(totTbl, 0, 2, "UT " + str.tostring(_nUp) + "    DT " + str.tostring(_nDn) + "    NT " + str.tostring(_cnt - _nUp - _nDn) + "   (" + str.tostring(_cnt) + " TF)", bgcolor = _bgr, text_color = color.black, text_size = PF)
