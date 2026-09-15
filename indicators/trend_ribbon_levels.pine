@@ -75,17 +75,16 @@ fvgLabel   = input.bool(true, "Box par \"FVG\" likho", group = gFvg)
 gLgb = "3b · LGB (liquidity sweep)"
 showLGBd   = input.bool(true, "LGB chart par dikhao", group = gLgb)
 lgbBoxOn   = input.bool(true, "Sweep ka box bhi banao", group = gLgb)
-lgbKeep    = input.int(6, "Keep last N sweeps", minval = 1, maxval = 20, group = gLgb)
 colLgb     = input.color(color.new(#ffd600, 0), "LGB rang", group = gLgb)
 
 gLeg = "5 · Legend (sab timeframes)"
 showLegend = input.bool(true, "Legend dikhao", group = gLeg)
-legendPos  = input.string("Middle Left", "Legend jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gLeg)
+legendPos  = input.string("Middle Right", "Legend jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gLeg)
 legMinSep  = input.float(0.05, "Trend maana jaye jab MA faasla (x ATR) se zyada ho", minval = 0, step = 0.01, group = gLeg)
 legMomoLive = input.bool(true, "FVG/LGB live candle se (chart jaisa)", group = gLeg)
 legClosed  = input.bool(true, "Trend closed candle se (repaint nahi)", group = gLeg)
 showTotals = input.bool(true, "TOTAL buy/sell % (sab TF ka nichor)", group = gLeg)
-totalsPos  = input.string("Middle Right", "TOTAL jagah", options = ["Top Right","Middle Right","Bottom Right","Top Left","Middle Left","Bottom Left"], group = gLeg)
+totalsPos  = input.string("Top Right", "TOTAL jagah", options = ["Top Right","Middle Right","Bottom Right","Top Left","Middle Left","Bottom Left"], group = gLeg)
 
 gIdea = "4 · Trade idea"
 showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
@@ -100,7 +99,7 @@ panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top L
 panelFont  = input.string("Normal", "Panel font", options = ["Small","Normal","Large","Huge"], group = gIdea)
 // Panel ka background pehle 90% transparent tha — candles aur lines aar-paar
 // dikh kar text kha jaati thin. Ab default thos hai.
-panelTrsp  = input.int(10, "Panel/legend background transparency", minval = 0, maxval = 100, group = gIdea)
+panelTrsp  = input.int(85, "Panel/legend background transparency", minval = 0, maxval = 100, group = gIdea)
 ideaLblOff = input.int(2, "Idea label kitne bars aage", minval = 0, maxval = 30, group = gIdea)
 
 // ---------------------------------------------------------------- helpers
@@ -288,8 +287,8 @@ while array.size(fvgBox) > fvgKeep
 // FVG ka apna box tha magar LGB ka chart par koi nishaan hi nahi tha — sirf
 // legend mein likha aata tha. Ab sweep bhi nazar aata hai: jis swing ki
 // liquidity li gayi us par label, aur (chahein to) us wick ka box.
-var box[]   lgbBx  = array.new_box()
-var label[] lgbLb  = array.new_label()
+var box   lgbBxC = na
+var label lgbLbC = na
 
 swHi = ta.valuewhen(not na(ph), ph, 0)
 swLo = ta.valuewhen(not na(pl), pl, 0)
@@ -302,21 +301,22 @@ lgbDnRaw = not na(swLo) and low  < swLo and close > swLo
 lgbUpC = lgbUpRaw and not lgbUpRaw[1]
 lgbDnC = lgbDnRaw and not lgbDnRaw[1]
 
-if showLGBd and (lgbUpC or lgbDnC)
-    _lvl = lgbUpC ? swHi : swLo
-    _ext = lgbUpC ? high : low
-    _txt = lgbUpC ? "LGB ↑" : "LGB ↓"
-    _sty = lgbUpC ? label.style_label_down : label.style_label_up
-    if lgbBoxOn
-        array.push(lgbBx, box.new(bar_index - 1, math.max(_lvl, _ext), bar_index + 1, math.min(_lvl, _ext), xloc = xloc.bar_index, bgcolor = color.new(colLgb, 80), border_color = color.new(colLgb, 40)))
-    array.push(lgbLb, label.new(bar_index, _ext, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = _sty, color = color.new(colLgb, 15), textcolor = color.black, size = PFL))
-
-while array.size(lgbBx) > lgbKeep
-    box.delete(array.get(lgbBx, 0))
-    array.remove(lgbBx, 0)
-while array.size(lgbLb) > lgbKeep
-    label.delete(array.get(lgbLb, 0))
-    array.remove(lgbLb, 0)
+// Nishaan sirf mojooda candle par. Purane sweeps chart par jama ho kar sirf
+// bikhaar paida karte the — unki tafseel legend ke LGB column mein rehti hai.
+if showLGBd and barstate.islast
+    box.delete(lgbBxC)
+    label.delete(lgbLbC)
+    lgbBxC := na
+    lgbLbC := na
+    if lgbUpRaw or lgbDnRaw
+        _up  = lgbUpRaw
+        _lvl = _up ? swHi : swLo
+        _ext = _up ? high : low
+        _txt = _up ? "LGB ↑" : "LGB ↓"
+        _sty = _up ? label.style_label_down : label.style_label_up
+        if lgbBoxOn
+            lgbBxC := box.new(bar_index - 1, math.max(_lvl, _ext), bar_index + 1, math.min(_lvl, _ext), xloc = xloc.bar_index, bgcolor = color.new(colLgb, 80), border_color = color.new(colLgb, 40))
+        lgbLbC := label.new(bar_index, _ext, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = _sty, color = color.new(colLgb, 15), textcolor = color.black, size = PFL)
 
 alertcondition(lgbUpC, "LGB up", "Upar ki liquidity li gayi (LGB up)")
 alertcondition(lgbDnC, "LGB down", "Neeche ki liquidity li gayi (LGB down)")
@@ -543,8 +543,11 @@ if showTouch and barstate.islast
 //  jodi, wahi Pivot L/R, wahi FVG size filter. Is liye legend ki row aur chart
 //  ka nishaan kabhi ek doosre ko jhutla nahi sakte.
 // ============================================================================
-var int SCALE_TREND = 1000000
-var int SCALE_PRESS = 1000
+// Packing: (trend+2) * SCALE_TREND + pressure * SCALE_PRESS + bits
+// Bits ab 10 hain (max 1023), is liye SCALE_PRESS 1000 se 10000 karna para —
+// warna 1023 bits pressure ke khane mein ghus kar use kharab kar deta.
+var int SCALE_TREND = 2000000
+var int SCALE_PRESS = 10000
 
 f_labTF(_tf) => _tf == "W" ? "1W" : _tf == "D" ? "1D" : _tf == "240" ? "4H" : _tf == "180" ? "3H" : _tf == "120" ? "2H" : _tf == "60" ? "1H" : _tf == "30" ? "30m" : _tf == "15" ? "15m" : _tf == "5" ? "5m" : _tf == "1" ? "1m" : _tf
 f_lbl(_st)  => _st == 1 ? "UT" : _st == -1 ? "DT" : "NT"
@@ -557,8 +560,9 @@ f_decode(_v) =>
     _press = int(math.floor(_rem / SCALE_PRESS))
     _bits  = _rem - _press * SCALE_PRESS
     _st    = _stVal == 3 ? 1 : _stVal == 1 ? -1 : 0
-    // bits: 0 up-gate, 1 down-gate, 2 FVG UP, 3 FVG DN, 4 LGB UP, 5 LGB DN, 6 DZ, 7 SZ
-    [_st, f_hasBit(_bits, 0), f_hasBit(_bits, 1), f_hasBit(_bits, 2), f_hasBit(_bits, 3), f_hasBit(_bits, 4), f_hasBit(_bits, 5), f_hasBit(_bits, 6), f_hasBit(_bits, 7), _press]
+    // bits: 0 up-gate, 1 down-gate, 2 FVG UP, 3 FVG DN, 4 LGB UP, 5 LGB DN,
+    //       6 DZ touch, 7 SZ touch, 8 DZ taraf, 9 SZ taraf
+    [_st, f_hasBit(_bits, 0), f_hasBit(_bits, 1), f_hasBit(_bits, 2), f_hasBit(_bits, 3), f_hasBit(_bits, 4), f_hasBit(_bits, 5), f_hasBit(_bits, 6), f_hasBit(_bits, 7), f_hasBit(_bits, 8), f_hasBit(_bits, 9), _press]
 
 // Ye poora hisab us TF ke apne context mein chalta hai, is liye [1] ka matlab
 // "us TF ki pichhli candle" hota hai — chart ki nahi.
@@ -599,11 +603,21 @@ f_pack(_useClosed, _momoLive) =>
     _lgbDn = not na(_swLoM) and _lm < _swLoM and _cm > _swLoM
     _dzT   = not na(_swLoM) and _lm <= _swLoM
     _szT   = not na(_swHiM) and _hm >= _swHiM
+    // Touch kabhi kabhaar hota hai, is liye SZ/DZ ka khana takreeban hamesha
+    // khaali rehta tha. Ab har TF batata hai ke price us TF ke swing range mein
+    // kahan khara hai: neeche wale teesre hisse mein (demand ke paas), upar
+    // wale mein (supply ke paas), ya darmiyan.
+    _rng   = not na(_swHiM) and not na(_swLoM) ? _swHiM - _swLoM : na
+    _posOK = not na(_rng) and _rng > 0
+    _pos   = _posOK ? (_cm - _swLoM) / _rng : na
+    _nrDz  = _posOK and _pos <= 0.33
+    _nrSz  = _posOK and _pos >= 0.67
     _dist  = (_fx - _sx) / _den
     _slope = ((_fx - _f1) - (_sx - _s1)) / _den
     _pBuy  = int(math.round(100 * (1.0 / (1.0 + math.exp(-(0.75 * _dist + 0.25 * _slope))))))
     _bits  = (_up ? 1 : 0) + (_dn ? 2 : 0) + (_fvgUp ? 4 : 0) + (_fvgDn ? 8 : 0) +
-              (_lgbUp ? 16 : 0) + (_lgbDn ? 32 : 0) + (_dzT ? 64 : 0) + (_szT ? 128 : 0)
+              (_lgbUp ? 16 : 0) + (_lgbDn ? 32 : 0) + (_dzT ? 64 : 0) + (_szT ? 128 : 0) +
+              (_nrDz ? 256 : 0) + (_nrSz ? 512 : 0)
     (_st + 2) * SCALE_TREND + _pBuy * SCALE_PRESS + _bits
 
 var table legTbl = na
@@ -631,10 +645,12 @@ if (showLegend or showTotals) and barstate.islast
     for i = 0 to array.size(tfs) - 1
         _tf  = array.get(tfs, i)
         _pk  = request.security(syminfo.tickerid, _tf, f_pack(legClosed, legMomoLive), barmerge.gaps_off, barmerge.lookahead_off)
-        [lst, lup, ldn, lfu, lfd, llu, lld, ldz, lsz, lpb] = f_decode(_pk)
+        [lst, lup, ldn, lfu, lfd, llu, lld, ldz, lsz, lndz, lnsz, lpb] = f_decode(_pk)
         _row = f_labTF(_tf) + "  " + f_lbl(lst)
         _row := _row + "   B " + str.tostring(lpb) + "% / S " + str.tostring(100 - lpb) + "%"
-        _row := _row + "   " + (ldz ? "DZ" : lsz ? "SZ" : "--")
+        // DZ! / SZ! = swing ko chhoo raha hai. DZ / SZ = us kinare ki taraf.
+        _srT = ldz ? "DZ!" : lsz ? "SZ!" : lndz ? "DZ " : lnsz ? "SZ " : "MID"
+        _row := _row + "   " + _srT
         _row := _row + "   FVG " + (lfu ? "UP" : lfd ? "DN" : "-")
         _row := _row + "   LGB " + (llu ? "UP" : lld ? "DN" : "-")
         _col = lup ? color.new(colSup, 0) : ldn ? color.new(colRes, 0) : color.new(color.gray, 0)
