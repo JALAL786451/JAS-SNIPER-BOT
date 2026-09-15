@@ -79,12 +79,11 @@ colLgb     = input.color(color.new(#ffd600, 0), "LGB rang", group = gLgb)
 
 gLeg = "5 · Legend (sab timeframes)"
 showLegend = input.bool(true, "Legend dikhao", group = gLeg)
-legendPos  = input.string("Middle Right", "Legend jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gLeg)
+legendPos  = input.string("Top Right", "Legend jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gLeg)
 legMinSep  = input.float(0.05, "Trend maana jaye jab MA faasla (x ATR) se zyada ho", minval = 0, step = 0.01, group = gLeg)
 legMomoLive = input.bool(true, "FVG/LGB live candle se (chart jaisa)", group = gLeg)
 legClosed  = input.bool(true, "Trend closed candle se (repaint nahi)", group = gLeg)
-showTotals = input.bool(true, "TOTAL buy/sell % (sab TF ka nichor)", group = gLeg)
-totalsPos  = input.string("Top Right", "TOTAL jagah", options = ["Top Right","Middle Right","Bottom Right","Top Left","Middle Left","Bottom Left"], group = gLeg)
+showTotals = input.bool(true, "TOTAL buy/sell % (legend ki pehli row)", group = gLeg)
 
 gIdea = "4 · Trade idea"
 showIdea   = input.bool(true, "Show the idea box + panel", group = gIdea)
@@ -95,7 +94,7 @@ useAtrTgt  = input.bool(true, "Target ke liye level na ho to ATR se target banao
 atrTgtMult = input.float(2.0, "ATR target (x ATR)", minval = 0.5, step = 0.5, group = gIdea)
 ideaBars   = input.int(20, "Idea box kitne bars aage", minval = 5, group = gIdea)
 markHist   = input.bool(false, "Purane setups par bhi nishaan lagao (sirf seekhne ke liye)", group = gIdea)
-panelPos   = input.string("Bottom Right", "Panel", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gIdea)
+panelPos   = input.string("Bottom Left", "Panel", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gIdea)
 panelFont  = input.string("Normal", "Panel font", options = ["Small","Normal","Large","Huge"], group = gIdea)
 // Panel ka background pehle 90% transparent tha — candles aur lines aar-paar
 // dikh kar text kha jaati thin. Ab default thos hai.
@@ -621,55 +620,57 @@ f_pack(_useClosed, _momoLive) =>
     (_st + 2) * SCALE_TREND + _pBuy * SCALE_PRESS + _bits
 
 var table legTbl = na
-var table totTbl = na
 if (showLegend or showTotals) and barstate.islast
     string[] tfs = array.from("1","5","15","30","60","120","180","240","D","W")
-    if showLegend
-        if na(legTbl)
-            legTbl := table.new(f_pos(legendPos), 1, 1 + array.size(tfs), border_width = 1)
-        else
-            table.clear(legTbl, 0, 0, 0, array.size(tfs))
+    if na(legTbl)
+        legTbl := table.new(f_pos(legendPos), 1, 13, border_width = 1)
+    else
+        table.clear(legTbl, 0, 0, 0, 12)
     _bgh = color.new(color.white, math.max(panelTrsp - 8, 0))
     _bgr = color.new(color.white, panelTrsp)
-    // sab TF ka nichor — yehi TOTAL row banata hai
     float _sumP = 0.0
     int _cnt = 0
     int _nUp = 0
     int _nDn = 0
-    // WAQT mode mein har TF apne bars khud nikalta hai, is liye header bars ke
-    // bajaye minute likhta hai — warna ye sirf chart wale TF ka sach hota.
-    _hd  = useTimeLen ? "LEGEND  |  " + maType + " " + str.tostring(fastMins) + "/" + str.tostring(slowMins) + " min" : "LEGEND  |  " + maType + " " + str.tostring(legFastBars) + "/" + str.tostring(legSlowBars) + " bars"
-    _hd := _hd + "   |   FVG/LGB " + (legMomoLive ? "live" : "closed") + "   |   trend " + (legClosed ? "closed" : "live")
-    if showLegend
-        table.cell(legTbl, 0, 0, _hd, bgcolor = _bgh, text_color = color.black, text_size = PF)
+    // Sirf wahi TF apni row leta hai jahan DZ ya SZ ka mamla hai. MID wale das
+    // rows sirf jagah gherte the aur right side ki har cheez ko dhak dete the.
+    // TOTAL band ho to pehli row khaali chhorne ki bajaye rows upar se shuru
+    int _r = showTotals ? 1 : 0
+    string _fvgS = ""
+    string _lgbS = ""
     for i = 0 to array.size(tfs) - 1
         _tf  = array.get(tfs, i)
         _pk  = request.security(syminfo.tickerid, _tf, f_pack(legClosed, legMomoLive), barmerge.gaps_off, barmerge.lookahead_off)
         [lst, lup, ldn, lfu, lfd, llu, lld, ldz, lsz, lndz, lnsz, lpb] = f_decode(_pk)
-        _row = f_labTF(_tf) + "  " + f_lbl(lst)
-        _row := _row + "   B " + str.tostring(lpb) + "% / S " + str.tostring(100 - lpb) + "%"
-        // DZ! / SZ! = swing ko chhoo raha hai. DZ / SZ = us kinare ki taraf.
-        _srT = ldz ? "DZ!" : lsz ? "SZ!" : lndz ? "DZ " : lnsz ? "SZ " : "MID"
-        _row := _row + "   " + _srT
-        _row := _row + "   FVG " + (lfu ? "UP" : lfd ? "DN" : "-")
-        _row := _row + "   LGB " + (llu ? "UP" : lld ? "DN" : "-")
-        _col = lup ? color.new(colSup, 0) : ldn ? color.new(colRes, 0) : color.new(color.gray, 0)
         _sumP := _sumP + lpb
         _cnt  := _cnt + 1
         _nUp  := _nUp + (lup ? 1 : 0)
         _nDn  := _nDn + (ldn ? 1 : 0)
-        if showLegend
-            table.cell(legTbl, 0, 1 + i, _row, bgcolor = _bgr, text_color = _col, text_size = PF)
+        if lfu or lfd
+            _fvgS := _fvgS + f_labTF(_tf) + (lfu ? "↑" : "↓") + "  "
+        if llu or lld
+            _lgbS := _lgbS + f_labTF(_tf) + (llu ? "↑" : "↓") + "  "
+        // DZ! / SZ! = swing ko chhoo raha hai. DZ / SZ = us kinare ki taraf.
+        _hasZ = ldz or lsz or lndz or lnsz
+        if showLegend and _hasZ and _r <= 10
+            _zTxt = ldz ? "DZ!" : lsz ? "SZ!" : lndz ? "DZ" : "SZ"
+            _row  = f_labTF(_tf) + "   " + f_lbl(lst) + "   B " + str.tostring(lpb) + "% / S " + str.tostring(100 - lpb) + "%   " + _zTxt
+            _zCol = ldz or lndz ? color.new(colSup, 0) : color.new(colRes, 0)
+            table.cell(legTbl, 0, _r, _row, bgcolor = _bgr, text_color = _zCol, text_size = PF)
+            _r := _r + 1
 
-    // TOTAL — dason timeframes ka ausat, right side par apni chhoti table mein
+    // Row 0 — poore stack ka nichor
+    _tBuy  = _cnt > 0 ? int(math.round(_sumP / _cnt)) : 50
+    _tSell = 100 - _tBuy
+    _tCol  = _tBuy > 55 ? color.new(colSup, 0) : _tBuy < 45 ? color.new(colRes, 0) : color.new(color.gray, 0)
+    _tot   = "1m → 1W    BUY " + str.tostring(_tBuy) + "%  |  SELL " + str.tostring(_tSell) + "%    (UT " + str.tostring(_nUp) + "  DT " + str.tostring(_nDn) + "  NT " + str.tostring(_cnt - _nUp - _nDn) + ")"
     if showTotals
-        if na(totTbl)
-            totTbl := table.new(f_pos(totalsPos), 1, 3, border_width = 1)
-        else
-            table.clear(totTbl, 0, 0, 0, 2)
-        _tBuy  = _cnt > 0 ? int(math.round(_sumP / _cnt)) : 50
-        _tSell = 100 - _tBuy
-        _tCol  = _tBuy > 55 ? color.new(colSup, 0) : _tBuy < 45 ? color.new(colRes, 0) : color.new(color.gray, 0)
-        table.cell(totTbl, 0, 0, "TOTAL  1m → 1W", bgcolor = _bgh, text_color = color.black, text_size = PF)
-        table.cell(totTbl, 0, 1, "BUY " + str.tostring(_tBuy) + "%   |   SELL " + str.tostring(_tSell) + "%", bgcolor = _bgr, text_color = _tCol, text_size = PF)
-        table.cell(totTbl, 0, 2, "UT " + str.tostring(_nUp) + "    DT " + str.tostring(_nDn) + "    NT " + str.tostring(_cnt - _nUp - _nDn) + "   (" + str.tostring(_cnt) + " TF)", bgcolor = _bgr, text_color = color.black, text_size = PF)
+        table.cell(legTbl, 0, 0, _tot, bgcolor = _bgh, text_color = _tCol, text_size = PF)
+
+    if showLegend
+        if _r == (showTotals ? 1 : 0)
+            table.cell(legTbl, 0, _r, "Koi TF DZ ya SZ par nahi", bgcolor = _bgr, text_color = color.gray, text_size = PF)
+            _r := _r + 1
+        // FVG aur LGB ab apni das rows nahi lete — ek line mein jama ho kar
+        // batate hain ke kis kis TF par hain. Tafseel chart par mojood hai.
+        table.cell(legTbl, 0, _r, "FVG  " + (_fvgS == "" ? "-" : _fvgS) + "     LGB  " + (_lgbS == "" ? "-" : _lgbS), bgcolor = _bgr, text_color = color.black, text_size = PF)
