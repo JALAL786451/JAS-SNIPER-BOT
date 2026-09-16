@@ -53,6 +53,12 @@ bandOwnCol = input.bool(true,  "Colour each band by its own pair", group = gRib)
 gLvl = "2 · Levels (entry / target)"
 showLevels = input.bool(true, "Show levels", group = gLvl)
 pvLen      = input.int(15, "Pivot L/R", minval = 1, group = gLvl)
+// Broker apps (jaise Exness) jo S/R dikhate hain wo roz ek baar bante hain, is
+// liye har timeframe par ek jaise rehte hain. Hamare levels chart ki apni
+// candles se bante the, is liye har TF par badal jaate the. Ab dono soorten
+// mumkin hain: "Chart ka apna" purana tareeqa, baqi sab har chart par EK jaisi
+// lakeerein dete hain.
+lvlTFmode  = input.string("1D", "Levels kis timeframe se banein", options = ["Chart ka apna","1H","4H","1D","1W"], group = gLvl)
 maxLevels  = input.int(16, "Keep last N levels", minval = 2, maxval = 60, group = gLvl)
 breakATR   = input.float(0.10, "Break needs close beyond by (x ATR)", minval = 0, step = 0.05, group = gLvl)
 showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
@@ -124,6 +130,15 @@ f_fsLbl(s) => s == "Small" ? size.tiny : s == "Normal" ? size.small : s == "Larg
 PF  = f_fs(panelFont)
 PFL = f_fsLbl(panelFont)
 atr = ta.atr(14)
+
+// Levels chart ke apne swings se banenge ya kisi bare timeframe se — aur jo TF
+// unhein banata hai, unka naap bhi usi TF ke ATR se hona chahiye. 1m ka ATR
+// (~1.5) le kar daily levels naapte to "15 ATR se door" sirf 22 dollar banta
+// aur saare daily levels chhup jaate; 0.10 ATR ka "break" itna chhota hota ke
+// level har shor par rang badalta rehta.
+lvlOwn = lvlTFmode == "Chart ka apna"
+lvlTF  = lvlTFmode == "1H" ? "60" : lvlTFmode == "4H" ? "240" : lvlTFmode == "1W" ? "W" : "D"
+atrLvl = nz(lvlOwn ? atr : request.security(syminfo.tickerid, lvlTF, ta.atr(14), barmerge.gaps_off, barmerge.lookahead_off), atr)
 
 // ---------------------------------------------------------------- ribbon
 f_ma(_t, _src, _len) => _t == "SMA" ? ta.sma(_src, _len) : _t == "WMA" ? ta.wma(_src, _len) : _t == "RMA" ? ta.rma(_src, _len) : _t == "HMA" ? ta.hma(_src, _len) : ta.ema(_src, _len)
@@ -227,8 +242,19 @@ f_lvKill(_i) =>
     array.remove(lvIsRes, _i)
     array.remove(lvTouch, _i)
 
-f_lvAdd(_price) =>
-    _x1  = bar_index - pvLen
+// Bilkul qareeb do levels banane ka koi faida nahi — chart bhar jata hai aur
+// "nearest" ka matlab khatam ho jata hai.
+f_lvDup(_price) =>
+    bool _dup = false
+    if array.size(lvPrice) > 0
+        for i = 0 to array.size(lvPrice) - 1
+            if math.abs(array.get(lvPrice, i) - _price) <= atrLvl * 0.15
+                _dup := true
+                break
+    _dup
+
+f_lvAdd(_price, _back) =>
+    _x1  = bar_index - _back
     _res = _price > close
     _l   = line.new(_x1, _price, bar_index + 1, _price, xloc = xloc.bar_index, color = _res ? colRes : colSup, width = lvlWidth)
     array.push(lvLine,  _l)
@@ -241,10 +267,22 @@ f_lvAdd(_price) =>
 ph = ta.pivothigh(high, pvLen, pvLen)
 pl = ta.pivotlow (low,  pvLen, pvLen)
 
-if showLevels and not na(ph)
-    f_lvAdd(ph)
-if showLevels and not na(pl)
-    f_lvAdd(pl)
+// Doosre timeframe se pivot mangwate waqt gaps_on zaroori hai: is se qeemat
+// sirf US bar par aati hai jab wahan naya pivot bana. gaps_off hota to wohi
+// purani qeemat har bar dohrayi jaati aur ek hi level baar baar ban jaata.
+phTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivothigh(high, pvLen, pvLen), barmerge.gaps_on, barmerge.lookahead_off)
+plTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivotlow (low,  pvLen, pvLen), barmerge.gaps_on, barmerge.lookahead_off)
+
+newPh = lvlOwn ? ph : phTF
+newPl = lvlOwn ? pl : plTF
+// Apne chart ka pivot pvLen bars peechay bana tha; doosre TF wala abhi pohcha
+// hai, is liye uski lakeer yahin se shuru hoti hai.
+lvlBack = lvlOwn ? pvLen : 0
+
+if showLevels and not na(newPh) and not f_lvDup(newPh)
+    f_lvAdd(newPh, lvlBack)
+if showLevels and not na(newPl) and not f_lvDup(newPl)
+    f_lvAdd(newPl, lvlBack)
 
 // Har bar: lakeer aage barhao, touch ginno, aur role (R/S) price ki position se
 // tay karo. Break hone par lakeer marti nahi — uska rang palat jaata hai, kyunke
@@ -260,13 +298,13 @@ if array.size(lvLine) > 0
         if _touching and not _touchingPrev
             array.set(lvTouch, i, array.get(lvTouch, i) + 1)
         _now = _was
-        if _was and close > _px + atr * breakATR
+        if _was and close > _px + atrLvl * breakATR
             _now := false
-        if not _was and close < _px - atr * breakATR
+        if not _was and close < _px - atrLvl * breakATR
             _now := true
         if _now != _was
             array.set(lvIsRes, i, _now)
-        _far = hideFarATR > 0 and math.abs(_px - close) > atr * hideFarATR
+        _far = hideFarATR > 0 and math.abs(_px - close) > atrLvl * hideFarATR
         line.set_color(_ln, _far ? color.new(color.gray, 100) : (_now ? colRes : colSup))
 
 while array.size(lvLine) > maxLevels
