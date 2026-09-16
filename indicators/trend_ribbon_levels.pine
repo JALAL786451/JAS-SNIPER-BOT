@@ -75,6 +75,11 @@ fvgLabel   = input.bool(true, "Box par \"FVG\" likho", group = gFvg)
 gTrk = "6 · Ginti (virtual tracker)"
 useTracker = input.bool(true, "Is chart ke setups ki ginti rakho", group = gTrk)
 trkMinN    = input.int(10, "Itne se kam setups ho to 'sample chhota' likho", minval = 2, group = gTrk)
+// Spread ke bagair ginti hamesha asal se behtar dikhti hai. Gold par 0.26 aur
+// 1H ke chhote SL par ye takreeban 0.04R per trade banta hai — 776 trades par
+// ye poore edge ka aadha hissa hai. Is liye entry usi qeemat par li jaati hai
+// jo asal mein milti: buy par ask (upar), sell par bid (neeche).
+trkCost    = input.float(0.26, "Spread + commission (dollar per trade)", minval = 0, step = 0.01, group = gTrk)
 
 gLgb = "3b · LGB (liquidity sweep)"
 showLGBd   = input.bool(true, "LGB chart par dikhao", group = gLgb)
@@ -499,12 +504,15 @@ if useTracker and tDir == 0 and (sellOK or buyOK)
     _d   = buyOK ? 1 : -1
     _sl  = _d == 1 ? bStop : sStop
     _tg  = _d == 1 ? bTgt  : sTgt
-    _r   = math.abs(close - _sl)
+    // Buy ask par milti hai (thori mehengi), sell bid par (thori sasti) — dono
+    // soorton mein SL door aur target qareeb ho jaata hai. Yehi asal kharcha hai.
+    _px  = _d == 1 ? close + trkCost : close - trkCost
+    _r   = math.abs(_px - _sl)
     // SL ulti taraf ho ya sifar ho to ginti kharab ho jaati — aisi trade chhor dete hain
-    _ok  = _r > 0 and (_d == 1 ? (_sl < close and _tg > close) : (_sl > close and _tg < close))
+    _ok  = _r > 0 and (_d == 1 ? (_sl < _px and _tg > _px) : (_sl > _px and _tg < _px))
     if _ok
         tDir   := _d
-        tEntry := close
+        tEntry := _px
         tSL    := _sl
         tTgt   := _tg
         tR     := _r
@@ -608,7 +616,7 @@ if showIdea and barstate.islast
             _trk := "GINTI: is chart par abhi tak koi setup nahi bana"
             _tCl := color.new(color.gray, 0)
         else
-            _trk := "GINTI (" + timeframe.period + "):  " + str.tostring(nT) + " setups   " + str.tostring(nTP) + " TP / " + str.tostring(nSL) + " SL"
+            _trk := "GINTI (" + timeframe.period + ", spread " + str.tostring(trkCost, "#.##") + "):  " + str.tostring(nT) + " setups   " + str.tostring(nTP) + " TP / " + str.tostring(nSL) + " SL"
             _trk := _trk + (na(trkWin) ? "" : "   " + str.tostring(int(math.round(trkWin))) + "%")
             _trk := _trk + (na(trkAvgR) ? "" : "   ausat " + (trkAvgR >= 0 ? "+" : "") + str.tostring(trkAvgR, "#.##") + "R")
             _trk := _trk + (na(trkDays) ? "" : "   " + str.tostring(int(math.round(trkDays))) + " din ka record")
