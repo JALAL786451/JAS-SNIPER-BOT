@@ -86,6 +86,11 @@ showLGBd   = input.bool(true, "LGB chart par dikhao", group = gLgb)
 lgbBoxOn   = input.bool(true, "Sweep ka box bhi banao", group = gLgb)
 colLgb     = input.color(color.new(#ffd600, 0), "LGB rang", group = gLgb)
 
+gSaada = "0 · Saada mode"
+saadaMode = input.bool(true, "SAADA MODE — sirf rukh, taraf aur ek khabardar qeemat", group = gSaada)
+saadaPos  = input.string("Top Right", "Jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gSaada)
+saadaNeed = input.int(7, "Rukh maanne ke liye kitne TF chahiye (10 mein se)", minval = 5, maxval = 10, group = gSaada)
+
 gLeg = "5 · Legend (sab timeframes)"
 showLegend = input.bool(true, "Legend dikhao", group = gLeg)
 legendPos  = input.string("Top Right", "Legend jagah", options = ["Top Right","Top Left","Middle Left","Middle Right","Bottom Right","Bottom Left","Top Center","Bottom Center"], group = gLeg)
@@ -423,7 +428,7 @@ var box   ideaBox = na
 var line  ideaSL  = na
 var label ideaLbl = na
 
-if showIdea and barstate.islast
+if showIdea and not saadaMode and barstate.islast
     box.delete(ideaBox)
     line.delete(ideaSL)
     label.delete(ideaLbl)
@@ -527,7 +532,7 @@ trkDays   = na(firstT) ? na : (time - firstT) / 86400000.0
 
 // ---------------------------------------------------------------- panel
 var table pTbl = na
-if showIdea and barstate.islast
+if showIdea and not saadaMode and barstate.islast
     if na(pTbl)
         pTbl := table.new(f_pos(panelPos), 1, 5, border_width = 1)
     else
@@ -729,13 +734,22 @@ f_pack(_useClosed, _momoLive) =>
               (_nrDz ? 256 : 0) + (_nrSz ? 512 : 0)
     (_st + 2) * SCALE_TREND + _pBuy * SCALE_PRESS + _bits
 
+// Saada mode ko bhi wahi ginti chahiye jo legend banati hai — is liye hisab
+// hamesha hota hai, bas dikhaya alag alag jaata hai.
+legOn = showLegend and not saadaMode
+totOn = showTotals and not saadaMode
+var int gnUp  = 0
+var int gnDn  = 0
+var int gnCnt = 0
+
 var table legTbl = na
-if (showLegend or showTotals) and barstate.islast
+if (legOn or totOn or saadaMode) and barstate.islast
     string[] tfs = array.from("1","5","15","30","60","120","180","240","D","W")
-    if na(legTbl)
-        legTbl := table.new(f_pos(legendPos), 1, 13, border_width = 1)
-    else
-        table.clear(legTbl, 0, 0, 0, 12)
+    if legOn or totOn
+        if na(legTbl)
+            legTbl := table.new(f_pos(legendPos), 1, 13, border_width = 1)
+        else
+            table.clear(legTbl, 0, 0, 0, 12)
     _bgh = color.new(color.white, math.max(panelTrsp - 8, 0))
     _bgr = color.new(color.white, panelTrsp)
     float _sumP = 0.0
@@ -745,7 +759,7 @@ if (showLegend or showTotals) and barstate.islast
     // Sirf wahi TF apni row leta hai jahan DZ ya SZ ka mamla hai. MID wale das
     // rows sirf jagah gherte the aur right side ki har cheez ko dhak dete the.
     // TOTAL band ho to pehli row khaali chhorne ki bajaye rows upar se shuru
-    int _r = showTotals ? 1 : 0
+    int _r = totOn ? 1 : 0
     string _fvgS = ""
     string _lgbS = ""
     for i = 0 to array.size(tfs) - 1
@@ -762,7 +776,7 @@ if (showLegend or showTotals) and barstate.islast
             _lgbS := _lgbS + f_labTF(_tf) + (llu ? "↑" : "↓") + "  "
         // DZ! / SZ! = swing ko chhoo raha hai. DZ / SZ = us kinare ki taraf.
         _hasZ = ldz or lsz or lndz or lnsz
-        if showLegend and _hasZ and _r <= 10
+        if legOn and _hasZ and _r <= 10
             _zTxt = ldz ? "DZ!" : lsz ? "SZ!" : lndz ? "DZ" : "SZ"
             _row  = f_labTF(_tf) + "   " + f_lbl(lst) + "   B " + str.tostring(lpb) + "% / S " + str.tostring(100 - lpb) + "%   " + _zTxt
             // Rang trend batata hai — UT green, DT red, NT grey — jaisa SMC Coach
@@ -771,6 +785,11 @@ if (showLegend or showTotals) and barstate.islast
             table.cell(legTbl, 0, _r, _row, bgcolor = _bgr, text_color = _zCol, text_size = PF)
             _r := _r + 1
 
+    // Saada mode ke liye ginti mehfooz
+    gnUp  := _nUp
+    gnDn  := _nDn
+    gnCnt := _cnt
+
     // Row 0 — poore stack ka nichor
     _tBuy  = _cnt > 0 ? int(math.round(_sumP / _cnt)) : 50
     _tSell = 100 - _tBuy
@@ -778,13 +797,49 @@ if (showLegend or showTotals) and barstate.islast
     // Line chhoti rakhi gayi hai — lambi hone par uska shuru TradingView ki apni
     // OHLC line ke peeche chala jata tha.
     _tot   = "TOTAL  B " + str.tostring(_tBuy) + "% / S " + str.tostring(_tSell) + "%   UT " + str.tostring(_nUp) + "  DT " + str.tostring(_nDn) + "  NT " + str.tostring(_cnt - _nUp - _nDn)
-    if showTotals
+    if totOn
         table.cell(legTbl, 0, 0, _tot, bgcolor = _bgh, text_color = _tCol, text_size = PF)
 
-    if showLegend
-        if _r == (showTotals ? 1 : 0)
+    if legOn
+        if _r == (totOn ? 1 : 0)
             table.cell(legTbl, 0, _r, "Koi TF DZ ya SZ par nahi", bgcolor = _bgr, text_color = color.gray, text_size = PF)
             _r := _r + 1
         // FVG aur LGB ab apni das rows nahi lete — ek line mein jama ho kar
         // batate hain ke kis kis TF par hain. Tafseel chart par mojood hai.
         table.cell(legTbl, 0, _r, "FVG  " + (_fvgS == "" ? "-" : _fvgS) + "     LGB  " + (_lgbS == "" ? "-" : _lgbS), bgcolor = _bgr, text_color = color.black, text_size = PF)
+
+// ============================================================================
+//  SAADA MODE — teen line, bas
+//
+//  Ye un logon ke liye hai jinhein SL, TP, RR ya R se koi wasta nahi. Sirf
+//  teen baatein: bara rukh kis taraf hai, fishing kis taraf karni hai, aur wo
+//  ek qeemat jis ke paar jaane par rukh badal jaata hai.
+//
+//  Rukh das timeframes ki ginti se banta hai — raye se nahi. Saat ya us se
+//  zyada ek taraf hon to rukh us taraf, warna "MILA JULA" (yani koi taraf
+//  nahi, aur yehi sab se kaam ki khabar hoti hai).
+// ============================================================================
+var table saTbl = na
+if saadaMode and barstate.islast
+    if na(saTbl)
+        saTbl := table.new(f_pos(saadaPos), 1, 3, border_width = 1)
+    else
+        table.clear(saTbl, 0, 0, 0, 2)
+    _sUp   = gnUp >= saadaNeed
+    _sDn   = gnDn >= saadaNeed
+    _sTxt  = _sUp ? "UPAR" : _sDn ? "NEECHE" : "MILA JULA"
+    _sCol  = _sUp ? color.new(colSup, 0) : _sDn ? color.new(colRes, 0) : color.new(color.gray, 0)
+    _sBg   = color.new(color.white, math.max(panelTrsp - 8, 0))
+    _sBg2  = color.new(color.white, panelTrsp)
+    table.cell(saTbl, 0, 0, "RUKH:  " + _sTxt + "      (" + str.tostring(gnUp) + " upar, " + str.tostring(gnDn) + " neeche)", bgcolor = _sBg, text_color = _sCol, text_size = PF)
+    _fish = _sUp ? "Fishing:  BUY ki taraf" : _sDn ? "Fishing:  SELL ki taraf" : "Fishing:  koi taraf pakki nahi — chhoti lot, jaldi band"
+    table.cell(saTbl, 0, 1, _fish, bgcolor = _sBg2, text_color = _sCol, text_size = PF)
+    // Khabardar wali qeemat: jis taraf ka rukh hai, uske ulat wala qareebi level.
+    _warn = ""
+    if _sDn
+        _warn := na(nearR) ? "Khabardar:  upar koi level nahi" : "Khabardar:  " + f_px(nearR) + " ke upar band ho to rukh palat sakta hai"
+    else if _sUp
+        _warn := na(nearS) ? "Khabardar:  neeche koi level nahi" : "Khabardar:  " + f_px(nearS) + " ke neeche band ho to rukh palat sakta hai"
+    else
+        _warn := "Upar " + (na(nearR) ? "-" : f_px(nearR)) + "   |   Neeche " + (na(nearS) ? "-" : f_px(nearS)) + "   — jo pehle toote, rukh udhar"
+    table.cell(saTbl, 0, 2, _warn, bgcolor = _sBg2, text_color = color.black, text_size = PF)
