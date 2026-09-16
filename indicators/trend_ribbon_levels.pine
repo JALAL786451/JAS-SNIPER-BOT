@@ -53,6 +53,8 @@ bandOwnCol = input.bool(true,  "Colour each band by its own pair", group = gRib)
 gFsl = "0b · Faisla lakeer (ek hi lakeer)"
 showFlip   = input.bool(true, "Faisla lakeer dikhao", group = gFsl)
 flipWick   = input.bool(true, "Wick se faisla (band hone ka intezaar nahi)", group = gFsl)
+flipTFmode = input.string("1H", "Lakeer kis timeframe se", options = ["Chart ka apna","15m","1H","4H","1D"], group = gFsl)
+flipLen    = input.int(20, "Kitni candles ka ooncha/neecha", minval = 5, maxval = 200, group = gFsl)
 colFlipUp  = input.color(color.new(#00c853, 0), "Buy pressure", inline = "fl", group = gFsl)
 colFlipDn  = input.color(color.new(#d50000, 0), "Sell pressure", inline = "fl", group = gFsl)
 
@@ -434,27 +436,38 @@ if array.size(lvPrice) > 0
 //  muqabla CHART ki apni candle se hota hai — is liye faisla usi lamhe hota
 //  hai jab wick paar karti hai, HTF candle band hone ka intezaar nahi.
 // ============================================================================
-var float swH = na
-var float swL = na
-if not na(newPh)
-    swH := newPh
-if not na(newPl)
-    swL := newPl
+// Lakeer pichhli N candles ke ooncha/neecha par baithti hai — is liye wo price
+// ke SATH chalti hai. Girte bazaar mein upar wali lakeer neeche aati rehti hai,
+// charhte mein neeche wali upar. Pehle ye aakhri daily swing par thi, aur agar
+// kai din koi naya daily swing na banta to lakeer hafton purani jagah atak kar
+// price se 300+ door reh jaati thi — theek chalti thi, magar kisi kaam ki nahi.
+//
+// [1] lagana zaroori hai: warna mojooda candle khud apne hi ooncha/neecha se
+// muqabla karti aur lakeer kabhi toot hi na paati.
+f_flipSrc(_n) => [ta.highest(high, _n)[1], ta.lowest(low, _n)[1]]
+
+flipOwn = flipTFmode == "Chart ka apna"
+flipTF  = flipTFmode == "15m" ? "15" : flipTFmode == "4H" ? "240" : flipTFmode == "1D" ? "D" : "60"
+hhOwn = ta.highest(high, flipLen)[1]
+llOwn = ta.lowest (low,  flipLen)[1]
+[hhReq, llReq] = request.security(syminfo.tickerid, flipTF, f_flipSrc(flipLen), barmerge.gaps_off, barmerge.lookahead_off)
+hhF = flipOwn ? hhOwn : hhReq
+llF = flipOwn ? llOwn : llReq
 
 var int fMode = 0
-fUp = not na(swH) and (flipWick ? high > swH : close > swH)
-fDn = not na(swL) and (flipWick ? low  < swL : close < swL)
-// Ek hi barri candle dono taraf paar kar jaye to close jis taraf hai wahi maana
-// jaata hai — warna faisla us bar par bekaar ka palatta rehta.
+// Muqabla CHART ki apni candle se hota hai, is liye faisla usi lamhe hota hai
+// jab wick paar karti hai — bare TF ki candle band hone ka intezaar nahi.
+fUp = not na(hhF) and (flipWick ? high > hhF : close > hhF)
+fDn = not na(llF) and (flipWick ? low  < llF : close < llF)
 if fUp and fDn
-    fMode := close > (swH + swL) / 2 ? 1 : -1
+    fMode := close > (hhF + llF) / 2 ? 1 : -1
 else if fUp
     fMode := 1
 else if fDn
     fMode := -1
 
 // Lakeer wahi qeemat hai jiske tootne par faisla palat jaayega
-fLine = fMode == 1 ? swL : fMode == -1 ? swH : na
+fLine = fMode == 1 ? llF : fMode == -1 ? hhF : na
 fFlip = fMode != fMode[1] and fMode != 0
 
 plot(showFlip ? fLine : na, "Faisla lakeer", color = fMode == 1 ? color.new(colFlipUp, 0) : color.new(colFlipDn, 0), style = plot.style_linebr, linewidth = 3)
