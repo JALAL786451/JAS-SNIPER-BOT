@@ -447,9 +447,9 @@ if showIdea and barstate.islast
 var table pTbl = na
 if showIdea and barstate.islast
     if na(pTbl)
-        pTbl := table.new(f_pos(panelPos), 1, 6, border_width = 1)
+        pTbl := table.new(f_pos(panelPos), 1, 4, border_width = 1)
     else
-        table.clear(pTbl, 0, 0, 0, 5)
+        table.clear(pTbl, 0, 0, 0, 3)
     _bg  = color.new(color.white, panelTrsp)
     _bg2 = color.new(color.white, math.max(panelTrsp - 8, 0))
     // Header khud bata deta hai ke ribbon kitna WAQT naap rahi hai — yehi cheez
@@ -463,11 +463,15 @@ if showIdea and barstate.islast
     // chup-chaap nahi hona chahiye, warna ribbon shor dikhane lagti hai.
     if useTimeLen and _fastBars <= 2
         _hdr := _hdr + "\n! Ye waqt is chart ke liye bohot chhota hai — minute barhayein ya BARS mode par jayein"
-    table.cell(pTbl, 0, 0, _hdr, bgcolor = _bg2, text_color = color.black, text_size = PF)
-    _rTxt = na(nearR) ? "R  —  upar koi pivot nahi (record ka sabse ooncha ilaqa)" : "R  " + f_px(nearR) + "    " + str.tostring(nearRt) + " touch    " + f_px(distR) + " door"
-    _sTxt = na(nearS) ? "S  —  neeche koi pivot nahi (record ka sabse nichla ilaqa)" : "S  " + f_px(nearS) + "    " + str.tostring(nearSt) + " touch    " + f_px(distS) + " door"
-    table.cell(pTbl, 0, 1, _rTxt, bgcolor = _bg, text_color = colRes, text_size = PF)
-    table.cell(pTbl, 0, 2, _sTxt, bgcolor = _bg, text_color = colSup, text_size = PF)
+    // Header ka rang bhi bias batata hai
+    _hCol = ribThin ? color.new(color.gray, 0) : ribUp ? color.new(colSup, 0) : ribDn ? color.new(colRes, 0) : color.black
+    table.cell(pTbl, 0, 0, _hdr, bgcolor = _bg2, text_color = _hCol, text_size = PF)
+    // R aur S ab ek hi row mein — panel chhota hua to candles se kam takrata hai.
+    // Row ka rang batata hai ke price kis kinare se chipka hua hai.
+    _rTxt = na(nearR) ? "R  —  upar pivot nahi" : "R " + f_px(nearR) + "  x" + str.tostring(nearRt) + "  (" + f_px(distR) + " door)"
+    _sTxt = na(nearS) ? "S  —  neeche pivot nahi" : "S " + f_px(nearS) + "  x" + str.tostring(nearSt) + "  (" + f_px(distS) + " door)"
+    _rsCol = na(distR) or na(distS) ? color.black : distR < distS ? color.new(colRes, 0) : color.new(colSup, 0)
+    table.cell(pTbl, 0, 1, _rTxt + "        " + _sTxt, bgcolor = _bg, text_color = _rsCol, text_size = PF)
 
     _idea = "PLAN: abhi koi nahi"
     if sellOK
@@ -478,7 +482,7 @@ if showIdea and barstate.islast
         _idea := "INTEZAAR:  price " + f_px(sEntry) + " tak upar aaye → SELL → " + f_px(sTgt) + "     SL " + f_px(sStop) + "     RR 1:" + str.tostring(sRR, "#.#")
     else if buyWait
         _idea := "INTEZAAR:  price " + f_px(bEntry) + " tak neeche aaye → BUY → " + f_px(bTgt) + "     SL " + f_px(bStop) + "     RR 1:" + str.tostring(bRR, "#.#")
-    table.cell(pTbl, 0, 3, _idea, bgcolor = _bg2, text_color = sellOK or sellWait ? colRes : buyOK or buyWait ? colSup : color.black, text_size = PF)
+    table.cell(pTbl, 0, 2, _idea, bgcolor = _bg2, text_color = sellOK or sellWait ? colRes : buyOK or buyWait ? colSup : color.black, text_size = PF)
 
     // agar level toot gaya to agla padaav — dono taraf ke numbers
     // Khaali taraf ka matlab samjhana zaroori hai: level "ghayab" nahi hua, wahan
@@ -491,7 +495,6 @@ if showIdea and barstate.islast
     if not na(nearR)
         _brk := (_brk == "" ? "" : _brk + "     |     ") + "Agar R " + f_px(nearR) + " toota → " + (na(farR) ? "record mein upar pivot nahi, ATR andaza " + _atrUp : "agla " + f_px(farR))
     _brk := _brk + "     |     Levels: " + str.tostring(array.size(lvPrice)) + "/" + str.tostring(maxLevels)
-    table.cell(pTbl, 0, 4, _brk == "" ? "Koi level nahi bana abhi" : _brk, bgcolor = _bg, text_color = color.black, text_size = PF)
 
     // wajah — kyun ban rahi hai, ya kyun nahi ban rahi
     _why = ""
@@ -516,7 +519,12 @@ if showIdea and barstate.islast
             _why := _why + "• Buy ka plan tha magar RR 1:" + str.tostring(bRR, "#.#") + " chhota hai (minimum 1:" + str.tostring(minRR, "#.#") + ")\n"
         if _why == ""
             _why := "• Bias, level aur RR ek sath align nahi hue\n"
-    table.cell(pTbl, 0, 5, _why, bgcolor = _bg, text_color = color.black, text_size = PF, text_halign = text.align_left)
+    // Wajah aur "agar toota" ab ek hi cell mein, do lines — do alag rows se panel
+    // be-wajah lamba ho raha tha.
+    // "Missing" wali list pehle se \n par khatam hoti hai — ek aur lagane se
+    // beech mein khaali line reh jaati thi.
+    _whyTxt = str.endswith(_why, "\n") ? _why : _why + "\n"
+    table.cell(pTbl, 0, 3, _whyTxt + (_brk == "" ? "Koi level nahi bana abhi" : _brk), bgcolor = _bg, text_color = color.black, text_size = PF, text_halign = text.align_left)
 
 // ---------------------------------------------------------------- nearest R/S labels
 var label labR = na
@@ -655,7 +663,9 @@ if (showLegend or showTotals) and barstate.islast
         if showLegend and _hasZ and _r <= 10
             _zTxt = ldz ? "DZ!" : lsz ? "SZ!" : lndz ? "DZ" : "SZ"
             _row  = f_labTF(_tf) + "   " + f_lbl(lst) + "   B " + str.tostring(lpb) + "% / S " + str.tostring(100 - lpb) + "%   " + _zTxt
-            _zCol = ldz or lndz ? color.new(colSup, 0) : color.new(colRes, 0)
+            // Rang trend batata hai — UT green, DT red, NT grey — jaisa SMC Coach
+            // mein tha. DZ!/SZ! khud lafzon mein likha hota hai.
+            _zCol = lst == 1 ? color.new(colSup, 0) : lst == -1 ? color.new(colRes, 0) : color.new(color.gray, 0)
             table.cell(legTbl, 0, _r, _row, bgcolor = _bgr, text_color = _zCol, text_size = PF)
             _r := _r + 1
 
@@ -663,7 +673,9 @@ if (showLegend or showTotals) and barstate.islast
     _tBuy  = _cnt > 0 ? int(math.round(_sumP / _cnt)) : 50
     _tSell = 100 - _tBuy
     _tCol  = _tBuy > 55 ? color.new(colSup, 0) : _tBuy < 45 ? color.new(colRes, 0) : color.new(color.gray, 0)
-    _tot   = "1m → 1W    BUY " + str.tostring(_tBuy) + "%  |  SELL " + str.tostring(_tSell) + "%    (UT " + str.tostring(_nUp) + "  DT " + str.tostring(_nDn) + "  NT " + str.tostring(_cnt - _nUp - _nDn) + ")"
+    // Line chhoti rakhi gayi hai — lambi hone par uska shuru TradingView ki apni
+    // OHLC line ke peeche chala jata tha.
+    _tot   = "TOTAL  B " + str.tostring(_tBuy) + "% / S " + str.tostring(_tSell) + "%   UT " + str.tostring(_nUp) + "  DT " + str.tostring(_nDn) + "  NT " + str.tostring(_cnt - _nUp - _nDn)
     if showTotals
         table.cell(legTbl, 0, 0, _tot, bgcolor = _bgh, text_color = _tCol, text_size = PF)
 
