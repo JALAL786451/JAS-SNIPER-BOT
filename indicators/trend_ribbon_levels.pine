@@ -291,6 +291,14 @@ pl = ta.pivotlow (low,  pvLen, pvLen)
 phTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivothigh(high, pvLenTF, pvLenTF), barmerge.gaps_on, barmerge.lookahead_off)
 plTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivotlow (low,  pvLenTF, pvLenTF), barmerge.gaps_on, barmerge.lookahead_off)
 
+// Touch ab us TF ki candle se gine jaate hain jis se level bana. Chart ki
+// candle se ginte the, is liye ek hi level 1H par "x9" aur 1m par "x52" dikhta
+// tha — ek hi level, do alag taqatein, sirf is liye ke kaunsa chart khula hai.
+// Ab matlab saaf hai: kitni DAILY candles ne is qeemat ko chhua.
+htfHi = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, high[1], barmerge.gaps_off, barmerge.lookahead_off)
+htfLo = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, low[1],  barmerge.gaps_off, barmerge.lookahead_off)
+htfNew = lvlOwn ? false : ta.change(time(lvlTF)) != 0
+
 newPh = lvlOwn ? ph : phTF
 newPl = lvlOwn ? pl : plTF
 // Apne chart ka pivot pvLen bars peechay bana tha; doosre TF wala abhi pohcha
@@ -311,9 +319,12 @@ if array.size(lvLine) > 0
         _px  = array.get(lvPrice, i)
         _was = array.get(lvIsRes, i)
         line.set_x2(_ln, bar_index + 1)
-        _touching     = high >= _px and low <= _px
-        _touchingPrev = high[1] >= _px and low[1] <= _px
-        if _touching and not _touchingPrev
+        if lvlOwn
+            _touching     = high >= _px and low <= _px
+            _touchingPrev = high[1] >= _px and low[1] <= _px
+            if _touching and not _touchingPrev
+                array.set(lvTouch, i, array.get(lvTouch, i) + 1)
+        else if htfNew and not na(htfHi) and htfHi >= _px and htfLo <= _px
             array.set(lvTouch, i, array.get(lvTouch, i) + 1)
         _now = _was
         if _was and close > _px + atrLvl * breakATR
