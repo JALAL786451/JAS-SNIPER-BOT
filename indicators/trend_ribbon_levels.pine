@@ -59,6 +59,11 @@ pvLen      = input.int(15, "Pivot L/R", minval = 1, group = gLvl)
 // mumkin hain: "Chart ka apna" purana tareeqa, baqi sab har chart par EK jaisi
 // lakeerein dete hain.
 lvlTFmode  = input.string("1D", "Levels kis timeframe se banein", options = ["Chart ka apna","1H","4H","1D","1W"], group = gLvl)
+// Pivot L/R ka matlab hai "swing ke dono taraf itni candles". Chart wale mode
+// mein 15 ka matlab 15 candles tha, magar 1D par wohi 15 = 15 DIN ban jata —
+// yani aaj ki choti 15 din baad lakeer banti. Bare TF ke levels ke liye alag,
+// chhoti setting chahiye, warna levels mahina bhar peechay reh jaate hain.
+pvLenTF    = input.int(5, "Bare TF ke levels: Pivot L/R", minval = 1, maxval = 20, group = gLvl)
 maxLevels  = input.int(16, "Keep last N levels", minval = 2, maxval = 60, group = gLvl)
 breakATR   = input.float(0.10, "Break needs close beyond by (x ATR)", minval = 0, step = 0.05, group = gLvl)
 showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
@@ -270,8 +275,8 @@ pl = ta.pivotlow (low,  pvLen, pvLen)
 // Doosre timeframe se pivot mangwate waqt gaps_on zaroori hai: is se qeemat
 // sirf US bar par aati hai jab wahan naya pivot bana. gaps_off hota to wohi
 // purani qeemat har bar dohrayi jaati aur ek hi level baar baar ban jaata.
-phTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivothigh(high, pvLen, pvLen), barmerge.gaps_on, barmerge.lookahead_off)
-plTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivotlow (low,  pvLen, pvLen), barmerge.gaps_on, barmerge.lookahead_off)
+phTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivothigh(high, pvLenTF, pvLenTF), barmerge.gaps_on, barmerge.lookahead_off)
+plTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivotlow (low,  pvLenTF, pvLenTF), barmerge.gaps_on, barmerge.lookahead_off)
 
 newPh = lvlOwn ? ph : phTF
 newPl = lvlOwn ? pl : plTF
