@@ -55,6 +55,7 @@ showFlip   = input.bool(true, "Faisla lakeer dikhao", group = gFsl)
 flipWick   = input.bool(true, "Wick se faisla (band hone ka intezaar nahi)", group = gFsl)
 flipTFmode = input.string("1H", "Lakeer kis timeframe se", options = ["Chart ka apna","15m","1H","4H","1D"], group = gFsl)
 flipLen    = input.int(20, "Kitni candles ka ooncha/neecha", minval = 5, maxval = 200, group = gFsl)
+flipHistory = input.bool(false, "Purani seerhi bhi dikhao (train route)", group = gFsl)
 colFlipUp  = input.color(color.new(#00c853, 0), "Buy pressure", inline = "fl", group = gFsl)
 colFlipDn  = input.color(color.new(#d50000, 0), "Sell pressure", inline = "fl", group = gFsl)
 
@@ -77,8 +78,16 @@ zoneW      = input.float(0.6, "Zone ki chaurai (x ATR)", minval = 0.1, step = 0.
 // Yehi asal chhanni hai: ek baar ruk jana ittefaq ho sakta hai, do ya teen baar
 // ruk jana rukawat hoti hai. Kam baar wale zone memory mein rehte hain (taake
 // aage mil kar mazboot ban sakein) magar chart par nazar nahi aate.
-minTouch   = input.int(2, "Zone tab dikhao jab itni baar ruka ho", minval = 1, maxval = 10, group = gLvl)
-maxLevels  = input.int(24, "Kitne zones yaad rakhein", minval = 4, maxval = 60, group = gLvl)
+minTouch   = input.int(1, "Zone tab dikhao jab itni baar ruka ho", minval = 1, maxval = 10, group = gLvl)
+// SMC Coach ka chart is liye saaf rehta hai ke wahan zone TOOT-TE HI MAR JATA
+// hai. Hamara engine sab jama karta raha, is liye chart naqsha ban gaya. Ab
+// zone bhi patla hai aur toot-ne par khatam ho jata hai — jab price upar wale
+// (red) zones ko paar kar le to sirf green bache, aur chart ka rang khud bata
+// de ke ab kya chal raha hai.
+zonePad    = input.float(0.15, "Zone ki motai (x ATR)", minval = 0.02, step = 0.01, group = gLvl)
+zoneKill   = input.bool(true, "Zone toot-ne par khatam kar do", group = gLvl)
+zoneMaxAge = input.int(300, "Itni candles purana zone khatam", minval = 20, group = gLvl)
+maxLevels  = input.int(10, "Kitne zones yaad rakhein", minval = 2, maxval = 60, group = gLvl)
 showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
 hideFarATR = input.float(15, "Itne ATR se door wale levels chhupao (0 = sab dikhao)", minval = 0, step = 1, group = gLvl)
 colRes     = input.color(color.new(#d50000, 0), "Resistance (upar)", group = gLvl)
@@ -325,6 +334,19 @@ if showLevels and not na(newPh)
 if showLevels and not na(newPl)
     f_zAdd(newPl)
 
+// Har bar: jo zone toot gaya ya bohot purana ho gaya, wo khatam. Yehi cheez
+// chart ko saaf rakhti hai — warna har purana zone hamesha ke liye pada rehta.
+if array.size(zBox) > 0
+    for i = array.size(zBox) - 1 to 0
+        _b    = array.get(zBox, i)
+        _mid  = (array.get(zLo, i) + array.get(zHi, i)) / 2
+        _pad  = atrLvl * zonePad
+        _isSup = _mid < close
+        _broke = zoneKill and (_isSup ? close < _mid - _pad : close > _mid + _pad)
+        _old   = (bar_index - box.get_left(_b)) > zoneMaxAge
+        if _broke or _old
+            f_zKill(i)
+
 while array.size(zBox) > maxLevels
     f_zKill(f_zWeakest())
 
@@ -475,7 +497,17 @@ else if fDn
 fLine = fMode == 1 ? llF : fMode == -1 ? hhF : na
 fFlip = fMode != fMode[1] and fMode != 0
 
-plot(showFlip ? fLine : na, "Faisla lakeer", color = fMode == 1 ? color.new(colFlipUp, 0) : color.new(colFlipDn, 0), style = plot.style_linebr, linewidth = 3)
+// Pehle poori tareekh seerhi ki shakl mein banti thi — "train ka route" jaisa.
+// Ab sirf ek seedhi lakeer, mojooda faisle ki qeemat par. Purani seerhi chahiye
+// to switch mojood hai.
+plot(showFlip and flipHistory ? fLine : na, "Faisla lakeer (tareekh)", color = fMode == 1 ? color.new(colFlipUp, 0) : color.new(colFlipDn, 0), style = plot.style_linebr, linewidth = 2)
+
+var line fLn = na
+if showFlip and not flipHistory and barstate.islast
+    line.delete(fLn)
+    fLn := na
+    if not na(fLine)
+        fLn := line.new(bar_index - 1, fLine, bar_index, fLine, xloc = xloc.bar_index, extend = extend.both, color = fMode == 1 ? color.new(colFlipUp, 0) : color.new(colFlipDn, 0), width = 3)
 plotshape(showFlip and fFlip and fMode == 1  ? low  : na, title = "Faisla: BUY",  style = shape.triangleup,   location = location.absolute, color = color.new(colFlipUp, 0), size = size.small, text = "BUY")
 plotshape(showFlip and fFlip and fMode == -1 ? high : na, title = "Faisla: SELL", style = shape.triangledown, location = location.absolute, color = color.new(colFlipDn, 0), size = size.small, text = "SELL")
 alertcondition(fFlip and fMode == 1,  "Faisla BUY",  "Faisla palat gaya — ab BUY ka pressure")
@@ -492,17 +524,18 @@ if array.size(zBox) > 0 and barstate.islast
         _hi  = array.get(zHi, i)
         _cnt = array.get(zCnt, i)
         _mid = (_lo + _hi) / 2
-        // Ek hi qeemat par bane zone ki chaurai sifar hoti hai — usay nazar
-        // aane ke liye thora pad chahiye.
-        _pad = math.max((atrLvl * 0.12 - (_hi - _lo)) / 2, 0)
+        // Band hamesha ek hi motai ka — cluster sirf ye batata hai ke zone
+        // KAHAN hai, kitna chowra hai ye nahi. Warna kuch zone bohot mote ho
+        // kar aadha chart dhak lete the.
+        _pad = atrLvl * zonePad
         _far = hideFarATR > 0 and math.abs(_mid - close) > atrLvl * hideFarATR
         _show = _cnt >= minTouch and not _far
         _isR = _mid > close
         _act = i == nearRi or i == nearSi
         _dim = dimOthers and not _act
         _col = _dim ? colDim : (_isR ? colRes : colSup)
-        box.set_top(_b, _hi + _pad)
-        box.set_bottom(_b, _lo - _pad)
+        box.set_top(_b, _mid + _pad)
+        box.set_bottom(_b, _mid - _pad)
         box.set_right(_b, bar_index + 1)
         box.set_bgcolor(_b, _show ? color.new(_col, _dim ? 93 : 82) : color.new(color.gray, 100))
         box.set_border_color(_b, _show ? color.new(_col, _dim ? 80 : 35) : color.new(color.gray, 100))
