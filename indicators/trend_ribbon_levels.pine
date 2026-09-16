@@ -56,18 +56,24 @@ flipWick   = input.bool(true, "Wick se faisla (band hone ka intezaar nahi)", gro
 flipTFmode = input.string("1H", "Lakeer kis timeframe se", options = ["Chart ka apna","15m","1H","4H","1D"], group = gFsl)
 flipLen    = input.int(20, "Kitni candles ka ooncha/neecha", minval = 5, maxval = 200, group = gFsl)
 flipHistory = input.bool(false, "Purani seerhi bhi dikhao (train route)", group = gFsl)
+flipMarks   = input.bool(false, "Har purani palat par BUY/SELL ka nishaan", group = gFsl)
 colFlipUp  = input.color(color.new(#00c853, 0), "Buy pressure", inline = "fl", group = gFsl)
 colFlipDn  = input.color(color.new(#d50000, 0), "Sell pressure", inline = "fl", group = gFsl)
 
 gLvl = "2 · Levels (entry / target)"
 showLevels = input.bool(true, "Show levels", group = gLvl)
-pvLen      = input.int(15, "Pivot L/R", minval = 1, group = gLvl)
+pvLen      = input.int(3, "Pivot L/R", minval = 1, group = gLvl)
 // Broker apps (jaise Exness) jo S/R dikhate hain wo roz ek baar bante hain, is
 // liye har timeframe par ek jaise rehte hain. Hamare levels chart ki apni
 // candles se bante the, is liye har TF par badal jaate the. Ab dono soorten
 // mumkin hain: "Chart ka apna" purana tareeqa, baqi sab har chart par EK jaisi
 // lakeerein dete hain.
-lvlTFmode  = input.string("1D", "Levels kis timeframe se banein", options = ["Chart ka apna","1H","4H","1D","1W"], group = gLvl)
+// "Har TF par ek jaisi lakeerein" aur "price ke paas, kaam ki lakeerein" — ye
+// do khwahishein aapas mein takraati hain. 1D se banti lakeerein har chart par
+// ek jaisi to rehti hain, magar zone toot-ne par marne lage to ya to sab mar
+// jaate hain ya itni door reh jaate hain ke bekaar. SMC Coach chart ke APNE
+// swings se zone banata hai, isi liye uske zone hamesha kaam ke hote hain.
+lvlTFmode  = input.string("Chart ka apna", "Levels kis timeframe se banein", options = ["Chart ka apna","1H","4H","1D","1W"], group = gLvl)
 // Pivot L/R ka matlab hai "swing ke dono taraf itni candles". Chart wale mode
 // mein 15 ka matlab 15 candles tha, magar 1D par wohi 15 = 15 DIN ban jata —
 // yani aaj ki choti 15 din baad lakeer banti. Bare TF ke levels ke liye alag,
@@ -102,7 +108,7 @@ colDim     = input.color(color.new(#787b86, 35), "Grey (baqi levels)", group = g
 gFvg = "3 · FVG (khaali jagah)"
 showFVG    = input.bool(true, "Show fair value gaps", group = gFvg)
 fvgMinATR  = input.float(0.25, "Ignore gaps smaller than (x ATR)", minval = 0, step = 0.05, group = gFvg)
-fvgKeep    = input.int(6, "Keep last N gaps", minval = 1, maxval = 20, group = gFvg)
+fvgKeep    = input.int(3, "Keep last N gaps", minval = 1, maxval = 20, group = gFvg)
 // FVG ka apna rang. Pehle ye levels aur idea box jaisa hi green/red tha, is
 // liye teen alag cheezein ek jaisi dikhti thin. Ab neela/narangi, aur box par
 // naam bhi likha hota hai.
@@ -298,7 +304,7 @@ f_zWeakest() =>
                 _w := i
     _w
 
-f_zAdd(_p) =>
+f_zAdd(_p, _back) =>
     _w = atrLvl * zoneW
     int _hit = -1
     if array.size(zLo) > 0
@@ -312,7 +318,9 @@ f_zAdd(_p) =>
         array.set(zCnt, _hit, array.get(zCnt, _hit) + 1)
         array.set(zAt,  _hit, bar_index)
     else
-        array.push(zBox, box.new(bar_index, _p, bar_index + 1, _p, xloc = xloc.bar_index, bgcolor = color.new(color.gray, 100), border_color = color.new(color.gray, 100)))
+        // Box us candle se shuru hota hai jahan swing BANA tha, na ke jahan wo
+        // confirm hua — pivot hamesha _back candles peechay banta hai.
+        array.push(zBox, box.new(bar_index - _back, _p, bar_index + 1, _p, xloc = xloc.bar_index, bgcolor = color.new(color.gray, 100), border_color = color.new(color.gray, 100)))
         array.push(zLo,  _p)
         array.push(zHi,  _p)
         array.push(zCnt, 1)
@@ -329,10 +337,13 @@ plTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivotlow (low,
 newPh = lvlOwn ? ph : phTF
 newPl = lvlOwn ? pl : plTF
 
+// Chart ke apne pivot pvLen candles peechay bane the; doosre TF wale abhi
+// pohche hain, is liye unka box yahin se shuru hota hai.
+lvlBack = lvlOwn ? pvLen : 0
 if showLevels and not na(newPh)
-    f_zAdd(newPh)
+    f_zAdd(newPh, lvlBack)
 if showLevels and not na(newPl)
-    f_zAdd(newPl)
+    f_zAdd(newPl, lvlBack)
 
 // Har bar: jo zone toot gaya ya bohot purana ho gaya, wo khatam. Yehi cheez
 // chart ko saaf rakhti hai — warna har purana zone hamesha ke liye pada rehta.
@@ -508,8 +519,8 @@ if showFlip and not flipHistory and barstate.islast
     fLn := na
     if not na(fLine)
         fLn := line.new(bar_index - 1, fLine, bar_index, fLine, xloc = xloc.bar_index, extend = extend.both, color = fMode == 1 ? color.new(colFlipUp, 0) : color.new(colFlipDn, 0), width = 3)
-plotshape(showFlip and fFlip and fMode == 1  ? low  : na, title = "Faisla: BUY",  style = shape.triangleup,   location = location.absolute, color = color.new(colFlipUp, 0), size = size.small, text = "BUY")
-plotshape(showFlip and fFlip and fMode == -1 ? high : na, title = "Faisla: SELL", style = shape.triangledown, location = location.absolute, color = color.new(colFlipDn, 0), size = size.small, text = "SELL")
+plotshape(showFlip and flipMarks and fFlip and fMode == 1  ? low  : na, title = "Faisla: BUY",  style = shape.triangleup,   location = location.absolute, color = color.new(colFlipUp, 0), size = size.small, text = "BUY")
+plotshape(showFlip and flipMarks and fFlip and fMode == -1 ? high : na, title = "Faisla: SELL", style = shape.triangledown, location = location.absolute, color = color.new(colFlipDn, 0), size = size.small, text = "SELL")
 alertcondition(fFlip and fMode == 1,  "Faisla BUY",  "Faisla palat gaya — ab BUY ka pressure")
 alertcondition(fFlip and fMode == -1, "Faisla SELL", "Faisla palat gaya — ab SELL ka pressure")
 
