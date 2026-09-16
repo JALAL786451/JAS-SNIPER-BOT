@@ -72,6 +72,10 @@ colFvgUp   = input.color(color.new(#00b0ff, 0), "FVG upar wala", inline = "fc", 
 colFvgDn   = input.color(color.new(#ff9100, 0), "FVG neeche wala", inline = "fc", group = gFvg)
 fvgLabel   = input.bool(true, "Box par \"FVG\" likho", group = gFvg)
 
+gTrk = "6 · Ginti (virtual tracker)"
+useTracker = input.bool(true, "Is chart ke setups ki ginti rakho", group = gTrk)
+trkMinN    = input.int(10, "Itne se kam setups ho to 'sample chhota' likho", minval = 2, group = gTrk)
+
 gLgb = "3b · LGB (liquidity sweep)"
 showLGBd   = input.bool(true, "LGB chart par dikhao", group = gLgb)
 lgbBoxOn   = input.bool(true, "Sweep ka box bhi banao", group = gLgb)
@@ -443,13 +447,83 @@ if showIdea and barstate.islast
         // jagah mein lagta hai.
         ideaLbl := label.new(bar_index + ideaLblOff, _e, _txt, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(_c, _live ? 10 : 25), textcolor = color.white, size = PFL)
 
+// ---------------------------------------------------------------- ginti
+// Ye tool ki raye ko ginti mein badalta hai. Jab bhi "ABHI" wala setup banta
+// hai, ek farzi trade khol kar dekha jaata hai ke aage kya hua: target laga ya
+// SL. Koi paisa nahi lagta, bas record banta hai.
+//
+// Ginti hamesha USI chart ke timeframe ki hoti hai jis par aap khare hain,
+// kyunke script sirf isi TF ka data parhti hai. Doosre TF ka number dekhna ho
+// to chart badal lein.
+//
+// Entry chart ke close par li jaati hai — us qeemat par jo asal mein milti,
+// na ke us level par jo abhi door ho. Isi liye panel ka chhapa hua RR aur
+// ginti ka asal R thora alag ho sakte hain; ye jaan-boojh kar hai.
+var int   tDir   = 0
+var float tEntry = na
+var float tSL    = na
+var float tTgt   = na
+var float tR     = na
+var int   nT     = 0
+var int   nTP    = 0
+var int   nSL    = 0
+var float sumR   = 0.0
+var int   firstT = na
+
+// Pehle khuli hui farzi trade ka hisab, phir nayi trade — taake ek hi bar par
+// khulna aur band hona na ho jaye.
+if tDir != 0
+    _done = false
+    if tDir == 1
+        if low <= tSL
+            nSL  := nSL + 1
+            sumR := sumR - 1.0
+            _done := true
+        else if high >= tTgt
+            nTP  := nTP + 1
+            sumR := sumR + (tTgt - tEntry) / tR
+            _done := true
+    else
+        if high >= tSL
+            nSL  := nSL + 1
+            sumR := sumR - 1.0
+            _done := true
+        else if low <= tTgt
+            nTP  := nTP + 1
+            sumR := sumR + (tEntry - tTgt) / tR
+            _done := true
+    if _done
+        tDir := 0
+
+if useTracker and tDir == 0 and (sellOK or buyOK)
+    _d   = buyOK ? 1 : -1
+    _sl  = _d == 1 ? bStop : sStop
+    _tg  = _d == 1 ? bTgt  : sTgt
+    _r   = math.abs(close - _sl)
+    // SL ulti taraf ho ya sifar ho to ginti kharab ho jaati — aisi trade chhor dete hain
+    _ok  = _r > 0 and (_d == 1 ? (_sl < close and _tg > close) : (_sl > close and _tg < close))
+    if _ok
+        tDir   := _d
+        tEntry := close
+        tSL    := _sl
+        tTgt   := _tg
+        tR     := _r
+        nT     := nT + 1
+        if na(firstT)
+            firstT := time
+
+trkClosed = nTP + nSL
+trkWin    = trkClosed > 0 ? 100.0 * nTP / trkClosed : na
+trkAvgR   = trkClosed > 0 ? sumR / trkClosed : na
+trkDays   = na(firstT) ? na : (time - firstT) / 86400000.0
+
 // ---------------------------------------------------------------- panel
 var table pTbl = na
 if showIdea and barstate.islast
     if na(pTbl)
-        pTbl := table.new(f_pos(panelPos), 1, 4, border_width = 1)
+        pTbl := table.new(f_pos(panelPos), 1, 5, border_width = 1)
     else
-        table.clear(pTbl, 0, 0, 0, 3)
+        table.clear(pTbl, 0, 0, 0, 4)
     _bg  = color.new(color.white, panelTrsp)
     _bg2 = color.new(color.white, math.max(panelTrsp - 8, 0))
     // Header khud bata deta hai ke ribbon kitna WAQT naap rahi hai — yehi cheez
@@ -525,6 +599,26 @@ if showIdea and barstate.islast
     // beech mein khaali line reh jaati thi.
     _whyTxt = str.endswith(_why, "\n") ? _why : _why + "\n"
     table.cell(pTbl, 0, 3, _whyTxt + (_brk == "" ? "Koi level nahi bana abhi" : _brk), bgcolor = _bg, text_color = color.black, text_size = PF, text_halign = text.align_left)
+
+    // Ginti wali row — raye ke neeche uska record
+    if useTracker
+        _trk = ""
+        _tCl = color.black
+        if nT == 0
+            _trk := "GINTI: is chart par abhi tak koi setup nahi bana"
+            _tCl := color.new(color.gray, 0)
+        else
+            _trk := "GINTI (" + timeframe.period + "):  " + str.tostring(nT) + " setups   " + str.tostring(nTP) + " TP / " + str.tostring(nSL) + " SL"
+            _trk := _trk + (na(trkWin) ? "" : "   " + str.tostring(int(math.round(trkWin))) + "%")
+            _trk := _trk + (na(trkAvgR) ? "" : "   ausat " + (trkAvgR >= 0 ? "+" : "") + str.tostring(trkAvgR, "#.##") + "R")
+            _trk := _trk + (na(trkDays) ? "" : "   " + str.tostring(int(math.round(trkDays))) + " din ka record")
+            if tDir != 0
+                _trk := _trk + "   (1 abhi khuli hai)"
+            _tCl := na(trkAvgR) ? color.black : trkAvgR > 0 ? color.new(colSup, 0) : color.new(colRes, 0)
+            // Chhoti ginti par bharosa nahi karna chahiye — ye khud bata dega.
+            if trkClosed < trkMinN
+                _trk := _trk + "\n! Sirf " + str.tostring(trkClosed) + " mukammal trades — sample chhota hai, is number par faisla na karein"
+        table.cell(pTbl, 0, 4, _trk, bgcolor = _bg, text_color = _tCl, text_size = PF, text_halign = text.align_left)
 
 // ---------------------------------------------------------------- nearest R/S labels
 var label labR = na
