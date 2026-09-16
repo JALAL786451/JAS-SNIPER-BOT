@@ -71,9 +71,14 @@ lvlTFmode  = input.string("1D", "Levels kis timeframe se banein", options = ["Ch
 // mein 15 ka matlab 15 candles tha, magar 1D par wohi 15 = 15 DIN ban jata —
 // yani aaj ki choti 15 din baad lakeer banti. Bare TF ke levels ke liye alag,
 // chhoti setting chahiye, warna levels mahina bhar peechay reh jaate hain.
-pvLenTF    = input.int(5, "Bare TF ke levels: Pivot L/R", minval = 1, maxval = 20, group = gLvl)
-maxLevels  = input.int(16, "Keep last N levels", minval = 2, maxval = 60, group = gLvl)
-breakATR   = input.float(0.10, "Break needs close beyond by (x ATR)", minval = 0, step = 0.05, group = gLvl)
+pvLenTF    = input.int(3, "Bare TF ke levels: Pivot L/R", minval = 1, maxval = 20, group = gLvl)
+// Zone ki chaurai: itne faasle ke andar wale swings ek hi zone maane jaate hain.
+zoneW      = input.float(0.6, "Zone ki chaurai (x ATR)", minval = 0.1, step = 0.1, group = gLvl)
+// Yehi asal chhanni hai: ek baar ruk jana ittefaq ho sakta hai, do ya teen baar
+// ruk jana rukawat hoti hai. Kam baar wale zone memory mein rehte hain (taake
+// aage mil kar mazboot ban sakein) magar chart par nazar nahi aate.
+minTouch   = input.int(2, "Zone tab dikhao jab itni baar ruka ho", minval = 1, maxval = 10, group = gLvl)
+maxLevels  = input.int(24, "Kitne zones yaad rakhein", minval = 4, maxval = 60, group = gLvl)
 showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
 hideFarATR = input.float(15, "Itne ATR se door wale levels chhupao (0 = sab dikhao)", minval = 0, step = 1, group = gLvl)
 colRes     = input.color(color.new(#d50000, 0), "Resistance (upar)", group = gLvl)
@@ -247,97 +252,81 @@ fill(p7, p8,  color = f_fillCol(m7, m8,  6), title = "Band 7")
 fill(p8, p9,  color = f_fillCol(m8, m9,  7), title = "Band 8")
 fill(p9, p10, color = f_fillCol(m9, m10, 8), title = "Band 9")
 
-// ---------------------------------------------------------------- levels
-var line[]  lvLine  = array.new_line()
-var float[] lvPrice = array.new_float()
-var bool[]  lvIsRes = array.new_bool()
-var int[]   lvTouch = array.new_int()
+// ---------------------------------------------------------------- ZONES (S/R)
+// Pehle har level ek AKELE pivot se banta tha — aur ek akela pivot ittefaq bhi
+// ho sakta hai. Asal rukawat wahan hoti hai jahan price BAAR BAAR ruka ho, aur
+// wo ek ILAQA hota hai, patli lakeer nahi.
+//
+// Ab har swing jama hota hai. Jo swing kisi mojooda zone ke qareeb ho, usi mein
+// shaamil ho jata hai — zone thora chowra hota hai aur uska counter barhta hai.
+// Jo door ho, uska naya zone ban jata hai. Chart par sirf wo zone aate hain jo
+// kam az kam "minTouch" baar ruk chuke hon.
+var box[]   zBox = array.new_box()
+var float[] zLo  = array.new_float()
+var float[] zHi  = array.new_float()
+var int[]   zCnt = array.new_int()
+var int[]   zAt  = array.new_int()
 
-f_lvKill(_i) =>
-    line.delete(array.get(lvLine, _i))
-    array.remove(lvLine,  _i)
-    array.remove(lvPrice, _i)
-    array.remove(lvIsRes, _i)
-    array.remove(lvTouch, _i)
+f_zKill(_i) =>
+    box.delete(array.get(zBox, _i))
+    array.remove(zBox, _i)
+    array.remove(zLo,  _i)
+    array.remove(zHi,  _i)
+    array.remove(zCnt, _i)
+    array.remove(zAt,  _i)
 
-// Bilkul qareeb do levels banane ka koi faida nahi — chart bhar jata hai aur
-// "nearest" ka matlab khatam ho jata hai.
-f_lvDup(_price) =>
-    bool _dup = false
-    if array.size(lvPrice) > 0
-        for i = 0 to array.size(lvPrice) - 1
-            if math.abs(array.get(lvPrice, i) - _price) <= atrLvl * 0.15
-                _dup := true
+// Jagah khatam ho to sab se KAMZOR zone jaata hai, sab se purana nahi. Purana
+// magar baar baar ruka hua zone naye se zyada ahem hota hai.
+f_zWeakest() =>
+    int _w = 0
+    if array.size(zCnt) > 1
+        for i = 1 to array.size(zCnt) - 1
+            _ci = array.get(zCnt, i)
+            _cw = array.get(zCnt, _w)
+            if _ci < _cw
+                _w := i
+            else if _ci == _cw and array.get(zAt, i) < array.get(zAt, _w)
+                _w := i
+    _w
+
+f_zAdd(_p) =>
+    _w = atrLvl * zoneW
+    int _hit = -1
+    if array.size(zLo) > 0
+        for i = 0 to array.size(zLo) - 1
+            if math.abs(_p - (array.get(zLo, i) + array.get(zHi, i)) / 2) <= _w
+                _hit := i
                 break
-    _dup
+    if _hit >= 0
+        array.set(zLo,  _hit, math.min(array.get(zLo, _hit), _p))
+        array.set(zHi,  _hit, math.max(array.get(zHi, _hit), _p))
+        array.set(zCnt, _hit, array.get(zCnt, _hit) + 1)
+        array.set(zAt,  _hit, bar_index)
+    else
+        array.push(zBox, box.new(bar_index, _p, bar_index + 1, _p, xloc = xloc.bar_index, bgcolor = color.new(color.gray, 100), border_color = color.new(color.gray, 100)))
+        array.push(zLo,  _p)
+        array.push(zHi,  _p)
+        array.push(zCnt, 1)
+        array.push(zAt,  bar_index)
 
-f_lvAdd(_price, _back) =>
-    _x1  = bar_index - _back
-    _res = _price > close
-    _l   = line.new(_x1, _price, bar_index + 1, _price, xloc = xloc.bar_index, color = _res ? colRes : colSup, width = lvlWidth)
-    array.push(lvLine,  _l)
-    array.push(lvPrice, _price)
-    array.push(lvIsRes, _res)
-    // Jo swing is level ko banata hai wo khud pehla test hai. Counter 0 se
-    // shuru karne par har naya level "x0" dikhata tha, jo ghalat tha.
-    array.push(lvTouch, 1)
-
+// Swings ka source: chart ke apne pivots, ya kisi bare TF ke. Doosre TF se
+// mangwate waqt gaps_on zaroori hai — is se qeemat sirf US bar par aati hai jab
+// wahan naya pivot bana. gaps_off hota to wohi qeemat har bar dohrayi jaati aur
+// ek hi swing baar baar zone mein jama hota rehta.
 ph = ta.pivothigh(high, pvLen, pvLen)
 pl = ta.pivotlow (low,  pvLen, pvLen)
-
-// Doosre timeframe se pivot mangwate waqt gaps_on zaroori hai: is se qeemat
-// sirf US bar par aati hai jab wahan naya pivot bana. gaps_off hota to wohi
-// purani qeemat har bar dohrayi jaati aur ek hi level baar baar ban jaata.
 phTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivothigh(high, pvLenTF, pvLenTF), barmerge.gaps_on, barmerge.lookahead_off)
 plTF = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, ta.pivotlow (low,  pvLenTF, pvLenTF), barmerge.gaps_on, barmerge.lookahead_off)
-
-// Touch ab us TF ki candle se gine jaate hain jis se level bana. Chart ki
-// candle se ginte the, is liye ek hi level 1H par "x9" aur 1m par "x52" dikhta
-// tha — ek hi level, do alag taqatein, sirf is liye ke kaunsa chart khula hai.
-// Ab matlab saaf hai: kitni DAILY candles ne is qeemat ko chhua.
-htfHi = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, high[1], barmerge.gaps_off, barmerge.lookahead_off)
-htfLo = lvlOwn ? na : request.security(syminfo.tickerid, lvlTF, low[1],  barmerge.gaps_off, barmerge.lookahead_off)
-htfNew = lvlOwn ? false : ta.change(time(lvlTF)) != 0
-
 newPh = lvlOwn ? ph : phTF
 newPl = lvlOwn ? pl : plTF
-// Apne chart ka pivot pvLen bars peechay bana tha; doosre TF wala abhi pohcha
-// hai, is liye uski lakeer yahin se shuru hoti hai.
-lvlBack = lvlOwn ? pvLen : 0
 
-if showLevels and not na(newPh) and not f_lvDup(newPh)
-    f_lvAdd(newPh, lvlBack)
-if showLevels and not na(newPl) and not f_lvDup(newPl)
-    f_lvAdd(newPl, lvlBack)
+if showLevels and not na(newPh)
+    f_zAdd(newPh)
+if showLevels and not na(newPl)
+    f_zAdd(newPl)
 
-// Har bar: lakeer aage barhao, touch ginno, aur role (R/S) price ki position se
-// tay karo. Break hone par lakeer marti nahi — uska rang palat jaata hai, kyunke
-// tooti hui resistance agli baar support ka kaam karti hai.
-if array.size(lvLine) > 0
-    for i = array.size(lvLine) - 1 to 0
-        _ln  = array.get(lvLine, i)
-        _px  = array.get(lvPrice, i)
-        _was = array.get(lvIsRes, i)
-        line.set_x2(_ln, bar_index + 1)
-        if lvlOwn
-            _touching     = high >= _px and low <= _px
-            _touchingPrev = high[1] >= _px and low[1] <= _px
-            if _touching and not _touchingPrev
-                array.set(lvTouch, i, array.get(lvTouch, i) + 1)
-        else if htfNew and not na(htfHi) and htfHi >= _px and htfLo <= _px
-            array.set(lvTouch, i, array.get(lvTouch, i) + 1)
-        _now = _was
-        if _was and close > _px + atrLvl * breakATR
-            _now := false
-        if not _was and close < _px - atrLvl * breakATR
-            _now := true
-        if _now != _was
-            array.set(lvIsRes, i, _now)
-        // Rang yahan nahi lagta — pehle ye maloom hona chahiye ke abhi konsa
-        // level qareeb-tareen hai, aur wo hisab neeche hota hai.
-
-while array.size(lvLine) > maxLevels
-    f_lvKill(0)
+while array.size(zBox) > maxLevels
+    f_zKill(f_zWeakest())
 
 // ---------------------------------------------------------------- FVG
 var box[] fvgBox = array.new_box()
@@ -414,20 +403,25 @@ nearRt := 0
 nearSt := 0
 nearRi := -1
 nearSi := -1
-if array.size(lvPrice) > 0
-    for i = 0 to array.size(lvPrice) - 1
-        _px = array.get(lvPrice, i)
-        _tc = array.get(lvTouch, i)
-        if _px > close
-            if na(nearR) or _px < nearR
-                nearR  := _px
-                nearRt := _tc
-                nearRi := i
-        if _px < close
-            if na(nearS) or _px > nearS
-                nearS  := _px
-                nearSt := _tc
-                nearSi := i
+// Zone ka wo kinara jis se pehla muqabla hoga: upar wale zone ka NEECHE wala
+// kinara, neeche wale zone ka UPAR wala. Jo zone price ko apne andar liye hue
+// hai wo kisi taraf nahi ginata — us waqt hum zone ke ANDAR khare hain.
+if array.size(zLo) > 0
+    for i = 0 to array.size(zLo) - 1
+        if array.get(zCnt, i) >= minTouch
+            _lo = array.get(zLo, i)
+            _hi = array.get(zHi, i)
+            _tc = array.get(zCnt, i)
+            if _lo > close
+                if na(nearR) or _lo < nearR
+                    nearR  := _lo
+                    nearRt := _tc
+                    nearRi := i
+            if _hi < close
+                if na(nearS) or _hi > nearS
+                    nearS  := _hi
+                    nearSt := _tc
+                    nearSi := i
 
 // ============================================================================
 //  FAISLA LAKEER — ek hi lakeer, jo palat jaati hai
@@ -487,34 +481,53 @@ plotshape(showFlip and fFlip and fMode == -1 ? high : na, title = "Faisla: SELL"
 alertcondition(fFlip and fMode == 1,  "Faisla BUY",  "Faisla palat gaya — ab BUY ka pressure")
 alertcondition(fFlip and fMode == -1, "Faisla SELL", "Faisla palat gaya — ab SELL ka pressure")
 
-// Ab rang lagta hai, kyunke ab pata hai ke konsa level abhi ahem hai. Do
-// lakeerein poore rang aur poori motai mein, baqi halki aur patli, aur bohot
-// door wali bilkul ghayab.
-if array.size(lvLine) > 0
-    for i = 0 to array.size(lvLine) - 1
-        _ln  = array.get(lvLine, i)
-        _px  = array.get(lvPrice, i)
-        _isR = array.get(lvIsRes, i)
-        _far = hideFarATR > 0 and math.abs(_px - close) > atrLvl * hideFarATR
+// Ab rang lagta hai, kyunke ab pata hai ke konsa zone abhi ahem hai. Do zone
+// poore rang mein, baqi halke, kamzor aur bohot door wale bilkul ghayab.
+// Sirf aakhri bar par — zone ki shakl aur rang wahi maani rakhte hain jo abhi
+// nazar aa rahe hain, aur har bar 24 boxes ko chhoona faaltu bojh hai.
+if array.size(zBox) > 0 and barstate.islast
+    for i = 0 to array.size(zBox) - 1
+        _b   = array.get(zBox, i)
+        _lo  = array.get(zLo, i)
+        _hi  = array.get(zHi, i)
+        _cnt = array.get(zCnt, i)
+        _mid = (_lo + _hi) / 2
+        // Ek hi qeemat par bane zone ki chaurai sifar hoti hai — usay nazar
+        // aane ke liye thora pad chahiye.
+        _pad = math.max((atrLvl * 0.12 - (_hi - _lo)) / 2, 0)
+        _far = hideFarATR > 0 and math.abs(_mid - close) > atrLvl * hideFarATR
+        _show = _cnt >= minTouch and not _far
+        _isR = _mid > close
         _act = i == nearRi or i == nearSi
         _dim = dimOthers and not _act
-        line.set_color(_ln, _far ? color.new(color.gray, 100) : _dim ? colDim : (_isR ? colRes : colSup))
-        line.set_width(_ln, _dim ? 1 : lvlWidth)
+        _col = _dim ? colDim : (_isR ? colRes : colSup)
+        box.set_top(_b, _hi + _pad)
+        box.set_bottom(_b, _lo - _pad)
+        box.set_right(_b, bar_index + 1)
+        box.set_bgcolor(_b, _show ? color.new(_col, _dim ? 93 : 82) : color.new(color.gray, 100))
+        box.set_border_color(_b, _show ? color.new(_col, _dim ? 80 : 35) : color.new(color.gray, 100))
+        box.set_border_width(_b, _dim ? 1 : lvlWidth)
+        box.set_text(_b, _show and _act ? str.tostring(_cnt) + " baar ruka" : "")
+        box.set_text_color(_b, color.new(_isR ? colRes : colSup, 0))
+        box.set_text_size(_b, PFL)
+        box.set_text_halign(_b, text.align_left)
 
 // Doosra level, nearest ke bhi aage — "agar ye toot gaya to aage kya" ke liye.
 var float farR = na
 var float farS = na
 farR := na
 farS := na
-if array.size(lvPrice) > 0
-    for i = 0 to array.size(lvPrice) - 1
-        _px = array.get(lvPrice, i)
-        if not na(nearR) and _px > nearR
-            if na(farR) or _px < farR
-                farR := _px
-        if not na(nearS) and _px < nearS
-            if na(farS) or _px > farS
-                farS := _px
+if array.size(zLo) > 0
+    for i = 0 to array.size(zLo) - 1
+        if array.get(zCnt, i) >= minTouch
+            _lo = array.get(zLo, i)
+            _hi = array.get(zHi, i)
+            if not na(nearR) and _lo > nearR
+                if na(farR) or _lo < farR
+                    farR := _lo
+            if not na(nearS) and _hi < nearS
+                if na(farS) or _hi > farS
+                    farS := _hi
 
 distR = na(nearR) ? na : nearR - close
 distS = na(nearS) ? na : close - nearS
@@ -726,7 +739,12 @@ if showIdea and not saadaMode and barstate.islast
         _brk := _brk + "Agar S " + f_px(nearS) + " toota → " + (na(farS) ? "record mein neeche pivot nahi, ATR andaza " + _atrDn : "agla " + f_px(farS))
     if not na(nearR)
         _brk := (_brk == "" ? "" : _brk + "     |     ") + "Agar R " + f_px(nearR) + " toota → " + (na(farR) ? "record mein upar pivot nahi, ATR andaza " + _atrUp : "agla " + f_px(farR))
-    _brk := _brk + "     |     Levels: " + str.tostring(array.size(lvPrice)) + "/" + str.tostring(maxLevels)
+    // Sirf wo zone ginte hain jo chart par nazar bhi aate hain
+    int _zShown = 0
+    if array.size(zCnt) > 0
+        for i = 0 to array.size(zCnt) - 1
+            _zShown := _zShown + (array.get(zCnt, i) >= minTouch ? 1 : 0)
+    _brk := _brk + "     |     Zones: " + str.tostring(_zShown) + " (yaad " + str.tostring(array.size(zCnt)) + "/" + str.tostring(maxLevels) + ")"
 
     // wajah — kyun ban rahi hai, ya kyun nahi ban rahi
     _why = ""
@@ -787,9 +805,9 @@ if showTouch and barstate.islast
     labR := na
     labS := na
     if not na(nearR)
-        labR := label.new(bar_index + 2, nearR, "R " + f_px(nearR) + "   x" + str.tostring(nearRt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colRes, 20), textcolor = color.white, size = PFL)
+        labR := label.new(bar_index + 2, nearR, "SELL zone shuru  " + f_px(nearR) + "   (" + str.tostring(nearRt) + " baar ruka)", xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colRes, 20), textcolor = color.white, size = PFL)
     if not na(nearS)
-        labS := label.new(bar_index + 2, nearS, "S " + f_px(nearS) + "   x" + str.tostring(nearSt), xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colSup, 20), textcolor = color.white, size = PFL)
+        labS := label.new(bar_index + 2, nearS, "BUY zone shuru  " + f_px(nearS) + "   (" + str.tostring(nearSt) + " baar ruka)", xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = color.new(colSup, 20), textcolor = color.white, size = PFL)
 
 // ============================================================================
 //  LEGEND — har timeframe ek nazar mein
