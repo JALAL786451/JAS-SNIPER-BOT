@@ -71,6 +71,11 @@ hideFarATR = input.float(15, "Itne ATR se door wale levels chhupao (0 = sab dikh
 colRes     = input.color(color.new(#d50000, 0), "Resistance (upar)", group = gLvl)
 colSup     = input.color(color.new(#00c853, 0), "Support (neeche)",  group = gLvl)
 lvlWidth   = input.int(2, "Line width", minval = 1, maxval = 5, group = gLvl)
+// Sola lakeerein ek jaisi rangeen hon to nazar bhatakti hai. Sirf wo do jo
+// abhi kaam ki hain — price ke foran upar aur foran neeche wali — poore rang
+// mein, baqi halki grey. Broker apps bhi kuch aisa hi karte hain.
+dimOthers  = input.bool(true, "Sirf qareebi R aur S rangeen, baqi grey", group = gLvl)
+colDim     = input.color(color.new(#787b86, 35), "Grey (baqi levels)", group = gLvl)
 
 gFvg = "3 · FVG (khaali jagah)"
 showFVG    = input.bool(true, "Show fair value gaps", group = gFvg)
@@ -309,8 +314,8 @@ if array.size(lvLine) > 0
             _now := true
         if _now != _was
             array.set(lvIsRes, i, _now)
-        _far = hideFarATR > 0 and math.abs(_px - close) > atrLvl * hideFarATR
-        line.set_color(_ln, _far ? color.new(color.gray, 100) : (_now ? colRes : colSup))
+        // Rang yahan nahi lagta — pehle ye maloom hona chahiye ke abhi konsa
+        // level qareeb-tareen hai, aur wo hisab neeche hota hai.
 
 while array.size(lvLine) > maxLevels
     f_lvKill(0)
@@ -382,10 +387,14 @@ var float nearR = na
 var float nearS = na
 var int   nearRt = 0
 var int   nearSt = 0
+var int   nearRi = -1
+var int   nearSi = -1
 nearR  := na
 nearS  := na
 nearRt := 0
 nearSt := 0
+nearRi := -1
+nearSi := -1
 if array.size(lvPrice) > 0
     for i = 0 to array.size(lvPrice) - 1
         _px = array.get(lvPrice, i)
@@ -394,10 +403,26 @@ if array.size(lvPrice) > 0
             if na(nearR) or _px < nearR
                 nearR  := _px
                 nearRt := _tc
+                nearRi := i
         if _px < close
             if na(nearS) or _px > nearS
                 nearS  := _px
                 nearSt := _tc
+                nearSi := i
+
+// Ab rang lagta hai, kyunke ab pata hai ke konsa level abhi ahem hai. Do
+// lakeerein poore rang aur poori motai mein, baqi halki aur patli, aur bohot
+// door wali bilkul ghayab.
+if array.size(lvLine) > 0
+    for i = 0 to array.size(lvLine) - 1
+        _ln  = array.get(lvLine, i)
+        _px  = array.get(lvPrice, i)
+        _isR = array.get(lvIsRes, i)
+        _far = hideFarATR > 0 and math.abs(_px - close) > atrLvl * hideFarATR
+        _act = i == nearRi or i == nearSi
+        _dim = dimOthers and not _act
+        line.set_color(_ln, _far ? color.new(color.gray, 100) : _dim ? colDim : (_isR ? colRes : colSup))
+        line.set_width(_ln, _dim ? 1 : lvlWidth)
 
 // Doosra level, nearest ke bhi aage — "agar ye toot gaya to aage kya" ke liye.
 var float farR = na
