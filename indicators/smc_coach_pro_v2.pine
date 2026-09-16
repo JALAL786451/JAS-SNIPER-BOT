@@ -192,6 +192,10 @@ panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=
 panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6, group=gPanel)
 panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"], group=gPanel)
 showDebug     = input.bool(false, "DEBUG heartbeat", group=gPanel)
+// Purane Buy/Sell aur ST ke nishaan chart par jama hote rehte the — kai hafton
+// ke signals ek sath nazar aate the jab ke kaam ka sirf aakhri wala hota hai.
+// Ab sirf mojooda nishaan rehta hai; naya aate hi purana mit jata hai.
+showOnlyLast  = input.bool(true, "Sirf mojooda signal dikhao (purane mit jayein)", group=gPanel)
 
 // ============================================================================
 //  HELPERS / COLORS
@@ -239,8 +243,14 @@ stSellSig = enableST and stTrend == -1 and stTrend[1] == 1
 
 plot(enableST and stShowPlots and stTrend == 1 ? stUp : na, title="ST Up",  style=plot.style_linebr, linewidth=2, color=color.new(color.green, 0))
 plot(enableST and stShowPlots and stTrend == -1 ? stDn : na, title="ST Dn", style=plot.style_linebr, linewidth=2, color=color.new(color.red, 0))
-plotshape((enableST and stShowSignals) ? (stBuySig ? stUp : na) : na,  title="ST Buy",  text="ST",  style=shape.labelup,   location=location.absolute, color=color.new(color.green,0), textcolor=color.white, size=size.tiny)
-plotshape((enableST and stShowSignals) ? (stSellSig ? stDn : na) : na, title="ST Sell", text="ST", style=shape.labeldown, location=location.absolute, color=color.new(color.red,0),   textcolor=color.white, size=size.tiny)
+plotshape((enableST and stShowSignals and not showOnlyLast) ? (stBuySig ? stUp : na) : na,  title="ST Buy",  text="ST",  style=shape.labelup,   location=location.absolute, color=color.new(color.green,0), textcolor=color.white, size=size.tiny)
+plotshape((enableST and stShowSignals and not showOnlyLast) ? (stSellSig ? stDn : na) : na, title="ST Sell", text="ST", style=shape.labeldown, location=location.absolute, color=color.new(color.red,0),   textcolor=color.white, size=size.tiny)
+
+// Sirf aakhri ST palat — naya aate hi purana mit jata hai
+var label lbST = na
+if enableST and stShowSignals and showOnlyLast and (stBuySig or stSellSig)
+    label.delete(lbST)
+    lbST := label.new(bar_index, stBuySig ? stUp : stDn, "ST", xloc=xloc.bar_index, yloc=yloc.price, style=stBuySig ? label.style_label_up : label.style_label_down, color=color.new(stBuySig ? color.green : color.red, 0), textcolor=color.white, size=size.tiny)
 
 // The legend's optional extra rows used to run their own copy of this logic
 // (hard-coded pivot 5/5, a high>high[1] "sweep", a trend that always demanded
@@ -682,8 +692,14 @@ if sigBuyTotal or sigSellTotal
     if sigSellTotal and zoneSellRaw and f_zoneValid(resIdx)
         array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
 
-plotshape(sigBuyTotal,  title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
-plotshape(sigSellTotal, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+plotshape(sigBuyTotal  and not showOnlyLast, title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
+plotshape(sigSellTotal and not showOnlyLast, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+
+// Sirf aakhri signal ka nishaan
+var label lbSig = na
+if (sigBuyTotal or sigSellTotal) and showOnlyLast
+    label.delete(lbSig)
+    lbSig := label.new(bar_index, sigBuyTotal ? low : high, sigBuyTotal ? "BUY" : "SELL", xloc=xloc.bar_index, yloc=yloc.price, style=sigBuyTotal ? label.style_label_up : label.style_label_down, color=color.new(sigBuyTotal ? color.teal : color.purple, 0), textcolor=color.white, size=size.small)
 
 // ============================================================================
 //  VIRTUAL TRADE TRACKER (live hit-rate / expectancy)
@@ -768,6 +784,22 @@ if tDir != 0
                 _closed := true
     if _closed
         tDir := 0
+        // Trade khatam — uski Entry/SL/TP lines bhi chali jayein. Warna wo
+        // wahin padi rehti thin aur 170 candle purani plan chart par zinda
+        // lagti thi.
+        if showOnlyLast
+            line.delete(lnE)
+            line.delete(lnS)
+            line.delete(lnT1)
+            line.delete(lnT2)
+            line.delete(lnT3)
+            label.delete(lbPlan)
+            lnE   := na
+            lnS   := na
+            lnT1  := na
+            lnT2  := na
+            lnT3  := na
+            lbPlan := na
 
 // --- draw the Entry / SL / TP plan for EVERY signal
 // (this used to live inside the tracker's "open a trade" block, so a signal
