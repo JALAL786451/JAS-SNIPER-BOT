@@ -92,6 +92,9 @@ minTouch   = input.int(1, "Zone tab dikhao jab itni baar ruka ho", minval = 1, m
 // de ke ab kya chal raha hai.
 zonePad    = input.float(0.15, "Zone ki motai (x ATR)", minval = 0.02, step = 0.01, group = gLvl)
 zoneKill   = input.bool(true, "Zone toot-ne par khatam kar do", group = gLvl)
+// Zone sirf tab toota maana jaye jab price us se SAAF paar nikal jaye. Bagair
+// is ke ek tick ka poke bhi zone maar deta tha.
+zoneBreak  = input.float(0.10, "Toota maanne ke liye itna paar jana zaroori (x ATR)", minval = 0, step = 0.05, group = gLvl)
 zoneMaxAge = input.int(300, "Itni candles purana zone khatam", minval = 20, group = gLvl)
 maxLevels  = input.int(10, "Kitne zones yaad rakhein", minval = 2, maxval = 60, group = gLvl)
 showTouch  = input.bool(true, "Label nearest R / S with touch count", group = gLvl)
@@ -281,6 +284,11 @@ var float[] zLo  = array.new_float()
 var float[] zHi  = array.new_float()
 var int[]   zCnt = array.new_int()
 var int[]   zAt  = array.new_int()
+// Zone ka rukh (SELL zone ya BUY zone) uski PAIDAISH par tay hota hai aur phir
+// badalta nahi — zone toot jaye to wo marta hai, rang nahi badalta. Pehle ye
+// har tick par naye sire se tay hota tha (mid > close), is liye jab price zone
+// ke kinare par hilti to wohi zone ek lamhe BUY aur agle lamhe SELL ban jata.
+var bool[]  zIsR = array.new_bool()
 
 f_zKill(_i) =>
     box.delete(array.get(zBox, _i))
@@ -289,6 +297,7 @@ f_zKill(_i) =>
     array.remove(zHi,  _i)
     array.remove(zCnt, _i)
     array.remove(zAt,  _i)
+    array.remove(zIsR, _i)
 
 // Jagah khatam ho to sab se KAMZOR zone jaata hai, sab se purana nahi. Purana
 // magar baar baar ruka hua zone naye se zyada ahem hota hai.
@@ -325,6 +334,7 @@ f_zAdd(_p, _back) =>
         array.push(zHi,  _p)
         array.push(zCnt, 1)
         array.push(zAt,  bar_index)
+        array.push(zIsR, _p > close)
 
 // Swings ka source: chart ke apne pivots, ya kisi bare TF ke. Doosre TF se
 // mangwate waqt gaps_on zaroori hai — is se qeemat sirf US bar par aati hai jab
@@ -347,13 +357,17 @@ if showLevels and not na(newPl)
 
 // Har bar: jo zone toot gaya ya bohot purana ho gaya, wo khatam. Yehi cheez
 // chart ko saaf rakhti hai — warna har purana zone hamesha ke liye pada rehta.
-if array.size(zBox) > 0
+// Faisla sirf CANDLE BAND HONE par — warna chalti candle mein price zone ke
+// aar-paar hilti rehti hai aur zone har lamhe marta aur jeeta rehta hai.
+if array.size(zBox) > 0 and barstate.isconfirmed
     for i = array.size(zBox) - 1 to 0
         _b    = array.get(zBox, i)
         _mid  = (array.get(zLo, i) + array.get(zHi, i)) / 2
         _pad  = atrLvl * zonePad
-        _isSup = _mid < close
-        _broke = zoneKill and (_isSup ? close < _mid - _pad : close > _mid + _pad)
+        _mrg  = atrLvl * zoneBreak
+        // Rukh yaad-dasht se aata hai, close se nahi
+        _isR  = array.get(zIsR, i)
+        _broke = zoneKill and (_isR ? close > _mid + _pad + _mrg : close < _mid - _pad - _mrg)
         _old   = (bar_index - box.get_left(_b)) > zoneMaxAge
         if _broke or _old
             f_zKill(i)
@@ -442,17 +456,18 @@ nearSi := -1
 if array.size(zLo) > 0
     for i = 0 to array.size(zLo) - 1
         if array.get(zCnt, i) >= minTouch
-            _lo = array.get(zLo, i)
-            _hi = array.get(zHi, i)
-            _tc = array.get(zCnt, i)
-            if _lo > close
-                if na(nearR) or _lo < nearR
-                    nearR  := _lo
+            _mid = (array.get(zLo, i) + array.get(zHi, i)) / 2
+            _pd  = atrLvl * zonePad
+            _tc  = array.get(zCnt, i)
+            // Zone ka wo kinara jahan pehla muqabla hoga, aur rukh yaad-dasht se
+            if array.get(zIsR, i)
+                if na(nearR) or (_mid - _pd) < nearR
+                    nearR  := _mid - _pd
                     nearRt := _tc
                     nearRi := i
-            if _hi < close
-                if na(nearS) or _hi > nearS
-                    nearS  := _hi
+            else
+                if na(nearS) or (_mid + _pd) > nearS
+                    nearS  := _mid + _pd
                     nearSt := _tc
                     nearSi := i
 
@@ -541,7 +556,7 @@ if array.size(zBox) > 0 and barstate.islast
         _pad = atrLvl * zonePad
         _far = hideFarATR > 0 and math.abs(_mid - close) > atrLvl * hideFarATR
         _show = _cnt >= minTouch and not _far
-        _isR = _mid > close
+        _isR = array.get(zIsR, i)
         _act = i == nearRi or i == nearSi
         _dim = dimOthers and not _act
         _col = _dim ? colDim : (_isR ? colRes : colSup)
@@ -564,14 +579,14 @@ farS := na
 if array.size(zLo) > 0
     for i = 0 to array.size(zLo) - 1
         if array.get(zCnt, i) >= minTouch
-            _lo = array.get(zLo, i)
-            _hi = array.get(zHi, i)
-            if not na(nearR) and _lo > nearR
-                if na(farR) or _lo < farR
-                    farR := _lo
-            if not na(nearS) and _hi < nearS
-                if na(farS) or _hi > farS
-                    farS := _hi
+            _md = (array.get(zLo, i) + array.get(zHi, i)) / 2
+            _pd2 = atrLvl * zonePad
+            if array.get(zIsR, i) and not na(nearR) and (_md - _pd2) > nearR
+                if na(farR) or (_md - _pd2) < farR
+                    farR := _md - _pd2
+            if not array.get(zIsR, i) and not na(nearS) and (_md + _pd2) < nearS
+                if na(farS) or (_md + _pd2) > farS
+                    farS := _md + _pd2
 
 distR = na(nearR) ? na : nearR - close
 distS = na(nearS) ? na : close - nearS
