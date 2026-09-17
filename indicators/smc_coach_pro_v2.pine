@@ -74,6 +74,9 @@ zoneMaxAge    = input.int(300, "Kill zone after N bars", minval=20, group=gStruc
 zoneToWick    = input.bool(true, "Zone ko wick tak le jao (band candle ko chhue)", group=gStruct)
 zoneKeepExtr  = input.bool(true, "Sab se ooncha/neecha zone umar/touch se na maro", group=gStruct)
 zoneFarATR    = input.float(8.0, "Zone itni ATR se door ho to hata do (0 = kabhi nahi)", minval=0, step=0.5, group=gStruct)
+zoneShowLine  = input.bool(false, "Zone ke beech wali lakeer dikhao (dayein tak jati hai)", group=gStruct)
+zoneShowBrdr  = input.bool(false, "Zone ke border dikhao", group=gStruct)
+zoneFade      = input.int(88, "Zone ki shade kitni halki (zyada = halki)", minval=70, maxval=97, group=gStruct)
 freshMaxTouch = input.int(0, "\"Fresh\" zone = touches <= N", minval=0, maxval=5, group=gStruct)
 useCloseBreak = input.bool(true, "BOS/CHOCH needs CLOSE beyond swing", group=gStruct)
 showSR        = input.bool(true,  "Draw S/R zones", group=gStruct)
@@ -378,9 +381,12 @@ newZone(_idx,_price,_isSupport)=>
     _cSup = pivSwapCol ? colSRBear : colSRBull
     _cRes = pivSwapCol ? colSRBull : colSRBear
     col  = _isSupport ? _cSup : _cRes
-    fill = showSR ? color.new(col, 86) : color.new(color.gray, 100)
-    bcol = showSR ? color.new(col, 70) : color.new(col, 100)
-    lcol = showSR ? col : color.new(col, 100)
+    // Border aur beech wali lakeer default band hain. Un ki wajah se chart par
+    // "digital signal" jaisi seerhiyan ban jati thin aur shor lagta tha. Ab
+    // sirf ek narm si patti rehti hai.
+    fill = showSR ? color.new(col, zoneFade) : color.new(color.gray, 100)
+    bcol = showSR and zoneShowBrdr ? color.new(col, 70) : color.new(col, 100)
+    lcol = showSR and zoneShowLine ? col : color.new(col, 100)
     b = box.new(_idx, top, bar_index, bot, xloc=xloc.bar_index, bgcolor=fill, border_color=bcol)
     l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=lcol, width=2)
     array.push(zBoxes, b)
