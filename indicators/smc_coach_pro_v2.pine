@@ -57,7 +57,7 @@
 // ============================================================================
 indicator("SMC Coach — Pro v2 (Zones + Risk Engine + MTF Dashboard)",
      overlay = true, max_labels_count = 500, max_lines_count = 500,
-     max_boxes_count = 500, dynamic_requests = true)
+     max_boxes_count = 500, max_bars_back = 1000, dynamic_requests = true)
 
 // ---------------- TF helper ----------------
 is1H = (timeframe.isminutes and timeframe.multiplier == 60) or (str.upper(timeframe.period) == "60") or (str.upper(timeframe.period) == "1H")
@@ -71,6 +71,8 @@ maxZones      = input.int(10, "Keep last N zones", minval=2, maxval=100, group=g
 zonePadATR    = input.float(0.15, "Zone padding (x ATR)", minval=0, step=0.01, group=gStruct)
 zoneMaxTouch  = input.int(2, "Kill zone after N touches", minval=1, maxval=10, group=gStruct)
 zoneMaxAge    = input.int(300, "Kill zone after N bars", minval=20, group=gStruct)
+zoneToWick    = input.bool(true, "Zone ko wick tak le jao (band candle ko chhue)", group=gStruct)
+zoneKeepExtr  = input.bool(true, "Sab se ooncha/neecha zone umar/touch se na maro", group=gStruct)
 freshMaxTouch = input.int(0, "\"Fresh\" zone = touches <= N", minval=0, maxval=5, group=gStruct)
 useCloseBreak = input.bool(true, "BOS/CHOCH needs CLOSE beyond swing", group=gStruct)
 showSR        = input.bool(true,  "Draw S/R zones", group=gStruct)
@@ -132,8 +134,8 @@ retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1,
 groupST       = "7 · Supertrend"
 enableST      = input.bool(true,  "Enable Supertrend", group=groupST)
 useSTFilter   = input.bool(true,  "Use ST as extra filter", group=groupST)
-stShowPlots   = input.bool(true,  "Plot ST lines", group=groupST)
-stShowSignals = input.bool(true,  "Show ST Buy/Sell labels", group=groupST)
+stShowPlots   = input.bool(false, "Plot ST lines (chart par ST ki lakeerein)", group=groupST)
+stShowSignals = input.bool(false, "Show ST Buy/Sell labels", group=groupST)
 stPeriod      = input.int(10, "ATR Period", minval=1, group=groupST)
 stMult        = input.float(3.0, "ATR Multiplier", step=0.1, group=groupST)
 stSrc         = input.source(hl2, "ST Source", group=groupST)
@@ -334,8 +336,16 @@ f_zoneKill(i) =>
 // zone entry, the freshness score and the TP1 room test.
 newZone(_idx,_price,_isSupport)=>
     pad  = atr * zonePadATR
-    top  = _price + pad
-    bot  = _price - pad
+    // Zone ka anchor: pivot ki price. zoneToWick ON ho to band ko us candle ki
+    // asli wick tak khencha jata hai, taake band wick ke sire ko sach much
+    // chhue (sirf +/- pad lagane se lambi wick band se bahar reh jati thi).
+    _off  = math.max(0, bar_index - _idx)
+    _wick = _isSupport ? low[_off] : high[_off]
+    _body = _isSupport ? math.min(open[_off], close[_off]) : math.max(open[_off], close[_off])
+    top   = zoneToWick ? (_isSupport ? math.max(_body, _price) + pad : math.max(_wick, _price))
+             : _price + pad
+    bot   = zoneToWick ? (_isSupport ? math.min(_wick, _price) : math.min(_body, _price) - pad)
+             : _price - pad
     col  = _isSupport?colSRBull:colSRBear
     fill = showSR ? color.new(_isSupport?color.lime:color.red, 86) : color.new(color.gray, 100)
     bcol = showSR ? color.new(col, 70) : color.new(col, 100)
@@ -357,6 +367,20 @@ if (bosDn or chochDn) and not na(lastHiIdx)
     newZone(lastHiIdx, lastHi, false)
 
 // --- maintain: extend, count touches, invalidate broken / stale / exhausted
+// Pehle extreme dhoondo: sab se ooncha supply top aur sab se neecha demand bottom.
+// zoneKeepExtr ON ho to ye do zones umar ya touch se nahi marte (break se marte hain),
+// warna chart ka sab se aham high/low band gayab ho jata tha.
+float _extSupTop = na
+float _extDemBot = na
+if zoneKeepExtr and array.size(zBoxes) > 0
+    for j = 0 to array.size(zBoxes) - 1
+        _bj = array.get(zBoxes, j)
+        if array.get(zIsSup, j)
+            _bj2 = box.get_bottom(_bj)
+            _extDemBot := na(_extDemBot) ? _bj2 : math.min(_extDemBot, _bj2)
+        else
+            _tj = box.get_top(_bj)
+            _extSupTop := na(_extSupTop) ? _tj : math.max(_extSupTop, _tj)
 if array.size(zBoxes) > 0
     for i = array.size(zBoxes) - 1 to 0
         _b     = array.get(zBoxes, i)
@@ -372,11 +396,23 @@ if array.size(zBoxes) > 0
         _broke = _isSup ? close < _bot : close > _top
         _stale = (bar_index - array.get(zBorn, i)) > zoneMaxAge
         _spent = array.get(zTouch, i) > zoneMaxTouch
-        if _broke or _stale or _spent
+        _isExt = zoneKeepExtr and (_isSup ? (not na(_extDemBot) and _bot <= _extDemBot)
+                 : (not na(_extSupTop) and _top >= _extSupTop))
+        if _broke or ((_stale or _spent) and not _isExt)
             f_zoneKill(i)
 
+// Cap: sab se purana zone hatao, lekin extreme wale ko bacha kar rakho.
 while array.size(zBoxes) > maxZones
-    f_zoneKill(0)
+    int _victim = 0
+    if zoneKeepExtr
+        for k = 0 to array.size(zBoxes) - 1
+            _bk = array.get(zBoxes, k)
+            _ke = array.get(zIsSup, k) ? (not na(_extDemBot) and box.get_bottom(_bk) <= _extDemBot)
+                   : (not na(_extSupTop) and box.get_top(_bk) >= _extSupTop)
+            if not _ke
+                _victim := k
+                break
+    f_zoneKill(_victim)
 
 f_lastZoneIdx(_isSupport)=>
     int ret = -1
