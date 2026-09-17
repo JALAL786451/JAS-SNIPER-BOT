@@ -1,0 +1,169 @@
+//@version=5
+// ============================================================================
+//  JAS TIDE v1 — trend-following strategy (XAUUSD, 4H / 1D)
+//
+//  YE KIS BUNIYAD PAR BANI HAI
+//  Is session mein hum ne jo dekha, sirf us par:
+//   1. Bare timeframes behtar chale (1D 47.6% > 4H 43.8% > 1H 42% > 1M 37.5%),
+//      is liye ye 4H aur 1D ke liye hai, scalping ke liye nahi.
+//   2. Spread chhoti timeframe ka munafa kha jata hai, is liye spread/commission
+//      yahan zaroori input hai aur natije mein shamil hota hai.
+//   3. Jab chhota aur bara timeframe ek taraf hon tab natija behtar tha, is liye
+//      bare timeframe ka filter lazmi hai.
+//   4. Jitne kam qawaid, utna kam dhoka. Is mein sirf 4 qawaid hain.
+//
+//  YE KOI NAYI IJAAD NAHI HAI. Ye "Donchian breakout + bare TF ka trend filter"
+//  hai — 1980 ki Turtle Traders wali soch. Maine ise is liye chuna ke ye
+//  duniya ki sab se zyada aazmai hui aur sab se saada trend strategy hai,
+//  aur is mein chhupane ko kuch nahi.
+//
+//  REPAINT NAHI KARTI:
+//   - Har faisla BAND ho chuki candle par hota hai (calc_on_every_tick = false)
+//   - Bare timeframe ka data [1] ke saath liya gaya hai aur lookahead_off hai
+//   - Breakout ka level [1] se liya gaya hai, yani mojooda candle shamil nahi
+//   Tasdeeq khud karein: Bar Replay chala kar teer ki jagah note karein, phir
+//   replay band kar ke dekhein ke teer wahin hai ya nahi.
+//
+//  EK POSITION AIK WAQT MEIN. Koi grid, martingale, hedging ya averaging nahi.
+//
+//  ZARURI: ye strategy hai, indicator nahi. TradingView khud "Strategy Tester"
+//  mein asal natija deta hai — usi ko dekhein, chart ke teeron ko nahi.
+// ============================================================================
+strategy("JAS Tide v1 — Donchian + HTF filter", overlay = true,
+     initial_capital       = 10000,
+     default_qty_type      = strategy.fixed,
+     default_qty_value     = 1,
+     pyramiding            = 0,
+     calc_on_every_tick    = false,
+     process_orders_on_close = true,
+     slippage              = 26,
+     commission_type       = strategy.commission.cash_per_order,
+     commission_value      = 0,
+     max_labels_count      = 300)
+
+// ---------------------------------------------------------------- INPUTS ---
+gCore = "1 · Qawaid"
+entryLen  = input.int(20, "Breakout: kitni candle ka high/low tore", minval=5,  maxval=200, group=gCore)
+exitLen   = input.int(10, "Exit: kitni candle ka ulta high/low", minval=3, maxval=100, group=gCore)
+atrLen    = input.int(14, "ATR length", minval=2, group=gCore)
+atrMult   = input.float(2.0, "Shuru ka stop (x ATR)", minval=0.5, step=0.1, group=gCore)
+
+gHTF = "2 · Bara timeframe ka filter"
+useHTF    = input.bool(true, "Bare timeframe ka filter lagao", group=gHTF)
+htfTF     = input.timeframe("D", "Bara timeframe", group=gHTF)
+htfFast   = input.int(50,  "HTF EMA fast", minval=2, group=gHTF)
+htfSlow   = input.int(200, "HTF EMA slow", minval=3, group=gHTF)
+
+gRisk = "3 · Risk"
+riskPct   = input.float(1.0, "Har trade par risk (% equity)", minval=0.1, maxval=5.0, step=0.1, group=gRisk)
+usePartial= input.bool(true, "2R par aadha band karo", group=gRisk)
+partialR  = input.float(2.0, "Aadha band karne ka R", minval=0.5, step=0.5, group=gRisk)
+exitOnHTF = input.bool(true, "Bara timeframe palat jaye to nikal jao", group=gRisk)
+
+// KHARCHA: Pine strategy() ko input nahi de sakta, is liye slippage yahan
+// upar 26 tick (= $0.26 gold par) rakha gaya hai. Apne broker ka spread aur
+// commission Strategy Tester ki "Properties" tab mein badlein. Ye ZAROORI
+// hai - bina kharche ke natija hamesha jhoota chamakdar aata hai.
+
+gFilt = "5 · Chop filter"
+useAtrFloor = input.bool(true, "Bohot susti mein trade na karo", group=gFilt)
+minAtrPct   = input.float(0.25, "Kam az kam ATR (% price ka)", minval=0.0, step=0.05, group=gFilt)
+
+gView = "6 · Dikhawa"
+showLevels = input.bool(true, "Breakout ke level dikhao", group=gView)
+
+// ------------------------------------------------------------- HISAAB -----
+atr = ta.atr(atrLen)
+
+// Breakout ke level: [1] lagaya hai, yani MOJOODA candle shamil nahi. Warna
+// candle khud apna hi high tor deti aur har bar signal ban jata.
+hiBrk = ta.highest(high, entryLen)[1]
+loBrk = ta.lowest (low,  entryLen)[1]
+hiExit = ta.highest(high, exitLen)[1]
+loExit = ta.lowest (low,  exitLen)[1]
+
+// Bara timeframe: [1] andar liya hai + lookahead_off, is liye repaint nahi.
+f_htf() =>
+    _f = ta.ema(close, htfFast)
+    _s = ta.ema(close, htfSlow)
+    [_f[1], _s[1]]
+[hF, hS] = request.security(syminfo.tickerid, htfTF, f_htf(), barmerge.gaps_off, barmerge.lookahead_off)
+
+bullHTF = not useHTF or (not na(hF) and not na(hS) and hF > hS)
+bearHTF = not useHTF or (not na(hF) and not na(hS) and hF < hS)
+
+atrPct   = atr / close * 100.0
+liveOk   = not useAtrFloor or atrPct >= minAtrPct
+
+// ------------------------------------------------------------- SIGNALS ----
+longSig  = close > hiBrk and bullHTF and liveOk
+shortSig = close < loBrk and bearHTF and liveOk
+
+// Position size: risk ka hisaab stop ke faasle se. Stop jitna door, lot utna
+// chhota. Is se har trade ka nuqsan barabar rehta hai.
+slDist  = atr * atrMult
+qtyCalc = slDist > 0 ? (strategy.equity * riskPct / 100.0) / slDist : 0.0
+qty     = math.max(qtyCalc, 0.0)
+
+var float entryPx = na
+var float stopPx  = na
+var float initR   = na     // shuru ka stop faasla - partial ka target isi se
+var float initQty = na     // entry ki poori maqdaar
+var bool  p1Done  = false
+
+// --------------------------------------------------------------- ENTRIES --
+if strategy.position_size == 0 and qty > 0
+    if longSig
+        strategy.entry("L", strategy.long, qty = qty)
+        entryPx := close
+        stopPx  := close - slDist
+        initR   := slDist
+        initQty := qty
+        p1Done  := false
+    else if shortSig
+        strategy.entry("S", strategy.short, qty = qty)
+        entryPx := close
+        stopPx  := close + slDist
+        initR   := slDist
+        initQty := qty
+        p1Done  := false
+
+// ---------------------------------------------------------------- EXITS ---
+// Stop sirf trade ke haq mein sarakta hai, kabhi peeche nahi jata.
+// Aadha band ho chuka? Position ki maqdaar ghatne se pata chal jata hai.
+if not p1Done and not na(initQty) and math.abs(strategy.position_size) < initQty * 0.9
+    p1Done := true
+
+if strategy.position_size > 0
+    stopPx := math.max(nz(stopPx, close - slDist), loExit)
+    if usePartial and not p1Done
+        strategy.exit("P1", from_entry = "L", limit = entryPx + nz(initR, slDist) * partialR, qty_percent = 50)
+    strategy.exit("XL", from_entry = "L", stop = stopPx)
+    if exitOnHTF and useHTF and bearHTF
+        strategy.close("L", comment = "HTF palta")
+
+if strategy.position_size < 0
+    stopPx := math.min(nz(stopPx, close + slDist), hiExit)
+    if usePartial and not p1Done
+        strategy.exit("P1", from_entry = "S", limit = entryPx - nz(initR, slDist) * partialR, qty_percent = 50)
+    strategy.exit("XS", from_entry = "S", stop = stopPx)
+    if exitOnHTF and useHTF and bullHTF
+        strategy.close("S", comment = "HTF palta")
+
+if strategy.position_size == 0
+    stopPx  := na
+    entryPx := na
+    initR   := na
+    initQty := na
+    p1Done  := false
+
+// ---------------------------------------------------------------- DRAW ----
+plot(showLevels ? hiBrk : na, "Breakout upar",  color = color.new(color.green, 40), style = plot.style_stepline)
+plot(showLevels ? loBrk : na, "Breakout neeche", color = color.new(color.red, 40),  style = plot.style_stepline)
+plot(strategy.position_size != 0 ? stopPx : na, "Stop", color = color.new(color.orange, 0), style = plot.style_linebr, linewidth = 2)
+
+bgcolor(useHTF and bullHTF and not bearHTF ? color.new(color.green, 94) : useHTF and bearHTF and not bullHTF ? color.new(color.red, 94) : na, title = "HTF rukh")
+
+// --------------------------------------------------------------- ALERTS ---
+alertcondition(longSig,  "JAS Tide BUY",  "JAS Tide: BUY breakout")
+alertcondition(shortSig, "JAS Tide SELL", "JAS Tide: SELL breakout")
