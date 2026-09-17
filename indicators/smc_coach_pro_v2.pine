@@ -207,6 +207,8 @@ showRows      = input.bool(false, "Legend: extra TF rows (5/15/30/4H/1D + DZ/SZ)
 teacherPos    = input.string("Top Right", "Teacher position", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 legendPos     = input.string("Top Left",  "Legend position",  options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 statsPos      = input.string("Bottom Right", "Stats position", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
+showLive      = input.bool(true, "LIVE CANDLE panel (abhi wali candle kya kar rahi hai)", group=gPanel)
+livePos       = input.string("Bottom Left", "Live candle panel position", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=100, group=gPanel)
 panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6, group=gPanel)
 panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"], group=gPanel)
@@ -1345,6 +1347,52 @@ if barstate.islast
     lbS1 := f_pivLbl(lbS1, pvS1, "Support: " + f_px(pvS1),    color.new(pivColS, 0),  showPiv and not na(pvS1))
     lbR2 := f_pivLbl(lbR2, pvR2, f_px(pvR2),                  color.new(pivColR, 40), showPiv and pivShowR2 and not na(pvR2))
     lbS2 := f_pivLbl(lbS2, pvS2, f_px(pvS2),                  color.new(pivColS, 40), showPiv and pivShowR2 and not na(pvS2))
+
+// ============================================================================
+//  LIVE CANDLE PANEL
+//  Ye PESHEENGOI nahi hai. Ye sirf batata hai ke jo candle ABHI chal rahi hai
+//  us mein AB TAK kya hua: open se upar hai ya neeche, apni range mein kahan
+//  khari hai, aur band hone mein kitna waqt baqi hai. Agle second ka koi
+//  indicator nahi bata sakta - ye sirf mojooda haal ki tasdeeq hai.
+// ============================================================================
+var table vTbl = na
+if showLive and barstate.islast
+    if na(vTbl)
+        vTbl := table.new(f_pos(livePos), 1, 5)
+    else
+        table.clear(vTbl, 0, 0, 0, 4)
+
+    _rg   = math.max(high - low, syminfo.mintick)
+    _fromOpen = close - open
+    _posPct   = (close - low) / _rg * 100.0
+    _bodyPct  = math.abs(_fromOpen) / _rg * 100.0
+    _up       = _fromOpen > 0
+    _flat     = math.abs(_fromOpen) < syminfo.mintick
+    _colDir   = _flat ? color.new(color.gray, 0) : (_up ? color.new(color.green, 0) : color.new(color.red, 0))
+
+    // Candle band hone mein kitna waqt baqi hai
+    _msLeft = time_close - timenow
+    _secTot = math.max(0, int(_msLeft / 1000))
+    _mm     = int(_secTot / 60)
+    _ss     = _secTot % 60
+    _tLeft  = str.tostring(_mm) + "m " + (_ss < 10 ? "0" : "") + str.tostring(_ss) + "s"
+
+    // Range mein jagah se taqat: 70%+ upar = kharidaar bhaari, 30%- = bechne wale
+    _strength = _posPct >= 70 ? "Kharidaar bhaari" : _posPct <= 30 ? "Bechne wale bhaari" : "Barabar ki jang"
+    _colStr   = _posPct >= 70 ? color.new(color.green, 0)
+                : _posPct <= 30 ? color.new(color.red, 0) : color.new(color.gray, 0)
+
+    table.cell(vTbl, 0, 0, "LIVE CANDLE (" + timeframe.period + ")  —  peesheengoi nahi, sirf abhi ka haal",
+         bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+    table.cell(vTbl, 0, 1, "Abhi ka rukh: " + (_flat ? "BARABAR" : (_up ? "BUY" : "SELL")) +
+                           "   (open se " + (_fromOpen >= 0 ? "+" : "-") + f_px(math.abs(_fromOpen)) + ")",
+         bgcolor=bgPanel, text_color=_colDir, text_size=PFS)
+    table.cell(vTbl, 0, 2, "Candle ki range mein jagah: " + str.tostring(int(math.round(_posPct))) + "%  —  " + _strength,
+         bgcolor=bgPanel, text_color=_colStr, text_size=PFS)
+    table.cell(vTbl, 0, 3, "Body kitni bhari: " + str.tostring(int(math.round(_bodyPct))) + "%  (baqi wick hai)",
+         bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+    table.cell(vTbl, 0, 4, "Band hone mein: " + _tLeft + "   —  band hone tak sab badal sakta hai",
+         bgcolor=bgPanel, text_color=color.new(color.gray, 0), text_size=PFS)
 
 // ============================================================================
 //  DEBUG
