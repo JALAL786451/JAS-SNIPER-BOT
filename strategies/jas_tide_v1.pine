@@ -70,8 +70,17 @@ gFilt = "5 · Chop filter"
 useAtrFloor = input.bool(true, "Bohot susti mein trade na karo", group=gFilt)
 minAtrPct   = input.float(0.25, "Kam az kam ATR (% price ka)", minval=0.0, step=0.05, group=gFilt)
 
-gView = "6 · Dikhawa"
+gDate = "6 · Test ka arsa (out-of-sample ke liye)"
+useDates  = input.bool(false, "Sirf in tareekhon ke darmiyan trade karo", group=gDate)
+dtFrom    = input.time(timestamp("01 Jan 2014 00:00 +0000"), "Shuru", group=gDate)
+dtTo      = input.time(timestamp("31 Dec 2019 23:59 +0000"), "Khatam", group=gDate)
+
+gView = "7 · Dikhawa"
 showLevels = input.bool(true, "Breakout ke level dikhao", group=gView)
+
+// Tareekh ka pehra. Bull run ke bahar parakhne ke liye - warna har trend
+// strategy 2023-2026 ke gold par achhi lagti hai.
+inDates = not useDates or (time >= dtFrom and time <= dtTo)
 
 // ------------------------------------------------------------- HISAAB -----
 atr = ta.atr(atrLen)
@@ -127,7 +136,7 @@ if strategy.position_size == 0
     p1Done  := false
 
 // --------------------------------------------------------------- ENTRIES --
-if strategy.position_size == 0 and qty > 0
+if strategy.position_size == 0 and qty > 0 and inDates
     if longSig
         strategy.entry("L", strategy.long, qty = qty)
         entryPx := close
@@ -164,6 +173,11 @@ if strategy.position_size < 0
     strategy.exit("XS", from_entry = "S", stop = stopPx)
     if exitOnHTF and useHTF and bullHTF
         strategy.close("S", comment = "HTF palta")
+
+// Arsa khatam ho jaye to khuli position band kar do, warna aakhri trade
+// arson tak khinchti rehti hai aur natija jhoota ho jata hai.
+if useDates and time > dtTo and strategy.position_size != 0
+    strategy.close_all(comment = "Arsa khatam")
 
 // ---------------------------------------------------------------- DRAW ----
 plot(showLevels ? hiBrk : na, "Breakout upar",  color = color.new(color.green, 40), style = plot.style_stepline)
