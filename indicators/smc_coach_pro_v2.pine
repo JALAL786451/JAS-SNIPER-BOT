@@ -192,7 +192,7 @@ showPiv   = input.bool(true,  "Kal ke din se banne wali S/R lines dikhao", group
 pivTF     = input.string("D", "Kis din se", options=["D","W"], group=gPivot)
 pivShowR2 = input.bool(true,  "Door wali R2 / S2 bhi dikhao", group=gPivot)
 pivMethod = input.string("Classic", "Hisaab ka tareeqa", options=["Classic","Fibonacci","Camarilla"], group=gPivot)
-pivSwapCol= input.bool(false, "Rang ulta karo (Exness jaisa: resistance green, support red)", group=gPivot)
+pivSwapCol= input.bool(false, "Rang ulta karo - POORA chart (Exness jaisa: resistance green, support red)", group=gPivot)
 pivManual = input.bool(false, "Khud apne number daalo (Exness ke number yahan likh dein)", group=gPivot)
 mP  = input.float(0, "  Pivot",      step=0.01, group=gPivot)
 mR1 = input.float(0, "  Resistance 1", step=0.01, group=gPivot)
@@ -363,8 +363,13 @@ newZone(_idx,_price,_isSupport)=>
              : _price + pad
     bot   = zoneToWick ? (_isSupport ? math.min(_wick, _price) : math.min(_body, _price) - pad)
              : _price - pad
-    col  = _isSupport?colSRBull:colSRBear
-    fill = showSR ? color.new(_isSupport?color.lime:color.red, 86) : color.new(color.gray, 100)
+    // Rang wahi convention follow karta hai jo pivot lines ka hai, warna ek
+    // hi chart par green ke do ulte matlab ban jate thay: neeche wala zone
+    // green (support) aur oopar wali pivot line bhi green (resistance).
+    _cSup = pivSwapCol ? colSRBear : colSRBull
+    _cRes = pivSwapCol ? colSRBull : colSRBear
+    col  = _isSupport ? _cSup : _cRes
+    fill = showSR ? color.new(col, 86) : color.new(color.gray, 100)
     bcol = showSR ? color.new(col, 70) : color.new(col, 100)
     lcol = showSR ? col : color.new(col, 100)
     b = box.new(_idx, top, bar_index, bot, xloc=xloc.bar_index, bgcolor=fill, border_color=bcol)
