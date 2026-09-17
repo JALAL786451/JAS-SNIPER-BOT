@@ -212,6 +212,9 @@ livePos       = input.string("Bottom Left", "Live candle panel position", option
 panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=100, group=gPanel)
 panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6, group=gPanel)
 panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"], group=gPanel)
+showTeachHdr  = input.bool(false, "TEACHER wali pehli line dikhao", group=gPanel)
+pressFont     = input.string("Large", "PRESSURE line ka font", options=["Tiny","Small","Normal","Large"], group=gPanel)
+pressDark     = input.bool(true, "PRESSURE ke rang gehre rakho (safed chart par saaf)", group=gPanel)
 showDebug     = input.bool(false, "DEBUG heartbeat", group=gPanel)
 // Purane Buy/Sell aur ST ke nishaan chart par jama hote rehte the — kai hafton
 // ke signals ek sath nazar aate the jab ke kaam ka sirf aakhri wala hota hai.
@@ -223,6 +226,7 @@ showOnlyLast  = input.bool(true, "Sirf mojooda signal dikhao (purane mit jayein)
 // ============================================================================
 f_size(s)=> s=="Tiny"?size.tiny:s=="Small"?size.small:s=="Normal"?size.normal:size.large
 PFS = f_size(panelFont)
+PRS = f_size(pressFont)
 f_pos(s)=> s=="Top Left"?position.top_left:s=="Top Right"?position.top_right:s=="Bottom Left"?position.bottom_left:position.bottom_right
 f_lbl(st)=> st==1?"UT":st==-1?"DT":"NT"
 f_px(x) => str.tostring(x, format.mintick)
@@ -534,7 +538,10 @@ slope = ((emaF - emaF[1]) - (emaS - emaS[1])) / math.max(atr, minTk)
 sig(x) => 1.0 / (1.0 + math.exp(-x))
 pressBuy  = math.round(100 * sig(0.75 * dist + 0.25 * slope))
 pressSell = 100 - pressBuy
-pressCol  = pressBuy > 55 ? color.new(color.lime, 0) : pressBuy < 45 ? color.new(color.red, 0) : color.new(color.gray, 0)
+// Safed chart par lime aur halka grey parhe nahi jate. pressDark on ho to
+// gehre rang: gehra sabz, gehra laal, gehra slaty.
+pressCol  = pressDark ? (pressBuy > 55 ? color.new(#1B5E20, 0) : pressBuy < 45 ? color.new(#B71C1C, 0) : color.new(#37474F, 0))
+             : (pressBuy > 55 ? color.new(color.lime, 0) : pressBuy < 45 ? color.new(color.red, 0) : color.new(color.gray, 0))
 
 // ============================================================================
 //  CONTEXT FILTERS: volume / chop / session / DXY
@@ -991,12 +998,16 @@ if showTeacher and barstate.islast
 
     presetTxt = "Preset: SCALP 1H" + (is1H ? "" : "  (Tip: use 1H)")
     stateTxt  = sigBuyTotal ? "BUY ✅" : sigSellTotal ? "SELL ✅" : "WAIT"
-    table.cell(tTbl, 0, r0 + 0, "TEACHER | " + timeframe.period + " — " + stateTxt + "  ["+entryMode+"]  |  " + presetTxt,
-               bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
-    table.cell(tTbl, 0, r0 + 1,
+    // TEACHER wali pehli line ab default band hai. Band ho to baqi saari
+    // rows ek qadam upar aa jati hain, warna khali patti reh jati thi.
+    if showTeachHdr
+        table.cell(tTbl, 0, r0 + 0, "TEACHER | " + timeframe.period + " — " + stateTxt + "  ["+entryMode+"]  |  " + presetTxt,
+             bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+    rT = r0 + (showTeachHdr ? 1 : 0)
+    table.cell(tTbl, 0, rT + 0,
                "PRESSURE  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%" +
                "     SCORE  B " + str.tostring(scoreBuy) + " / S " + str.tostring(scoreSell) + "  (min " + str.tostring(minScore) + ")",
-               bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
+               bgcolor=bgPanel2, text_color=pressCol, text_size=PRS, text_halign=text.align_center)
 
     reason := "", missB := "", missS := ""
     stTxt = enableST ? (" | ST: " + (stTrend==1?"UP":"DN")) : ""
@@ -1014,13 +1025,13 @@ if showTeacher and barstate.islast
                       " | B↓/C↓: " + (recentDownStruct ? "YES" : "NO") +
                       " | FVG↓: " + (FVG_dn ? "Y" : "N") +
                       " | LGB↑: " + (LGB_up ? "Y" : "N") + stTxt
-        table.cell(tTbl, 0, r0 + 2, reason, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        table.cell(tTbl, 0, rT + 1, reason, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
         _e  = sigBuyTotal ? planEntryB : planEntryS
         _sl = sigBuyTotal ? planSLb    : planSLs
         _r  = sigBuyTotal ? planRb     : planRs
         _t1 = sigBuyTotal ? _e + _r*tp1R : _e - _r*tp1R
         _t3 = sigBuyTotal ? _e + _r*tp3R : _e - _r*tp3R
-        table.cell(tTbl, 0, r0 + 3,
+        table.cell(tTbl, 0, rT + 2,
                    "PLAN  Entry " + f_px(_e) + "  SL " + f_px(_sl) +
                    "  TP1 " + f_px(_t1) + "  TP3 " + f_px(_t3) +
                    "  |  Risk " + str.tostring(riskPct,"#.##") + "%  (" + f_px(_r) + " / unit)",
@@ -1094,9 +1105,9 @@ if showTeacher and barstate.islast
         if cSell and not xSell
             missS += "• Same bar par Buy ka score barabar/behtar tha (tie)\n"
 
-        table.cell(tTbl, 0, r0 + 2, "BUY missing:\n"  + (missB == "" ? "• Same bar align nahi hui\n" : missB),
+        table.cell(tTbl, 0, rT + 1, "BUY missing:\n"  + (missB == "" ? "• Same bar align nahi hui\n" : missB),
                    bgcolor=bgPanel, text_color=color.black, text_size=PFS)
-        table.cell(tTbl, 0, r0 + 3, "SELL missing:\n" + (missS == "" ? "• Same bar align nahi hui\n" : missS),
+        table.cell(tTbl, 0, rT + 2, "SELL missing:\n" + (missS == "" ? "• Same bar align nahi hui\n" : missS),
                    bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
     htfTxt = "HTF 4H/D: " + (enableHTF ? (f_lbl(st4h) + " / " + f_lbl(std)) : "-") +
@@ -1105,13 +1116,13 @@ if showTeacher and barstate.islast
              " | ADX " + str.tostring(nz(adxV,0), "#.#") +
              " | RelVol " + (na(relVol) ? "-" : str.tostring(relVol, "#.##")) +
              " | Sess " + (sessOK ? "OK" : "OFF")
-    table.cell(tTbl, 0, r0 + 4, htfTxt, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+    table.cell(tTbl, 0, rT + 3, htfTxt, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
     openTxt = tDir == 0 ? (useTracker ? "No open virtual trade" : "Virtual tracking OFF") :
               (tDir==1?"LONG":"SHORT") + " open @ " + f_px(tEntry) +
               "  SL " + f_px(tSL) + (hit1 ? "  ✓TP1" : "") + (hit2 ? " ✓TP2" : "") + (hit3 ? " ✓TP3" : "") +
               "  |  bars " + str.tostring(bar_index - tBar)
-    table.cell(tTbl, 0, r0 + 5, openTxt, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+    table.cell(tTbl, 0, rT + 4, openTxt, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
 // ============================================================================
 //  STATS PANEL
