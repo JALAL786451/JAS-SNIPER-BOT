@@ -216,6 +216,7 @@ showTeachHdr  = input.bool(false, "TEACHER wali pehli line dikhao", group=gPanel
 pressFont     = input.string("Large", "PRESSURE line ka font", options=["Tiny","Small","Normal","Large"], group=gPanel)
 pressDark     = input.bool(true, "PRESSURE ke rang gehre rakho (safed chart par saaf)", group=gPanel)
 hlMomoRow     = input.bool(true, "Legend: jis TF par FVG ya LGB ho us row ko numaya karo", group=gPanel)
+hlShade       = input.int(90, "Legend: numaya row ki shade kitni halki (zyada = halki)", minval=70, maxval=97, group=gPanel)
 showDebug     = input.bool(false, "DEBUG heartbeat", group=gPanel)
 // Purane Buy/Sell aur ST ke nishaan chart par jama hote rehte the — kai hafton
 // ke signals ek sath nazar aate the jab ke kaam ka sirf aakhri wala hota hai.
@@ -1295,10 +1296,17 @@ if showLegend and barstate.islast
         _momoUp   = fu or ld
         _momoDn   = fd or lu
         _hasMomo  = _momoUp or _momoDn
-        _rowBg = not (hlMomoRow and _hasMomo) ? bgPanel : (_momoUp and _momoDn) ? color.new(color.orange, 75) : _momoUp ? color.new(color.green, 75) : color.new(color.red, 75)
-        _rowTxt = _row + (hlMomoRow and _hasMomo ? "  ◄" : "")
+        _hl    = hlMomoRow and _hasMomo
+        // Shade ab bohot halki hai aur numaya row ka text gehra kar diya jata
+        // hai. Pehle shade gehri thi aur us par lime/halka grey text baithta
+        // tha - sab dhundla ho jata tha.
+        _rowBg = not _hl ? bgPanel : (_momoUp and _momoDn) ? color.new(color.orange, hlShade) : _momoUp ? color.new(color.green, hlShade) : color.new(color.red, hlShade)
+        _rowTxt = _row + (_hl ? "  ◄◄" : "")
 
-        _col = lg ? color.new(color.lime, 0) : sg ? color.new(color.red, 0) : color.new(color.gray, 0)
+        // Rang hamesha gehre: safed chart par lime aur halka grey parhe nahi jate.
+        _colN = lg ? color.new(#1B5E20, 0) : sg ? color.new(#B71C1C, 0) : color.new(#37474F, 0)
+        _colH = (_momoUp and _momoDn) ? color.new(#E65100, 0) : _momoUp ? color.new(#1B5E20, 0) : color.new(#B71C1C, 0)
+        _col  = _hl ? _colH : _colN
         table.cell(lTbl, 0, rL + 1 + i, _rowTxt, bgcolor=_rowBg, text_color=_col, text_size=PFS)
 
 // ============================================================================
