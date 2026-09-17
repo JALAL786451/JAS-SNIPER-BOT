@@ -1,6 +1,7 @@
 //@version=5
 // ============================================================================
-//  JAS TIDE v1 — trend-following strategy (XAUUSD, 4H / 1D)
+//  JAS TIDE v1.1 — trend-following strategy (XAUUSD, 4H / 1D)
+//  v1.1: stop reset ka bug theek (neeche BUG FIX ka note parhein)
 //
 //  YE KIS BUNIYAD PAR BANI HAI
 //  Is session mein hum ne jo dekha, sirf us par:
@@ -29,7 +30,7 @@
 //  ZARURI: ye strategy hai, indicator nahi. TradingView khud "Strategy Tester"
 //  mein asal natija deta hai — usi ko dekhein, chart ke teeron ko nahi.
 // ============================================================================
-strategy("JAS Tide v1 — Donchian + HTF filter", overlay = true,
+strategy("JAS Tide v1.1 — Donchian + HTF filter", overlay = true,
      initial_capital       = 10000,
      default_qty_type      = strategy.fixed,
      default_qty_value     = 1,
@@ -111,6 +112,20 @@ var float initR   = na     // shuru ka stop faasla - partial ka target isi se
 var float initQty = na     // entry ki poori maqdaar
 var bool  p1Done  = false
 
+// BUG FIX (v1.1): ye reset pehle NEECHE tha. Entry wali candle par
+// strategy.position_size abhi bhi 0 hota hai (order us candle ke close par
+// bharta hai), is liye reset usi candle par naya stopPx/entryPx mita deta
+// tha. Agli candle par stopPx na hota, aur nz() har baar use close se
+// dobara ginta tha - yani stop price ke peeche NEECHE bhi sarakne lagta tha.
+// Natija: haarti hui trade ka stop kabhi lagta hi nahi tha.
+// Ab reset entries se PEHLE chalta hai, to naya stop kabhi nahi mitta.
+if strategy.position_size == 0
+    stopPx  := na
+    entryPx := na
+    initR   := na
+    initQty := na
+    p1Done  := false
+
 // --------------------------------------------------------------- ENTRIES --
 if strategy.position_size == 0 and qty > 0
     if longSig
@@ -135,7 +150,7 @@ if not p1Done and not na(initQty) and math.abs(strategy.position_size) < initQty
     p1Done := true
 
 if strategy.position_size > 0
-    stopPx := math.max(nz(stopPx, close - slDist), loExit)
+    stopPx := math.max(nz(stopPx, nz(entryPx, close) - nz(initR, slDist)), loExit)
     if usePartial and not p1Done
         strategy.exit("P1", from_entry = "L", limit = entryPx + nz(initR, slDist) * partialR, qty_percent = 50)
     strategy.exit("XL", from_entry = "L", stop = stopPx)
@@ -143,19 +158,12 @@ if strategy.position_size > 0
         strategy.close("L", comment = "HTF palta")
 
 if strategy.position_size < 0
-    stopPx := math.min(nz(stopPx, close + slDist), hiExit)
+    stopPx := math.min(nz(stopPx, nz(entryPx, close) + nz(initR, slDist)), hiExit)
     if usePartial and not p1Done
         strategy.exit("P1", from_entry = "S", limit = entryPx - nz(initR, slDist) * partialR, qty_percent = 50)
     strategy.exit("XS", from_entry = "S", stop = stopPx)
     if exitOnHTF and useHTF and bullHTF
         strategy.close("S", comment = "HTF palta")
-
-if strategy.position_size == 0
-    stopPx  := na
-    entryPx := na
-    initR   := na
-    initQty := na
-    p1Done  := false
 
 // ---------------------------------------------------------------- DRAW ----
 plot(showLevels ? hiBrk : na, "Breakout upar",  color = color.new(color.green, 40), style = plot.style_stepline)
