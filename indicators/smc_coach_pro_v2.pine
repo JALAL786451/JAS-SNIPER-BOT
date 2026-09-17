@@ -1335,7 +1335,12 @@ f_pivLbl(_old, _y, _txt, _col, _on) =>
            style=label.style_label_left, color=color.new(color.black, 100),
            textcolor=_col, size=size.small) : na
 if barstate.islast
-    lbP  := f_pivLbl(lbP,  pvP,  "Pivot: " + f_px(pvP),       color.new(color.gray, 0),   showPiv and not na(pvP))
+    // Label saaf batata hai number kahan se aaya: (khud) = aap ke likhe hue,
+    // (auto) = script ka apna hisaab. Script naya paste karne par settings
+    // reset ho jati hain aur (khud) wale number gum ho jate hain - ab woh
+    // chupke se nahi hota, label foran bata dega.
+    _pvSrc = pivManual ? " (khud)" : " (auto)"
+    lbP  := f_pivLbl(lbP,  pvP,  "Pivot: " + f_px(pvP) + _pvSrc, color.new(color.gray, 0), showPiv and not na(pvP))
     lbR1 := f_pivLbl(lbR1, pvR1, "Resistance: " + f_px(pvR1), color.new(pivColR, 0),  showPiv and not na(pvR1))
     lbS1 := f_pivLbl(lbS1, pvS1, "Support: " + f_px(pvS1),    color.new(pivColS, 0),  showPiv and not na(pvS1))
     lbR2 := f_pivLbl(lbR2, pvR2, f_px(pvR2),                  color.new(pivColR, 40), showPiv and pivShowR2 and not na(pvR2))
