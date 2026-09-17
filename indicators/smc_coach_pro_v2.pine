@@ -187,6 +187,11 @@ gateAtrLen     = input.int(14,     "Dash gates: ATR length", minval=1, group=gDa
 gateUseClosed  = input.bool(true,  "Dashboard gates (L/S) use CLOSED candles", group=gDash)
 dashMomoLive   = input.bool(true,  "Dashboard FVG/LGB from the LIVE bar (match chart)", group=gDash)
 
+gPivot = "11b · Exness-style daily levels"
+showPiv   = input.bool(true,  "Kal ke din se banne wali S/R lines dikhao", group=gPivot)
+pivTF     = input.string("D", "Kis din se", options=["D","W"], group=gPivot)
+pivShowR2 = input.bool(true,  "Door wali R2 / S2 bhi dikhao", group=gPivot)
+
 gPanel = "12 · Panels"
 showTeacher   = input.bool(true,  "Show Teacher panel", group=gPanel)
 showLegend    = input.bool(true,  "Show Legend / Dashboard", group=gPanel)
@@ -1258,6 +1263,48 @@ if showLegend and barstate.islast
 
         _col = lg ? color.new(color.lime, 0) : sg ? color.new(color.red, 0) : color.new(color.gray, 0)
         table.cell(lTbl, 0, rL + 1 + i, _row, bgcolor=bgPanel, text_color=_col, text_size=PFS)
+
+// ============================================================================
+//  EXNESS-STYLE DAILY LEVELS (classic pivot points)
+//  Ye zones se alag cheez hai. Ye kal ke din ki High/Low/Close se ginti hai,
+//  poore din ek hi jagah khari rehti hai, aur agle din nayi ban jati hai —
+//  bilkul waisi hi jaisi Exness ki app mein Resistance / Pivot / Support
+//  aati hain. Zones market ke rukne ki jagah batate hain, ye lines din ka
+//  naqsha batati hain. Dono saath chalte hain, ek doosre ka muqabla nahi.
+// ============================================================================
+[pvH, pvL, pvC] = request.security(syminfo.tickerid, pivTF, [high[1], low[1], close[1]],
+     lookahead = barmerge.lookahead_on)
+
+pvP  = (pvH + pvL + pvC) / 3.0
+pvRg = pvH - pvL
+pvR1 = 2.0 * pvP - pvL
+pvS1 = 2.0 * pvP - pvH
+pvR2 = pvP + pvRg
+pvS2 = pvP - pvRg
+
+plot(showPiv ? pvP : na,  title="Pivot", color=color.new(color.gray, 0),  linewidth=2, style=plot.style_linebr)
+plot(showPiv ? pvR1 : na, title="R1",    color=color.new(color.red, 20),  linewidth=2, style=plot.style_linebr)
+plot(showPiv ? pvS1 : na, title="S1",    color=color.new(color.green, 20), linewidth=2, style=plot.style_linebr)
+plot(showPiv and pivShowR2 ? pvR2 : na, title="R2", color=color.new(color.red, 55),   linewidth=1, style=plot.style_linebr)
+plot(showPiv and pivShowR2 ? pvS2 : na, title="S2", color=color.new(color.green, 55), linewidth=1, style=plot.style_linebr)
+
+// Har level par uska naam aur qeemat, sirf aakhri candle par.
+var label lbP  = na
+var label lbR1 = na
+var label lbS1 = na
+var label lbR2 = na
+var label lbS2 = na
+f_pivLbl(_old, _y, _txt, _col, _on) =>
+    label.delete(_old)
+    _on ? label.new(bar_index + 3, _y, _txt, xloc=xloc.bar_index, yloc=yloc.price,
+           style=label.style_label_left, color=color.new(color.black, 100),
+           textcolor=_col, size=size.small) : na
+if barstate.islast
+    lbP  := f_pivLbl(lbP,  pvP,  "Pivot: " + f_px(pvP),       color.new(color.gray, 0),   showPiv)
+    lbR1 := f_pivLbl(lbR1, pvR1, "Resistance: " + f_px(pvR1), color.new(color.red, 0),    showPiv)
+    lbS1 := f_pivLbl(lbS1, pvS1, "Support: " + f_px(pvS1),    color.new(color.green, 0),  showPiv)
+    lbR2 := f_pivLbl(lbR2, pvR2, f_px(pvR2),                  color.new(color.red, 40),   showPiv and pivShowR2)
+    lbS2 := f_pivLbl(lbS2, pvS2, f_px(pvS2),                  color.new(color.green, 40), showPiv and pivShowR2)
 
 // ============================================================================
 //  DEBUG
