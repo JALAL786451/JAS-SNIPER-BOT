@@ -222,6 +222,7 @@ showDebug     = input.bool(false, "DEBUG heartbeat", group=gPanel)
 // ke signals ek sath nazar aate the jab ke kaam ka sirf aakhri wala hota hai.
 // Ab sirf mojooda nishaan rehta hai; naya aate hi purana mit jata hai.
 showOnlyLast  = input.bool(true, "Sirf mojooda signal dikhao (purane mit jayein)", group=gPanel)
+sigFollow     = input.bool(true, "Khuli trade ka BUY/SELL label current candle par rakho", group=gPanel)
 
 // ============================================================================
 //  HELPERS / COLORS
@@ -952,6 +953,14 @@ if showRisk and barstate.islast and not na(lnE) and (tDir != 0 or not useTracker
     line.set_x2(lnT2, bar_index + 15)
     line.set_x2(lnT3, bar_index + 15)
     label.set_x(lbPlan, bar_index + 15)
+
+// Khuli virtual trade ka BUY/SELL label wahin khara rehta tha jahan trade
+// khuli thi - 27 candle purana label naye signal jaisa lagta tha. Ab woh
+// current candle par aa jata hai aur apni umar khud likh deta hai.
+if sigFollow and showOnlyLast and barstate.islast and tDir != 0 and not na(lbSig)
+    label.set_x(lbSig, bar_index)
+    label.set_y(lbSig, tDir == 1 ? low : high)
+    label.set_text(lbSig, (tDir == 1 ? "BUY" : "SELL") + " chal rahi · " + str.tostring(bar_index - tBar) + " candle")
 
 winR    = nTrades > 0 ? 100.0 * nTP1 / nTrades : na
 expR    = nTrades > 0 ? sumR / nTrades : na
