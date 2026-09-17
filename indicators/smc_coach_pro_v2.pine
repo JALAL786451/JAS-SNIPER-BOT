@@ -173,6 +173,8 @@ gStats = "10 · Performance Tracker"
 useTracker    = input.bool(true, "Track virtual results (TP/SL hit-rate)", group=gStats)
 showStats     = input.bool(true, "Show stats panel", group=gStats)
 beAfterTP1    = input.bool(true, "Move stop to BE after TP1", group=gStats)
+exitOnFlip    = input.bool(true, "Trend palat jaye to purana virtual trade band karo", group=gStats)
+tMaxBars      = input.int(60, "Virtual trade N candle ke baad khud band (0 = kabhi nahi)", minval=0, group=gStats)
 
 gDash = "11 · Dashboard gates"
 gateUseAdx     = input.bool(false, "Dash gates: use ADX filter", group=gDash)
@@ -758,6 +760,7 @@ var int nTP2 = 0
 var int nTP3 = 0
 var int nSLh = 0
 var int nBE  = 0
+var int nFlip = 0
 var float sumR = 0.0
 
 var line  lnE  = na
@@ -818,6 +821,15 @@ if tDir != 0
                 nTP3 += 1
                 sumR += tp3R
                 _closed := true
+    // Structure ulti taraf tootne par, ya bohot der ho jaane par, purana
+    // virtual trade zabardasti band. Warna 4320 wali SELL 52 candle tak
+    // chart par zinda rehti thi jab ke price upar ja chuki thi.
+    _flipOut = exitOnFlip and (tDir == 1 ? (bosDn or chochDn) : (bosUp or chochUp))
+    _timeOut = tMaxBars > 0 and not na(tBar) and (bar_index - tBar) > tMaxBars
+    if not _closed and (_flipOut or _timeOut)
+        sumR += ((tDir == 1 ? close - tEntry : tEntry - close) / tR)
+        nFlip += 1
+        _closed := true
     if _closed
         tDir := 0
         // Trade khatam — uski Entry/SL/TP lines bhi chali jayein. Warna wo
@@ -830,6 +842,8 @@ if tDir != 0
             line.delete(lnT2)
             line.delete(lnT3)
             label.delete(lbPlan)
+            label.delete(lbSig)
+            lbSig := na
             lnE   := na
             lnS   := na
             lnT1  := na
@@ -1083,6 +1097,7 @@ if showStats and useTracker and barstate.islast
                            " / TP3 " + str.tostring(nTP3),
                bgcolor=bgPanel, text_color=color.black, text_size=PFS)
     table.cell(sTbl, 0, 2, "SL " + str.tostring(nSLh) + "  |  BE " + str.tostring(nBE) +
+                           "  |  Flip " + str.tostring(nFlip) +
                            "  |  TP1 hit-rate " + (na(winR) ? "-" : str.tostring(winR, "#.#") + "%"),
                bgcolor=bgPanel, text_color=na(winR) ? color.black : (winR >= 50 ? color.new(color.green,0) : color.new(color.red,0)), text_size=PFS)
     table.cell(sTbl, 0, 3, "Expectancy: " + (na(expR) ? "-" : str.tostring(expR, "#.##") + " R / trade") +
