@@ -215,6 +215,7 @@ panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small"
 showTeachHdr  = input.bool(false, "TEACHER wali pehli line dikhao", group=gPanel)
 pressFont     = input.string("Large", "PRESSURE line ka font", options=["Tiny","Small","Normal","Large"], group=gPanel)
 pressDark     = input.bool(true, "PRESSURE ke rang gehre rakho (safed chart par saaf)", group=gPanel)
+hlMomoRow     = input.bool(true, "Legend: jis TF par FVG ya LGB ho us row ko numaya karo", group=gPanel)
 showDebug     = input.bool(false, "DEBUG heartbeat", group=gPanel)
 // Purane Buy/Sell aur ST ke nishaan chart par jama hote rehte the — kai hafton
 // ke signals ek sath nazar aate the jab ke kaam ka sirf aakhri wala hota hai.
@@ -1287,8 +1288,18 @@ if showLegend and barstate.islast
               " | SR:" + _srTxt +
               " | PRESS:" + str.tostring(pBuy) + "/" + str.tostring(_pSell) + "%"
 
+        // Jis TF par FVG ya LGB chal rahi ho, us poori row ka background badal
+        // jata hai aur aakhir mein ◄ ka nishan lag jata hai. Warna woh khana
+        // baqi sab jaisa hi dikhta tha aur aankh usey chhor deti thi.
+        // Bullish: FVG↑ ya LGB↓ (neeche ke stop saaf hue). Bearish: FVG↓ ya LGB↑.
+        _momoUp   = fu or ld
+        _momoDn   = fd or lu
+        _hasMomo  = _momoUp or _momoDn
+        _rowBg = not (hlMomoRow and _hasMomo) ? bgPanel : (_momoUp and _momoDn) ? color.new(color.orange, 75) : _momoUp ? color.new(color.green, 75) : color.new(color.red, 75)
+        _rowTxt = _row + (hlMomoRow and _hasMomo ? "  ◄" : "")
+
         _col = lg ? color.new(color.lime, 0) : sg ? color.new(color.red, 0) : color.new(color.gray, 0)
-        table.cell(lTbl, 0, rL + 1 + i, _row, bgcolor=bgPanel, text_color=_col, text_size=PFS)
+        table.cell(lTbl, 0, rL + 1 + i, _rowTxt, bgcolor=_rowBg, text_color=_col, text_size=PFS)
 
 // ============================================================================
 //  EXNESS-STYLE DAILY LEVELS (classic pivot points)
