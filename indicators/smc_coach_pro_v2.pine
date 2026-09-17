@@ -73,6 +73,7 @@ zoneMaxTouch  = input.int(2, "Kill zone after N touches", minval=1, maxval=10, g
 zoneMaxAge    = input.int(300, "Kill zone after N bars", minval=20, group=gStruct)
 zoneToWick    = input.bool(true, "Zone ko wick tak le jao (band candle ko chhue)", group=gStruct)
 zoneKeepExtr  = input.bool(true, "Sab se ooncha/neecha zone umar/touch se na maro", group=gStruct)
+zoneFarATR    = input.float(8.0, "Zone itni ATR se door ho to hata do (0 = kabhi nahi)", minval=0, step=0.5, group=gStruct)
 freshMaxTouch = input.int(0, "\"Fresh\" zone = touches <= N", minval=0, maxval=5, group=gStruct)
 useCloseBreak = input.bool(true, "BOS/CHOCH needs CLOSE beyond swing", group=gStruct)
 showSR        = input.bool(true,  "Draw S/R zones", group=gStruct)
@@ -93,6 +94,7 @@ onePerZone             = input.bool(true, "Max one signal per zone", group=gEntr
 gTrend = "3 · Trend / Momentum"
 emaFastLen    = input.int(20, "EMA fast", minval=2, group=gTrend)
 emaSlowLen    = input.int(50, "EMA slow", minval=3, group=gTrend)
+maBandOn      = input.bool(true, "EMA20/50 ke beech band bharo (green = buy, red = sell)", group=gTrend)
 useAdx        = input.bool(true, "Use ADX filter", group=gTrend)
 adxLen        = input.int(14, "ADX DI length", minval=2, group=gTrend)
 adxSmooth     = input.int(14, "ADX smoothing", minval=1, group=gTrend)
@@ -400,7 +402,12 @@ if array.size(zBoxes) > 0
         _spent = array.get(zTouch, i) > zoneMaxTouch
         _isExt = zoneKeepExtr and (_isSup ? (not na(_extDemBot) and _bot <= _extDemBot)
                  : (not na(_extSupTop) and _top >= _extSupTop))
-        if _broke or ((_stale or _spent) and not _isExt)
+        // Bohot door ka zone hata do. Warna 4360 wali red band chart par
+        // padi rehti thi jab ke price 4310 par thi aur EMA20/50 buy ka
+        // rukh dikha rahe thay - dono aapas mein ulte lagte thay.
+        _gap   = _isSup ? (close - _top) : (_bot - close)
+        _far   = zoneFarATR > 0 and _gap > atr * zoneFarATR
+        if _broke or _far or ((_stale or _spent) and not _isExt)
             f_zoneKill(i)
 
 // Cap: sab se purana zone hatao, lekin extreme wale ko bacha kar rakho.
@@ -494,8 +501,13 @@ longOK  = (emaF > emaS) and (strictTrendClose ? close > emaF : true) and (useAdx
 shortOK = (emaF < emaS) and (strictTrendClose ? close < emaF : true) and (useAdx ? adxV >= adxMin : true)
 trendState = longOK ? 1 : shortOK ? -1 : 0
 
-plot(emaF, title="EMA fast", color=color.new(color.aqua, 0))
-plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 0))
+pF = plot(emaF, title="EMA fast", color=color.new(color.aqua, 0))
+pS = plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 0))
+// EMA20/50 ke beech ka band: jab EMA20 upar ho to green (buy ka rukh),
+// neeche ho to red (sell ka rukh). Ye band hamesha MA ke saath chalta hai,
+// is liye ye kabhi purani jagah par atka nahi rehta.
+fill(pF, pS, color = maBandOn ? color.new(emaF > emaS ? color.green : color.red, 82)
+             : color.new(color.gray, 100), title="EMA20/50 band")
 
 dist  = (emaF - emaS) / math.max(atr, minTk)
 slope = ((emaF - emaF[1]) - (emaS - emaS[1])) / math.max(atr, minTk)
