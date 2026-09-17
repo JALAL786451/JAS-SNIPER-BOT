@@ -98,6 +98,7 @@ gTrend = "3 · Trend / Momentum"
 emaFastLen    = input.int(20, "EMA fast", minval=2, group=gTrend)
 emaSlowLen    = input.int(50, "EMA slow", minval=3, group=gTrend)
 maBandOn      = input.bool(true, "EMA20/50 ke beech band bharo (green = buy, red = sell)", group=gTrend)
+maBandFade    = input.int(93, "EMA band ki shade kitni halki (zyada = halki)", minval=70, maxval=99, group=gTrend)
 useAdx        = input.bool(true, "Use ADX filter", group=gTrend)
 adxLen        = input.int(14, "ADX DI length", minval=2, group=gTrend)
 adxSmooth     = input.int(14, "ADX smoothing", minval=1, group=gTrend)
@@ -540,7 +541,9 @@ pS = plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 0))
 // EMA20/50 ke beech ka band: jab EMA20 upar ho to green (buy ka rukh),
 // neeche ho to red (sell ka rukh). Ye band hamesha MA ke saath chalta hai,
 // is liye ye kabhi purani jagah par atka nahi rehta.
-fill(pF, pS, color = maBandOn ? color.new(emaF > emaS ? color.green : color.red, 82)
+// Shade default par bohot halki hai. Bare timeframes par EMA20 aur EMA50
+// door door hote hain, to gehri shade candles aur zones ko chhupa leti thi.
+fill(pF, pS, color = maBandOn ? color.new(emaF > emaS ? color.green : color.red, maBandFade)
              : color.new(color.gray, 100), title="EMA20/50 band")
 
 dist  = (emaF - emaS) / math.max(atr, minTk)
