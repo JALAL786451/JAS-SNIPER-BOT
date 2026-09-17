@@ -1379,8 +1379,7 @@ if showLive and barstate.islast
 
     // Range mein jagah se taqat: 70%+ upar = kharidaar bhaari, 30%- = bechne wale
     _strength = _posPct >= 70 ? "Kharidaar bhaari" : _posPct <= 30 ? "Bechne wale bhaari" : "Barabar ki jang"
-    _colStr   = _posPct >= 70 ? color.new(color.green, 0)
-                : _posPct <= 30 ? color.new(color.red, 0) : color.new(color.gray, 0)
+    _colStr   = _posPct >= 70 ? color.new(color.green, 0) : _posPct <= 30 ? color.new(color.red, 0) : color.new(color.gray, 0)
 
     table.cell(vTbl, 0, 0, "LIVE CANDLE (" + timeframe.period + ")  —  peesheengoi nahi, sirf abhi ka haal",
          bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
