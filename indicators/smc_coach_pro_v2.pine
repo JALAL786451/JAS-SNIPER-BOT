@@ -111,6 +111,7 @@ hlSmooth      = input.string("EMA", "Naali ka hisaab", options=["EMA","SMA","WMA
 hlFillOn      = input.bool(true,  "Naali ke andar halka rang bharo", group=gTrend)
 hlFade        = input.int(92, "Naali ki shade kitni halki (zyada = halki)", minval=70, maxval=99, group=gTrend)
 hlWidth       = input.int(2, "Naali ki lakeer ki motai", minval=1, maxval=4, group=gTrend)
+hlMarks       = input.bool(true, "Naali tootne par nishan lagao (dono taraf)", group=gTrend)
 useAdx        = input.bool(true, "Use ADX filter", group=gTrend)
 adxLen        = input.int(14, "ADX DI length", minval=2, group=gTrend)
 adxSmooth     = input.int(14, "ADX smoothing", minval=1, group=gTrend)
@@ -581,6 +582,23 @@ hlCol  = hlUp ? color.green : hlDn ? color.red : color.gray
 pHL = plot(showHL ? hlLo : na, title="Naali neeche (low)",  color=color.new(showHL ? color.green : color.gray, showHL ? 10 : 100), linewidth=hlWidth)
 pHH = plot(showHL ? hlHi : na, title="Naali oopar (high)", color=color.new(showHL ? color.red   : color.gray, showHL ? 10 : 100), linewidth=hlWidth)
 fill(pHL, pHH, color = (showHL and hlFillOn) ? color.new(hlCol, hlFade) : color.new(color.gray, 100), title="Naali ka andar")
+
+// --- Naali tootne ke nishan ---
+// Masla: naali ka rang sirf us ke apne rukh se banta hai, aur MA hamesha
+// peeche chalti hai. Girawat ke waqt price naali se door chali jati hai, phir
+// jab woh palat kar upar aati hai to naali abhi oopar hi hoti hai - is liye
+// TALE par koi wakia nazar nahi aata, jab ke CHOTI par saaf dikhta hai.
+// Hal: dono taraf ka ek hi qism ka wakia ginna - price ka naali ko torna.
+hlBrkUp = showHL and ta.crossover(close,  hlHi)   // oopar wali tor kar bahar = kharidaar
+hlBrkDn = showHL and ta.crossunder(close, hlLo)   // neeche wali tor kar bahar = bechne wale
+
+plotshape(hlMarks and hlBrkUp, title="Naali tooti UPAR", style=shape.triangleup,
+     location=location.belowbar, color=color.new(color.green, 0), size=size.tiny)
+plotshape(hlMarks and hlBrkDn, title="Naali tooti NEECHE", style=shape.triangledown,
+     location=location.abovebar, color=color.new(color.red, 0), size=size.tiny)
+
+alertcondition(hlBrkUp, "Naali tooti UPAR",  "Price ne low/high naali ko upar se tora")
+alertcondition(hlBrkDn, "Naali tooti NEECHE", "Price ne low/high naali ko neeche se tora")
 
 dist  = (emaF - emaS) / math.max(atr, minTk)
 slope = ((emaF - emaF[1]) - (emaS - emaS[1])) / math.max(atr, minTk)
