@@ -99,6 +99,18 @@ emaFastLen    = input.int(20, "EMA fast", minval=2, group=gTrend)
 emaSlowLen    = input.int(50, "EMA slow", minval=3, group=gTrend)
 maBandOn      = input.bool(true, "EMA20/50 ke beech band bharo (green = buy, red = sell)", group=gTrend)
 maBandFade    = input.int(93, "EMA band ki shade kitni halki (zyada = halki)", minval=70, maxval=99, group=gTrend)
+
+// --- Candle ko chipakne wali naali (low/high channel) ---
+// Aam MA candle ke CLOSE par banti hai, is liye woh candle ke BEECH se
+// guzarti hai aur kisi kinare ko nahi chhuti. Ye naali low aur high par
+// banti hai, is liye neeche wali lakeer candles ke neeche aur oopar wali
+// candles ke oopar chipki rehti hai.
+showHL        = input.bool(true,  "Candle-chipku naali dikhao (low/high channel)", group=gTrend)
+hlLen         = input.int(20, "Naali ki length", minval=2, maxval=200, group=gTrend)
+hlSmooth      = input.string("EMA", "Naali ka hisaab", options=["EMA","SMA","WMA"], group=gTrend)
+hlFillOn      = input.bool(true,  "Naali ke andar halka rang bharo", group=gTrend)
+hlFade        = input.int(92, "Naali ki shade kitni halki (zyada = halki)", minval=70, maxval=99, group=gTrend)
+hlWidth       = input.int(2, "Naali ki lakeer ki motai", minval=1, maxval=4, group=gTrend)
 useAdx        = input.bool(true, "Use ADX filter", group=gTrend)
 adxLen        = input.int(14, "ADX DI length", minval=2, group=gTrend)
 adxSmooth     = input.int(14, "ADX smoothing", minval=1, group=gTrend)
@@ -545,6 +557,30 @@ pS = plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 0))
 // door door hote hain, to gehri shade candles aur zones ko chhupa leti thi.
 fill(pF, pS, color = maBandOn ? color.new(emaF > emaS ? color.green : color.red, maBandFade)
              : color.new(color.gray, 100), title="EMA20/50 band")
+
+// ============================================================================
+//  CANDLE-CHIPKU NAALI (low / high channel)
+//  Neeche wali lakeer candles ke LOW ka ausat hai, oopar wali HIGH ka.
+//  Uptrend mein price neeche wali par baar baar tap karti hai - wahi support.
+//  Downtrend mein oopar wali resistance ban jati hai. Naali toot jaye to
+//  trend badalne ka ishara.
+//  YE SIRF DIKHAWA HAI - kisi signal, score ya gate par iska koi asar nahi.
+//  Signals ab bhi EMA20/50 (close par) se hi bante hain.
+// ============================================================================
+f_hlMa(_src, _len) =>
+    hlSmooth == "SMA" ? ta.sma(_src, _len) : hlSmooth == "WMA" ? ta.wma(_src, _len) : ta.ema(_src, _len)
+
+hlLo = f_hlMa(low,  hlLen)
+hlHi = f_hlMa(high, hlLen)
+
+// Rang naali ke rukh se: dono lakeerein upar ja rahi hon to sabz, neeche to laal.
+hlUp   = hlLo > hlLo[1] and hlHi > hlHi[1]
+hlDn   = hlLo < hlLo[1] and hlHi < hlHi[1]
+hlCol  = hlUp ? color.green : hlDn ? color.red : color.gray
+
+pHL = plot(showHL ? hlLo : na, title="Naali neeche (low)",  color=color.new(showHL ? color.green : color.gray, showHL ? 10 : 100), linewidth=hlWidth)
+pHH = plot(showHL ? hlHi : na, title="Naali oopar (high)", color=color.new(showHL ? color.red   : color.gray, showHL ? 10 : 100), linewidth=hlWidth)
+fill(pHL, pHH, color = (showHL and hlFillOn) ? color.new(hlCol, hlFade) : color.new(color.gray, 100), title="Naali ka andar")
 
 dist  = (emaF - emaS) / math.max(atr, minTk)
 slope = ((emaF - emaF[1]) - (emaS - emaS[1])) / math.max(atr, minTk)
