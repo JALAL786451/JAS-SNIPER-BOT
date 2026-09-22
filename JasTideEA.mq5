@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
 //|                                                   JasTideEA.mq5  |
-//|  JAS Tide v1.1 ka MT5 tarjuma — Donchian breakout + HTF filter   |
+//|  JAS Tide v1.1 ka MT5 tarjuma - Donchian breakout + HTF filter   |
 //|                                                                  |
 //|  YE STRATEGIES/JAS_TIDE_V1.PINE KA HU-BA-HU TARJUMA HAI.         |
 //|  Pine par TradingView Strategy Tester ka natija (XAUUSD 1D,      |
@@ -8,13 +8,13 @@
 //|     458 trades | 40.17% jeet | PF 1.564 | Max DD 20.64%          |
 //|  2014-2019 (phansa daur): 45 trades | PF 1.205 | DD 4.47%        |
 //|  Agar is EA ka MT5 backtest in se BOHOT mukhtalif aaye to kahin  |
-//|  tarjume mein farq hai — pehle wajah dhoondein, tab bharosa.      |
+//|  tarjume mein farq hai - pehle wajah dhoondein, tab bharosa.      |
 //|                                                                  |
 //|  QAWAID (sirf chaar):                                            |
 //|   1) BUY : band candle ka close pichhli N candle ke sab se       |
 //|            ooncha high tore, AUR D1 par EMA50 > EMA200           |
 //|   2) SELL: iska ulta                                             |
-//|   3) Stop: entry se ATR x 2.0 — aur sirf AAGE sarakta hai        |
+//|   3) Stop: entry se ATR x 2.0 - aur sirf AAGE sarakta hai        |
 //|   4) Nikalna: 2R par aadha band, baqi ulte Donchian par          |
 //|                                                                  |
 //|  NO grid / NO martingale / NO hedging / NO averaging.            |
@@ -31,30 +31,30 @@
 CTrade trade;
 
 //--------------------------- INPUTS -----------------------------------
-input group "=== 1 · Qawaid ==="
+input group "=== 1 - Qawaid ==="
 input int    InpEntryLen       = 10;      // Breakout: kitni candle ka high/low tore
 input int    InpExitLen        = 5;       // Exit: kitni candle ka ulta high/low
 input int    InpAtrPeriod      = 14;      // ATR period
 input double InpAtrMult        = 2.0;     // Shuru ka stop (x ATR)
 
-input group "=== 2 · Bara timeframe ka filter ==="
+input group "=== 2 - Bara timeframe ka filter ==="
 input bool   InpUseHTF         = true;    // HTF filter lagao
 input ENUM_TIMEFRAMES InpHtfTF = PERIOD_D1; // Bara timeframe
 input int    InpHtfFast        = 50;      // HTF EMA fast
 input int    InpHtfSlow        = 200;     // HTF EMA slow
 input bool   InpExitOnHtfFlip  = true;    // HTF palat jaye to nikal jao
 
-input group "=== 3 · Risk (jaan boojh kar tang — khud na barhayein) ==="
+input group "=== 3 - Risk (jaan boojh kar tang - khud na barhayein) ==="
 input double InpRiskPercent    = 1.0;     // Har trade par risk (% balance)
 input bool   InpUsePartial     = true;    // 2R par aadha band karo
 input double InpPartialR       = 2.0;     // Aadha band karne ka R
 input double InpMaxLot         = 1.00;    // Lot ki hadd (hifazat)
 
-input group "=== 4 · Chop filter ==="
+input group "=== 4 - Chop filter ==="
 input bool   InpUseAtrFloor    = true;    // Bohot susti mein trade na karo
 input double InpMinAtrPercent  = 0.25;    // Kam az kam ATR (% price ka)
 
-input group "=== 5 · Amal ==="
+input group "=== 5 - Amal ==="
 input int    InpSlippagePoints = 50;      // Max slippage (points)
 input int    InpMagicNumber    = 20260917; // Magic number
 
@@ -69,6 +69,19 @@ double   g_entryPx     = 0.0;             // is trade ki entry
 double   g_initR       = 0.0;             // shuru ka stop faasla (1R)
 double   g_initVol     = 0.0;             // entry ki poori maqdaar
 bool     g_partialDone = false;           // aadha band ho chuka?
+
+//--- Function prototypes. MQL5 aam tor par baad mein likhe function ko bhi
+//--- pehchan leta hai, magar ye likh dene se koi shak nahi rehta.
+bool   IsNewBar();
+bool   HasPosition(long &type, double &volume, double &openPrice, double &sl);
+void   SyncStateWithPosition();
+double MinStopDistance();
+double LotFromRisk(double stopDistPrice);
+bool   HtfBull(bool &ok);
+void   CheckPartialOnTick();
+void   OpenTrade(bool isBuy, double atr);
+void   ManageOpenPosition(long posType, double posVol, double posOpen, double posSL,
+                          double hiExit, double loExit, bool bull);
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -209,7 +222,7 @@ double LotFromRisk(double stopDistPrice)
   }
 
 //+------------------------------------------------------------------+
-//| HTF ka rukh — shift 1, yani BAND ho chuki daily candle            |
+//| HTF ka rukh - shift 1, yani BAND ho chuki daily candle            |
 //+------------------------------------------------------------------+
 bool HtfBull(bool &ok)
   {
@@ -224,7 +237,7 @@ bool HtfBull(bool &ok)
   }
 
 //+------------------------------------------------------------------+
-//| 2R par aadha band — har tick par, kyunki Pine mein ye limit order |
+//| 2R par aadha band - har tick par, kyunki Pine mein ye limit order |
 //| hai jo candle ke beech bhar jata hai.                             |
 //+------------------------------------------------------------------+
 void CheckPartialOnTick()
@@ -285,7 +298,7 @@ void OnTick()
 
    //--- Donchian levels. Pine mein [1] laga hai, yani MOJOODA candle shamil
    //    nahi. MT5 mein band candle shift 1 hai, is liye levels shift 2 se
-   //    ginte hain — warna candle apna hi high tor deti aur har bar signal
+   //    ginte hain - warna candle apna hi high tor deti aur har bar signal
    //    ban jata.
    int hiIdx = iHighest(_Symbol, PERIOD_CURRENT, MODE_HIGH, InpEntryLen, 2);
    int loIdx = iLowest (_Symbol, PERIOD_CURRENT, MODE_LOW,  InpEntryLen, 2);
@@ -314,10 +327,10 @@ void OnTick()
    bool   inPos = HasPosition(posType, posVol, posOpen, posSL);
 
    if(inPos)
-      ManageOpenPosition(posType, posVol, posOpen, posSL, atr, hiExit, loExit, bull);
+      ManageOpenPosition(posType, posVol, posOpen, posSL, hiExit, loExit, bull);
    else
      {
-      // position band ho chuki — purani yaadein saaf
+      // position band ho chuki - purani yaadein saaf
       g_entryPx = 0.0; g_initR = 0.0; g_initVol = 0.0; g_partialDone = false;
 
       if(!liveOk) return;
@@ -372,7 +385,7 @@ void OpenTrade(bool isBuy, double atr)
 //| Khuli position: stop sirf AAGE sarakta hai, kabhi peeche nahi.    |
 //+------------------------------------------------------------------+
 void ManageOpenPosition(long posType, double posVol, double posOpen, double posSL,
-                        double atr, double hiExit, double loExit, bool bull)
+                        double hiExit, double loExit, bool bull)
   {
    int    dig  = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
    double ask  = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
@@ -395,7 +408,7 @@ void ManageOpenPosition(long posType, double posVol, double posOpen, double posS
       if((isBuy && !bull) || (!isBuy && bull))
         {
          trade.PositionClose(_Symbol);
-         Print("HTF palta — position band.");
+         Print("HTF palta - position band.");
          return;
         }
      }
