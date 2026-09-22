@@ -1,0 +1,208 @@
+//@version=5
+// ============================================================================
+//  JAS TIDE — SIGNAL (haath se trade karne ke liye)
+//
+//  Ye wohi qawaid hain jo strategies/jas_tide_v1.pine aur JasTideEA.mq5 mein
+//  hain. Farq sirf itna: ye khud trade nahi karta, ye aap ko BATATA hai --
+//  kab BUY, kab SELL, kis qeemat par, stop kahan, target kahan, aur KITNE
+//  LOT ka order lagana hai.
+//
+//  QAWAID (sirf chaar):
+//   BUY  = band candle ka close pichhli N candle ke sab se ooncha high tore
+//          AUR bare timeframe (D1) par EMA50 > EMA200
+//   SELL = iska ulta
+//   STOP = entry se ATR x 2.0
+//   TP   = 2R (yani stop ke faasle ka do guna)
+//
+//  BACKTEST (XAUUSD 1D, saara data, 10/5/14/2.0/D/50/200):
+//   458 trades | 40.17% jeet | PF 1.564 | Max DD 20.64%
+//   2014-2019 ke phanse hue daur mein bhi: +3.10%, DD sirf 4.47%
+//
+//  KAUN SA TIMEFRAME: 1D sab se behtar raha, 4H doosre number par.
+//  1H aur us se chhote par expectancy lagbhag sifar thi - wahan na lagayein.
+//
+//  REPAINT NAHI: signal sirf BAND candle par aata hai (barstate.isconfirmed),
+//  breakout level [1] se lia gaya hai, aur D1 ka EMA bhi [1] + lookahead_off.
+//
+//  YE PEESHEENGOI NAHI HAI. Ye ek qaida hai jo 458 dafa chala kar naapa gaya.
+//  Har signal chalega aisa koi waada nahi - 60% signal HAARTE hain.
+// ============================================================================
+indicator("JAS Tide - Signal (manual trading)", overlay = true,
+     max_labels_count = 100, max_lines_count = 100)
+
+// ---------------------------------------------------------------- INPUTS ---
+gCore = "1 · Qawaid (backtest wali settings)"
+entryLen = input.int(10, "Breakout: kitni candle ka high/low tore", minval=3, maxval=200, group=gCore)
+atrLen   = input.int(14, "ATR length", minval=2, group=gCore)
+atrMult  = input.float(2.0, "Stop = ATR x", minval=0.5, step=0.1, group=gCore)
+tpR      = input.float(2.0, "Target = kitne R", minval=0.5, step=0.5, group=gCore)
+
+gHTF = "2 · Bara timeframe ka filter"
+useHTF  = input.bool(true, "Bare timeframe ka filter lagao", group=gHTF)
+htfTF   = input.timeframe("D", "Bara timeframe", group=gHTF)
+htfFast = input.int(50,  "HTF EMA fast", minval=2, group=gHTF)
+htfSlow = input.int(200, "HTF EMA slow", minval=3, group=gHTF)
+
+gFilt = "3 · Chop filter"
+useAtrFloor = input.bool(true, "Bohot susti mein signal na do", group=gFilt)
+minAtrPct   = input.float(0.25, "Kam az kam ATR (% price ka)", minval=0.0, step=0.05, group=gFilt)
+
+gAcc = "4 · Aap ka account (lot ka hisaab is se banta hai)"
+accType  = input.string("Cent", "Account ki qism", options=["Cent","Standard"], group=gAcc)
+balUSD   = input.float(500.0, "Balance (DOLLAR mein, cent mein nahi)", minval=1, step=10, group=gAcc)
+riskPct  = input.float(1.0, "Har trade par risk (%)", minval=0.1, maxval=5.0, step=0.1, group=gAcc)
+minLot   = input.float(0.01, "Broker ka minimum lot", minval=0.001, step=0.01, group=gAcc)
+lotStep  = input.float(0.01, "Lot ka step", minval=0.001, step=0.01, group=gAcc)
+
+gView = "5 · Dikhawa"
+showPanel = input.bool(true, "Panel dikhao", group=gView)
+panelPos  = input.string("Bottom Right", "Panel ki jagah", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gView)
+showLast  = input.bool(true, "Sirf mojooda signal dikhao (purane mit jayein)", group=gView)
+showLines = input.bool(true, "Entry / SL / TP ki lakeerein dikhao", group=gView)
+
+// ------------------------------------------------------------- HISAAB -----
+atr = ta.atr(atrLen)
+
+// [1] lagaya hai, yani MOJOODA candle shamil nahi - warna candle apna hi
+// high tor deti aur har bar signal ban jata.
+hiBrk = ta.highest(high, entryLen)[1]
+loBrk = ta.lowest (low,  entryLen)[1]
+
+f_htf() =>
+    _f = ta.ema(close, htfFast)
+    _s = ta.ema(close, htfSlow)
+    [_f[1], _s[1]]
+[hF, hS] = request.security(syminfo.tickerid, htfTF, f_htf(), barmerge.gaps_off, barmerge.lookahead_off)
+
+htfReady = not na(hF) and not na(hS)
+bullHTF  = htfReady and hF > hS
+bullOK   = not useHTF or bullHTF
+bearOK   = not useHTF or (htfReady and not bullHTF)
+
+atrPct = atr / close * 100.0
+liveOk = not useAtrFloor or atrPct >= minAtrPct
+
+// Signal sirf BAND candle par. Chalti hui candle par kuch nahi dikhega -
+// aur yehi theek hai, warna teer aata jata rehta.
+rawBuy  = close > hiBrk and bullOK and liveOk
+rawSell = close < loBrk and bearOK and liveOk
+sigBuy  = rawBuy  and barstate.isconfirmed
+sigSell = rawSell and barstate.isconfirmed
+
+// ------------------------------------------------------- LOT KA HISAAB ----
+// XAUUSD:
+//   Standard account: 1.00 lot par gold ka $1 move = $100
+//   Cent account    : 1.00 lot par gold ka $1 move = $1 (yani 100 USC)
+f_lot(_stopDist) =>
+    _perLot   = accType == "Cent" ? 1.0 : 100.0
+    _riskMon  = balUSD * riskPct / 100.0
+    _lossLot  = _stopDist * _perLot
+    _raw      = _lossLot > 0 ? _riskMon / _lossLot : 0.0
+    _step     = lotStep > 0 ? lotStep : 0.01
+    math.floor(_raw / _step) * _step
+
+// ------------------------------------------------------ TRADE KA NAQSHA ---
+var int    tDir   = 0
+var float  tEntry = na
+var float  tSL    = na
+var float  tTP    = na
+var float  tLot   = na
+var int    tBar   = na
+
+if sigBuy or sigSell
+    _d       = sigBuy ? 1 : -1
+    _stop    = atr * atrMult
+    tDir    := _d
+    tEntry  := close
+    tSL     := _d == 1 ? close - _stop : close + _stop
+    tTP     := _d == 1 ? close + _stop * tpR : close - _stop * tpR
+    tLot    := f_lot(_stop)
+    tBar    := bar_index
+
+// ---------------------------------------------------------------- LABELS --
+var label lbSig = na
+if (sigBuy or sigSell) and showLast
+    label.delete(lbSig)
+    lbSig := label.new(bar_index, sigBuy ? low : high, sigBuy ? "BUY" : "SELL",
+         xloc=xloc.bar_index, yloc=yloc.price,
+         style = sigBuy ? label.style_label_up : label.style_label_down,
+         color = color.new(sigBuy ? #1B5E20 : #B71C1C, 0), textcolor=color.white, size=size.normal)
+
+plotshape(not showLast and sigBuy,  title="BUY",  style=shape.labelup,   location=location.belowbar, color=color.new(#1B5E20,0), text="BUY",  textcolor=color.white, size=size.small)
+plotshape(not showLast and sigSell, title="SELL", style=shape.labeldown, location=location.abovebar, color=color.new(#B71C1C,0), text="SELL", textcolor=color.white, size=size.small)
+
+// Breakout ke level - taake dikhe ke agla signal kahan banega
+plot(hiBrk, "Breakout upar",  color=color.new(#B71C1C, 55), style=plot.style_stepline)
+plot(loBrk, "Breakout neeche", color=color.new(#1B5E20, 55), style=plot.style_stepline)
+
+// ------------------------------------------------------ ENTRY/SL/TP LINES -
+var line lnE = na
+var line lnS = na
+var line lnT = na
+if showLines and barstate.islast
+    line.delete(lnE)
+    line.delete(lnS)
+    line.delete(lnT)
+    lnE := na
+    lnS := na
+    lnT := na
+    if tDir != 0 and not na(tEntry)
+        _x1 = nz(tBar, bar_index)
+        lnE := line.new(_x1, tEntry, bar_index + 12, tEntry, xloc=xloc.bar_index, color=color.new(color.blue, 0), width=2)
+        lnS := line.new(_x1, tSL,    bar_index + 12, tSL,    xloc=xloc.bar_index, color=color.new(#B71C1C, 0), width=2, style=line.style_dashed)
+        lnT := line.new(_x1, tTP,    bar_index + 12, tTP,    xloc=xloc.bar_index, color=color.new(#1B5E20, 0), width=2, style=line.style_dashed)
+
+// ---------------------------------------------------------------- PANEL ---
+f_pos(s) => s=="Top Left"?position.top_left:s=="Top Right"?position.top_right:s=="Bottom Left"?position.bottom_left:position.bottom_right
+f_px(x) => str.tostring(x, format.mintick)
+
+// Timeframe ka mashwara - backtest isi par mabni hai
+tfOk   = timeframe.isdaily or (timeframe.isminutes and timeframe.multiplier == 240)
+tfNote = timeframe.isdaily ? "1D - sab se behtar" : (timeframe.isminutes and timeframe.multiplier == 240) ? "4H - theek hai" : "YE TF THEEK NAHI. 1D ya 4H par lagayein."
+
+// Kyun signal nahi aaya - saaf saaf
+miss = ""
+if not liveOk
+    miss += "• Bazaar bohot susat hai (ATR " + str.tostring(atrPct, "#.##") + "% < " + str.tostring(minAtrPct) + "%)\n"
+if useHTF and not htfReady
+    miss += "• Bare timeframe ka data abhi taiyar nahi\n"
+if useHTF and htfReady
+    miss += "• " + htfTF + " ka rukh: " + (bullHTF ? "UPAR (sirf BUY ki ijazat)" : "NEECHE (sirf SELL ki ijazat)") + "\n"
+if close <= hiBrk and close >= loBrk
+    miss += "• Price abhi naali ke andar hai. Upar " + f_px(hiBrk) + " tootey to BUY,\n  neeche " + f_px(loBrk) + " tootey to SELL\n"
+
+var table pnl = na
+if showPanel and barstate.islast
+    if na(pnl)
+        pnl := table.new(f_pos(panelPos), 1, 7, border_width=1)
+    else
+        table.clear(pnl, 0, 0, 0, 6)
+
+    _hdr = "JAS TIDE  —  " + timeframe.period + "   (" + tfNote + ")"
+    table.cell(pnl, 0, 0, _hdr, bgcolor=color.new(color.white, 5),
+         text_color = tfOk ? color.new(#1B5E20,0) : color.new(#B71C1C,0), text_size=size.normal)
+
+    _state = tDir == 0 ? "INTEZAR — abhi koi signal nahi"
+             : (tDir == 1 ? "BUY" : "SELL") + "  (" + str.tostring(bar_index - nz(tBar, bar_index)) + " candle purana)"
+    _scol  = tDir == 0 ? color.new(#37474F,0) : (tDir == 1 ? color.new(#1B5E20,0) : color.new(#B71C1C,0))
+    table.cell(pnl, 0, 1, _state, bgcolor=color.new(color.white, 12), text_color=_scol, text_size=size.large)
+
+    if tDir != 0 and not na(tEntry)
+        table.cell(pnl, 0, 2, "Entry  " + f_px(tEntry), bgcolor=color.new(color.white, 20), text_color=color.new(color.blue,0), text_size=size.normal)
+        table.cell(pnl, 0, 3, "SL     " + f_px(tSL) + "   (ATR x " + str.tostring(atrMult) + ")", bgcolor=color.new(color.white, 20), text_color=color.new(#B71C1C,0), text_size=size.normal)
+        table.cell(pnl, 0, 4, "TP     " + f_px(tTP) + "   (" + str.tostring(tpR) + "R)", bgcolor=color.new(color.white, 20), text_color=color.new(#1B5E20,0), text_size=size.normal)
+
+        _lotTxt = tLot >= minLot ? ("LOT    " + str.tostring(tLot, "#.##") + "   (" + accType + " account, risk " + str.tostring(riskPct) + "%)")
+                  : ("LOT    BOHOT CHHOTA — " + str.tostring(tLot, "#.###") + " nikla, minimum " + str.tostring(minLot) + " hai.\nTRADE NA KAREIN ya stop chhota TF par lein.")
+        _lcol   = tLot >= minLot ? color.new(#37474F,0) : color.new(#B71C1C,0)
+        table.cell(pnl, 0, 5, _lotTxt, bgcolor=color.new(color.white, 12), text_color=_lcol, text_size=size.normal)
+    else
+        table.cell(pnl, 0, 2, miss == "" ? "• Sab shartein poori, agli candle ka intezar" : miss,
+             bgcolor=color.new(color.white, 20), text_color=color.new(#37474F,0), text_size=size.small)
+
+    table.cell(pnl, 0, 6, "60% signal HAARTE hain. Faida chhoti haar aur bari jeet se aata hai.\nHar signal par barabar risk rakhein - warna hisaab toot jata hai.",
+         bgcolor=color.new(color.white, 25), text_color=color.new(#37474F,0), text_size=size.small)
+
+// --------------------------------------------------------------- ALERTS ---
+alertcondition(sigBuy,  "JAS Tide BUY",  "JAS Tide: BUY signal (band candle par)")
+alertcondition(sigSell, "JAS Tide SELL", "JAS Tide: SELL signal (band candle par)")
