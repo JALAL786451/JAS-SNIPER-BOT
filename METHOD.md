@@ -280,3 +280,80 @@ screenshot alone cannot say which.
 Neither can it say, from the Closed tab alone: how long the basket was held,
 how deep it went before the reversal, or whether the 4374.481 buy was a
 fishing lot or a recovery lot. Those need the Open tab or the equity curve.
+
+---
+
+## The first measured result — 3,872 orders, roughly 22 Jun to 21 Sep 2026
+
+He showed the Exness app's own Performance page. This is the first time the
+method has been measured rather than described, and it is his own live money,
+not a backtest. The numbers, as the app reports them:
+
+| | |
+|---|---|
+| Total orders | **3,872** |
+| Profitable | **2,906 (75.1%)** |
+| Unprofitable | 966 (24.9%) |
+| Gross profit | **+$3,592.75** |
+| Gross loss | **-$3,771.15** |
+| Net | **-$178.40** |
+| Trading cost shown by the app | $0.00 |
+| Trading volume | **$4,513,133** |
+| Balance | $706 → **$528.18 equity** (**-25%**) |
+
+Derived from those:
+
+- **Average win $1.24. Average loss $3.90.** The average loss is **3.16x the
+  average win**.
+- **Profit factor 0.953** — just under break-even.
+- The equity curve rises to about $715 and then falls to ~$500 over roughly
+  six weeks, recovering to $528. The account's worst drawdown is the one it is
+  still in.
+
+### Why this matters
+
+**A 75% win rate lost money.** Three wins do not cover one loss when the loss
+is 3.16x the size. This is the mirror image of the Donchian strategy tested in
+this repo (`strategies/jas_tide_v1.pine`), which wins only 40% of the time,
+wins 2.1x what it loses, and is profitable over 458 trades. Win rate is not
+the variable that decides the outcome; the ratio of average win to average
+loss is.
+
+This is a direct consequence of the method as documented above: no stop loss
+means a losing leg is held until it comes back or until the basket is unwound
+at a loss, while winners are closed at a few dollars. The method *manufactures*
+small wins and large losses. That is what the 3.16x is.
+
+### The cost estimate — do not treat the app's "$0.00" as the real cost
+
+The app reports trading cost as $0.00 because this is a spread-only account:
+the cost is inside the fills, not a separate line. From the reported volume:
+
+```
+$4,513,133 x ($0.26 / ~$4,300)  ≈  $273 of spread
+Net result                       =  -$178
+Implied result before spread     ≈  +$95
+```
+
+So on this sample the method's *direction* was roughly break-even to slightly
+positive, and **the spread is what made it negative**. At about 92 orders per
+day over ~42 trading days, each order carries roughly $0.07 of spread against
+an average win of $1.24 — about 6% of every win, paid 3,872 times.
+
+The $0.26 spread is an assumption; the real figure varied. The direction of
+the finding is robust, the exact number is not.
+
+### What this points at
+
+Two changes, both measurable, neither of which requires abandoning the method:
+
+1. **Fewer orders.** Same approach, a fraction of the clicks. Cutting order
+   count by two-thirds cuts roughly $180 of cost on this sample.
+2. **Cap the size of a loss.** If the average loss were brought down to the
+   size of the average win, the same 3,872 trades at the same 75% win rate
+   return roughly **+$2,395** instead of -$178.
+
+The second is the larger effect by far, and it is the one the method as
+written resists, because it has no stop by design. Do not graft a stop onto
+his method on your own initiative — it is his call. Record the arithmetic and
+let him decide.
