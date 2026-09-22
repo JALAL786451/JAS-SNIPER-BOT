@@ -36,6 +36,8 @@ entryLen = input.int(10, "Breakout: kitni candle ka high/low tore", minval=3, ma
 atrLen   = input.int(14, "ATR length", minval=2, group=gCore)
 atrMult  = input.float(2.0, "Stop = ATR x", minval=0.5, step=0.1, group=gCore)
 tpR      = input.float(2.0, "Target = kitne R", minval=0.5, step=0.5, group=gCore)
+exitLen  = input.int(5, "Trail: kitni candle ka ulta high/low", minval=2, maxval=100, group=gCore)
+exitOnHTF= input.bool(true, "Bara timeframe palat jaye to nikal jao", group=gCore)
 
 gHTF = "2 · Bara timeframe ka filter"
 useHTF  = input.bool(true, "Bare timeframe ka filter lagao", group=gHTF)
@@ -67,6 +69,8 @@ atr = ta.atr(atrLen)
 // high tor deti aur har bar signal ban jata.
 hiBrk = ta.highest(high, entryLen)[1]
 loBrk = ta.lowest (low,  entryLen)[1]
+hiExit = ta.highest(high, exitLen)[1]
+loExit = ta.lowest (low,  exitLen)[1]
 
 f_htf() =>
     _f = ta.ema(close, htfFast)
@@ -89,6 +93,8 @@ rawSell = close < loBrk and bearOK and liveOk
 sigBuy  = rawBuy  and barstate.isconfirmed
 sigSell = rawSell and barstate.isconfirmed
 
+f_px(x) => str.tostring(x, format.mintick)
+
 // ------------------------------------------------------- LOT KA HISAAB ----
 // XAUUSD:
 //   Standard account: 1.00 lot par gold ka $1 move = $100
@@ -104,20 +110,70 @@ f_lot(_stopDist) =>
 // ------------------------------------------------------ TRADE KA NAQSHA ---
 var int    tDir   = 0
 var float  tEntry = na
-var float  tSL    = na
+var float  tSL    = na      // ye TRAIL hota hai, jama nahi rehta
 var float  tTP    = na
 var float  tLot   = na
+var float  tR     = na      // shuru ka stop faasla
 var int    tBar   = na
+var bool   tHalf  = false   // 2R par aadha band ho chuka?
+var string tLast  = ""      // pichli trade ka anjaam
+var int    nSL    = 0
+var int    nTP    = 0
+var int    nFlip  = 0
 
-if sigBuy or sigSell
+// --- PEHLE khuli trade ko sanbhalo, PHIR nayi kholo ---
+// Ye hissa pehle NAHI THA. Us ki wajah se panel 48 candle purani SELL ko
+// "abhi ka hukm" bana kar dikha raha tha, halanke us ka SL kab ka lag
+// chuka tha. User ne ye pakra - bilkul theek pakra.
+if tDir != 0 and barstate.isconfirmed
+    _closed = false
+
+    // 1) Stop laga?
+    if tDir == 1 and low <= tSL
+        nSL     += 1
+        tLast   := "Pichli BUY: STOP laga (" + f_px(tSL) + ")"
+        _closed := true
+    if tDir == -1 and high >= tSL
+        nSL     += 1
+        tLast   := "Pichli SELL: STOP laga (" + f_px(tSL) + ")"
+        _closed := true
+
+    // 2) 2R ka target - yahan AADHA band karna hai, baqi trail par chalta hai
+    if not _closed and not tHalf
+        if (tDir == 1 and high >= tTP) or (tDir == -1 and low <= tTP)
+            tHalf := true
+            nTP   += 1
+
+    // 3) Bara timeframe palat gaya?
+    if not _closed and exitOnHTF and useHTF and htfReady
+        if (tDir == 1 and not bullHTF) or (tDir == -1 and bullHTF)
+            nFlip   += 1
+            tLast   := (tDir == 1 ? "Pichli BUY" : "Pichli SELL") + ": " + htfTF + " ka rukh palta, nikal gaye"
+            _closed := true
+
+    // 4) Trail - stop sirf trade ke haq mein sarakta hai, kabhi peeche nahi
+    if not _closed
+        if tDir == 1
+            tSL := math.max(tSL, loExit)
+        else
+            tSL := math.min(tSL, hiExit)
+
+    if _closed
+        tDir  := 0
+        tHalf := false
+
+// --- Naya signal sirf tab jab koi trade khuli na ho ---
+if (sigBuy or sigSell) and tDir == 0
     _d       = sigBuy ? 1 : -1
     _stop    = atr * atrMult
     tDir    := _d
     tEntry  := close
+    tR      := _stop
     tSL     := _d == 1 ? close - _stop : close + _stop
     tTP     := _d == 1 ? close + _stop * tpR : close - _stop * tpR
     tLot    := f_lot(_stop)
     tBar    := bar_index
+    tHalf   := false
 
 // ---------------------------------------------------------------- LABELS --
 var label lbSig = na
@@ -127,6 +183,12 @@ if (sigBuy or sigSell) and showLast
          xloc=xloc.bar_index, yloc=yloc.price,
          style = sigBuy ? label.style_label_up : label.style_label_down,
          color = color.new(sigBuy ? #1B5E20 : #B71C1C, 0), textcolor=color.white, size=size.normal)
+
+// Trade band ho gayi to us ka label bhi chala jaye - warna purana BUY/SELL
+// chart par khara rehta aur naye signal jaisa lagta.
+if showLast and tDir == 0 and not na(lbSig)
+    label.delete(lbSig)
+    lbSig := na
 
 plotshape(not showLast and sigBuy,  title="BUY",  style=shape.labelup,   location=location.belowbar, color=color.new(#1B5E20,0), text="BUY",  textcolor=color.white, size=size.small)
 plotshape(not showLast and sigSell, title="SELL", style=shape.labeldown, location=location.abovebar, color=color.new(#B71C1C,0), text="SELL", textcolor=color.white, size=size.small)
@@ -154,7 +216,6 @@ if showLines and barstate.islast
 
 // ---------------------------------------------------------------- PANEL ---
 f_pos(s) => s=="Top Left"?position.top_left:s=="Top Right"?position.top_right:s=="Bottom Left"?position.bottom_left:position.bottom_right
-f_px(x) => str.tostring(x, format.mintick)
 
 // Timeframe ka mashwara - backtest isi par mabni hai
 tfOk   = timeframe.isdaily or (timeframe.isminutes and timeframe.multiplier == 240)
@@ -182,25 +243,36 @@ if showPanel and barstate.islast
     table.cell(pnl, 0, 0, _hdr, bgcolor=color.new(color.white, 5),
          text_color = tfOk ? color.new(#1B5E20,0) : color.new(#B71C1C,0), text_size=size.normal)
 
-    _state = tDir == 0 ? "INTEZAR — abhi koi signal nahi"
-             : (tDir == 1 ? "BUY" : "SELL") + "  (" + str.tostring(bar_index - nz(tBar, bar_index)) + " candle purana)"
+    _state = tDir == 0 ? "INTEZAR - koi trade khuli nahi"
+             : (tDir == 1 ? "BUY chal rahi" : "SELL chal rahi") + "  (" + str.tostring(bar_index - nz(tBar, bar_index)) + " candle se)"
     _scol  = tDir == 0 ? color.new(#37474F,0) : (tDir == 1 ? color.new(#1B5E20,0) : color.new(#B71C1C,0))
     table.cell(pnl, 0, 1, _state, bgcolor=color.new(color.white, 12), text_color=_scol, text_size=size.large)
 
     if tDir != 0 and not na(tEntry)
-        table.cell(pnl, 0, 2, "Entry  " + f_px(tEntry), bgcolor=color.new(color.white, 20), text_color=color.new(color.blue,0), text_size=size.normal)
-        table.cell(pnl, 0, 3, "SL     " + f_px(tSL) + "   (ATR x " + str.tostring(atrMult) + ")", bgcolor=color.new(color.white, 20), text_color=color.new(#B71C1C,0), text_size=size.normal)
-        table.cell(pnl, 0, 4, "TP     " + f_px(tTP) + "   (" + str.tostring(tpR) + "R)", bgcolor=color.new(color.white, 20), text_color=color.new(#1B5E20,0), text_size=size.normal)
+        // abhi kitne R par hain
+        _rNow = na(tR) or tR <= 0 ? 0.0 : (tDir == 1 ? (close - tEntry) : (tEntry - close)) / tR
+        table.cell(pnl, 0, 2, "Entry  " + f_px(tEntry) + "      abhi: " + (_rNow >= 0 ? "+" : "") + str.tostring(_rNow, "#.##") + "R",
+             bgcolor=color.new(color.white, 20), text_color=color.new(color.blue,0), text_size=size.normal)
+        table.cell(pnl, 0, 3, "SL     " + f_px(tSL) + "   <- ye SARAKTA hai, MT5 mein badalte rahein",
+             bgcolor=color.new(color.white, 20), text_color=color.new(#B71C1C,0), text_size=size.normal)
+        table.cell(pnl, 0, 4, tHalf ? ("TP1 LAG CHUKA (" + str.tostring(tpR) + "R) - aadha band, baqi trail par")
+             : ("TP1    " + f_px(tTP) + "   (" + str.tostring(tpR) + "R) - yahan AADHA band karein"),
+             bgcolor=color.new(color.white, 20), text_color=color.new(#1B5E20,0), text_size=size.normal)
 
         _lotTxt = tLot >= minLot ? ("LOT    " + str.tostring(tLot, "#.##") + "   (" + accType + " account, risk " + str.tostring(riskPct) + "%)")
                   : ("LOT    BOHOT CHHOTA — " + str.tostring(tLot, "#.###") + " nikla, minimum " + str.tostring(minLot) + " hai.\nTRADE NA KAREIN ya stop chhota TF par lein.")
         _lcol   = tLot >= minLot ? color.new(#37474F,0) : color.new(#B71C1C,0)
         table.cell(pnl, 0, 5, _lotTxt, bgcolor=color.new(color.white, 12), text_color=_lcol, text_size=size.normal)
     else
-        table.cell(pnl, 0, 2, miss == "" ? "• Sab shartein poori, agli candle ka intezar" : miss,
+        table.cell(pnl, 0, 2, miss == "" ? "Sab shartein poori, agli candle ka intezar" : miss,
              bgcolor=color.new(color.white, 20), text_color=color.new(#37474F,0), text_size=size.small)
+        table.cell(pnl, 0, 3, tLast == "" ? "Abhi tak koi trade band nahi hui" : tLast,
+             bgcolor=color.new(color.white, 20), text_color=color.new(#37474F,0), text_size=size.small)
+        table.cell(pnl, 0, 4, "", bgcolor=color.new(color.white, 20), text_size=size.small)
+        table.cell(pnl, 0, 5, "", bgcolor=color.new(color.white, 12), text_size=size.small)
 
-    table.cell(pnl, 0, 6, "60% signal HAARTE hain. Faida chhoti haar aur bari jeet se aata hai.\nHar signal par barabar risk rakhein - warna hisaab toot jata hai.",
+    table.cell(pnl, 0, 6, "Is chart par ab tak: STOP " + str.tostring(nSL) + "   TP1 " + str.tostring(nTP) + "   HTF-palta " + str.tostring(nFlip) +
+         "\n60% signal HAARTE hain. Faida chhoti haar aur bari jeet se aata hai.",
          bgcolor=color.new(color.white, 25), text_color=color.new(#37474F,0), text_size=size.small)
 
 // --------------------------------------------------------------- ALERTS ---
