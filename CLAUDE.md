@@ -16,6 +16,7 @@ toward backtesting and demo before live trading.
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
 | `indicators/smc_coach_pro_v2.pine` | SMC Coach Pro v2.1 — zones, BOS/CHOCH, risk engine, MTF dashboard |
 | `strategies/jas_tide_v1.pine` | JAS Tide v1 — Donchian breakout + HTF EMA filter, Pine **strategy** so the Strategy Tester gives real numbers. Claude's own design, not the user's method |
+| `strategies/tony_ema_scalper_test.pine` | A YouTube EMA-cross indicator the user brought in, converted faithfully to a Pine strategy so it can be measured. Not improved on purpose |
 | `indicators/trend_ribbon_levels.pine` | Trend Ribbon + Levels — 10-MA gradient ribbon and pivot S/R lines |
 | `tools/` | Windows compile and backtest automation |
 | `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |
