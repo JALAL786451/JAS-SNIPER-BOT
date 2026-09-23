@@ -357,3 +357,45 @@ The second is the larger effect by far, and it is the one the method as
 written resists, because it has no stop by design. Do not graft a stop onto
 his method on your own initiative — it is his call. Record the arithmetic and
 let him decide.
+
+### Correction — the 3,872 orders span TWO different account types
+
+He corrected this the next day, and it changes the reading above materially.
+The section above treated the whole sample as one regime. It is not.
+
+- He started at **$707 on a USD Standard account.**
+- He traded that down to **$489**.
+- **At $489 he switched to a Cent Standard account**, and has since brought it
+  back to **$528.18**.
+
+| Period | Account | Result |
+|---|---|---|
+| Start → switch | **USD Standard** | $707 → $489 = **-$218 (-30.8%)** |
+| Switch → now | **Cent Standard** | $489 → $528 = **+$39 (+8.0%)** |
+
+**The entire loss belongs to the Standard-account period. Since moving to the
+cent account he is up.**
+
+What this does to the figures above:
+
+- **The average win $1.24 / average loss $3.90 and the 3.16x ratio are not
+  reliable as stated.** They average across both regimes, and a cent-account
+  trade is a hundredth the USD size of a Standard-account one. The $3.90
+  average loss is dominated by the Standard period; it is not a property of
+  the method, it is a property of the lot size relative to the account.
+- **The $273 spread estimate is likewise mixed** and should not be quoted as a
+  single number until the two periods are separated.
+- What does survive: 0.10 lots on a **Standard** account with ~$700 is roughly
+  $10 per dollar of gold, so a normal $20 day is 30% of the account. That is
+  what the -30.8% is. On the cent account the same 0.10 lot is 10 USC per
+  dollar — a hundred times smaller — and the drawdown problem largely goes
+  away. This is the arithmetic that the "Points vs digits"/lot-size warnings
+  in CLAUDE.md are about, and here it is visible in live equity.
+
+He diagnosed and fixed this himself, before any of it was analysed here. The
+account-type switch is the single largest risk improvement in the record so
+far, and it was his call.
+
+**If this sample is ever re-analysed, split it at $489 first.** Any
+conclusion drawn across the whole 3,872 orders is comparing two different
+instruments.
