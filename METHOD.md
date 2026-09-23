@@ -475,3 +475,84 @@ it is still open. Anyone picking this up later should note:
 
 **Do not tell him the matter is settled.** The execution is settled. The
 history that produced −$264.72 is not.
+
+---
+
+## 23 September 2026 — the full statement arrived. The −$264.72 is now settled.
+
+Jalal supplied the complete statement for account **252706674** (Standard,
+USD, 1:2000), period 13 Aug – 23 Sep 2026. It covers the entire life of that
+account. The parsed rows reconcile to the statement's own printed total of
+−119.24 exactly, so every number below is the broker's, not an estimate.
+
+### The whole account, in four days
+
+| | |
+|---|---|
+| Deposit | $706.70 (14 Aug 10:55) |
+| Withdrawal | $587.46 (18 Aug 00:45) |
+| Closed Trade P/L | **−$119.24** |
+| Final balance | $0.00 |
+| Trades | 367, on only 4 days (14, 16, 17, 18 Aug) — 271 of them on 17 Aug |
+| Win rate | 194/367 = 52.9% |
+| Profit factor | 0.944 (gross win $2,011.65, gross loss −$2,130.89) |
+| Avg win / avg loss | $10.37 vs −$12.32 (0.84×) |
+| Stop loss used | **0 of 367** |
+| Take profit used | 4 of 367 |
+| Swap | $0.00 |
+| Commission | $0.00 |
+| Peak balance | **$1,001.78** at 17 Aug 02:59 |
+
+### The minute-by-minute balance on 17 August
+
+Reconstructed by applying each closed trade's profit in close-time order,
+starting from the $706.70 deposit:
+
+```
+17 Aug 02:59   1,001.78   <- peak, +42% on deposit
+17 Aug 12:01     940.58
+17 Aug 18:45     746.59
+17 Aug 19:52     -81.06   <- first time negative
+17 Aug 20:22    -286.55   <- lowest point
+17 Aug 20:38    -264.72   <- the figure in his screenshot, to the cent
+17 Aug 20:44     651.23   <- the figure in Exness's reply, to the cent
+18 Aug 00:06     587.46
+18 Aug 00:45       0.00   <- withdrawn
+```
+
+Between 18:45 and 20:43 he closed 97 positions one at a time for
+−$1,020.93. Seventy-four of those were **sells**: −$1,399.40. Those realised
+losses hit balance immediately. The 81 remaining positions were still open
+and showing +$885 of *unrealised* profit, which sits only in equity. That is
+why the app's headline read +650 while the balance line read −264.72. At
+20:44 the basket closed for +$885.42 and balance became $651.23.
+
+**Exness's arithmetic was correct.** Their reply matches the statement to the
+cent. The negative balance was real, temporary, and caused by the order in
+which positions were closed — not by a broker error.
+
+### What the statement actually says about the method
+
+Exness answered the question he asked. The statement answers the one that
+matters more:
+
+- He was **$1,001.78 at 3am on 17 August** — up 42% on a $706.70 deposit —
+  and $0 by the next midnight. The account did not die on a bad day. It died
+  by giving back a good one.
+- Gold rose from about 4372 to 4420 on 17 August, roughly **+$48**. He was
+  carrying a stop-less sell ladder into it. Six of the ten largest losses are
+  0.01-lot sells opened between 23:55 and 00:11 and held **over 20 hours**
+  each, closed −$44 to −$46.
+- Losers were held longer than winners here too: 442 min vs 410 min.
+- 0 stop losses on 367 trades. Nothing in this account limited a loss except
+  his own decision to close.
+- Trading cost genuinely was zero. Swap $0.00, commission $0.00 across all
+  367 trades. The cost was not the broker.
+
+The Fishing Lots method did not lose to spread, swap, or the broker. At 52.9%
+wins and a 0.84 win/loss size ratio, the profit factor is 0.944 — it loses
+slowly and by design, and then one un-stopped ladder against a $48 trend
+settles it in an evening.
+
+**This matter is now settled, on both sides.** Exness's figures check out,
+and the account's own record shows what took the money.
