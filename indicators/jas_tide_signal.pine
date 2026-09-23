@@ -224,13 +224,22 @@ tfNote = timeframe.isdaily ? "1D - sab se behtar" : (timeframe.isminutes and tim
 // Kyun signal nahi aaya - saaf saaf
 miss = ""
 if not liveOk
-    miss += "• Bazaar bohot susat hai (ATR " + str.tostring(atrPct, "#.##") + "% < " + str.tostring(minAtrPct) + "%)\n"
+    miss += "Bazaar bohot susat hai (ATR " + str.tostring(atrPct, "#.##") + "% < " + str.tostring(minAtrPct) + "%)\n"
 if useHTF and not htfReady
-    miss += "• Bare timeframe ka data abhi taiyar nahi\n"
+    miss += "Bare timeframe ka data abhi taiyar nahi\n"
 if useHTF and htfReady
-    miss += "• " + htfTF + " ka rukh: " + (bullHTF ? "UPAR (sirf BUY ki ijazat)" : "NEECHE (sirf SELL ki ijazat)") + "\n"
+    miss += htfTF + " ka rukh: " + (bullHTF ? "UPAR (sirf BUY ki ijazat)" : "NEECHE (sirf SELL ki ijazat)") + "\n"
 if close <= hiBrk and close >= loBrk
-    miss += "• Price abhi naali ke andar hai. Upar " + f_px(hiBrk) + " tootey to BUY,\n  neeche " + f_px(loBrk) + " tootey to SELL\n"
+    // Doori bhi likh do - yehi batati hai ke signal kitna qareeb hai.
+    // Dollar ke saath ATR mein bhi, kyunki gold roz ~1 ATR hilta hai.
+    _dUp = hiBrk - close
+    _dDn = close - loBrk
+    _aUp = atr > 0 ? _dUp / atr : 0.0
+    _aDn = atr > 0 ? _dDn / atr : 0.0
+    miss += "Price abhi naali ke ANDAR hai:\n"
+    miss += "  BUY  " + f_px(hiBrk) + "   ->  " + str.tostring(_dUp, "#.##") + " door  (" + str.tostring(_aUp, "#.#") + " ATR)\n"
+    miss += "  SELL " + f_px(loBrk) + "   ->  " + str.tostring(_dDn, "#.##") + " door  (" + str.tostring(_aDn, "#.#") + " ATR)\n"
+    miss += "  (1 ATR = " + f_px(atr) + ", yani ek candle ka aam safar)\n"
 
 var table pnl = na
 if showPanel and barstate.islast
