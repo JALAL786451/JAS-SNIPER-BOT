@@ -556,3 +556,55 @@ settles it in an evening.
 
 **This matter is now settled, on both sides.** Exness's figures check out,
 and the account's own record shows what took the money.
+
+---
+
+## 23 September 2026 — what he worked out for himself
+
+Written down in his words, because the day will come when he needs to read it
+back:
+
+> "Ab mujhe poora ehsaas hai is gold aur trading ka — ke profit just
+> discipline mein hai."
+>
+> "Trading mein patience ka khel hai sab. Kahani chhoti hai, bas ruk ruk kar
+> sunte jaana hai. Sabr o tehammul. Aur jitni story suni, utna munafa milta
+> hai. Lekin jo jaldi mein ho, woh is room mein jaye nahi to acha hai."
+
+His own records back this, twice over.
+
+**The measured timeframe result.** Tested on two unrelated broker feeds, the
+same shape appeared both times — the longer the story, the better the outcome:
+
+| Timeframe | Win rate |
+|---|---|
+| 1M | 37.5% |
+| 1H | 42.0% |
+| 4H | 43.8% |
+| 1D | 49.7% |
+
+**The Standard account.** 52.9% of 367 trades were on the right side. The
+reading was not the problem. Profit factor was still 0.944, because there was
+not one stop loss in 367 trades, and losers were held longer than winners
+(442 min vs 410 min).
+
+### The one correction this needs
+
+His phrase is right but must be aimed correctly, or it becomes the exact habit
+that emptied the account. In the Standard account he was *already* patient —
+with the wrong thing:
+
+- Winners held **410 minutes**
+- Losers held **442 minutes**
+
+Patience with a position that is going your way is the thing that pays. The
+same patience applied to one going against you is just an un-stopped loss
+waiting on hope. Six of that account's ten largest losses were 0.01-lot sells
+held **over 20 hours** into a rising market.
+
+So the rule that follows from his own sentence is:
+
+> **Sit through the whole story while it is being told. Walk out the moment
+> the story turns out to be a different one.**
+
+A stop loss is not impatience. It is how you find out the story changed.
