@@ -18,6 +18,7 @@ toward backtesting and demo before live trading.
 | `indicators/jas_tide_signal.pine` | JAS Tide ke wohi qawaid, magar indicator ki shakal mein - haath se trade karne ke liye. BUY/SELL, entry, SL, TP aur lot ka hisaab batata hai |
 | `strategies/jas_tide_v1.pine` | JAS Tide v1 — Donchian breakout + HTF EMA filter, Pine **strategy** so the Strategy Tester gives real numbers. Claude's own design, not the user's method |
 | `strategies/tony_ema_scalper_test.pine` | A YouTube EMA-cross indicator the user brought in, converted faithfully to a Pine strategy so it can be measured. Not improved on purpose |
+| `indicators/candle_xray.pine` | Candle X-Ray — ek bari candle (1D/1W) ko kholta hai aur uske andar ki chhoti candles (1m/5m/15m) chart ke saath khali jagah mein dikhata hai. Rang ka gehrapan volume, saath mein price profile aur 1m-se-1W MTF patti. Sirf dekhne ka aala, koi signal nahi |
 | `indicators/trend_ribbon_levels.pine` | Trend Ribbon + Levels — 10-MA gradient ribbon and pivot S/R lines |
 | `tools/` | Windows compile and backtest automation |
 | `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |

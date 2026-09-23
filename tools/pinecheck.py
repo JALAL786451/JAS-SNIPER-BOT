@@ -26,7 +26,7 @@ NAMESPACES = {
     'ticker', 'currency', 'order', 'plot', 'shape', 'location', 'size',
     'position', 'text', 'display', 'format', 'scale', 'xloc', 'yloc',
     'extend', 'alert', 'adjustment', 'earnings', 'dividends', 'splits',
-    'log', 'runtime', 'timezone', 'font', 'hline', 'math',
+    'log', 'runtime', 'timezone', 'font', 'hline', 'math', 'barmerge',
 }
 
 BUILTIN_VARS = {
@@ -135,7 +135,8 @@ def main(path):
     decl_re = re.compile(
         r'(?m)^\s*(?:var\s+|varip\s+)?'
         r'(?:(?:int|float|bool|string|color|line|label|box|table|'
-        r'array<[^>]*>|map<[^>]*>|matrix<[^>]*>|[A-Z]\w*)\s+)?'
+        r'array<[^>]*>|map<[^>]*>|matrix<[^>]*>|[A-Z]\w*)'
+        r'(?:\s*\[\s*\])?\s+)?'
         r'([A-Za-z_]\w*)\s*(?::=|=)(?!=)')
     for m in decl_re.finditer(code):
         declared.add(m.group(1))
