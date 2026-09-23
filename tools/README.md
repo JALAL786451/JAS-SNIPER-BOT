@@ -12,8 +12,27 @@ python3 tools/pinecheck.py xauusd_combined_indicator.pine
 
 Catches the failure classes that cost a round-trip to TradingView: typos in
 identifiers, `:=` on a name that was never declared, unbalanced brackets, tabs,
-indentation that is not a multiple of four, and statements that accidentally
-wrap onto a second line (Pine's continuation-indent rule is a trap).
+and the continuation-indent trap.
+
+That last one is the subtle rule. An ordinary statement line must be indented
+at a multiple of four. A *continuation* — a line that carries on the statement
+above it — must **not** be, or Pine reads it as the start of a new block and
+reports `end of line without line continuation`. The checker works out which
+kind each line is by tracking open brackets, a trailing operator on the line
+above, and a leading operator on the line itself, then applies the right rule.
+So this is correct and passes:
+
+```pine
+x = cond ? a
+     : b
+```
+
+and this is the bug it exists to catch:
+
+```pine
+x = cond ? a
+    : b
+```
 
 It is not a compiler and does not type-check.
 

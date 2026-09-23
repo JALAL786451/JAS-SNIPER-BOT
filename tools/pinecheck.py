@@ -86,10 +86,30 @@ def main(path):
     code = strip_noise(raw)
     code_lines = code.split('\n')
 
-    # --- bracket balance, whole file and per statement ----------------------
+    # --- bracket balance, and the continuation-indent trap --------------------
+    # Pine reads a wrapped line as a NEW BLOCK when its indent is a multiple of
+    # 4. So a continuation must be indented at something else (1, 2, 5, 6, ...),
+    # while an ordinary statement line must be at a multiple of 4. Which rule
+    # applies depends on whether a bracket is still open above it.
+    DANGLING = (',', '?', ':', '+', '-', '*', '/', '%', '=', 'and', 'or', 'not')
     depth = 0
+    dangling = False
     for i, ln in enumerate(code_lines, 1):
-        start = depth
+        stripped = ln.strip()
+        leads = (stripped.startswith(('?', '+', '*', '/', '%', ',', ')', ']'))
+                 or (stripped.startswith(':') and not stripped.startswith(':='))
+                 or stripped.startswith(('and ', 'or ')))
+        continuation = depth > 0 or dangling or leads
+        if stripped:
+            indent = len(ln) - len(ln.lstrip(' '))
+            if continuation:
+                if indent % 4 == 0:
+                    problems.append(
+                        f'line {i}: continuation line indented {indent} (a multiple '
+                        f'of 4) - Pine will read it as a new block. Use 1, 2, 5 or 6 '
+                        f'spaces, or keep the statement on one line.')
+            elif indent % 4 != 0:
+                problems.append(f'line {i}: indent of {indent} is not a multiple of 4')
         for c in ln:
             if c in '([':
                 depth += 1
@@ -98,20 +118,11 @@ def main(path):
             if depth < 0:
                 problems.append(f'line {i}: closing bracket with nothing open')
                 depth = 0
-        if start == 0 and depth != 0 and ln.strip():
-            problems.append(
-                f'line {i}: statement wraps to the next line (unbalanced bracket). '
-                f'Pine continuation indentation is error-prone - keep it on one line.')
+        if stripped:
+            dangling = (not stripped.endswith('=>')
+                        and any(stripped.endswith(t) for t in DANGLING))
     if depth != 0:
         problems.append(f'end of file: {depth} bracket(s) never closed')
-
-    # --- indentation --------------------------------------------------------
-    for i, ln in enumerate(code_lines, 1):
-        if not ln.strip():
-            continue
-        indent = len(ln) - len(ln.lstrip(' '))
-        if indent % 4 != 0:
-            problems.append(f'line {i}: indent of {indent} is not a multiple of 4')
 
     # --- collect declared names --------------------------------------------
     declared = set()
@@ -131,6 +142,10 @@ def main(path):
     # loop counters
     for m in re.finditer(r'\bfor\s+([A-Za-z_]\w*)\s*(?:=|\bin\b)', code):
         declared.add(m.group(1))
+    # tuple destructuring: `[a, b] = f()` and `for [i, v] in arr`
+    for m in re.finditer(r'\[([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)+)\]\s*(?:=(?!=)|\bin\b)', code):
+        for part in m.group(1).split(','):
+            declared.add(part.strip())
     # assignments, typed or bare, at any indent
     decl_re = re.compile(
         r'(?m)^\s*(?:var\s+|varip\s+)?'
