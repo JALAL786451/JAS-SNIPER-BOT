@@ -399,3 +399,79 @@ far, and it was his call.
 **If this sample is ever re-analysed, split it at $489 first.** Any
 conclusion drawn across the whole 3,872 orders is comparing two different
 instruments.
+
+---
+
+## 17 August 2026 — the negative balance, and what it says about the method
+
+He raised a dispute with Exness over this basket and kept the reply. Account
+**252706674, MT5 Standard** (not the cent account — see the lot arithmetic
+below). The broker's own figures, from their email:
+
+| | |
+|---|---|
+| 5 positions closed manually, 20:43:45–20:43:58 GMT | **+$30.53** |
+| 81 positions closed by one Close All at 20:44:20 GMT | **+$885.42** |
+| Total realised | **+$915.95** |
+| **Account balance immediately before the closure** | **−$264.72** |
+| Balance after | **+$651.23** |
+
+His screenshots of the moment before closing show **86 open**, floating
+**+$915.44**, and the app's headline figure reading **650.72 USD**. Those
+reconcile exactly: the headline was **equity**, not balance.
+
+```
+Equity 650.72  =  Balance (−264.72)  +  Floating (+915.46)
+```
+
+The Close All dialog at that moment offered **+915.46**; the fills actually
+returned **+915.95**, i.e. **49 cents better** than quoted. Execution was not
+the problem.
+
+### Which account, proved from the lot size
+
+The average winning position was **+$18.22** at **0.01 lot**.
+
+- Standard: 0.01 lot = 1 oz, so $1 of gold = $1. A +$18.22 winner needs an $18
+  move. Plausible.
+- Cent: 0.01 lot = $0.01 per $1 of gold. A +$18.22 winner would need gold to
+  move **$1,822**. Impossible.
+
+So this is the **Standard** period, before the switch at $489.
+
+### The mechanism this exposes — the important part
+
+A **negative balance with positive equity** is the signature of this method
+under stress. It happens because:
+
+1. Losing legs get closed (or the basket gets partially unwound). Those losses
+   are **realised** — they come straight off the balance.
+2. Winning legs are **kept open**. Their profit is **unrealised** — it sits in
+   equity, not balance.
+3. Repeat that enough and the balance goes below zero while the app still
+   shows a comfortable positive number, because the app's headline is equity.
+
+On 17 August the account was standing **entirely on unrealised profit in open
+positions. There was no floor underneath it.** Had gold moved the other way
+that night, the +$915 would have drained and there was nothing below it — the
+basket would only have gone deeper, with no way out.
+
+He survived and closed at +$915.95. **That was survival, not skill**, and the
+distinction matters: the same setup with gold moving the other way ends the
+account.
+
+### What was NOT answered
+
+Exness answered the question *"was the close executed correctly?"* — and
+demonstrably it was. They did **not** answer *"how did the balance reach
+−$264.72 in the first place?"* That is the question that actually matters, and
+it is still open. Anyone picking this up later should note:
+
+- The path to a negative balance is unexplained by the email.
+- Whether negative-balance protection should have applied, and why the account
+  was not stopped out earlier, is unexplained.
+- Whether swap on 86 positions held across days contributed is unexplained.
+  The Performance page reports "Trading cost 0.00", which is worth probing.
+
+**Do not tell him the matter is settled.** The execution is settled. The
+history that produced −$264.72 is not.
