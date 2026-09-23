@@ -94,6 +94,20 @@ aC = request.security_lower_tf(syminfo.tickerid, ltfRes, close)
 aV = request.security_lower_tf(syminfo.tickerid, ltfRes, volume)
 
 // ============================================================================
+//  SCALE ANCHOR — ye lakeer dikhai nahi deti, magar hataiye mat
+//
+//  Is script mein ek bhi asli plot nahi, sab kuch drawings hain (box, line,
+//  label, polyline). Aise overlay ko TradingView kabhi kabhi chart wale price
+//  scale se alag, apna scale de deta hai. Us soorat mein strip andar se to
+//  theek rehti hai magar chart ke candles se alag jagah chali jaati hai, aur
+//  right side se price kheenchte hi sab bikhar jaata hai.
+//
+//  Ye bilkul shaffaf plot close ke barabar hai. Iska ek hi kaam hai:
+//  TradingView ko yaad dilana ke ye indicator chart wale hi scale par hai.
+// ============================================================================
+plot(close, "scale anchor", color = color.new(color.white, 100), display = display.pane, editable = false)
+
+// ============================================================================
 //  MTF patti — har timeframe abhi kis taraf
 // ============================================================================
 f_bias(_tf) => request.security(syminfo.tickerid, _tf, close > open ? 1 : close < open ? -1 : 0, lookahead = barmerge.lookahead_off)
