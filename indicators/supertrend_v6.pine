@@ -10,7 +10,17 @@
 //     Ye sab v6 mein khatam ho chuke hain, is liye woh chalta hi nahi tha.
 //     Hisaab bilkul wohi rakha gaya hai, ek number nahi badla.
 //
-//  2) REPAINT BAND KIYA  <- ASAL KAAM
+//  2) LABEL SAHI JAGAH PAR  <- Jalal ne pakra, aur ye sab se bari baat hai
+//     Asli script Buy/Sell ka label BAND par lagata tha. Band wahan hota hai
+//     jahan se candle SHURU hui thi - jahan aap sauda kar hi nahi sakte thay.
+//     Misal: 1H par ek candle 4380 se 4240 tak giri. Label 4378 par laga.
+//     Dekhne mein lagta hai "4378 par sell mila". Haqeeqat: signal candle
+//     BAND hone par bana, jab price 4240 thi. 138 dollar pehle hi ja chuka.
+//     Yehi wajah hai ke Supertrend peeche ke chart par jaadu lagta hai.
+//     Ab label us qeemat par lagta hai jahan aap waqai daakhil ho sakte thay,
+//     aur ek nuqta-dar lakeer dikhati hai ke band kitna door reh gaya.
+//
+//  3) REPAINT BAND KIYA
 //     Asli script chalti candle ke close par trend palat deta tha. Chalta
 //     close har second badalta hai, to signal aata tha, phir gayab ho jata
 //     tha, phir aata tha. Peeche ke chart par ye nazar nahi aata - wahan har
@@ -30,7 +40,7 @@
 // chalata hai, aur v6 in dono ke saath timeframe ki ijazat nahi deta (CE10080).
 // Nuqsan koi nahi - asli file mein resolution="" tha, jiska matlab bhi "wohi
 // timeframe jo chart par hai" tha. Yani pehle bhi kuch nahi kar raha tha.
-indicator("Supertrend", overlay = true, format = format.price, precision = 2)
+indicator("Supertrend", overlay = true, format = format.price, precision = 2, max_lines_count = 500)
 
 // ------------------------------------------------------- 1. ASLI SETTINGS --
 g1          = "1. Supertrend (asli settings)"
@@ -49,6 +59,8 @@ htfSlow     = input.int(200, "HTF EMA slow", minval = 1, group = g2)
 
 // ------------------------------------------------------------- 3. DIKHAWA --
 g3          = "3. Dikhawa"
+sigAtClose  = input.bool(true, "Label asli entry par (band par nahi)", group = g3)
+showLag     = input.bool(true, "Band se entry tak ka faasla dikhayein", group = g3)
 showsignals = input.bool(true, "Buy/Sell labels", group = g3)
 highlighting= input.bool(true, "Highlighter on/off", group = g3)
 fillTransp  = input.int(85, "Highlighter ka halkapan", minval = 50, maxval = 98, group = g3)
@@ -109,6 +121,24 @@ blockUp = flipUp and ready and not htfLong
 blockDn = flipDn and ready and not htfShort
 
 // ============================================================================
+//  LABEL KAHAN LAGE, AUR "DER" KITNI HUI
+//
+//  Signal tab pakka hota hai jab candle BAND hoti hai. Us waqt qeemat close
+//  par hoti hai - yahi woh jagah hai jahan aap waqai daakhil ho sakte thay.
+//  Band (up/dn) wahan reh jaata hai jahan se candle chali thi.
+//  Dono ka farq = "der" - jitna faida/nuqsan signal milne se pehle ho chuka.
+// ============================================================================
+sigBand = buySignal ? up : dn
+buyY    = sigAtClose ? close : up
+sellY   = sigAtClose ? close : dn
+
+var float lastLag = na
+if buySignal or sellSignal
+    lastLag := math.abs(sigBand - close)
+    if showLag
+        line.new(bar_index, sigBand, bar_index, close, color = color.new(buySignal ? cUp : cDn, 30), style = line.style_dotted, width = 1)
+
+// ============================================================================
 //  LAKEEREIN
 // ============================================================================
 // display.pane = sirf chart par bano, upar wali patti aur Data Window mein
@@ -128,17 +158,17 @@ fillDn = color.new(cDn, highlighting and trend == -1 ? fillTransp : 100)
 fill(mPlot, upPlot, title = "UpTrend Highlighter",   color = fillUp)
 fill(mPlot, dnPlot, title = "DownTrend Highlighter", color = fillDn)
 
-plotshape(buySignal  ? up : na, "UpTrend Begins",   location = location.absolute, style = shape.circle, size = size.tiny, color = cUp, display = display.pane)
-plotshape(sellSignal ? dn : na, "DownTrend Begins", location = location.absolute, style = shape.circle, size = size.tiny, color = cDn, display = display.pane)
-plotshape(buySignal  and showsignals ? up : na, "Buy",  text = "Buy",  location = location.absolute, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
-plotshape(sellSignal and showsignals ? dn : na, "Sell", text = "Sell", location = location.absolute, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
-plotshape(blockUp and showsignals ? up : na, "Buy roka gaya",  text = "x", location = location.absolute, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
-plotshape(blockDn and showsignals ? dn : na, "Sell roka gaya", text = "x", location = location.absolute, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
+plotshape(buySignal  ? buyY  : na, "UpTrend Begins",   location = location.absolute, style = shape.circle, size = size.tiny, color = cUp, display = display.pane)
+plotshape(sellSignal ? sellY : na, "DownTrend Begins", location = location.absolute, style = shape.circle, size = size.tiny, color = cDn, display = display.pane)
+plotshape(buySignal  and showsignals ? buyY  : na, "Buy",  text = "Buy",  location = location.absolute, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
+plotshape(sellSignal and showsignals ? sellY : na, "Sell", text = "Sell", location = location.absolute, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
+plotshape(blockUp and showsignals ? close : na, "Buy roka gaya",  text = "x", location = location.absolute, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
+plotshape(blockDn and showsignals ? close : na, "Sell roka gaya", text = "x", location = location.absolute, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
 
 // ============================================================================
 //  PANEL - Supertrend asal mein trailing stop hai, to uska faasla dikhayein
 // ============================================================================
-var table TB = table.new(position.top_right, 2, 5, border_width = 1)
+var table TB = table.new(position.top_right, 2, 6, border_width = 1)
 
 f_row(_r, _a, _b, _tc) =>
     table.cell(TB, 0, _r, _a, text_color = #111111, text_size = size.small, text_halign = text.align_left,  bgcolor = #FFFFFFAA)
@@ -153,7 +183,8 @@ if showPanel and barstate.islast
     f_row(1, "Rukh", trend == 1 ? "UP" : "DOWN", tCol)
     f_row(2, "ST (trailing stop)", str.tostring(stLevel, format.mintick), tCol)
     f_row(3, "Faasla", str.tostring(dist, format.mintick) + "  (" + str.tostring(inAtr, "#.##") + " ATR)", #111111)
-    f_row(4, "Bara filter", not useHTF ? "band hai (off)" : not htfReady ? "data nahi" : hF > hS ? "UP - sirf BUY" : "DOWN - sirf SELL", not useHTF ? #787B86 : hF > hS ? cUp : cDn)
+    f_row(4, "Pichhle signal ki der", na(lastLag) ? "koi signal nahi" : str.tostring(lastLag, format.mintick) + "  (" + str.tostring(atrV > 0 ? lastLag / atrV : 0.0, "#.##") + " ATR)", na(lastLag) ? #787B86 : #111111)
+    f_row(5, "Bara filter", not useHTF ? "band hai (off)" : not htfReady ? "data nahi" : hF > hS ? "UP - sirf BUY" : "DOWN - sirf SELL", not useHTF ? #787B86 : hF > hS ? cUp : cDn)
 
 // ============================================================================
 //  ALERTS
