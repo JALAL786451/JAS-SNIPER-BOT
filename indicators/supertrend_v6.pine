@@ -60,7 +60,8 @@ htfSlow     = input.int(200, "HTF EMA slow", minval = 1, group = g2)
 // ------------------------------------------------------------- 3. DIKHAWA --
 g3          = "3. Dikhawa"
 sigAtClose  = input.bool(true, "Label asli entry par (band par nahi)", group = g3)
-showLag     = input.bool(true, "Band se entry tak ka faasla dikhayein", group = g3)
+lblOff      = input.float(1.0, "Label candle se kitna door (ATR ka hissa)", minval = 0.0, maxval = 6.0, step = 0.25, group = g3)
+showLag     = input.bool(true, "Label se asli entry tak nuqta-dar lakeer", group = g3)
 showsignals = input.bool(true, "Buy/Sell labels", group = g3)
 highlighting= input.bool(true, "Highlighter on/off", group = g3)
 fillTransp  = input.int(85, "Highlighter ka halkapan", minval = 50, maxval = 98, group = g3)
@@ -132,11 +133,22 @@ sigBand = buySignal ? up : dn
 buyY    = sigAtClose ? close : up
 sellY   = sigAtClose ? close : dn
 
+// Label candle se ATR ke hisaab se door. belowbar/abovebar kaafi nahi tha -
+// woh sirf USI candle se thora upar/neechey rakhta hai, to bagal ki lambi
+// candle label ko nigal leti thi. Ye faasla har jagah ek jaisa rehta hai.
+lblGap   = lblOff * atrV
+buyLblY  = low  - lblGap
+sellLblY = high + lblGap
+
 var float lastLag = na
 if buySignal or sellSignal
     lastLag := math.abs(sigBand - close)
+    // Ek nuqta-dar lakeer label se asli entry tak. Buy par label neechey aur
+    // band bhi neechey, sell par dono upar - to ye lakeer band ke aar paar
+    // se guzarti hai. Yani ek hi lakeer teeno cheezein jor deti hai:
+    // label, band, aur woh qeemat jahan aap waqai daakhil ho sakte thay.
     if showLag
-        line.new(bar_index, sigBand, bar_index, close, color = color.new(buySignal ? cUp : cDn, 30), style = line.style_dotted, width = 1)
+        line.new(bar_index, buySignal ? buyLblY : sellLblY, bar_index, close, color = color.new(buySignal ? cUp : cDn, 25), style = line.style_dotted, width = 1)
 
 // ============================================================================
 //  LAKEEREIN
@@ -166,10 +178,10 @@ plotshape(sellSignal ? sellY : na, "Entry (sell)", location = location.absolute,
 // label ke upar ban jaati thi aur "Buy" parha hi nahi jaata tha.
 // Asli qeemat batane ka kaam upar wala chhota gola aur nuqta-dar lakeer
 // karti hai; ye label sirf ishara hai ke is candle par signal bana.
-plotshape(buySignal  and showsignals, "Buy",  text = "Buy",  location = location.belowbar, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
-plotshape(sellSignal and showsignals, "Sell", text = "Sell", location = location.abovebar, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
-plotshape(blockUp and showsignals, "Buy roka gaya",  text = "x", location = location.belowbar, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
-plotshape(blockDn and showsignals, "Sell roka gaya", text = "x", location = location.abovebar, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
+plotshape(buySignal  and showsignals ? buyLblY  : na, "Buy",  text = "Buy",  location = location.absolute, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
+plotshape(sellSignal and showsignals ? sellLblY : na, "Sell", text = "Sell", location = location.absolute, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
+plotshape(blockUp and showsignals ? buyLblY  : na, "Buy roka gaya",  text = "x", location = location.absolute, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
+plotshape(blockDn and showsignals ? sellLblY : na, "Sell roka gaya", text = "x", location = location.absolute, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
 
 // ============================================================================
 //  PANEL - Supertrend asal mein trailing stop hai, to uska faasla dikhayein
