@@ -56,18 +56,20 @@ cDn         = input.color(#F23645, "Down", group = g3, inline = "c")
 //  ASAL HISAAB - bheji hui file se bilkul wohi, sirf v6 ki zabaan mein
 // ============================================================================
 atr2 = ta.sma(ta.tr, Periods)
-atr  = changeATR ? ta.atr(Periods) : atr2
+atrV = changeATR ? ta.atr(Periods) : atr2
 
-up  = src - Multiplier * atr
+up  = src - Multiplier * atrV
 up1 = nz(up[1], up)
 up := close[1] > up1 ? math.max(up, up1) : up
 
-dn  = src + Multiplier * atr
+dn  = src + Multiplier * atrV
 dn1 = nz(dn[1], dn)
 dn := close[1] < dn1 ? math.min(dn, dn1) : dn
 
-trend = 1
-trend := nz(trend[1], trend)
+// Asli file mein: trend = 1 phir trend := nz(trend[1], trend).
+// v6 mein `var` isi kaam ko saaf tareeqe se karta hai - pehli candle par 1,
+// uske baad khud ba khud pichhli value. Natija bilkul wohi.
+var int trend = 1
 trend := trend == -1 and close > dn1 ? 1 : trend == 1 and close < up1 ? -1 : trend
 
 stLevel = trend == 1 ? up : dn
@@ -96,7 +98,9 @@ ready  = not confirmBar or barstate.isconfirmed
 buySignal  = flipUp and ready and htfLong
 sellSignal = flipDn and ready and htfShort
 
-// bara filter ne jo signal roka - ye dekhna kaam ka hai
+// Bara filter SIRF signal rokta hai. Supertrend ki lakeer apne hisaab se
+// palatti rahegi - woh trailing stop hai, use rokna ghalat hoga.
+// Ye nishan dikhate hain ke filter ne kya roka.
 blockUp = flipUp and ready and not htfLong
 blockDn = flipDn and ready and not htfShort
 
@@ -105,10 +109,10 @@ blockDn = flipDn and ready and not htfShort
 // ============================================================================
 upPlot = plot(trend ==  1 ? up : na, "Up Trend",   style = plot.style_linebr, linewidth = 2, color = cUp)
 dnPlot = plot(trend == -1 ? dn : na, "Down Trend", style = plot.style_linebr, linewidth = 2, color = cDn)
-mPlot  = plot(ohlc4, "", style = plot.style_circles, linewidth = 0, display = display.none)
+mPlot  = plot(ohlc4, "Highlighter anchor", style = plot.style_circles, linewidth = 0, color = color.new(color.white, 100), editable = false)
 
-fillUp = highlighting and trend ==  1 ? color.new(cUp, fillTransp) : na
-fillDn = highlighting and trend == -1 ? color.new(cDn, fillTransp) : na
+fillUp = color.new(cUp, highlighting and trend ==  1 ? fillTransp : 100)
+fillDn = color.new(cDn, highlighting and trend == -1 ? fillTransp : 100)
 fill(mPlot, upPlot, title = "UpTrend Highlighter",   color = fillUp)
 fill(mPlot, dnPlot, title = "DownTrend Highlighter", color = fillDn)
 
@@ -131,7 +135,7 @@ f_row(_r, _a, _b, _tc) =>
 if showPanel and barstate.islast
     tCol = trend == 1 ? cUp : cDn
     dist = math.abs(close - stLevel)
-    inAtr = atr > 0 ? dist / atr : 0.0
+    inAtr = atrV > 0 ? dist / atrV : 0.0
     table.cell(TB, 0, 0, "SUPERTREND", text_color = color.white, text_size = size.normal, bgcolor = tCol)
     table.cell(TB, 1, 0, str.tostring(Periods) + " / " + str.tostring(Multiplier, "#.#"), text_color = color.white, text_size = size.normal, bgcolor = tCol)
     f_row(1, "Rukh", trend == 1 ? "UP" : "DOWN", tCol)
