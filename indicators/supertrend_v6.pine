@@ -26,7 +26,11 @@
 //  ise strategy bana dein aur asli number dekh lein - jaise humne Tony wale
 //  EMA scalper ke saath kiya tha.
 // ============================================================================
-indicator("Supertrend", overlay = true, format = format.price, precision = 2, timeframe = "", timeframe_gaps = false)
+// timeframe = "" yahan nahi lag sakta: ye script table banata hai aur alert()
+// chalata hai, aur v6 in dono ke saath timeframe ki ijazat nahi deta (CE10080).
+// Nuqsan koi nahi - asli file mein resolution="" tha, jiska matlab bhi "wohi
+// timeframe jo chart par hai" tha. Yani pehle bhi kuch nahi kar raha tha.
+indicator("Supertrend", overlay = true, format = format.price, precision = 2)
 
 // ------------------------------------------------------- 1. ASLI SETTINGS --
 g1          = "1. Supertrend (asli settings)"

@@ -93,6 +93,31 @@ def main(path):
     code = strip_noise(raw)
     code_lines = code.split('\n')
 
+    # --- indicator(timeframe=) vs side effects (v6 CE10080) -----------------
+    # v6 refuses a timeframe/resolution argument on indicator() when the script
+    # also creates drawings or fires alerts, because those cannot be evaluated
+    # in another timeframe's context.
+    m = re.search(r'\b(indicator|strategy)\s*\(', code)
+    if m:
+        j, d = m.end(), 1
+        while j < len(code) and d > 0:
+            if code[j] == '(':
+                d += 1
+            elif code[j] == ')':
+                d -= 1
+            j += 1
+        head = code[m.end():j]
+        if re.search(r'\b(timeframe|resolution)\s*=', head):
+            effects = sorted({e for e in ('table.new', 'label.new', 'line.new',
+                                          'box.new', 'polyline.new', 'alert(')
+                              if e in code[j:]})
+            if effects:
+                ln = code[:m.start()].count('\n') + 1
+                problems.append(
+                    f'line {ln}: {m.group(1)}() takes a timeframe/resolution argument '
+                    f'while the script has side effects ({", ".join(effects)}). '
+                    f'Pine v6 rejects this (CE10080) - drop the argument.')
+
     # --- bracket balance, and the continuation-indent trap --------------------
     # Pine reads a wrapped line as a NEW BLOCK when its indent is a multiple of
     # 4. So a continuation must be indented at something else (1, 2, 5, 6, ...),
