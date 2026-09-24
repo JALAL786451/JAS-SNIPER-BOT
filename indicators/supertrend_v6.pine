@@ -158,12 +158,18 @@ fillDn = color.new(cDn, highlighting and trend == -1 ? fillTransp : 100)
 fill(mPlot, upPlot, title = "UpTrend Highlighter",   color = fillUp)
 fill(mPlot, dnPlot, title = "DownTrend Highlighter", color = fillDn)
 
-plotshape(buySignal  ? buyY  : na, "UpTrend Begins",   location = location.absolute, style = shape.circle, size = size.tiny, color = cUp, display = display.pane)
-plotshape(sellSignal ? sellY : na, "DownTrend Begins", location = location.absolute, style = shape.circle, size = size.tiny, color = cDn, display = display.pane)
-plotshape(buySignal  and showsignals ? buyY  : na, "Buy",  text = "Buy",  location = location.absolute, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
-plotshape(sellSignal and showsignals ? sellY : na, "Sell", text = "Sell", location = location.absolute, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
-plotshape(blockUp and showsignals ? close : na, "Buy roka gaya",  text = "x", location = location.absolute, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
-plotshape(blockDn and showsignals ? close : na, "Sell roka gaya", text = "x", location = location.absolute, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
+// Ye chhote gole THEEK us qeemat par hain jahan aap daakhil ho sakte thay.
+// Label ishara hai, ye gola hisaab hai.
+plotshape(buySignal  ? buyY  : na, "Entry (buy)",  location = location.absolute, style = shape.circle, size = size.small, color = cUp, display = display.pane)
+plotshape(sellSignal ? sellY : na, "Entry (sell)", location = location.absolute, style = shape.circle, size = size.small, color = cDn, display = display.pane)
+// Likhai candle ke BAHAR - belowbar/abovebar. Entry par rakhne se candle
+// label ke upar ban jaati thi aur "Buy" parha hi nahi jaata tha.
+// Asli qeemat batane ka kaam upar wala chhota gola aur nuqta-dar lakeer
+// karti hai; ye label sirf ishara hai ke is candle par signal bana.
+plotshape(buySignal  and showsignals, "Buy",  text = "Buy",  location = location.belowbar, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
+plotshape(sellSignal and showsignals, "Sell", text = "Sell", location = location.abovebar, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
+plotshape(blockUp and showsignals, "Buy roka gaya",  text = "x", location = location.belowbar, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
+plotshape(blockDn and showsignals, "Sell roka gaya", text = "x", location = location.abovebar, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
 
 // ============================================================================
 //  PANEL - Supertrend asal mein trailing stop hai, to uska faasla dikhayein
