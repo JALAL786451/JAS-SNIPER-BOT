@@ -82,6 +82,13 @@ def main(path):
             problems.append(f'line {i}: contains a TAB - Pine wants spaces only')
         if ln.rstrip() != ln and ln.strip():
             problems.append(f'line {i}: trailing whitespace')
+        # v6 rejects linewidth < 1 (v2 accepted 0 to hide a plot). To hide a
+        # plot now, give it a fully transparent colour and width 1.
+        m = re.search(r'\blinewidth\s*=\s*(-?\d+)', ln)
+        if m and int(m.group(1)) < 1:
+            problems.append(
+                f'line {i}: linewidth = {m.group(1)} - Pine v6 needs 1 or more. '
+                f'To hide a plot use linewidth = 1 with a fully transparent colour.')
 
     code = strip_noise(raw)
     code_lines = code.split('\n')

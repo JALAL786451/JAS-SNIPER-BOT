@@ -109,7 +109,7 @@ blockDn = flipDn and ready and not htfShort
 // ============================================================================
 upPlot = plot(trend ==  1 ? up : na, "Up Trend",   style = plot.style_linebr, linewidth = 2, color = cUp)
 dnPlot = plot(trend == -1 ? dn : na, "Down Trend", style = plot.style_linebr, linewidth = 2, color = cDn)
-mPlot  = plot(ohlc4, "Highlighter anchor", style = plot.style_circles, linewidth = 0, color = color.new(color.white, 100), editable = false)
+mPlot  = plot(ohlc4, "Highlighter anchor", style = plot.style_circles, linewidth = 1, color = color.new(color.white, 100), editable = false)
 
 fillUp = color.new(cUp, highlighting and trend ==  1 ? fillTransp : 100)
 fillDn = color.new(cDn, highlighting and trend == -1 ? fillTransp : 100)
