@@ -37,14 +37,14 @@
 //  chhoti TF wali qatarein wahan sach nahi bolengi. Bari TF (chart ke barabar
 //  ya us se bari) har jagah theek rehti hain.
 // ============================================================================
-indicator("OB Radar", "OB RADAR", overlay = true, max_boxes_count = 500, max_labels_count = 100, max_lines_count = 100)
+indicator("OB Radar", "OB RADAR", overlay = true, max_boxes_count = 60, max_labels_count = 20, max_lines_count = 20)
 
 // ------------------------------------------------------------ 1. ORDER BLOCK
 g1        = "1. Order Block (asli qaida)"
 periods   = input.int(5,    "Kitni lagatar candles chahiye", minval = 1, maxval = 20, group = g1)
 threshold = input.float(0.0, "Kam az kam kitne % ki harkat", step = 0.1, minval = 0.0, group = g1)
 usewicks  = input.bool(false, "Poori range (High/Low) lein", group = g1)
-obLook    = input.int(200,  "Bull%/Bear% ginne ke liye kitni candles peeche", minval = 20, maxval = 2000, group = g1)
+obLook    = input.int(100,  "Bull%/Bear% ginne ke liye kitni candles peeche", minval = 20, maxval = 1000, group = g1)
 
 // ---------------------------------------------------------------- 2. BAQI
 g2        = "2. Baqi auzaar (har TF par)"
@@ -52,6 +52,7 @@ maFastLen = input.int(20,  "MA fast", minval = 1, group = g2)
 maSlowLen = input.int(50,  "MA slow", minval = 1, group = g2)
 maType    = input.string("EMA", "MA kis tarah ka", options = ["EMA", "SMA"], group = g2)
 pivotLR   = input.int(5,   "Swing pehchanne ka daira (S/R aur LGB)", minval = 1, maxval = 50, group = g2)
+maPlot    = input.bool(true, "MA20/50 chart par bhi banayein", group = g2)
 
 // ------------------------------------------------------------- 3. LEGEND
 g3        = "3. Legend"
@@ -71,7 +72,7 @@ useTFW    = input.bool(true, "1W",  group = g3, inline = "c")
 // ---------------------------------------------------------- 4. CHART PAR
 g4        = "4. Chart par (sirf is chart ki TF ka)"
 drawOB    = input.bool(true, "OB ke khaney banayein", group = g4)
-obKeep    = input.int(6, "Kitne purane OB rakhein (har taraf)", minval = 1, maxval = 30, group = g4)
+obKeep    = input.int(1, "Kitne OB rakhein (1 = sirf taza)", minval = 1, maxval = 10, group = g4)
 obExtend  = input.bool(true, "Khaney ko daayein tak barhayein", group = g4)
 
 // ---------------------------------------------------------------- 5. RANG
@@ -81,7 +82,9 @@ cBear     = input.color(#F23645, "Bearish", group = g5, inline = "r")
 cFlat     = input.color(#787B86, "Khali",   group = g5, inline = "r")
 cTxt      = input.color(#111111, "Likhai",  group = g5, inline = "s")
 cBg       = input.color(#FFFFFFEE, "Panel", group = g5, inline = "s")
-obTransp  = input.int(82, "Khaney ka halkapan", minval = 50, maxval = 97, group = g5)
+obTransp  = input.int(92, "Khaney ka halkapan", minval = 50, maxval = 98, group = g5)
+cMaF      = input.color(#FF9800, "MA fast", group = g5, inline = "m")
+cMaS      = input.color(#7E57C2, "MA slow", group = g5, inline = "m")
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
@@ -125,9 +128,15 @@ f_scan() =>
     _lsHi = ta.valuewhen(_obBear, _bearHi, 0)
     _lsLo = ta.valuewhen(_obBear, _bearLo, 0)
 
+    // 2 = demand ke ANDAR, 1 = demand sab se qareeb
+    // -2 = supply ke ANDAR, -1 = supply sab se qareeb, 0 = koi zone hi nahi
+    // Pehle sirf "andar" dekhta tha, is liye khaana takreeban hamesha "-"
+    // rehta tha. Ab qareeb wala zone bhi batata hai - wohi kaam ki baat hai.
     _inDem = not na(_lbHi) and close <= _lbHi and close >= _lbLo
     _inSup = not na(_lsHi) and close <= _lsHi and close >= _lsLo
-    _zone  = _inDem and _inSup ? 0 : _inDem ? 1 : _inSup ? -1 : 0
+    _dDem  = not na(_lbHi) ? math.abs(close - (_lbHi + _lbLo) / 2) : 1e12
+    _dSup  = not na(_lsHi) ? math.abs(close - (_lsHi + _lsLo) / 2) : 1e12
+    _zone  = _inDem ? 2 : _inSup ? -2 : _dDem > 1e11 and _dSup > 1e11 ? 0 : _dDem < _dSup ? 1 : -1
 
     // --- MA20/50 -----------------------------------------------------------
     _mf = f_ma(close, maFastLen)
@@ -192,14 +201,18 @@ f_trim(_arr, _keep) =>
 if drawOB and OB_bull
     _t = usewicks ? high[obp] : open[obp]
     _b = low[obp]
-    array.push(BXB, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBull, obTransp), border_color = color.new(cBull, 45), extend = obExtend ? extend.right : extend.none))
+    array.push(BXB, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBull, obTransp), border_color = color.new(cBull, 70), extend = obExtend ? extend.right : extend.none))
     f_trim(BXB, obKeep)
 
 if drawOB and OB_bear
     _t = high[obp]
     _b = usewicks ? low[obp] : open[obp]
-    array.push(BXS, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBear, obTransp), border_color = color.new(cBear, 45), extend = obExtend ? extend.right : extend.none))
+    array.push(BXS, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBear, obTransp), border_color = color.new(cBear, 70), extend = obExtend ? extend.right : extend.none))
     f_trim(BXS, obKeep)
+
+// MA20/50 chart par. Legend ka "MA" khaana inhi do lakeeron ka faisla hai.
+plot(maPlot ? f_ma(close, maFastLen) : na, "MA fast", color = cMaF, linewidth = 2, display = display.pane)
+plot(maPlot ? f_ma(close, maSlowLen) : na, "MA slow", color = cMaS, linewidth = 2, display = display.pane)
 
 plotshape(OB_bull, "Bullish OB", style = shape.triangleup, color = cBull, size = size.tiny, location = location.belowbar, offset = -obp, display = display.pane)
 plotshape(OB_bear, "Bearish OB", style = shape.triangledown, color = cBear, size = size.tiny, location = location.abovebar, offset = -obp, display = display.pane)
@@ -228,18 +241,31 @@ f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lg
     _fvg  = nz(_fvgRaw)
     _lgb  = nz(_lgbRaw)
     _zone = nz(_zoneRaw)
-    _tot  = nz(_nbRaw) + nz(_nsRaw)
-    _bp   = _tot > 0 ? nz(_nbRaw) * 100.0 / _tot : 50.0
-    _net  = _ok ? _ob + _ma + _fvg + _lgb + _zone : 0
+    _nb   = nz(_nbRaw)
+    _ns   = nz(_nsRaw)
+    _tot  = _nb + _ns
+    // Bull% ko gol karke Bear% usi se nikalte hain, warna dono alag alag gol
+    // ho kar 38/63 ban jate the - jama 101. Ab hamesha theek 100 banega.
+    _bR   = _tot > 0 ? math.round(_nb * 100.0 / _tot) : 50
+    // Zone ka vote sirf tab jab price waqai ANDAR ho (2 / -2), qareeb hone par nahi
+    _zv   = _zone == 2 ? 1 : _zone == -2 ? -1 : 0
+    _net  = _ok ? _ob + _ma + _fvg + _lgb + _zv : 0
+    // S/R: 0% = swing low par, 100% = swing high par. Is se bahar nikal jaye
+    // to woh breakout hai - "127%" likhna uljhan deta tha, ab BRK likhta hai.
+    _srTxt = not _ok or na(_posRaw) ? "-" : _posRaw > 100 ? "BRK+" : _posRaw < 0 ? "BRK-" : str.tostring(_posRaw, "#") + "%"
+    _srCol = not _ok or na(_posRaw) ? cFlat : _posRaw > 100 ? cBull : _posRaw < 0 ? cBear : _posRaw >= 70 ? cBear : _posRaw <= 30 ? cBull : cTxt
+    // BARA huroof = price zone ke ANDAR hai. chhote huroof = zone qareeb hai.
+    _zTxt = not _ok ? "-" : _zone == 2 ? "DZ" : _zone == -2 ? "SZ" : _zone == 1 ? "dz" : _zone == -1 ? "sz" : "-"
+    _zCol = _zone == 2 ? cBull : _zone == -2 ? cBear : _zone == 1 ? color.new(cBull, 40) : _zone == -1 ? color.new(cBear, 40) : cFlat
     f_cell(0, _r, _name, cTxt, cBg)
-    f_cell(1, _r, not _ok or _ob == 0 ? "-" : (_ob > 0 ? "BULL" : "BEAR") + " " + str.tostring(_age), f_sgnCol(_ob), color.new(f_sgnCol(_ob), _ob == 0 ? 100 : 82))
-    f_cell(2, _r, not _ok or _tot == 0 ? "-" : str.tostring(_bp, "#") + "/" + str.tostring(100 - _bp, "#"), _tot == 0 ? cFlat : _bp > 50 ? cBull : _bp < 50 ? cBear : cFlat, cBg)
+    f_cell(1, _r, not _ok or _ob == 0 ? "-" : (_ob > 0 ? "BULL" : "BEAR") + " " + str.tostring(_age), f_sgnCol(_ob), color.new(f_sgnCol(_ob), _ob == 0 ? 100 : 86))
+    table.cell(TB, 2, _r, not _ok or _tot == 0 ? "-" : str.tostring(_bR, "#") + "/" + str.tostring(100 - _bR, "#"), text_color = _tot == 0 ? cFlat : _bR > 50 ? cBull : _bR < 50 ? cBear : cFlat, text_size = f_sz(tblSize), bgcolor = cBg, tooltip = "Pichhli " + str.tostring(obLook) + " candles mein: " + str.tostring(_nb, "#") + " bullish OB, " + str.tostring(_ns, "#") + " bearish OB")
     f_cell(3, _r, _ok ? f_sgnTxt(_ma, "UP", "DN") : "-", f_sgnCol(_ma), cBg)
-    f_cell(4, _r, _ok and not na(_posRaw) ? str.tostring(_posRaw, "#") + "%" : "-", not _ok or na(_posRaw) ? cFlat : _posRaw >= 70 ? cBear : _posRaw <= 30 ? cBull : cTxt, cBg)
+    f_cell(4, _r, _srTxt, _srCol, cBg)
     f_cell(5, _r, _ok ? f_sgnTxt(_fvg, "UP", "DN") : "-", f_sgnCol(_fvg), cBg)
     f_cell(6, _r, _ok ? f_sgnTxt(_lgb, "UP", "DN") : "-", f_sgnCol(_lgb), cBg)
-    f_cell(7, _r, _ok ? f_sgnTxt(_zone, "DZ", "SZ") : "-", f_sgnCol(_zone), cBg)
-    f_cell(8, _r, not _ok ? "-" : (_net > 0 ? "+" : "") + str.tostring(_net), f_sgnCol(_net), color.new(f_sgnCol(_net), _net == 0 ? 100 : 78))
+    f_cell(7, _r, _zTxt, _zCol, cBg)
+    f_cell(8, _r, not _ok ? "-" : (_net > 0 ? "+" : "") + str.tostring(_net), f_sgnCol(_net), color.new(f_sgnCol(_net), _net == 0 ? 100 : 80))
     _net
 
 if showTable and barstate.islast
