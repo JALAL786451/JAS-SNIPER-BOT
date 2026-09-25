@@ -57,6 +57,7 @@ maPlot    = input.bool(true, "MA20/50 chart par bhi banayein", group = g2)
 // ------------------------------------------------------------- 3. LEGEND
 g3        = "3. Legend"
 showTable = input.bool(true, "Legend dikhayein", group = g3)
+tzOff     = input.int(5, "Apna waqt: UTC se kitne ghante aagey", minval = -12, maxval = 14, group = g3)
 tblPos    = input.string("Top Right", "Legend kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = g3)
 tblSize   = input.string("Small", "Likhai ka size", options = ["Tiny", "Small", "Normal"], group = g3)
 useTF1    = input.bool(true, "1m",  group = g3, inline = "a")
@@ -161,19 +162,24 @@ f_scan() =>
     // [1] YAHAN lagta hai, request.security ke andar - tab ye us TF ki BAND
     // HO CHUKI candle deta hai. Agar [1] bahar lagate to sirf pichhli CHART
     // candle ka wohi kachcha value milta aur repaint bilkul nahi rukta.
-    [_obNow[1], _obAge[1], _nBull[1], _nBear[1], _ma[1], _pos[1], _fvg[1], _lgb[1], _zone[1]]
+    // time[1] bhi wapas bhejte hain: ye us BAND candle ka waqt hai jis se ye
+    // saari qatar bani. Legend mein TF ke naam par mouse rakhne se ye waqt
+    // dikhta hai - yani aap KHUD tasdeeq kar sakte hain ke qatar kis candle
+    // ki hai, aur agli baar kab badlegi. Mere kehne par bharosa karne ki
+    // zaroorat nahi.
+    [_obNow[1], _obAge[1], _nBull[1], _nBear[1], _ma[1], _pos[1], _fvg[1], _lgb[1], _zone[1], time[1]]
 
 f_tf(_tf) => request.security(syminfo.tickerid, _tf, f_scan(), barmerge.gaps_off, barmerge.lookahead_off)
 
-[o1, a1, b1, r1, m1, p1, f1, l1, z1] = f_tf("1")
-[o5, a5, b5, r5, m5, p5, f5, l5, z5] = f_tf("5")
-[oF, aF, bF, rF, mF, pF, fF, lF, zF] = f_tf("15")
-[oT, aT, bT, rT, mT, pT, fT, lT, zT] = f_tf("30")
-[oH, aH, bH, rH, mH, pH, fH, lH, zH] = f_tf("60")
-[o2, a2, b2, r2, m2, p2, f2, l2, z2] = f_tf("120")
-[o4, a4, b4, r4, m4, p4, f4, l4, z4] = f_tf("240")
-[oD, aD, bD, rD, mD, pD, fD, lD, zD] = f_tf("D")
-[oW, aW, bW, rW, mW, pW, fW, lW, zW] = f_tf("W")
+[o1, a1, b1, r1, m1, p1, f1, l1, z1, t1] = f_tf("1")
+[o5, a5, b5, r5, m5, p5, f5, l5, z5, t5] = f_tf("5")
+[oF, aF, bF, rF, mF, pF, fF, lF, zF, tF] = f_tf("15")
+[oT, aT, bT, rT, mT, pT, fT, lT, zT, tT] = f_tf("30")
+[oH, aH, bH, rH, mH, pH, fH, lH, zH, tH] = f_tf("60")
+[o2, a2, b2, r2, m2, p2, f2, l2, z2, t2] = f_tf("120")
+[o4, a4, b4, r4, m4, p4, f4, l4, z4, t4] = f_tf("240")
+[oD, aD, bD, rD, mD, pD, fD, lD, zD, tD] = f_tf("D")
+[oW, aW, bW, rW, mW, pW, fW, lW, zW, tW] = f_tf("W")
 
 // ============================================================================
 //  IS CHART KI APNI TF — khaney banane ke liye
@@ -233,7 +239,7 @@ f_cell(_c, _r, _t, _tc, _bg) => table.cell(TB, _c, _r, _t, text_color = _tc, tex
 // TradingView har TF ka data har chart par nahi de pata (misal: 1W chart par
 // 1m ka). Us soorat mein value na aati hai. Yahan nz() se sab kuch 0 ban jata
 // hai aur khaana "-" dikhata hai -- "NaN" nahi, jo dekhne wale ko uljha deta.
-f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lgbRaw, _zoneRaw) =>
+f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lgbRaw, _zoneRaw, _tRaw) =>
     _ok   = not na(_obRaw) and not na(_maRaw)
     _ob   = nz(_obRaw)
     _age  = nz(_ageRaw)
@@ -257,7 +263,8 @@ f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lg
     // BARA huroof = price zone ke ANDAR hai. chhote huroof = zone qareeb hai.
     _zTxt = not _ok ? "-" : _zone == 2 ? "DZ" : _zone == -2 ? "SZ" : _zone == 1 ? "dz" : _zone == -1 ? "sz" : "-"
     _zCol = _zone == 2 ? cBull : _zone == -2 ? cBear : _zone == 1 ? color.new(cBull, 40) : _zone == -1 ? color.new(cBear, 40) : cFlat
-    f_cell(0, _r, _name, cTxt, cBg)
+    _tzs = tzOff >= 0 ? "UTC+" + str.tostring(tzOff) : "UTC" + str.tostring(tzOff)
+    table.cell(TB, 0, _r, _name, text_color = cTxt, text_size = f_sz(tblSize), bgcolor = cBg, tooltip = na(_tRaw) ? "Is TF ka data nahi mila" : "Ye qatar " + _name + " ki us candle se hai jo " + str.format_time(_tRaw, "dd MMM HH:mm", _tzs) + " par khuli aur BAND ho chuki hai. Agli band candle tak ye nahi badlegi.")
     f_cell(1, _r, not _ok or _ob == 0 ? "-" : (_ob > 0 ? "BULL" : "BEAR") + " " + str.tostring(_age), f_sgnCol(_ob), color.new(f_sgnCol(_ob), _ob == 0 ? 100 : 86))
     table.cell(TB, 2, _r, not _ok or _tot == 0 ? "-" : str.tostring(_bR, "#") + "/" + str.tostring(100 - _bR, "#"), text_color = _tot == 0 ? cFlat : _bR > 50 ? cBull : _bR < 50 ? cBear : cFlat, text_size = f_sz(tblSize), bgcolor = cBg, tooltip = "Pichhli " + str.tostring(obLook) + " candles mein: " + str.tostring(_nb, "#") + " bullish OB, " + str.tostring(_ns, "#") + " bearish OB")
     f_cell(3, _r, _ok ? f_sgnTxt(_ma, "UP", "DN") : "-", f_sgnCol(_ma), cBg)
@@ -284,31 +291,31 @@ if showTable and barstate.islast
     sumNet = 0
     if useTF1
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "1m", o1, a1, b1, r1, m1, p1, f1, l1, z1)
+        sumNet := sumNet + f_line(rr, "1m", o1, a1, b1, r1, m1, p1, f1, l1, z1, t1)
     if useTF5
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "5m", o5, a5, b5, r5, m5, p5, f5, l5, z5)
+        sumNet := sumNet + f_line(rr, "5m", o5, a5, b5, r5, m5, p5, f5, l5, z5, t5)
     if useTF15
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "15m", oF, aF, bF, rF, mF, pF, fF, lF, zF)
+        sumNet := sumNet + f_line(rr, "15m", oF, aF, bF, rF, mF, pF, fF, lF, zF, tF)
     if useTF30
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "30m", oT, aT, bT, rT, mT, pT, fT, lT, zT)
+        sumNet := sumNet + f_line(rr, "30m", oT, aT, bT, rT, mT, pT, fT, lT, zT, tT)
     if useTF60
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "1H", oH, aH, bH, rH, mH, pH, fH, lH, zH)
+        sumNet := sumNet + f_line(rr, "1H", oH, aH, bH, rH, mH, pH, fH, lH, zH, tH)
     if useTF120
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "2H", o2, a2, b2, r2, m2, p2, f2, l2, z2)
+        sumNet := sumNet + f_line(rr, "2H", o2, a2, b2, r2, m2, p2, f2, l2, z2, t2)
     if useTF240
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "4H", o4, a4, b4, r4, m4, p4, f4, l4, z4)
+        sumNet := sumNet + f_line(rr, "4H", o4, a4, b4, r4, m4, p4, f4, l4, z4, t4)
     if useTFD
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "1D", oD, aD, bD, rD, mD, pD, fD, lD, zD)
+        sumNet := sumNet + f_line(rr, "1D", oD, aD, bD, rD, mD, pD, fD, lD, zD, tD)
     if useTFW
         rr := rr + 1
-        sumNet := sumNet + f_line(rr, "1W", oW, aW, bW, rW, mW, pW, fW, lW, zW)
+        sumNet := sumNet + f_line(rr, "1W", oW, aW, bW, rW, mW, pW, fW, lW, zW, tW)
 
     if rr < 10
         rr := rr + 1
