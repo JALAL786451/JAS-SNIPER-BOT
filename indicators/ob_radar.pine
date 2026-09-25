@@ -1,0 +1,298 @@
+//@version=6
+// ============================================================================
+//  OB RADAR — har timeframe ka Order Block, ek hi nazar mein
+//
+//  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
+//  bilkul wohi rakha gaya hai:
+//    BULLISH OB = aakhri LAAL candle, uske baad lagatar N HARI candles
+//    BEARISH OB = aakhri HARI candle, uske baad lagatar N LAAL candles
+//    aur us poore safar mein kam az kam X% ki harkat honi chahiye
+//
+//  Us par ye cheezein barhai gayi hain:
+//   - 9 timeframe ek saath (1m se 1W tak), ek legend mein
+//   - Har TF ka Bull% / Bear% -- OB ginti se, andaze se nahi
+//   - Har TF par MA20/50, S/R, FVG, LGB, Supply/Demand zone
+//   - Sab ka mila jula NET vote
+//
+//  FVG / LGB / swing ki tareef bilkul wohi hai jo aapki apni
+//  smc_coach_pro_v2.pine mein hai, taake dono scripts ek hi zabaan bolein:
+//    FVG up = low > high[2]      |  FVG dn = high < low[2]
+//    LGB up = high > lastHi AUR close < lastHi   (buy-side liquidity sweep)
+//    LGB dn = low  < lastLo AUR close > lastLo   (sell-side liquidity sweep)
+//
+//  REPAINT KE BAREY MEIN -- SAAF BAAT:
+//  Legend har TF ki AAKHRI BAND HO CHUKI candle dikhata hai, chalti hui nahi.
+//  Yani 1D chart par "1D" ki qatar KAL ka haal batayegi, aaj ka nahi -- aur
+//  yehi sahi hai, kyunke aaj ki candle abhi mukammal hui hi nahi.
+//  Har timeframe ki har value us TF ki BAND HO CHUKI candle se li gayi hai
+//  ([1] + lookahead_off). Yani jo legend abhi dikha raha hai, woh baad mein
+//  badal kar kuch aur nahi ho jayega.
+//
+//  MAGAR EK HADD HAI, AUR YE CHHUPANA BE-IMANI HOGI:
+//  Jab aap 1D chart par baithe hain aur 1m ka haal poochhte hain, TradingView
+//  sirf ABHI ka 1m haal theek deta hai. Peeche ke dino ka 1m haal woh theek
+//  nahi de sakta -- us ke pas itna bareek record hi nahi hota.
+//  Is liye: ye legend "abhi kya chal raha hai" ke liye bharosey ke qabil hai.
+//  Isey peeche ke chart par ja kar "us din kya tha" ke liye mat parhein --
+//  chhoti TF wali qatarein wahan sach nahi bolengi. Bari TF (chart ke barabar
+//  ya us se bari) har jagah theek rehti hain.
+// ============================================================================
+indicator("OB Radar", "OB RADAR", overlay = true, max_boxes_count = 500, max_labels_count = 100, max_lines_count = 100)
+
+// ------------------------------------------------------------ 1. ORDER BLOCK
+g1        = "1. Order Block (asli qaida)"
+periods   = input.int(5,    "Kitni lagatar candles chahiye", minval = 1, maxval = 20, group = g1)
+threshold = input.float(0.0, "Kam az kam kitne % ki harkat", step = 0.1, minval = 0.0, group = g1)
+usewicks  = input.bool(false, "Poori range (High/Low) lein", group = g1)
+obLook    = input.int(200,  "Bull%/Bear% ginne ke liye kitni candles peeche", minval = 20, maxval = 2000, group = g1)
+
+// ---------------------------------------------------------------- 2. BAQI
+g2        = "2. Baqi auzaar (har TF par)"
+maFastLen = input.int(20,  "MA fast", minval = 1, group = g2)
+maSlowLen = input.int(50,  "MA slow", minval = 1, group = g2)
+maType    = input.string("EMA", "MA kis tarah ka", options = ["EMA", "SMA"], group = g2)
+pivotLR   = input.int(5,   "Swing pehchanne ka daira (S/R aur LGB)", minval = 1, maxval = 50, group = g2)
+
+// ------------------------------------------------------------- 3. LEGEND
+g3        = "3. Legend"
+showTable = input.bool(true, "Legend dikhayein", group = g3)
+tblPos    = input.string("Top Right", "Legend kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = g3)
+tblSize   = input.string("Small", "Likhai ka size", options = ["Tiny", "Small", "Normal"], group = g3)
+useTF1    = input.bool(true, "1m",  group = g3, inline = "a")
+useTF5    = input.bool(true, "5m",  group = g3, inline = "a")
+useTF15   = input.bool(true, "15m", group = g3, inline = "a")
+useTF30   = input.bool(true, "30m", group = g3, inline = "b")
+useTF60   = input.bool(true, "1H",  group = g3, inline = "b")
+useTF120  = input.bool(true, "2H",  group = g3, inline = "b")
+useTF240  = input.bool(true, "4H",  group = g3, inline = "c")
+useTFD    = input.bool(true, "1D",  group = g3, inline = "c")
+useTFW    = input.bool(true, "1W",  group = g3, inline = "c")
+
+// ---------------------------------------------------------- 4. CHART PAR
+g4        = "4. Chart par (sirf is chart ki TF ka)"
+drawOB    = input.bool(true, "OB ke khaney banayein", group = g4)
+obKeep    = input.int(6, "Kitne purane OB rakhein (har taraf)", minval = 1, maxval = 30, group = g4)
+obExtend  = input.bool(true, "Khaney ko daayein tak barhayein", group = g4)
+
+// ---------------------------------------------------------------- 5. RANG
+g5        = "5. Rang"
+cBull     = input.color(#089981, "Bullish", group = g5, inline = "r")
+cBear     = input.color(#F23645, "Bearish", group = g5, inline = "r")
+cFlat     = input.color(#787B86, "Khali",   group = g5, inline = "r")
+cTxt      = input.color(#111111, "Likhai",  group = g5, inline = "s")
+cBg       = input.color(#FFFFFFEE, "Panel", group = g5, inline = "s")
+obTransp  = input.int(82, "Khaney ka halkapan", minval = 50, maxval = 97, group = g5)
+
+// ============================================================================
+//  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
+// ============================================================================
+f_ma(_s, _l) => maType == "EMA" ? ta.ema(_s, _l) : ta.sma(_s, _l)
+
+f_scan() =>
+    _obp = periods + 1
+
+    // --- OB: wugamlo ka asli qaida, jyon ka tyon ---------------------------
+    _abs = close[_obp] != 0 ? (math.abs(close[_obp] - close[1]) / close[_obp]) * 100 : 0.0
+    _rel = _abs >= threshold
+
+    _upc = 0
+    _dnc = 0
+    for i = 1 to periods
+        _upc := _upc + (close[i] > open[i] ? 1 : 0)
+        _dnc := _dnc + (close[i] < open[i] ? 1 : 0)
+
+    _obBull = close[_obp] < open[_obp] and _upc == periods and _rel
+    _obBear = close[_obp] > open[_obp] and _dnc == periods and _rel
+
+    _bullHi = _obBull ? (usewicks ? high[_obp] : open[_obp]) : na
+    _bullLo = _obBull ? low[_obp] : na
+    _bearHi = _obBear ? high[_obp] : na
+    _bearLo = _obBear ? (usewicks ? low[_obp] : open[_obp]) : na
+
+    // --- Bull% / Bear%: ginti, andaza nahi ---------------------------------
+    _nBull = math.sum(_obBull ? 1 : 0, obLook)
+    _nBear = math.sum(_obBear ? 1 : 0, obLook)
+
+    // --- Sab se taza OB kaun sa, aur kitna purana --------------------------
+    _sb = nz(ta.barssince(_obBull), 999999)
+    _ss = nz(ta.barssince(_obBear), 999999)
+    _obNow = _sb > 999998 and _ss > 999998 ? 0 : _sb < _ss ? 1 : -1
+    _obAge = math.min(_sb, _ss)
+
+    // --- Taza OB ke daire (zone test ke liye) ------------------------------
+    _lbHi = ta.valuewhen(_obBull, _bullHi, 0)
+    _lbLo = ta.valuewhen(_obBull, _bullLo, 0)
+    _lsHi = ta.valuewhen(_obBear, _bearHi, 0)
+    _lsLo = ta.valuewhen(_obBear, _bearLo, 0)
+
+    _inDem = not na(_lbHi) and close <= _lbHi and close >= _lbLo
+    _inSup = not na(_lsHi) and close <= _lsHi and close >= _lsLo
+    _zone  = _inDem and _inSup ? 0 : _inDem ? 1 : _inSup ? -1 : 0
+
+    // --- MA20/50 -----------------------------------------------------------
+    _mf = f_ma(close, maFastLen)
+    _ms = f_ma(close, maSlowLen)
+    _ma = _mf > _ms ? 1 : _mf < _ms ? -1 : 0
+
+    // --- Swing / S-R (aapki SMC script wali tareef) ------------------------
+    _ph = ta.pivothigh(high, pivotLR, pivotLR)
+    _pl = ta.pivotlow(low, pivotLR, pivotLR)
+    _hi = ta.valuewhen(not na(_ph), _ph, 0)
+    _lo = ta.valuewhen(not na(_pl), _pl, 0)
+    _pos = not na(_hi) and not na(_lo) and _hi > _lo ? (close - _lo) / (_hi - _lo) * 100 : 50.0
+
+    // --- FVG (SMC script wali tareef) --------------------------------------
+    _fvg = bar_index > 2 and low > high[2] ? 1 : bar_index > 2 and high < low[2] ? -1 : 0
+
+    // --- LGB (SMC script wali tareef) --------------------------------------
+    _lgbUp = not na(_hi) and high > _hi and close < _hi
+    _lgbDn = not na(_lo) and low < _lo and close > _lo
+    _lgb = _lgbDn ? 1 : _lgbUp ? -1 : 0
+
+    // [1] YAHAN lagta hai, request.security ke andar - tab ye us TF ki BAND
+    // HO CHUKI candle deta hai. Agar [1] bahar lagate to sirf pichhli CHART
+    // candle ka wohi kachcha value milta aur repaint bilkul nahi rukta.
+    [_obNow[1], _obAge[1], _nBull[1], _nBear[1], _ma[1], _pos[1], _fvg[1], _lgb[1], _zone[1]]
+
+f_tf(_tf) => request.security(syminfo.tickerid, _tf, f_scan(), barmerge.gaps_off, barmerge.lookahead_off)
+
+[o1, a1, b1, r1, m1, p1, f1, l1, z1] = f_tf("1")
+[o5, a5, b5, r5, m5, p5, f5, l5, z5] = f_tf("5")
+[oF, aF, bF, rF, mF, pF, fF, lF, zF] = f_tf("15")
+[oT, aT, bT, rT, mT, pT, fT, lT, zT] = f_tf("30")
+[oH, aH, bH, rH, mH, pH, fH, lH, zH] = f_tf("60")
+[o2, a2, b2, r2, m2, p2, f2, l2, z2] = f_tf("120")
+[o4, a4, b4, r4, m4, p4, f4, l4, z4] = f_tf("240")
+[oD, aD, bD, rD, mD, pD, fD, lD, zD] = f_tf("D")
+[oW, aW, bW, rW, mW, pW, fW, lW, zW] = f_tf("W")
+
+// ============================================================================
+//  IS CHART KI APNI TF — khaney banane ke liye
+// ============================================================================
+obp = periods + 1
+absMove = close[obp] != 0 ? (math.abs(close[obp] - close[1]) / close[obp]) * 100 : 0.0
+relMove = absMove >= threshold
+
+upc = 0
+dnc = 0
+for i = 1 to periods
+    upc := upc + (close[i] > open[i] ? 1 : 0)
+    dnc := dnc + (close[i] < open[i] ? 1 : 0)
+
+OB_bull = close[obp] < open[obp] and upc == periods and relMove and barstate.isconfirmed
+OB_bear = close[obp] > open[obp] and dnc == periods and relMove and barstate.isconfirmed
+
+var array<box> BXB = array.new<box>()
+var array<box> BXS = array.new<box>()
+
+f_trim(_arr, _keep) =>
+    while array.size(_arr) > _keep
+        box.delete(array.shift(_arr))
+
+if drawOB and OB_bull
+    _t = usewicks ? high[obp] : open[obp]
+    _b = low[obp]
+    array.push(BXB, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBull, obTransp), border_color = color.new(cBull, 45), extend = obExtend ? extend.right : extend.none))
+    f_trim(BXB, obKeep)
+
+if drawOB and OB_bear
+    _t = high[obp]
+    _b = usewicks ? low[obp] : open[obp]
+    array.push(BXS, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBear, obTransp), border_color = color.new(cBear, 45), extend = obExtend ? extend.right : extend.none))
+    f_trim(BXS, obKeep)
+
+plotshape(OB_bull, "Bullish OB", style = shape.triangleup, color = cBull, size = size.tiny, location = location.belowbar, offset = -obp, display = display.pane)
+plotshape(OB_bear, "Bearish OB", style = shape.triangledown, color = cBear, size = size.tiny, location = location.abovebar, offset = -obp, display = display.pane)
+
+// ============================================================================
+//  LEGEND
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Bottom Right" ? position.bottom_right : _s == "Bottom Left" ? position.bottom_left : _s == "Middle Right" ? position.middle_right : position.top_right
+f_sz(_s) => _s == "Tiny" ? size.tiny : _s == "Normal" ? size.normal : size.small
+
+var table TB = table.new(f_pos(tblPos), 9, 11, border_width = 1)
+
+f_sgnTxt(_v, _up, _dn) => _v > 0 ? _up : _v < 0 ? _dn : "-"
+f_sgnCol(_v) => _v > 0 ? cBull : _v < 0 ? cBear : cFlat
+
+f_cell(_c, _r, _t, _tc, _bg) => table.cell(TB, _c, _r, _t, text_color = _tc, text_size = f_sz(tblSize), bgcolor = _bg)
+
+// TradingView har TF ka data har chart par nahi de pata (misal: 1W chart par
+// 1m ka). Us soorat mein value na aati hai. Yahan nz() se sab kuch 0 ban jata
+// hai aur khaana "-" dikhata hai -- "NaN" nahi, jo dekhne wale ko uljha deta.
+f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lgbRaw, _zoneRaw) =>
+    _ok   = not na(_obRaw) and not na(_maRaw)
+    _ob   = nz(_obRaw)
+    _age  = nz(_ageRaw)
+    _ma   = nz(_maRaw)
+    _fvg  = nz(_fvgRaw)
+    _lgb  = nz(_lgbRaw)
+    _zone = nz(_zoneRaw)
+    _tot  = nz(_nbRaw) + nz(_nsRaw)
+    _bp   = _tot > 0 ? nz(_nbRaw) * 100.0 / _tot : 50.0
+    _net  = _ok ? _ob + _ma + _fvg + _lgb + _zone : 0
+    f_cell(0, _r, _name, cTxt, cBg)
+    f_cell(1, _r, not _ok or _ob == 0 ? "-" : (_ob > 0 ? "BULL" : "BEAR") + " " + str.tostring(_age), f_sgnCol(_ob), color.new(f_sgnCol(_ob), _ob == 0 ? 100 : 82))
+    f_cell(2, _r, not _ok or _tot == 0 ? "-" : str.tostring(_bp, "#") + "/" + str.tostring(100 - _bp, "#"), _tot == 0 ? cFlat : _bp > 50 ? cBull : _bp < 50 ? cBear : cFlat, cBg)
+    f_cell(3, _r, _ok ? f_sgnTxt(_ma, "UP", "DN") : "-", f_sgnCol(_ma), cBg)
+    f_cell(4, _r, _ok and not na(_posRaw) ? str.tostring(_posRaw, "#") + "%" : "-", not _ok or na(_posRaw) ? cFlat : _posRaw >= 70 ? cBear : _posRaw <= 30 ? cBull : cTxt, cBg)
+    f_cell(5, _r, _ok ? f_sgnTxt(_fvg, "UP", "DN") : "-", f_sgnCol(_fvg), cBg)
+    f_cell(6, _r, _ok ? f_sgnTxt(_lgb, "UP", "DN") : "-", f_sgnCol(_lgb), cBg)
+    f_cell(7, _r, _ok ? f_sgnTxt(_zone, "DZ", "SZ") : "-", f_sgnCol(_zone), cBg)
+    f_cell(8, _r, not _ok ? "-" : (_net > 0 ? "+" : "") + str.tostring(_net), f_sgnCol(_net), color.new(f_sgnCol(_net), _net == 0 ? 100 : 78))
+    _net
+
+if showTable and barstate.islast
+    table.clear(TB, 0, 0, 8, 10)
+    f_cell(0, 0, "TF",    color.white, cFlat)
+    f_cell(1, 0, "OB",    color.white, cFlat)
+    f_cell(2, 0, "B/B %", color.white, cFlat)
+    f_cell(3, 0, "MA",    color.white, cFlat)
+    f_cell(4, 0, "S/R",   color.white, cFlat)
+    f_cell(5, 0, "FVG",   color.white, cFlat)
+    f_cell(6, 0, "LGB",   color.white, cFlat)
+    f_cell(7, 0, "ZONE",  color.white, cFlat)
+    f_cell(8, 0, "NET",   color.white, cFlat)
+
+    rr = 0
+    sumNet = 0
+    if useTF1
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "1m", o1, a1, b1, r1, m1, p1, f1, l1, z1)
+    if useTF5
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "5m", o5, a5, b5, r5, m5, p5, f5, l5, z5)
+    if useTF15
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "15m", oF, aF, bF, rF, mF, pF, fF, lF, zF)
+    if useTF30
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "30m", oT, aT, bT, rT, mT, pT, fT, lT, zT)
+    if useTF60
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "1H", oH, aH, bH, rH, mH, pH, fH, lH, zH)
+    if useTF120
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "2H", o2, a2, b2, r2, m2, p2, f2, l2, z2)
+    if useTF240
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "4H", o4, a4, b4, r4, m4, p4, f4, l4, z4)
+    if useTFD
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "1D", oD, aD, bD, rD, mD, pD, fD, lD, zD)
+    if useTFW
+        rr := rr + 1
+        sumNet := sumNet + f_line(rr, "1W", oW, aW, bW, rW, mW, pW, fW, lW, zW)
+
+    if rr < 10
+        rr := rr + 1
+        _c = sumNet > 0 ? cBull : sumNet < 0 ? cBear : cFlat
+        f_cell(0, rr, "SAB", color.white, _c)
+        table.cell(TB, 1, rr, (sumNet > 0 ? "BULL  +" : sumNet < 0 ? "BEAR  " : "BARABAR  ") + str.tostring(sumNet), text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c)
+        table.merge_cells(TB, 1, rr, 8, rr)
+
+// ============================================================================
+//  ALERTS — sirf is chart ki TF ke OB par, aur band candle par
+// ============================================================================
+alertcondition(OB_bull, "Naya Bullish OB", "Naya Bullish OB mila - ye BUY ka signal NAHI hai")
+alertcondition(OB_bear, "Naya Bearish OB", "Naya Bearish OB mila - ye SELL ka signal NAHI hai")
