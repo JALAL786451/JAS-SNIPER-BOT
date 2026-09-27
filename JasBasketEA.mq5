@@ -44,6 +44,12 @@ input int    InpEmaFast        = 20;
 input int    InpEmaSlow        = 50;
 
 //--- 6. Amal ------------------------------------------------------
+input group "=== 8 - Bachao aur faide wali lot ==="
+input bool   InpCloseWinners = true;   // Faide wali lot akeli band kar do
+input double InpLegProfit    = 0.14;   // Ek lot ka faida (account currency; cent par ~14)
+input bool   InpUseDefence   = true;   // Khilaf jane par ulti lot
+input double InpDefenceMult  = 3.5;    // Kitne qadam khilaf jane par (gold: 3.5 x $1 = $3.50)
+
 input group "=== 7 - Qadam aur bara rukh ==="
 input bool   InpUseStep     = true;    // Nayi lot sirf tab jab qeemat ek qadam door ho
 input double InpStepMult    = 1.0;     // Qadam = ATR ka kitna hissa
@@ -71,6 +77,7 @@ datetime g_lastBar = 0, g_lastAction = 0;
 datetime g_lastOrder = 0;
 string   g_say = "";
 double   g_step = 0, g_near = -1;
+double   g_defDist = 0, g_worstAgainst = 0;
 int      g_htf = 0;
 
 //+------------------------------------------------------------------+
@@ -263,6 +270,9 @@ void OnTick()
       return;
      }
 
+   //--- aap ka qaida 3: faide wali lot band ------------------------
+   if(CloseWinners()) return;
+
    //--- Q8: jori bana kar band - faida + sab se buri lot -----------
    if(InpUsePairClose && nBuy + nSell >= 2)
       if(TryPairClose()) return;
@@ -272,6 +282,26 @@ void OnTick()
    if(flattenNow && MathAbs(netLot) > InpLot / 2.0)
      {
       Balance(netLot, totLot, "Q6: market " + IntegerToString(minsEnd) + " min mein band");
+     }
+
+   //--- aap ka qaida 4: pehli lot khilaf gayi -> ulti lot ----------
+   int    worstDir = 0;
+   double worstAgainst = WorstAgainst(bid, worstDir);
+   double defDist = StepSize() * InpDefenceMult;
+   g_defDist = defDist; g_worstAgainst = worstAgainst;
+   if(InpUseDefence && worstDir != 0 && defDist > 0 &&
+      worstAgainst >= defDist - 1e-8)
+     {
+      // ulti taraf, magar sirf agar us taraf abhi kam lots hain
+      double sameSide = (worstDir > 0) ? lotBuy : lotSell;
+      double oppSide  = (worstDir > 0) ? lotSell : lotBuy;
+      if(oppSide < sameSide - 1e-8)
+        {
+         g_say += StringFormat("Bachao: lot %.2f khilaf (hadd %.2f) - ulti lot.\n",
+                               worstAgainst, defDist);
+         Balance(worstDir * 1.0, totLot, "Bachao: " +
+                 DoubleToString(worstAgainst, 2) + " khilaf");
+        }
      }
 
    //--- Q3: net ki hadd -> sirf ulti taraf -------------------------
@@ -371,6 +401,41 @@ void CloseAll(string why)
      }
   }
 
+//--- faide wali lot akeli band (aap ka qaida 3) --------------------
+bool CloseWinners()
+  {
+   if(!InpCloseWinners) return(false);
+   if(TimeCurrent() - g_lastOrder < InpMinSecsBetween) return(false);
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(!pos.SelectByIndex(i))          continue;
+      if(pos.Symbol() != _Symbol)        continue;
+      if(pos.Magic()  != (long)InpMagic) continue;
+      if(pos.Profit() + pos.Swap() < InpLegProfit) continue;
+      g_lastOrder = TimeCurrent();
+      Print("Faide wali lot band: ", DoubleToString(pos.Profit() + pos.Swap(), 2));
+      trade.PositionClose(pos.Ticket());
+      return(true);
+     }
+   return(false);
+  }
+
+//--- sab se buri lot kitni door khilaf gayi -----------------------
+double WorstAgainst(double bid, int &dirOfWorst)
+  {
+   double worst = 0; dirOfWorst = 0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(!pos.SelectByIndex(i))          continue;
+      if(pos.Symbol() != _Symbol)        continue;
+      if(pos.Magic()  != (long)InpMagic) continue;
+      bool isBuy = (pos.PositionType() == POSITION_TYPE_BUY);
+      double d = isBuy ? (pos.PriceOpen() - bid) : (bid - pos.PriceOpen());
+      if(d > worst) { worst = d; dirOfWorst = isBuy ? 1 : -1; }
+     }
+   return(worst);          // 0 = koi lot khilaf nahi
+  }
+
 //+------------------------------------------------------------------+
 //|  Q8 - sab se achi aur sab se buri lot ek saath band               |
 //|  Akeli faide wali band karne se kitab mein sirf buri lots bachti  |
@@ -454,6 +519,8 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
            }
         }
      }
+   s += StringFormat("Bachao par    : %.2f     abhi khilaf: %.2f\n",
+                     g_defDist, g_worstAgainst);
    s += StringFormat("Qadam         : %.2f     qareeb tareen lot: %s\n",
                      g_step, (g_near < 0 ? "koi nahi" : DoubleToString(g_near, 2)));
    s += StringFormat("Bara rukh (%s): %s\n", EnumToString(InpTrendTF),
