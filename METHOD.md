@@ -665,3 +665,102 @@ available instantly, and all of it feeds the one question he says he is
 actually asking.
 
 The judgement stays his. The counting stops costing him seconds.
+
+---
+
+## 28 September 2026 — six rules, read out of the live book
+
+He says he has no rules. His open book, pulled from the Exness statement for
+account 253687618, says otherwise. Fifty-six XAUUSD positions and the BTCUSDc
+deals for the same period, counted rather than described.
+
+### 1. Market closed, book flat. Market open, book takes a side.
+
+Both symbols, at the same moment, in his own words:
+
+> "Gold ki market off hai, 10+ hours hain market khulne mein, aur us waqt open
+> market ka pata nahi chalta ke kahan se khule, is liye mein sell aur buy ka
+> farq zyada nahi rakhta."
+
+| | State | Buy | Sell | Net |
+|---|---|---|---|---|
+| XAU/USD | **closed** | 0.31 | 0.29 | **0.02** |
+| BTC | **open** | 0.78 | 0.96 | **0.18** |
+
+Nine times the net exposure on the one that is trading. Converted to a normal
+day's range on each, BTC is carrying 4.5 times the risk. Had he held the gold
+book at BTC's net through the break, a 50-dollar gap on the open would cost
+900 USC instead of 100.
+
+This is gap management, and it is the clearest rule in the whole method.
+
+### 2. Lot size never escalates
+
+Fifty-five of the fifty-six positions are 0.01. The fifty-sixth is the first
+one, 0.05. Nothing doubles, ever. The single most common way a laddered book
+kills an account is absent here by consistent practice.
+
+### 3. He fires bursts, not ladders
+
+METHOD.md has recorded a "3 to 4.30 dollar" ladder spacing since the September
+basket. The live book shows something else:
+
+```
+25 Sep 14:06    7 sells    4259.24 - 4263.80     spread 4.55
+25 Sep 14:11    6 sells    4264.44 - 4266.24     spread 1.80
+25 Sep 14:20    7 sells    4265.39 - 4266.48     spread 1.09
+24 Sep 18:03    5 buys     4258.09 - 4258.70     spread 0.62
+```
+
+Half of all positions were opened within sixty seconds of the one before, and
+seventeen within five seconds. The unit is not a rung on a ladder. It is a
+burst of several lots at very nearly one price.
+
+### 4. The freeze gets built deliberately, and fast
+
+The net exposure, cluster by cluster, on 25 September:
+
+```
+11:15    +0.24 lot
+14:06    7 sells   ->  +0.17
+14:11    6 sells   ->  +0.10
+14:20    7 sells   ->  +0.03
+14:31    1 sell    ->  +0.01      balanced
+```
+
+Twenty-two sells in twenty-five minutes, taking 0.24 to 0.01. He knew the
+count he needed.
+
+### 5. Equity is the limit, and he reads it correctly
+
+> "Balance kaafi hai, mazeed neeche bhi gaya tab bhi equity hai."
+
+Correct. At 0.02 net, gold would have to travel 26,100 dollars to empty the
+account. The floating -1,346.50 USC cannot grow while the book stays balanced.
+
+### 6. No stop loss, no take profit, on any position
+
+Fifty-six of fifty-six, S/L 0.000 and T/P 0.000.
+
+### The one place his reasoning and the arithmetic part company
+
+He holds the balanced book expecting a news spike to rescue it:
+
+> "kisi news se ooper aana shuru ho jayega aur meri opposite lots ko ek dam
+> saari basket ko profit mein change kar dega"
+
+It cannot, and the reason is the freeze itself. Computed from the 56 positions:
+
+| Gold moves | Basket |
+|---|---|
+| +20 | -1,297 USC |
+| +100 | -1,137 USC |
+| +500 | -337 USC |
+
+Break-even sits at gold 4,954, some 669 dollars up. Phase 4 says it plainly
+already — "Not up, not down." The protection and the paralysis are the same
+mechanism.
+
+Closing the sell side costs 610.60 USC and leaves 0.31 lot of buys needing
+43 dollars to recover everything. Frozen, 669 dollars. Unfrozen, 43. That is
+Phase 6, and it is the step still outstanding.
