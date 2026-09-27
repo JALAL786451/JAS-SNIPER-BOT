@@ -1,75 +1,75 @@
 //@version=6
 // ============================================================================
-//  FISHING LIVE — chart par dikhao ke kitab mein kya chal raha hai
+//  FISHING LIVE — kuch set nahi karna. Bas chart par daal dein.
 //
-//  fishing_lots_test.pine NAAPTA hai (alag pane mein equity curve).
-//  YE DIKHATA hai. Chart par, har lot, har waqt.
+//  Jalal ki apni Fishing Lots method, chart par chalti hui.
+//  Account: Exness StandardCent. Sab hisaab USC mein, jaisa app par dikhta hai.
 //
-//  Maqsad ek hi hai, Jalal ke apne alfaaz mein:
-//      "mujhe samajh mein aaye ke mein aisa he kerta hoon"
+//  KOI SETTING BADALNE KI ZAROORAT NAHI:
+//  Aapke qawaid gold ke dollar mein hain -- $1 faida, $3.50 ladder, $4 turn.
+//  Magar BTC 84,000 par hai aur wahan $3.50 kuch bhi nahi. Pehle ye aapko
+//  haath se theek karna parta tha. Ab script khud kar leta hai.
 //
-//  Is liye ye har lamhe likh kar batata hai ke abhi kaun sa phase chal raha
-//  hai, kitni lots kis taraf hain, agli lot kahan lagegi, aur kitab kab
-//  jamegi. Aap ise dekh kar keh sakein: "haan, mein yehi karta hoon" ya
-//  "nahi, ye ghalat hai" -- aur tab main qaida theek kar doonga.
+//  Har symbol aur har timeframe ke liye ek "qadam" khud naap liya jata hai:
 //
-//  GOLD KE ILAWA (BTC waghera) ke liye:
-//  Aapke qawaid gold ke dollar mein hain ($1 faida, $3.50 ladder, $4 turn).
-//  BTC 84,000 par hai - wahan $1 kuch bhi nahi. Is liye "Paimana" ko
-//  "Khud ba khud (ATR)" kar dein: tab wohi qawaid us symbol ki apni chaal
-//  ke hisaab se naap liye jayenge.
+//      qadam = ATR(14) / sqrt(is candle ke minute)
 //
-//  YE TRADE NAHI KARTA. Sirf dikhata hai.
+//  sqrt is liye ke bazaar ki chaal waqt ke square root se barhti hai -- 4 guna
+//  waqt mein harkat 2 guna hoti hai, 4 guna nahi. Is bantware se qadam har
+//  timeframe par takreeban ek jaisa rehta hai.
+//
+//  Gold par ye qadam ~0.50 dollar banta hai, aur us hisaab se:
+//      faida  = 2 qadam = ~$1.00     <- aapka asli qaida
+//      ladder = 7 qadam = ~$3.50     <- METHOD.md ka naapa hua faasla
+//      turn   = 8 qadam = ~$4.00     <- aapka asli qaida
+//  BTC par wohi qawaid BTC ki apni chaal ke hisaab se bare ho jate hain.
+//
+//  Panel sab se neechey likh kar dikhata hai ke is waqt qawaid kitne dollar
+//  ke bane. Gold par unhein dekh kar aap khud mila sakte hain.
+//
+//  YE TRADE NAHI KARTA. Sirf dikhata hai ke method kya kar rahi hoti.
 // ============================================================================
 indicator("Fishing Live", "FISH LIVE", overlay = true, max_lines_count = 100, max_labels_count = 100)
 
-// ------------------------------------------------------------- 1. PAIMANA
-gS        = "1. Paimana (gold ya koi aur symbol)"
-scaleMode = input.string("Gold ke dollar", "Qawaid kis paimane par", options = ["Gold ke dollar", "Khud ba khud (ATR)"], group = gS)
-atrLen    = input.int(14, "ATR ki lambai (auto ke liye)", minval = 1, group = gS)
-fishMult  = input.float(1.7, "Faida     = ATR x", minval = 0.1, step = 0.1, group = gS)
-ladMult   = input.float(6.0, "Ladder    = ATR x", minval = 0.1, step = 0.5, group = gS)
-turnMult  = input.float(6.7, "Turn      = ATR x", minval = 0.1, step = 0.5, group = gS)
+// --- Sab pehle se set hai. Aam tor par haath lagane ki zaroorat nahi. -------
+g1        = "Account (Exness StandardCent)"
+startUSC  = input.float(52000, "Balance (USC)", minval = 1, group = g1)
+lotSize   = input.float(0.01, "Har lot ka size", minval = 0.001, step = 0.01, group = g1)
+spreadStp = input.float(0.5, "Spread + fees (qadam mein)", minval = 0.0, step = 0.1, group = g1)
 
-// -------------------------------------------------------------- 2. QAWAID
-gR        = "2. Qawaid (gold ke dollar mein)"
-fishTgtD  = input.float(1.0,  "Ek lot kitne dollar faide par band", minval = 0.01, step = 0.1, group = gR)
-ladderD   = input.float(3.50, "Agli lot kitne dollar baad", minval = 0.01, step = 0.1, group = gR)
-turnD     = input.float(4.0,  "Kitne dollar nuqsan par ulti taraf", minval = 0.01, step = 0.5, group = gR)
-emaFast   = input.int(20, "EMA fast", minval = 1, group = gR)
-emaSlow   = input.int(50, "EMA slow", minval = 2, group = gR)
-maxAdds   = input.int(12, "Ek taraf zyada se zyada lots", minval = 1, maxval = 40, group = gR)
-basketUSD = input.float(0.10, "Basket kitne USD faide par Close All", minval = 0.001, step = 0.05, group = gR)
+g2        = "Qawaid (qadam mein - khud naap liye jate hain)"
+atrLen    = input.int(14, "ATR", minval = 2, group = g2)
+fishStp   = input.float(2.0, "Faida  = kitne qadam", minval = 0.1, step = 0.5, group = g2)
+ladStp    = input.float(7.0, "Ladder = kitne qadam", minval = 0.1, step = 0.5, group = g2)
+turnStp   = input.float(8.0, "Turn   = kitne qadam", minval = 0.1, step = 0.5, group = g2)
+emaFast   = input.int(20, "EMA fast", minval = 1, group = g2)
+emaSlow   = input.int(50, "EMA slow", minval = 2, group = g2)
+maxAdds   = input.int(12, "Ek taraf zyada se zyada lots", minval = 1, maxval = 40, group = g2)
+basketUSC = input.float(10, "Basket kitne USC faide par Close All", minval = 0.1, step = 5, group = g2)
 
-// ------------------------------------------------------------- 3. ACCOUNT
-gA        = "3. Account"
-accType   = input.string("Cent (gold)", "Account", options = ["Cent (gold)", "Standard (gold)", "Khud likhein"], group = gA)
-customPL  = input.float(1.0, "Khud likhein: 1.00 lot par $1 harkat = kitne $", minval = 0.0001, step = 0.5, group = gA)
-lotSize   = input.float(0.01, "Har lot ka size", minval = 0.001, step = 0.01, group = gA)
-startBal  = input.float(500.0, "Balance (USD)", minval = 1, group = gA)
-
-// ------------------------------------------------------------- 4. DIKHAWA
-gD        = "4. Dikhawa"
-showLines = input.bool(true, "Har khuli lot ki lakeer", group = gD)
-showMarks = input.bool(true, "Kahan lot lagi aur kahan band hui", group = gD)
-showNext  = input.bool(true, "Agli lot kahan lagegi", group = gD)
-cBuy      = input.color(#089981, "Buy",  group = gD, inline = "c")
-cSell     = input.color(#F23645, "Sell", group = gD, inline = "c")
-cFlat     = input.color(#787B86, "Khali", group = gD, inline = "c")
-cTxt      = input.color(#111111, "Likhai", group = gD, inline = "e")
-cBg       = input.color(#FFFFFFEE, "Panel", group = gD, inline = "e")
+g3        = "Dikhawa"
+showLines = input.bool(true, "Har khuli lot ki lakeer", group = g3)
+showNext  = input.bool(true, "Agli lot kahan lagegi", group = g3)
+cBuy      = input.color(#089981, "Buy", group = g3, inline = "c")
+cSell     = input.color(#F23645, "Sell", group = g3, inline = "c")
+cFlat     = input.color(#787B86, "Khali", group = g3, inline = "c")
+cTxt      = input.color(#111111, "Likhai", group = g3, inline = "e")
+cBg       = input.color(#FFFFFFEE, "Panel", group = g3, inline = "e")
 
 // ============================================================================
-//  PAIMANA — gold ke dollar, ya us symbol ki apni chaal
+//  QADAM — har symbol, har timeframe ke liye khud
 // ============================================================================
-atrV   = ta.atr(atrLen)
-isAuto = scaleMode == "Khud ba khud (ATR)"
-fishU  = isAuto ? atrV * fishMult : fishTgtD
-ladU   = isAuto ? atrV * ladMult  : ladderD
-turnU  = isAuto ? atrV * turnMult : turnD
+tfMin  = math.max(1.0, timeframe.in_seconds(timeframe.period) / 60.0)
+stepU  = ta.atr(atrLen) / math.sqrt(tfMin)
+fishU  = stepU * fishStp
+ladU   = stepU * ladStp
+turnU  = stepU * turnStp
+spreadU = stepU * spreadStp
 
-perLot = accType == "Cent (gold)" ? 1.0 : accType == "Standard (gold)" ? 100.0 : customPL
-f_money(_move) => _move * lotSize * perLot
+// Cent account: 1.00 lot par qeemat $1 hile to 100 USC. Yani 0.01 lot par
+// $1 = 1 USC -- theek wohi jo METHOD.md mein likha hai.
+f_usc(_move) => _move * lotSize * 100.0
+costUSC = f_usc(spreadU)
 
 emaF = ta.ema(close, emaFast)
 emaS = ta.ema(close, emaSlow)
@@ -80,13 +80,13 @@ bias = emaF > emaS ? 1 : emaF < emaS ? -1 : 0
 // ============================================================================
 var array<int>   legDir = array.new<int>()
 var array<float> legPx  = array.new<float>()
-var float lastAdd  = na
-var int   origDir  = 0
-var bool  unwound  = false
-var float unwAt    = na
-var int   baskets  = 0
-var float bal      = startBal
-var string phase   = "INTEZAR"
+var float lastAdd = na
+var int   origDir = 0
+var bool  unwound = false
+var float unwAt   = na
+var int   baskets = 0
+var float balUSC  = startUSC
+var string phase  = "INTEZAR"
 
 f_net() =>
     _n = 0
@@ -99,7 +99,7 @@ f_pl(_px) =>
     _s = 0.0
     if array.size(legDir) > 0
         for i = 0 to array.size(legDir) - 1
-            _s := _s + f_money((_px - array.get(legPx, i)) * array.get(legDir, i))
+            _s := _s + f_usc((_px - array.get(legPx, i)) * array.get(legDir, i))
     _s
 
 f_worst(_px) =>
@@ -109,25 +109,25 @@ f_worst(_px) =>
             _w := math.min(_w, (_px - array.get(legPx, i)) * array.get(legDir, i))
     _w
 
-f_breakeven() =>
-    _sum = 0.0
+f_be() =>
+    _s = 0.0
     _n = 0
     if array.size(legDir) > 0
         for i = 0 to array.size(legDir) - 1
-            _sum := _sum + array.get(legPx, i) * array.get(legDir, i)
+            _s := _s + array.get(legPx, i) * array.get(legDir, i)
             _n := _n + array.get(legDir, i)
-    _n != 0 ? _sum / _n : na
+    _n != 0 ? _s / _n : na
 
 // ============================================================================
-//  AMAL — band ho chuki candle par, taake jo dikhe woh pakka ho
+//  AMAL — sirf band ho chuki candle par
 // ============================================================================
 opened = 0
 closed = false
 
-if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
-    px  = close
-    n   = array.size(legDir)
-    pl  = f_pl(px)
+if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) and stepU > 0
+    px = close
+    n = array.size(legDir)
+    pl = f_pl(px)
     net = f_net()
 
     if n == 0
@@ -135,16 +135,17 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
         if bias != 0
             array.push(legDir, bias)
             array.push(legPx, px)
+            balUSC := balUSC - costUSC
             origDir := bias
             lastAdd := px
             unwound := false
             unwAt := na
-            phase := "FISHING"
             opened := bias
+            phase := "FISHING"
     else
         worst = f_worst(px)
-        if pl >= basketUSD
-            bal := bal + pl
+        if pl >= basketUSC
+            balUSC := balUSC + pl
             baskets := baskets + 1
             array.clear(legDir)
             array.clear(legPx)
@@ -155,7 +156,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
             closed := true
             phase := "CLOSE ALL"
         else if n == 1 and (px - array.get(legPx, 0)) * array.get(legDir, 0) >= fishU
-            bal := bal + pl
+            balUSC := balUSC + pl
             baskets := baskets + 1
             array.clear(legDir)
             array.clear(legPx)
@@ -169,7 +170,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
             _i = array.size(legDir) - 1
             while _i >= 0
                 if array.get(legDir, _i) != origDir
-                    bal := bal + f_money((px - array.get(legPx, _i)) * array.get(legDir, _i))
+                    balUSC := balUSC + f_usc((px - array.get(legPx, _i)) * array.get(legDir, _i))
                     array.remove(legDir, _i)
                     array.remove(legPx, _i)
                 _i := _i - 1
@@ -180,23 +181,26 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
         else if (not unwound or worst <= nz(unwAt, 0.0) - turnU) and worst <= -turnU and net != 0 and n < maxAdds * 2
             array.push(legDir, net > 0 ? -1 : 1)
             array.push(legPx, px)
+            balUSC := balUSC - costUSC
             opened := net > 0 ? -1 : 1
+            unwound := false
             phase := "FREEZE BANA RAHA"
         else if net != 0 and math.abs(net) < maxAdds and not na(lastAdd) and math.abs(px - lastAdd) >= ladU
             array.push(legDir, net > 0 ? 1 : -1)
             array.push(legPx, px)
+            balUSC := balUSC - costUSC
             lastAdd := px
             opened := net > 0 ? 1 : -1
             phase := "LADDER"
         else
-            phase := net == 0 ? "JAMI HUI (freeze)" : math.abs(f_worst(px)) >= turnU * 0.5 ? "INTEZAR (nuqsan mein)" : "CHAL RAHI HAI"
+            phase := net == 0 ? "JAMI HUI (freeze)" : worst <= -turnU * 0.5 ? "INTEZAR (nuqsan mein)" : "CHAL RAHI HAI"
 
 // ============================================================================
-//  CHART PAR NISHAN
+//  CHART PAR
 // ============================================================================
-plotshape(showMarks and opened ==  1, "Lot lagi (buy)",  style = shape.triangleup,   location = location.belowbar, color = cBuy,  size = size.tiny, display = display.pane)
-plotshape(showMarks and opened == -1, "Lot lagi (sell)", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.tiny, display = display.pane)
-plotshape(showMarks and closed, "Basket band", style = shape.xcross, location = location.abovebar, color = #2962FF, size = size.small, display = display.pane)
+plotshape(opened == 1, "Lot lagi (buy)", style = shape.triangleup, location = location.belowbar, color = cBuy, size = size.tiny, display = display.pane)
+plotshape(opened == -1, "Lot lagi (sell)", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.tiny, display = display.pane)
+plotshape(closed, "Basket band", style = shape.xcross, location = location.abovebar, color = #2962FF, size = size.small, display = display.pane)
 
 var array<line>  LN = array.new<line>()
 var array<label> LB = array.new<label>()
@@ -209,32 +213,29 @@ if barstate.islast
 
     if showLines and array.size(legDir) > 0
         for i = 0 to array.size(legDir) - 1
-            _d  = array.get(legDir, i)
-            _p  = array.get(legPx, i)
-            _g  = (close - _p) * _d
-            _c  = _d == 1 ? cBuy : cSell
-            array.push(LN, line.new(bar_index - 30, _p, bar_index + 8, _p, xloc = xloc.bar_index, color = color.new(_c, 35), style = line.style_dotted, width = 1))
-            array.push(LB, label.new(bar_index + 9, _p, (_d == 1 ? "BUY  " : "SELL ") + str.tostring(lotSize, "#.##") + "   " + (_g >= 0 ? "+" : "") + str.tostring(f_money(_g), "#.##"), xloc = xloc.bar_index, style = label.style_label_left, color = color.new(_c, 20), textcolor = color.white, size = size.tiny))
+            _d = array.get(legDir, i)
+            _p = array.get(legPx, i)
+            _u = f_usc((close - _p) * _d)
+            _c = _d == 1 ? cBuy : cSell
+            array.push(LN, line.new(bar_index - 30, _p, bar_index + 6, _p, xloc = xloc.bar_index, color = color.new(_c, 40), style = line.style_dotted))
+            array.push(LB, label.new(bar_index + 7, _p, (_d == 1 ? "BUY  " : "SELL ") + str.tostring(lotSize, "#.##") + "   " + (_u >= 0 ? "+" : "") + str.tostring(_u, "#.##") + " USC", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(_c, 20), textcolor = color.white, size = size.tiny))
+        _b = f_be()
+        if not na(_b)
+            array.push(LN, line.new(bar_index - 30, _b, bar_index + 6, _b, xloc = xloc.bar_index, color = color.new(#2962FF, 10), width = 2))
+            array.push(LB, label.new(bar_index + 7, _b, "BARABAR  " + str.tostring(_b, format.mintick), xloc = xloc.bar_index, style = label.style_label_left, color = color.new(#2962FF, 10), textcolor = color.white, size = size.tiny))
 
-        _be = f_breakeven()
-        if not na(_be)
-            array.push(LN, line.new(bar_index - 30, _be, bar_index + 8, _be, xloc = xloc.bar_index, color = color.new(#2962FF, 10), style = line.style_solid, width = 2))
-            array.push(LB, label.new(bar_index + 9, _be, "BARABAR  " + str.tostring(_be, format.mintick), xloc = xloc.bar_index, style = label.style_label_left, color = color.new(#2962FF, 10), textcolor = color.white, size = size.tiny))
-
-    if showNext and not na(lastAdd) and array.size(legDir) > 0
-        _nt = f_net()
-        if _nt != 0 and math.abs(_nt) < maxAdds
-            _up = lastAdd + ladU
-            _dn = lastAdd - ladU
-            array.push(LN, line.new(bar_index, _up, bar_index + 8, _up, xloc = xloc.bar_index, color = color.new(cFlat, 45), style = line.style_dashed))
-            array.push(LN, line.new(bar_index, _dn, bar_index + 8, _dn, xloc = xloc.bar_index, color = color.new(cFlat, 45), style = line.style_dashed))
-            array.push(LB, label.new(bar_index + 9, _up, "agli lot yahan", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(cFlat, 30), textcolor = color.white, size = size.tiny))
-            array.push(LB, label.new(bar_index + 9, _dn, "agli lot yahan", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(cFlat, 30), textcolor = color.white, size = size.tiny))
+    if showNext and not na(lastAdd) and array.size(legDir) > 0 and f_net() != 0 and math.abs(f_net()) < maxAdds
+        _up = lastAdd + ladU
+        _dn = lastAdd - ladU
+        array.push(LN, line.new(bar_index, _up, bar_index + 6, _up, xloc = xloc.bar_index, color = color.new(cFlat, 45), style = line.style_dashed))
+        array.push(LN, line.new(bar_index, _dn, bar_index + 6, _dn, xloc = xloc.bar_index, color = color.new(cFlat, 45), style = line.style_dashed))
+        array.push(LB, label.new(bar_index + 7, _up, "agli lot yahan", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(cFlat, 30), textcolor = color.white, size = size.tiny))
+        array.push(LB, label.new(bar_index + 7, _dn, "agli lot yahan", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(cFlat, 30), textcolor = color.white, size = size.tiny))
 
 // ============================================================================
-//  PANEL — abhi kitab mein kya hai
+//  PANEL
 // ============================================================================
-var table TB = table.new(position.top_right, 2, 10, border_width = 1)
+var table TB = table.new(position.top_right, 2, 11, border_width = 1)
 
 f_row(_r, _a, _b, _tc) =>
     table.cell(TB, 0, _r, _a, text_color = cTxt, text_size = size.small, text_halign = text.align_left, bgcolor = cBg)
@@ -249,26 +250,19 @@ if barstate.islast
                 nB := nB + 1
             else
                 nS := nS + 1
-    pl  = f_pl(close)
+    pl = f_pl(close)
     net = nB - nS
-    // Paimana us symbol ke liye theek hai ya nahi. Gold ke $3.50 BTC par
-    // (jahan ek candle 150 dollar hilti hai) kuch bhi nahi -- ladder har
-    // candle par lagta hai aur saara natija kachra ho jata hai. Chup chaap
-    // ghalat natija dene se behtar hai ke script khud cheekh kar bata de.
-    scaleBad = not isAuto and not na(atrV) and atrV > 0 and ladU < atrV / 3.0
     pCol = phase == "JAMI HUI (freeze)" ? #2962FF : phase == "CLOSE ALL" or phase == "MACHLI PAKRI" ? cBuy : phase == "FREEZE BANA RAHA" or phase == "LADDER" ? #F57C00 : cFlat
 
-    table.cell(TB, 0, 0, scaleBad ? "PAIMANA GALAT HAI" : "ABHI: " + phase, text_color = color.white, text_size = size.normal, bgcolor = scaleBad ? #B71C1C : pCol)
-    table.cell(TB, 1, 0, scaleBad ? "ATR par karein" : str.tostring(nB + nS) + " lot", text_color = color.white, text_size = size.normal, bgcolor = scaleBad ? #B71C1C : pCol)
-    f_row(1, "Buy ki lots",  str.tostring(nB) + "  (" + str.tostring(nB * lotSize, "#.##") + ")", nB > 0 ? cBuy : cFlat)
-    f_row(2, "Sell ki lots", str.tostring(nS) + "  (" + str.tostring(nS * lotSize, "#.##") + ")", nS > 0 ? cSell : cFlat)
+    table.cell(TB, 0, 0, "ABHI: " + phase, text_color = color.white, text_size = size.normal, bgcolor = pCol)
+    table.cell(TB, 1, 0, str.tostring(nB + nS) + " lot", text_color = color.white, text_size = size.normal, bgcolor = pCol)
+    f_row(1, "Buy ki lots", str.tostring(nB) + "   (" + str.tostring(nB * lotSize, "#.##") + ")", nB > 0 ? cBuy : cFlat)
+    f_row(2, "Sell ki lots", str.tostring(nS) + "   (" + str.tostring(nS * lotSize, "#.##") + ")", nS > 0 ? cSell : cFlat)
     f_row(3, "Net (barabar = 0)", str.tostring(net), net == 0 and nB + nS > 0 ? #2962FF : net > 0 ? cBuy : net < 0 ? cSell : cFlat)
-    f_row(4, "Kitab ka haal", (pl >= 0 ? "+" : "") + "$" + str.tostring(pl, "#.##"), pl >= 0 ? cBuy : cSell)
-    f_row(5, "Sab se bura leg", str.tostring(f_worst(close), "#.##") + " " + (isAuto ? "" : "$"), cSell)
-    f_row(6, "Barabar hone ka price", na(f_breakeven()) ? "-" : str.tostring(f_breakeven(), format.mintick), cTxt)
+    f_row(4, "Kitab ka haal", (pl >= 0 ? "+" : "") + str.tostring(pl, "#.##") + " USC", pl >= 0 ? cBuy : cSell)
+    f_row(5, "Sab se bura leg", str.tostring(f_worst(close), "#.##") + " (qeemat)", cSell)
+    f_row(6, "Barabar hone ka price", na(f_be()) ? "-" : str.tostring(f_be(), format.mintick), cTxt)
     f_row(7, "Baskets band hue", str.tostring(baskets), cTxt)
-    f_row(8, "Balance", "$" + str.tostring(bal, "#.##"), bal >= startBal ? cBuy : cSell)
-    if scaleBad
-        f_row(9, "Is symbol ki ek candle", "~" + str.tostring(atrV, format.mintick) + ", ladder sirf " + str.tostring(ladU, format.mintick), #B71C1C)
-    else
-        f_row(9, "Paimana", isAuto ? "ATR: faida " + str.tostring(fishU, format.mintick) + " / ladder " + str.tostring(ladU, format.mintick) : "gold ke dollar", cTxt)
+    f_row(8, "Balance", str.tostring(balUSC, "#") + " USC", balUSC >= startUSC ? cBuy : cSell)
+    f_row(9, "Yani dollar mein", "$" + str.tostring(balUSC / 100.0, "#.##"), balUSC >= startUSC ? cBuy : cSell)
+    f_row(10, "Qawaid is waqt", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
