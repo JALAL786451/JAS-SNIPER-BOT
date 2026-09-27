@@ -29,7 +29,7 @@ aap se poochna hai
 | L7 | **Net** (buy − sell) ki hadd 0.20. Us par pohnch kar sirf ulti taraf | [BACHAO] | ✅ |
 | L8 | **Kul lots** ki hadd 1.00. Us par pohnch kar **koi lot nahi** — na seedhi na ulti, sirf INTEZAR | [BACHAO] | ✅ |
 | L9 | **Equity** balance ke 90% se neeche jaye to naye lots band. Naapa: sab se neeche 90.95% | [NAAPA] | ✅ |
-| L10 | **HMR / news ke waqt lot nahi lagegi** | [AAPKA] | ❓ |
+| L10 | **Bari news** (NFP, CPI, FOMC) se **30 minute pehle** se **5 minute baad** tak koi nayi lot nahi — na hamla, na bachao. Khuli lots **joon ki toon** | [AAPKA] | ✅ |
 
 ## Kab band karna hai
 
@@ -63,6 +63,16 @@ spread** (1 lot = $0.10 BTC par). Qadam ka qaida (L2) isi liye aaya.
 **Net bilkul 0 wali kitab kabhi wapas nahi aati.** Uska P/L qeemat se badalta
 hi nahi. Nikalne ka ek hi raasta hai: ek taraf band karna. Panel ab ye saaf
 likhta hai.
+
+**MT5 ka news calendar EA ko LIVE milta hai**, Strategy Tester mein nahi —
+main ne pehle iska ulat kaha tha. Is liye L10 apne aap chalta hai, waqt haath
+se daalne ki zarurat nahi. Agar kisi terminal par calendar na mile to panel
+likh deta hai "calendar nahi mila", taake khamoshi se har trade na le le.
+
+**News ke waqt band hona sirf KHOLNE par hai.** Close All, faide wali lot aur
+jori — ye teeno chalte rehte hain. Aap ne "joon ki toon rahne de" kaha tha,
+jo main ne ye samjha ke kitab ko zabardasti barabar mat karo — faida lene se
+mana nahi. Agar ghalat samjha to bata dein.
 
 **Har file par build number** (`b10` waghera) panel ki pehli line mein, taake
 screenshot se pata chale ke kaun si file chal rahi hai.
