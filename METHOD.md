@@ -608,3 +608,60 @@ So the rule that follows from his own sentence is:
 > the story turns out to be a different one.**
 
 A stop loss is not impatience. It is how you find out the story changed.
+
+---
+
+## 28 September 2026 — the largest gap, answered
+
+"What is NOT yet defined" has listed this since the method was first written
+down:
+
+> **The reversal signal itself.** Liquidity grabs and fair value gaps across 1
+> minute to 1 week are consulted, but which combination counts as a reversal
+> has never been written down. This is the largest gap.
+
+Asked directly, he answered it. In his own words:
+
+> "Mera apna koi qaida hai hi nahi. Aap ne mujhe sikhaya, tab se mein samajh
+> gaya ke yahan koi qaida hai hi nahi. Bas mein apni equity ka khayal karta
+> hoon aur 1m par jab jab lagta hai ke sell lagni chahiye ya buy lagni
+> chahiye, against sahi lage tab woh lagata hoon, defence ki lot ho tab woh
+> lagata hoon, ya wait karta hoon ke kitni against ja sakti hai."
+
+So the gap is not an omission waiting to be filled in. **There is no rule.**
+What sits in that place is three things, and they should be recorded as what
+they are:
+
+1. **Equity is the constraint.** Not a signal, not a level — how much room is
+   left. Everything else is decided inside that.
+2. **The 1-minute chart is where he reads.** Not a checklist across nine
+   timeframes; the chart in front of him.
+3. **The question he actually asks** is not "has the reversal arrived" but
+   **"how far against can this still go?"** — and the answer decides whether a
+   defence lot goes on, or he waits.
+
+### What this settles, and what it costs
+
+**It settles the EA question.** The turn cannot be automated, because it is
+not a procedure. Anything that claims to automate it is automating a rule
+someone invented — in the measurement rigs in this repo, a rule I invented.
+That is worth stating plainly: every net-profit figure those rigs have
+produced is a figure for *my* reversal rule, not for his method. The exposure
+arithmetic they report — deepest book, most lots at once, the move that would
+empty the account — does not depend on the reversal rule and stands on its own.
+
+**It also points at what can be built**, and it is what METHOD.md already
+said he wanted. Not judgement. Arithmetic and endurance:
+
+> "The platform can show the combined weight of the lots ... but reading it
+> and working it out takes him three or four seconds. During the ordinary
+> fishing that is fine. The moment a reversal traps him, calculation suddenly
+> matters enormously and those seconds are expensive."
+
+That problem needs no reversal signal. How many lots balance the book right
+now, what the P/L freezes at if he balances at this price, how far price can
+travel before equity reaches a floor he names — all of it is arithmetic
+available instantly, and all of it feeds the one question he says he is
+actually asking.
+
+The judgement stays his. The counting stops costing him seconds.
