@@ -368,17 +368,21 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
       double perPt = MoneyPerPoint(1.0);
       if(perPt > 0)
         {
-         double needFrozen = (MathAbs(netLot) > 1e-8)
-                             ? MathAbs(basket) / (MathAbs(netLot) * perPt) : -1;
-         double lotOne  = (netLot > 0) ? lotBuy : lotSell;
-         double needOpen = (lotOne > 1e-8)
-                           ? MathAbs(basket) / (lotOne * perPt) : -1;
-         if(needFrozen > 0 && needOpen > 0)
+         bool   flat       = (MathAbs(netLot) <= 1e-8);
+         double needFrozen = flat ? -1
+                             : MathAbs(basket) / (MathAbs(netLot) * perPt);
+         double lotOne     = (netLot > 0) ? lotBuy : lotSell;
+         double needOpen   = (lotOne > 1e-8)
+                             ? MathAbs(basket) / (lotOne * perPt) : -1;
+         if(needOpen > 0 && basket < 0)
            {
             s += "\nPhase 6 ka hisaab:\n";
-            s += StringFormat("  Jami hui kitab  : qeemat %.1f chahiye\n", needFrozen);
+            if(flat)
+               s += "  Jami hui kitab  : NET 0 - qeemat se KABHI nahi nikalti\n";
+            else
+               s += StringFormat("  Jami hui kitab  : qeemat %.1f chahiye\n", needFrozen);
             s += StringFormat("  Ek taraf band   : qeemat %.1f chahiye\n", needOpen);
-            if(needOpen * InpUnfreezeRatio < needFrozen)
+            if(flat || needOpen * InpUnfreezeRatio < needFrozen)
                s += "  >> KHOLNA BOHOT BEHTAR HAI <<\n";
            }
         }
