@@ -69,6 +69,8 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
+#define EA_BUILD "b8"          // har nayi file par ye number barhta hai
+
 CTrade        trade;
 CPositionInfo pos;
 int      hFast = INVALID_HANDLE, hSlow = INVALID_HANDLE;
@@ -476,7 +478,7 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
             double totLot, double basket, double equity, double floorEq,
             int minsEnd, double sumPxDirLot, double bid)
   {
-   string s = "=== JAS BASKET EA ===\n";
+   string s = "=== JAS BASKET EA  " + EA_BUILD + " ===\n";
    s += StringFormat("Buy  %d lot (%.2f)   Sell %d lot (%.2f)\n",
                      nBuy, lotBuy, nSell, lotSell);
    s += StringFormat("NET  %+.2f  (hadd %.2f)    KUL %.2f (hadd %.2f)\n",
