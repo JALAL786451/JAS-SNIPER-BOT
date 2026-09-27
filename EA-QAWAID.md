@@ -117,19 +117,30 @@ Har hissa alag se band/chalu ho sakega, bina EA band kiye.
 
 ---
 
-## Ab kya chahiye
+## Teen number — AB NAAPE JA CHUKE HAIN
 
-**Teen number aap se:**
-1. Q3 — net exposure ki hadd
-2. Q7 — Close All ka faida (USC mein)
-3. Q10 — equity ki hadd
+Statement 253687618 (30 Aug – 27 Sep 2026) aa gaya. 1,964 band positions aur
+135 khuli positions, dono khane **ain se ain** mila diye:
 
-**Aur ek file:**
-Exness statement, **1 September se aaj tak**, account 253687618 — jis mein
-"Deals" ka khana ho. Us se main Q3, Q7 aur Q10 khud naap loonga, aur aap ko
-sirf haan ya nahi kehna paregi.
+- Closed Trade P/L parse: **3,655.62 USC** — statement ka apna total: 3 655.6200 ✔
+- Floating P/L parse: **-1,512.0155 USC** — statement ka apna total: -1 512.0155 ✔
 
----
+Ab teeno number yaad se nahi, **napa hua** hai:
+
+| Q | Kya | Aap ne asal mein kiya | EA ka default | Faisla |
+|---|---|---|---|---|
+| Q3 | Net (buy-sell) lots ki hadd | Gold **1.24**, BTC **0.91** (sab se ooncha lamha) | `InpMaxNetLots = 0.20` | **Aap ka faisla.** Main khud nahi barhaunga |
+| Q3b | Kul lots ki hadd | Gold **3.42**, BTC **4.65** | `InpMaxTotalLots = 1.00` | Wahi baat |
+| Q7 | Close All ka faida | Gold ke 36 Close All: darmiyana **+54.80 USC**, ausat +64.49 | `InpCloseAllProfit = 50.0` | **Theek hai** — badalne ki zarurat nahi |
+| Q10 | Equity ki hadd | Equity/Balance sab se neeche **90.95%** (16 Sep 03:23) | `InpEquityFloorPct = 90.0` | **Theek hai** — balkul saheeh baitha |
+
+Q7 aur Q10 par EA pehle se saheeh hai. Q3 par EA aap se **6x sakht** hai.
+
+**Q3 par mera mashwara:** default 0.20 hi rakhein. 16 September ko net 0.86 lot
+sell thi aur us ek Close All ne **-4,376 USC (-$43.76)** liya — us din ka poora
+nuqsan -817 USC. Jitna net barhta hai, utna hi ek dafa ka nuqsan barhta hai.
+Agar aap 0.20 se barhana chahte hain to number likh dein, main daal doonga —
+magar apni marzi se main risk ki hadd kabhi nahi barhata.
 
 ## Jo is EA mein NAHI hoga
 

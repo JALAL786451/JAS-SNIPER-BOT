@@ -764,3 +764,72 @@ mechanism.
 Closing the sell side costs 610.60 USC and leaves 0.31 lot of buys needing
 43 dollars to recover everything. Frozen, 669 dollars. Unfrozen, 43. That is
 Phase 6, and it is the step still outstanding.
+
+## 27 September — poora mahina, ain se ain (account 253687618)
+
+The statement he uploaded after closing the BTC book. Account 253687618,
+StandardCent, USC, leverage 1:2000. Period 30 Aug – 27 Sep 2026.
+**1,964 closed positions and 135 open ones, both sections reconciled to the
+cent against the statement's own printed totals** (closed 3,655.62 USC;
+floating -1,512.0155 USC) before anything below was concluded.
+
+### The month, in his own currency
+
+| | USC | $ |
+|---|---|---|
+| Starting balance (derived) | 49,911.48 | 499.11 |
+| Closed P/L | +3,655.62 | +36.56 |
+| Ending balance | 53,567.10 | 535.67 |
+| Floating (open book) | -1,512.02 | -15.12 |
+| **Equity** | **52,055.08** | **520.55** |
+| Peak balance | 56,726.72 (16 Sep 03:23) | 567.27 |
+| Lowest equity | 49,319.78 (10 Sep 13:44) | 493.20 |
+
+**This month made money.** +7.3% on closed trades in 27 days, no deposit, no
+withdrawal, **swap 0.00 and commission 0.00 across all 1,964 trades.** That is
+the first profitable statement in this project.
+
+### How
+
+- 1,517 wins, 442 losses, 5 flat — **77.2% win rate**
+- Gross profit 20,728 USC, gross loss 17,073 USC — **profit factor 1.214**
+- 1,661 of 1,964 trades at 0.01 lot. Lot size still does not escalate.
+- **15 of 1,964 had a stop loss. 34 had a take profit. The open book: 0 of 135.**
+- Median hold: winners **34.7 min**, losers **147.9 min** — the August pattern
+  exactly, unchanged. He still holds losers 4x longer than winners. The
+  difference is that this month the hedge and the equity floor absorbed it.
+
+### The two numbers METHOD.md said were never measured
+
+- **Largest net exposure:** gold +1.24 lot (10 Sep 13:44) / -0.86 (16 Sep);
+  BTC +0.91 / -0.71. Largest total lots at once: gold **3.42**, BTC **4.65**.
+  Most positions open at once: gold 172, BTC 159.
+- **Deepest the book ever went:** floating **-5,130.96 USC (-$51.31)** on
+  16 Sep 03:23, on 31 legs. As a fraction of balance that is **90.95%
+  equity/balance** — the floor, measured. It never went below.
+
+### Close All, counted
+
+36 group-closes of 10+ gold legs within 60 seconds. P/L of each:
+min **-4,376.30**, median **+54.80**, mean +64.49, max +3,559.70 USC.
+**26 of 36 profitable.** On BTC: 3 group-closes, the one he just did at
+27 Sep 13:25:34 — **77 legs, 1.82 lots, -191.32 USC (-$1.91)**.
+
+The single worst event of the month was one Close All: 16 Sep 03:31:35, 31 legs,
+0.86 lots, **-4,376.30 USC**. That one basket ate 8% of the account, and it is
+the same basket that produced the -$51.31 floating low eight minutes earlier.
+Net exposure, not lot count, is what made it expensive.
+
+### Does closing profitable legs mid-basket help?
+
+I promised to measure this rather than argue it. Across the month, with 3+ legs
+still open and the rest of the book negative:
+
+- profitable legs closed: **1,140 times, +15,934.54 USC (+$159.35)**
+- losing legs closed: **274 times, -12,576.90 USC (-$125.77)**
+
+Net +3,358 USC — very close to the month's whole closed P/L of +3,656. So the
+month's profit *is* this behaviour. What this cannot prove is the counterfactual:
+whether holding those legs would have earned more, because the statement has no
+tick prices between events. What it does establish is that the practice is not
+bleeding the account, which was the open question.
