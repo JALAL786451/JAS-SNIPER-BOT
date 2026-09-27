@@ -80,7 +80,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b14"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b15"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -405,7 +405,10 @@ void OnTick()
    g_spikeNow = SpikeNow();
    if(g_spikeNow && MathAbs(netLot) > InpLot / 2.0)
      {
-      int shut = HedgeByClosing(netLot);    // L21: pehle band kar ke
+      // L21 sirf tab jab DONO taraf lots hon. Ek taraf wali kitab par
+      // "zyada wali taraf band karo" ka matlab "sab band karo" ban jata
+      // hai - aur spike mein sab band karna wohi hai jo mana kiya gaya.
+      int shut = (nBuy > 0 && nSell > 0) ? HedgeByClosing(netLot) : 0;
       if(shut > 0)
          g_say += StringFormat("SPIKE - hedge: %d lot band, net ab sifar.\n", shut);
       else

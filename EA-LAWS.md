@@ -49,6 +49,7 @@ aap se poochna hai
 | L19 | Spike ka hedge **L10 (news) ki rok se guzar sakta hai** — sirf hedge, aur koi lot nahi | [AAPKA] | ✅ |
 | L20 | Hedge se KUL lots barhti hain. Hadd **abhi bhi lagu** hai; torne ke liye `InpSpikeOverCap` chalu karna paregi | [BACHAO] | ✅ |
 | L21 | **Hedge ke liye lot lagana zaroori nahi.** Zyada wali taraf se utni lots **band** kar do — 40 buy / 30 sell mein 10 buy band, ho gaya 30-30. Kul lots **ghatti** hain, barhti nahi, is liye L20 ka masla hi khatam | [AAPKA] | ✅ |
+| L21b | Band kar ke hedge **sirf tab jab dono taraf lots hon**. Ek taraf wali kitab par woh "sab band karo" ban jata hai — jo spike mein mana hai. Wahan **ulti lot** lagti hai | [BACHAO] | ✅ |
 | L22 | Jo lots band karni hain un mein **faida aur nuqsan mila kar** chunni hain — ek acha, ek bura — taake band karne se kitab par zarb na parey | [AAPKA] | ✅ |
 
 ## Market ka waqt
