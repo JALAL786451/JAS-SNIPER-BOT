@@ -25,7 +25,7 @@ input int    InpBarsBetween    = 1;      // Do jhundon ke darmiyan kam az kam ca
 input group "=== 2 - Hadd (ye EA ko rokti hain) ==="
 input double InpMaxNetLots     = 0.20;   // Net (buy - sell) ki hadd
 input double InpMaxTotalLots   = 1.00;   // Kul lots ki hadd (dono taraf mila kar)
-input double InpEquityFloorPct = 90.0;   // Equity shuru ke is % par naye lots band
+input double InpEquityFloorPct = 90.0;   // Equity, balance ke is % se neeche -> naye lots band
 
 //--- 3. Faida (Q7, Q8) --------------------------------------------
 input group "=== 3 - Faida lena ==="
@@ -57,7 +57,6 @@ input ulong  InpMagic          = 20260928;
 CTrade        trade;
 CPositionInfo pos;
 int      hFast = INVALID_HANDLE, hSlow = INVALID_HANDLE;
-double   g_startEquity = 0.0;
 datetime g_lastBar = 0, g_lastAction = 0;
 datetime g_lastOrder = 0;
 string   g_say = "";
@@ -80,7 +79,6 @@ int OnInit()
    trade.SetDeviationInPoints(InpSlippage);
    trade.SetTypeFillingBySymbol(_Symbol);
 
-   g_startEquity = AccountInfoDouble(ACCOUNT_EQUITY);
    g_lastBar     = iTime(_Symbol, PERIOD_CURRENT, 0);
    return(INIT_SUCCEEDED);
   }
@@ -196,7 +194,8 @@ void OnTick()
    double totLot  = lotBuy + lotSell;
    double basket  = plBuy + plSell;
    double equity  = AccountInfoDouble(ACCOUNT_EQUITY);
-   double floorEq = g_startEquity * InpEquityFloorPct / 100.0;
+   double balance = AccountInfoDouble(ACCOUNT_BALANCE);
+   double floorEq = balance * InpEquityFloorPct / 100.0;
    int    minsEnd = MinutesToSessionEnd();
    double bid     = SymbolInfoDouble(_Symbol, SYMBOL_BID);
 
@@ -349,6 +348,7 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
                      netLot, InpMaxNetLots, totLot, InpMaxTotalLots);
    s += StringFormat("Kitab ka haal : %.2f     Close All par: %.2f\n",
                      basket, InpCloseAllProfit);
+   s += StringFormat("Balance       : %.2f\n", AccountInfoDouble(ACCOUNT_BALANCE));
    s += StringFormat("Equity        : %.2f     hadd: %.2f%s\n",
                      equity, floorEq, (equity <= floorEq ? "  << RUKA HUA" : ""));
 
