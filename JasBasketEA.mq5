@@ -141,20 +141,48 @@ double NormLot(double l)
 int MinutesToSessionEnd()
   {
    MqlDateTime t; TimeToStruct(TimeCurrent(), t);
-   datetime from, to;
-   int best = -1;
-   for(int s = 0; s < 8; s++)
+   int nowSec = t.hour * 3600 + t.min * 60 + t.sec;
+   int day    = (int)t.day_of_week;
+   int carry  = 0;                       // is din se pehle kitne minute guzre
+
+   // Aaj se le kar 7 din tak: pehla asli khala dhoondo.
+   // Agar session 23:59 par khatam ho aur agle din 00:00 par shuru ho,
+   // to market band nahi hui - woh sirf din badalna hai (BTC 24/7).
+   for(int d = 0; d < 8; d++)
      {
-      if(!SymbolInfoSessionTrade(_Symbol, (ENUM_DAY_OF_WEEK)t.day_of_week, s, from, to)) break;
-      int nowSec = t.hour * 3600 + t.min * 60 + t.sec;
-      int toSec  = (int)to;
-      if(nowSec <= toSec)
+      int wd = (day + d) % 7;
+      datetime from, to;
+      int endSec = -1;                   // is din ka aakhri session kab khatam
+
+      for(int s = 0; s < 8; s++)
         {
-         int m = (toSec - nowSec) / 60;
-         if(best < 0 || m < best) best = m;
+         if(!SymbolInfoSessionTrade(_Symbol, (ENUM_DAY_OF_WEEK)wd, s, from, to)) break;
+         int fSec = (int)from, tSec = (int)to;
+         if(d == 0 && tSec < nowSec) continue;     // aaj ka guzra hua session
+
+         // agar is session se pehle khala hai aur hum us khale mein hain -> market abhi band hai
+         if(endSec >= 0 && fSec > endSec + 60) return(0);
+         if(d == 0 && s == 0 && fSec > nowSec)      return(0);
+         if(endSec < 0 || tSec > endSec) endSec = tSec;
         }
+
+      if(endSec < 0) return(0);          // is din koi session nahi -> band
+
+      // din ke aakhir tak chala? to agle din dekho ke woh 00:00 se shuru hota hai ya nahi
+      if(endSec < 86340)                 // 23:59 se pehle khatam -> yahi asli band hai
+         return(carry + (endSec - (d == 0 ? nowSec : 0)) / 60);
+
+      datetime nf, nt;
+      int nwd = (day + d + 1) % 7;
+      if(!SymbolInfoSessionTrade(_Symbol, (ENUM_DAY_OF_WEEK)nwd, 0, nf, nt))
+         return(carry + (endSec - (d == 0 ? nowSec : 0)) / 60);   // agla din band -> asli band
+      if((int)nf > 60)                   // agla din 00:00 se shuru nahi -> asli band
+         return(carry + (endSec - (d == 0 ? nowSec : 0)) / 60);
+
+      carry += (86400 - (d == 0 ? nowSec : 0)) / 60;   // din jurta gaya, aage dekho
      }
-   return(best);          // -1 = pata nahi
+
+   return(-1);                           // 7 din tak koi khala nahi -> 24/7
   }
 
 //+------------------------------------------------------------------+
@@ -187,7 +215,7 @@ void OnTick()
       if(TryPairClose()) return;
 
    //--- Q6: market band hone se pehle kitab barabar ----------------
-   bool flattenNow = (InpFlattenBeforeClose && minsEnd >= 0 && minsEnd <= InpFlattenMinutes);
+   bool flattenNow = (InpFlattenBeforeClose && minsEnd > 0 && minsEnd <= InpFlattenMinutes);
    if(flattenNow && MathAbs(netLot) > InpLot / 2.0)
      {
       Balance(netLot, "Q6: market " + IntegerToString(minsEnd) + " min mein band");
@@ -324,8 +352,12 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
    s += StringFormat("Equity        : %.2f     hadd: %.2f%s\n",
                      equity, floorEq, (equity <= floorEq ? "  << RUKA HUA" : ""));
 
-   if(minsEnd >= 0)
+   if(minsEnd > 0)
       s += StringFormat("Market band   : %d minute mein\n", minsEnd);
+   else if(minsEnd == 0)
+      s += "Market        : ABHI BAND\n";
+   else
+      s += "Market        : 24/7 (band nahi hoti)\n";
 
    //--- Q9: kholna behtar hai ya jamna? ---------------------------
    if(totLot > 0)
