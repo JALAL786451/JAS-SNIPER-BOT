@@ -44,6 +44,11 @@ input int    InpEmaFast        = 20;
 input int    InpEmaSlow        = 50;
 
 //--- 6. Amal ------------------------------------------------------
+input group "=== 10 - Spike par hedge (L17) ==="
+input bool   InpUseSpikeHedge = true;  // Spike aaye to kitab hedge (net sifar)
+input double InpSpikeMult     = 3.0;   // Spike = ek candle mein kitne qadam
+input bool   InpSpikeOverCap  = false; // Hedge ke liye KUL lots ki hadd tor do?
+
 input group "=== 9 - News (L10) ==="
 input bool   InpUseNews      = true;   // Bari news ke waqt nayi lot band
 input int    InpNewsBefore   = 30;     // News se kitne minute pehle
@@ -75,7 +80,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b11"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b12"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -89,6 +94,7 @@ double   g_defDist = 0, g_worstAgainst = 0;
 bool     g_newsBlock = false, g_newsOK = false;
 datetime g_newsAt = 0, g_newsLast = 0;
 string   g_newsName = "";
+bool     g_spikeHedge = false, g_spikeNow = false;
 int      g_htf = 0;
 
 //+------------------------------------------------------------------+
@@ -272,6 +278,18 @@ double StepSize()
    return(a[0] * InpStepMult);
   }
 
+//--- L17: abhi spike chal raha hai? -------------------------------
+bool SpikeNow()
+  {
+   if(!InpUseSpikeHedge) return(false);
+   double st = StepSize();
+   if(st <= 0) return(false);
+   double hi = iHigh(_Symbol, PERIOD_CURRENT, 0);
+   double lo = iLow (_Symbol, PERIOD_CURRENT, 0);
+   if(hi <= 0 || lo <= 0) return(false);
+   return((hi - lo) >= st * InpSpikeMult);
+  }
+
 //--- sab se qareeb khuli lot kitni door hai ------------------------
 double NearestLegDistance(double px)
   {
@@ -317,6 +335,29 @@ void OnTick()
 
    g_say = "";
    RefreshNews();
+
+   //--- L17: spike -> kitab hedge karo, band mat karo ---------------
+   g_spikeNow = SpikeNow();
+   if(g_spikeNow && MathAbs(netLot) > InpLot / 2.0)
+     {
+      bool capOK = InpSpikeOverCap ||
+                   (totLot + InpLot <= InpMaxTotalLots + 1e-8);
+      if(capOK)
+        {
+         g_spikeHedge = true;
+         g_say += "SPIKE - hedge kar raha hoon, band nahi.\n";
+         OpenLot((netLot > 0) ? -1 : 1, "L17: spike hedge");
+         g_spikeHedge = false;
+        }
+      else
+         g_say += "SPIKE - magar KUL lots hadd par, hedge nahi ho sakta.\n";
+     }
+   if(g_spikeNow)
+     {
+      Report(nBuy, nSell, lotBuy, lotSell, netLot, totLot, basket, equity, floorEq,
+             minsEnd, sumPxDirLot, bid);
+      return;                                  // spike ke dauran kuch band nahi
+     }
 
    //--- Q7: basket poori band -------------------------------------
    if(InpAllowCloseAll && totLot > 0 && basket >= InpCloseAllProfit)
@@ -421,7 +462,7 @@ int Direction()
 
 void OpenLot(int dir, string why)
   {
-   if(g_newsBlock) return;                           // L10: news ke waqt koi lot nahi
+   if(g_newsBlock && !g_spikeHedge) return;           // L10 (spike hedge ki istisna: L17)
    if(TimeCurrent() - g_lastOrder < InpMinSecsBetween) return;
    g_lastOrder = TimeCurrent();
    double l = NormLot(InpLot);
@@ -437,7 +478,6 @@ void OpenLot(int dir, string why)
 void Balance(double netLot, double totLot, string why)
   {
    if(!InpAllowFreeze) return;
-   if(g_newsBlock) return;                           // L10
    if(totLot + InpLot > InpMaxTotalLots + 1e-8)      // kul lots ki hadd
      {
       g_say += "KUL lots hadd par (" + DoubleToString(totLot, 2) + ") - ab sirf INTEZAR.\n";
@@ -577,6 +617,9 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
            }
         }
      }
+   if(g_spikeNow)
+      s += "SPIKE         : << CHAL RAHA HAI - sirf hedge >>\n";
+
    if(!InpUseNews)
       s += "News          : dekha nahi ja raha\n";
    else if(!g_newsOK)
