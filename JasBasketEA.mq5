@@ -80,7 +80,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b13"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b14"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -94,6 +94,7 @@ double   g_defDist = 0, g_worstAgainst = 0;
 bool     g_newsBlock = false, g_newsOK = false;
 datetime g_newsAt = 0, g_newsLast = 0;
 string   g_newsName = "";
+int      g_newsErr = 0, g_newsAll = 0, g_newsHigh = 0;
 bool     g_spikeHedge = false, g_spikeNow = false;
 int      g_htf = 0;
 
@@ -240,10 +241,21 @@ void RefreshNews()
    if(!InpUseNews) return;
 
    MqlCalendarValue v[];
+   ResetLastError();
    int n = CalendarValueHistory(v, now - 6 * 3600, now + 12 * 3600,
                                 NULL, InpNewsCurrency);
-   if(n <= 0) return;                         // calendar nahi mila
+   g_newsErr = GetLastError();
+   g_newsAll = n;
+   if(n <= 0)                                 // currency ke saath kuch nahi mila
+     {
+      ResetLastError();
+      n = CalendarValueHistory(v, now - 6 * 3600, now + 12 * 3600);
+      g_newsErr = GetLastError();
+      g_newsAll = n;
+      if(n <= 0) return;
+     }
    g_newsOK = true;
+   g_newsHigh = 0;
 
    datetime bestAt = 0; string bestName = "";
    for(int i = 0; i < n; i++)
@@ -251,6 +263,7 @@ void RefreshNews()
       MqlCalendarEvent e;
       if(!CalendarEventById(v[i].event_id, e))      continue;
       if(e.importance != CALENDAR_IMPORTANCE_HIGH)  continue;
+      g_newsHigh++;
 
       datetime at   = v[i].time;
       datetime from = at - (datetime)(InpNewsBefore * 60);
@@ -682,7 +695,7 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
    if(!InpUseNews)
       s += "News          : dekha nahi ja raha\n";
    else if(!g_newsOK)
-      s += "News          : calendar nahi mila\n";
+      s += StringFormat("News          : calendar nahi mila (error %d)\n", g_newsErr);
    else if(g_newsBlock)
       s += StringFormat("News          : << BAND >> %s (%s)\n",
                         g_newsName, TimeToString(g_newsAt, TIME_MINUTES));
@@ -690,7 +703,8 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
       s += StringFormat("News          : agli %s (%s)\n",
                         g_newsName, TimeToString(g_newsAt, TIME_DATE | TIME_MINUTES));
    else
-      s += "News          : aaj koi bari nahi\n";
+      s += StringFormat("News          : koi bari nahi (%d mein se %d bari)\n",
+                        g_newsAll, g_newsHigh);
 
    s += StringFormat("Bachao par    : %.2f     abhi khilaf: %.2f\n",
                      g_defDist, g_worstAgainst);
