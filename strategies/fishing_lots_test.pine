@@ -56,7 +56,7 @@ turnLevel = input.float(4.0, "Kitne dollar nuqsan par ulti taraf lagana", minval
 gX        = "4. Phase 4-6 — Freeze aur Unwind"
 doFreeze  = input.bool(true, "Dono taraf barabar kar ke jamaein (freeze)", group = gX)
 doUnwind  = input.bool(true, "Phase 6: rukh palatne par hedge lots band karein", group = gX)
-basketTgt = input.float(1.0, "Basket kitne USD faide par Close All", minval = 0.01, step = 0.5, group = gX)
+basketTgt = input.float(0.10, "Basket kitne USD faide par Close All (METHOD.md ki misal: +52.20 USC = $0.52)", minval = 0.01, step = 0.05, group = gX)
 
 // ---------------------------------------------------------------- 5. RANG
 gC        = "5. Dikhawa"
@@ -97,6 +97,8 @@ var float maxAdv    = 0.0
 var float peakEq    = startBal
 var float maxDD     = 0.0
 var float lastAdd   = na
+var bool  unwound   = false
+var float feesPaid  = 0.0
 var int   frozenBars= 0
 var int   maxFrozen = 0
 
@@ -167,6 +169,7 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
         if bias != 0
             f_open(bias, px)
             balance := balance - costPerLeg
+            feesPaid := feesPaid + costPerLeg
             origDir := bias
             lastAdd := px
     else
@@ -185,6 +188,7 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
             f_clearBook()
             lastAdd := na
             origDir := 0
+            unwound := false
             frozenBars := 0
 
         // ---- PHASE 1 ka chhota faida: akeli lot ~$1 par ---------------------
@@ -196,6 +200,7 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
             f_clearBook()
             lastAdd := na
             origDir := 0
+            unwound := false
 
         // ---- PHASE 6 ka pehla hissa: kitab jami hui hai aur rukh palat gaya.
         // METHOD.md kehti hai "hedge lots chhote nuqsan par band, phir doosri
@@ -211,16 +216,22 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
                     array.remove(legPx, _i)
                 _i := _i - 1
             lastAdd := px
+            // Ek basket mein Phase 6 sirf EK baar. Warna kitab jamti aur
+            // khulti rehti hai aur har chakkar ka spread account kha jata hai.
+            unwound := true
 
         // ---- PHASE 3-4: ulti taraf lagao, aur barabar kar ke jamao ----------
-        else if doFreeze and worst <= -turnLevel and netD != 0 and n < maxAdds * 2
+        else if doFreeze and not unwound and worst <= -turnLevel and netD != 0 and n < maxAdds * 2
             f_open(netD > 0 ? -1 : 1, px)
             balance := balance - costPerLeg
+            feesPaid := feesPaid + costPerLeg
+            feesPaid := feesPaid + costPerLeg
 
         // ---- PHASE 2-3: ladder, har ~3.50 dollar par agli lot --------------
         else if netD != 0 and math.abs(netD) < maxAdds and not na(lastAdd) and math.abs(px - lastAdd) >= ladderGap
             f_open(netD > 0 ? 1 : -1, px)
             balance := balance - costPerLeg
+            feesPaid := feesPaid + costPerLeg
             lastAdd := px
 
 equity = balance + f_floatUSD(close)
@@ -235,7 +246,7 @@ hline(startBal, "Shuru ka balance", color = color.new(color.gray, 40), linestyle
 // ============================================================================
 //  PANEL
 // ============================================================================
-var table TB = table.new(position.top_right, 2, 14, border_width = 1)
+var table TB = table.new(position.top_right, 2, 15, border_width = 1)
 
 f_row(_r, _a, _b, _tc) =>
     table.cell(TB, 0, _r, _a, text_color = cTxt, text_size = size.small, text_halign = text.align_left, bgcolor = cBg)
@@ -253,14 +264,15 @@ if barstate.islast
     f_row(1, "Baskets band hue", str.tostring(baskets), cTxt)
     f_row(2, "Jeete / Haare", str.tostring(bWin) + " / " + str.tostring(bLoss), bWin > bLoss ? cUp : cDn)
     f_row(3, "Jeet ka %", str.tostring(wr, "#.0") + " %", wr >= 50 ? cUp : cDn)
-    f_row(4, "Profit factor", na(pf) ? "-" : str.tostring(pf, "#.###"), na(pf) ? cTxt : pf >= 1 ? cUp : cDn)
+    f_row(4, "Profit factor", na(pf) ? (baskets > 0 ? "koi haar nahi" : "-") : str.tostring(pf, "#.###"), na(pf) ? cUp : pf >= 1 ? cUp : cDn)
     f_row(5, "Net natija", "$" + str.tostring(net, "#.##"), cNet)
     f_row(6, "Balance ab", "$" + str.tostring(balance, "#.##"), cTxt)
-    table.cell(TB, 0, 7, "KABHI NAAPA NAHI GAYA", text_color = color.white, text_size = size.small, bgcolor = #37474F)
-    table.cell(TB, 1, 7, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
-    f_row(8, "Ek saath sab se zyada lots", str.tostring(maxLegs) + "  (" + str.tostring(maxLegs * lotSize, "#.##") + " lot)", cTxt)
-    f_row(9, "Sab se zyada khula (net)", str.tostring(maxNet) + "  (" + str.tostring(maxNet * lotSize, "#.##") + " lot)", cTxt)
-    f_row(10, "Kitab sab se gehri", "$" + str.tostring(maxFloat, "#.##"), cDn)
-    f_row(11, "Sab se bara ulta gold move", "$" + str.tostring(maxAdv, "#.##"), cDn)
-    f_row(12, "Max drawdown", "$" + str.tostring(maxDD, "#.##") + "  (" + str.tostring(startBal > 0 ? maxDD * 100.0 / startBal : 0, "#.#") + "%)", cDn)
-    f_row(13, "Account khatam: gold hile", na(wipe) ? "-" : "$" + str.tostring(wipe, "#.#"), cDn)
+    f_row(7, "Spread mein gaya", "-$" + str.tostring(feesPaid, "#.##"), cDn)
+    table.cell(TB, 0, 8, "KABHI NAAPA NAHI GAYA", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    table.cell(TB, 1, 8, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    f_row(9, "Ek saath sab se zyada lots", str.tostring(maxLegs) + "  (" + str.tostring(maxLegs * lotSize, "#.##") + " lot)", cTxt)
+    f_row(10, "Sab se zyada khula (net)", str.tostring(maxNet) + "  (" + str.tostring(maxNet * lotSize, "#.##") + " lot)", cTxt)
+    f_row(11, "Kitab sab se gehri", "$" + str.tostring(maxFloat, "#.##"), cDn)
+    f_row(12, "Sab se bara ulta gold move", "$" + str.tostring(maxAdv, "#.##"), cDn)
+    f_row(13, "Max drawdown", "$" + str.tostring(maxDD, "#.##") + "  (" + str.tostring(startBal > 0 ? maxDD * 100.0 / startBal : 0, "#.#") + "%)", cDn)
+    f_row(14, "Account khatam: gold hile", na(wipe) ? "-" : "$" + str.tostring(wipe, "#.#"), cDn)
