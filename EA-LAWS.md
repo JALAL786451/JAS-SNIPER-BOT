@@ -15,7 +15,7 @@ aap se poochna hai
 
 | # | Qanoon | Kis se | Status |
 |---|---|---|---|
-| L1 | Bara rukh (H1 EMA50) dekh kar **usi taraf** pehli lot. Ulti taraf hamla nahi | [AAPKA] | ✅ |
+| L1 | Bara rukh (H1 EMA50) dekh kar **usi taraf** lot. **Sirf ek rukh** — chart ki EMA se ittefaq nahi manga jata | [AAPKA] | ✅ |
 | L2 | Zoor usi taraf rahe to **ek qadam door** aur lot. Gold par qadam $1.00, baqi par ATR(14) | [AAPKA] | ✅ |
 | L3 | Lot akeli faide mein aa jaye to **band kar do**, phir rukh dobara dekho | [AAPKA] | ✅ |
 | L4 | Koi lot **3.5 qadam khilaf** chali jaye to **ulti lot** (gold par $3.50) | [AAPKA] | ✅ |
@@ -94,6 +94,12 @@ lot lagana sirf tab jab band karna mumkin na ho.
 Magar **jorh hamesha sifar nahi hoga**. Agar nuqsan wali lots faide walon se
 bohot bari hon, to band karne par kuch nuqsan nikelga. Ye hisaab hai, kharabi
 nahi.
+
+**Do brake ek saath lagana ghalti thi.** Main ne qadam aur rukh, dono ek din
+mein daal diye aur kisi ko naapa nahi. Rukh mein main ne M1 aur H1 **dono** ka
+ittefaq maang liya — jo L1 mein likha hi nahi tha. Natija: EA ghanton kuch
+nahi karta tha. Ab rukh sirf H1 se hai. Aur panel ab saaf likhta hai ke kaun
+si rok chal rahi hai, taake agli dafa andaza na lagana pare.
 
 **Close All ka news se koi taluq nahi.** Agar news ke dauran bhi basket +50 ho
 jaye to sab band ho jayega. Aap ne khud ye saaf kar diya.

@@ -80,7 +80,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b15"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b16"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -486,19 +486,25 @@ void OnTick()
    //--- naye lots (Q2) ---------------------------------------------
    double step   = StepSize();
    double nearD  = NearestLegDistance(bid);
-   int    dir    = Direction();
-   int    htf    = TrendTF();
-   bool   stepOK = (!InpUseStep) || step <= 0 || nearD < 0 || (nearD >= step - 1e-8);
-   bool   trendOK = (dir == 0 || htf == 0 || dir == htf);
+   int    ema    = Direction();        // chart ki EMA20/50 - sirf madad ke liye
+   int    htf    = TrendTF();          // bara rukh - YAHI faisla karta hai (L1)
+   int    dir    = (htf != 0) ? htf : ema;
+   bool   stepOK  = (!InpUseStep) || step <= 0 || nearD < 0 || (nearD >= step - 1e-8);
+   bool   trendOK = (dir != 0);
    g_step = step; g_near = nearD; g_htf = htf;
 
-   if(!netAtCap && !flattenNow && InpAllowNewLots)
-     {
-      if(!trendOK)
-         g_say += "Bara rukh ulta hai - hamla nahi.\n";
-      else if(!stepOK)
-         g_say += StringFormat("Qadam poora nahi (%.2f / %.2f) - intezar.\n", nearD, step);
-     }
+   // kaun si rok chal rahi hai - andaza nahi, likh kar batao
+   string blk = "";
+   if(!InpAllowNewLots)                             blk += "naye lots band; ";
+   if(equity <= floorEq)                            blk += "equity hadd par; ";
+   if(totLot + InpLot > InpMaxTotalLots + 1e-8)     blk += "KUL lots hadd par; ";
+   if(netAtCap)                                     blk += "NET hadd par (sirf bachao); ";
+   if(flattenNow)                                   blk += "market band hone wali; ";
+   if(g_newsBlock)                                  blk += "news; ";
+   if(!trendOK)                                     blk += "rukh pata nahi; ";
+   if(!stepOK)                                      blk += StringFormat("qadam %.2f/%.2f; ", nearD, step);
+   g_say += (blk == "") ? "Sab saaf - agli candle par lot lagegi.\n"
+                        : ("Ruka hua: " + blk + "\n");
 
    datetime bt = iTime(_Symbol, PERIOD_CURRENT, 0);
    if(bt != g_lastBar)
