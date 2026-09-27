@@ -67,7 +67,7 @@ input double InpStepMult    = 1.0;     // Qadam = ATR ka kitna hissa
 input int    InpAtrLen      = 14;      // ATR ki lambai
 input double InpGoldStep    = 1.00;    // Gold par aap ka apna qadam (dollar)
 input bool   InpUseTrendTF  = true;    // Bara rukh dekhein
-input ENUM_TIMEFRAMES InpTrendTF = PERIOD_H1;  // Bara rukh kis TF se
+input ENUM_TIMEFRAMES InpTrendTF = PERIOD_M5;  // Bara rukh kis TF se
 input int    InpTrendEma    = 50;      // Bare rukh ki EMA
 
 input group "=== 6 - Amal ==="
@@ -80,7 +80,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b16"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b17"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -493,6 +493,10 @@ void OnTick()
    bool   trendOK = (dir != 0);
    g_step = step; g_near = nearD; g_htf = htf;
 
+   datetime btNow = iTime(_Symbol, PERIOD_CURRENT, 0);
+   bool gapOK = (g_lastAction == 0) ||
+                (Bars(_Symbol, PERIOD_CURRENT, g_lastAction, btNow) >= InpBarsBetween);
+
    // kaun si rok chal rahi hai - andaza nahi, likh kar batao
    string blk = "";
    if(!InpAllowNewLots)                             blk += "naye lots band; ";
@@ -503,17 +507,16 @@ void OnTick()
    if(g_newsBlock)                                  blk += "news; ";
    if(!trendOK)                                     blk += "rukh pata nahi; ";
    if(!stepOK)                                      blk += StringFormat("qadam %.2f/%.2f; ", nearD, step);
+   if(!gapOK)                                       blk += "candle ka faasla; ";
    g_say += (blk == "") ? "Sab saaf - agli candle par lot lagegi.\n"
                         : ("Ruka hua: " + blk + "\n");
 
-   datetime bt = iTime(_Symbol, PERIOD_CURRENT, 0);
+   datetime bt = btNow;
    if(bt != g_lastBar)
      {
       g_lastBar = bt;
       bool equityOK = (equity > floorEq);
       bool roomOK   = (totLot + InpLot * InpBurst <= InpMaxTotalLots + 1e-8);
-      bool gapOK    = (g_lastAction == 0) ||
-                      (Bars(_Symbol, PERIOD_CURRENT, g_lastAction, bt) >= InpBarsBetween);
 
       if(InpAllowNewLots && equityOK && roomOK && gapOK && !flattenNow &&
          !netAtCap && trendOK && stepOK && dir != 0)
