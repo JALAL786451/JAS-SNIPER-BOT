@@ -44,6 +44,15 @@ input int    InpEmaFast        = 20;
 input int    InpEmaSlow        = 50;
 
 //--- 6. Amal ------------------------------------------------------
+input group "=== 7 - Qadam aur bara rukh ==="
+input bool   InpUseStep     = true;    // Nayi lot sirf tab jab qeemat ek qadam door ho
+input double InpStepMult    = 1.0;     // Qadam = ATR ka kitna hissa
+input int    InpAtrLen      = 14;      // ATR ki lambai
+input double InpGoldStep    = 1.00;    // Gold par aap ka apna qadam (dollar)
+input bool   InpUseTrendTF  = true;    // Bara rukh dekhein
+input ENUM_TIMEFRAMES InpTrendTF = PERIOD_H1;  // Bara rukh kis TF se
+input int    InpTrendEma    = 50;      // Bare rukh ki EMA
+
 input group "=== 6 - Amal ==="
 input bool   InpAllowNewLots   = true;   // Naye lots lagana chalu
 input bool   InpAllowFreeze    = true;   // Kitab barabar karna chalu
@@ -57,9 +66,12 @@ input ulong  InpMagic          = 20260928;
 CTrade        trade;
 CPositionInfo pos;
 int      hFast = INVALID_HANDLE, hSlow = INVALID_HANDLE;
+int      hAtr  = INVALID_HANDLE, hTrend = INVALID_HANDLE;
 datetime g_lastBar = 0, g_lastAction = 0;
 datetime g_lastOrder = 0;
 string   g_say = "";
+double   g_step = 0, g_near = -1;
+int      g_htf = 0;
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -69,9 +81,12 @@ int OnInit()
 
    hFast = iMA(_Symbol, PERIOD_CURRENT, InpEmaFast, 0, MODE_EMA, PRICE_CLOSE);
    hSlow = iMA(_Symbol, PERIOD_CURRENT, InpEmaSlow, 0, MODE_EMA, PRICE_CLOSE);
-   if(hFast == INVALID_HANDLE || hSlow == INVALID_HANDLE)
+   hAtr   = iATR(_Symbol, PERIOD_CURRENT, InpAtrLen);
+   hTrend = iMA(_Symbol, InpTrendTF, InpTrendEma, 0, MODE_EMA, PRICE_CLOSE);
+   if(hFast == INVALID_HANDLE || hSlow == INVALID_HANDLE ||
+      hAtr  == INVALID_HANDLE || hTrend == INVALID_HANDLE)
      {
-      Print("EMA handle nahi bana.");
+      Print("Indicator handle nahi bana.");
       return(INIT_FAILED);
      }
 
@@ -87,6 +102,8 @@ void OnDeinit(const int reason)
   {
    if(hFast != INVALID_HANDLE) IndicatorRelease(hFast);
    if(hSlow != INVALID_HANDLE) IndicatorRelease(hSlow);
+   if(hAtr  != INVALID_HANDLE) IndicatorRelease(hAtr);
+   if(hTrend != INVALID_HANDLE) IndicatorRelease(hTrend);
    Comment("");
   }
 
@@ -183,6 +200,43 @@ int MinutesToSessionEnd()
    return(-1);                           // 7 din tak koi khala nahi -> 24/7
   }
 
+//--- ek qadam kitna bara: gold par aap ka apna, warna ATR se -------
+double StepSize()
+  {
+   if(StringFind(_Symbol, "XAU") >= 0 || StringFind(_Symbol, "GOLD") >= 0)
+      return(InpGoldStep);
+   double a[1];
+   if(CopyBuffer(hAtr, 0, 1, 1, a) < 1) return(0);
+   return(a[0] * InpStepMult);
+  }
+
+//--- sab se qareeb khuli lot kitni door hai ------------------------
+double NearestLegDistance(double px)
+  {
+   double best = -1;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(!pos.SelectByIndex(i))          continue;
+      if(pos.Symbol() != _Symbol)        continue;
+      if(pos.Magic()  != (long)InpMagic) continue;
+      double d = MathAbs(px - pos.PriceOpen());
+      if(best < 0 || d < best) best = d;
+     }
+   return(best);          // -1 = koi lot nahi
+  }
+
+//--- bara rukh: +1 upar, -1 neeche, 0 pata nahi --------------------
+int TrendTF()
+  {
+   if(!InpUseTrendTF) return(0);
+   double e[1];
+   if(CopyBuffer(hTrend, 0, 1, 1, e) < 1) return(0);
+   double px = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if(px > e[0]) return(1);
+   if(px < e[0]) return(-1);
+   return(0);
+  }
+
 //+------------------------------------------------------------------+
 void OnTick()
   {
@@ -228,6 +282,22 @@ void OnTick()
      }
 
    //--- naye lots (Q2) ---------------------------------------------
+   double step   = StepSize();
+   double nearD  = NearestLegDistance(bid);
+   int    dir    = Direction();
+   int    htf    = TrendTF();
+   bool   stepOK = (!InpUseStep) || step <= 0 || nearD < 0 || (nearD >= step - 1e-8);
+   bool   trendOK = (dir == 0 || htf == 0 || dir == htf);
+   g_step = step; g_near = nearD; g_htf = htf;
+
+   if(!netAtCap && !flattenNow && InpAllowNewLots)
+     {
+      if(!trendOK)
+         g_say += "Bara rukh ulta hai - hamla nahi.\n";
+      else if(!stepOK)
+         g_say += StringFormat("Qadam poora nahi (%.2f / %.2f) - intezar.\n", nearD, step);
+     }
+
    datetime bt = iTime(_Symbol, PERIOD_CURRENT, 0);
    if(bt != g_lastBar)
      {
@@ -236,16 +306,13 @@ void OnTick()
       bool roomOK   = (totLot + InpLot * InpBurst <= InpMaxTotalLots + 1e-8);
       bool gapOK    = (g_lastAction == 0) ||
                       (Bars(_Symbol, PERIOD_CURRENT, g_lastAction, bt) >= InpBarsBetween);
-      if(InpAllowNewLots && equityOK && roomOK && gapOK && !flattenNow && !netAtCap)
+
+      if(InpAllowNewLots && equityOK && roomOK && gapOK && !flattenNow &&
+         !netAtCap && trendOK && stepOK && dir != 0)
         {
-         int dir = Direction();
-         if(dir != 0)
-           {
-            for(int k = 0; k < InpBurst; k++)
-               OpenLot(dir, "Q2: fishing, EMA" + IntegerToString(InpEmaFast) +
-                       (dir > 0 ? " > EMA" : " < EMA") + IntegerToString(InpEmaSlow));
-            g_lastAction = bt;
-           }
+         for(int k = 0; k < InpBurst; k++)
+            OpenLot(dir, "Q2: fishing, qadam " + DoubleToString(step, 2));
+         g_lastAction = bt;
         }
       else if(!equityOK)
          g_say += "Equity hadd par - naye lots band.\n";
@@ -387,6 +454,17 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
            }
         }
      }
+   s += StringFormat("Qadam         : %.2f     qareeb tareen lot: %s\n",
+                     g_step, (g_near < 0 ? "koi nahi" : DoubleToString(g_near, 2)));
+   s += StringFormat("Bara rukh (%s): %s\n", EnumToString(InpTrendTF),
+                     (g_htf > 0 ? "UPAR" : (g_htf < 0 ? "NEECHE" : "pata nahi")));
+
+   double spread = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - bid;
+   double perPt2 = MoneyPerPoint(1.0);
+   if(totLot > 0 && perPt2 > 0)
+      s += StringFormat("Spread ka bojh: %.2f  (%d lots par)\n",
+                        spread * totLot * perPt2, nBuy + nSell);
+
    if(g_say != "") s += "\n" + g_say;
    Comment(s);
   }
