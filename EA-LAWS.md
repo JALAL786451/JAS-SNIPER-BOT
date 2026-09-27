@@ -1,0 +1,68 @@
+# JAS Basket EA — QANOON ki list
+
+Ye chalti hui list hai. Jab bhi testing ke dauran koi aisi baat nikle jo
+pehle nazar nahi aayi, woh yahan likhi jayegi — chhoti ho ya bari.
+
+Har qanoon ke saath: **[AAPKA]** = aap ka apna qaida, **[NAAPA]** = aap ke
+statement se naapa hua number, **[BACHAO]** = EA ko ghalti se rokne ke liye.
+
+Status: ✅ = EA mein hai aur chal raha hai · ⏳ = abhi likhna hai · ❓ = pehle
+aap se poochna hai
+
+---
+
+## Lots kab lagti hain
+
+| # | Qanoon | Kis se | Status |
+|---|---|---|---|
+| L1 | Bara rukh (H1 EMA50) dekh kar **usi taraf** pehli lot. Ulti taraf hamla nahi | [AAPKA] | ✅ |
+| L2 | Zoor usi taraf rahe to **ek qadam door** aur lot. Gold par qadam $1.00, baqi par ATR(14) | [AAPKA] | ✅ |
+| L3 | Lot akeli faide mein aa jaye to **band kar do**, phir rukh dobara dekho | [AAPKA] | ✅ |
+| L4 | Koi lot **3.5 qadam khilaf** chali jaye to **ulti lot** (gold par $3.50) | [AAPKA] | ✅ |
+| L5 | Ulti lot sirf tab jab woh taraf **halki** ho — warna EA ulat kar doosra ambaar laga deta | [BACHAO] | ✅ |
+| L6 | Lot ka size **kabhi nahi barhta** — 0.01. Statement: 1,661 / 1,964 trades 0.01 par | [NAAPA] | ✅ |
+
+## Kab rukna hai
+
+| # | Qanoon | Kis se | Status |
+|---|---|---|---|
+| L7 | **Net** (buy − sell) ki hadd 0.20. Us par pohnch kar sirf ulti taraf | [BACHAO] | ✅ |
+| L8 | **Kul lots** ki hadd 1.00. Us par pohnch kar **koi lot nahi** — na seedhi na ulti, sirf INTEZAR | [BACHAO] | ✅ |
+| L9 | **Equity** balance ke 90% se neeche jaye to naye lots band. Naapa: sab se neeche 90.95% | [NAAPA] | ✅ |
+| L10 | **HMR / news ke waqt lot nahi lagegi** | [AAPKA] | ❓ |
+
+## Kab band karna hai
+
+| # | Qanoon | Kis se | Status |
+|---|---|---|---|
+| L11 | Sab mila kar **+50** ho jaye to **Close All**. Naapa: 36 Close All ka darmiyana +54.80 | [NAAPA] | ✅ |
+| L12 | Ek lot **+14** par akeli band. Naapa: 1,140 aisi lots ka ausat +13.98 | [NAAPA] | ✅ |
+| L13 | Jori: sab se achi + sab se **buri** lot ek saath. Akeli achi band karne se kitab mein sirf buri bachti hain | [BACHAO] | ✅ |
+| L14 | Koi **SL ya TP nahi**. Statement: 1,964 mein se 15 par SL, khuli 135 mein se 0 | [NAAPA] | ✅ |
+
+## Market ka waqt
+
+| # | Qanoon | Kis se | Status |
+|---|---|---|---|
+| L15 | **24/7 symbol** (BTC) par "market band" ka qaida lagta hi nahi. Aadhi raat din badalna band hona nahi hai | [BACHAO] | ✅ |
+| L16 | **Gold** par market band hone se 30 minute pehle kitab barabar | [AAPKA] | ✅ |
+
+---
+
+## Testing ke dauran jo pata chala
+
+**Cent aur Standard ek jaise hain.** 0.01 lot gold par $1 ki harkat dono par
+1 unit hai — farq sirf naam ka (USC / USD). Is liye $52,000 ka Standard demo
+aap ke 52,000 USC account ka theek theek naqsha hai, aur cent demo ki zarurat
+nahi. (Main ne pehle iska ulat kaha tha; woh ghalat tha.)
+
+**Waqt se lot lagana ghalat tha.** Purana EA har M1 candle par ek lot lagata
+tha — 90 minute mein 47 lots, kitab −$17.97, jis mein taqreeban **$4.70 sirf
+spread** (1 lot = $0.10 BTC par). Qadam ka qaida (L2) isi liye aaya.
+
+**Net bilkul 0 wali kitab kabhi wapas nahi aati.** Uska P/L qeemat se badalta
+hi nahi. Nikalne ka ek hi raasta hai: ek taraf band karna. Panel ab ye saaf
+likhta hai.
+
+**Har file par build number** (`b10` waghera) panel ki pehli line mein, taake
+screenshot se pata chale ke kaun si file chal rahi hai.
