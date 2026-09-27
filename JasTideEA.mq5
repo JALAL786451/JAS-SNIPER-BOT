@@ -28,6 +28,8 @@
 #property strict
 
 #include <Trade\Trade.mqh>
+#define EA_BUILD "t1"          // har nayi file par ye number barhta hai
+
 CTrade trade;
 
 //--------------------------- INPUTS -----------------------------------
@@ -73,15 +75,18 @@ bool     g_partialDone = false;           // aadha band ho chuka?
 //--- Function prototypes. MQL5 aam tor par baad mein likhe function ko bhi
 //--- pehchan leta hai, magar ye likh dene se koi shak nahi rehta.
 bool   IsNewBar();
-bool   HasPosition(long &type, double &volume, double &openPrice, double &sl);
+bool   HasPosition(ulong &ticket, long &type, double &volume, double &openPrice, double &sl);
 void   SyncStateWithPosition();
 double MinStopDistance();
 double LotFromRisk(double stopDistPrice);
 bool   HtfBull(bool &ok);
 void   CheckPartialOnTick();
 void   OpenTrade(bool isBuy, double atr);
-void   ManageOpenPosition(long posType, double posVol, double posOpen, double posSL,
-                          double hiExit, double loExit, bool bull);
+void   ManageOpenPosition(ulong posTk, long posType, double posVol, double posOpen,
+                          double posSL, double hiExit, double loExit, bool bull);
+void   Report(bool inPos, long posType, double posVol, double posOpen, double posSL,
+              double hiBrk, double loBrk, double hiExit, double loExit,
+              double atr, double atrPct, bool htfOk, bool bull, bool liveOk);
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -124,6 +129,7 @@ void OnDeinit(const int reason)
    if(g_atrHandle != INVALID_HANDLE) IndicatorRelease(g_atrHandle);
    if(g_htfFastH  != INVALID_HANDLE) IndicatorRelease(g_htfFastH);
    if(g_htfSlowH  != INVALID_HANDLE) IndicatorRelease(g_htfSlowH);
+   Comment("");
   }
 
 //+------------------------------------------------------------------+
@@ -141,19 +147,21 @@ bool IsNewBar()
 //+------------------------------------------------------------------+
 //| Is EA ki apni position (symbol + magic)                          |
 //+------------------------------------------------------------------+
-bool HasPosition(long &type, double &volume, double &openPrice, double &sl)
+bool HasPosition(ulong &ticket, long &type, double &volume, double &openPrice, double &sl)
   {
+   ticket = 0;
    for(int i = PositionsTotal() - 1; i >= 0; i--)
      {
-      ulong ticket = PositionGetTicket(i);
-      if(ticket == 0) continue;
-      if(!PositionSelectByTicket(ticket)) continue;
+      ulong tk = PositionGetTicket(i);
+      if(tk == 0) continue;
+      if(!PositionSelectByTicket(tk)) continue;
       if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
       if(PositionGetInteger(POSITION_MAGIC) != InpMagicNumber) continue;
       type      = PositionGetInteger(POSITION_TYPE);
       volume    = PositionGetDouble(POSITION_VOLUME);
       openPrice = PositionGetDouble(POSITION_PRICE_OPEN);
       sl        = PositionGetDouble(POSITION_SL);
+      ticket    = tk;
       return(true);
      }
    return(false);
@@ -164,8 +172,8 @@ bool HasPosition(long &type, double &volume, double &openPrice, double &sl)
 //+------------------------------------------------------------------+
 void SyncStateWithPosition()
   {
-   long   type; double vol, openPx, sl;
-   if(HasPosition(type, vol, openPx, sl))
+   ulong  tk; long type; double vol, openPx, sl;
+   if(HasPosition(tk, type, vol, openPx, sl))
      {
       g_entryPx = openPx;
       if(g_initR <= 0.0) g_initR = MathAbs(openPx - sl);
@@ -245,8 +253,8 @@ void CheckPartialOnTick()
    if(!InpUsePartial || g_partialDone) return;
    if(g_initR <= 0.0 || g_entryPx <= 0.0) return;
 
-   long posType; double posVol, posOpen, posSL;
-   if(!HasPosition(posType, posVol, posOpen, posSL)) return;
+   ulong posTk; long posType; double posVol, posOpen, posSL;
+   if(!HasPosition(posTk, posType, posVol, posOpen, posSL)) return;
 
    if(g_initVol > 0.0 && posVol < g_initVol * 0.9) { g_partialDone = true; return; }
 
@@ -268,7 +276,7 @@ void CheckPartialOnTick()
       g_partialDone = true;   // itni chhoti position ke aadha nahi ho sakta
       return;
      }
-   if(trade.PositionClosePartial(_Symbol, NormalizeDouble(half, 2)))
+   if(trade.PositionClosePartial(posTk, NormalizeDouble(half, 2)))
      {
       g_partialDone = true;
       Print("2R par aadha band kiya.");
@@ -283,60 +291,111 @@ void OnTick()
    // yahan sirf candle band hone par dekhte to natija backtest se alag hota.
    CheckPartialOnTick();
 
-   if(!IsNewBar()) return;
+   bool newBar = IsNewBar();          // ek hi dafa - iska apna asar hai
 
-   if(g_skipFirstBar) { g_skipFirstBar = false; SyncStateWithPosition(); return; }
-   if(!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED)) return;
-   if(!MQLInfoInteger(MQL_TRADE_ALLOWED)) return;
-   if(!SymbolInfoInteger(_Symbol, SYMBOL_TRADE_MODE)) return;
-
-   //--- ATR: shift 1 (band candle)
+   //--- panel har tick par chahiye, is liye hisaab pehle -------------
    double atrBuf[];
-   if(CopyBuffer(g_atrHandle, 0, 1, 1, atrBuf) != 1) return;
+   if(CopyBuffer(g_atrHandle, 0, 1, 1, atrBuf) != 1)
+     { Comment("=== JAS TIDE EA  " + EA_BUILD + " ===\nATR ka data abhi nahi aaya."); return; }
    double atr = atrBuf[0];
-   if(atr <= 0.0) return;
 
-   //--- Donchian levels. Pine mein [1] laga hai, yani MOJOODA candle shamil
-   //    nahi. MT5 mein band candle shift 1 hai, is liye levels shift 2 se
-   //    ginte hain - warna candle apna hi high tor deti aur har bar signal
-   //    ban jata.
-   int hiIdx = iHighest(_Symbol, PERIOD_CURRENT, MODE_HIGH, InpEntryLen, 2);
-   int loIdx = iLowest (_Symbol, PERIOD_CURRENT, MODE_LOW,  InpEntryLen, 2);
+   int hiIdx   = iHighest(_Symbol, PERIOD_CURRENT, MODE_HIGH, InpEntryLen, 2);
+   int loIdx   = iLowest (_Symbol, PERIOD_CURRENT, MODE_LOW,  InpEntryLen, 2);
    int hiExIdx = iHighest(_Symbol, PERIOD_CURRENT, MODE_HIGH, InpExitLen, 2);
    int loExIdx = iLowest (_Symbol, PERIOD_CURRENT, MODE_LOW,  InpExitLen, 2);
-   if(hiIdx < 0 || loIdx < 0 || hiExIdx < 0 || loExIdx < 0) return;
+   if(hiIdx < 0 || loIdx < 0 || hiExIdx < 0 || loExIdx < 0)
+     { Comment("=== JAS TIDE EA  " + EA_BUILD + " ===\nCandle ka data abhi nahi aaya."); return; }
 
    double hiBrk  = iHigh(_Symbol, PERIOD_CURRENT, hiIdx);
    double loBrk  = iLow (_Symbol, PERIOD_CURRENT, loIdx);
    double hiExit = iHigh(_Symbol, PERIOD_CURRENT, hiExIdx);
    double loExit = iLow (_Symbol, PERIOD_CURRENT, loExIdx);
-
    double closed = iClose(_Symbol, PERIOD_CURRENT, 1);
-   if(closed <= 0.0) return;
 
    bool htfOk = false;
    bool bull  = HtfBull(htfOk);
-   if(!htfOk) return;                    // HTF data abhi taiyar nahi
-   bool bullOK = (!InpUseHTF) || bull;
-   bool bearOK = (!InpUseHTF) || (!bull);
-
-   double atrPct = atr / closed * 100.0;
+   double atrPct = (closed > 0.0) ? (atr / closed * 100.0) : 0.0;
    bool   liveOk = (!InpUseAtrFloor) || (atrPct >= InpMinAtrPercent);
 
-   long   posType; double posVol, posOpen, posSL;
-   bool   inPos = HasPosition(posType, posVol, posOpen, posSL);
+   ulong  posTk; long posType = 0; double posVol = 0, posOpen = 0, posSL = 0;
+   bool   inPos = HasPosition(posTk, posType, posVol, posOpen, posSL);
+
+   //--- faisle sirf band candle par --------------------------------
+   bool canAct = newBar && !g_skipFirstBar && atr > 0.0 && closed > 0.0 && htfOk
+                 && TerminalInfoInteger(TERMINAL_TRADE_ALLOWED)
+                 && MQLInfoInteger(MQL_TRADE_ALLOWED)
+                 && SymbolInfoInteger(_Symbol, SYMBOL_TRADE_MODE) != SYMBOL_TRADE_MODE_DISABLED;
+
+   if(newBar && g_skipFirstBar)
+     { g_skipFirstBar = false; SyncStateWithPosition(); }
+   else if(canAct)
+     {
+      bool bullOK = (!InpUseHTF) || bull;
+      bool bearOK = (!InpUseHTF) || (!bull);
+
+      if(inPos)
+         ManageOpenPosition(posTk, posType, posVol, posOpen, posSL,
+                            hiExit, loExit, bull);
+      else
+        {
+         g_entryPx = 0.0; g_initR = 0.0; g_initVol = 0.0; g_partialDone = false;
+         if(liveOk)
+           {
+            if(closed > hiBrk && bullOK)      OpenTrade(true,  atr);
+            else if(closed < loBrk && bearOK) OpenTrade(false, atr);
+           }
+        }
+      inPos = HasPosition(posTk, posType, posVol, posOpen, posSL);
+     }
+
+   Report(inPos, posType, posVol, posOpen, posSL, hiBrk, loBrk, hiExit, loExit,
+          atr, atrPct, htfOk, bull, liveOk);
+  }
+
+//+------------------------------------------------------------------+
+//|  Chart par haal likho - basket EA ki tarah                        |
+//+------------------------------------------------------------------+
+void Report(bool inPos, long posType, double posVol, double posOpen, double posSL,
+            double hiBrk, double loBrk, double hiExit, double loExit,
+            double atr, double atrPct, bool htfOk, bool bull, bool liveOk)
+  {
+   string s = "=== JAS TIDE EA  " + EA_BUILD + " ===\n";
+   int dig = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
 
    if(inPos)
-      ManageOpenPosition(posType, posVol, posOpen, posSL, hiExit, loExit, bull);
+     {
+      bool   isBuy = (posType == POSITION_TYPE_BUY);
+      double px    = SymbolInfoDouble(_Symbol, isBuy ? SYMBOL_BID : SYMBOL_ASK);
+      double rNow  = (g_initR > 0.0)
+                     ? ((isBuy ? (px - g_entryPx) : (g_entryPx - px)) / g_initR) : 0.0;
+      s += StringFormat("Position      : %s %.2f lot @ %s\n",
+                        (isBuy ? "BUY" : "SELL"), posVol, DoubleToString(posOpen, dig));
+      s += StringFormat("SL            : %s     1R = %s\n",
+                        DoubleToString(posSL, dig), DoubleToString(g_initR, dig));
+      s += StringFormat("Abhi          : %+.2f R     aadha band: %s\n",
+                        rNow, (g_partialDone ? "ho chuka" : "nahi"));
+      s += StringFormat("Nikalna       : %s\n",
+                        DoubleToString(isBuy ? loExit : hiExit, dig));
+     }
    else
      {
-      // position band ho chuki - purani yaadein saaf
-      g_entryPx = 0.0; g_initR = 0.0; g_initVol = 0.0; g_partialDone = false;
-
-      if(!liveOk) return;
-      if(closed > hiBrk && bullOK) OpenTrade(true,  atr);
-      else if(closed < loBrk && bearOK) OpenTrade(false, atr);
+      s += "Position      : koi nahi - breakout ka intezar\n";
+      s += StringFormat("BUY tab jab   : close > %s\n", DoubleToString(hiBrk, dig));
+      s += StringFormat("SELL tab jab  : close < %s\n", DoubleToString(loBrk, dig));
      }
+
+   s += StringFormat("Bara rukh (%s): %s\n", EnumToString(InpHtfTF),
+                     (!InpUseHTF ? "filter band" : (!htfOk ? "data nahi" :
+                     (bull ? "UPAR - sirf BUY" : "NEECHE - sirf SELL"))));
+   s += StringFormat("ATR           : %s  (%.2f%% - hadd %.2f%%)%s\n",
+                     DoubleToString(atr, dig), atrPct, InpMinAtrPercent,
+                     (liveOk ? "" : "  << SUST, trade nahi"));
+   s += StringFormat("Balance       : %.2f     Equity: %.2f\n",
+                     AccountInfoDouble(ACCOUNT_BALANCE),
+                     AccountInfoDouble(ACCOUNT_EQUITY));
+   s += StringFormat("Risk per trade: %.2f%%  = %.2f\n", InpRiskPercent,
+                     AccountInfoDouble(ACCOUNT_BALANCE) * InpRiskPercent / 100.0);
+   Comment(s);
   }
 
 //+------------------------------------------------------------------+
@@ -384,8 +443,8 @@ void OpenTrade(bool isBuy, double atr)
 //+------------------------------------------------------------------+
 //| Khuli position: stop sirf AAGE sarakta hai, kabhi peeche nahi.    |
 //+------------------------------------------------------------------+
-void ManageOpenPosition(long posType, double posVol, double posOpen, double posSL,
-                        double hiExit, double loExit, bool bull)
+void ManageOpenPosition(ulong posTk, long posType, double posVol, double posOpen,
+                        double posSL, double hiExit, double loExit, bool bull)
   {
    int    dig  = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
    double ask  = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
@@ -407,7 +466,7 @@ void ManageOpenPosition(long posType, double posVol, double posOpen, double posS
      {
       if((isBuy && !bull) || (!isBuy && bull))
         {
-         trade.PositionClose(_Symbol);
+         trade.PositionClose(posTk);
          Print("HTF palta - position band.");
          return;
         }
@@ -433,7 +492,7 @@ void ManageOpenPosition(long posType, double posVol, double posOpen, double posS
    newSL = NormalizeDouble(newSL, dig);
    if(MathAbs(newSL - posSL) < _Point) return;
 
-   if(!trade.PositionModify(_Symbol, newSL, 0.0))
+   if(!trade.PositionModify(posTk, newSL, 0.0))
       PrintFormat("SL modify fail: retcode=%d %s", trade.ResultRetcode(), trade.ResultRetcodeDescription());
   }
 //+------------------------------------------------------------------+
