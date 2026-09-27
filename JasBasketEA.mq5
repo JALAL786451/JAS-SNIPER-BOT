@@ -217,16 +217,14 @@ void OnTick()
    bool flattenNow = (InpFlattenBeforeClose && minsEnd > 0 && minsEnd <= InpFlattenMinutes);
    if(flattenNow && MathAbs(netLot) > InpLot / 2.0)
      {
-      Balance(netLot, "Q6: market " + IntegerToString(minsEnd) + " min mein band");
-      return;
+      Balance(netLot, totLot, "Q6: market " + IntegerToString(minsEnd) + " min mein band");
      }
 
    //--- Q3: net ki hadd -> sirf ulti taraf -------------------------
    bool netAtCap = (MathAbs(netLot) >= InpMaxNetLots - 1e-8);
    if(InpAllowFreeze && netAtCap && MathAbs(netLot) > InpLot / 2.0)
      {
-      Balance(netLot, "Q3: net " + DoubleToString(netLot, 2) + " hadd par");
-      return;
+      Balance(netLot, totLot, "Q3: net " + DoubleToString(netLot, 2) + " hadd par");
      }
 
    //--- naye lots (Q2) ---------------------------------------------
@@ -282,9 +280,14 @@ void OpenLot(int dir, string why)
   }
 
 //--- net ko sifar ki taraf lana: ek ulti lot ----------------------
-void Balance(double netLot, string why)
+void Balance(double netLot, double totLot, string why)
   {
    if(!InpAllowFreeze) return;
+   if(totLot + InpLot > InpMaxTotalLots + 1e-8)      // kul lots ki hadd
+     {
+      g_say += "KUL lots hadd par (" + DoubleToString(totLot, 2) + ") - ab sirf INTEZAR.\n";
+      return;
+     }
    int dir = (netLot > 0) ? -1 : 1;
    OpenLot(dir, why);
   }
