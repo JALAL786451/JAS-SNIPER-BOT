@@ -85,6 +85,12 @@ var int   origDir = 0
 var bool  unwound = false
 var float unwAt   = na
 var int   baskets = 0
+// Kitni baar kaun sa phase chala. Ye is liye ke method ka DIL freeze hai --
+// agar woh kabhi chala hi nahi, to jo natija nazar aa raha hai woh sirf
+// fishing ka hai, poori method ka nahi.
+var int   nLadder = 0
+var int   nFreeze = 0
+var int   nUnwind = 0
 var float balUSC  = startUSC
 var string phase  = "INTEZAR"
 
@@ -177,6 +183,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             lastAdd := px
             unwound := true
             unwAt := f_worst(px)
+            nUnwind := nUnwind + 1
             phase := "UNWIND"
         else if (not unwound or worst <= nz(unwAt, 0.0) - turnU) and worst <= -turnU and net != 0 and n < maxAdds * 2
             array.push(legDir, net > 0 ? -1 : 1)
@@ -184,6 +191,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             balUSC := balUSC - costUSC
             opened := net > 0 ? -1 : 1
             unwound := false
+            nFreeze := nFreeze + 1
             phase := "FREEZE BANA RAHA"
         else if net != 0 and math.abs(net) < maxAdds and not na(lastAdd) and math.abs(px - lastAdd) >= ladU
             array.push(legDir, net > 0 ? 1 : -1)
@@ -191,6 +199,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             balUSC := balUSC - costUSC
             lastAdd := px
             opened := net > 0 ? 1 : -1
+            nLadder := nLadder + 1
             phase := "LADDER"
         else
             phase := net == 0 ? "JAMI HUI (freeze)" : worst <= -turnU * 0.5 ? "INTEZAR (nuqsan mein)" : "CHAL RAHI HAI"
@@ -235,7 +244,7 @@ if barstate.islast
 // ============================================================================
 //  PANEL
 // ============================================================================
-var table TB = table.new(position.top_right, 2, 11, border_width = 1)
+var table TB = table.new(position.top_right, 2, 15, border_width = 1)
 
 f_row(_r, _a, _b, _tc) =>
     table.cell(TB, 0, _r, _a, text_color = cTxt, text_size = size.small, text_halign = text.align_left, bgcolor = cBg)
@@ -265,4 +274,9 @@ if barstate.islast
     f_row(7, "Baskets band hue", str.tostring(baskets), cTxt)
     f_row(8, "Balance", str.tostring(balUSC, "#") + " USC", balUSC >= startUSC ? cBuy : cSell)
     f_row(9, "Yani dollar mein", "$" + str.tostring(balUSC / 100.0, "#.##"), balUSC >= startUSC ? cBuy : cSell)
-    f_row(10, "Qawaid is waqt", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
+    table.cell(TB, 0, 10, "AB TAK KITNI BAAR", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    table.cell(TB, 1, 10, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    f_row(11, "Ladder lagi", str.tostring(nLadder), nLadder > 0 ? #F57C00 : cFlat)
+    f_row(12, "FREEZE bana (dil)", str.tostring(nFreeze) + (nFreeze == 0 ? "   <- kabhi nahi!" : ""), nFreeze > 0 ? #2962FF : #B71C1C)
+    f_row(13, "Unwind hua", str.tostring(nUnwind), nUnwind > 0 ? cBuy : cFlat)
+    f_row(14, "Qawaid is waqt", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
