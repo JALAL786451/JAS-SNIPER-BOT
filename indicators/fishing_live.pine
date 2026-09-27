@@ -37,11 +37,14 @@ startUSC  = input.float(52000, "Balance (USC)", minval = 1, group = g1)
 lotSize   = input.float(0.01, "Har lot ka size", minval = 0.001, step = 0.01, group = g1)
 spreadStp = input.float(0.5, "Spread + fees (qadam mein)", minval = 0.0, step = 0.1, group = g1)
 
-g2        = "Qawaid (qadam mein - khud naap liye jate hain)"
-atrLen    = input.int(14, "ATR", minval = 2, group = g2)
-fishStp   = input.float(2.0, "Faida  = kitne qadam", minval = 0.1, step = 0.5, group = g2)
-ladStp    = input.float(7.0, "Ladder = kitne qadam", minval = 0.1, step = 0.5, group = g2)
-turnStp   = input.float(8.0, "Turn   = kitne qadam", minval = 0.1, step = 0.5, group = g2)
+g2        = "Qawaid"
+atrLen    = input.int(14, "ATR (gold ke ilawa symbols ke liye)", minval = 2, group = g2)
+goldFish  = input.float(1.00, "GOLD: faida (dollar)", minval = 0.01, step = 0.1, group = g2)
+goldLad   = input.float(3.50, "GOLD: ladder (dollar)", minval = 0.01, step = 0.1, group = g2)
+goldTurn  = input.float(4.00, "GOLD: turn (dollar)", minval = 0.01, step = 0.5, group = g2)
+fishStp   = input.float(0.85, "Baqi symbols: faida  = kitne qadam", minval = 0.05, step = 0.05, group = g2)
+ladStp    = input.float(2.95, "Baqi symbols: ladder = kitne qadam", minval = 0.05, step = 0.05, group = g2)
+turnStp   = input.float(3.37, "Baqi symbols: turn   = kitne qadam", minval = 0.05, step = 0.05, group = g2)
 emaFast   = input.int(20, "EMA fast", minval = 1, group = g2)
 emaSlow   = input.int(50, "EMA slow", minval = 2, group = g2)
 maxAdds   = input.int(12, "Ek taraf zyada se zyada lots", minval = 1, maxval = 40, group = g2)
@@ -59,12 +62,28 @@ cBg       = input.color(#FFFFFFEE, "Panel", group = g3, inline = "e")
 // ============================================================================
 //  QADAM — har symbol, har timeframe ke liye khud
 // ============================================================================
+// GOLD par aapke ASLI qawaid, jyon ke tyon -- koi hisaab nahi, koi andaza
+// nahi. $1 faida, $3.50 ladder, $4 turn.
+//
+// Pehle main gold par bhi ATR se naapta tha, aur woh 2.4 guna bara nikla
+// (faida 2.38, ladder 8.33). Jalal ke panel ne ye khud pakra. Wajah: ATR ko
+// sqrt(minute) se taqseem karne ka model farz karta hai ke bazaar mehez
+// bekhabar chaal chalta hai. Asli gold rujhaan banata hai, is liye bare
+// timeframe par qadam bara nikal aata hai -- gold 5m par 1.19, 1H par 2.07.
+// Yani woh bantwara gold par theek kaam nahi karta.
+//
+// Is liye ab: gold ke qawaid seedha likh diye gaye hain. Baqi symbols ke
+// liye ATR wala raasta rehta hai, aur us ke multiplier is tarah chune gaye
+// hain ke natija gold ke qawaid ke barabar nisbat mein rahe. BTC gold se
+// takreeban 20 guna mehnga hai, aur ye multiplier BTC par ladder ~$68 dete
+// hain -- yani $3.50 x 20. Wohi nisbat.
+isGold = str.contains(syminfo.ticker, "XAU") or str.contains(syminfo.ticker, "GOLD")
 tfMin  = math.max(1.0, timeframe.in_seconds(timeframe.period) / 60.0)
 stepU  = ta.atr(atrLen) / math.sqrt(tfMin)
-fishU  = stepU * fishStp
-ladU   = stepU * ladStp
-turnU  = stepU * turnStp
-spreadU = stepU * spreadStp
+fishU  = isGold ? goldFish : stepU * fishStp
+ladU   = isGold ? goldLad  : stepU * ladStp
+turnU  = isGold ? goldTurn : stepU * turnStp
+spreadU = isGold ? 0.26 : stepU * spreadStp
 
 // Cent account: 1.00 lot par qeemat $1 hile to 100 USC. Yani 0.01 lot par
 // $1 = 1 USC -- theek wohi jo METHOD.md mein likha hai.
@@ -300,4 +319,4 @@ if barstate.islast
     f_row(12, "Ladder lagi", str.tostring(nLadder), nLadder > 0 ? #F57C00 : cFlat)
     f_row(13, "FREEZE bana (dil)", str.tostring(nFreeze) + (nFreeze == 0 ? "   <- kabhi nahi!" : ""), nFreeze > 0 ? #2962FF : #B71C1C)
     f_row(14, "Unwind hua", str.tostring(nUnwind), nUnwind > 0 ? cBuy : cFlat)
-    f_row(15, "Qawaid is waqt", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
+    f_row(15, isGold ? "Qawaid (GOLD - aapke apne)" : "Qawaid (khud naape hue)", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
