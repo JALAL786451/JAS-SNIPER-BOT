@@ -29,7 +29,7 @@ input double InpEquityFloorPct = 90.0;   // Equity, balance ke is % se neeche ->
 
 //--- 3. Faida (Q7, Q8) --------------------------------------------
 input group "=== 3 - Faida lena ==="
-input double InpCloseAllProfit = 50.0;   // Basket kitne (account currency) par Close All
+input double InpCloseAllProfit = 50.0;   // Basket kitne par Close All (naapa hua: darmiyana 54.80)
 input bool   InpUsePairClose   = true;   // Beech mein jori bana kar band karna
 input double InpPairMinProfit  = 5.0;    // Jori ka kam az kam faida
 
@@ -46,7 +46,7 @@ input int    InpEmaSlow        = 50;
 //--- 6. Amal ------------------------------------------------------
 input group "=== 8 - Bachao aur faide wali lot ==="
 input bool   InpCloseWinners = true;   // Faide wali lot akeli band kar do
-input double InpLegProfit    = 0.14;   // Ek lot ka faida (account currency; cent par ~14)
+input double InpLegProfit    = 14.0;   // Ek lot ka faida (naapa hua: ausat 13.98)
 input bool   InpUseDefence   = true;   // Khilaf jane par ulti lot
 input double InpDefenceMult  = 3.5;    // Kitne qadam khilaf jane par (gold: 3.5 x $1 = $3.50)
 
@@ -69,7 +69,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b8"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b9"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
