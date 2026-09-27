@@ -69,7 +69,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b9"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b10"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -508,7 +508,7 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
          double lotOne     = (netLot > 0) ? lotBuy : lotSell;
          double needOpen   = (lotOne > 1e-8)
                              ? MathAbs(basket) / (lotOne * perPt) : -1;
-         if(needOpen > 0 && basket < 0)
+         if(needOpen > 0 && basket < 0 && nBuy > 0 && nSell > 0)
            {
             s += "\nPhase 6 ka hisaab:\n";
             if(flat)
