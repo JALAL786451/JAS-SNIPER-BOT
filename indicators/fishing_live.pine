@@ -288,8 +288,13 @@ if barstate.islast
     f_row(7, "Baskets band hue", str.tostring(baskets), cTxt)
     _age = na(openBar) ? 0 : bar_index - openBar
     f_row(8, "Ye basket kitni der khuli", na(openBar) ? "-" : str.tostring(_age) + " candle", _age > 500 ? #B71C1C : cTxt)
-    f_row(9, "Balance", str.tostring(balUSC, "#") + " USC", balUSC >= startUSC ? cBuy : cSell)
-    f_row(10, "Yani dollar mein", "$" + str.tostring(balUSC / 100.0, "#.##"), balUSC >= startUSC ? cBuy : cSell)
+    // Balance woh hai jo band ho chuka. EQUITY asli haal hai -- balance jama
+    // khuli kitab. 17 August ko app 650 dikha rahi thi (equity) jab ke balance
+    // -264.72 tha. Us din ka sabaq yahi hai: sirf balance dekhna dhoka hai.
+    _eq = balUSC + pl
+    f_row(9, "Balance (band ho chuka)", str.tostring(balUSC, "#") + " USC", cTxt)
+    table.cell(TB, 0, 10, "EQUITY (asli haal)", text_color = color.white, text_size = size.normal, bgcolor = _eq >= startUSC ? cBuy : cSell)
+    table.cell(TB, 1, 10, str.tostring(_eq, "#") + " USC   =  $" + str.tostring(_eq / 100.0, "#.##"), text_color = color.white, text_size = size.normal, bgcolor = _eq >= startUSC ? cBuy : cSell)
     table.cell(TB, 0, 11, "AB TAK KITNI BAAR", text_color = color.white, text_size = size.small, bgcolor = #37474F)
     table.cell(TB, 1, 11, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
     f_row(12, "Ladder lagi", str.tostring(nLadder), nLadder > 0 ? #F57C00 : cFlat)
