@@ -14,6 +14,7 @@ toward backtesting and demo before live trading.
 | `jas_sniper_v21.pine` | Pine v5 mirror of the above, for TradingView backtests |
 | `TrendMomentumEA.mq5` | TrendMomentumEA v1.01 — EMA trend + tick-volume momentum |
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
+| `JasBasketEA.mq5` | JAS Basket EA — user ki apni basket method, EA-QAWAID.md ke qawaid par. Dono taraf lots, net aur kul lots ki hadd, equity ka farsh, market band hone se pehle kitab barabar, Close All, aur Q8: faide wali lot sab se BURI lot ke saath jori bana kar band (taake kitab behtar ho, buri nahi). Phase 6 ka hisaab chart par likhta hai magar khud nahi karta jab tak ijazat na ho. Hedging account chahiye. **Abhi tak compile nahi hua** |
 | `indicators/smc_coach_pro_v2.pine` | SMC Coach Pro v2.1 — zones, BOS/CHOCH, risk engine, MTF dashboard |
 | `indicators/jas_tide_signal.pine` | JAS Tide ke wohi qawaid, magar indicator ki shakal mein - haath se trade karne ke liye. BUY/SELL, entry, SL, TP aur lot ka hisaab batata hai |
 | `strategies/jas_tide_v1.pine` | JAS Tide v1 — Donchian breakout + HTF EMA filter, Pine **strategy** so the Strategy Tester gives real numbers. Claude's own design, not the user's method |
