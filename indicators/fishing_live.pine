@@ -84,6 +84,8 @@ var float lastAdd = na
 var int   origDir = 0
 var bool  unwound = false
 var float unwAt   = na
+var float freezePx = na
+var int   openBar  = na
 var int   baskets = 0
 // Kitni baar kaun sa phase chala. Ye is liye ke method ka DIL freeze hai --
 // agar woh kabhi chala hi nahi, to jo natija nazar aa raha hai woh sirf
@@ -136,6 +138,10 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
     pl = f_pl(px)
     net = f_net()
 
+    // Jis lamhe kitab poori jam gayi, us waqt ka price yaad rakhna hai --
+    // Phase 6 ka faisla usi se hoga.
+    if n > 0 and net == 0 and na(freezePx)
+        freezePx := px
     if n == 0
         phase := "INTEZAR"
         if bias != 0
@@ -147,6 +153,8 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             unwound := false
             unwAt := na
             opened := bias
+            openBar := bar_index
+            freezePx := na
             phase := "FISHING"
     else
         worst = f_worst(px)
@@ -160,6 +168,8 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             unwound := false
             unwAt := na
             closed := true
+            freezePx := na
+            openBar := na
             phase := "CLOSE ALL"
         else if n == 1 and (px - array.get(legPx, 0)) * array.get(legDir, 0) >= fishU
             balUSC := balUSC + pl
@@ -171,8 +181,10 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             unwound := false
             unwAt := na
             closed := true
+            freezePx := na
+            openBar := na
             phase := "MACHLI PAKRI"
-        else if net == 0 and origDir != 0 and bias == origDir
+        else if net == 0 and origDir != 0 and not na(freezePx) and (px - freezePx) * origDir >= turnU
             _i = array.size(legDir) - 1
             while _i >= 0
                 if array.get(legDir, _i) != origDir
@@ -183,6 +195,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) a
             lastAdd := px
             unwound := true
             unwAt := f_worst(px)
+            freezePx := na
             nUnwind := nUnwind + 1
             phase := "UNWIND"
         else if (not unwound or worst <= nz(unwAt, 0.0) - turnU) and worst <= -turnU and net != 0 and n < maxAdds * 2
@@ -244,7 +257,7 @@ if barstate.islast
 // ============================================================================
 //  PANEL
 // ============================================================================
-var table TB = table.new(position.top_right, 2, 15, border_width = 1)
+var table TB = table.new(position.top_right, 2, 16, border_width = 1)
 
 f_row(_r, _a, _b, _tc) =>
     table.cell(TB, 0, _r, _a, text_color = cTxt, text_size = size.small, text_halign = text.align_left, bgcolor = cBg)
@@ -270,13 +283,16 @@ if barstate.islast
     f_row(3, "Net (barabar = 0)", str.tostring(net), net == 0 and nB + nS > 0 ? #2962FF : net > 0 ? cBuy : net < 0 ? cSell : cFlat)
     f_row(4, "Kitab ka haal", (pl >= 0 ? "+" : "") + str.tostring(pl, "#.##") + " USC", pl >= 0 ? cBuy : cSell)
     f_row(5, "Sab se bura leg", str.tostring(f_worst(close), "#.##") + " (qeemat)", cSell)
-    f_row(6, "Barabar hone ka price", na(f_be()) ? "-" : str.tostring(f_be(), format.mintick), cTxt)
+    _beOk = nB + nS > 0 and math.abs(net) * 2 >= nB + nS
+    f_row(6, "Barabar hone ka price", not _beOk or na(f_be()) ? "kitab jami hui hai" : str.tostring(f_be(), format.mintick), cTxt)
     f_row(7, "Baskets band hue", str.tostring(baskets), cTxt)
-    f_row(8, "Balance", str.tostring(balUSC, "#") + " USC", balUSC >= startUSC ? cBuy : cSell)
-    f_row(9, "Yani dollar mein", "$" + str.tostring(balUSC / 100.0, "#.##"), balUSC >= startUSC ? cBuy : cSell)
-    table.cell(TB, 0, 10, "AB TAK KITNI BAAR", text_color = color.white, text_size = size.small, bgcolor = #37474F)
-    table.cell(TB, 1, 10, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
-    f_row(11, "Ladder lagi", str.tostring(nLadder), nLadder > 0 ? #F57C00 : cFlat)
-    f_row(12, "FREEZE bana (dil)", str.tostring(nFreeze) + (nFreeze == 0 ? "   <- kabhi nahi!" : ""), nFreeze > 0 ? #2962FF : #B71C1C)
-    f_row(13, "Unwind hua", str.tostring(nUnwind), nUnwind > 0 ? cBuy : cFlat)
-    f_row(14, "Qawaid is waqt", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
+    _age = na(openBar) ? 0 : bar_index - openBar
+    f_row(8, "Ye basket kitni der khuli", na(openBar) ? "-" : str.tostring(_age) + " candle", _age > 500 ? #B71C1C : cTxt)
+    f_row(9, "Balance", str.tostring(balUSC, "#") + " USC", balUSC >= startUSC ? cBuy : cSell)
+    f_row(10, "Yani dollar mein", "$" + str.tostring(balUSC / 100.0, "#.##"), balUSC >= startUSC ? cBuy : cSell)
+    table.cell(TB, 0, 11, "AB TAK KITNI BAAR", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    table.cell(TB, 1, 11, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    f_row(12, "Ladder lagi", str.tostring(nLadder), nLadder > 0 ? #F57C00 : cFlat)
+    f_row(13, "FREEZE bana (dil)", str.tostring(nFreeze) + (nFreeze == 0 ? "   <- kabhi nahi!" : ""), nFreeze > 0 ? #2962FF : #B71C1C)
+    f_row(14, "Unwind hua", str.tostring(nUnwind), nUnwind > 0 ? cBuy : cFlat)
+    f_row(15, "Qawaid is waqt", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)
