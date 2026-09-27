@@ -156,6 +156,26 @@ def main(path):
     if depth != 0:
         problems.append(f'end of file: {depth} bracket(s) never closed')
 
+    # --- "for i = 0 to array.size(x) - 1" on a possibly empty array ---------
+    # Pine picks the loop direction from the bounds, so on an empty array this
+    # becomes "for i = 0 to -1" and runs DOWNWARD through i = 0, which then
+    # reads element 0 of a zero-length array: RE10045 at runtime, nothing at
+    # compile time. Safe only behind a size guard, or when the array is built
+    # with array.from(...) and so can never be empty.
+    fixed = set(re.findall(r'(?m)(?:^|\s)([A-Za-z_]\w*)\s*=\s*array\.from\s*\(', code))
+    for m in re.finditer(r'(?m)^(\s*)for\s+[A-Za-z_]\w*\s*=\s*0\s+to\s+array\.size\s*\(\s*([A-Za-z_]\w*)\s*\)\s*-\s*1\b', code):
+        arr = m.group(2)
+        if arr in fixed:
+            continue
+        ln = code[:m.start()].count('\n') + 1
+        before = '\n'.join(code_lines[max(0, ln - 5):ln - 1])
+        guarded = re.search(r'array\.size\s*\(\s*' + re.escape(arr) + r'\s*\)\s*(?:>|!=|>=)', before)
+        if not guarded:
+            problems.append(
+                f'line {ln}: "for ... = 0 to array.size({arr}) - 1" with no size guard above it. '
+                f'On an empty array Pine runs this backwards through 0 and reads element 0 '
+                f'(RE10045). Wrap it in "if array.size({arr}) > 0".')
+
     # --- collect declared names --------------------------------------------
     declared = set()
     # user functions + their parameters

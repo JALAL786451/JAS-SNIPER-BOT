@@ -100,23 +100,31 @@ var float lastAdd   = na
 var int   frozenBars= 0
 var int   maxFrozen = 0
 
+// KHALI KITAB KA JAAL:
+// "for i = 0 to array.size(x) - 1" khali array par "for i = 0 to -1" ban
+// jata hai. Pine ise ULTA gin kar chalata hai, i = 0 par pohanchta hai, aur
+// khali array se maangta hai -> RE10045. Har aise loop se pehle size ka
+// pehra lazmi hai.
 f_netDir() =>
     _n = 0
-    for i = 0 to array.size(legDir) - 1
-        _n := _n + array.get(legDir, i)
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _n := _n + array.get(legDir, i)
     _n
 
 f_floatUSD(_px) =>
     _s = 0.0
-    for i = 0 to array.size(legDir) - 1
-        _s := _s + f_money((_px - array.get(legPx, i)) * array.get(legDir, i), lotSize)
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _s := _s + f_money((_px - array.get(legPx, i)) * array.get(legDir, i), lotSize)
     _s
 
 f_worstLegGold(_px) =>
     _w = 0.0
-    for i = 0 to array.size(legDir) - 1
-        _g = (_px - array.get(legPx, i)) * array.get(legDir, i)
-        _w := math.min(_w, _g)
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _g = (_px - array.get(legPx, i)) * array.get(legDir, i)
+            _w := math.min(_w, _g)
     _w
 
 // Sirf array mein daalta hai. Kharcha call karne wali jagah balance se kata
