@@ -40,6 +40,15 @@ aap se poochna hai
 | L13 | Jori: sab se achi + sab se **buri** lot ek saath. Akeli achi band karne se kitab mein sirf buri bachti hain | [BACHAO] | ✅ |
 | L14 | Koi **SL ya TP nahi**. Statement: 1,964 mein se 15 par SL, khuli 135 mein se 0 | [NAAPA] | ✅ |
 
+## Spike (L17)
+
+| # | Qanoon | Kis se | Status |
+|---|---|---|---|
+| L17 | **Spike** (ek candle ka phaila 3 qadam se bara) ke dauran **Close All nahi — hedge**. Net sifar kar do, phir spike chahe jitna bara ho, na faida na nuqsan | [AAPKA] | ✅ |
+| L18 | Spike ke dauran **kuch band nahi hota** — Close All, faide wali lot, jori, teeno ruk jate hain | [AAPKA] | ✅ |
+| L19 | Spike ka hedge **L10 (news) ki rok se guzar sakta hai** — sirf hedge, aur koi lot nahi | [AAPKA] | ✅ |
+| L20 | Hedge se KUL lots barhti hain. Hadd **abhi bhi lagu** hai; torne ke liye `InpSpikeOverCap` chalu karna paregi | [BACHAO] | ✅ |
+
 ## Market ka waqt
 
 | # | Qanoon | Kis se | Status |
@@ -73,6 +82,9 @@ likh deta hai "calendar nahi mila", taake khamoshi se har trade na le le.
 jori — ye teeno chalte rehte hain. Aap ne "joon ki toon rahne de" kaha tha,
 jo main ne ye samjha ke kitab ko zabardasti barabar mat karo — faida lene se
 mana nahi. Agar ghalat samjha to bata dein.
+
+**Close All ka news se koi taluq nahi.** Agar news ke dauran bhi basket +50 ho
+jaye to sab band ho jayega. Aap ne khud ye saaf kar diya.
 
 **Har file par build number** (`b10` waghera) panel ki pehli line mein, taake
 screenshot se pata chale ke kaun si file chal rahi hai.
