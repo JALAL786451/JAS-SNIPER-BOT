@@ -83,6 +83,7 @@ var array<float> legPx  = array.new<float>()
 var float lastAdd  = na
 var int   origDir  = 0
 var bool  unwound  = false
+var float unwAt    = na
 var int   baskets  = 0
 var float bal      = startBal
 var string phase   = "INTEZAR"
@@ -137,6 +138,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
             origDir := bias
             lastAdd := px
             unwound := false
+            unwAt := na
             phase := "FISHING"
             opened := bias
     else
@@ -149,6 +151,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
             lastAdd := na
             origDir := 0
             unwound := false
+            unwAt := na
             closed := true
             phase := "CLOSE ALL"
         else if n == 1 and (px - array.get(legPx, 0)) * array.get(legDir, 0) >= fishU
@@ -159,6 +162,7 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
             lastAdd := na
             origDir := 0
             unwound := false
+            unwAt := na
             closed := true
             phase := "MACHLI PAKRI"
         else if net == 0 and origDir != 0 and bias == origDir
@@ -171,8 +175,9 @@ if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(atrV)
                 _i := _i - 1
             lastAdd := px
             unwound := true
+            unwAt := f_worst(px)
             phase := "UNWIND"
-        else if not unwound and worst <= -turnU and net != 0 and n < maxAdds * 2
+        else if (not unwound or worst <= nz(unwAt, 0.0) - turnU) and worst <= -turnU and net != 0 and n < maxAdds * 2
             array.push(legDir, net > 0 ? -1 : 1)
             array.push(legPx, px)
             opened := net > 0 ? -1 : 1
@@ -246,10 +251,15 @@ if barstate.islast
                 nS := nS + 1
     pl  = f_pl(close)
     net = nB - nS
+    // Paimana us symbol ke liye theek hai ya nahi. Gold ke $3.50 BTC par
+    // (jahan ek candle 150 dollar hilti hai) kuch bhi nahi -- ladder har
+    // candle par lagta hai aur saara natija kachra ho jata hai. Chup chaap
+    // ghalat natija dene se behtar hai ke script khud cheekh kar bata de.
+    scaleBad = not isAuto and not na(atrV) and atrV > 0 and ladU < atrV / 3.0
     pCol = phase == "JAMI HUI (freeze)" ? #2962FF : phase == "CLOSE ALL" or phase == "MACHLI PAKRI" ? cBuy : phase == "FREEZE BANA RAHA" or phase == "LADDER" ? #F57C00 : cFlat
 
-    table.cell(TB, 0, 0, "ABHI: " + phase, text_color = color.white, text_size = size.normal, bgcolor = pCol)
-    table.cell(TB, 1, 0, str.tostring(nB + nS) + " lot", text_color = color.white, text_size = size.normal, bgcolor = pCol)
+    table.cell(TB, 0, 0, scaleBad ? "PAIMANA GALAT HAI" : "ABHI: " + phase, text_color = color.white, text_size = size.normal, bgcolor = scaleBad ? #B71C1C : pCol)
+    table.cell(TB, 1, 0, scaleBad ? "ATR par karein" : str.tostring(nB + nS) + " lot", text_color = color.white, text_size = size.normal, bgcolor = scaleBad ? #B71C1C : pCol)
     f_row(1, "Buy ki lots",  str.tostring(nB) + "  (" + str.tostring(nB * lotSize, "#.##") + ")", nB > 0 ? cBuy : cFlat)
     f_row(2, "Sell ki lots", str.tostring(nS) + "  (" + str.tostring(nS * lotSize, "#.##") + ")", nS > 0 ? cSell : cFlat)
     f_row(3, "Net (barabar = 0)", str.tostring(net), net == 0 and nB + nS > 0 ? #2962FF : net > 0 ? cBuy : net < 0 ? cSell : cFlat)
@@ -258,4 +268,7 @@ if barstate.islast
     f_row(6, "Barabar hone ka price", na(f_breakeven()) ? "-" : str.tostring(f_breakeven(), format.mintick), cTxt)
     f_row(7, "Baskets band hue", str.tostring(baskets), cTxt)
     f_row(8, "Balance", "$" + str.tostring(bal, "#.##"), bal >= startBal ? cBuy : cSell)
-    f_row(9, "Paimana", isAuto ? "ATR: faida " + str.tostring(fishU, format.mintick) + " / ladder " + str.tostring(ladU, format.mintick) : "gold ke dollar", cTxt)
+    if scaleBad
+        f_row(9, "Is symbol ki ek candle", "~" + str.tostring(atrV, format.mintick) + ", ladder sirf " + str.tostring(ladU, format.mintick), #B71C1C)
+    else
+        f_row(9, "Paimana", isAuto ? "ATR: faida " + str.tostring(fishU, format.mintick) + " / ladder " + str.tostring(ladU, format.mintick) : "gold ke dollar", cTxt)

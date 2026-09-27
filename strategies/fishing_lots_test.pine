@@ -98,6 +98,7 @@ var float peakEq    = startBal
 var float maxDD     = 0.0
 var float lastAdd   = na
 var bool  unwound   = false
+var float unwAt     = na
 var float feesPaid  = 0.0
 var int   frozenBars= 0
 var int   maxFrozen = 0
@@ -171,6 +172,8 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
             balance := balance - costPerLeg
             feesPaid := feesPaid + costPerLeg
             origDir := bias
+            unwound := false
+            unwAt := na
             lastAdd := px
     else
         worst = f_worstLegGold(px)
@@ -189,6 +192,7 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
             lastAdd := na
             origDir := 0
             unwound := false
+            unwAt := na
             frozenBars := 0
 
         // ---- PHASE 1 ka chhota faida: akeli lot ~$1 par ---------------------
@@ -201,6 +205,7 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
             lastAdd := na
             origDir := 0
             unwound := false
+            unwAt := na
 
         // ---- PHASE 6 ka pehla hissa: kitab jami hui hai aur rukh palat gaya.
         // METHOD.md kehti hai "hedge lots chhote nuqsan par band, phir doosri
@@ -216,12 +221,16 @@ if barstate.isconfirmed and bar_index > emaSlow + 2
                     array.remove(legPx, _i)
                 _i := _i - 1
             lastAdd := px
-            // Ek basket mein Phase 6 sirf EK baar. Warna kitab jamti aur
-            // khulti rehti hai aur har chakkar ka spread account kha jata hai.
+            // Phase 6 ke baad kitab dobara TABHI jam sakti hai jab nuqsan ek
+            // aur poora turn-level gehra ho jaye. Warna do kharabiyan: har
+            // candle par jamna-khulna (spread kha jata hai), ya kabhi dobara
+            // na jamna (kitab hamesha ke liye nangi). METHOD.md dono ke
+            // beech wali soorat batati hai: "the whole cycle restarts".
             unwound := true
+            unwAt := f_worstLegGold(px)
 
         // ---- PHASE 3-4: ulti taraf lagao, aur barabar kar ke jamao ----------
-        else if doFreeze and not unwound and worst <= -turnLevel and netD != 0 and n < maxAdds * 2
+        else if doFreeze and (not unwound or worst <= nz(unwAt, 0.0) - turnLevel) and worst <= -turnLevel and netD != 0 and n < maxAdds * 2
             f_open(netD > 0 ? -1 : 1, px)
             balance := balance - costPerLeg
             feesPaid := feesPaid + costPerLeg
