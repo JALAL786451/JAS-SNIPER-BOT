@@ -48,6 +48,8 @@ aap se poochna hai
 | L18 | Spike ke dauran **kuch band nahi hota** — Close All, faide wali lot, jori, teeno ruk jate hain | [AAPKA] | ✅ |
 | L19 | Spike ka hedge **L10 (news) ki rok se guzar sakta hai** — sirf hedge, aur koi lot nahi | [AAPKA] | ✅ |
 | L20 | Hedge se KUL lots barhti hain. Hadd **abhi bhi lagu** hai; torne ke liye `InpSpikeOverCap` chalu karna paregi | [BACHAO] | ✅ |
+| L21 | **Hedge ke liye lot lagana zaroori nahi.** Zyada wali taraf se utni lots **band** kar do — 40 buy / 30 sell mein 10 buy band, ho gaya 30-30. Kul lots **ghatti** hain, barhti nahi, is liye L20 ka masla hi khatam | [AAPKA] | ✅ |
+| L22 | Jo lots band karni hain un mein **faida aur nuqsan mila kar** chunni hain — ek acha, ek bura — taake band karne se kitab par zarb na parey | [AAPKA] | ✅ |
 
 ## Market ka waqt
 
@@ -82,6 +84,15 @@ likh deta hai "calendar nahi mila", taake khamoshi se har trade na le le.
 jori — ye teeno chalte rehte hain. Aap ne "joon ki toon rahne de" kaha tha,
 jo main ne ye samjha ke kitab ko zabardasti barabar mat karo — faida lene se
 mana nahi. Agar ghalat samjha to bata dein.
+
+**Band kar ke hedge karna kholne se behtar hai.** Kul lots ghatti hain
+(hadd ka masla nahi), spread kam lagta hai (70 mein se sirf 10 lots), aur sab
+se buri lots kitab se nikal jati hain. EA ab pehle yahi koshish karta hai;
+lot lagana sirf tab jab band karna mumkin na ho.
+
+Magar **jorh hamesha sifar nahi hoga**. Agar nuqsan wali lots faide walon se
+bohot bari hon, to band karne par kuch nuqsan nikelga. Ye hisaab hai, kharabi
+nahi.
 
 **Close All ka news se koi taluq nahi.** Agar news ke dauran bhi basket +50 ho
 jaye to sab band ho jayega. Aap ne khud ye saaf kar diya.

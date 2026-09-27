@@ -80,7 +80,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b12"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b13"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -278,6 +278,58 @@ double StepSize()
    return(a[0] * InpStepMult);
   }
 
+//+------------------------------------------------------------------+
+//|  L21 - hedge BAND kar ke, lot laga kar nahi                       |
+//|  40 buy aur 30 sell hain to 10 buy band karo: 30 aur 30.          |
+//|  Jo 10 chunni hain un mein faida aur nuqsan mila kar, taake band  |
+//|  karne se kitab par zarb na parey. Kul lots BARHTI nahi, GHATTI   |
+//|  hain - is liye hadd ka koi masla nahi.                           |
+//+------------------------------------------------------------------+
+int HedgeByClosing(double netLot)
+  {
+   int need = (int)MathRound(MathAbs(netLot) / InpLot);
+   if(need <= 0) return(0);
+   bool heavyIsBuy = (netLot > 0);
+
+   ulong  tk[];  double pf[];
+   int    n = 0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(!pos.SelectByIndex(i))          continue;
+      if(pos.Symbol() != _Symbol)        continue;
+      if(pos.Magic()  != (long)InpMagic) continue;
+      if((pos.PositionType() == POSITION_TYPE_BUY) != heavyIsBuy) continue;
+      ArrayResize(tk, n + 1); ArrayResize(pf, n + 1);
+      tk[n] = pos.Ticket();
+      pf[n] = pos.Profit() + pos.Swap();
+      n++;
+     }
+   if(n < need) need = n;
+   if(need <= 0) return(0);
+
+   // faide ke hisaab se tarteeb: sab se acha pehle, sab se bura aakhir mein
+   for(int a = 1; a < n; a++)
+     {
+      ulong  kt = tk[a]; double kp = pf[a];
+      int    b  = a - 1;
+      while(b >= 0 && pf[b] < kp) { pf[b + 1] = pf[b]; tk[b + 1] = tk[b]; b--; }
+      pf[b + 1] = kp; tk[b + 1] = kt;
+     }
+
+   // ek acha, ek bura - chalta hua jorh sifar ke qareeb rakho
+   double run = 0; int done = 0, lo = 0, hi = n - 1;
+   while(done < need && lo <= hi)
+     {
+      int pick = (run < 0) ? lo : hi;      // ghata hai to acha lo, warna bura
+      if(trade.PositionClose(tk[pick])) { run += pf[pick]; done++; }
+      if(pick == lo) lo++; else hi--;
+     }
+   if(done > 0)
+      Print("L21: hedge band kar ke - ", done, " lot, jorh ",
+            DoubleToString(run, 2));
+   return(done);
+  }
+
 //--- L17: abhi spike chal raha hai? -------------------------------
 bool SpikeNow()
   {
@@ -340,18 +392,25 @@ void OnTick()
    g_spikeNow = SpikeNow();
    if(g_spikeNow && MathAbs(netLot) > InpLot / 2.0)
      {
-      bool capOK = InpSpikeOverCap ||
-                   (totLot + InpLot <= InpMaxTotalLots + 1e-8);
-      if(capOK)
-        {
-         g_spikeHedge = true;
-         g_say += "SPIKE - hedge kar raha hoon, band nahi.\n";
-         OpenLot((netLot > 0) ? -1 : 1, "L17: spike hedge");
-         g_spikeHedge = false;
-        }
+      int shut = HedgeByClosing(netLot);    // L21: pehle band kar ke
+      if(shut > 0)
+         g_say += StringFormat("SPIKE - hedge: %d lot band, net ab sifar.\n", shut);
       else
-         g_say += "SPIKE - magar KUL lots hadd par, hedge nahi ho sakta.\n";
+        {
+         bool capOK = InpSpikeOverCap ||
+                      (totLot + InpLot <= InpMaxTotalLots + 1e-8);
+         if(capOK)
+           {
+            g_spikeHedge = true;
+            g_say += "SPIKE - hedge: ulti lot laga raha hoon.\n";
+            OpenLot((netLot > 0) ? -1 : 1, "L17: spike hedge");
+            g_spikeHedge = false;
+           }
+         else
+            g_say += "SPIKE - hedge nahi ho saka (KUL lots hadd par).\n";
+        }
      }
+
    if(g_spikeNow)
      {
       Report(nBuy, nSell, lotBuy, lotSell, netLot, totLot, basket, equity, floorEq,
