@@ -25,6 +25,7 @@ toward backtesting and demo before live trading.
 | `indicators/ob_radar.pine` | OB Radar — wugamlo ke Order Block Finder ka qaida jyon ka tyon, magar 9 timeframe (1m se 1W) ek legend mein: har TF ka taza OB, Bull%/Bear% (OB ginti se), MA20/50, S/R, FVG, LGB, Supply/Demand zone aur NET vote. Har value us TF ki BAND candle se ([1] request.security ke andar). Chhoti TF ka data sirf ABHI ke liye bharosey ka hai, peeche ke chart ke liye nahi |
 | `indicators/trend_ribbon_levels.pine` | Trend Ribbon + Levels — 10-MA gradient ribbon and pivot S/R lines |
 | `tools/` | Windows compile and backtest automation |
+| `EA-QAWAID.md` | Basket EA ke qawaid ka masauda, Roman Urdu mein, user ki manzoori ke liye. Har qaida [AAPKA] (uski apni kitab se gina) ya [BEHTAR] (user ne khud kaha ke EA uski ghaltiyan na karey — har aisa qaida kisi naape hue number par khara hai) |
 | `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |
 | `SAWAL-LIST.md` | The question list he answers by number, in Roman Urdu |
 
