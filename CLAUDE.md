@@ -15,6 +15,9 @@ toward backtesting and demo before live trading.
 | `TrendMomentumEA.mq5` | TrendMomentumEA v1.01 — EMA trend + tick-volume momentum |
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
 | `JasBasketEA.mq5` | JAS Basket EA — user ki apni basket method, EA-QAWAID.md ke qawaid par. Dono taraf lots, net aur kul lots ki hadd, equity ka farsh, market band hone se pehle kitab barabar, Close All, aur Q8: faide wali lot sab se BURI lot ke saath jori bana kar band (taake kitab behtar ho, buri nahi). Phase 6 ka hisaab chart par likhta hai magar khud nahi karta jab tak ijazat na ho. Hedging account chahiye. **Abhi tak compile nahi hua** |
+| `JasBasketEA_BTC.mq5` | Wahi basket EA, magar BTC ke liye. Paise wale teen number 100 se taqseem (BTC ki 0.01 lot gold se sau guna kam hilti hai) aur magic number alag. **Haath se mat badlein** - `tools/make_btc.py` ise gold wali file se khud banati hai |
+| `EA-LAWS.md` | EA ke qanoon ki chalti hui list - jo bhi testing mein nikle, yahan likha jata hai. Saath mein kaam ka tareeqa (do tabs wala jaal) |
+| `EA-CHECKLIST.md` | Nayi file lagane ke 23 qadam, tarteeb se. Jo qadam baar baar chhootte hain un par nishan |
 | `indicators/smc_coach_pro_v2.pine` | SMC Coach Pro v2.1 — zones, BOS/CHOCH, risk engine, MTF dashboard |
 | `indicators/jas_tide_signal.pine` | JAS Tide ke wohi qawaid, magar indicator ki shakal mein - haath se trade karne ke liye. BUY/SELL, entry, SL, TP aur lot ka hisaab batata hai |
 | `strategies/jas_tide_v1.pine` | JAS Tide v1 — Donchian breakout + HTF EMA filter, Pine **strategy** so the Strategy Tester gives real numbers. Claude's own design, not the user's method |
@@ -25,7 +28,7 @@ toward backtesting and demo before live trading.
 | `indicators/supertrend_v6.pine` | Supertrend — user ne jo file bheji thi us par v6 likha tha magar andar ka code v2/v3 ka tha, chalta hi nahi tha. Hisaab jyon ka tyon, zabaan v6, aur signal ab sirf band candle par (repaint band). Optional HTF filter. Trailing stop hai, peshangoi nahi |
 | `indicators/ob_radar.pine` | OB Radar — wugamlo ke Order Block Finder ka qaida jyon ka tyon, magar 9 timeframe (1m se 1W) ek legend mein: har TF ka taza OB, Bull%/Bear% (OB ginti se), MA20/50, S/R, FVG, LGB, Supply/Demand zone aur NET vote. Har value us TF ki BAND candle se ([1] request.security ke andar). Chhoti TF ka data sirf ABHI ke liye bharosey ka hai, peeche ke chart ke liye nahi |
 | `indicators/trend_ribbon_levels.pine` | Trend Ribbon + Levels — 10-MA gradient ribbon and pivot S/R lines |
-| `tools/` | Windows compile and backtest automation |
+| `tools/` | Windows compile and backtest automation, plus `make_btc.py` |
 | `EA-QAWAID.md` | Basket EA ke qawaid ka masauda, Roman Urdu mein, user ki manzoori ke liye. Har qaida [AAPKA] (uski apni kitab se gina) ya [BEHTAR] (user ne khud kaha ke EA uski ghaltiyan na karey — har aisa qaida kisi naape hue number par khara hai) |
 | `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |
 | `SAWAL-LIST.md` | The question list he answers by number, in Roman Urdu |
