@@ -1,3 +1,6 @@
+//====================================================================
+//===  BUILD t2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasTideEA.mq5  |
 //|  JAS Tide v1.1 ka MT5 tarjuma - Donchian breakout + HTF filter   |
@@ -28,7 +31,7 @@
 #property strict
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "t1"          // har nayi file par ye number barhta hai
+#define EA_BUILD "t2"          // har nayi file par ye number barhta hai
 
 CTrade trade;
 

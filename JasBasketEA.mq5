@@ -1,3 +1,6 @@
+//====================================================================
+//===  BUILD b18   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//====================================================================
 //+------------------------------------------------------------------+
 //|  JasBasketEA.mq5                                                  |
 //|  Jalal ki apni basket method - machine par, uski ghaltiyon ke     |
@@ -80,7 +83,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b17"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b18"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
