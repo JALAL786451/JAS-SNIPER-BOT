@@ -44,6 +44,12 @@ input int    InpEmaFast        = 20;
 input int    InpEmaSlow        = 50;
 
 //--- 6. Amal ------------------------------------------------------
+input group "=== 9 - News (L10) ==="
+input bool   InpUseNews      = true;   // Bari news ke waqt nayi lot band
+input int    InpNewsBefore   = 30;     // News se kitne minute pehle
+input int    InpNewsAfter    = 5;      // News ke baad kitne minute
+input string InpNewsCurrency = "USD";  // Kis mulk ki news (khali = sab)
+
 input group "=== 8 - Bachao aur faide wali lot ==="
 input bool   InpCloseWinners = true;   // Faide wali lot akeli band kar do
 input double InpLegProfit    = 14.0;   // Ek lot ka faida (naapa hua: ausat 13.98)
@@ -69,7 +75,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260928;
 
-#define EA_BUILD "b10"          // har nayi file par ye number barhta hai
+#define EA_BUILD "b11"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -80,6 +86,9 @@ datetime g_lastOrder = 0;
 string   g_say = "";
 double   g_step = 0, g_near = -1;
 double   g_defDist = 0, g_worstAgainst = 0;
+bool     g_newsBlock = false, g_newsOK = false;
+datetime g_newsAt = 0, g_newsLast = 0;
+string   g_newsName = "";
 int      g_htf = 0;
 
 //+------------------------------------------------------------------+
@@ -209,6 +218,50 @@ int MinutesToSessionEnd()
    return(-1);                           // 7 din tak koi khala nahi -> 24/7
   }
 
+//+------------------------------------------------------------------+
+//|  L10 - bari news ke waqt nayi lot nahi                            |
+//|  MT5 ka calendar live mein milta hai, Strategy Tester mein nahi.  |
+//+------------------------------------------------------------------+
+void RefreshNews()
+  {
+   datetime now = TimeCurrent();
+   if(now - g_newsLast < 60) return;          // minute mein ek dafa kaafi
+   g_newsLast  = now;
+   g_newsBlock = false;
+   g_newsOK    = false;
+   g_newsAt    = 0;
+   g_newsName  = "";
+   if(!InpUseNews) return;
+
+   MqlCalendarValue v[];
+   int n = CalendarValueHistory(v, now - 6 * 3600, now + 12 * 3600,
+                                NULL, InpNewsCurrency);
+   if(n <= 0) return;                         // calendar nahi mila
+   g_newsOK = true;
+
+   datetime bestAt = 0; string bestName = "";
+   for(int i = 0; i < n; i++)
+     {
+      MqlCalendarEvent e;
+      if(!CalendarEventById(v[i].event_id, e))      continue;
+      if(e.importance != CALENDAR_IMPORTANCE_HIGH)  continue;
+
+      datetime at   = v[i].time;
+      datetime from = at - (datetime)(InpNewsBefore * 60);
+      datetime to   = at + (datetime)(InpNewsAfter  * 60);
+      if(now >= from && now <= to)
+        {
+         g_newsBlock = true;
+         g_newsAt    = at;
+         g_newsName  = e.name;
+         return;                              // abhi band - bas yahi kaafi
+        }
+      if(at > now && (bestAt == 0 || at < bestAt)) { bestAt = at; bestName = e.name; }
+     }
+   g_newsAt   = bestAt;                       // agli bari news
+   g_newsName = bestName;
+  }
+
 //--- ek qadam kitna bara: gold par aap ka apna, warna ATR se -------
 double StepSize()
   {
@@ -263,6 +316,7 @@ void OnTick()
    double bid     = SymbolInfoDouble(_Symbol, SYMBOL_BID);
 
    g_say = "";
+   RefreshNews();
 
    //--- Q7: basket poori band -------------------------------------
    if(InpAllowCloseAll && totLot > 0 && basket >= InpCloseAllProfit)
@@ -367,6 +421,7 @@ int Direction()
 
 void OpenLot(int dir, string why)
   {
+   if(g_newsBlock) return;                           // L10: news ke waqt koi lot nahi
    if(TimeCurrent() - g_lastOrder < InpMinSecsBetween) return;
    g_lastOrder = TimeCurrent();
    double l = NormLot(InpLot);
@@ -382,6 +437,7 @@ void OpenLot(int dir, string why)
 void Balance(double netLot, double totLot, string why)
   {
    if(!InpAllowFreeze) return;
+   if(g_newsBlock) return;                           // L10
    if(totLot + InpLot > InpMaxTotalLots + 1e-8)      // kul lots ki hadd
      {
       g_say += "KUL lots hadd par (" + DoubleToString(totLot, 2) + ") - ab sirf INTEZAR.\n";
@@ -521,6 +577,19 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
            }
         }
      }
+   if(!InpUseNews)
+      s += "News          : dekha nahi ja raha\n";
+   else if(!g_newsOK)
+      s += "News          : calendar nahi mila\n";
+   else if(g_newsBlock)
+      s += StringFormat("News          : << BAND >> %s (%s)\n",
+                        g_newsName, TimeToString(g_newsAt, TIME_MINUTES));
+   else if(g_newsAt > 0)
+      s += StringFormat("News          : agli %s (%s)\n",
+                        g_newsName, TimeToString(g_newsAt, TIME_DATE | TIME_MINUTES));
+   else
+      s += "News          : aaj koi bari nahi\n";
+
    s += StringFormat("Bachao par    : %.2f     abhi khilaf: %.2f\n",
                      g_defDist, g_worstAgainst);
    s += StringFormat("Qadam         : %.2f     qareeb tareen lot: %s\n",
