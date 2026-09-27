@@ -340,7 +340,7 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
                            ? MathAbs(basket) / (lotOne * perPt) : -1;
          if(needFrozen > 0 && needOpen > 0)
            {
-            s += StringFormat("\nPhase 6 ka hisaab:\n");
+            s += "\nPhase 6 ka hisaab:\n";
             s += StringFormat("  Jami hui kitab  : qeemat %.1f chahiye\n", needFrozen);
             s += StringFormat("  Ek taraf band   : qeemat %.1f chahiye\n", needOpen);
             if(needOpen * InpUnfreezeRatio < needFrozen)
