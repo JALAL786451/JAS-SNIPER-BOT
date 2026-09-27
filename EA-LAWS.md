@@ -61,6 +61,26 @@ aap se poochna hai
 
 ---
 
+## Kaam ka tareeqa (isi par chalna hai)
+
+**File hamesha MT5 ke Navigator se kholein:** `Expert Advisors` -> EA ka naam
+-> right-click -> **`Modify`**. **Kabhi `File -> New` se nayi file na banayein.**
+
+Wajah: 27-28 September ko kai ghante isi mein zaya hue. MetaEditor mein do
+tabs khul gayi thin, dono ka naam `JasBasketEA.mq5` -- ek asal (jo MT5 chalata
+hai), ek meri banwai hui nakal. **F7 wohi file compile karta hai jis par focus
+ho**, is liye woh baar baar galat file compile karta raha aur har dafa
+"0 errors, code generated" bhi likhta raha. Paste hamesha sahi jagah ja raha
+tha; compile galat jagah ho raha tha.
+
+**Pakarne ka tareeqa:** MT5 -> `File` -> `Open Data Folder` -> `MQL5` ->
+`Experts`, aur **Date modified** dekhein. Agar **MQL5 Source File** ki tareekh
+nayi ho magar **MQL5 Program** ki purani -- to compile kisi aur file ka hua
+hai. Sab MetaEditor band karein, `Modify` se dobara kholein, phir F7.
+
+**Har file par build number** (`b18`, `t2`) file ki pehli line par aur panel ki
+pehli line par. Dono ka milna zaroori hai. Isi nishani se ye masla pakra gaya.
+
 ## Testing ke dauran jo pata chala
 
 **Cent aur Standard ek jaise hain.** 0.01 lot gold par $1 ki harkat dono par
@@ -104,5 +124,4 @@ si rok chal rahi hai, taake agli dafa andaza na lagana pare.
 **Close All ka news se koi taluq nahi.** Agar news ke dauran bhi basket +50 ho
 jaye to sab band ho jayega. Aap ne khud ye saaf kar diya.
 
-**Har file par build number** (`b10` waghera) panel ki pehli line mein, taake
-screenshot se pata chale ke kaun si file chal rahi hai.
+
