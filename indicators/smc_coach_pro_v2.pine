@@ -1502,12 +1502,8 @@ if showLive and barstate.islast
     // bhaari" likh deta tha, jo saaf jhoot tha. Ab woh khamoshi se batata hai
     // ke abhi koi khabar nahi.
     _noRange  = (high - low) < syminfo.mintick
-    _strength = _noRange ? "Abhi koi khabar nahi - candle naye si hai"
-                : _posPct >= 70 ? "Kharidaar bhaari"
-                : _posPct <= 30 ? "Bechne wale bhaari" : "Barabar ki jang"
-    _colStr   = _noRange ? color.new(color.gray, 0)
-                : _posPct >= 70 ? color.new(color.green, 0)
-                : _posPct <= 30 ? color.new(color.red, 0) : color.new(color.gray, 0)
+    _strength = _noRange ? "Abhi koi khabar nahi - candle naye si hai" : _posPct >= 70 ? "Kharidaar bhaari" : _posPct <= 30 ? "Bechne wale bhaari" : "Barabar ki jang"
+    _colStr   = _noRange ? color.new(color.gray, 0) : _posPct >= 70 ? color.new(color.green, 0) : _posPct <= 30 ? color.new(color.red, 0) : color.new(color.gray, 0)
 
     table.cell(vTbl, 0, 0, "LIVE CANDLE (" + timeframe.period + ")  —  peesheengoi nahi, sirf abhi ka haal",
          bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
@@ -1516,13 +1512,11 @@ if showLive and barstate.islast
                            "   O " + f_px(open) + "  H " + f_px(high) +
                            "  L " + f_px(low) + "  C " + f_px(close),
          bgcolor=bgPanel, text_color=_colDir, text_size=PFS)
-    table.cell(vTbl, 0, 2, "Candle ki range mein jagah: " +
-                           (_noRange ? "—" : str.tostring(int(math.round(_posPct))) + "%") +
-                           "  —  " + _strength,
+    _jagah = _noRange ? "—" : str.tostring(int(math.round(_posPct))) + "%"
+    table.cell(vTbl, 0, 2, "Candle ki range mein jagah: " + _jagah + "  —  " + _strength,
          bgcolor=bgPanel, text_color=_colStr, text_size=PFS)
-    table.cell(vTbl, 0, 3, "Body kitni bhari: " +
-                           (_noRange ? "—  (range abhi bani hi nahi)"
-                                     : str.tostring(int(math.round(_bodyPct))) + "%  (baqi wick hai)"),
+    _bodyTxt = _noRange ? "—  (range abhi bani hi nahi)" : str.tostring(int(math.round(_bodyPct))) + "%  (baqi wick hai)"
+    table.cell(vTbl, 0, 3, "Body kitni bhari: " + _bodyTxt,
          bgcolor=bgPanel, text_color=color.black, text_size=PFS)
     table.cell(vTbl, 0, 4, "Band hone mein: " + _tLeft + "   —  band hone tak sab badal sakta hai",
          bgcolor=bgPanel, text_color=color.new(color.gray, 0), text_size=PFS)
