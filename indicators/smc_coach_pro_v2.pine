@@ -1503,7 +1503,9 @@ if showLive and barstate.islast
     table.cell(vTbl, 0, 0, "LIVE CANDLE (" + timeframe.period + ")  —  peesheengoi nahi, sirf abhi ka haal",
          bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
     table.cell(vTbl, 0, 1, "Abhi ka rukh: " + (_flat ? "BARABAR" : (_up ? "BUY" : "SELL")) +
-                           "   (open se " + (_fromOpen >= 0 ? "+" : "-") + f_px(math.abs(_fromOpen)) + ")",
+                           "   (open se " + (_fromOpen >= 0 ? "+" : "-") + f_px(math.abs(_fromOpen)) + ")" +
+                           "   O " + f_px(open) + "  H " + f_px(high) +
+                           "  L " + f_px(low) + "  C " + f_px(close),
          bgcolor=bgPanel, text_color=_colDir, text_size=PFS)
     table.cell(vTbl, 0, 2, "Candle ki range mein jagah: " + str.tostring(int(math.round(_posPct))) + "%  —  " + _strength,
          bgcolor=bgPanel, text_color=_colStr, text_size=PFS)
