@@ -65,6 +65,9 @@ is1H = (timeframe.isminutes and timeframe.multiplier == 60) or (str.upper(timefr
 // ============================================================================
 //  INPUTS
 // ============================================================================
+gChart  = "0 · Chart"
+futureBars = input.int(5, "Aage kitni candle tak lines/label banayein (kam = candles nahi sikurtin)", minval=0, maxval=60, group=gChart, tooltip="TradingView us aakhri cheez tak chart ko khenchta hai jo indicator banata hai. Ye number jitna bara, candles utni sikurti hain. 0 = bilkul aage kuch nahi.")
+
 gStruct = "1 · Structure & Zones"
 pivotLR       = input.int(3,  "Pivot L/R (swings)", minval=1, group=gStruct)
 maxZones      = input.int(10, "Keep last N zones", minval=2, maxval=100, group=gStruct)
@@ -976,11 +979,11 @@ if (sigBuyTotal or sigSellTotal) and showRisk
     line.delete(lnT3)
     label.delete(lbPlan)
     _colT  = color.new(color.green, 0)
-    lnE   := line.new(bar_index, _pe,  bar_index + 30, _pe,  color=color.new(color.blue, 0), width=2)
-    lnS   := line.new(bar_index, _psl, bar_index + 30, _psl, color=color.new(color.red, 0),  width=2, style=line.style_dashed)
-    lnT1  := line.new(bar_index, _pt1, bar_index + 30, _pt1, color=_colT, width=1)
-    lnT2  := line.new(bar_index, _pt2, bar_index + 30, _pt2, color=_colT, width=1, style=line.style_dotted)
-    lnT3  := line.new(bar_index, _pt3, bar_index + 30, _pt3, color=_colT, width=1, style=line.style_dotted)
+    lnE   := line.new(bar_index, _pe,  bar_index + futureBars, _pe,  color=color.new(color.blue, 0), width=2)
+    lnS   := line.new(bar_index, _psl, bar_index + futureBars, _psl, color=color.new(color.red, 0),  width=2, style=line.style_dashed)
+    lnT1  := line.new(bar_index, _pt1, bar_index + futureBars, _pt1, color=_colT, width=1)
+    lnT2  := line.new(bar_index, _pt2, bar_index + futureBars, _pt2, color=_colT, width=1, style=line.style_dotted)
+    lnT3  := line.new(bar_index, _pt3, bar_index + futureBars, _pt3, color=_colT, width=1, style=line.style_dotted)
     _units = _pr > 0 ? (acctSize * riskPct / 100.0) / _pr : na
     _txt = (_dir==1 ? "LONG" : "SHORT") + "  Score " + str.tostring(_dir==1 ? scoreBuy : scoreSell) + "/100" +
            "\nEntry " + f_px(_pe) + "   SL " + f_px(_psl) +
@@ -989,7 +992,7 @@ if (sigBuyTotal or sigSellTotal) and showRisk
            "\nTP3 " + f_px(_pt3) + " (" + str.tostring(tp3R,"#.#") + "R)" +
            "\nRisk " + str.tostring(riskPct,"#.##") + "%  ≈ " + str.tostring(_units, "#.####") + " units"
     _colBg = color.new(_dir == 1 ? color.teal : color.purple, 15)
-    lbPlan := label.new(bar_index + 30, _pe, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_colBg, textcolor=color.white, size=size.tiny)
+    lbPlan := label.new(bar_index + futureBars, _pe, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_colBg, textcolor=color.white, size=size.tiny)
 
 // --- open a new virtual trade on signal (only while tracking is on; a trade
 //     opened earlier is still managed above, so nothing can get stranded)
@@ -1011,12 +1014,12 @@ if (sigBuyTotal or sigSellTotal) and tDir == 0 and useTracker
 // keep the plan lines following price to the right while the plan is live
 // (with tracking off there is no position to close, so the last plan stays)
 if showRisk and barstate.islast and not na(lnE) and (tDir != 0 or not useTracker)
-    line.set_x2(lnE,  bar_index + 15)
-    line.set_x2(lnS,  bar_index + 15)
-    line.set_x2(lnT1, bar_index + 15)
-    line.set_x2(lnT2, bar_index + 15)
-    line.set_x2(lnT3, bar_index + 15)
-    label.set_x(lbPlan, bar_index + 15)
+    line.set_x2(lnE,  bar_index + futureBars)
+    line.set_x2(lnS,  bar_index + futureBars)
+    line.set_x2(lnT1, bar_index + futureBars)
+    line.set_x2(lnT2, bar_index + futureBars)
+    line.set_x2(lnT3, bar_index + futureBars)
+    label.set_x(lbPlan, bar_index + futureBars)
 
 // Khuli virtual trade ka BUY/SELL label wahin khara rehta tha jahan trade
 // khuli thi - 27 candle purana label naye signal jaisa lagta tha. Ab woh
@@ -1433,7 +1436,7 @@ var line lnR2 = na
 var line lnS2 = na
 f_pivLine(_old, _y, _col, _w, _on) =>
     line.delete(_old)
-    _on and not na(_y) ? line.new(bar_index - pivBack, _y, bar_index + 10, _y, xloc=xloc.bar_index, color=_col, width=_w) : na
+    _on and not na(_y) ? line.new(bar_index - pivBack, _y, bar_index + futureBars, _y, xloc=xloc.bar_index, color=_col, width=_w) : na
 if barstate.islast
     lnP  := f_pivLine(lnP,  pvP,  color.new(color.gray, 0), 2, showPiv)
     lnR1 := f_pivLine(lnR1, pvR1, color.new(pivColR, 20),   2, showPiv)
@@ -1449,7 +1452,7 @@ var label lbR2 = na
 var label lbS2 = na
 f_pivLbl(_old, _y, _txt, _col, _on) =>
     label.delete(_old)
-    _on ? label.new(bar_index + 3, _y, _txt, xloc=xloc.bar_index, yloc=yloc.price,
+    _on ? label.new(bar_index + math.min(futureBars, 3), _y, _txt, xloc=xloc.bar_index, yloc=yloc.price,
            style=label.style_label_left, color=color.new(color.black, 100),
            textcolor=_col, size=size.small) : na
 if barstate.islast
