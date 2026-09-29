@@ -16,6 +16,7 @@ toward backtesting and demo before live trading.
 | `sniper_backtest.pine` | Old 14/28 SMA crossover. Unrelated to the EAs |
 | `JasBasketEA.mq5` | JAS Basket EA — user ki apni basket method, EA-QAWAID.md ke qawaid par. Dono taraf lots, net aur kul lots ki hadd, equity ka farsh, market band hone se pehle kitab barabar, Close All, aur Q8: faide wali lot sab se BURI lot ke saath jori bana kar band (taake kitab behtar ho, buri nahi). Phase 6 ka hisaab chart par likhta hai magar khud nahi karta jab tak ijazat na ho. Hedging account chahiye. **Abhi tak compile nahi hua** |
 | `JasBasketEA_BTC.mq5` | Wahi basket EA, magar BTC ke liye. Paise wale teen number 100 se taqseem (BTC ki 0.01 lot gold se sau guna kam hilti hai) aur magic number alag. **Haath se mat badlein** - `tools/make_btc.py` ise gold wali file se khud banati hai |
+| `JasDesk.mq5` | JAS Desk — phansi hui kitab ka control panel. **Trade nahi karta.** Buy/sell lots, ausat price, barabar ka price, har raaste ki keemat (sab band / ek taraf band / buri lot / jori), aur stop out kitni door hai. Button default BAND hain; chalu karne par bhi do click mangte hain. Kisi bhi lot ko ginta hai, EA ki ho ya haath ki |
 | `EA-LAWS.md` | EA ke qanoon ki chalti hui list - jo bhi testing mein nikle, yahan likha jata hai. Saath mein kaam ka tareeqa (do tabs wala jaal) |
 | `EA-CHECKLIST.md` | Nayi file lagane ke 23 qadam, tarteeb se. Jo qadam baar baar chhootte hain un par nishan |
 | `indicators/smc_coach_pro_v2.pine` | SMC Coach Pro v2.1 — zones, BOS/CHOCH, risk engine, MTF dashboard |
