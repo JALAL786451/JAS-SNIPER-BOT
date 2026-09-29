@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD d1   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD d2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|  JasDesk.mq5                                                      |
@@ -19,7 +19,7 @@
 #include <Trade\Trade.mqh>
 #include <Trade\PositionInfo.mqh>
 
-#define EA_BUILD "d1"
+#define EA_BUILD "d2"
 
 input group "=== Dikhane ke liye ==="
 input int    InpFont        = 9;        // Likhai ka size
@@ -190,8 +190,12 @@ void Draw()
    s += StringFormat("Balance %s    Equity %s\n", M(bal), M(eq));
    s += StringFormat("Margin  %s    Free %s    Level %.1f%%\n", M(mgn), M(freeM), mlvl);
 
-   double soVal = (double)AccountInfoInteger(ACCOUNT_MARGIN_SO_SO);
-   if(soVal <= 0) soVal = 50.0;
+   // ACCOUNT_MARGIN_SO_SO double hai, integer nahi - AccountInfoDouble se aata hai.
+   // Aur SO_MODE batata hai ke woh percent mein hai ya paise mein.
+   long   soMode = AccountInfoInteger(ACCOUNT_MARGIN_SO_MODE);
+   double soVal  = AccountInfoDouble(ACCOUNT_MARGIN_SO_SO);
+   if(soMode != ACCOUNT_STOPOUT_MODE_PERCENT) soVal = 0.0;
+   if(soVal <= 0.0) soVal = 50.0;
    if(MathAbs(net) < 1e-8)
       s += "Stop out: qeemat se nahi ho sakta (NET 0). Sirf swap khata rahega.\n";
    else if(mgn > 0.0 && perPt > 0.0)
