@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD btc-b18   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD btc-b20   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|  JasBasketEA_BTC.mq5                                                  |
@@ -33,6 +33,7 @@ input double InpEquityFloorPct = 90.0;   // Equity, balance ke is % se neeche ->
 
 //--- 3. Faida (Q7, Q8) --------------------------------------------
 input group "=== 3 - Faida lena ==="
+input double InpCloseAllPerLot = 90.0;   // Close All: kul lot ke har 1.00 par itna faida
 input double InpCloseAllProfit = 0.5;   // GOLD par: 50.0  |  Basket kitne par Close All (naapa hua: darmiyana 54.80)
 input bool   InpUsePairClose   = true;   // Beech mein jori bana kar band karna
 input double InpPairMinProfit  = 0.05;   // GOLD par: 5.0  |  Jori ka kam az kam faida
@@ -61,6 +62,7 @@ input string InpNewsCurrency = "USD";  // Kis mulk ki news (khali = sab)
 
 input group "=== 8 - Bachao aur faide wali lot ==="
 input bool   InpCloseWinners = true;   // Faide wali lot akeli band kar do
+input double InpLegProfitSteps = 2.0;    // Ek lot band: kitne QADAM faide mein (0 = neeche wala number use karo)
 input double InpLegProfit    = 0.14;   // GOLD par: 14.0  |  Ek lot ka faida (naapa hua: ausat 13.98)
 input bool   InpUseDefence   = true;   // Khilaf jane par ulti lot
 input double InpDefenceMult  = 3.5;    // Kitne qadam khilaf jane par (gold: 3.5 x $1 = $3.50)
@@ -84,7 +86,7 @@ input int    InpMinSecsBetween = 3;      // Do orderon ke darmiyan kam az kam se
 input int    InpSlippage       = 50;
 input ulong  InpMagic          = 20260929;   // GOLD par: 20260928
 
-#define EA_BUILD "btc-b18"          // har nayi file par ye number barhta hai
+#define EA_BUILD "btc-b20"          // har nayi file par ye number barhta hai
 
 CTrade        trade;
 CPositionInfo pos;
@@ -94,7 +96,7 @@ datetime g_lastBar = 0, g_lastAction = 0;
 datetime g_lastOrder = 0;
 string   g_say = "";
 double   g_step = 0, g_near = -1;
-double   g_defDist = 0, g_worstAgainst = 0;
+double   g_defDist = 0, g_worstAgainst = 0, g_closeTgt = 0;
 bool     g_newsBlock = false, g_newsOK = false;
 datetime g_newsAt = 0, g_newsLast = 0;
 string   g_newsName = "";
@@ -439,10 +441,13 @@ void OnTick()
      }
 
    //--- Q7: basket poori band -------------------------------------
-   if(InpAllowCloseAll && totLot > 0 && basket >= InpCloseAllProfit)
+   double closeTgt = (InpCloseAllPerLot > 0.0) ? InpCloseAllPerLot * totLot
+                                               : InpCloseAllProfit;
+   g_closeTgt = closeTgt;
+   if(InpAllowCloseAll && totLot > 0 && basket >= closeTgt)
      {
       CloseAll("Q7: basket " + DoubleToString(basket, 2) + " >= " +
-               DoubleToString(InpCloseAllProfit, 2));
+               DoubleToString(closeTgt, 2));
       return;
      }
 
@@ -597,7 +602,13 @@ bool CloseWinners()
       if(!pos.SelectByIndex(i))          continue;
       if(pos.Symbol() != _Symbol)        continue;
       if(pos.Magic()  != (long)InpMagic) continue;
-      if(pos.Profit() + pos.Swap() < InpLegProfit) continue;
+      double need = InpLegProfit;
+      if(InpLegProfitSteps > 0.0)
+        {
+         double st = StepSize(), pp = MoneyPerPoint(1.0);
+         if(st > 0.0 && pp > 0.0) need = InpLegProfitSteps * st * pos.Volume() * pp;
+        }
+      if(pos.Profit() + pos.Swap() < need) continue;
       g_lastOrder = TimeCurrent();
       Print("Faide wali lot band: ", DoubleToString(pos.Profit() + pos.Swap(), 2));
       trade.PositionClose(pos.Ticket());
@@ -668,7 +679,7 @@ void Report(int nBuy, int nSell, double lotBuy, double lotSell, double netLot,
    s += StringFormat("NET  %+.2f  (hadd %.2f)    KUL %.2f (hadd %.2f)\n",
                      netLot, InpMaxNetLots, totLot, InpMaxTotalLots);
    s += StringFormat("Kitab ka haal : %.2f     Close All par: %.2f\n",
-                     basket, InpCloseAllProfit);
+                     basket, g_closeTgt);
    s += StringFormat("Balance       : %.2f\n", AccountInfoDouble(ACCOUNT_BALANCE));
    s += StringFormat("Equity        : %.2f     hadd: %.2f%s\n",
                      equity, floorEq, (equity <= floorEq ? "  << RUKA HUA" : ""));
