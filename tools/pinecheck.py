@@ -151,8 +151,14 @@ def main(path):
                 problems.append(f'line {i}: closing bracket with nothing open')
                 depth = 0
         if stripped:
+            # A word operator only dangles when it IS the last word - not when
+            # it merely ends an identifier ("anchor" ends in "or", "showBand"
+            # ends in "and"). Symbols need no such care.
             dangling = (not stripped.endswith('=>')
-                        and any(stripped.endswith(t) for t in DANGLING))
+                        and (any(stripped.endswith(t) for t in DANGLING
+                                 if not t.isalpha())
+                             or bool(re.search(r'(?<![A-Za-z0-9_])(and|or|not)$',
+                                               stripped))))
     if depth != 0:
         problems.append(f'end of file: {depth} bracket(s) never closed')
 
