@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD d2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD d3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|  JasDesk.mq5                                                      |
@@ -19,7 +19,7 @@
 #include <Trade\Trade.mqh>
 #include <Trade\PositionInfo.mqh>
 
-#define EA_BUILD "d2"
+#define EA_BUILD "d3"
 
 input group "=== Dikhane ke liye ==="
 input int    InpFont        = 9;        // Likhai ka size
@@ -57,6 +57,10 @@ int OnInit()
    trade.SetTypeFillingBySymbol(_Symbol);
    if(InpAllowButtons) MakeButtons();
    EventSetTimer(1);          // market band ho to bhi panel chalta rahe
+   // Toolbox -> Experts tab mein ye line aani chahiye. Agar panel nazar na
+   // aaye magar ye line ho, to EA zinda hai aur masla sirf dikhne ka hai.
+   PrintFormat("JAS DESK %s chal raha hai | chart ka symbol %s | is par %d lot | poore account par %d",
+               EA_BUILD, _Symbol, CountOn(_Symbol), PositionsTotal());
    Draw();
    return(INIT_SUCCEEDED);
   }
@@ -66,6 +70,33 @@ void OnDeinit(const int reason)
    EventKillTimer();
    Comment("");
    ObjectsDeleteAll(0, "JD_");
+  }
+
+//--- kisi bhi symbol par kitni lots khuli hain
+int CountOn(string sym)
+  {
+   int n = 0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(!pos.SelectByIndex(i)) continue;
+      if(sym != "" && pos.Symbol() != sym) continue;
+      n++;
+     }
+   return(n);
+  }
+
+//--- doosre symbols par kya para hai, naam ke saath
+string OtherSymbols()
+  {
+   string s = "";
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(!pos.SelectByIndex(i))   continue;
+      if(pos.Symbol() == _Symbol) continue;
+      if(StringFind(s, pos.Symbol()) < 0)
+         s += (s == "" ? "" : ", ") + pos.Symbol();
+     }
+   return(s);
   }
 
 //+------------------------------------------------------------------+
@@ -143,7 +174,17 @@ void Draw()
 
    //--- BARABAR KA PRICE (break even) ------------------------------
    if(tot <= 0.0)
-      s += "Kitab khali hai.\n";
+     {
+      int allN = PositionsTotal();
+      if(allN == 0)
+         s += "Is account par koi lot khuli nahi hai.\n";
+      else
+        {
+         s += StringFormat("Is chart (%s) par koi lot nahi.\n", _Symbol);
+         s += StringFormat("MAGAR account par %d lot khuli hain: %s\n", allN, OtherSymbols());
+         s += "   >> Us symbol ka chart kholein aur wahan ye EA lagayein <<\n";
+        }
+     }
    else if(MathAbs(net) < 1e-8)
      {
       s += "BARABAR KA PRICE: koi nahi - NET 0 hai.\n";
