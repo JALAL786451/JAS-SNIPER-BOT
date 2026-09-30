@@ -1,9 +1,19 @@
 //@version=6
 //=====================================================================
-//  Analogue Matcher v2  |  JAS      BUILD a2
+//  Analogue Matcher v2  |  JAS      BUILD a3
 //  Asal: "Analogue Matcher | GainzAlgo" (user ne diya)
 //  Qaida wohi: aaj ki shakal jaisi purani shakal dhoondo, aur us ke
 //  baad jo hua tha woh aage dikha do.
+//
+//  a2 -> a3 mein kya badla (Daily gold chart par dekh kar):
+//   * BUNIYADI KAMI THEEK KI: a2 ne gold Daily par "10/10 = 100% upar"
+//     likha aur sab se bura bhi +7.68%. Yeh hunar nahi tha - gold us
+//     poore arse mein upar hi ja raha tha, is liye HAR misaal ke baad
+//     price upar tha. Ab "Aam taur par" wali row batati hai ke SAB
+//     misaalon mein kitne upar gaye, aur "Fark" batata hai ke match us
+//     se kitna aage hai. Fark chhota = koi khabar nahi.
+//   * Jab ek bhi qareebi match na mile to Faisla saaf keh deta hai.
+//   * "Sab se qareeb" ka farq bhi dikhta hai, taake hadd theek set ho.
 //
 //  a1 -> a2 mein kya badla (chart par dekh kar):
 //   * Match ab POORI SHAKAL se hota hai, sirf jhukaav se nahi.
@@ -29,7 +39,7 @@
 //  YAAD RAHE: yeh peshangoi nahi. Purani misaalon ki ginti hai.
 //  Strategy Tester is par nahi chalta - naapa hua nahi hai.
 //=====================================================================
-indicator("Analogue Matcher v2 | JAS a2", overlay = true, max_lines_count = 500, max_boxes_count = 500, max_labels_count = 50, max_bars_back = 5000)
+indicator("Analogue Matcher v2 | JAS a3", overlay = true, max_lines_count = 500, max_boxes_count = 500, max_labels_count = 50, max_bars_back = 5000)
 
 // ---------------------- Settings ----------------------
 int   win      = input.int(50,    "Shakal ki lambai (candles)",       minval = 10, maxval = 200,  group = "Dhoond")
@@ -72,7 +82,7 @@ wipe() =>
             label.delete(lb)
         array.clear(gLabels)
 
-var table tbl = table.new(position.top_right, 2, 10, bgcolor = color.new(#101418, 5), border_width = 1, border_color = color.new(color.gray, 50), frame_width = 1, frame_color = color.new(color.gray, 50))
+var table tbl = table.new(position.top_right, 2, 11, bgcolor = color.new(#101418, 5), border_width = 1, border_color = color.new(color.gray, 50), frame_width = 1, frame_color = color.new(color.gray, 50))
 
 row(int r, string a, string b, color c) =>
     table.cell(tbl, 0, r, a, text_color = color.new(#c8d0d8, 0), text_size = size.normal, text_halign = text.align_left)
@@ -97,17 +107,20 @@ if barstate.islast
     //    ka "aage kya hua" abhi mukammal nahi hua.
     int[]   idxArr  = array.new_int()
     float[] disArr  = array.new_float()
+    float[] retArr  = array.new_float()
 
     if sC > 0.0 and lim >= win
         for i = win to lim
             float mH = mAvg[i]
             float sH = mSd[i]
-            if sH > 0.0
+            float bs = close[i]
+            if sH > 0.0 and bs > 0.0
                 float acc = 0.0
                 for j = 0 to win - 1
                     acc += math.abs(array.get(zNow, j) - (close[i + j] - mH) / sH)
                 array.push(idxArr, i)
                 array.push(disArr, acc / win)
+                array.push(retArr, close[i - win] / bs - 1.0)
 
     int nAll = array.size(idxArr)
     int kUse = math.min(kWant, nAll)
@@ -123,7 +136,12 @@ if barstate.islast
     float worstRet = 0.0
     float sumDist  = 0.0
     float kDist    = 0.0
+    float minDist  = 0.0
     int   bestIdx  = na
+    // Buniyad: SAB misaalon ka nateeja. Agar bazaar us arse mein bas
+    // upar ja raha tha to yeh 90% hoga - aur match ka 100% bekaar.
+    int   baseUp   = 0
+    float baseRet  = 0.0
 
     if kUse > 0
         int[] ord = array.sort_indices(disArr, order.ascending)
@@ -132,6 +150,11 @@ if barstate.islast
         for m = 0 to nAll - 1
             if array.get(disArr, m) <= goodDist
                 nGood += 1
+            float rr = array.get(retArr, m)
+            baseRet += rr
+            baseUp  += rr > 0.0 ? 1 : 0
+        baseRet /= nAll
+        minDist := array.get(disArr, array.get(ord, 0))
         for m = 0 to kUse - 1
             int   i    = array.get(idxArr, array.get(ord, m))
             float base = close[i]
@@ -187,27 +210,39 @@ if barstate.islast
 
     // 5. Table
     if showTbl
-        table.clear(tbl, 0, 0, 1, 9)
+        table.clear(tbl, 0, 0, 1, 10)
         table.cell(tbl, 0, 0, "Analogue Matcher v2", bgcolor = color.new(#2a3138, 0), text_color = color.white, text_size = size.normal, text_halign = text.align_left)
-        table.cell(tbl, 1, 0, "a2", bgcolor = color.new(#2a3138, 0), text_color = color.white, text_size = size.normal, text_halign = text.align_right)
+        table.cell(tbl, 1, 0, "a3", bgcolor = color.new(#2a3138, 0), text_color = color.white, text_size = size.normal, text_halign = text.align_right)
         if kUse == 0
             row(1, "Match", "abhi data kam hai", color.orange)
         else
-            float upPct = up * 100.0 / kUse
-            color upCol = up * 2 > kUse ? color.lime : (up * 2 < kUse ? color.red : color.orange)
-            // Bharosa: shakal saaf ho, match qareeb ho, aur ginti ek taraf ho.
-            bool  weakShape = r2now < 0.30
-            bool  weakMatch = kDist > goodDist
-            bool  weakVote  = math.abs(upPct - 50.0) < 20.0
-            string verdict = weakShape or weakMatch or weakVote ? "KAMZOR - intezar" : (up * 2 > kUse ? "UPAR ki taraf" : "NEECHE ki taraf")
-            color  vCol    = weakShape or weakMatch or weakVote ? color.orange : upCol
+            float upPct   = up * 100.0 / kUse
+            float basePct = baseUp * 100.0 / nAll
+            float edgePct = upPct - basePct
+            float edgeRet = avgRet - baseRet
+            color upCol   = up * 2 > kUse ? color.lime : (up * 2 < kUse ? color.red : color.orange)
+            color edgeCol = math.abs(edgePct) < 15.0 ? color.orange : (edgePct > 0.0 ? color.lime : color.red)
+
+            // Char shartein. Koi ek bhi tooti to Faisla KAMZOR.
+            bool weakShape = r2now < 0.30            // shakal hi saaf nahi
+            bool weakMatch = kDist > goodDist        // match door hain
+            bool weakVote  = math.abs(upPct - 50.0) < 20.0   // ginti barabar
+            bool weakEdge  = math.abs(edgePct) < 15.0        // buniyad se aage nahi
+            bool weak      = weakShape or weakMatch or weakVote or weakEdge
+
+            string why = nGood == 0 ? "is shakal jaisi misaal nahi mili" : weakEdge ? "buniyad se aage nahi" : weakShape ? "shakal saaf nahi" : weakMatch ? "match door hain" : "ginti barabar hai"
+            string verdict = weak ? "KAMZOR - " + why : (up * 2 > kUse ? "UPAR ki taraf" : "NEECHE ki taraf")
+            color  vCol    = weak ? color.orange : upCol
 
             row(1, "Faisla",           verdict, vCol)
-            row(2, "Upar gaye",        str.tostring(up) + "/" + str.tostring(kUse) + "  = " + str.tostring(upPct, "#") + "%", upCol)
-            row(3, "Ausat chaal",      str.tostring(avgRet * 100.0, "#.##") + "%", upCol)
-            row(4, "Sab se acha tha",  str.tostring(bestRet * 100.0, "#.##") + "%", color.lime)
-            row(5, "Sab se bura tha",  str.tostring(worstRet * 100.0, "#.##") + "%", color.red)
-            row(6, "Match ka farq",    str.tostring(sumDist / kUse, "#.###") + "  (hadd " + str.tostring(goodDist, "#.##") + ")", weakMatch ? color.orange : color.white)
-            row(7, "Qareebi match",    str.tostring(nGood) + " / " + str.tostring(nAll) + " dekhe", color.new(#c8d0d8, 0))
-            row(8, "Shakal ki safai",  str.tostring(r2now, "#.##") + (weakShape ? "  (kam)" : "  (theek)"), weakShape ? color.orange : color.white)
-            row(9, "Yeh chance NAHI",  "sirf purani ginti", color.new(color.orange, 20))
+            row(2, "Match ke K",       str.tostring(up) + "/" + str.tostring(kUse) + " upar  = " + str.tostring(upPct, "#") + "%", upCol)
+            row(3, "Aam taur par",     str.tostring(baseUp) + "/" + str.tostring(nAll) + " upar  = " + str.tostring(basePct, "#") + "%", color.new(#c8d0d8, 0))
+            string sgnP = edgePct >= 0.0 ? "+" : ""
+            string sgnR = edgeRet >= 0.0 ? "+" : ""
+            row(4, "FARK (yehi asal)", sgnP + str.tostring(edgePct, "#") + "%  chaal " + sgnR + str.tostring(edgeRet * 100.0, "#.##") + "%", edgeCol)
+            row(5, "Ausat chaal",      str.tostring(avgRet * 100.0, "#.##") + "%   (aam " + str.tostring(baseRet * 100.0, "#.##") + "%)", upCol)
+            row(6, "Acha / Bura tha",  str.tostring(bestRet * 100.0, "#.#") + "%  /  " + str.tostring(worstRet * 100.0, "#.#") + "%", color.new(#c8d0d8, 0))
+            row(7, "Match ka farq",    str.tostring(minDist, "#.##") + " se " + str.tostring(kDist, "#.##") + "   (hadd " + str.tostring(goodDist, "#.##") + ")", weakMatch ? color.orange : color.white)
+            row(8, "Qareebi match",    str.tostring(nGood) + " / " + str.tostring(nAll) + " dekhe", nGood == 0 ? color.orange : color.white)
+            row(9, "Shakal ki safai",  str.tostring(r2now, "#.##") + (weakShape ? "  (kam)" : "  (theek)"), weakShape ? color.orange : color.white)
+            row(10,"Yeh chance NAHI",  "sirf purani ginti", color.new(color.orange, 20))
