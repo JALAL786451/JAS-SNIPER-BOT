@@ -128,3 +128,9 @@ jaye to sab band ho jayega. Aap ne khud ye saaf kar diya.
 MetaEditor mein error deta hai ("implicit conversion from 'unknown' to
 'string'"). Ye ghalti do dafa hui: 27 Sep `JasBasketEA` mein, 1 Oct
 `JasDeskView` v4 mein. Jahan koi number nahi, wahan seedha `s += "..."`.
+
+**Exness MT5 hedge account par Close By chalta hai.** 1 Oct demo par
+`JasJoriClose` ne 1.50 BUY ko 150 SELL ke saath 150/150 Close By kiya. Andaza
+-80.82, balance ka asal farq -81.19 - bazaar par band karne (-116.29) se
+taqreeban spread jitna (0.24 x 150 = 36) behtar. 150 Close By mein ~30 second
+lage (200 ms ka waqfa har ek ke beech).
