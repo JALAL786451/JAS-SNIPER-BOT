@@ -20,6 +20,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 - **`JasJoriClose.mq5` script s1** — 1.50 SELL (#1879567169 @ 4157.057) ko 64 BUY (1.50 lot, ausat 4153.40) ke saath CLOSE BY. Panel ka andaza: +512.80, NET 0 -> 0, lots 4.10 -> 1.10, bachi kitab 47 position -3,282.60. User ne B (script) chuna. DEMO TEST PASS (472540009, Exness-MT5Trial16, 1 Oct): pehli dafa nateeja -150 par khud ruka (taala theek), phir InpMinResult -200 par 150/150 Close By, andaza -80.82, asal balance farq -81.19. **Exness Close By deta hai.**
   - **LIVE HO GAYA (1 Oct ~5:35 PM PKT):** 64/64 Close By, balance 45,873.40 -> 46,424.10 (**+550.70**, andaza 548.37). 1.50 SELL kitab se bahar. Bachi kitab: **47 position, 0.55 BUY / 0.55 SELL, NET 0, P/L -3,284.50**, sab nuqsan mein. Agli bari lot SELL 0.11 @ 4155.416 - us ke neeche koi BUY nahi, jori manfi hogi (script khud rok dega). Phase 6 (ek taraf band) ka faisla user ka, abhi nahi
 
+- **Agla mauzu (1 Oct shaam, user thak gaya tha):** user apni **BUY lots pehle khatam karna chahta hai**, SELL se pehle ("sell ka ek end hai, buy ka koi end nahi"). "SELL upar / BUY neeche le jao" chakkar (0.10 lot, $10 hadd) samjhaya magar user ne kaha samajh nahi aaya - **naqsha manzoor NAHI hua, file mat banana**. Agli dafa taaza zehen se, NFP (Jumma 2 Oct 5:30 PM PKT) ke baad, asaan misaal se. Bachi kitab: 38 BUY 0.55 (0.01x31, 0.02x3, 0.03x1, 0.05x3) / 9 SELL 0.55 (0.01x4, 0.10x4, 0.11x1)
+
 ## User ke faisle (in par dobara sawal na poochein)
 
 - Cut ka maqsad: **buri lot ko faide wali se dhaanp kar nikalna**
