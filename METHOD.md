@@ -833,3 +833,16 @@ month's profit *is* this behaviour. What this cannot prove is the counterfactual
 whether holding those legs would have earned more, because the statement has no
 tick prices between events. What it does establish is that the practice is not
 bleeding the account, which was the open question.
+
+## 1 October 2026 — how he used to pair-close, and what replaced it
+
+In his words: he used **two phones logged into the same account**, selected a
+sell on one and a buy on the other, and pressed close on both together. What
+he could never work out was **which position should be paired with which**.
+
+That manual way pays the spread on both legs, and the two clicks never land at
+exactly the same instant, so for a moment the book is not frozen. MT5's
+**Close By** does the same pairing in one operation with no spread and no gap,
+and `JasDeskView` (BARI LOT KI JORI) now does the which-with-which arithmetic.
+`JasJoriClose.mq5` runs the whole pairing after one confirmation. Tested on demo
+the same day: 150/150 Close By, result within 37 cents of the estimate.
