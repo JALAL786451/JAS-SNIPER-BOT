@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v3.1                                  |
+//|  JAS DESK VIEW   -   build v4                                    |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v3.1"
+#define EA_BUILD "v4"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -41,7 +41,14 @@ input color InpColBE       = clrGold;         // Barabar ke price ka rang
 input color InpColWorst    = clrMagenta;      // Sab se buri lot ka rang
 
 input group "=== Nikalne ka plan ==="
-input bool InpShowPlan = true;    // Jori bana kar nikalne ka plan dikhao
+input bool   InpShowPlan    = true;   // Jori bana kar nikalne ka plan dikhao
+input double InpNetWarn     = 0.20;   // Band karne ke baad NET is se zyada ho to chetawani
+
+input group "=== Bari lot ki jori ==="
+input bool   InpShowBigPair = true;          // Sab se bari lot ki LOT-BARABAR jori dikhao
+input int    InpPairListMax = 15;            // Jori ki zyada se zyada kitni lots list mein
+input color  InpColBig      = clrOrange;     // Bari lot ki lakeer ka rang
+input color  InpColPair     = clrLime;       // Jori wali lots ki lakeer ka rang
 
 
 //--- poori kitab ka naqsha
@@ -288,6 +295,131 @@ int Collect(ulong &tk[], int &ty[], double &vol[], double &px[], double &pl[])
   }
 
 //+------------------------------------------------------------------+
+//|  BARI LOT KI JORI                                                 |
+//|  Sab se bari lot (barabar ho to sab se buri) ke saath ULTI taraf  |
+//|  ki itni lots chuno ke lot BARABAR ho jayein - kitab jami rahe.   |
+//|  Bari SELL ke liye pehle woh BUY jo us se NEECHE khuli (sab se    |
+//|  sasti pehle), bari BUY ke liye woh SELL jo us se UPAR khuli.     |
+//|  Lot barabar hon to jori ka nateeja qeemat se nahi badalta.       |
+//|  Wapas: chuni hui lots ki ginti. sel[] mein un ke index.          |
+//+------------------------------------------------------------------+
+int PickBigPair(const int &ty[], const double &vol[], const double &px[], const double &pl[],
+                int c, int &big, int &sel[], int &nGood, double &volGood,
+                double &target, double &matched)
+  {
+   big = -1; nGood = 0; volGood = 0.0; target = 0.0; matched = 0.0;
+   ArrayResize(sel, 0);
+   for(int i = 0; i < c; i++)
+      if(big < 0 || vol[i] > vol[big] + 1e-8
+         || (MathAbs(vol[i] - vol[big]) < 1e-8 && pl[i] < pl[big]))
+         big = i;
+   if(big < 0) return(0);
+
+   bool bigBuy = (ty[big] == POSITION_TYPE_BUY);
+   int  cand[]; ArrayResize(cand, c);
+   int  nc = 0;
+   for(int i = 0; i < c; i++)
+     {
+      if(i == big || ty[i] == ty[big]) continue;
+      cand[nc] = i; nc++;
+      bool good = bigBuy ? (px[i] > px[big]) : (px[i] < px[big]);
+      if(good) { nGood++; volGood += vol[i]; }
+     }
+   // behtar price pehle: bari SELL -> sasti BUY pehle, bari BUY -> mehngi SELL pehle
+   for(int a = 0; a < nc - 1; a++)
+      for(int d = a + 1; d < nc; d++)
+        {
+         bool swap = bigBuy ? (px[cand[d]] > px[cand[a]]) : (px[cand[d]] < px[cand[a]]);
+         if(swap) { int t = cand[a]; cand[a] = cand[d]; cand[d] = t; }
+        }
+
+   double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+   if(step <= 0.0) step = 0.01;
+   long want = (long)MathRound(vol[big] / step);
+   long got  = 0;
+   int  n    = 0;
+   ArrayResize(sel, nc);
+   for(int k = 0; k < nc && got < want; k++)
+     {
+      long u = (long)MathRound(vol[cand[k]] / step);
+      if(got + u > want) continue;      // lot se aage nikal jati - chhor do
+      sel[n] = cand[k]; n++;
+      got += u;
+     }
+   ArrayResize(sel, n);
+   target  = vol[big];
+   matched = got * step;
+   return(n);
+  }
+
+string BigPairText(double net, double tot, double basket)
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+   if(c <= 0) return("");
+
+   int    big, nGood;
+   int    sel[];
+   double volGood, target, matched;
+   int n = PickBigPair(ty, vol, px, pl, c, big, sel, nGood, volGood, target, matched);
+   if(big < 0) return("");
+
+   bool   bigBuy = (ty[big] == POSITION_TYPE_BUY);
+   string other  = bigBuy ? "SELL" : "BUY";
+   string where  = bigBuy ? "UPAR" : "NEECHE";
+
+   string s = "--- BARI LOT KI JORI (lot barabar - kitab jami rahegi) ---\n";
+   s += StringFormat("Bari lot : #%I64u %s %.2f @ %s   %s\n",
+                     tk[big], (bigBuy ? "BUY " : "SELL"), vol[big], Px(px[big]), M(pl[big]));
+   s += StringFormat("Is se %s khuli %s: %d position, %.2f lot\n",
+                     where, other, nGood, volGood);
+   if(n <= 0)
+     {
+      s += "Ulti taraf koi lot nahi jo jori bana sake.\n\n";
+      return(s);
+     }
+
+   double sumPl = pl[big], wPx = 0.0, dirSum = (bigBuy ? vol[big] : -vol[big]);
+   int    bad   = 0;
+   s += StringFormat("Chuni gayi (behtar price pehle, %.2f lot tak):\n", target);
+   for(int k = 0; k < n; k++)
+     {
+      int  i    = sel[k];
+      bool good = bigBuy ? (px[i] > px[big]) : (px[i] < px[big]);
+      if(!good) bad++;
+      sumPl  += pl[i];
+      wPx    += px[i] * vol[i];
+      dirSum += (ty[i] == POSITION_TYPE_BUY ? vol[i] : -vol[i]);
+      if(k < InpPairListMax)
+         s += StringFormat("   #%I64u %s %.2f @ %s  %10s%s\n",
+                           tk[i], other, vol[i], Px(px[i]), M(pl[i]),
+                           good ? "" : "   << " + (bigBuy ? "NEECHE" : "UPAR") + " wali");
+     }
+   if(n > InpPairListMax)
+      s += StringFormat("   ... aur %d lots (chart par hari lakeerein)\n", n - InpPairListMax);
+
+   s += StringFormat("Jori: %s %.2f + %s %.2f (%d position), ausat %s\n",
+                     (bigBuy ? "BUY" : "SELL"), vol[big], other, matched, n,
+                     Px(matched > 0 ? wPx / matched : 0.0));
+   s += StringFormat("  NATEEJA  : %s\n", M(sumPl));
+
+   if(MathAbs(matched - target) < 1e-8)
+      s += "  Lot barabar - ye nateeja qeemat se nahi badalta (sirf spread).\n";
+   else
+      s += StringFormat("  !! Poori jori nahi bani: %.2f lot kam. Baqi lot qeemat ke saath chalegi.\n",
+                        target - matched);
+   if(bad > 0)
+      s += StringFormat("  !! %d lots %s wali hain - %s mein khuli lots kaafi nahi. Ye jori ko nuqsan deti hain.\n",
+                        bad, (bigBuy ? "NEECHE" : "UPAR"), where);
+
+   double netAfter = net - dirSum;
+   s += StringFormat("  Band karne ke baad: NET %+.2f -> %+.2f,  kul lots %.2f -> %.2f\n",
+                     net, netAfter, tot, tot - vol[big] - matched);
+   s += StringFormat("  Bachi kitab: %d position, P/L %s\n\n", c - n - 1, M(basket - sumPl));
+   return(s);
+  }
+
+//+------------------------------------------------------------------+
 //|  CHART PAR LAKEEREIN                                              |
 //+------------------------------------------------------------------+
 void HLine(string name, double price, color col, int width, int style, string text)
@@ -303,6 +435,30 @@ void HLine(string name, double price, color col, int width, int style, string te
    ObjectSetInteger(0, n, OBJPROP_HIDDEN, true);
    ObjectSetString (0, n, OBJPROP_TEXT, text);
    ObjectSetString (0, n, OBJPROP_TOOLTIP, text);
+  }
+
+void PairLines()
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+   int    big, nGood;
+   int    sel[];
+   double volGood, target, matched;
+   int n = PickBigPair(ty, vol, px, pl, c, big, sel, nGood, volGood, target, matched);
+   if(big < 0 || n <= 0) return;
+   HLine("BIG", px[big], InpColBig, 3, STYLE_SOLID,
+         "BARI LOT " + (ty[big] == POSITION_TYPE_BUY ? "BUY " : "SELL ")
+         + DoubleToString(vol[big], 2) + " @ " + Px(px[big]));
+   ObjectSetInteger(0, "JDV_BIG", OBJPROP_BACK, false);
+   for(int k = 0; k < n; k++)
+     {
+      int i = sel[k];
+      string nm = "PR" + IntegerToString((long)tk[i]);
+      HLine(nm, px[i], InpColPair, 2, STYLE_SOLID,
+            "JORI: " + (ty[i] == POSITION_TYPE_BUY ? "BUY " : "SELL ")
+            + DoubleToString(vol[i], 2) + " @ " + Px(px[i]));
+      ObjectSetInteger(0, "JDV_" + nm, OBJPROP_BACK, false);
+     }
   }
 
 void DrawLines(Book &b, double net)
@@ -352,6 +508,23 @@ void DrawLines(Book &b, double net)
                + " @ " + Px(px[i]) + "   " + M(pl[i]));
         }
      }
+
+   if(InpShowBigPair) PairLines();
+  }
+
+//--- band karne ke baad NET kahan jayega. PLAN A/B paise se jori banate
+//--- hain, lot se nahi - is liye kitab jami na rahe to saaf likh do.
+string NetAfterLine(double before, double after)
+  {
+   string s = StringFormat("  NET baad mein : %+.2f -> %+.2f", before, after);
+   if(MathAbs(after) > InpNetWarn + 1e-8 && MathAbs(after) > MathAbs(before) + 1e-8)
+     {
+      double perPt = MoneyPerPoint();
+      s += StringFormat("\n  !! KHATRA: kitab JAMI NAHI rahegi - har 1.0 qeemat par %s %s",
+                        M(MathAbs(after) * perPt), g_ccy);
+      s += (after > 0 ? " (neeche gaye to nuqsan)" : " (upar gaye to nuqsan)");
+     }
+   return(s + "\n");
   }
 
 //+------------------------------------------------------------------+
@@ -360,7 +533,7 @@ void DrawLines(Book &b, double net)
 //|  dhaanp kar nikalo. Buri lot kitab se chali jaye, nateeja sifar   |
 //|  ya thora plus rahe, aur kul lots kam ho jayein.                  |
 //+------------------------------------------------------------------+
-string PlanText(Book &b, double tot, double basket)
+string PlanText(Book &b, double net, double tot, double basket)
   {
    ulong tk[]; int ty[]; double vol[], px[], pl[];
    int c = Collect(tk, ty, vol, px, pl);
@@ -398,8 +571,12 @@ string PlanText(Book &b, double tot, double basket)
    double need  = -pl[bad];
    double got   = 0.0, cutVol = vol[bad];
    int    used  = 0;
+   double dirA  = (ty[bad] == POSITION_TYPE_BUY ? vol[bad] : -vol[bad]);
    for(int i = 0; i < nw && got < need; i++)
-     { got += pl[wi[i]]; cutVol += vol[wi[i]]; used++; }
+     {
+      got += pl[wi[i]]; cutVol += vol[wi[i]]; used++;
+      dirA += (ty[wi[i]] == POSITION_TYPE_BUY ? vol[wi[i]] : -vol[wi[i]]);
+     }
 
    s += StringFormat("PLAN A - sirf sab se buri lot nikalein\n");
    s += StringFormat("  Buri lot : #%I64u %s %.2f   %s\n",
@@ -416,18 +593,21 @@ string PlanText(Book &b, double tot, double basket)
       s += StringFormat("  Iske saath %d faide wali lots band karein (+%s)\n", used, M(got));
       s += StringFormat("  NATEEJA  : %s        (sifar ke qareeb = maqsad poora)\n", M(got + pl[bad]));
       s += StringFormat("  Nikal jayengi : %d position, %.2f lot\n", used + 1, cutVol);
-      s += StringFormat("  Bachegi       : %d position, %.2f lot, P/L %s\n\n",
+      s += StringFormat("  Bachegi       : %d position, %.2f lot, P/L %s\n",
                         c - used - 1, tot - cutVol, M(basket - got - pl[bad]));
+      s += NetAfterLine(net, net - dirA) + "\n";
      }
 
    //--- PLAN B: jitna faida maujood hai, utni buri lots -------------
    double pool = allWin, eaten = 0.0, cutVolB = 0.0;
    int    nBad = 0;
+   double dirB = 0.0;
    for(int i = 0; i < nl; i++)
      {
       if(eaten + (-pl[li[i]]) > pool) break;
       eaten += -pl[li[i]];
       cutVolB += vol[li[i]];
+      dirB += (ty[li[i]] == POSITION_TYPE_BUY ? vol[li[i]] : -vol[li[i]]);
       nBad++;
      }
    s += StringFormat("PLAN B - jitna faida maujood hai, utni buri lots nikalein\n");
@@ -436,12 +616,18 @@ string PlanText(Book &b, double tot, double basket)
       s += "  Sab se buri lot bhi poore faide se bari hai - PLAN A dekhein.\n\n";
    else
      {
-      double volAll = cutVolB; for(int i = 0; i < nw; i++) volAll += vol[wi[i]];
+      double volAll = cutVolB;
+      for(int i = 0; i < nw; i++)
+        {
+         volAll += vol[wi[i]];
+         dirB   += (ty[wi[i]] == POSITION_TYPE_BUY ? vol[wi[i]] : -vol[wi[i]]);
+        }
       s += StringFormat("  Is se %d sab se buri lots dhaank sakte hain (%s)\n", nBad, M(-eaten));
       s += StringFormat("  NATEEJA  : %s\n", M(allWin - eaten));
       s += StringFormat("  Nikal jayengi : %d position, %.2f lot\n", nBad + nw, volAll);
-      s += StringFormat("  Bachegi       : %d position, %.2f lot, P/L %s\n\n",
+      s += StringFormat("  Bachegi       : %d position, %.2f lot, P/L %s\n",
                         c - nBad - nw, tot - volAll, M(basket - (allWin - eaten)));
+      s += NetAfterLine(net, net - dirB) + "\n";
      }
    return(s);
   }
@@ -546,7 +732,8 @@ void Draw()
      }
 
    //--- D2) NIKALNE KA PLAN -------------------------------------------
-   if(InpShowPlan) s += PlanText(b, tot, basket);
+   if(InpShowBigPair) s += BigPairText(net, tot, basket);
+   if(InpShowPlan)    s += PlanText(b, net, tot, basket);
 
    //--- E) SAB SE BURI LOTS -------------------------------------------
    if(InpShowWorst)
