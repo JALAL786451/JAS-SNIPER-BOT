@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v1                                    |
+//|  JAS DESK VIEW   -   build v2                                    |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,10 +24,11 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v1"
+#define EA_BUILD "v2"
 
 input group "=== Dikhane ke liye ==="
-input bool InpShowWorst = true;   // Sab se buri 5 lots ki list bhi dikhao
+input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
+input bool InpShowWorst = true;   // Sab se buri lots ki list bhi dikhao
 input int  InpWorstHowMany = 5;   // Kitni buri lots dikhani hain
 
 
@@ -185,6 +186,61 @@ string WorstList(int want)
    return(s);
   }
 
+
+//+------------------------------------------------------------------+
+//|  EK TARAF (buy ya sell) ko LOT KE SIZE ke hisaab se toro.         |
+//|  Yani: 0.01 ki kitni, 0.05 ki kitni, 1.00 ki kitni - har size ka  |
+//|  alag hisaab, ginti + kul lots + us group ka paisa.               |
+//+------------------------------------------------------------------+
+string SizeBreak(int wantType)
+  {
+   int n = PositionsTotal();
+   if(n <= 0) return("");
+
+   double sz[];   // har alag size (0.01, 0.05, 1.00 ...)
+   int    ct[];   // us size ki kitni lots khuli hain
+   double vl[];   // us size ka kul volume
+   double pl[];   // us size ka kul paisa
+   ArrayResize(sz, n); ArrayResize(ct, n); ArrayResize(vl, n); ArrayResize(pl, n);
+   int groups = 0;
+
+   for(int i = 0; i < n; i++)
+     {
+      if(PositionGetTicket(i) == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if((int)PositionGetInteger(POSITION_TYPE) != wantType) continue;
+
+      double v = PositionGetDouble(POSITION_VOLUME);
+      double p = PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP);
+
+      int at = -1;
+      for(int g = 0; g < groups; g++)
+         if(MathAbs(sz[g] - v) < 1e-8) { at = g; break; }
+      if(at < 0)
+        { at = groups; sz[at] = v; ct[at] = 0; vl[at] = 0; pl[at] = 0; groups++; }
+
+      ct[at]++; vl[at] += v; pl[at] += p;
+     }
+   if(groups <= 0) return("   (koi nahi)\n");
+
+   // chhoti size pehle
+   for(int a = 0; a < groups - 1; a++)
+      for(int bi = a + 1; bi < groups; bi++)
+         if(sz[bi] < sz[a])
+           {
+            double t1 = sz[a]; sz[a] = sz[bi]; sz[bi] = t1;
+            int    t2 = ct[a]; ct[a] = ct[bi]; ct[bi] = t2;
+            double t3 = vl[a]; vl[a] = vl[bi]; vl[bi] = t3;
+            double t4 = pl[a]; pl[a] = pl[bi]; pl[bi] = t4;
+           }
+
+   string s = "";
+   for(int g = 0; g < groups; g++)
+      s += StringFormat("   %5.2f  x %3d  =  %6.2f lot    %12s\n",
+                        sz[g], ct[g], vl[g], M(pl[g]));
+   return(s);
+  }
+
 //+------------------------------------------------------------------+
 void Draw()
   {
@@ -244,6 +300,17 @@ void Draw()
       s += "  >> Kitab LONG hai. Qeemat UPAR jaye to kitab behtar hogi.\n\n";
    else
       s += "  >> Kitab SHORT hai. Qeemat NEECHE jaye to kitab behtar hogi.\n\n";
+
+   //--- B2) LOT KE SIZE KE HISAAB SE -----------------------------------
+   if(InpShowSizes)
+     {
+      s += "--- Lot ke SIZE ke hisaab se (size x ginti = kul lot) ---\n";
+      s += StringFormat("BUY  (ginti %d, kul %.2f lot)\n", b.nBuy, b.lotBuy);
+      s += SizeBreak((int)POSITION_TYPE_BUY);
+      s += StringFormat("SELL (ginti %d, kul %.2f lot)\n", b.nSell, b.lotSell);
+      s += SizeBreak((int)POSITION_TYPE_SELL);
+      s += "\n";
+     }
 
    //--- C) BARABAR KA PRICE -------------------------------------------
    if(MathAbs(net) < 1e-8)
