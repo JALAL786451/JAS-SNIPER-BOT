@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v4.1                                  |
+//|  JAS DESK VIEW   -   build v4.2                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v4.1"
+#define EA_BUILD "v4.2"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -582,7 +582,7 @@ string PlanText(Book &b, double net, double tot, double basket)
       dirA += (ty[wi[i]] == POSITION_TYPE_BUY ? vol[wi[i]] : -vol[wi[i]]);
      }
 
-   s += StringFormat("PLAN A - sirf sab se buri lot nikalein\n");
+   s += "PLAN A - sirf sab se buri lot nikalein\n";
    s += StringFormat("  Buri lot : #%I64u %s %.2f   %s\n",
                      tk[bad], Pick(ty[bad] == POSITION_TYPE_BUY, "BUY ", "SELL"),
                      vol[bad], M(pl[bad]));
@@ -614,7 +614,7 @@ string PlanText(Book &b, double net, double tot, double basket)
       dirB += (ty[li[i]] == POSITION_TYPE_BUY ? vol[li[i]] : -vol[li[i]]);
       nBad++;
      }
-   s += StringFormat("PLAN B - jitna faida maujood hai, utni buri lots nikalein\n");
+   s += "PLAN B - jitna faida maujood hai, utni buri lots nikalein\n";
    s += StringFormat("  Kul faida : %s   (%d position)\n", M(allWin), nw);
    if(nBad <= 0)
       s += "  Sab se buri lot bhi poore faide se bari hai - PLAN A dekhein.\n\n";

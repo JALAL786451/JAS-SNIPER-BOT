@@ -124,4 +124,7 @@ si rok chal rahi hai, taake agli dafa andaza na lagana pare.
 **Close All ka news se koi taluq nahi.** Agar news ke dauran bhi basket +50 ho
 jaye to sab band ho jayega. Aap ne khud ye saaf kar diya.
 
-
+**`StringFormat` ko kam az kam ek value chahiye.** `StringFormat("sirf likhai\n")`
+MetaEditor mein error deta hai ("implicit conversion from 'unknown' to
+'string'"). Ye ghalti do dafa hui: 27 Sep `JasBasketEA` mein, 1 Oct
+`JasDeskView` v4 mein. Jahan koi number nahi, wahan seedha `s += "..."`.

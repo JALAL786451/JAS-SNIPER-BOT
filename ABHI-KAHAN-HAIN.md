@@ -6,7 +6,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## Aakhri kaam (1 October 2026)
 
-- **`JasDeskView.mq5` build v4.1** — sirf parhne wala panel. Trade NAHI karta.
+- **`JasDeskView.mq5` build v4.2** — sirf parhne wala panel. Trade NAHI karta.
   - v4: BARI LOT KI JORI (lot barabar, kitab jami rahe) + har plan ke saath "NET baad mein" aur KHATRA line
   - v3.1: timeframe/setting badalne par lakeerein gayab ho jati thin (`g_sig` OnDeinit mein reset nahi hota tha) - theek kiya
   - Abhi baqi (chhota): lakeer ke tooltip ka P/L sirf lot khulne/band hone par naya hota hai
@@ -26,7 +26,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## Baqi kaam
 
-1. JasDeskView v4.1 compile + LIVE `XAUUSDc` chart par (sirf parhta hai) - panel par "v4.1" likha aaye (v4 par 2 errors aaye the: string wale "? :" - Pick() se theek kiye)
+1. JasDeskView v4.2 compile + LIVE `XAUUSDc` chart par (sirf parhta hai) - panel par "v4.2" likha aaye (v4/v4.1 ke 2 errors: StringFormat bina value ke - PLAN A/B ki heading. v4.2 mein theek)
 2. User ki live hedged kitab (1 Oct): 112 lots, 102 BUY / 10 SELL, Close All -2,771 USC, equity 43,102, kitab JAMI (NET ~0, har taraf ~2.0 lot - screenshots se andaza). Ek SELL **1.50** lot ki hai - user ko upar jane par isi ka dar hai. User ka faisla: pehle v4 laga kar asli number dekhna, phir 1.50 SELL ko us ke NEECHE wali BUY (1.50 lot barabar) se dhaanp kar nikalna. Jumma 2 Oct NFP 5:30 PM PKT - jami kitab ko news kuch nahi karti, khuli ko kar sakti hai
 3. L23 cool-off (Close All ke baad thehrao) — user ne jawab nahi diya
 4. `JasTideEA.mq5` t2 kabhi compile nahi hua
