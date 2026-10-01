@@ -6,7 +6,9 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## Aakhri kaam (1 October 2026)
 
-- **`JasDeskView.mq5` build v3** — sirf parhne wala panel. Trade NAHI karta.
+- **`JasDeskView.mq5` build v3.1** — sirf parhne wala panel. Trade NAHI karta.
+  - v3.1: timeframe/setting badalne par lakeerein gayab ho jati thin (`g_sig` OnDeinit mein reset nahi hota tha) - theek kiya
+  - Abhi baqi (chhota): lakeer ke tooltip ka P/L sirf lot khulne/band hone par naya hota hai
   - Close-All dialog wali ginti + dono taraf ke lots, lot SIZE ke hisaab se ginti
   - Ausat price, barabar ka price, NET kis taraf
   - Chart par lakeerein (ausat buy/sell, barabar, buri lot, har lot)
@@ -23,10 +25,15 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## Baqi kaam
 
-1. JasDeskView v3 demo par compile + screenshot
+1. JasDeskView v3.1 demo par compile + screenshot (panel ke upar "v3.1" likha aana chahiye)
 2. User ki live hedged kitab — koi faisla nahi hua
 3. L23 cool-off (Close All ke baad thehrao) — user ne jawab nahi diya
 4. `JasTideEA.mq5` t2 kabhi compile nahi hua
+
+## Usage (1 October)
+
+- Gold hourly routine ab **din mein 1 dafa** (Peer-Jumma 6:05 PM PKT), message sirf ahem din par. Cowork usage isi se tha.
+- "Usage credits" switch user ke account par OFF hai - extra paisa nahi katta. $100 wala message muft cloud credit tha.
 
 ## Kaam ka tareeqa (user ne kaha)
 

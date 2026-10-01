@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v3                                    |
+//|  JAS DESK VIEW   -   build v3.1                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v3"
+#define EA_BUILD "v3.1"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -78,6 +78,10 @@ void OnDeinit(const int reason)
    EventKillTimer();
    Comment("");
    ObjectsDeleteAll(0, "JDV_");
+   // Timeframe ya setting badalne par MT5 EA dobara load nahi karta, sirf
+   // OnDeinit/OnInit chalata hai - g_sig purana reh jata. Lakeerein upar mit
+   // chuki hain, is liye yaad bhi mita do taake agli dafa dobara banein.
+   g_sig = 0;
   }
 
 void OnTick()  { Draw(); }
