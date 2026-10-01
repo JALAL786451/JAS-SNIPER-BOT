@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v2                                    |
+//|  JAS DESK VIEW   -   build v3                                    |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,12 +24,24 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v2"
+#define EA_BUILD "v3"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
 input bool InpShowWorst = true;   // Sab se buri lots ki list bhi dikhao
 input int  InpWorstHowMany = 5;   // Kitni buri lots dikhani hain
+
+input group "=== Chart par lakeerein ==="
+input bool  InpDrawKey     = true;            // Ahem lakeerein (ausat buy/sell, barabar ka price)
+input bool  InpDrawEachLot = true;            // Har lot ki apni lakeer bhi
+input int   InpMaxLotLines = 60;              // Zyada se zyada itni lot-lakeerein (chart saaf rahe)
+input color InpColBuy      = clrDodgerBlue;   // BUY ka rang
+input color InpColSell     = clrTomato;       // SELL ka rang
+input color InpColBE       = clrGold;         // Barabar ke price ka rang
+input color InpColWorst    = clrMagenta;      // Sab se buri lot ka rang
+
+input group "=== Nikalne ka plan ==="
+input bool InpShowPlan = true;    // Jori bana kar nikalne ka plan dikhao
 
 
 //--- poori kitab ka naqsha
@@ -46,6 +58,7 @@ struct Book
   };
 
 string g_ccy = "";
+ulong  g_sig = 0;       // kitab badli ya nahi - lakeerein tabhi dobara banti hain
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -64,6 +77,7 @@ void OnDeinit(const int reason)
   {
    EventKillTimer();
    Comment("");
+   ObjectsDeleteAll(0, "JDV_");
   }
 
 void OnTick()  { Draw(); }
@@ -241,6 +255,193 @@ string SizeBreak(int wantType)
    return(s);
   }
 
+
+//+------------------------------------------------------------------+
+//|  KITAB KO AIK JAGAH JAMA KARO (sirf is chart ke symbol ki lots)   |
+//|  Teen alag jagah yehi loop chahiye tha, is liye ek hi dafa.       |
+//+------------------------------------------------------------------+
+int Collect(ulong &tk[], int &ty[], double &vol[], double &px[], double &pl[])
+  {
+   int n = PositionsTotal();
+   ArrayResize(tk, n); ArrayResize(ty, n); ArrayResize(vol, n);
+   ArrayResize(px, n); ArrayResize(pl, n);
+   int c = 0;
+   for(int i = 0; i < n; i++)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      tk[c]  = t;
+      ty[c]  = (int)PositionGetInteger(POSITION_TYPE);
+      vol[c] = PositionGetDouble(POSITION_VOLUME);
+      px[c]  = PositionGetDouble(POSITION_PRICE_OPEN);
+      pl[c]  = PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP);
+      c++;
+     }
+   ArrayResize(tk, c); ArrayResize(ty, c); ArrayResize(vol, c);
+   ArrayResize(px, c); ArrayResize(pl, c);
+   return(c);
+  }
+
+//+------------------------------------------------------------------+
+//|  CHART PAR LAKEEREIN                                              |
+//+------------------------------------------------------------------+
+void HLine(string name, double price, color col, int width, int style, string text)
+  {
+   string n = "JDV_" + name;
+   if(ObjectFind(0, n) < 0) ObjectCreate(0, n, OBJ_HLINE, 0, 0, price);
+   ObjectSetDouble (0, n, OBJPROP_PRICE, price);
+   ObjectSetInteger(0, n, OBJPROP_COLOR, col);
+   ObjectSetInteger(0, n, OBJPROP_WIDTH, width);
+   ObjectSetInteger(0, n, OBJPROP_STYLE, style);
+   ObjectSetInteger(0, n, OBJPROP_BACK, true);
+   ObjectSetInteger(0, n, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, n, OBJPROP_HIDDEN, true);
+   ObjectSetString (0, n, OBJPROP_TEXT, text);
+   ObjectSetString (0, n, OBJPROP_TOOLTIP, text);
+  }
+
+void DrawLines(Book &b, double net)
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+
+   // kitab badli hai ya nahi - har second lakeerein dobara banane se
+   // chart jhilmilata hai, is liye sirf tabdeeli par banti hain.
+   ulong sig = (ulong)c;
+   for(int i = 0; i < c; i++) sig += tk[i];
+   if(sig == g_sig) return;
+   g_sig = sig;
+
+   ObjectsDeleteAll(0, "JDV_");
+   if(c <= 0) return;
+
+   if(InpDrawKey)
+     {
+      if(b.lotBuy  > 0) HLine("AVGBUY",  b.avgBuy,  InpColBuy,  2, STYLE_SOLID,
+                              "Ausat BUY " + DoubleToString(b.lotBuy, 2) + " lot");
+      if(b.lotSell > 0) HLine("AVGSELL", b.avgSell, InpColSell, 2, STYLE_SOLID,
+                              "Ausat SELL " + DoubleToString(b.lotSell, 2) + " lot");
+      if(MathAbs(net) > 1e-8)
+        {
+         double be = b.sumDirLot / net;
+         HLine("BE", be, InpColBE, 2, STYLE_DASH, "BARABAR KA PRICE (yahan kitab sifar)");
+        }
+      // sab se buri lot
+      int worst = -1;
+      for(int i = 0; i < c; i++)
+         if(worst < 0 || pl[i] < pl[worst]) worst = i;
+      if(worst >= 0)
+         HLine("WORST", px[worst], InpColWorst, 2, STYLE_DOT,
+               "SAB SE BURI: " + (ty[worst] == POSITION_TYPE_BUY ? "BUY " : "SELL ")
+               + DoubleToString(vol[worst], 2) + "  " + M(pl[worst]));
+     }
+
+   if(InpDrawEachLot)
+     {
+      int shown = (c < InpMaxLotLines) ? c : InpMaxLotLines;
+      for(int i = 0; i < shown; i++)
+        {
+         bool isBuy = (ty[i] == POSITION_TYPE_BUY);
+         HLine("L" + IntegerToString((long)tk[i]), px[i], isBuy ? InpColBuy : InpColSell, 1, STYLE_DOT,
+               (isBuy ? "BUY " : "SELL ") + DoubleToString(vol[i], 2)
+               + " @ " + Px(px[i]) + "   " + M(pl[i]));
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|  NIKALNE KA PLAN                                                  |
+//|  Qaida (user ne khud chuna): BURI lot ko FAIDE wali lots se       |
+//|  dhaanp kar nikalo. Buri lot kitab se chali jaye, nateeja sifar   |
+//|  ya thora plus rahe, aur kul lots kam ho jayein.                  |
+//+------------------------------------------------------------------+
+string PlanText(Book &b, double tot, double basket)
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+   if(c <= 0) return("");
+
+   // nuqsan wali: sab se buri pehle.  faide wali: sab se achi pehle.
+   int    li[];
+   int    wi[];
+   int    nl = 0, nw = 0;
+   ArrayResize(li, c); ArrayResize(wi, c);
+   for(int i = 0; i < c; i++)
+     {
+      if(pl[i] < 0) { li[nl] = i; nl++; }
+      else          { wi[nw] = i; nw++; }
+     }
+   for(int a = 0; a < nl - 1; a++)
+      for(int d = a + 1; d < nl; d++)
+         if(pl[li[d]] < pl[li[a]]) { int t = li[a]; li[a] = li[d]; li[d] = t; }
+   for(int a = 0; a < nw - 1; a++)
+      for(int d = a + 1; d < nw; d++)
+         if(pl[wi[d]] > pl[wi[a]]) { int t = wi[a]; wi[a] = wi[d]; wi[d] = t; }
+
+   double allWin = 0; for(int i = 0; i < nw; i++) allWin += pl[wi[i]];
+
+   string s = "--- NIKALNE KA PLAN (buri lot ko faide wali se dhaanp kar) ---\n";
+
+   if(nl <= 0)
+     {
+      s += "Koi lot nuqsan mein nahi. Sab band karne par " + M(basket) + " milega.\n\n";
+      return(s);
+     }
+
+   //--- PLAN A: sirf sab se buri lot nikalni hai ---------------------
+   int    bad   = li[0];
+   double need  = -pl[bad];
+   double got   = 0.0, cutVol = vol[bad];
+   int    used  = 0;
+   for(int i = 0; i < nw && got < need; i++)
+     { got += pl[wi[i]]; cutVol += vol[wi[i]]; used++; }
+
+   s += StringFormat("PLAN A - sirf sab se buri lot nikalein\n");
+   s += StringFormat("  Buri lot : #%I64u %s %.2f   %s\n",
+                     tk[bad], (ty[bad] == POSITION_TYPE_BUY ? "BUY " : "SELL"),
+                     vol[bad], M(pl[bad]));
+   if(got < need)
+     {
+      s += StringFormat("  Poora faida (%s) bhi is lot ko nahi dhaanp sakta (chahiye %s).\n",
+                        M(allWin), M(need));
+      s += StringFormat("  Kami: %s\n\n", M(need - got));
+     }
+   else
+     {
+      s += StringFormat("  Iske saath %d faide wali lots band karein (+%s)\n", used, M(got));
+      s += StringFormat("  NATEEJA  : %s        (sifar ke qareeb = maqsad poora)\n", M(got + pl[bad]));
+      s += StringFormat("  Nikal jayengi : %d position, %.2f lot\n", used + 1, cutVol);
+      s += StringFormat("  Bachegi       : %d position, %.2f lot, P/L %s\n\n",
+                        c - used - 1, tot - cutVol, M(basket - got - pl[bad]));
+     }
+
+   //--- PLAN B: jitna faida maujood hai, utni buri lots -------------
+   double pool = allWin, eaten = 0.0, cutVolB = 0.0;
+   int    nBad = 0;
+   for(int i = 0; i < nl; i++)
+     {
+      if(eaten + (-pl[li[i]]) > pool) break;
+      eaten += -pl[li[i]];
+      cutVolB += vol[li[i]];
+      nBad++;
+     }
+   s += StringFormat("PLAN B - jitna faida maujood hai, utni buri lots nikalein\n");
+   s += StringFormat("  Kul faida : %s   (%d position)\n", M(allWin), nw);
+   if(nBad <= 0)
+      s += "  Sab se buri lot bhi poore faide se bari hai - PLAN A dekhein.\n\n";
+   else
+     {
+      double volAll = cutVolB; for(int i = 0; i < nw; i++) volAll += vol[wi[i]];
+      s += StringFormat("  Is se %d sab se buri lots dhaank sakte hain (%s)\n", nBad, M(-eaten));
+      s += StringFormat("  NATEEJA  : %s\n", M(allWin - eaten));
+      s += StringFormat("  Nikal jayengi : %d position, %.2f lot\n", nBad + nw, volAll);
+      s += StringFormat("  Bachegi       : %d position, %.2f lot, P/L %s\n\n",
+                        c - nBad - nw, tot - volAll, M(basket - (allWin - eaten)));
+     }
+   return(s);
+  }
+
 //+------------------------------------------------------------------+
 void Draw()
   {
@@ -273,6 +474,7 @@ void Draw()
          s += "   >> Us symbol ka chart kholein aur wahan ye EA lagayein <<\n";
         }
       Comment(s);
+      DrawLines(b, 0.0);
       return;
      }
 
@@ -339,6 +541,9 @@ void Draw()
       s += "\n";
      }
 
+   //--- D2) NIKALNE KA PLAN -------------------------------------------
+   if(InpShowPlan) s += PlanText(b, tot, basket);
+
    //--- E) SAB SE BURI LOTS -------------------------------------------
    if(InpShowWorst)
      {
@@ -376,5 +581,6 @@ void Draw()
      }
 
    Comment(s);
+   DrawLines(b, net);
   }
 //+------------------------------------------------------------------+
