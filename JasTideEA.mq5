@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD t2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD t3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasTideEA.mq5  |
@@ -31,9 +31,12 @@
 #property strict
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "t2"          // har nayi file par ye number barhta hai
+#define EA_BUILD "t3"          // har nayi file par ye number barhta hai
 
 CTrade trade;
+
+// String chunne ka kaam if se - "cond ? \"\" : \"...\"" MetaEditor mein shak wala hai.
+string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
 
 //--------------------------- INPUTS -----------------------------------
 input group "=== 1 - Qawaid ==="
@@ -372,11 +375,11 @@ void Report(bool inPos, long posType, double posVol, double posOpen, double posS
       double rNow  = (g_initR > 0.0)
                      ? ((isBuy ? (px - g_entryPx) : (g_entryPx - px)) / g_initR) : 0.0;
       s += StringFormat("Position      : %s %.2f lot @ %s\n",
-                        (isBuy ? "BUY" : "SELL"), posVol, DoubleToString(posOpen, dig));
+                        Pick(isBuy, "BUY", "SELL"), posVol, DoubleToString(posOpen, dig));
       s += StringFormat("SL            : %s     1R = %s\n",
                         DoubleToString(posSL, dig), DoubleToString(g_initR, dig));
       s += StringFormat("Abhi          : %+.2f R     aadha band: %s\n",
-                        rNow, (g_partialDone ? "ho chuka" : "nahi"));
+                        rNow, Pick(g_partialDone, "ho chuka", "nahi"));
       s += StringFormat("Nikalna       : %s\n",
                         DoubleToString(isBuy ? loExit : hiExit, dig));
      }
@@ -388,11 +391,11 @@ void Report(bool inPos, long posType, double posVol, double posOpen, double posS
      }
 
    s += StringFormat("Bara rukh (%s): %s\n", EnumToString(InpHtfTF),
-                     (!InpUseHTF ? "filter band" : (!htfOk ? "data nahi" :
-                     (bull ? "UPAR - sirf BUY" : "NEECHE - sirf SELL"))));
+                     Pick(!InpUseHTF, "filter band", Pick(!htfOk, "data nahi",
+                     Pick(bull, "UPAR - sirf BUY", "NEECHE - sirf SELL"))));
    s += StringFormat("ATR           : %s  (%.2f%% - hadd %.2f%%)%s\n",
                      DoubleToString(atr, dig), atrPct, InpMinAtrPercent,
-                     (liveOk ? "" : "  << SUST, trade nahi"));
+                     Pick(liveOk, "", "  << SUST, trade nahi"));
    s += StringFormat("Balance       : %.2f     Equity: %.2f\n",
                      AccountInfoDouble(ACCOUNT_BALANCE),
                      AccountInfoDouble(ACCOUNT_EQUITY));
@@ -438,7 +441,7 @@ void OpenTrade(bool isBuy, double atr)
    g_partialDone = false;
 
    PrintFormat("%s khuli @ %s | SL %s | lot %.2f | 1R = %s",
-               isBuy ? "BUY" : "SELL",
+               Pick(isBuy, "BUY", "SELL"),
                DoubleToString(price, dig), DoubleToString(sl, dig), lots,
                DoubleToString(stopDist, dig));
   }
