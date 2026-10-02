@@ -5,7 +5,7 @@ dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
-Aakhri update: 2 October 2026.
+Aakhri update: 2 October 2026 (raat).
 
 ---
 
@@ -22,10 +22,11 @@ Aakhri update: 2 October 2026.
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
-## 1b. Live kitab ka haal (2 Oct subha)
+## 1b. Live kitab ka haal (2 Oct raat ~8 PM)
 
-94 position, BUY 0.64 (ausat 4205.4) / SELL 0.64 (ausat 4154.5), **NET 0 (jami)**,
-Close All **-3,277 USC**. Saara nuqsan BUY mein; SELL taqreeban barabar. User ka
+99 position, BUY 0.68 (ausat 4204.75) / SELL 0.68 (ausat 4162.05), **NET 0 (jami)**,
+Close All **-2,920 USC** (subha -3,277 tha; user ne haath se SELL upar shift kiye).
+Saara nuqsan 28 Sep ki **0.59 BUY @ ~4213** mein. Aaj ki lots theek jagah: SELL upar, BUY neeche. Saara nuqsan BUY mein; SELL taqreeban barabar. User ka
 iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
 "ek band, ek khule" (nayi lot tabhi jab purani band ho), news ke waqt kuch nahi.
 
@@ -87,6 +88,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
 | `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
 | `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
+| `JasChakkarEA.mq5` k1 | **EA.** Faide wali SELL 0.01 band, gold $5 upar/neeche par nayi SELL (+5/-5 USC), ek waqt mein ek chakkar | Bana 2 Oct raat. **Compile + demo test baqi** |
 | `JasBasketEA.mq5` b20 | Meri method ka EA, sirf apni (magic) lots | Haath ki lots ko nahi chhoota |
 | `JasDesk.mq5` | Button wala desk | User ne MT5 se hata diya |
 

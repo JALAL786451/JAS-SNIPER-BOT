@@ -4,7 +4,7 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE: neeche "SAB SE TAAZA (2 Oct): wapas KACHUWE par - JasTideEA t4" dekho
+## SAB SE PEHLE: neeche "SAB SE TAAZA (2 Oct raat): JasChakkarEA k1" dekho
 
 (Pakki kahani - accounts, qaide, sabaq, tools ka haal - `MERI-KAHANI.md` mein hai. Pehle woh parho.)
 
@@ -28,7 +28,22 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## SAB SE TAAZA (2 Oct): wapas KACHUWE par - JasTideEA t4
+## SAB SE TAAZA (2 Oct raat): JasChakkarEA k1 - demo test baqi
+
+- NFP guzar gaya. JasTide t4 ka test user ne kar liya (number abhi nahi bheje).
+- **Live kitab (2 Oct ~8 PM, qeemat ~4142):** 99 position, BUY 0.68 / SELL 0.68, NET 0, Close All **-2,920**. Subha -3,277 tha - user ne haath se SELL upar shift kar ke +355 behtar kiya. 4 hisse:
+  | Hissa | Lot | Ausat |
+  |---|---|---|
+  | A. BUY upar (zyada tar 28 Sep, ek 0.01 @ 4367) | 0.59 | 4213.2 (~-4,170, saara nuqsan) |
+  | B. SELL upar (2 Oct) | 0.13 | 4193.3 |
+  | C. SELL neeche (29 Sep + 2 Oct) | 0.55 | ~4154.5 |
+  | D. BUY neeche (2 Oct) | 0.09 | 4149.5 |
+- User ne samjhaya: aaj ki lots SELL upar / BUY neeche (sahi). Masla sirf hissa A.
+- Bataya: jami kitab mein gold kahin jaye nuqsan wahi; sirf intezar se wapas nahi aata. Mehfooz kaam: B+D ki Close By (+353 balance mein, 99->82 position, kul nuqsan wahi) - user ne abhi faisla nahi kiya.
+- **User ne manga aur manzoor kiya: `JasChakkarEA.mq5` build k1** (EA, script nahi - intezar karna hai). Ek chakkar: kitab jami ho to sab se neeche wali faide wali SELL 0.01 band -> gold $5 upar = nayi SELL (+5 USC) / $5 neeche = nayi SELL (-5 USC). Ek waqt mein ek chakkar, BUY ko haath nahi, news (30 min pehle - 60 min baad) aur Jumma 19:00 server ke baad naya chakkar nahi, Jumma 20:00 par khula ho to SELL khol kar jami. Lagatar 5 haar ya kul -50 par ruk jata hai. Haal GlobalVariables mein (EA dobara lage to yaad). User ne pucha tha "$5 ya 5 USC": $5 = gold ki qeemat, 5 USC = account ka nateeja (0.01 lot par).
+- **Agla qadam:** compile (cloud mein compile nahi hota) + DEMO `XAUUSDm` par test: 5 BUY 0.01 + 5 SELL 0.01 alag alag khol kar, tez dekhne ke liye `InpStep = 1`. Live par tabhi jab demo par chakkar theek chalein.
+
+## (purana) 2 Oct: wapas KACHUWE par - JasTideEA t4
 
 - JAS Pro Box strategy test (strategies/jas_pro_box_test.pine) 1D par chala: user ne kaha "results achhe nahi" (number nahi bheje). Pro Box ab sirf observation.
 - User ka faisla: JasTideEA.mq5 **t4** (swap ko alag ginti) par kaam. SBS: Qadam 1 = t4 compile + panel "t4" + wohi tester settings (XAUUSDm D1 2015-2026, 1m OHLC, 10k), Journal ki 3 "JAS TIDE t4" lines bhejna. Qadam 2 (agar chahiye) = MT5 custom symbol swap 0 ke saath, taake lot size bhi swap-free balance se bane.
