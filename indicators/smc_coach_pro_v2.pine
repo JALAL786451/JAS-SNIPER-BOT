@@ -231,7 +231,9 @@ showPress     = input.bool(true,  "Daen: sab TF ka mila hua BUY/SELL pressure (e
 pressPos      = input.string("Top Right", "Daen table ki jagah", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 showExp       = input.bool(true,  "Daen table ke neeche BUY / SELL expectancy line", group=gPanel)
 panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=100, group=gPanel)
-panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6, group=gPanel)
+panelPad      = input.int(1,  "Daen panel: upar khali rows", minval=0, maxval=10, group=gPanel)
+legendPad     = input.int(4,  "Baen legend: upar khali rows (TradingView ke BUY/SELL dabbe ke neeche)", minval=0, maxval=10, group=gPanel)
+marks1m       = input.bool(true, "BUY/SELL, plan (SL/TP), LGB, FVG ke nishan bhi sirf 1m par", group=gPanel)
 panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"], group=gPanel)
 pressFont     = input.string("Normal", "Pressure table ka font", options=["Tiny","Small","Normal","Large"], group=gPanel)
 pressDark     = input.bool(true, "PRESSURE ke rang gehre rakho (safed chart par saaf)", group=gPanel)
@@ -256,6 +258,8 @@ atr1  = ta.tr(true)
 minTk = syminfo.mintick
 
 showTables = not only1m or is1m
+// 2H/3H/4H par SELL/plan/LGB ke label dhyan bhatkate the (2 Oct) - ab sirf 1m par
+marksOK    = not marks1m or is1m
 
 colSRBull = color.new(color.lime,  0)
 colSRBear = color.new(color.red,   0)
@@ -292,7 +296,7 @@ plotshape((enableST and stShowSignals and not showOnlyLast) ? (stSellSig ? stDn 
 
 // Sirf aakhri ST palat — naya aate hi purana mit jata hai
 var label lbST = na
-if enableST and stShowSignals and showOnlyLast and (stBuySig or stSellSig)
+if marksOK and enableST and stShowSignals and showOnlyLast and (stBuySig or stSellSig)
     label.delete(lbST)
     lbST := label.new(bar_index, stBuySig ? stUp : stDn, "ST", xloc=xloc.bar_index, yloc=yloc.price, style=stBuySig ? label.style_label_up : label.style_label_down, color=color.new(stBuySig ? color.green : color.red, 0), textcolor=color.white, size=size.tiny)
 
@@ -525,15 +529,15 @@ LGB_dn = not na(lastLo) and low  < lastLo and close > lastLo   // sweep of sell-
 if barstate.islast
     box.delete(fvgBox)
     fvgBox := na
-    if showFVG and FVG_up
+    if marksOK and showFVG and FVG_up
         fvgBox := box.new(bar_index-2, high[2], bar_index, low,  xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
-    else if showFVG and FVG_dn
+    else if marksOK and showFVG and FVG_dn
         fvgBox := box.new(bar_index-2, low [2], bar_index, high, xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
     label.delete(lgbLbl)
     lgbLbl := na
-    if showLGB and LGB_up
+    if marksOK and showLGB and LGB_up
         lgbLbl := label.new(bar_index, lastHi, "LGB↑", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_down, color=color.new(color.red,0),  textcolor=color.white, size=size.tiny)
-    else if showLGB and LGB_dn
+    else if marksOK and showLGB and LGB_dn
         lgbLbl := label.new(bar_index, lastLo, "LGB↓", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_up,   color=color.new(color.lime,0), textcolor=color.black, size=size.tiny)
 
 // ============================================================================
@@ -825,12 +829,12 @@ if sigBuyTotal or sigSellTotal
     if sigSellTotal and zoneSellRaw and f_zoneValid(resIdx)
         array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
 
-plotshape(sigBuyTotal  and not showOnlyLast, title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
-plotshape(sigSellTotal and not showOnlyLast, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+plotshape(marksOK and sigBuyTotal  and not showOnlyLast, title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
+plotshape(marksOK and sigSellTotal and not showOnlyLast, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
 
 // Sirf aakhri signal ka nishaan
 var label lbSig = na
-if (sigBuyTotal or sigSellTotal) and showOnlyLast
+if marksOK and (sigBuyTotal or sigSellTotal) and showOnlyLast
     label.delete(lbSig)
     lbSig := label.new(bar_index, sigBuyTotal ? low : high, sigBuyTotal ? "BUY" : "SELL", xloc=xloc.bar_index, yloc=yloc.price, style=sigBuyTotal ? label.style_label_up : label.style_label_down, color=color.new(sigBuyTotal ? color.teal : color.purple, 0), textcolor=color.white, size=size.small)
 
@@ -962,7 +966,7 @@ if tDir != 0
 // (this used to live inside the tracker's "open a trade" block, so a signal
 //  fired while a virtual trade was still open — or with tracking off — printed
 //  an arrow with no plan at all)
-if (sigBuyTotal or sigSellTotal) and showRisk
+if marksOK and (sigBuyTotal or sigSellTotal) and showRisk
     _dir   = sigBuyTotal ? 1 : -1
     _pe    = close
     _psl   = _dir == 1 ? planSLb : planSLs
@@ -1103,15 +1107,15 @@ if showTables and barstate.islast and (showLegend or showPress)
 
     // ---------------- BAEN: chalti candle ----------------
     if showLegend
-        _rows = panelPad + 1 + _n
+        _rows = legendPad + 1 + _n
         if na(lTbl)
             lTbl := table.new(f_pos(legendPos), 10, _rows)
         else
             table.clear(lTbl, 0, 0, 9, _rows - 1)
-        if panelPad > 0
-            for r = 0 to panelPad - 1
-                table.cell(lTbl, 0, r, "", bgcolor=bgPanel, text_size=PFS)
-        _r0 = panelPad
+        if legendPad > 0
+            for r = 0 to legendPad - 1
+                table.cell(lTbl, 0, r, " ", bgcolor=bgPanel, text_size=PFS)
+        _r0 = legendPad
         string[] hdr = array.from("TF","Rukh","O","H","L","C","Bhari","FVG","LGB","Zone")
         for k = 0 to 9
             table.cell(lTbl, k, _r0, array.get(hdr, k), bgcolor=bgPanel2, text_color=_hdrC, text_size=PFS)
