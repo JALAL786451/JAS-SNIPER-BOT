@@ -4,7 +4,9 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE (2 Oct): SMC Coach Pro v3 FILE BAN GAYI - user TradingView par compile kare, error/screenshot bheje
+## SAB SE PEHLE: neeche "SAB SE TAAZA (2 Oct): wapas KACHUWE par - JasTideEA t4" dekho
+
+(Pakki kahani - accounts, qaide, sabaq, tools ka haal - `MERI-KAHANI.md` mein hai. Pehle woh parho.)
 
 ## Aakhri kaam (1-2 October 2026)
 
@@ -74,7 +76,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 6. **MA21 / MA63**: har chart par us chart ke APNE TF ki do lakeerein (1m par doosre TF ki MA nahi). Purani EMA20/50 + band ki jagah 21/63.
 7. Chart ke nishan (zone dabbe, BUY/SELL teer, SL/TP, pivot lines) **rehne dein**.
 8. User ne **B** chuna: tracker andar chupa chalta rahe (koi panel/teer nahi), sirf **ek chhoti line: BUY expectancy / SELL expectancy**.
-9. **Nayi chat mein sab se pehle yahi kaam** - naqsha poora manzoor hai, dobara sawal na poochein; seedha file banayein, compile ke liye user TradingView par lagayega.
+9. ~~Nayi chat mein sab se pehle yahi kaam~~ - **HO GAYA** (v3 bani aur compile hui, upar dekho).
 
 ## User ke faisle (in par dobara sawal na poochein)
 
@@ -85,8 +87,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## Baqi kaam
 
-1. JasDeskView v4.2 compile + LIVE `XAUUSDc` chart par (sirf parhta hai) - panel par "v4.2" likha aaye (v4/v4.1 ke 2 errors: StringFormat bina value ke - PLAN A/B ki heading. v4.2 mein theek)
-2. User ki live hedged kitab (1 Oct): 112 lots, 102 BUY / 10 SELL, Close All -2,771 USC, equity 43,102, kitab JAMI (NET ~0, har taraf ~2.0 lot - screenshots se andaza). Ek SELL **1.50** lot ki hai - user ko upar jane par isi ka dar hai. User ka faisla: pehle v4 laga kar asli number dekhna, phir 1.50 SELL ko us ke NEECHE wali BUY (1.50 lot barabar) se dhaanp kar nikalna. Jumma 2 Oct NFP 5:30 PM PKT - jami kitab ko news kuch nahi karti, khuli ko kar sakti hai
+1. ✅ HO GAYA (1 Oct): JasDeskView v4.2 compile + LIVE `XAUUSDc` chart par (sirf parhta hai) - panel par "v4.2" likha aaye (v4/v4.1 ke 2 errors: StringFormat bina value ke - PLAN A/B ki heading. v4.2 mein theek)
+2. (purana, 1 Oct subha - ab 94 position, NET 0, -3,277 USC; MERI-KAHANI.md dekho) User ki live hedged kitab (1 Oct): 112 lots, 102 BUY / 10 SELL, Close All -2,771 USC, equity 43,102, kitab JAMI (NET ~0, har taraf ~2.0 lot - screenshots se andaza). Ek SELL **1.50** lot ki hai - user ko upar jane par isi ka dar hai. User ka faisla: pehle v4 laga kar asli number dekhna, phir 1.50 SELL ko us ke NEECHE wali BUY (1.50 lot barabar) se dhaanp kar nikalna. Jumma 2 Oct NFP 5:30 PM PKT - jami kitab ko news kuch nahi karti, khuli ko kar sakti hai
 3. L23 cool-off (Close All ke baad thehrao) — user ne jawab nahi diya
 4. `JasTideEA.mq5` **t4** (OnTester swap ka hisaab alag likhta hai). t3 ka pehla MT5 test (XAUUSDm D1, 2015-2026, 1m OHLC, 10k): 132 trades, 44.7% jeet, PF 1.23, +8,515, balance DD 45.8%. Wajah ka shak: demo par swap long -513.2 points (~-$51/lot/din, Budh 3x) - user ka live swap-free hai. Pehle t3 (1 Oct: string `? :` Pick() se badle) - user $50,000 STANDARD demo par 1D test karega, LIVE par nahi. Pine ka nateeja: 458 trades, 40.17% jeet, PF 1.564, DD 20.64%
 

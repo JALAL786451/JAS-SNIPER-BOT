@@ -22,6 +22,13 @@ Aakhri update: 2 October 2026.
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
+## 1b. Live kitab ka haal (2 Oct subha)
+
+94 position, BUY 0.64 (ausat 4205.4) / SELL 0.64 (ausat 4154.5), **NET 0 (jami)**,
+Close All **-3,277 USC**. Saara nuqsan BUY mein; SELL taqreeban barabar. User ka
+iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
+"ek band, ek khule" (nayi lot tabhi jab purani band ho), news ke waqt kuch nahi.
+
 ## 2. Accounts
 
 | | Number | Qisam | Note |
@@ -78,7 +85,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasDeskView.mq5` v4.2 | **Sirf parhta hai.** Close-All ginti, lots by size, ausat, NET, BARI LOT KI JORI, PLAN A/B + "NET baad mein" | ✅ Live par chal raha. Kami: "ek taraf band" line sirf ek taraf ka fasla batati hai, poori kitab ka nahi |
 | `JasJoriClose.mq5` s1 | **Script.** Bari lot ki lot-barabar jori **Close By** se band, ek Yes/No | ✅ Demo 150/150, **live 64/64 (+550.70 USC, 1 Oct)**. Abhi sasti BUY pehle chunta hai - user upar wali BUY pehle chahta hai (option banana baqi) |
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
-| `indicators/smc_coach_pro_v2.pine` | SMC dashboard | **Agla kaam** - naqsha `ABHI-KAHAN-HAIN.md` mein manzoor |
+| `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
+| `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
 | `JasBasketEA.mq5` b20 | Meri method ka EA, sirf apni (magic) lots | Haath ki lots ko nahi chhoota |
 | `JasDesk.mq5` | Button wala desk | User ne MT5 se hata diya |
 
