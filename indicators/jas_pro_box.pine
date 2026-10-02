@@ -170,9 +170,11 @@ if not na(dSwB) and bar_index > dSwB
     if na(dChB) and not na(lastLo) and close < lastLo
         dChB := bar_index
 
-// Tayyari ki umar: sweep ke 30 candle mein CHOCH, CHOCH ke 20 candle mein entry
-uAlive = not na(uSwB) and (na(uChB) ? bar_index - uSwB <= 30 : bar_index - uChB <= 20) and low > uSwL
-dAlive = not na(dSwB) and (na(dChB) ? bar_index - dSwB <= 30 : bar_index - dChB <= 20) and high < dSwH
+// Tayyari ki umar: sweep ke 30 candle mein CHOCH, CHOCH ke 20 candle mein entry.
+// ">=" zaroori hai: sweep wali candle ka low khud uSwL hai. Pehle ">" tha, is
+// liye tayyari usi candle par mar jati thi aur C ki ginti hamesha 0 rehti thi.
+uAlive = not na(uSwB) and (na(uChB) ? bar_index - uSwB <= 30 : bar_index - uChB <= 20) and low >= uSwL
+dAlive = not na(dSwB) and (na(dChB) ? bar_index - dSwB <= 30 : bar_index - dChB <= 20) and high <= dSwH
 
 cBuy  = uAlive and not na(uChB) and bar_index > uChB and not na(uFT) and low <= uFT and close >= uFB and close > open
 cSell = dAlive and not na(dChB) and bar_index > dChB and not na(dFB) and high >= dFB and close <= dFT and close < open
@@ -275,7 +277,7 @@ f_open(_k, _d, _sl) =>
         array.set(dg2, _k, f_tag(_x2, _t2, "TP2 " + f_px(_t2), color.new(#1B5E20, 0)))
         array.set(dgM, _k, label.new(bar_index, _d == 1 ? low : high,
              f_nm(_k) + " " + f_dir(_d) + "\n" + str.format_time(time, "dd MMM HH:mm", tzLbl) + "  @ " + f_px(_e) +
-             "\nLot " + str.tostring(_lot, "#.##") + "  (risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + ")",
+             "\n" + htfTF + " rukh: " + (na(hF) ? "-" : hF > hS ? "UP" : "DN") + "   Lot " + str.tostring(_lot, "#.##") + "  (risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + ")",
              xloc = xloc.bar_index, yloc = yloc.price, style = _d == 1 ? label.style_label_up : label.style_label_down,
              color = color.new(_cM, 0), textcolor = color.white, size = size.normal))
     alert(f_nm(_k) + " " + f_dir(_d) + " " + syminfo.ticker + " | Entry " + f_px(_e) + " | SL " + f_px(_sl) +
