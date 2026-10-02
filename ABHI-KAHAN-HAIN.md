@@ -32,6 +32,18 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 - Teen tareeqe saath: A MA21/63 pullback, B swing par engulfing/pin bar, C SMC sweep->CHOCH->FVG. 1H rukh filter. SL swing+0.2ATR (0.5-3.5 ATR), TP1 1R aadhi+BE, TP2 2R, 64 candle timeout. Laal/hara dabba sirf khuli trade ka, rangeen price tags, live R. Lot = risk/(SL$ x 100), default 50,000 USC, 1%. Table: teeno ki Trades / Jeet % / Exp.
 - SMC file ka naam badla: smc_coach_pro_v2.pine -> **smc_coach_pro_v3.pine** (title "SMC Coach Pro v3"). Price-scale plots hataye (trade band hone ke baad atke rehte the).
 
+### JAS Pro Box - pehli ginti (2 Oct dopahar, OANDA XAUUSD, Auto bara TF + $0.30 spread, R fi trade)
+
+| Chart | A · MA | B · Candle | C · SMC | ITTIFAQ |
+|---|---|---|---|---|
+| 15m (1H rukh) | -0.16 (111) | -0.11 (150) | -0.13 (23) | -0.30 (77) |
+| 1H (4H rukh) | -0.02 (193) | -0.11 (265) | **+0.27 (46)** | 0.00 (140) |
+| 2H (1D rukh) | +0.17 (91) | -0.25 (132) | +0.22 (22) | +0.09 (54) |
+| 4H (1D rukh) | +0.20 (100) | +0.10 (136) | **+0.48 (29)** | +0.15 (64) |
+
+- Chhota TF (15m) har jagah manfi. C · SMC 1H/2H/4H teeno par musbat magar ginti kam (22-46). Ittifaq akele C se behtar NAHI.
+- User ko kaha: 4H aur 1H par observation, har hafte 15m/1H/2H/4H ka screenshot; settings ko purane number ke liye mat ghumao (overfitting).
+
 ## SMC Coach Pro v3 (indicators/smc_coach_pro_v3.pine) - COMPILE HO GAYA, chal raha hai (2 Oct)
 
 - 2 Oct dopahar ke baad ye badla: daen taraf pressure ek line; naali default band; labels/plan sirf 1m; legend 4 row neeche.
