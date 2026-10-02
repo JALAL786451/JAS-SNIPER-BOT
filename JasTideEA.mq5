@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD t3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD t4   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasTideEA.mq5  |
@@ -31,7 +31,7 @@
 #property strict
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "t3"          // har nayi file par ye number barhta hai
+#define EA_BUILD "t4"          // har nayi file par ye number barhta hai
 
 CTrade trade;
 
@@ -500,5 +500,40 @@ void ManageOpenPosition(ulong posTk, long posType, double posVol, double posOpen
 
    if(!trade.PositionModify(posTk, newSL, 0.0))
       PrintFormat("SL modify fail: retcode=%d %s", trade.ResultRetcode(), trade.ResultRetcodeDescription());
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| SIRF TESTER: swap ka hisaab alag likho.                          |
+//| Demo/standard account par gold BUY ka swap bohot bara hai, aur   |
+//| user ka live account swap-free hai. Ye function trade ka koi     |
+//| qaida nahi badalta - sirf test ke aakhir mein ginta hai.         |
+//| "OnTester result" mein: faida SWAP KE BAGHAIR.                    |
+//+------------------------------------------------------------------+
+double OnTester()
+  {
+   double profit = 0.0, swap = 0.0, comm = 0.0;
+   int    deals  = 0;
+   if(HistorySelect(0, TimeCurrent() + 86400))
+     {
+      int n = HistoryDealsTotal();
+      for(int i = 0; i < n; i++)
+        {
+         ulong t = HistoryDealGetTicket(i);
+         if(t == 0) continue;
+         if(HistoryDealGetString(t, DEAL_SYMBOL) != _Symbol) continue;
+         if(HistoryDealGetInteger(t, DEAL_MAGIC) != InpMagicNumber) continue;
+         profit += HistoryDealGetDouble(t, DEAL_PROFIT);
+         swap   += HistoryDealGetDouble(t, DEAL_SWAP);
+         comm   += HistoryDealGetDouble(t, DEAL_COMMISSION);
+         deals++;
+        }
+     }
+   double withSwap    = profit + swap + comm;
+   double withoutSwap = profit + comm;
+   PrintFormat("JAS TIDE %s | deals %d | kul SWAP: %.2f", EA_BUILD, deals, swap);
+   PrintFormat("JAS TIDE %s | faida SWAP KE SAATH : %.2f", EA_BUILD, withSwap);
+   PrintFormat("JAS TIDE %s | faida SWAP KE BAGHAIR: %.2f   (swap-free account jaisa)", EA_BUILD, withoutSwap);
+   return(withoutSwap);
   }
 //+------------------------------------------------------------------+
