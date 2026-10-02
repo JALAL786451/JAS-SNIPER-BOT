@@ -48,7 +48,7 @@ showBox = input.string("Sab", "Ittifaq band ho to: kis tareeqe ka dabba", option
 
 gF   = "2 · Pro filter"
 useHTF  = input.bool(true, "Sirf bare TF ke rukh mein (MA21 vs MA63)", group = gF)
-htfTF   = input.timeframe("60", "Bara TF", group = gF)
+htfIn   = input.string("Auto", "Bara TF (Auto = chart ke hisaab se khud)", options = ["Auto", "15", "60", "240", "D", "W"], group = gF)
 maFLen  = input.int(21, "MA fast", minval = 2, group = gF)
 maSLen  = input.int(63, "MA slow", minval = 3, group = gF)
 pivLen  = input.int(3, "Swing: dono taraf kitni candles", minval = 1, maxval = 10, group = gF)
@@ -60,6 +60,7 @@ slMin   = input.float(0.5, "SL kam az kam (x ATR)", minval = 0.2, step = 0.1, gr
 slMax   = input.float(3.5, "SL zyada se zyada (x ATR)", minval = 0.5, step = 0.1, group = gR)
 tp1R    = input.float(1.0, "TP1 (R) - aadhi band + BE", minval = 0.3, step = 0.1, group = gR)
 tp2R    = input.float(2.0, "TP2 (R)", minval = 0.5, step = 0.1, group = gR)
+spreadU = input.float(0.30, "Spread + kharcha fi trade ($) - nateeje se kat-ta hai", minval = 0, step = 0.05, group = gR)
 maxBars = input.int(64, "N candle baad khud band (0 = kabhi nahi)", minval = 0, group = gR)
 coolBar = input.int(5, "Trade band hone ke baad kitni candle ruko", minval = 0, group = gR)
 
@@ -69,6 +70,7 @@ acctCur = input.string("USC", "Currency", options = ["USC", "USD"], group = gL)
 riskPct = input.float(1.0, "Risk fi trade (%)", minval = 0.1, maxval = 5, step = 0.1, group = gL)
 
 gP   = "5 · Dikhawa"
+topPad  = input.int(2, "Table upar se kitni khali rows (TradingView ki likhai ke neeche)", minval = 0, maxval = 8, group = gP)
 tblPos  = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gP)
 fontSz  = input.string("Small", "Font", options = ["Tiny", "Small", "Normal", "Large"], group = gP)
 tzLbl   = input.string("Asia/Karachi", "Waqt kis zone mein", group = gP)
@@ -97,6 +99,11 @@ plot(showMA ? emaF : na, "MA21", color = color.new(color.aqua, 0), linewidth = 2
 plot(showMA ? emaS : na, "MA63", color = color.new(color.fuchsia, 0), linewidth = 2)
 
 // Bare TF ka rukh: aakhri BAND candle ([1] + lookahead_on = repaint nahi)
+// Auto: bara TF chart se kam az kam 4 guna bara (2H/4H chart par 1H "bara" nahi hota)
+_cs = timeframe.in_seconds()
+htfTF = htfIn != "Auto" ? htfIn : _cs <= 60 ? "15" : _cs <= 900 ? "60" : _cs <= 3600 ? "240" : _cs <= 14400 ? "D" : _cs <= 86400 ? "W" : "M"
+f_tfName(_t) => _t == "15" ? "15m" : _t == "60" ? "1H" : _t == "240" ? "4H" : _t == "D" ? "1D" : _t == "W" ? "1W" : _t == "M" ? "1M" : _t
+htfName = f_tfName(htfTF)
 [hF, hS] = request.security(syminfo.tickerid, htfTF, [ta.ema(close, maFLen)[1], ta.ema(close, maSLen)[1]], barmerge.gaps_off, barmerge.lookahead_on)
 htfUp = not useHTF or (not na(hF) and hF > hS)
 htfDn = not useHTF or (not na(hF) and hF < hS)
@@ -285,7 +292,7 @@ f_open(_k, _d, _sl) =>
         array.set(dg2, _k, f_tag(_x2, _t2, "TP2 " + f_px(_t2), color.new(#1B5E20, 0)))
         array.set(dgM, _k, label.new(bar_index, _d == 1 ? low : high,
              f_nm(_k) + " " + f_dir(_d) + "\n" + str.format_time(time, "dd MMM HH:mm", tzLbl) + "  @ " + f_px(_e) +
-             "\n" + htfTF + " rukh: " + (na(hF) ? "-" : hF > hS ? "UP" : "DN") + "   Lot " + str.tostring(_lot, "#.##") + "  (risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + ")",
+             "\n" + htfName + " rukh: " + (na(hF) ? "-" : hF > hS ? "UP" : "DN") + "   Lot " + str.tostring(_lot, "#.##") + "  (risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + ")",
              xloc = xloc.bar_index, yloc = yloc.price, style = _d == 1 ? label.style_label_up : label.style_label_down,
              color = color.new(_cM, 0), textcolor = color.white, size = size.normal))
     alert(f_nm(_k) + " " + f_dir(_d) + " " + syminfo.ticker + " | Entry " + f_px(_e) + " | SL " + f_px(_sl) +
@@ -321,6 +328,8 @@ f_manage(_k) =>
             _o = _d * (close - _e) / _r
             _res := _h1 ? 0.5 * tp1R + 0.5 * _o : _o
         if not na(_res)
+            // Spread / kharcha: har trade ke nateeje se kato (R mein)
+            _res := _res - spreadU / _r
             array.set(sN, _k, array.get(sN, _k) + 1)
             array.set(sW, _k, array.get(sW, _k) + (_res > 0 ? 1 : 0))
             array.set(sR, _k, array.get(sR, _k) + _res)
@@ -414,8 +423,12 @@ if barstate.islast
 // ============================================================================
 f_st(_k) => array.get(tDir, _k) == 1 ? "BUY" : array.get(tDir, _k) == -1 ? "SELL" : "intezar"
 
-var table tb = table.new(f_pos(tblPos), 5, 9, border_width = 1, border_color = color.new(color.gray, 70))
+var table tb = table.new(f_pos(tblPos), 5, 9 + 8, border_width = 1, border_color = color.new(color.gray, 70))
 if barstate.islast
+    _P   = topPad
+    if _P > 0
+        for r = 0 to _P - 1
+            table.cell(tb, 0, r, " ", bgcolor = color.new(color.white, 100), text_size = FS)
     _bg  = color.new(color.white, 10)
     _bg2 = color.new(color.silver, 40)
     _htf = not useHTF ? "filter band" : na(hF) ? "-" : hF > hS ? "UP (sirf BUY)" : "DN (sirf SELL)"
@@ -433,19 +446,19 @@ if barstate.islast
              (array.get(tH1, 3) ? "TP1 ho gaya, SL ab Entry par: nuqsan ka khatra khatam" : "SL " + f_px(array.get(tSL, 3)) + " ya TP ka intezar") +
              "   |   abhi " + f_r(f_liveR(3))
         _sayBg := color.new(_iD == 1 ? color.green : color.red, 70)
-    table.cell(tb, 0, 0, _say, bgcolor = _sayBg, text_color = color.black, text_size = size.normal)
-    table.merge_cells(tb, 0, 0, 4, 0)
+    table.cell(tb, 0, _P + 0, _say, bgcolor = _sayBg, text_color = color.black, text_size = size.normal)
+    table.merge_cells(tb, 0, _P + 0, 4, _P + 0)
 
     // --- Line 2: teeno kya keh rahe hain ---
     _clash = nOpB > 0 and nOpS > 0
-    _lin2 = "A: " + f_st(0) + "   B: " + f_st(1) + "   C: " + f_st(2) + "   |   " + htfTF + " rukh: " + _htf +
+    _lin2 = "A: " + f_st(0) + "   B: " + f_st(1) + "   C: " + f_st(2) + "   |   " + htfName + " rukh: " + _htf +
          (_clash ? "   |   tareeqe ULTE hain -> market ne faisla nahi kiya" : "")
-    table.cell(tb, 0, 1, _lin2, bgcolor = _bg, text_color = _clash ? color.new(#E65100, 0) : color.black, text_size = FS)
-    table.merge_cells(tb, 0, 1, 4, 1)
+    table.cell(tb, 0, _P + 1, _lin2, bgcolor = _bg, text_color = _clash ? color.new(#E65100, 0) : color.black, text_size = FS)
+    table.merge_cells(tb, 0, _P + 1, 4, _P + 1)
 
     string[] hdr = array.from("Tareeqa", "Abhi", "Trades", "Jeet %", "Exp (R)")
     for c = 0 to 4
-        table.cell(tb, c, 2, array.get(hdr, c), bgcolor = _bg2, text_color = color.black, text_size = FS)
+        table.cell(tb, c, _P + 2, array.get(hdr, c), bgcolor = _bg2, text_color = color.black, text_size = FS)
     for k = 0 to 3
         _on  = k == 0 ? useA : k == 1 ? useB : k == 2 ? useC : ittOn
         _d   = array.get(tDir, k)
@@ -457,15 +470,15 @@ if barstate.islast
         _cEx = na(_ex) or _n < 20 ? color.new(#37474F, 0) : _ex > 0 ? color.new(#1B5E20, 0) : color.new(#B71C1C, 0)
         _exT = na(_ex) ? "-" : f_r(_ex) + (_n < 20 ? " (kam ginti)" : _ex <= 0 ? " KAMZOR" : "")
         _rowBg = k == 3 ? color.new(color.yellow, 80) : _bg
-        table.cell(tb, 0, 3 + k, k == 3 ? "ITTIFAQ (2+ ek taraf)" : f_nm(k), bgcolor = _rowBg, text_color = color.black, text_size = FS, text_halign = text.align_left)
-        table.cell(tb, 1, 3 + k, _now, bgcolor = _rowBg, text_color = _cNow, text_size = FS)
-        table.cell(tb, 2, 3 + k, str.tostring(_n), bgcolor = _rowBg, text_color = color.black, text_size = FS)
-        table.cell(tb, 3, 3 + k, _n > 0 ? str.tostring(int(math.round(100.0 * _w / _n))) + "%" : "-", bgcolor = _rowBg, text_color = color.black, text_size = FS)
-        table.cell(tb, 4, 3 + k, _exT, bgcolor = _rowBg, text_color = _cEx, text_size = FS)
-    table.cell(tb, 0, 7, "Lot: risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur +
-         "  ÷  (SL ka faasla $ × 100)   |   TP1 " + str.tostring(tp1R, "#.#") + "R aadhi + BE, TP2 " + str.tostring(tp2R, "#.#") + "R",
+        table.cell(tb, 0, _P + 3 + k, k == 3 ? "ITTIFAQ (2+ ek taraf)" : f_nm(k), bgcolor = _rowBg, text_color = color.black, text_size = FS, text_halign = text.align_left)
+        table.cell(tb, 1, _P + 3 + k, _now, bgcolor = _rowBg, text_color = _cNow, text_size = FS)
+        table.cell(tb, 2, _P + 3 + k, str.tostring(_n), bgcolor = _rowBg, text_color = color.black, text_size = FS)
+        table.cell(tb, 3, _P + 3 + k, _n > 0 ? str.tostring(int(math.round(100.0 * _w / _n))) + "%" : "-", bgcolor = _rowBg, text_color = color.black, text_size = FS)
+        table.cell(tb, 4, _P + 3 + k, _exT, bgcolor = _rowBg, text_color = _cEx, text_size = FS)
+    table.cell(tb, 0, _P + 7, "Lot: risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur +
+         "  ÷  (SL ka faasla $ × 100)   |   TP1 " + str.tostring(tp1R, "#.#") + "R aadhi + BE, TP2 " + str.tostring(tp2R, "#.#") + "R   |   spread $" + str.tostring(spreadU, "#.##") + " har trade se kata",
          bgcolor = _bg, text_color = color.black, text_size = FS)
-    table.merge_cells(tb, 0, 7, 4, 7)
-    table.cell(tb, 0, 8, "Sirf observation. 20+ trades aur kai mahine ki ginti se pehle real par nahi.",
+    table.merge_cells(tb, 0, _P + 7, 4, _P + 7)
+    table.cell(tb, 0, _P + 8, "Sirf observation. 20+ trades aur kai mahine ki ginti se pehle real par nahi.",
          bgcolor = _bg, text_color = color.new(#B71C1C, 0), text_size = FS)
-    table.merge_cells(tb, 0, 8, 4, 8)
+    table.merge_cells(tb, 0, _P + 8, 4, _P + 8)
