@@ -31,6 +31,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 - 2 Oct dopahar ke baad ye badla: daen taraf pressure ek line; naali default band; labels/plan sirf 1m; legend 4 row neeche.
 - **MTF 90% signal (naya, compile baqi):** 1m-1W sab TF ka ausat pressure 90%+ ek taraf, har TF usi taraf, 1m candle usi taraf band, close MA21 ke sahi taraf, ulta zone TP1 se pehle na ho -> 1m par Entry/SL/TP1/TP2. TP1 par aadhi + BE. Apni alag expectancy (daen table, "MTF 90%:" line). Bari candles ka high/low 1m candles se joda jata hai (history = live). User sirf TEST kar raha hai, trade nahi.
 
+- **15m signal (naya, compile baqi, 2 Oct):** user ne 15m wala naqsha manzoor kiya. 15m chart par: 15m/1H/4H/1D ka ausat pressure 80%+, chaaron usi taraf, 1H MA21/63 usi taraf (band candle), 15m candle usi taraf band, MA21 ke sahi taraf magar 1.5 ATR se zyada door nahi (peecha nahi), ulta zone TP1 se pehle nahi. SL/TP1(1R, aadhi+BE)/TP2(2R), 64 candle timeout. Daen table 15m par bhi; baen legend sirf 1m.
+
 ### Purana (v3 pehli shakal)
 
 - Neeche wala poora naqsha file mein kar diya. **Abhi tak compile nahi hua** - user 1m XAU chart par lagaye.
