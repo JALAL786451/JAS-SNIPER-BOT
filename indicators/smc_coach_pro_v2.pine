@@ -1093,14 +1093,262 @@ f_req(_tf) =>
 [o1d, h1d, l1d, c1d, b1d] = f_req("D")
 [o1w, h1w, l1w, c1w, b1w] = f_req("W")
 
+// ============================================================================
+//  MTF 90% SIGNAL (sirf 1m chart) — user ka qaida, 2 Oct 2026
+//  Jab 1m se 1W tak SAB TF ka mila hua pressure ek taraf 90%+ ho, 1m par
+//  trade ka plan banta hai: Entry, SL, TP1, TP2 + us qaide ki apni expectancy.
+//
+//  Pressure har TF ki CHALTI candle se: (close - low) / (high - low).
+//  1m chart par har bari candle ka high/low yahin 1m candles se joda jata hai
+//  (open request se, lookahead_on - open shuru mein hi pakka hota hai, is
+//  liye mustaqbil nahi dekhta). Is tarah purani history aur live dono par
+//  bilkul wohi hisaab chalta hai - expectancy ki ginti sachi rehti hai.
+//
+//  Pro qawaid jo saath lagaye:
+//   - Har TF usi taraf ho (sirf ausat nahi) - ek bara TF ulta ho to signal nahi
+//   - 1m candle BAND ho aur usi taraf band ho, aur 1m close MA21 ke sahi taraf
+//   - SL: aakhri N candles ka swing + ATR buffer, 0.8-3.0 ATR ke beech
+//   - Ulta 1m zone TP1 se pehle ho to signal nahi (jagah nahi)
+//   - TP1 par aadhi band + SL entry par (BE), baqi TP2 tak
+//   - Ek waqt mein ek hi MTF trade; cooldown; N candle baad khud band
+//   - 10+ trades ke baad expectancy manfi ho to label "KAMZOR" likhta hai
+//  Ye sirf TEST/SEEKHNE ke liye hai. Pehle demo, phir faisla.
+// ============================================================================
+gMtf = "13 · MTF 90% signal (sirf 1m)"
+mtfOn      = input.bool(true,  "MTF 90% signal chalao", group=gMtf)
+mtfMin     = input.int(90, "Mila hua pressure kam az kam (%)", minval=55, maxval=99, group=gMtf)
+mtfNeedAll = input.bool(true,  "Har TF usi taraf ho (50% se upar/neeche)", group=gMtf)
+mtfNeedMA  = input.bool(true,  "1m close MA21 ke sahi taraf ho", group=gMtf)
+mtfRoom    = input.bool(true,  "Ulta zone TP1 se pehle ho to signal nahi", group=gMtf)
+mtfSwing   = input.int(15, "SL: kitni 1m candles ka swing", minval=3, maxval=100, group=gMtf)
+mtfBuf     = input.float(0.25, "SL buffer (x ATR)", step=0.05, minval=0, group=gMtf)
+mtfMinSL   = input.float(0.8, "SL kam az kam (x ATR)", step=0.1, minval=0.2, group=gMtf)
+mtfMaxSL   = input.float(3.0, "SL zyada se zyada (x ATR)", step=0.1, minval=0.5, group=gMtf)
+mtfT1      = input.float(1.0, "TP1 (R)", step=0.1, minval=0.3, group=gMtf)
+mtfT2      = input.float(2.0, "TP2 (R)", step=0.1, minval=0.5, group=gMtf)
+mtfMaxBars = input.int(120, "Trade N candle baad khud band (0 = kabhi nahi)", minval=0, group=gMtf)
+mtfCool    = input.int(15, "Do signal ke beech kam az kam candles", minval=0, group=gMtf)
+
+// Chalti bari candle 1m candles se: open request se, high/low yahin jama.
+f_run(_tf) =>
+    _o = request.security(syminfo.tickerid, _tf, open, barmerge.gaps_off, barmerge.lookahead_on)
+    var float _h = na
+    var float _l = na
+    if timeframe.change(_tf) or na(_h)
+        _h := high
+        _l := low
+    else
+        _h := math.max(_h, high)
+        _l := math.min(_l, low)
+    [_o, math.max(_h, nz(_o, _h)), math.min(_l, nz(_o, _l))]
+
+[ro01, rh01, rl01] = f_run("1")
+[ro05, rh05, rl05] = f_run("5")
+[ro15, rh15, rl15] = f_run("15")
+[ro30, rh30, rl30] = f_run("30")
+[ro60, rh60, rl60] = f_run("60")
+[ro3h, rh3h, rl3h] = f_run("180")
+[ro4h, rh4h, rl4h] = f_run("240")
+[ro1d, rh1d, rl1d] = f_run("D")
+[ro1w, rh1w, rl1w] = f_run("W")
+
+// 1m chart par apna joda hua hisaab; doosre chart par request wala.
+f_sel(_a, _b) => is1m ? _a : _b
+f_pb(_h, _l) => (not na(_h) and not na(_l) and _h - _l >= minTk) ? (close - _l) / (_h - _l) * 100 : na
+
+xo01 = f_sel(ro01, o01)
+xh01 = f_sel(rh01, h01)
+xl01 = f_sel(rl01, l01)
+xo05 = f_sel(ro05, o05)
+xh05 = f_sel(rh05, h05)
+xl05 = f_sel(rl05, l05)
+xo15 = f_sel(ro15, o15)
+xh15 = f_sel(rh15, h15)
+xl15 = f_sel(rl15, l15)
+xo30 = f_sel(ro30, o30)
+xh30 = f_sel(rh30, h30)
+xl30 = f_sel(rl30, l30)
+xo60 = f_sel(ro60, o60)
+xh60 = f_sel(rh60, h60)
+xl60 = f_sel(rl60, l60)
+xo3h = f_sel(ro3h, o3h)
+xh3h = f_sel(rh3h, h3h)
+xl3h = f_sel(rl3h, l3h)
+xo4h = f_sel(ro4h, o4h)
+xh4h = f_sel(rh4h, h4h)
+xl4h = f_sel(rl4h, l4h)
+xo1d = f_sel(ro1d, o1d)
+xh1d = f_sel(rh1d, h1d)
+xl1d = f_sel(rl1d, l1d)
+xo1w = f_sel(ro1w, o1w)
+xh1w = f_sel(rh1w, h1w)
+xl1w = f_sel(rl1w, l1w)
+
+float[] mtfP = array.from(f_pb(xh01, xl01), f_pb(xh05, xl05), f_pb(xh15, xl15), f_pb(xh30, xl30), f_pb(xh60, xl60),
+                          f_pb(xh3h, xl3h), f_pb(xh4h, xl4h), f_pb(xh1d, xl1d), f_pb(xh1w, xl1w))
+float mtfSum   = 0.0
+int   mtfCnt   = 0
+bool  mtfAllUp = true
+bool  mtfAllDn = true
+for i = 0 to array.size(mtfP) - 1
+    _v = array.get(mtfP, i)
+    if not na(_v)
+        mtfSum   += _v
+        mtfCnt   += 1
+        mtfAllUp := mtfAllUp and _v > 50
+        mtfAllDn := mtfAllDn and _v < 50
+mtfAvg = mtfCnt > 0 ? mtfSum / mtfCnt : na
+
+// --- signal ---
+mSLb   = math.max(math.min(ta.lowest(low, mtfSwing) - atr * mtfBuf, close - atr * mtfMinSL), close - atr * mtfMaxSL)
+mSLs   = math.min(math.max(ta.highest(high, mtfSwing) + atr * mtfBuf, close + atr * mtfMinSL), close + atr * mtfMaxSL)
+mRoomB = na(obsUp) or (obsUp - close) >= (close - mSLb) * mtfT1
+mRoomS = na(obsDn) or (close - obsDn) >= (mSLs - close) * mtfT1
+
+mtfGo      = mtfOn and is1m and barstate.isconfirmed and mtfCnt == 9
+mtfBuyRaw  = mtfGo and mtfAvg >= mtfMin and (not mtfNeedAll or mtfAllUp) and close > open and (not mtfNeedMA or close > emaF) and (not mtfRoom or mRoomB)
+mtfSellRaw = mtfGo and mtfAvg <= 100 - mtfMin and (not mtfNeedAll or mtfAllDn) and close < open and (not mtfNeedMA or close < emaF) and (not mtfRoom or mRoomS)
+
+// --- chupa tracker: sirf MTF signal ke nateeje (R mein) ---
+var int   mDir  = 0
+var float mE    = na
+var float mSL   = na
+var float mR    = na
+var float mT1   = na
+var float mT2   = na
+var int   mBar  = na
+var bool  mHit1 = false
+var int   mLast = na
+var int   mNB   = 0
+var int   mNS   = 0
+var int   mWB   = 0
+var int   mWS   = 0
+var float mSumB = 0.0
+var float mSumS = 0.0
+var line  mlE   = na
+var line  mlS   = na
+var line  mlT1  = na
+var line  mlT2  = na
+var label mlbP  = na
+var label mlbG  = na
+var label mlbR  = na
+
+f_mDel() =>
+    line.delete(mlE)
+    line.delete(mlS)
+    line.delete(mlT1)
+    line.delete(mlT2)
+    label.delete(mlbP)
+
+if mDir != 0
+    float _res = na
+    string _why = ""
+    if mDir == 1
+        if low <= mSL
+            _res := mHit1 ? 0.5 * mtfT1 : -1.0
+            _why := mHit1 ? "TP1 ✓ phir BE" : "SL ✗"
+        else
+            if not mHit1 and high >= mT1
+                mHit1 := true
+                mSL   := mE
+            if high >= mT2
+                _res := 0.5 * mtfT1 + 0.5 * mtfT2
+                _why := "TP2 ✓"
+    else
+        if high >= mSL
+            _res := mHit1 ? 0.5 * mtfT1 : -1.0
+            _why := mHit1 ? "TP1 ✓ phir BE" : "SL ✗"
+        else
+            if not mHit1 and low <= mT1
+                mHit1 := true
+                mSL   := mE
+            if low <= mT2
+                _res := 0.5 * mtfT1 + 0.5 * mtfT2
+                _why := "TP2 ✓"
+    if na(_res) and mtfMaxBars > 0 and bar_index - mBar >= mtfMaxBars
+        _opn = (mDir == 1 ? close - mE : mE - close) / mR
+        _res := mHit1 ? 0.5 * mtfT1 + 0.5 * _opn : _opn
+        _why := "Waqt khatam"
+    if not na(_res)
+        if mDir == 1
+            mNB   += 1
+            mSumB += _res
+            mWB   += _res > 0 ? 1 : 0
+        else
+            mNS   += 1
+            mSumS += _res
+            mWS   += _res > 0 ? 1 : 0
+        f_mDel()
+        label.delete(mlbR)
+        mlbR := label.new(bar_index, mDir == 1 ? high : low, "MTF " + (mDir == 1 ? "BUY" : "SELL") + ": " + _why + " " + (_res > 0 ? "+" : "") + str.tostring(_res, "#.##") + "R",
+             xloc=xloc.bar_index, yloc=yloc.price, style=mDir == 1 ? label.style_label_down : label.style_label_up,
+             color=color.new(_res > 0 ? #1B5E20 : _res < 0 ? #B71C1C : #37474F, 0), textcolor=color.white, size=size.small)
+        mDir := 0
+
+mExpB = mNB > 0 ? mSumB / mNB : na
+mExpS = mNS > 0 ? mSumS / mNS : na
+f_expTxt(_e, _n, _w) => na(_e) ? "- (0)" : (_e > 0 ? "+" : "") + str.tostring(_e, "#.##") + "R (" + str.tostring(_n) + ", jeet " + str.tostring(int(math.round(100.0 * _w / _n))) + "%)"
+
+mCoolOK = na(mLast) or bar_index - mLast >= mtfCool
+mtfBuy  = mtfBuyRaw  and mDir == 0 and mCoolOK
+mtfSell = mtfSellRaw and mDir == 0 and mCoolOK and not mtfBuy
+
+if mtfBuy or mtfSell
+    _d    = mtfBuy ? 1 : -1
+    mDir  := _d
+    mE    := close
+    mSL   := _d == 1 ? mSLb : mSLs
+    mR    := math.abs(mE - mSL)
+    mT1   := mE + _d * mR * mtfT1
+    mT2   := mE + _d * mR * mtfT2
+    mBar  := bar_index
+    mLast := bar_index
+    mHit1 := false
+    _pct  = int(math.round(_d == 1 ? mtfAvg : 100 - mtfAvg))
+    f_mDel()
+    label.delete(mlbG)
+    _cE   = _d == 1 ? color.teal : color.purple
+    mlE  := line.new(bar_index, mE,  bar_index + futureBars, mE,  color=color.new(color.blue, 0), width=2)
+    mlS  := line.new(bar_index, mSL, bar_index + futureBars, mSL, color=color.new(color.red, 0), width=2, style=line.style_dashed)
+    mlT1 := line.new(bar_index, mT1, bar_index + futureBars, mT1, color=color.new(color.green, 0), width=2)
+    mlT2 := line.new(bar_index, mT2, bar_index + futureBars, mT2, color=color.new(color.green, 0), width=1, style=line.style_dotted)
+    mlbG := label.new(bar_index, _d == 1 ? low : high, "MTF " + (_d == 1 ? "BUY " : "SELL ") + str.tostring(_pct) + "%",
+         xloc=xloc.bar_index, yloc=yloc.price, style=_d == 1 ? label.style_label_up : label.style_label_down,
+         color=color.new(_cE, 0), textcolor=color.white, size=size.normal)
+    _eX  = _d == 1 ? mExpB : mExpS
+    _nX  = _d == 1 ? mNB : mNS
+    _wX  = _d == 1 ? mWB : mWS
+    _weak = _nX >= 10 and not na(_eX) and _eX <= 0
+    _txt = "MTF " + (_d == 1 ? "BUY" : "SELL") + "  " + str.tostring(_pct) + "% (1m-1W)" +
+           "\nEntry " + f_px(mE) + "   SL " + f_px(mSL) +
+           "\nTP1 " + f_px(mT1) + " (" + str.tostring(mtfT1, "#.#") + "R, aadhi band + BE)" +
+           "\nTP2 " + f_px(mT2) + " (" + str.tostring(mtfT2, "#.#") + "R)" +
+           "\nIs qaide ki Exp " + (_d == 1 ? "BUY " : "SELL ") + f_expTxt(_eX, _nX, _wX) +
+           (_weak ? "\nKAMZOR: ab tak expectancy manfi" : "")
+    mlbP := label.new(bar_index + futureBars, mE, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left,
+         color=color.new(_weak ? color.gray : _cE, 15), textcolor=color.white, size=size.small)
+    alert("MTF " + (_d == 1 ? "BUY " : "SELL ") + syminfo.ticker + " " + str.tostring(_pct) + "% | Entry " + f_px(mE) +
+          " | SL " + f_px(mSL) + " | TP1 " + f_px(mT1) + " | TP2 " + f_px(mT2), alert.freq_once_per_bar_close)
+
+// Khuli MTF trade ki lakeerein aakhri candle ke saath aage chalti rahein
+if barstate.islast and mDir != 0 and not na(mlE)
+    line.set_x2(mlE,  bar_index + futureBars)
+    line.set_x2(mlS,  bar_index + futureBars)
+    line.set_x2(mlT1, bar_index + futureBars)
+    line.set_x2(mlT2, bar_index + futureBars)
+    label.set_x(mlbP, bar_index + futureBars)
+
+alertcondition(mtfBuy,  "MTF 90% BUY",  "SMC Coach: MTF 90% BUY")
+alertcondition(mtfSell, "MTF 90% SELL", "SMC Coach: MTF 90% SELL")
+
 var table lTbl = na
 var table pTbl = na
 if showTables and barstate.islast and (showLegend or showPress)
     string[] tfs = array.from("1","5","15","30","60","180","240","D","W")
-    float[]  aO  = array.from(o01, o05, o15, o30, o60, o3h, o4h, o1d, o1w)
-    float[]  aH  = array.from(h01, h05, h15, h30, h60, h3h, h4h, h1d, h1w)
-    float[]  aL  = array.from(l01, l05, l15, l30, l60, l3h, l4h, l1d, l1w)
-    float[]  aC  = array.from(c01, c05, c15, c30, c60, c3h, c4h, c1d, c1w)
+    float[]  aO  = array.from(xo01, xo05, xo15, xo30, xo60, xo3h, xo4h, xo1d, xo1w)
+    float[]  aH  = array.from(xh01, xh05, xh15, xh30, xh60, xh3h, xh4h, xh1d, xh1w)
+    float[]  aL  = array.from(xl01, xl05, xl15, xl30, xl60, xl3h, xl4h, xl1d, xl1w)
+    float[]  aC  = array.from(close, close, close, close, close, close, close, close, close)
     int[]    aB  = array.from(b01, b05, b15, b30, b60, b3h, b4h, b1d, b1w)
     _n    = array.size(tfs)
     _hdrC = color.black
@@ -1162,18 +1410,9 @@ if showTables and barstate.islast and (showLegend or showPress)
     // 1m se 1W tak har TF ka BUY% (close candle ki range mein kahan) jama kar
     // ke ausat. Jo taraf zyada ho sirf wahi likhi jati hai: "BUY 61%" ya "SELL 57%".
     if showPress
-        float _sum = 0.0
-        int   _cnt = 0
-        for i = 0 to _n - 1
-            _h  = array.get(aH, i)
-            _l  = array.get(aL, i)
-            _c  = array.get(aC, i)
-            _rg = _h - _l
-            if not na(_c) and not na(_rg) and _rg >= minTk
-                _sum += (_c - _l) / _rg * 100
-                _cnt += 1
-        _avgB = _cnt > 0 ? int(math.round(_sum / _cnt)) : na
-        _rowsP = panelPad + 1 + (showExp ? 1 : 0)
+        // Wohi ausat jis par MTF 90% signal chalta hai
+        _avgB = na(mtfAvg) ? na : int(math.round(mtfAvg))
+        _rowsP = panelPad + 1 + (showExp ? 1 : 0) + (mtfOn ? 1 : 0)
         if na(pTbl)
             pTbl := table.new(f_pos(pressPos), 1, _rowsP)
         else
@@ -1184,12 +1423,19 @@ if showTables and barstate.islast and (showLegend or showPress)
         _p0  = panelPad
         _txt = na(_avgB) ? "PRESSURE  -" : _avgB > 50 ? "BUY " + str.tostring(_avgB) + "%" : _avgB < 50 ? "SELL " + str.tostring(100 - _avgB) + "%" : "BARABAR 50%"
         _col = na(_avgB) ? color.new(#37474F, 0) : f_pressCol(_avgB)
-        table.cell(pTbl, 0, _p0, _txt + "  (1m-1W)", bgcolor=bgPanel2, text_color=_col, text_size=PRS)
+        _hot = not na(_avgB) and (_avgB >= mtfMin or _avgB <= 100 - mtfMin)
+        table.cell(pTbl, 0, _p0, _txt + "  (1m-1W)" + (_hot ? "  ◄ " + str.tostring(mtfMin) + "%+" : ""),
+             bgcolor=_hot ? color.new(_avgB > 50 ? color.green : color.red, 80) : bgPanel2, text_color=_col, text_size=PRS)
         if showExp
             _re  = _p0 + 1
             _txB = useTracker ? (na(expRB) ? "-" : (expRB > 0 ? "+" : "") + str.tostring(expRB, "#.##") + "R") + " (" + str.tostring(nDoneB) + ")" : "off"
             _txS = useTracker ? (na(expRS) ? "-" : (expRS > 0 ? "+" : "") + str.tostring(expRS, "#.##") + "R") + " (" + str.tostring(nDoneS) + ")" : "off"
             table.cell(pTbl, 0, _re, "Exp  BUY " + _txB + "  |  SELL " + _txS, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        if mtfOn
+            _rm = _p0 + 1 + (showExp ? 1 : 0)
+            _st = mDir == 0 ? "intezar" : (mDir == 1 ? "BUY khuli" : "SELL khuli") + (mHit1 ? " (TP1 ✓)" : "")
+            table.cell(pTbl, 0, _rm, "MTF " + str.tostring(mtfMin) + "%: " + _st + "  |  BUY " + f_expTxt(mExpB, mNB, mWB) + "  |  SELL " + f_expTxt(mExpS, mNS, mWS),
+                 bgcolor=bgPanel, text_color=color.black, text_size=PFS)
 
 // ============================================================================
 //  EXNESS-STYLE DAILY LEVELS (classic pivot points)

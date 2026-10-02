@@ -26,7 +26,12 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## SMC Coach Pro v3 (indicators/smc_coach_pro_v2.pine) - FILE BAN GAYI (2 Oct), compile baqi
+## SMC Coach Pro v3 (indicators/smc_coach_pro_v2.pine) - COMPILE HO GAYA, chal raha hai (2 Oct)
+
+- 2 Oct dopahar ke baad ye badla: daen taraf pressure ek line; naali default band; labels/plan sirf 1m; legend 4 row neeche.
+- **MTF 90% signal (naya, compile baqi):** 1m-1W sab TF ka ausat pressure 90%+ ek taraf, har TF usi taraf, 1m candle usi taraf band, close MA21 ke sahi taraf, ulta zone TP1 se pehle na ho -> 1m par Entry/SL/TP1/TP2. TP1 par aadhi + BE. Apni alag expectancy (daen table, "MTF 90%:" line). Bari candles ka high/low 1m candles se joda jata hai (history = live). User sirf TEST kar raha hai, trade nahi.
+
+### Purana (v3 pehli shakal)
 
 - Neeche wala poora naqsha file mein kar diya. **Abhi tak compile nahi hua** - user 1m XAU chart par lagaye.
 - Pressure (daen) = close candle ki range mein kahan hai (low = 0% BUY, high = 100% BUY), har TF ki chalti candle.
