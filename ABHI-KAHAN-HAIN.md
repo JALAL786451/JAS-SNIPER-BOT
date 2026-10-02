@@ -26,6 +26,11 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
+## SAB SE TAAZA (2 Oct): wapas KACHUWE par - JasTideEA t4
+
+- JAS Pro Box strategy test (strategies/jas_pro_box_test.pine) 1D par chala: user ne kaha "results achhe nahi" (number nahi bheje). Pro Box ab sirf observation.
+- User ka faisla: JasTideEA.mq5 **t4** (swap ko alag ginti) par kaam. SBS: Qadam 1 = t4 compile + panel "t4" + wohi tester settings (XAUUSDm D1 2015-2026, 1m OHLC, 10k), Journal ki 3 "JAS TIDE t4" lines bhejna. Qadam 2 (agar chahiye) = MT5 custom symbol swap 0 ke saath, taake lot size bhi swap-free balance se bane.
+
 ## NAYA (2 Oct shaam): JAS Pro Box (indicators/jas_pro_box.pine) - Claude Code ka tohfa, compile baqi
 
 - User ne kaha "sab aap decide karein" - trading nahi jaanta, basket par trade karta hai, kai mahine sirf observation karega.
