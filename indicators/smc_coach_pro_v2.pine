@@ -1260,7 +1260,8 @@ mtfSellRaw = mtfGo and modeAvg <= 100 - modeMin and goAllDn and close < open and
 // --- chupa tracker: sirf MTF signal ke nateeje (R mein) ---
 // Chart par har trade ka POORA naqsha (2 Oct): laal dabba = Entry se SL
 // (nuqsan ka ilaqa), hara dabba = Entry se TP2 (faide ka ilaqa), aur har
-// lakeer ke sire par rangeen dabbe mein us ki qeemat (price-scale par bhi).
+// lakeer ke sire par rangeen dabbe mein us ki qeemat. (Price-scale plot
+// hata diya: trade band hone ke baad bhi aakhri qeemat wahan atki rehti thi.)
 // Naqsha SIRF khuli trade ka; trade band hote hi sab mit jata hai.
 var int    mDir  = 0
 var float  mE    = na
@@ -1425,12 +1426,6 @@ if mtfBuy or mtfSell
     mInfo := "KHULI: " + f_dirTxt(_d) + " " + f_hm(mTm) + " @ " + f_px(mE) + "  SL " + f_px(mSL) + "  TP1 " + f_px(mT1) + "  TP2 " + f_px(mT2)
     alert(modeName + " " + f_dirTxt(_d) + " " + syminfo.ticker + " " + str.tostring(mPct) + "% | Entry " + f_px(mE) +
           " | SL " + f_px(mSL) + " | TP1 " + f_px(mT1) + " | TP2 " + f_px(mT2), alert.freq_once_per_bar_close)
-
-// Khuli trade ki qeematein daen price-scale par bhi (sirf jab trade khuli ho)
-plot(mDir != 0 ? mE  : na, "Trade Entry", color=color.new(color.blue, 0),  display=display.price_scale)
-plot(mDir != 0 ? mSL : na, "Trade SL",    color=color.new(color.red, 0),   display=display.price_scale)
-plot(mDir != 0 ? mT1 : na, "Trade TP1",   color=color.new(#2E7D32, 0),     display=display.price_scale)
-plot(mDir != 0 ? mT2 : na, "Trade TP2",   color=color.new(#1B5E20, 0),     display=display.price_scale)
 
 // Khuli trade ka naqsha aakhri candle ke saath aage chalta rahe
 if barstate.islast and mDir != 0 and not na(mlE)
