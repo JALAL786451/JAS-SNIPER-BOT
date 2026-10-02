@@ -4,7 +4,7 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE (2 Oct): neeche "AGLA KAAM: SMC Coach Pro v2" wala hissa karo
+## SAB SE PEHLE (2 Oct): SMC Coach Pro v3 FILE BAN GAYI - user TradingView par compile kare, error/screenshot bheje
 
 ## Aakhri kaam (1-2 October 2026)
 
@@ -26,7 +26,15 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## AGLA KAAM: SMC Coach Pro v2 (indicators/smc_coach_pro_v2.pine, 1530 lines) - naqsha MANZOOR (2 Oct)
+## SMC Coach Pro v3 (indicators/smc_coach_pro_v2.pine) - FILE BAN GAYI (2 Oct), compile baqi
+
+- Neeche wala poora naqsha file mein kar diya. **Abhi tak compile nahi hua** - user 1m XAU chart par lagaye.
+- Pressure (daen) = close candle ki range mein kahan hai (low = 0% BUY, high = 100% BUY), har TF ki chalti candle.
+- MA21/63 EMA hain (signals bhi inhi se chalte hain - pehle 20/50 the).
+- Naali (low/high channel) aur us ke teer nahi chhede - naqshe mein zikr nahi tha. User chahe to band.
+- Expectancy line: sirf BAND virtual trades, R fi trade, qaus mein ginti.
+
+### Manzoor naqsha (2 Oct)
 
 1. Saari tafseel (tables/likhai) **sirf 1m chart par**. Baqi TF par koi table/likhai nahi.
 2. TF list: **1m, 5m, 15m, 30m, 1H, 3H, 4H, 1D, 1W** (3m aur 2H nahi, 3H shamil).
