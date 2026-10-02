@@ -41,7 +41,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 - User ne samjhaya: aaj ki lots SELL upar / BUY neeche (sahi). Masla sirf hissa A.
 - Bataya: jami kitab mein gold kahin jaye nuqsan wahi; sirf intezar se wapas nahi aata. Mehfooz kaam: B+D ki Close By (+353 balance mein, 99->82 position, kul nuqsan wahi) - user ne abhi faisla nahi kiya.
 - **User ne manga aur manzoor kiya: `JasChakkarEA.mq5` build k1** (EA, script nahi - intezar karna hai). Ek chakkar: kitab jami ho to sab se neeche wali faide wali SELL 0.01 band -> gold $5 upar = nayi SELL (+5 USC) / $5 neeche = nayi SELL (-5 USC). Ek waqt mein ek chakkar, BUY ko haath nahi, news (30 min pehle - 60 min baad) aur Jumma 19:00 server ke baad naya chakkar nahi, Jumma 20:00 par khula ho to SELL khol kar jami. Lagatar 5 haar ya kul -50 par ruk jata hai. Haal GlobalVariables mein (EA dobara lage to yaad). User ne pucha tha "$5 ya 5 USC": $5 = gold ki qeemat, 5 USC = account ka nateeja (0.01 lot par).
-- **Agla qadam:** compile (cloud mein compile nahi hota) + DEMO `XAUUSDm` par test: 5 BUY 0.01 + 5 SELL 0.01 alag alag khol kar, tez dekhne ke liye `InpStep = 1`. Live par tabhi jab demo par chakkar theek chalein.
+- **2 Oct raat: compile ho gaya, demo `XAUUSDm` par chal raha (InpStep 1).** Demo kitab NET +0.24 thi - user ne 24 SELL 0.01 alag alag khol kar jami ki (sahi: EA sirf 0.01 leta hai). **Pehla chakkar JEET:** SELL band 4137.741, nayi SELL 4138.592, +0.85 (slippage ~0.15), band SELL ka faida 1.00. Weekend aa gaya - Peer ko 3-5 chakkar (haar wala bhi) dekhne hain, phir InpStep 5.
+- (pehle wala qadam) compile (cloud mein compile nahi hota) + DEMO `XAUUSDm` par test: 5 BUY 0.01 + 5 SELL 0.01 alag alag khol kar, tez dekhne ke liye `InpStep = 1`. Live par tabhi jab demo par chakkar theek chalein.
 
 ## (purana) 2 Oct: wapas KACHUWE par - JasTideEA t4
 
