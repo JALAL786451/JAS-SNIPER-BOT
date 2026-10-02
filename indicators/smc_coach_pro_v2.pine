@@ -1260,8 +1260,8 @@ mtfSellRaw = mtfGo and modeAvg <= 100 - modeMin and goAllDn and close < open and
 // --- chupa tracker: sirf MTF signal ke nateeje (R mein) ---
 // Chart par har trade ka POORA naqsha (2 Oct): laal dabba = Entry se SL
 // (nuqsan ka ilaqa), hara dabba = Entry se TP2 (faide ka ilaqa), aur har
-// lakeer ke sire par us ki qeemat. Label saaf likhta hai "ABHI KHULI" ya
-// "PURANA" + waqt. Sirf aakhri trade ka naqsha rehta hai.
+// lakeer ke sire par rangeen dabbe mein us ki qeemat (price-scale par bhi).
+// Naqsha SIRF khuli trade ka; trade band hote hi sab mit jata hai.
 var int    mDir  = 0
 var float  mE    = na
 var float  mSL   = na
@@ -1280,7 +1280,7 @@ var int    mWB   = 0
 var int    mWS   = 0
 var float  mSumB = 0.0
 var float  mSumS = 0.0
-var string mInfo = "abhi koi ishara nahi"
+var string mInfo = "Koi khuli trade nahi - agle ishare ka intezar"
 var line   mlE   = na
 var line   mlS   = na
 var line   mlT1  = na
@@ -1311,9 +1311,10 @@ f_mDel() =>
     label.delete(mlbG)
     label.delete(mlbR)
 
+// Qeemat ka saaf dabba: rangeen pas-manzar, safed likhai
 f_tag(_x, _y, _t, _c) =>
     label.new(_x, _y, _t, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left,
-         color=color.new(color.white, 100), textcolor=_c, size=size.small)
+         color=_c, textcolor=color.white, size=size.normal)
 
 // Naqsha khinch kar _x2 tak le jao (khuli trade: aage tak; band: exit candle tak)
 f_mStretch(_x2) =>
@@ -1358,7 +1359,7 @@ if mDir != 0
         line.set_y1(mlS, mE)
         line.set_y2(mlS, mE)
         label.set_y(mtS, mE)
-        label.set_text(mtS, "SL ab Entry par (BE)")
+        label.set_text(mtS, "SL ab Entry par (BE) " + f_px(mE))
         label.set_text(mtT1, "TP1 " + f_px(mT1) + " ✓")
     if na(_res) and modeMax > 0 and bar_index - mBar >= modeMax
         _opn = (mDir == 1 ? close - mE : mE - close) / mR
@@ -1373,15 +1374,10 @@ if mDir != 0
             mNS   += 1
             mSumS += _res
             mWS   += _res > 0 ? 1 : 0
-        // Naqsha exit candle par rok do aur "PURANA" likh do
-        f_mStretch(bar_index)
-        _rTxt = _why + " " + (_res > 0 ? "+" : "") + str.tostring(_res, "#.##") + "R"
-        label.set_text(mlbG, "PURANA · " + modeName + " " + f_dirTxt(mDir) + " " + str.tostring(mPct) + "%\n" + f_hm(mTm) + " → " + f_hm(time) + "\nNateeja: " + _rTxt)
-        label.set_color(mlbG, color.new(color.gray, 20))
-        mlbR := label.new(bar_index, mDir == 1 ? high : low, "BAND: " + _rTxt,
-             xloc=xloc.bar_index, yloc=yloc.price, style=mDir == 1 ? label.style_label_down : label.style_label_up,
-             color=color.new(_res > 0 ? #1B5E20 : _res < 0 ? #B71C1C : #37474F, 0), textcolor=color.white, size=size.small)
-        mInfo := "Aakhri: " + f_dirTxt(mDir) + " " + f_hm(mTm) + " @ " + f_px(mE) + " → " + _rTxt
+        // Trade band: us ka saara naqsha mita do (user: purane ki zaroorat nahi)
+        f_mDel()
+        mlbR := na
+        mInfo := "Koi khuli trade nahi - agle ishare ka intezar"
         mDir := 0
 
 mExpB = mNB > 0 ? mSumB / mNB : na
@@ -1417,18 +1413,24 @@ if mtfBuy or mtfSell
     mlT2 := line.new(bar_index, mT2, _x2, mT2, color=color.new(color.green, 0), width=2, style=line.style_dotted)
     mtE  := f_tag(_x2, mE,  "Entry " + f_px(mE), color.new(color.blue, 0))
     mtS  := f_tag(_x2, mSL, "SL " + f_px(mSL), color.new(color.red, 0))
-    mtT1 := f_tag(_x2, mT1, "TP1 " + f_px(mT1) + " (aadhi band)", color.new(#1B5E20, 0))
+    mtT1 := f_tag(_x2, mT1, "TP1 " + f_px(mT1) + "  (aadhi band)", color.new(#2E7D32, 0))
     mtT2 := f_tag(_x2, mT2, "TP2 " + f_px(mT2), color.new(#1B5E20, 0))
     _eX  = _d == 1 ? mExpB : mExpS
     _nX  = _d == 1 ? mNB : mNS
     _weak = _nX >= 10 and not na(_eX) and _eX <= 0
     mlbG := label.new(bar_index, _d == 1 ? low : high,
-         "ABHI KHULI · " + modeName + " " + f_dirTxt(_d) + " " + str.tostring(mPct) + "%\n" + f_hm(mTm) + (_weak ? "\nKAMZOR: is qaide ki Exp manfi" : ""),
+         "ABHI KHULI · " + modeName + " " + f_dirTxt(_d) + " " + str.tostring(mPct) + "%\n" + f_hm(mTm) + "  @ " + f_px(mE) + (_weak ? "\nKAMZOR: is qaide ki Exp manfi" : ""),
          xloc=xloc.bar_index, yloc=yloc.price, style=_d == 1 ? label.style_label_up : label.style_label_down,
          color=color.new(_weak ? color.gray : _d == 1 ? color.teal : color.purple, 0), textcolor=color.white, size=size.normal)
     mInfo := "KHULI: " + f_dirTxt(_d) + " " + f_hm(mTm) + " @ " + f_px(mE) + "  SL " + f_px(mSL) + "  TP1 " + f_px(mT1) + "  TP2 " + f_px(mT2)
     alert(modeName + " " + f_dirTxt(_d) + " " + syminfo.ticker + " " + str.tostring(mPct) + "% | Entry " + f_px(mE) +
           " | SL " + f_px(mSL) + " | TP1 " + f_px(mT1) + " | TP2 " + f_px(mT2), alert.freq_once_per_bar_close)
+
+// Khuli trade ki qeematein daen price-scale par bhi (sirf jab trade khuli ho)
+plot(mDir != 0 ? mE  : na, "Trade Entry", color=color.new(color.blue, 0),  display=display.price_scale)
+plot(mDir != 0 ? mSL : na, "Trade SL",    color=color.new(color.red, 0),   display=display.price_scale)
+plot(mDir != 0 ? mT1 : na, "Trade TP1",   color=color.new(#2E7D32, 0),     display=display.price_scale)
+plot(mDir != 0 ? mT2 : na, "Trade TP2",   color=color.new(#1B5E20, 0),     display=display.price_scale)
 
 // Khuli trade ka naqsha aakhri candle ke saath aage chalta rahe
 if barstate.islast and mDir != 0 and not na(mlE)
