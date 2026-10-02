@@ -4,7 +4,9 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## Aakhri kaam (1 October 2026)
+## SAB SE PEHLE (2 Oct): neeche "AGLA KAAM: SMC Coach Pro v2" wala hissa karo
+
+## Aakhri kaam (1-2 October 2026)
 
 - **`JasDeskView.mq5` build v4.2** — sirf parhne wala panel. Trade NAHI karta.
   - v4: BARI LOT KI JORI (lot barabar, kitab jami rahe) + har plan ke saath "NET baad mein" aur KHATRA line
@@ -33,7 +35,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 5. Hatana: "BUY/SELL missing" list, HTF line, **virtual tracker** (aur us ka expectancy panel), chart par baqi likhai.
 6. **MA21 / MA63**: har chart par us chart ke APNE TF ki do lakeerein (1m par doosre TF ki MA nahi). Purani EMA20/50 + band ki jagah 21/63.
 7. Chart ke nishan (zone dabbe, BUY/SELL teer, SL/TP, pivot lines) **rehne dein**.
-8. Ek sawal khula: tracker hatane se expectancy bhi chali jayegi - user se pakka karna.
+8. User ne **B** chuna: tracker andar chupa chalta rahe (koi panel/teer nahi), sirf **ek chhoti line: BUY expectancy / SELL expectancy**.
+9. **Nayi chat mein sab se pehle yahi kaam** - naqsha poora manzoor hai, dobara sawal na poochein; seedha file banayein, compile ke liye user TradingView par lagayega.
 
 ## User ke faisle (in par dobara sawal na poochein)
 
