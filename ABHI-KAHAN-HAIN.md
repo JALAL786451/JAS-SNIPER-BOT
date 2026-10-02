@@ -26,7 +26,13 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## SMC Coach Pro v3 (indicators/smc_coach_pro_v2.pine) - COMPILE HO GAYA, chal raha hai (2 Oct)
+## NAYA (2 Oct shaam): JAS Pro Box (indicators/jas_pro_box.pine) - Claude Code ka tohfa, compile baqi
+
+- User ne kaha "sab aap decide karein" - trading nahi jaanta, basket par trade karta hai, kai mahine sirf observation karega.
+- Teen tareeqe saath: A MA21/63 pullback, B swing par engulfing/pin bar, C SMC sweep->CHOCH->FVG. 1H rukh filter. SL swing+0.2ATR (0.5-3.5 ATR), TP1 1R aadhi+BE, TP2 2R, 64 candle timeout. Laal/hara dabba sirf khuli trade ka, rangeen price tags, live R. Lot = risk/(SL$ x 100), default 50,000 USC, 1%. Table: teeno ki Trades / Jeet % / Exp.
+- SMC file ka naam badla: smc_coach_pro_v2.pine -> **smc_coach_pro_v3.pine** (title "SMC Coach Pro v3"). Price-scale plots hataye (trade band hone ke baad atke rehte the).
+
+## SMC Coach Pro v3 (indicators/smc_coach_pro_v3.pine) - COMPILE HO GAYA, chal raha hai (2 Oct)
 
 - 2 Oct dopahar ke baad ye badla: daen taraf pressure ek line; naali default band; labels/plan sirf 1m; legend 4 row neeche.
 - **MTF 90% signal (naya, compile baqi):** 1m-1W sab TF ka ausat pressure 90%+ ek taraf, har TF usi taraf, 1m candle usi taraf band, close MA21 ke sahi taraf, ulta zone TP1 se pehle na ho -> 1m par Entry/SL/TP1/TP2. TP1 par aadhi + BE. Apni alag expectancy (daen table, "MTF 90%:" line). Bari candles ka high/low 1m candles se joda jata hai (history = live). User sirf TEST kar raha hai, trade nahi.

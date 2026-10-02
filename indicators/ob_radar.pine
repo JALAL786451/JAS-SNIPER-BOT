@@ -15,7 +15,7 @@
 //   - Sab ka mila jula NET vote
 //
 //  FVG / LGB / swing ki tareef bilkul wohi hai jo aapki apni
-//  smc_coach_pro_v2.pine mein hai, taake dono scripts ek hi zabaan bolein:
+//  smc_coach_pro_v3.pine mein hai, taake dono scripts ek hi zabaan bolein:
 //    FVG up = low > high[2]      |  FVG dn = high < low[2]
 //    LGB up = high > lastHi AUR close < lastHi   (buy-side liquidity sweep)
 //    LGB dn = low  < lastLo AUR close > lastLo   (sell-side liquidity sweep)

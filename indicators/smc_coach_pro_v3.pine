@@ -1,6 +1,6 @@
 //@version=5
 // ============================================================================
-//  SMC COACH — PRO v2
+//  SMC COACH — PRO v3   (pehle "Pro v2"; file ka naam bhi v3)
 //  Scalp/Intraday SMC engine: Zones + BOS/CHOCH + FVG/LGB + Supertrend
 //  + HTF confluence + Risk Engine (SL/TP/RR) + Confluence Score
 //  + Virtual performance tracker + Alerts + MTF Dashboard (1m -> 1W)
@@ -69,7 +69,7 @@
 //   - EMA20/50 + band ki jagah MA21 / MA63 (chart ke apne TF ki).
 //   - Zone dabbe, BUY/SELL nishan, SL/TP, pivot lines wahi hain.
 // ============================================================================
-indicator("SMC Coach — Pro v2 (Zones + Risk Engine + MTF Dashboard)",
+indicator("SMC Coach Pro v3 (MTF Pressure + 15m Signal)", shorttitle = "SMC Coach Pro v3",
      overlay = true, max_labels_count = 500, max_lines_count = 500,
      max_boxes_count = 500, max_bars_back = 1000, dynamic_requests = true)
 
