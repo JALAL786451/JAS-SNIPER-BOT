@@ -1,197 +1,160 @@
 //====================================================================
-//===  BUILD k2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD k3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
-//|  JasChakkarEA.mq5                                                 |
+//|  JasChakkarEA.mq5  -  "trend ko dost bana kar"                    |
 //|                                                                   |
-//|  Jami kitab mein ek waqt mein SIRF 0.01 ka chakkar.               |
-//|  User ne 2 Oct 2026 ko khud manga; 3 Oct ko BUY + SELL dono.      |
+//|  User ke qaide (3 Oct 2026, khud naam le kar manga):              |
+//|   Q0  Koi lot / jori NUQSAN par band nahi - sirf 0 ya faida.      |
+//|   Q1  Rukh (H1 EMA50) ke KHILAF kabhi jhukao nahi.                |
+//|   Q2  Rukh ke saath jhukao, ek 0.01 fi step:                      |
+//|       rukh upar -> faide wali SELL 0.01 band, warna nayi BUY 0.01 |
+//|       rukh neeche -> faide wali BUY 0.01 band, warna nayi SELL    |
+//|   Q3  NET kabhi InpMaxNet (0.05) se zyada nahi.                   |
+//|   Q4  Nayi lot kabhi 0.01 se bari nahi.                           |
+//|   Q5  Hedge (NET 0) fauran: qeemat behtareen jagah se 1 step      |
+//|       ulti aaye, rukh badle/saaf na rahe, news aaye, ya Jumma.    |
+//|       Hedge ke liye bhi pehle faide wali lot band, warna nayi.    |
+//|       Hedge ke baad thori der (InpHedgePauseSec) phir rukh dekho. |
+//|   Q6  Bari lot (> 0.01) ki JORI: ulti taraf ki barabar lot,       |
+//|       Close By, sab se zyada faide wali jori - nateeja >= 0.      |
+//|   Q7  Seconds ka hisaab: har jhukao kitne second khula raha,      |
+//|       panel aur CSV mein.                                         |
+//|   Q8  Equity (attach ke waqt ki equity se): 95% par naya jhukao   |
+//|       band, 90% par sab hedge aur EA ruk jata hai.                |
 //|                                                                   |
-//|  SELL chakkar (gold upar ki shart):                               |
-//|    sab se NEECHE wali SELL 0.01 band -> qeemat STEP upar = nayi   |
-//|    SELL (jeet) / STEP neeche = nayi SELL (haar). Kitab phir jami. |
-//|  BUY chakkar (gold neeche ki shart):                              |
-//|    sab se UPAR wali BUY 0.01 band -> qeemat STEP neeche = nayi    |
-//|    BUY (jeet) / STEP upar = nayi BUY (haar). Kitab phir jami.     |
-//|                                                                   |
-//|  k1 ka sabaq (demo, 47 chakkar): chakkar asal mein 0.01 ki        |
-//|  rukh wali shart hai. Is liye k2 mein AUTO: H1 rukh upar ho to    |
-//|  SELL chakkar, neeche ho to BUY chakkar, saaf rukh na ho to       |
-//|  intezar. Ye qaida NAAPA NAHI gaya - demo par har taraf ki alag   |
-//|  ginti aur CSV isi liye hai.                                      |
-//|                                                                   |
-//|  Step: gold par $ (InpStep), baqi (BTC) par ATR x InpStepAtr.     |
-//|  Spread step ke InpMaxSpreadPct % se zyada ho to naya chakkar     |
-//|  nahi - kharcha qaboo mein.                                       |
-//|                                                                   |
-//|  Kya NAHI karta: lot nahi barhata, ek se zyada chakkar nahi,      |
-//|  kitab jami na ho to shuru nahi, koi SL / TP nahi.                |
-//|  Hedge account chahiye.                                           |
+//|  Jhukao ka nateeja = jhukao shuru se band tak equity ka farq      |
+//|  (baqi kitab jami hai, is liye farq jhukao ka hai).               |
+//|  Ye qaide NAAPE NAHI gaye - demo + CSV isi liye.                  |
+//|  Hedge account chahiye. Koi SL / TP nahi.                         |
 //+------------------------------------------------------------------+
 #property copyright "JAS-SNIPER-BOT"
-#property version   "2.00"
+#property version   "3.00"
 
 #include <Trade\Trade.mqh>
 
-#define K_BUILD "k2"
+#define K_BUILD "k3"
 
-enum ChakkarSide
-  {
-   SIDE_AUTO = 0,   // AUTO - H1 rukh se (upar = SELL, neeche = BUY)
-   SIDE_SELL = 1,   // Sirf SELL chakkar
-   SIDE_BUY  = 2    // Sirf BUY chakkar
-  };
+input group "=== 1 - Jhukao ==="
+input bool   InpTrade         = true;     // true = asal kaam; false = sirf panel par batao
+input double InpLot           = 0.01;     // Har lot (kabhi bari nahi)
+input double InpMaxNet        = 0.05;     // NET (BUY - SELL) ki hadd
+input double InpMinClose      = 0.0;      // Akeli lot kam az kam itne faide mein ho tab band (0 = barabar)
+input int    InpPauseSec      = 30;       // Do kaam ke darmiyan kam az kam second
+input int    InpHedgePauseSec = 300;      // Hedge ke baad kitne second ruk kar phir jhukao
+input int    InpMaxHedgeUnits = 60;       // Ek hedge mein zyada se zyada kitni 0.01 (is se zyada = haath se)
 
-input group "=== 1 - Chakkar ==="
-input bool        InpTrade        = true;       // true = asal kaam; false = sirf panel par batao
-input ChakkarSide InpSide         = SIDE_AUTO;  // Kis taraf ka chakkar
-input double      InpLot          = 0.01;       // Chakkar ki lot (sirf isi size ki lot band hogi)
-input double      InpMinProfit    = -9999.0;    // Lot kam az kam itne faide mein ho tab band (-9999 = koi bhi)
-input int         InpPauseSec     = 60;         // Do chakkar ke darmiyan kitne second
+input group "=== 2 - Step ==="
+input double          InpStep         = 5.0;        // GOLD: kitne DOLLAR
+input double          InpStepAtr      = 1.0;        // BAQI (BTC): ATR ka kitna guna
+input ENUM_TIMEFRAMES InpAtrTF        = PERIOD_M15; // ATR kis timeframe ka
+input double          InpMaxSpreadPct = 15.0;       // Spread step ke kitne % se zyada ho to naya jhukao nahi
 
-input group "=== 2 - Step (kitna chale, phir nayi lot) ==="
-input double          InpStep        = 5.0;         // GOLD: kitne DOLLAR
-input double          InpStepAtr     = 1.0;         // BAQI (BTC): ATR ka kitna guna
-input ENUM_TIMEFRAMES InpAtrTF       = PERIOD_M15;  // ATR kis timeframe ka
-input double          InpMaxSpreadPct = 15.0;       // Spread step ke kitne % se zyada ho to naya chakkar nahi
-
-input group "=== 3 - Rukh (sirf AUTO mein) ==="
+input group "=== 3 - Rukh ==="
 input ENUM_TIMEFRAMES InpTrendTF   = PERIOD_H1;  // Rukh kis timeframe se
 input int             InpTrendEMA  = 50;         // EMA kitni
 input int             InpSlopeBars = 3;          // EMA ka jhukaav kitni candles par
 
-input group "=== 4 - Hadd (EA ko rokti hain) ==="
-input int    InpMaxLossRow = 5;       // Lagatar itne chakkar haare to ruk jao
-input double InpStopSum    = -50.0;   // Chakkar ka kul nateeja is se neeche jaye to ruk jao
-input bool   InpResetStats = false;   // true = purani ginti saaf kar ke shuru (phir false kar dein)
+input group "=== 4 - Jori (bari lot) ==="
+input bool   InpJori      = true;    // Bari lot ki jori Close By se
+input double InpMinJori   = 0.0;     // Jori ka nateeja kam az kam (0 = barabar)
+input int    InpJoriDelay = 200;     // Do Close By ke darmiyan milli-second
 
-input group "=== 5 - News (L10) ==="
-input bool   InpUseNews      = true;  // Bari news ke waqt naya chakkar nahi
+input group "=== 5 - Equity (attach ke waqt ki equity ka %) ==="
+input double InpEqStopPct = 95.0;    // Is se neeche naya jhukao band
+input double InpEqHaltPct = 90.0;    // Is se neeche sab hedge aur EA ruk jaye
+input bool   InpResume    = false;   // true = ruka hua EA chalu + equity ka naya buniyadi number
+
+input group "=== 6 - News (L10) ==="
+input bool   InpUseNews      = true;  // Bari news se pehle hedge, news ke waqt jhukao nahi
 input int    InpNewsBefore   = 30;    // News se kitne minute pehle
 input int    InpNewsAfter    = 60;    // News ke kitne minute baad tak
 input string InpNewsCurrency = "USD"; // Kis mulk ki news (khali = sab)
 
-input group "=== 6 - Jumma (sirf jo market weekend band hoti hai) ==="
-input int    InpFriNoStart = 19;      // Jumma ko is ghante (server waqt) se naya chakkar nahi
-input int    InpFriFlat    = 20;      // Jumma ko is ghante se chakkar khula ho to lot khol kar kitab jami
+input group "=== 7 - Jumma (sirf jo market weekend band hoti hai) ==="
+input int    InpFriNoStart = 19;      // Jumma ko is ghante (server) se naya jhukao nahi
+input int    InpFriFlat    = 20;      // Jumma ko is ghante se hedge
 
-input group "=== 7 - Baqi ==="
+input group "=== 8 - Baqi ==="
 input long   InpMagic      = 260210;  // EA ki khud kholi hui lot ka nishan
-input bool   InpLines      = true;    // Chart par upar/neeche ki lakeerein
-input bool   InpCsv        = true;    // Har chakkar MQL5\Files\JasChakkar_<symbol>.csv mein
+input bool   InpLines      = true;    // Chart par hedge ki lakeer
+input bool   InpCsv        = true;    // Har jhukao MQL5\Files\JasChakkar_<symbol>.csv mein
+input bool   InpResetStats = false;   // true = ginti saaf (phir false kar dein)
 
 CTrade   trade;
 int      hEma = INVALID_HANDLE, hAtr = INVALID_HANDLE;
 
-//--- haal (GlobalVariables mein mehfooz)
-int      g_phase   = 0;      // 0 = tayyar, 1 = lot band, intezar
-int      g_side    = 0;      // 1 = SELL chakkar, 2 = BUY chakkar
-double   g_ref     = 0.0;    // jis price par lot band hui
-double   g_step    = 0.0;    // is chakkar ka step (shuru mein jama)
-double   g_closedOpen = 0.0;
-datetime g_startAt = 0;
-string   g_trendAt = "";
-int      g_lossRow = 0;
-double   g_sum     = 0.0;
-double   g_banked  = 0.0;
-int      g_wS = 0, g_lS = 0, g_wB = 0, g_lB = 0;
-double   g_sS = 0.0, g_sB = 0.0;
+//--- haal (GlobalVariables mein)
+bool     g_halted   = false;
+double   g_eqBase   = 0.0;
+bool     g_epOn     = false;   // jhukao chal raha hai
+int      g_epSide   = 0;       // +1 BUY ki taraf, -1 SELL ki taraf
+datetime g_epStart  = 0;
+double   g_epEq     = 0.0;     // jhukao shuru par equity
+double   g_epMax    = 0.0;     // sab se bara NET
+double   g_peak     = 0.0;     // behtareen qeemat (trailing)
+double   g_lastAdd  = 0.0;     // aakhri unit kahan lagi
+double   g_step     = 0.0;
+datetime g_hedgeAt  = 0;
+int      g_epW = 0, g_epL = 0, g_epN = 0;
+double   g_epSum = 0.0;
+long     g_epSecs = 0;
+int      g_jN = 0;    double g_jSum = 0.0;
+int      g_cN = 0;    double g_cSum = 0.0;   // akeli faide wali lots band
+int      g_oN = 0;                           // nayi lots kholi
 
-datetime g_lastAct = 0;
-datetime g_lastTry = 0;
-string   g_msg     = "Shuru";
-string   g_last    = "";
-int      g_trend   = 0;      // +1 upar, -1 neeche, 0 saaf nahi
-bool     g_247     = false;
+datetime g_lastAct = 0, g_lastTry = 0;
+string   g_msg = "Shuru", g_last = "";
+int      g_trend = 0;
+bool     g_247 = false;
 
-bool     g_newsBlock = false, g_newsOK = false;
+bool     g_newsBlock = false, g_newsSoon = false, g_newsOK = false;
 datetime g_newsAt = 0, g_newsLast = 0;
 string   g_newsName = "";
 
 string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
 string M(double v)  { return(DoubleToString(v, 2)); }
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
-string SideName(int s) { if(s == 1) return("SELL"); if(s == 2) return("BUY"); return("-"); }
 string TrendName(int t) { if(t > 0) return("UPAR"); if(t < 0) return("NEECHE"); return("SAAF NAHI"); }
+string DirName(int d)   { if(d > 0) return("BUY taraf"); if(d < 0) return("SELL taraf"); return("jami"); }
+int    Sgn(double v)    { if(v > 1e-6) return(1); if(v < -1e-6) return(-1); return(0); }
 
-string Key(string name)
-  {
-   return("JCK_" + IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)) + "_" + _Symbol + "_" + name);
-  }
-double GV(string name, double def)
-  {
-   string k = Key(name);
-   if(GlobalVariableCheck(k)) return(GlobalVariableGet(k));
-   return(def);
-  }
+string Key(string n) { return("JCK3_" + IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)) + "_" + _Symbol + "_" + n); }
+double GV(string n, double d) { string k = Key(n); if(GlobalVariableCheck(k)) return(GlobalVariableGet(k)); return(d); }
+void   SV(string n, double v) { GlobalVariableSet(Key(n), v); }
 
 void Save()
   {
-   GlobalVariableSet(Key("phase"),  g_phase);
-   GlobalVariableSet(Key("side"),   g_side);
-   GlobalVariableSet(Key("ref"),    g_ref);
-   GlobalVariableSet(Key("step"),   g_step);
-   GlobalVariableSet(Key("open"),   g_closedOpen);
-   GlobalVariableSet(Key("start"),  (double)g_startAt);
-   GlobalVariableSet(Key("row"),    g_lossRow);
-   GlobalVariableSet(Key("sum"),    g_sum);
-   GlobalVariableSet(Key("banked"), g_banked);
-   GlobalVariableSet(Key("wS"), g_wS); GlobalVariableSet(Key("lS"), g_lS); GlobalVariableSet(Key("sS"), g_sS);
-   GlobalVariableSet(Key("wB"), g_wB); GlobalVariableSet(Key("lB"), g_lB); GlobalVariableSet(Key("sB"), g_sB);
+   SV("halted", g_halted ? 1 : 0); SV("eqBase", g_eqBase);
+   SV("epOn", g_epOn ? 1 : 0); SV("epSide", g_epSide); SV("epStart", (double)g_epStart);
+   SV("epEq", g_epEq); SV("epMax", g_epMax); SV("peak", g_peak); SV("lastAdd", g_lastAdd);
+   SV("step", g_step); SV("hedgeAt", (double)g_hedgeAt);
+   SV("epW", g_epW); SV("epL", g_epL); SV("epN", g_epN); SV("epSum", g_epSum); SV("epSecs", (double)g_epSecs);
+   SV("jN", g_jN); SV("jSum", g_jSum); SV("cN", g_cN); SV("cSum", g_cSum); SV("oN", g_oN);
   }
 
 void Load()
   {
-   g_phase      = (int)GV("phase", 0);
-   g_side       = (int)GV("side", 1);   // k1 se aaye to SELL
-   g_ref        = GV("ref", 0.0);
-   g_step       = GV("step", 0.0);
-   g_closedOpen = GV("open", 0.0);
-   g_startAt    = (datetime)GV("start", 0.0);
-   g_lossRow    = (int)GV("row", 0);
-   g_sum        = GV("sum", 0.0);
-   g_banked     = GV("banked", 0.0);
-   g_wS = (int)GV("wS", 0); g_lS = (int)GV("lS", 0); g_sS = GV("sS", 0.0);
-   g_wB = (int)GV("wB", 0); g_lB = (int)GV("lB", 0); g_sB = GV("sB", 0.0);
-   // k1 ki ginti (sirf SELL thi) SELL ke khaane mein
-   if(g_wS == 0 && g_lS == 0 && GlobalVariableCheck(Key("wins")))
-     {
-      g_wS = (int)GV("wins", 0); g_lS = (int)GV("losses", 0); g_sS = g_sum;
-     }
-   if(g_phase == 1 && g_step <= 0.0) g_step = InpStep;   // k1 ka khula chakkar
+   g_halted = GV("halted", 0) > 0.5;  g_eqBase = GV("eqBase", 0.0);
+   g_epOn = GV("epOn", 0) > 0.5;      g_epSide = (int)GV("epSide", 0);
+   g_epStart = (datetime)GV("epStart", 0); g_epEq = GV("epEq", 0.0); g_epMax = GV("epMax", 0.0);
+   g_peak = GV("peak", 0.0); g_lastAdd = GV("lastAdd", 0.0); g_step = GV("step", 0.0);
+   g_hedgeAt = (datetime)GV("hedgeAt", 0);
+   g_epW = (int)GV("epW", 0); g_epL = (int)GV("epL", 0); g_epN = (int)GV("epN", 0);
+   g_epSum = GV("epSum", 0.0); g_epSecs = (long)GV("epSecs", 0);
+   g_jN = (int)GV("jN", 0); g_jSum = GV("jSum", 0.0);
+   g_cN = (int)GV("cN", 0); g_cSum = GV("cSum", 0.0); g_oN = (int)GV("oN", 0);
   }
 
 void ResetStats()
   {
-   string names[] = {"wins", "losses", "row", "sum", "banked", "wS", "lS", "sS", "wB", "lB", "sB"};
-   for(int i = 0; i < ArraySize(names); i++) GlobalVariableDel(Key(names[i]));
+   string n[] = {"epW", "epL", "epN", "epSum", "epSecs", "jN", "jSum", "cN", "cSum", "oN"};
+   for(int i = 0; i < ArraySize(n); i++) GlobalVariableDel(Key(n[i]));
   }
 
-bool IsGold()
-  {
-   return(StringFind(_Symbol, "XAU") >= 0 || StringFind(_Symbol, "GOLD") >= 0);
-  }
+bool IsGold() { return(StringFind(_Symbol, "XAU") >= 0 || StringFind(_Symbol, "GOLD") >= 0); }
+bool Is247()  { datetime f, t; return(SymbolInfoSessionTrade(_Symbol, SATURDAY, 0, f, t) && t > f); }
 
-//--- symbol hafte ke din bhi chalta hai? (BTC) -> Jumma ka qaida nahi
-bool Is247()
-  {
-   datetime f, t;
-   return(SymbolInfoSessionTrade(_Symbol, SATURDAY, 0, f, t) && t > f);
-  }
-
-//--- $1 ki harkat par InpLot ka paisa
-double MoneyPerDollar()
-  {
-   double p = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double r = 0.0;
-   if(p > 0.0 && OrderCalcProfit(ORDER_TYPE_BUY, _Symbol, InpLot, p, p + 1.0, r)) return(r);
-   double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-   double ts = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
-   if(ts > 0.0) return(tv / ts * InpLot);
-   return(0.0);
-  }
-
-//--- step abhi kitna (gold: fixed $, baqi: ATR)
 double StepNow()
   {
    if(IsGold()) return(InpStep);
@@ -200,7 +163,6 @@ double StepNow()
    return(a[0] * InpStepAtr);
   }
 
-//--- H1 rukh: band candle EMA ke upar aur EMA upar ja rahi = +1
 int TrendNow()
   {
    if(hEma == INVALID_HANDLE) return(0);
@@ -220,78 +182,239 @@ void Book(double &buy, double &sell, int &nb, int &ns)
    for(int i = PositionsTotal() - 1; i >= 0; i--)
      {
       ulong t = PositionGetTicket(i);
-      if(t == 0) continue;
-      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
       double v = PositionGetDouble(POSITION_VOLUME);
       if(PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY) { buy += v; nb++; }
       else                                                       { sell += v; ns++; }
      }
   }
 
-//--- SELL chakkar: sab se NEECHE wali SELL. BUY chakkar: sab se UPAR wali BUY.
-ulong PickPos(int side, double &openPx, double &pl)
+double NetNow() { double b, s; int nb, ns; Book(b, s, nb, ns); return(b - s); }
+
+//--- faide wali 0.01: SELL mein sab se NEECHE wali, BUY mein sab se UPAR wali
+//--- (taake SELL upar aur BUY neeche bachein)
+ulong PickProfit(long type, double &pl)
   {
-   ulong best = 0; openPx = 0.0; pl = 0.0;
-   long want = (side == 1) ? POSITION_TYPE_SELL : POSITION_TYPE_BUY;
+   ulong best = 0; double bp = 0.0; pl = 0.0;
    for(int i = PositionsTotal() - 1; i >= 0; i--)
      {
       ulong t = PositionGetTicket(i);
-      if(t == 0) continue;
-      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
-      if(PositionGetInteger(POSITION_TYPE) != want) continue;
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(PositionGetInteger(POSITION_TYPE) != type) continue;
       if(MathAbs(PositionGetDouble(POSITION_VOLUME) - InpLot) > 1e-8) continue;
-      double p  = PositionGetDouble(POSITION_PRICE_OPEN);
       double pr = PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP);
-      if(pr < InpMinProfit) continue;
-      bool better = (side == 1) ? (p < openPx) : (p > openPx);
-      if(best == 0 || better) { best = t; openPx = p; pl = pr; }
+      if(pr < InpMinClose) continue;
+      double p = PositionGetDouble(POSITION_PRICE_OPEN);
+      bool better = (type == POSITION_TYPE_SELL) ? (p < bp) : (p > bp);
+      if(best == 0 || better) { best = t; bp = p; pl = pr; }
      }
    return(best);
   }
 
+bool Ok(bool sent)
+  {
+   uint rc = trade.ResultRetcode();
+   if(sent && (rc == TRADE_RETCODE_DONE || rc == TRADE_RETCODE_PLACED)) return(true);
+   g_msg = "Order nahi chala: " + IntegerToString((int)rc) + " " + trade.ResultRetcodeDescription();
+   Print("JAS CHAKKAR: ", g_msg);
+   return(false);
+  }
+
+//--- NET ko dir (+1 / -1) taraf 0.01 hilao: pehle faide wali ulti lot band, warna nayi
+bool Unit(int dir, string &what)
+  {
+   long   opp = (dir > 0) ? POSITION_TYPE_SELL : POSITION_TYPE_BUY;
+   double pl;
+   ulong  tk = PickProfit(opp, pl);
+   if(tk > 0)
+     {
+      if(!Ok(trade.PositionClose(tk))) return(false);
+      g_cN++; g_cSum += pl;
+      what = StringFormat("%s 0.01 band (%s)", Pick(dir > 0, "SELL", "BUY"), M(pl));
+      return(true);
+     }
+   bool sent = (dir > 0) ? trade.Buy(InpLot, _Symbol, 0.0, 0.0, 0.0, "JasChakkar " + K_BUILD)
+                         : trade.Sell(InpLot, _Symbol, 0.0, 0.0, 0.0, "JasChakkar " + K_BUILD);
+   if(!Ok(sent)) return(false);
+   g_oN++;
+   what = "nayi " + Pick(dir > 0, "BUY", "SELL") + " 0.01";
+   return(true);
+  }
+
 //+------------------------------------------------------------------+
-//|  L10 - bari news ke waqt naya chakkar nahi                        |
+//|  CSV                                                              |
+//+------------------------------------------------------------------+
+void Csv(string kind, double res, long secs, string why)
+  {
+   if(!InpCsv) return;
+   int h = FileOpen("JasChakkar_" + _Symbol + ".csv",
+                    FILE_READ | FILE_WRITE | FILE_CSV | FILE_ANSI | FILE_SHARE_READ, ',');
+   if(h == INVALID_HANDLE) return;
+   if(FileSize(h) == 0)
+      FileWrite(h, "build", "time", "kind", "side", "seconds", "max_net", "step", "result", "why");
+   FileSeek(h, 0, SEEK_END);
+   FileWrite(h, K_BUILD, TimeToString(TimeCurrent(), TIME_DATE | TIME_SECONDS), kind,
+             DirName(g_epSide), (long)secs, DoubleToString(g_epMax, 2), Px(g_step), M(res), why);
+   FileClose(h);
+  }
+
+//+------------------------------------------------------------------+
+//|  Jhukao shuru / khatam                                            |
+//+------------------------------------------------------------------+
+void EpStart(int side, double px)
+  {
+   g_epOn = true; g_epSide = side; g_epStart = TimeCurrent();
+   g_epEq = AccountInfoDouble(ACCOUNT_EQUITY); g_epMax = 0.0;
+   g_peak = px; g_lastAdd = px; g_step = StepNow();
+  }
+
+void EpEnd(string why)
+  {
+   if(!g_epOn) return;
+   double res  = AccountInfoDouble(ACCOUNT_EQUITY) - g_epEq;
+   long   secs = (long)(TimeCurrent() - g_epStart);
+   g_epN++; g_epSum += res; g_epSecs += secs;
+   if(res >= 0.0) g_epW++; else g_epL++;
+   g_last = StringFormat("Jhukao %s khatam (%s): %d second, max NET %.2f -> %s%s",
+                         DirName(g_epSide), why, (int)secs, g_epMax, Pick(res >= 0.0, "+", ""), M(res));
+   Print("JAS CHAKKAR: ", g_last);
+   Csv("jhukao", res, secs, why);
+   g_epOn = false; g_epSide = 0;
+   g_hedgeAt = TimeCurrent();
+  }
+
+//--- NET ko 0 karo, abhi isi waqt (pause nahi)
+bool HedgeAll(string why)
+  {
+   double net = NetNow();
+   int units = (int)MathRound(MathAbs(net) / InpLot);
+   if(units == 0) { EpEnd(why); Save(); return(true); }
+   if(!InpTrade)  { g_msg = "SIRF DIKHANA: abhi hedge hota (" + why + ")"; return(false); }
+   if(units > InpMaxHedgeUnits)
+     { g_msg = StringFormat("NET %+.2f bohot bara - %d lot ka hedge haath se karein", net, units); return(false); }
+   int dir = -Sgn(net);
+   string w = "";
+   for(int i = 0; i < units; i++)
+     {
+      if(!Unit(dir, w)) { Save(); return(false); }
+     }
+   g_lastAct = TimeCurrent();
+   EpEnd(why);
+   g_msg = "Hedge: kitab jami (" + why + ")";
+   Save();
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
+//|  Q6 - bari lot ki jori (Close By), sirf nateeja >= InpMinJori     |
+//+------------------------------------------------------------------+
+bool TryJori()
+  {
+   if(!InpJori || !InpTrade) return(false);
+   int n = PositionsTotal();
+   ulong tk[]; long ty[]; double vol[], px[];
+   ArrayResize(tk, n); ArrayResize(ty, n); ArrayResize(vol, n); ArrayResize(px, n);
+   int c = 0;
+   for(int i = 0; i < n; i++)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      tk[c] = t; ty[c] = PositionGetInteger(POSITION_TYPE);
+      vol[c] = PositionGetDouble(POSITION_VOLUME); px[c] = PositionGetDouble(POSITION_PRICE_OPEN);
+      c++;
+     }
+   double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+   if(step <= 0.0) step = 0.01;
+
+   for(int b = 0; b < c; b++)
+     {
+      if(vol[b] <= InpLot + 1e-8) continue;          // sirf bari lot
+      bool bigBuy = (ty[b] == POSITION_TYPE_BUY);
+      // ulti taraf, sab se faide wali pehle (bari SELL: sasti BUY pehle; bari BUY: mehngi SELL pehle)
+      int cand[]; ArrayResize(cand, c); int nc = 0;
+      for(int i = 0; i < c; i++) if(i != b && ty[i] != ty[b]) { cand[nc] = i; nc++; }
+      for(int a = 0; a < nc - 1; a++)
+         for(int d = a + 1; d < nc; d++)
+           {
+            bool sw = bigBuy ? (px[cand[d]] > px[cand[a]]) : (px[cand[d]] < px[cand[a]]);
+            if(sw) { int t = cand[a]; cand[a] = cand[d]; cand[d] = t; }
+           }
+      long want = (long)MathRound(vol[b] / step), got = 0;
+      int  sel[]; ArrayResize(sel, nc); int ns = 0;
+      double res = 0.0;
+      for(int k = 0; k < nc && got < want; k++)
+        {
+         int i = cand[k];
+         long u = (long)MathRound(vol[i] / step);
+         if(got + u > want) continue;
+         double r = 0.0;
+         // jori ka nateeja = do lots ke khulne ke price ka farq
+         if(bigBuy) OrderCalcProfit(ORDER_TYPE_SELL, _Symbol, vol[i], px[i], px[b], r);
+         else       OrderCalcProfit(ORDER_TYPE_BUY,  _Symbol, vol[i], px[i], px[b], r);
+         sel[ns] = i; ns++; got += u; res += r;
+        }
+      if(got != want || res < InpMinJori) continue;   // adhoori ya nuqsan wali jori - nahi
+
+      long bigId = 0;
+      if(PositionSelectByTicket(tk[b])) bigId = PositionGetInteger(POSITION_IDENTIFIER);
+      int done = 0;
+      for(int k = 0; k < ns; k++)
+        {
+         ulong bigNow = 0;
+         if(PositionSelectByTicket(tk[b])) bigNow = tk[b];
+         else
+            for(int j = PositionsTotal() - 1; j >= 0; j--)
+              {
+               ulong t = PositionGetTicket(j);
+               if(t > 0 && PositionGetInteger(POSITION_IDENTIFIER) == bigId) { bigNow = t; break; }
+              }
+         if(bigNow == 0 || !PositionSelectByTicket(tk[sel[k]])) break;
+         MqlTradeRequest rq; MqlTradeResult rs;
+         ZeroMemory(rq); ZeroMemory(rs);
+         rq.action = TRADE_ACTION_CLOSE_BY; rq.position = bigNow;
+         rq.position_by = tk[sel[k]]; rq.symbol = _Symbol;
+         if(!OrderSend(rq, rs) || (rs.retcode != TRADE_RETCODE_DONE && rs.retcode != TRADE_RETCODE_PLACED))
+           { Print("JAS CHAKKAR: jori Close By ruka, retcode ", rs.retcode); break; }
+         done++;
+         if(InpJoriDelay > 0) Sleep(InpJoriDelay);
+        }
+      g_jN++; g_jSum += res;
+      g_last = StringFormat("JORI: %s %.2f @ %s + %d lots, %d/%d Close By, andaza %s",
+                            Pick(bigBuy, "BUY", "SELL"), vol[b], Px(px[b]), ns, done, ns, M(res));
+      Print("JAS CHAKKAR: ", g_last);
+      Csv("jori", res, 0, StringFormat("%d/%d", done, ns));
+      g_lastAct = TimeCurrent();
+      Save();
+      return(true);                                    // ek waqt mein ek jori
+     }
+   return(false);
+  }
+
+//+------------------------------------------------------------------+
+//|  News                                                             |
 //+------------------------------------------------------------------+
 void RefreshNews()
   {
    datetime now = TimeCurrent();
    if(now - g_newsLast < 60) return;
-   g_newsLast  = now;
-   g_newsBlock = false;
-   g_newsOK    = false;
-   g_newsAt    = 0;
-   g_newsName  = "";
+   g_newsLast = now; g_newsBlock = false; g_newsSoon = false; g_newsOK = false;
+   g_newsAt = 0; g_newsName = "";
    if(!InpUseNews) return;
-
    MqlCalendarValue v[];
    int n = CalendarValueHistory(v, now - 6 * 3600, now + 12 * 3600, NULL, InpNewsCurrency);
-   if(n <= 0)
-     {
-      n = CalendarValueHistory(v, now - 6 * 3600, now + 12 * 3600);
-      if(n <= 0) return;
-     }
+   if(n <= 0) { n = CalendarValueHistory(v, now - 6 * 3600, now + 12 * 3600); if(n <= 0) return; }
    g_newsOK = true;
-
    datetime bestAt = 0; string bestName = "";
    for(int i = 0; i < n; i++)
      {
       MqlCalendarEvent e;
-      if(!CalendarEventById(v[i].event_id, e))     continue;
-      if(e.importance != CALENDAR_IMPORTANCE_HIGH) continue;
-      datetime at   = v[i].time;
-      datetime from = at - (datetime)(InpNewsBefore * 60);
-      datetime to   = at + (datetime)(InpNewsAfter  * 60);
-      if(now >= from && now <= to)
-        {
-         g_newsBlock = true;
-         g_newsAt    = at;
-         g_newsName  = e.name;
-         return;
-        }
+      if(!CalendarEventById(v[i].event_id, e) || e.importance != CALENDAR_IMPORTANCE_HIGH) continue;
+      datetime at = v[i].time;
+      if(now >= at - (datetime)(InpNewsBefore * 60) && now <= at + (datetime)(InpNewsAfter * 60))
+        { g_newsBlock = true; g_newsSoon = (now < at); g_newsAt = at; g_newsName = e.name; return; }
       if(at > now && (bestAt == 0 || at < bestAt)) { bestAt = at; bestName = e.name; }
      }
-   g_newsAt   = bestAt;
-   g_newsName = bestName;
+   g_newsAt = bestAt; g_newsName = bestName;
   }
 
 bool FridayAfter(int hour)
@@ -302,222 +425,138 @@ bool FridayAfter(int hour)
   }
 
 //+------------------------------------------------------------------+
-//|  CSV - har poora chakkar ek line                                  |
+//|  Dimagh                                                           |
 //+------------------------------------------------------------------+
-void CsvWrite(double px, double res, string why)
+void Brain(double net, double bid, double ask, double eqPct)
   {
-   if(!InpCsv) return;
-   string fn = "JasChakkar_" + _Symbol + ".csv";
-   int h = FileOpen(fn, FILE_READ | FILE_WRITE | FILE_CSV | FILE_ANSI | FILE_SHARE_READ, ',');
-   if(h == INVALID_HANDLE) { Print("JAS CHAKKAR: CSV nahi khuli ", GetLastError()); return; }
-   if(FileSize(h) == 0)
-      FileWrite(h, "build", "start", "end", "minutes", "side", "trend", "closed_open",
-                "ref", "step", "reopen", "result", "why");
-   FileSeek(h, 0, SEEK_END);
-   int mins = (g_startAt > 0) ? (int)((TimeCurrent() - g_startAt) / 60) : 0;
-   FileWrite(h, K_BUILD,
-             TimeToString(g_startAt, TIME_DATE | TIME_SECONDS),
-             TimeToString(TimeCurrent(), TIME_DATE | TIME_SECONDS),
-             mins, SideName(g_side), g_trendAt, Px(g_closedOpen),
-             Px(g_ref), Px(g_step), Px(px), M(res), why);
-   FileClose(h);
-  }
+   int    sn  = Sgn(net);
+   double stp = StepNow();
 
-//+------------------------------------------------------------------+
-//|  Lakeerein                                                        |
-//+------------------------------------------------------------------+
-void HLine(string name, double price, color c, ENUM_LINE_STYLE st, string tip)
-  {
-   if(ObjectFind(0, name) < 0) ObjectCreate(0, name, OBJ_HLINE, 0, 0, price);
-   ObjectSetDouble(0, name, OBJPROP_PRICE, price);
-   ObjectSetInteger(0, name, OBJPROP_COLOR, c);
-   ObjectSetInteger(0, name, OBJPROP_STYLE, st);
-   ObjectSetInteger(0, name, OBJPROP_WIDTH, 1);
-   ObjectSetInteger(0, name, OBJPROP_BACK, true);
-   ObjectSetInteger(0, name, OBJPROP_SELECTABLE, false);
-   ObjectSetString(0, name, OBJPROP_TOOLTIP, tip);
-  }
-
-void DrawLines()
-  {
-   if(!InpLines || g_phase != 1)
+   //--- Q8: equity ki aakhri hadd
+   if(eqPct <= InpEqHaltPct && !g_halted)
      {
-      ObjectDelete(0, "JCK_up"); ObjectDelete(0, "JCK_dn"); ObjectDelete(0, "JCK_ref");
+      g_halted = true;
+      HedgeAll("equity " + DoubleToString(eqPct, 1) + "%");
+      g_msg = StringFormat("RUKA: equity %.1f%% (hadd %.0f%%). InpResume = true se chalu.", eqPct, InpEqHaltPct);
+      Save();
       return;
      }
-   bool sell = (g_side == 1);
-   HLine("JCK_up",  g_ref + g_step, sell ? clrLimeGreen : clrTomato, STYLE_DASH,
-         Pick(sell, "Yahan nayi SELL = JEET", "Yahan nayi BUY = HAAR"));
-   HLine("JCK_ref", g_ref, clrSilver, STYLE_DOT, "Yahan lot band hui thi");
-   HLine("JCK_dn",  g_ref - g_step, sell ? clrTomato : clrLimeGreen, STYLE_DASH,
-         Pick(sell, "Yahan nayi SELL = HAAR", "Yahan nayi BUY = JEET"));
-  }
-
-//+------------------------------------------------------------------+
-//|  Chakkar ka doosra hissa: nayi lot khol kar kitab phir jami       |
-//+------------------------------------------------------------------+
-void Reopen(string why)
-  {
-   if(TimeCurrent() - g_lastTry < 10) return;
-   g_lastTry = TimeCurrent();
-
-   bool sell = (g_side == 1);
-   bool ok   = sell ? trade.Sell(InpLot, _Symbol, 0.0, 0.0, 0.0, "JasChakkar " + K_BUILD)
-                    : trade.Buy (InpLot, _Symbol, 0.0, 0.0, 0.0, "JasChakkar " + K_BUILD);
-   uint rc = trade.ResultRetcode();
-   if(!ok || (rc != TRADE_RETCODE_DONE && rc != TRADE_RETCODE_PLACED))
+   if(g_halted)
      {
-      g_msg = "Nayi " + SideName(g_side) + " nahi khuli: " + IntegerToString((int)rc) + " "
-              + trade.ResultRetcodeDescription() + " - 10 second baad phir";
-      Print("JAS CHAKKAR: ", g_msg);
+      if(sn != 0) HedgeAll("ruka hua");
+      g_msg = StringFormat("RUKA: equity hadd. InpResume = true se chalu (abhi %.1f%%).", eqPct);
       return;
      }
 
-   double px = trade.ResultPrice();
-   if(px <= 0.0) px = SymbolInfoDouble(_Symbol, sell ? SYMBOL_BID : SYMBOL_ASK);
-   double res = 0.0;
-   // SELL: px par nayi SELL, ref par band hui thi -> (px - ref). BUY: (ref - px).
-   bool calc = sell ? OrderCalcProfit(ORDER_TYPE_SELL, _Symbol, InpLot, px, g_ref, res)
-                    : OrderCalcProfit(ORDER_TYPE_BUY,  _Symbol, InpLot, px, g_ref, res);
-   if(!calc) res = (sell ? (px - g_ref) : (g_ref - px)) * MoneyPerDollar();
+   //--- jhukao chal raha hai: trailing aur hedge ki wajah
+   if(sn != 0)
+     {
+      if(!g_epOn) EpStart(sn, sn > 0 ? bid : ask);     // pehle se jhuki kitab = jhukao
+      g_epSide = sn;
+      g_epMax  = MathMax(g_epMax, MathAbs(net));
+      if(g_step <= 0.0) g_step = stp;
+      if(sn > 0) g_peak = MathMax(g_peak, bid); else g_peak = MathMin(g_peak, ask);
 
-   g_sum += res;
-   bool win = (res >= 0.0);
-   if(win) g_lossRow = 0; else g_lossRow++;
-   if(sell) { if(win) g_wS++; else g_lS++; g_sS += res; }
-   else     { if(win) g_wB++; else g_lB++; g_sB += res; }
+      string why = "";
+      if(sn > 0 && bid <= g_peak - g_step)           why = "1 step ulti chaal";
+      else if(sn < 0 && ask >= g_peak + g_step)      why = "1 step ulti chaal";
+      else if(g_trend != sn)                         why = "rukh " + TrendName(g_trend);
+      else if(MathAbs(net) > InpMaxNet + 1e-6)       why = "NET hadd se zyada";
+      else if(g_newsBlock && g_newsSoon)             why = "news: " + g_newsName;
+      else if(FridayAfter(InpFriFlat))               why = "Jumma";
+      if(why != "") { HedgeAll(why); return; }
+     }
 
-   g_last = StringFormat("%s %s: band %s, nayi %s -> %s%s",
-                         SideName(g_side), why, Px(g_ref), Px(px), Pick(win, "+", ""), M(res));
-   Print("JAS CHAKKAR: ", g_last);
-   CsvWrite(px, res, why);
+   //--- Q6: jori (NET nahi badalti)
+   if(TimeCurrent() - g_lastAct >= InpPauseSec && TryJori()) return;
 
-   g_phase   = 0;
-   g_ref     = 0.0;
-   g_lastAct = TimeCurrent();
-   g_msg     = "Kitab phir jami. Agla chakkar thori der mein.";
-   Save();
-  }
+   //--- Q2: rukh ke saath agla 0.01
+   if(g_trend == 0)                         { g_msg = Pick(sn == 0, "Intezar: rukh saaf nahi", "Jhukao chal raha"); return; }
+   if(sn != 0 && sn != g_trend)             return;   // upar hedge ho chuka hoga
+   if(MathAbs(net) + InpLot > InpMaxNet + 1e-6) { g_msg = "Jhukao poora (NET hadd). Trailing chal raha."; return; }
+   if(eqPct <= InpEqStopPct)                { g_msg = StringFormat("Rok: equity %.1f%% - naya jhukao nahi", eqPct); return; }
+   if(g_newsBlock)                          { g_msg = "Rok: news - " + g_newsName; return; }
+   if(FridayAfter(InpFriNoStart))           { g_msg = "Rok: Jumma"; return; }
+   if(stp <= 0.0)                           { g_msg = "Rok: ATR nahi mila"; return; }
+   if(ask - bid > stp * InpMaxSpreadPct / 100.0) { g_msg = "Rok: spread bara"; return; }
+   if(TimeCurrent() - g_lastAct < InpPauseSec)    { g_msg = "Thehrao"; return; }
+   if(sn == 0 && TimeCurrent() - g_hedgeAt < InpHedgePauseSec)
+     { g_msg = StringFormat("Hedge ke baad thehrao: %d second", (int)(InpHedgePauseSec - (TimeCurrent() - g_hedgeAt))); return; }
 
-//+------------------------------------------------------------------+
-//|  Chakkar ka pehla hissa: ek lot band                              |
-//+------------------------------------------------------------------+
-void TryStart(double net, double spread, double stepNow)
-  {
-   if(g_lossRow >= InpMaxLossRow)
-     { g_msg = StringFormat("RUKA: lagatar %d haar. InpResetStats = true kar ke dobara lagayein.", g_lossRow); return; }
-   if(g_sum <= InpStopSum)
-     { g_msg = StringFormat("RUKA: kul nateeja %s, hadd %s. InpResetStats = true kar ke dobara lagayein.", M(g_sum), M(InpStopSum)); return; }
-   if(MathAbs(net) > 1e-6)
-     { g_msg = StringFormat("Intezar: kitab jami nahi (NET %+.2f). Jami ho to chakkar shuru.", net); return; }
-   if(g_newsBlock)
-     { g_msg = "Intezar: bari news - " + g_newsName; return; }
-   if(FridayAfter(InpFriNoStart))
-     { g_msg = "Intezar: Jumma, market band hone wali hai"; return; }
-   if(stepNow <= 0.0)
-     { g_msg = "Intezar: ATR abhi nahi mila"; return; }
-   if(spread > stepNow * InpMaxSpreadPct / 100.0)
-     { g_msg = StringFormat("Intezar: spread %s, step ka %.0f%% se zyada", Px(spread), InpMaxSpreadPct); return; }
-   if(TimeCurrent() - g_lastAct < InpPauseSec)
-     { g_msg = StringFormat("Thehrao: %d second", (int)(InpPauseSec - (TimeCurrent() - g_lastAct))); return; }
-
-   int side = 0;
-   if(InpSide == SIDE_SELL)      side = 1;
-   else if(InpSide == SIDE_BUY)  side = 2;
-   else if(g_trend > 0)          side = 1;
-   else if(g_trend < 0)          side = 2;
-   if(side == 0)
-     { g_msg = "Intezar: H1 rukh saaf nahi (AUTO)"; return; }
-
-   double op, pl;
-   ulong tk = PickPos(side, op, pl);
-   if(tk == 0)
-     { g_msg = StringFormat("Intezar: koi %.2f %s nahi mili (shart %s)", InpLot, SideName(side), M(InpMinProfit)); return; }
-
-   if(!InpTrade)
-     { g_msg = StringFormat("SIRF DIKHANA: abhi #%I64u %s @ %s (%s) band hoti", tk, SideName(side), Px(op), M(pl)); return; }
+   double px = (g_trend > 0) ? ask : bid;
+   if(sn != 0)
+     {
+      bool next = (g_trend > 0) ? (px >= g_lastAdd + g_step) : (px <= g_lastAdd - g_step);
+      if(!next)
+        { g_msg = StringFormat("Agli 0.01 jab qeemat %s", Px(g_trend > 0 ? g_lastAdd + g_step : g_lastAdd - g_step)); return; }
+     }
+   if(!InpTrade) { g_msg = "SIRF DIKHANA: abhi " + DirName(g_trend) + " 0.01 hota"; return; }
    if(!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) || !MQLInfoInteger(MQL_TRADE_ALLOWED))
-     { g_msg = "Algo Trading band hai - toolbar ka button HARA karein"; return; }
-   if(TimeCurrent() - g_lastTry < 10) return;
+     { g_msg = "Algo Trading band hai - button HARA karein"; return; }
+   if(TimeCurrent() - g_lastTry < 3) return;
    g_lastTry = TimeCurrent();
 
-   bool ok = trade.PositionClose(tk);
-   uint rc = trade.ResultRetcode();
-   if(!ok || (rc != TRADE_RETCODE_DONE && rc != TRADE_RETCODE_PLACED))
-     {
-      g_msg = SideName(side) + " band nahi hui: " + IntegerToString((int)rc) + " " + trade.ResultRetcodeDescription();
-      Print("JAS CHAKKAR: ", g_msg);
-      return;
-     }
-
-   double px = trade.ResultPrice();
-   if(px <= 0.0) px = SymbolInfoDouble(_Symbol, side == 1 ? SYMBOL_ASK : SYMBOL_BID);
-   g_side       = side;
-   g_ref        = px;
-   g_step       = stepNow;
-   g_closedOpen = op;
-   g_banked    += pl;
-   g_startAt    = TimeCurrent();
-   g_trendAt    = TrendName(g_trend);
-   g_phase      = 1;
-   g_lastAct    = TimeCurrent();
-   g_msg        = SideName(side) + " band. Ab intezar: upar ya neeche.";
-   PrintFormat("JAS CHAKKAR: #%I64u %s @ %s band @ %s (%s). Step %s, rukh %s",
-               tk, SideName(side), Px(op), Px(px), M(pl), Px(g_step), g_trendAt);
+   if(sn == 0) EpStart(g_trend, px);
+   string w = "";
+   if(!Unit(g_trend, w)) return;
+   g_lastAdd = px;
+   g_lastAct = TimeCurrent();
+   g_msg = "Jhukao: " + w;
+   PrintFormat("JAS CHAKKAR: %s @ %s, rukh %s", w, Px(px), TrendName(g_trend));
    Save();
   }
 
 //+------------------------------------------------------------------+
 //|  Panel                                                            |
 //+------------------------------------------------------------------+
-void Panel(double buy, double sell, int nb, int ns, double bid, double ask, double spread, double stepNow)
+void Panel(double buy, double sell, int nb, int ns, double bid, double ask, double eqPct)
   {
-   double per = MoneyPerDollar();
    string cur = AccountInfoString(ACCOUNT_CURRENCY);
-   string side = "AUTO (H1 rukh)";
-   if(InpSide == SIDE_SELL) side = "sirf SELL";
-   if(InpSide == SIDE_BUY)  side = "sirf BUY";
+   double net = buy - sell;
+   double stp = (g_epOn && g_step > 0.0) ? g_step : StepNow();
    string s = "";
-   s += "=== JAS CHAKKAR  " + K_BUILD + " ===   " + _Symbol + "  (" + cur + ")"
-        + Pick(g_247, "  [24/7]", "") + "\n";
-   s += Pick(InpTrade, "ASAL KAAM chalu", "SIRF DIKHANA - koi trade nahi") + "  |  " + side + "\n";
-   s += StringFormat("Step abhi %s (= %s %s)  |  lot %.2f\n", Px(stepNow), M(stepNow * per), cur, InpLot);
-   s += "Rukh " + EnumToString(InpTrendTF) + ": " + TrendName(g_trend) + "\n";
+   s += "=== JAS CHAKKAR  " + K_BUILD + " ===   " + _Symbol + " (" + cur + ")" + Pick(g_247, " [24/7]", "") + "\n";
+   s += Pick(InpTrade, "ASAL KAAM chalu", "SIRF DIKHANA") + "   |   trend ko dost, nuqsan par band nahi\n";
+   s += "Rukh " + EnumToString(InpTrendTF) + ": " + TrendName(g_trend)
+        + StringFormat("   step %s   spread %s\n", Px(stp), Px(ask - bid));
+   s += StringFormat("Equity %.1f%% (rok %.0f / band %.0f)%s\n", eqPct, InpEqStopPct, InpEqHaltPct, Pick(g_halted, "  RUKA", ""));
    s += "\n";
-   s += StringFormat("Kitab: BUY %d (%.2f)  SELL %d (%.2f)  NET %+.2f\n", nb, buy, ns, sell, buy - sell);
-   s += StringFormat("Qeemat %s   spread %s\n", Px(bid), Px(spread));
-   s += "\n";
-   if(g_phase == 1)
+   s += StringFormat("Kitab: BUY %d (%.2f)  SELL %d (%.2f)  NET %+.2f / hadd %.2f\n", nb, buy, ns, sell, net, InpMaxNet);
+   if(g_epOn)
      {
-      bool sl = (g_side == 1);
-      double now = 0.0;
-      if(sl) { if(!OrderCalcProfit(ORDER_TYPE_SELL, _Symbol, InpLot, bid, g_ref, now)) now = (bid - g_ref) * per; }
-      else   { if(!OrderCalcProfit(ORDER_TYPE_BUY,  _Symbol, InpLot, ask, g_ref, now)) now = (g_ref - ask) * per; }
-      s += "HAAL: " + SideName(g_side) + " BAND - intezar (rukh tha " + g_trendAt + ")\n";
-      s += StringFormat("  Band hui: khuli %s, band %s, step %s\n", Px(g_closedOpen), Px(g_ref), Px(g_step));
-      s += StringFormat("  UPAR   %s  -> nayi %s (%s)\n", Px(g_ref + g_step), SideName(g_side), Pick(sl, "jeet", "haar"));
-      s += StringFormat("  NEECHE %s  -> nayi %s (%s)\n", Px(g_ref - g_step), SideName(g_side), Pick(sl, "haar", "jeet"));
-      s += StringFormat("  Abhi khulti to: %s%s\n", Pick(now >= 0.0, "+", ""), M(now));
+      s += StringFormat("JHUKAO: %s, %d second se, max NET %.2f\n", DirName(g_epSide), (int)(TimeCurrent() - g_epStart), g_epMax);
+      s += StringFormat("  Abhi tak: %s   |   hedge agar qeemat %s\n",
+                        M(AccountInfoDouble(ACCOUNT_EQUITY) - g_epEq),
+                        Px(g_epSide > 0 ? g_peak - g_step : g_peak + g_step));
      }
-   else
-      s += "HAAL: TAYYAR\n";
+   else s += "JHUKAO: nahi (kitab jami)\n";
    s += "  " + g_msg + "\n";
    s += "\n";
-   s += StringFormat("SELL chakkar: jeet %d  haar %d  kul %s\n", g_wS, g_lS, M(g_sS));
-   s += StringFormat("BUY  chakkar: jeet %d  haar %d  kul %s\n", g_wB, g_lB, M(g_sB));
-   int n = g_wS + g_lS + g_wB + g_lB;
-   s += StringFormat("KUL: %s%s %s  |  fi chakkar %s  |  lagatar haar %d/%d  (ruk jayega %s)\n",
-                     Pick(g_sum >= 0.0, "+", ""), M(g_sum), cur,
-                     M(n > 0 ? g_sum / n : 0.0), g_lossRow, InpMaxLossRow, M(InpStopSum));
-   s += StringFormat("Band lots ka P/L (balance mein): %s\n", M(g_banked));
+   s += StringFormat("Jhukao: %d (jeet %d / haar %d)  kul %s  ausat %s  ausat %d sec\n",
+                     g_epN, g_epW, g_epL, M(g_epSum), M(g_epN > 0 ? g_epSum / g_epN : 0.0),
+                     (int)(g_epN > 0 ? g_epSecs / g_epN : 0));
+   s += StringFormat("Faide wali 0.01 band: %d (%s)   nayi 0.01: %d\n", g_cN, M(g_cSum), g_oN);
+   s += StringFormat("Jori: %d (%s)\n", g_jN, M(g_jSum));
    if(g_last != "") s += "Aakhri: " + g_last + "\n";
    s += "\n";
-   if(!InpUseNews)        s += "News: band (input)\n";
-   else if(!g_newsOK)     s += "News: calendar nahi mila - news ka khud khayal rakhein\n";
-   else if(g_newsBlock)   s += "News: ABHI ROK - " + g_newsName + "\n";
-   else if(g_newsAt > 0)  s += "News: agli bari " + TimeToString(g_newsAt, TIME_DATE | TIME_MINUTES) + " " + g_newsName + "\n";
-   else                   s += "News: agle 12 ghante mein koi bari nahi\n";
+   if(!InpUseNews)       s += "News: band (input)\n";
+   else if(!g_newsOK)    s += "News: calendar nahi mila\n";
+   else if(g_newsBlock)  s += "News: ABHI ROK - " + g_newsName + "\n";
+   else if(g_newsAt > 0) s += "News: agli " + TimeToString(g_newsAt, TIME_DATE | TIME_MINUTES) + " " + g_newsName + "\n";
+   else                  s += "News: agle 12 ghante mein koi bari nahi\n";
    Comment(s);
+  }
+
+void DrawLine()
+  {
+   if(!InpLines || !g_epOn || g_step <= 0.0) { ObjectDelete(0, "JCK_hedge"); return; }
+   double p = (g_epSide > 0) ? g_peak - g_step : g_peak + g_step;
+   if(ObjectFind(0, "JCK_hedge") < 0) ObjectCreate(0, "JCK_hedge", OBJ_HLINE, 0, 0, p);
+   ObjectSetDouble(0, "JCK_hedge", OBJPROP_PRICE, p);
+   ObjectSetInteger(0, "JCK_hedge", OBJPROP_COLOR, clrOrange);
+   ObjectSetInteger(0, "JCK_hedge", OBJPROP_STYLE, STYLE_DASH);
+   ObjectSetInteger(0, "JCK_hedge", OBJPROP_SELECTABLE, false);
+   ObjectSetString(0, "JCK_hedge", OBJPROP_TOOLTIP, "Yahan hedge (kitab jami)");
   }
 
 //+------------------------------------------------------------------+
@@ -525,73 +564,45 @@ void Work()
   {
    RefreshNews();
    g_trend = TrendNow();
-
    double buy, sell; int nb, ns;
    Book(buy, sell, nb, ns);
-   double net     = buy - sell;
-   double bid     = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double ask     = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   double spread  = ask - bid;
-   double stepNow = StepNow();
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double eq  = AccountInfoDouble(ACCOUNT_EQUITY);
+   if(g_eqBase <= 0.0) { g_eqBase = eq; Save(); }
+   double eqPct = (g_eqBase > 0.0) ? eq / g_eqBase * 100.0 : 100.0;
 
    if(AccountInfoInteger(ACCOUNT_MARGIN_MODE) != ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
       g_msg = "Ye account HEDGE nahi - EA kuch nahi karega";
    else if(bid > 0.0)
-     {
-      if(g_phase == 1)
-        {
-         bool   sl   = (g_side == 1);
-         double want = sl ? InpLot : -InpLot;   // SELL band = BUY ki taraf jhuki
-         if(MathAbs(net) < 1e-6)
-           {
-            g_phase = 0; g_ref = 0.0; g_lastAct = TimeCurrent();
-            g_msg   = "Kitab haath se jami ho gayi - chakkar khatam (gina nahi)";
-            Print("JAS CHAKKAR: ", g_msg);
-            Save();
-           }
-         else if(sl  && bid >= g_ref + g_step) Reopen("JEET");
-         else if(sl  && bid <= g_ref - g_step) Reopen("HAAR");
-         else if(!sl && ask <= g_ref - g_step) Reopen("JEET");
-         else if(!sl && ask >= g_ref + g_step) Reopen("HAAR");
-         else if(FridayAfter(InpFriFlat))      Reopen("JUMMA");
-         else if(MathAbs(net - want) > 1e-6)
-            g_msg = StringFormat("Dhyan: NET %+.2f hai, %+.2f hona chahiye tha (haath se lot?)", net, want);
-         else
-            g_msg = SideName(g_side) + " band. Intezar: upar ya neeche.";
-        }
-      else
-         TryStart(net, spread, stepNow);
-     }
+      Brain(buy - sell, bid, ask, eqPct);
 
-   DrawLines();
-   Panel(buy, sell, nb, ns, bid, ask, spread, stepNow);
+   Book(buy, sell, nb, ns);
+   DrawLine();
+   Panel(buy, sell, nb, ns, bid, ask, eqPct);
   }
 
-//+------------------------------------------------------------------+
 int OnInit()
   {
    trade.SetExpertMagicNumber(InpMagic);
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
-
-   if(InpLot <= 0.0 || InpStep <= 0.0 || InpStepAtr <= 0.0 || InpSlopeBars < 1)
+   if(InpLot <= 0.0 || InpMaxNet < InpLot || InpStep <= 0.0 || InpStepAtr <= 0.0 || InpSlopeBars < 1
+      || InpEqHaltPct >= InpEqStopPct)
      {
-      Alert("JAS CHAKKAR: Lot, Step, StepAtr aur SlopeBars 0 se bare hon");
+      Alert("JAS CHAKKAR: inputs theek nahi (Lot, MaxNet, Step, Equity %)");
       return(INIT_PARAMETERS_INCORRECT);
      }
    hEma = iMA(_Symbol, InpTrendTF, InpTrendEMA, 0, MODE_EMA, PRICE_CLOSE);
    hAtr = iATR(_Symbol, InpAtrTF, 14);
-   if(hEma == INVALID_HANDLE || hAtr == INVALID_HANDLE)
-     {
-      Alert("JAS CHAKKAR: EMA/ATR nahi bana");
-      return(INIT_FAILED);
-     }
+   if(hEma == INVALID_HANDLE || hAtr == INVALID_HANDLE) { Alert("JAS CHAKKAR: EMA/ATR nahi bana"); return(INIT_FAILED); }
 
    if(InpResetStats) ResetStats();
    Load();
+   if(InpResume) { g_halted = false; g_eqBase = AccountInfoDouble(ACCOUNT_EQUITY); Save(); }
    g_247 = Is247();
-   PrintFormat("JAS CHAKKAR %s shuru | %s | haal %d | %s | ref %s | 24/7 %s",
-               K_BUILD, _Symbol, g_phase, SideName(g_side), Px(g_ref), Pick(g_247, "haan", "nahi"));
+   PrintFormat("JAS CHAKKAR %s shuru | %s | equity buniyad %s | ruka %s | 24/7 %s",
+               K_BUILD, _Symbol, M(g_eqBase), Pick(g_halted, "haan", "nahi"), Pick(g_247, "haan", "nahi"));
    EventSetTimer(1);
    Work();
    return(INIT_SUCCEEDED);
@@ -602,7 +613,7 @@ void OnDeinit(const int reason)
    EventKillTimer();
    if(hEma != INVALID_HANDLE) IndicatorRelease(hEma);
    if(hAtr != INVALID_HANDLE) IndicatorRelease(hAtr);
-   ObjectDelete(0, "JCK_up"); ObjectDelete(0, "JCK_dn"); ObjectDelete(0, "JCK_ref");
+   ObjectDelete(0, "JCK_hedge");
    Comment("");
   }
 

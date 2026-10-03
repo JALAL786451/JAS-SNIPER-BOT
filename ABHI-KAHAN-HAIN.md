@@ -4,7 +4,7 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE: neeche "SAB SE TAAZA (3 Oct): JasChakkarEA k2 - BTC demo" dekho
+## SAB SE PEHLE: neeche "SAB SE TAAZA (3 Oct shaam): JasChakkarEA k3" dekho
 
 (Pakki kahani - accounts, qaide, sabaq, tools ka haal - `MERI-KAHANI.md` mein hai. Pehle woh parho.)
 
@@ -28,7 +28,14 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## SAB SE TAAZA (3 Oct): JasChakkarEA k2 - BTC demo (weekend)
+## SAB SE TAAZA (3 Oct shaam): JasChakkarEA k3 - "trend ko dost bana kar"
+
+- k2 test se pehle user ne naya naqsha diya: jami ki shart hatao, EA khud SELL/BUY khole aur band kare, sirf equity ka khayal; rukh ke khilaf nahi ("trend is our friend"), lot 0.01 se bari nahi, bari SELL jori se band, hedge zaroorat par magar zyada der nahi, seconds ka hisaab. Phir: **koi lot/jori nuqsan par band nahi, sirf 0 ya faida**; har sawal ka woh jawab jo 0/faida de ("asal maqsad profit").
+- Manzoor numbers: NET hadd 0.05, 1 step ulti chaal par hedge, equity (attach waqt ki) 95% rok / 90% hedge + ruk, jori = sab se zyada faide wali (bari SELL: sasti BUY pehle), nateeja >= 0. Hedge ke baad 300 sec thehrao, kaam ke beech 30 sec.
+- k3 bana (CLAUDE.md mein qaide Q0-Q8). Demo BTC par user ke 200+ lots pehle se khule. Mashwara: pehle `InpTrade = false` (SIRF DIKHANA) se dekhna EA kya karega - NET 0.05 se zyada ho to attach hote hi hedge karega.
+- Imaandari se bataya: jhukao ka nuqsan band nahi hota (Q0) magar floating mein rehta hai; lots barh sakti hain.
+
+## (purana) 3 Oct: JasChakkarEA k2 - BTC demo (weekend)
 
 - 2 Oct raat: $5 step par ginti reset, pehla $5 chakkar khula (demo gold). User ne ek MQL5 article (Part 9, Fib pullback depth / H1 range / autocorr, NQ par) bheja - bataya: naapne ke aalaat hain, likhne wala khud kehta hai forward-return test nahi hua; EA nahi, indicator ka mashwara. User ne kaha: abhi chakkar EA ko behtar karo, BUY + SELL dono, weekend par BTC demo.
 - **k2 bana:** InpSide AUTO (H1 EMA50 rukh: upar = SELL chakkar, neeche = BUY chakkar, saaf nahi = intezar) / sirf SELL / sirf BUY. BUY chakkar = sab se upar wali BUY 0.01 band, qeemat step neeche = nayi BUY (jeet). Step: gold $5, BTC ATR(M15) x 1. Spread > step ka 15% = naya chakkar nahi. 24/7 symbol par Jumma qaida band. SELL/BUY alag ginti + fi chakkar ausat + CSV (MQL5\Files\JasChakkar_<symbol>.csv). InpMinProfit default -9999. k1 ki ginti SELL ke khaane mein chali jati hai.
