@@ -1,0 +1,102 @@
+//@version=5
+// ============================================================================
+//  TONY'S EMA SCALPER — parakhne wali shakal (strategy)
+//
+//  YE MERI IJAAD NAHI. Ye us purane indicator ka HU-BA-HU tarjuma hai jo aap
+//  ne bheja, sirf itna farq ke ab ye STRATEGY hai - taake TradingView ka apna
+//  Strategy Tester asal natija de. Maine us ke qawaid BEHTAR NAHI kiye,
+//  warna test ka koi matlab na rehta.
+//
+//  ASAL QAWAID (jaisa us code mein tha):
+//    bullish = close ne EMA(20) ko cross kiya AUR candle upar band hui
+//    bearish = close ne EMA(20) ko cross kiya AUR candle neeche band hui
+//  Bas. Na trend filter, na stop, na target.
+//
+//  ASAL CODE MEIN JO KAMIYAN MILIN:
+//   1. highest(close,8) / lowest(close,8) wali laal-sabz lakeerein SIGNAL MEIN
+//      ISTEMAL HI NAHI HOTIN - woh sirf sajawat hain. Aur woh close par banti
+//      hain, high/low par nahi, is liye woh asal S/R bhi nahi.
+//   2. Koi stop loss nahi, koi take profit nahi.
+//   3. Koi bara-timeframe filter nahi.
+//   4. EMA cross khud ba khud sab se zyada jhoote signal deta hai jab bazaar
+//      ek jagah phansa ho - aur bazaar zyada tar phansa hi rehta hai.
+//   5. Puraana Pine (study/v1). "cross(...) == 1" ab chalta bhi nahi.
+//
+//  REPAINT: asal code history ko nahi badalta (koi security/offset nahi).
+//  Magar CHALTI HUI candle par teer aata jata rehta hai, kyunki close har
+//  second badalta hai. Yahan faisle sirf BAND candle par hote hain.
+// ============================================================================
+strategy("Tony EMA Scalper — TEST", overlay = true,
+     initial_capital       = 10000,
+     default_qty_type      = strategy.fixed,
+     default_qty_value     = 1,
+     pyramiding            = 0,
+     calc_on_every_tick    = false,
+     process_orders_on_close = true,
+     slippage              = 26,
+     commission_type       = strategy.commission.cash_per_order,
+     commission_value      = 0)
+
+gCore = "1 · Asal qawaid"
+emaLen   = input.int(20, "EMA length", minval=1, group=gCore)
+showDeco = input.bool(true, "Woh laal/sabz lakeerein dikhao (sajawat)", group=gCore)
+
+gRisk = "2 · Risk (asal code mein YE THA HI NAHI)"
+useStop  = input.bool(false, "ATR ka stop lagao", group=gRisk)
+atrLen   = input.int(14,  "ATR length", minval=2, group=gRisk)
+atrMult  = input.float(2.0, "Stop = ATR x", minval=0.5, step=0.1, group=gRisk)
+riskPct  = input.float(1.0, "Risk per trade (% equity)", minval=0.1, maxval=5.0, step=0.1, group=gRisk)
+
+gFilt = "3 · Filter (asal code mein YE BHI NAHI THA)"
+useHTF   = input.bool(false, "Bare timeframe ka trend filter", group=gFilt)
+htfTF    = input.timeframe("D", "Bara timeframe", group=gFilt)
+htfFast  = input.int(50,  "HTF EMA fast", minval=2, group=gFilt)
+htfSlow  = input.int(200, "HTF EMA slow", minval=3, group=gFilt)
+
+// ------------------------------------------------------------- HISAAB -----
+out = ta.ema(close, emaLen)
+atr = ta.atr(atrLen)
+
+// Asal code ki mantiq, lafz ba lafz:
+//   bearish = cross AND close[1] > close
+//   bullish = cross AND close[1] < close
+crossed = ta.cross(close, out)
+bearish = crossed and close[1] > close
+bullish = crossed and close[1] < close
+
+// Sajawat wali lakeerein - signal mein koi dakhal nahi (asal code jaisa hi)
+last8h = ta.highest(close, 8)
+lastl8 = ta.lowest (close, 8)
+plot(showDeco ? last8h : na, "High 8", color=color.new(color.red, 30), linewidth=2)
+plot(showDeco ? lastl8 : na, "Low 8",  color=color.new(color.green, 30), linewidth=2)
+plot(out, "EMA", color=color.new(color.blue, 0))
+
+// Optional HTF filter
+f_htf() =>
+    _f = ta.ema(close, htfFast)
+    _s = ta.ema(close, htfSlow)
+    [_f[1], _s[1]]
+[hF, hS] = request.security(syminfo.tickerid, htfTF, f_htf(), barmerge.gaps_off, barmerge.lookahead_off)
+bullOK = not useHTF or (not na(hF) and not na(hS) and hF > hS)
+bearOK = not useHTF or (not na(hF) and not na(hS) and hF < hS)
+
+// ---------------------------------------------------------------- TRADE ---
+// Asal code exit batata hi nahi, is liye yahan sab se saada tarjuma: ulta
+// signal aane par palat jao (hamesha bazaar mein). Stop lagana ho to upar
+// se on kar lein - phir farq khud dekh lijiye.
+slDist  = atr * atrMult
+qtyRisk = (useStop and slDist > 0) ? (strategy.equity * riskPct / 100.0) / slDist : 1.0
+qty     = math.max(qtyRisk, 0.0)
+
+if bullish and bullOK and qty > 0
+    strategy.entry("L", strategy.long, qty = qty)
+if bearish and bearOK and qty > 0
+    strategy.entry("S", strategy.short, qty = qty)
+
+if useStop and strategy.position_size > 0
+    strategy.exit("XL", from_entry = "L", stop = strategy.position_avg_price - slDist)
+if useStop and strategy.position_size < 0
+    strategy.exit("XS", from_entry = "S", stop = strategy.position_avg_price + slDist)
+
+plotshape(bearish and bearOK, title="Sell", style=shape.arrowdown, location=location.abovebar, color=color.new(color.red, 0), text="Sell")
+plotshape(bullish and bullOK, title="Buy",  style=shape.arrowup,   location=location.belowbar, color=color.new(color.green, 0), text="Buy")

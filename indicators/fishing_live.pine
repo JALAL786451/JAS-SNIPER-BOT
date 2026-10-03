@@ -1,0 +1,322 @@
+//@version=6
+// ============================================================================
+//  FISHING LIVE — kuch set nahi karna. Bas chart par daal dein.
+//
+//  Jalal ki apni Fishing Lots method, chart par chalti hui.
+//  Account: Exness StandardCent. Sab hisaab USC mein, jaisa app par dikhta hai.
+//
+//  KOI SETTING BADALNE KI ZAROORAT NAHI:
+//  Aapke qawaid gold ke dollar mein hain -- $1 faida, $3.50 ladder, $4 turn.
+//  Magar BTC 84,000 par hai aur wahan $3.50 kuch bhi nahi. Pehle ye aapko
+//  haath se theek karna parta tha. Ab script khud kar leta hai.
+//
+//  Har symbol aur har timeframe ke liye ek "qadam" khud naap liya jata hai:
+//
+//      qadam = ATR(14) / sqrt(is candle ke minute)
+//
+//  sqrt is liye ke bazaar ki chaal waqt ke square root se barhti hai -- 4 guna
+//  waqt mein harkat 2 guna hoti hai, 4 guna nahi. Is bantware se qadam har
+//  timeframe par takreeban ek jaisa rehta hai.
+//
+//  Gold par ye qadam ~0.50 dollar banta hai, aur us hisaab se:
+//      faida  = 2 qadam = ~$1.00     <- aapka asli qaida
+//      ladder = 7 qadam = ~$3.50     <- METHOD.md ka naapa hua faasla
+//      turn   = 8 qadam = ~$4.00     <- aapka asli qaida
+//  BTC par wohi qawaid BTC ki apni chaal ke hisaab se bare ho jate hain.
+//
+//  Panel sab se neechey likh kar dikhata hai ke is waqt qawaid kitne dollar
+//  ke bane. Gold par unhein dekh kar aap khud mila sakte hain.
+//
+//  YE TRADE NAHI KARTA. Sirf dikhata hai ke method kya kar rahi hoti.
+// ============================================================================
+indicator("Fishing Live", "FISH LIVE", overlay = true, max_lines_count = 100, max_labels_count = 100)
+
+// --- Sab pehle se set hai. Aam tor par haath lagane ki zaroorat nahi. -------
+g1        = "Account (Exness StandardCent)"
+startUSC  = input.float(52000, "Balance (USC)", minval = 1, group = g1)
+lotSize   = input.float(0.01, "Har lot ka size", minval = 0.001, step = 0.01, group = g1)
+spreadStp = input.float(0.5, "Spread + fees (qadam mein)", minval = 0.0, step = 0.1, group = g1)
+
+g2        = "Qawaid"
+atrLen    = input.int(14, "ATR (gold ke ilawa symbols ke liye)", minval = 2, group = g2)
+goldFish  = input.float(1.00, "GOLD: faida (dollar)", minval = 0.01, step = 0.1, group = g2)
+goldLad   = input.float(3.50, "GOLD: ladder (dollar)", minval = 0.01, step = 0.1, group = g2)
+goldTurn  = input.float(4.00, "GOLD: turn (dollar)", minval = 0.01, step = 0.5, group = g2)
+fishStp   = input.float(0.85, "Baqi symbols: faida  = kitne qadam", minval = 0.05, step = 0.05, group = g2)
+ladStp    = input.float(2.95, "Baqi symbols: ladder = kitne qadam", minval = 0.05, step = 0.05, group = g2)
+turnStp   = input.float(3.37, "Baqi symbols: turn   = kitne qadam", minval = 0.05, step = 0.05, group = g2)
+emaFast   = input.int(20, "EMA fast", minval = 1, group = g2)
+emaSlow   = input.int(50, "EMA slow", minval = 2, group = g2)
+maxAdds   = input.int(12, "Ek taraf zyada se zyada lots", minval = 1, maxval = 40, group = g2)
+basketUSC = input.float(10, "Basket kitne USC faide par Close All", minval = 0.1, step = 5, group = g2)
+
+g3        = "Dikhawa"
+showLines = input.bool(true, "Har khuli lot ki lakeer", group = g3)
+showNext  = input.bool(true, "Agli lot kahan lagegi", group = g3)
+cBuy      = input.color(#089981, "Buy", group = g3, inline = "c")
+cSell     = input.color(#F23645, "Sell", group = g3, inline = "c")
+cFlat     = input.color(#787B86, "Khali", group = g3, inline = "c")
+cTxt      = input.color(#111111, "Likhai", group = g3, inline = "e")
+cBg       = input.color(#FFFFFFEE, "Panel", group = g3, inline = "e")
+
+// ============================================================================
+//  QADAM — har symbol, har timeframe ke liye khud
+// ============================================================================
+// GOLD par aapke ASLI qawaid, jyon ke tyon -- koi hisaab nahi, koi andaza
+// nahi. $1 faida, $3.50 ladder, $4 turn.
+//
+// Pehle main gold par bhi ATR se naapta tha, aur woh 2.4 guna bara nikla
+// (faida 2.38, ladder 8.33). Jalal ke panel ne ye khud pakra. Wajah: ATR ko
+// sqrt(minute) se taqseem karne ka model farz karta hai ke bazaar mehez
+// bekhabar chaal chalta hai. Asli gold rujhaan banata hai, is liye bare
+// timeframe par qadam bara nikal aata hai -- gold 5m par 1.19, 1H par 2.07.
+// Yani woh bantwara gold par theek kaam nahi karta.
+//
+// Is liye ab: gold ke qawaid seedha likh diye gaye hain. Baqi symbols ke
+// liye ATR wala raasta rehta hai, aur us ke multiplier is tarah chune gaye
+// hain ke natija gold ke qawaid ke barabar nisbat mein rahe. BTC gold se
+// takreeban 20 guna mehnga hai, aur ye multiplier BTC par ladder ~$68 dete
+// hain -- yani $3.50 x 20. Wohi nisbat.
+isGold = str.contains(syminfo.ticker, "XAU") or str.contains(syminfo.ticker, "GOLD")
+tfMin  = math.max(1.0, timeframe.in_seconds(timeframe.period) / 60.0)
+stepU  = ta.atr(atrLen) / math.sqrt(tfMin)
+fishU  = isGold ? goldFish : stepU * fishStp
+ladU   = isGold ? goldLad  : stepU * ladStp
+turnU  = isGold ? goldTurn : stepU * turnStp
+spreadU = isGold ? 0.26 : stepU * spreadStp
+
+// Cent account: 1.00 lot par qeemat $1 hile to 100 USC. Yani 0.01 lot par
+// $1 = 1 USC -- theek wohi jo METHOD.md mein likha hai.
+f_usc(_move) => _move * lotSize * 100.0
+costUSC = f_usc(spreadU)
+
+emaF = ta.ema(close, emaFast)
+emaS = ta.ema(close, emaSlow)
+bias = emaF > emaS ? 1 : emaF < emaS ? -1 : 0
+
+// ============================================================================
+//  KITAB
+// ============================================================================
+var array<int>   legDir = array.new<int>()
+var array<float> legPx  = array.new<float>()
+var float lastAdd = na
+var int   origDir = 0
+var bool  unwound = false
+var float unwAt   = na
+var float freezePx = na
+var int   openBar  = na
+var int   baskets = 0
+// Kitni baar kaun sa phase chala. Ye is liye ke method ka DIL freeze hai --
+// agar woh kabhi chala hi nahi, to jo natija nazar aa raha hai woh sirf
+// fishing ka hai, poori method ka nahi.
+var int   nLadder = 0
+var int   nFreeze = 0
+var int   nUnwind = 0
+var float balUSC  = startUSC
+var string phase  = "INTEZAR"
+
+f_net() =>
+    _n = 0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _n := _n + array.get(legDir, i)
+    _n
+
+f_pl(_px) =>
+    _s = 0.0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _s := _s + f_usc((_px - array.get(legPx, i)) * array.get(legDir, i))
+    _s
+
+f_worst(_px) =>
+    _w = 0.0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _w := math.min(_w, (_px - array.get(legPx, i)) * array.get(legDir, i))
+    _w
+
+f_be() =>
+    _s = 0.0
+    _n = 0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _s := _s + array.get(legPx, i) * array.get(legDir, i)
+            _n := _n + array.get(legDir, i)
+    _n != 0 ? _s / _n : na
+
+// ============================================================================
+//  AMAL — sirf band ho chuki candle par
+// ============================================================================
+opened = 0
+closed = false
+
+if barstate.isconfirmed and bar_index > emaSlow + atrLen + 2 and not na(stepU) and stepU > 0
+    px = close
+    n = array.size(legDir)
+    pl = f_pl(px)
+    net = f_net()
+
+    // Jis lamhe kitab poori jam gayi, us waqt ka price yaad rakhna hai --
+    // Phase 6 ka faisla usi se hoga.
+    if n > 0 and net == 0 and na(freezePx)
+        freezePx := px
+    if n == 0
+        phase := "INTEZAR"
+        if bias != 0
+            array.push(legDir, bias)
+            array.push(legPx, px)
+            balUSC := balUSC - costUSC
+            origDir := bias
+            lastAdd := px
+            unwound := false
+            unwAt := na
+            opened := bias
+            openBar := bar_index
+            freezePx := na
+            phase := "FISHING"
+    else
+        worst = f_worst(px)
+        if pl >= basketUSC
+            balUSC := balUSC + pl
+            baskets := baskets + 1
+            array.clear(legDir)
+            array.clear(legPx)
+            lastAdd := na
+            origDir := 0
+            unwound := false
+            unwAt := na
+            closed := true
+            freezePx := na
+            openBar := na
+            phase := "CLOSE ALL"
+        else if n == 1 and (px - array.get(legPx, 0)) * array.get(legDir, 0) >= fishU
+            balUSC := balUSC + pl
+            baskets := baskets + 1
+            array.clear(legDir)
+            array.clear(legPx)
+            lastAdd := na
+            origDir := 0
+            unwound := false
+            unwAt := na
+            closed := true
+            freezePx := na
+            openBar := na
+            phase := "MACHLI PAKRI"
+        else if net == 0 and origDir != 0 and not na(freezePx) and (px - freezePx) * origDir >= turnU
+            _i = array.size(legDir) - 1
+            while _i >= 0
+                if array.get(legDir, _i) != origDir
+                    balUSC := balUSC + f_usc((px - array.get(legPx, _i)) * array.get(legDir, _i))
+                    array.remove(legDir, _i)
+                    array.remove(legPx, _i)
+                _i := _i - 1
+            lastAdd := px
+            unwound := true
+            unwAt := f_worst(px)
+            freezePx := na
+            nUnwind := nUnwind + 1
+            phase := "UNWIND"
+        else if (not unwound or worst <= nz(unwAt, 0.0) - turnU) and worst <= -turnU and net != 0 and n < maxAdds * 2
+            array.push(legDir, net > 0 ? -1 : 1)
+            array.push(legPx, px)
+            balUSC := balUSC - costUSC
+            opened := net > 0 ? -1 : 1
+            unwound := false
+            nFreeze := nFreeze + 1
+            phase := "FREEZE BANA RAHA"
+        else if net != 0 and math.abs(net) < maxAdds and not na(lastAdd) and math.abs(px - lastAdd) >= ladU
+            array.push(legDir, net > 0 ? 1 : -1)
+            array.push(legPx, px)
+            balUSC := balUSC - costUSC
+            lastAdd := px
+            opened := net > 0 ? 1 : -1
+            nLadder := nLadder + 1
+            phase := "LADDER"
+        else
+            phase := net == 0 ? "JAMI HUI (freeze)" : worst <= -turnU * 0.5 ? "INTEZAR (nuqsan mein)" : "CHAL RAHI HAI"
+
+// ============================================================================
+//  CHART PAR
+// ============================================================================
+plotshape(opened == 1, "Lot lagi (buy)", style = shape.triangleup, location = location.belowbar, color = cBuy, size = size.tiny, display = display.pane)
+plotshape(opened == -1, "Lot lagi (sell)", style = shape.triangledown, location = location.abovebar, color = cSell, size = size.tiny, display = display.pane)
+plotshape(closed, "Basket band", style = shape.xcross, location = location.abovebar, color = #2962FF, size = size.small, display = display.pane)
+
+var array<line>  LN = array.new<line>()
+var array<label> LB = array.new<label>()
+
+if barstate.islast
+    while array.size(LN) > 0
+        line.delete(array.pop(LN))
+    while array.size(LB) > 0
+        label.delete(array.pop(LB))
+
+    if showLines and array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _d = array.get(legDir, i)
+            _p = array.get(legPx, i)
+            _u = f_usc((close - _p) * _d)
+            _c = _d == 1 ? cBuy : cSell
+            array.push(LN, line.new(bar_index - 30, _p, bar_index + 6, _p, xloc = xloc.bar_index, color = color.new(_c, 40), style = line.style_dotted))
+            array.push(LB, label.new(bar_index + 7, _p, (_d == 1 ? "BUY  " : "SELL ") + str.tostring(lotSize, "#.##") + "   " + (_u >= 0 ? "+" : "") + str.tostring(_u, "#.##") + " USC", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(_c, 20), textcolor = color.white, size = size.tiny))
+        _b = f_be()
+        if not na(_b)
+            array.push(LN, line.new(bar_index - 30, _b, bar_index + 6, _b, xloc = xloc.bar_index, color = color.new(#2962FF, 10), width = 2))
+            array.push(LB, label.new(bar_index + 7, _b, "BARABAR  " + str.tostring(_b, format.mintick), xloc = xloc.bar_index, style = label.style_label_left, color = color.new(#2962FF, 10), textcolor = color.white, size = size.tiny))
+
+    if showNext and not na(lastAdd) and array.size(legDir) > 0 and f_net() != 0 and math.abs(f_net()) < maxAdds
+        _up = lastAdd + ladU
+        _dn = lastAdd - ladU
+        array.push(LN, line.new(bar_index, _up, bar_index + 6, _up, xloc = xloc.bar_index, color = color.new(cFlat, 45), style = line.style_dashed))
+        array.push(LN, line.new(bar_index, _dn, bar_index + 6, _dn, xloc = xloc.bar_index, color = color.new(cFlat, 45), style = line.style_dashed))
+        array.push(LB, label.new(bar_index + 7, _up, "agli lot yahan", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(cFlat, 30), textcolor = color.white, size = size.tiny))
+        array.push(LB, label.new(bar_index + 7, _dn, "agli lot yahan", xloc = xloc.bar_index, style = label.style_label_left, color = color.new(cFlat, 30), textcolor = color.white, size = size.tiny))
+
+// ============================================================================
+//  PANEL
+// ============================================================================
+var table TB = table.new(position.top_right, 2, 16, border_width = 1)
+
+f_row(_r, _a, _b, _tc) =>
+    table.cell(TB, 0, _r, _a, text_color = cTxt, text_size = size.small, text_halign = text.align_left, bgcolor = cBg)
+    table.cell(TB, 1, _r, _b, text_color = _tc, text_size = size.small, text_halign = text.align_right, bgcolor = cBg)
+
+if barstate.islast
+    nB = 0
+    nS = 0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            if array.get(legDir, i) == 1
+                nB := nB + 1
+            else
+                nS := nS + 1
+    pl = f_pl(close)
+    net = nB - nS
+    pCol = phase == "JAMI HUI (freeze)" ? #2962FF : phase == "CLOSE ALL" or phase == "MACHLI PAKRI" ? cBuy : phase == "FREEZE BANA RAHA" or phase == "LADDER" ? #F57C00 : cFlat
+
+    table.cell(TB, 0, 0, "ABHI: " + phase, text_color = color.white, text_size = size.normal, bgcolor = pCol)
+    table.cell(TB, 1, 0, str.tostring(nB + nS) + " lot", text_color = color.white, text_size = size.normal, bgcolor = pCol)
+    f_row(1, "Buy ki lots", str.tostring(nB) + "   (" + str.tostring(nB * lotSize, "#.##") + ")", nB > 0 ? cBuy : cFlat)
+    f_row(2, "Sell ki lots", str.tostring(nS) + "   (" + str.tostring(nS * lotSize, "#.##") + ")", nS > 0 ? cSell : cFlat)
+    f_row(3, "Net (barabar = 0)", str.tostring(net), net == 0 and nB + nS > 0 ? #2962FF : net > 0 ? cBuy : net < 0 ? cSell : cFlat)
+    f_row(4, "Kitab ka haal", (pl >= 0 ? "+" : "") + str.tostring(pl, "#.##") + " USC", pl >= 0 ? cBuy : cSell)
+    f_row(5, "Sab se bura leg", str.tostring(f_worst(close), "#.##") + " (qeemat)", cSell)
+    _beOk = nB + nS > 0 and math.abs(net) * 2 >= nB + nS
+    f_row(6, "Barabar hone ka price", not _beOk or na(f_be()) ? "kitab jami hui hai" : str.tostring(f_be(), format.mintick), cTxt)
+    f_row(7, "Baskets band hue", str.tostring(baskets), cTxt)
+    _age = na(openBar) ? 0 : bar_index - openBar
+    f_row(8, "Ye basket kitni der khuli", na(openBar) ? "-" : str.tostring(_age) + " candle", _age > 500 ? #B71C1C : cTxt)
+    // Balance woh hai jo band ho chuka. EQUITY asli haal hai -- balance jama
+    // khuli kitab. 17 August ko app 650 dikha rahi thi (equity) jab ke balance
+    // -264.72 tha. Us din ka sabaq yahi hai: sirf balance dekhna dhoka hai.
+    _eq = balUSC + pl
+    f_row(9, "Balance (band ho chuka)", str.tostring(balUSC, "#") + " USC", cTxt)
+    table.cell(TB, 0, 10, "EQUITY (asli haal)", text_color = color.white, text_size = size.normal, bgcolor = _eq >= startUSC ? cBuy : cSell)
+    table.cell(TB, 1, 10, str.tostring(_eq, "#") + " USC   =  $" + str.tostring(_eq / 100.0, "#.##"), text_color = color.white, text_size = size.normal, bgcolor = _eq >= startUSC ? cBuy : cSell)
+    table.cell(TB, 0, 11, "AB TAK KITNI BAAR", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    table.cell(TB, 1, 11, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    f_row(12, "Ladder lagi", str.tostring(nLadder), nLadder > 0 ? #F57C00 : cFlat)
+    f_row(13, "FREEZE bana (dil)", str.tostring(nFreeze) + (nFreeze == 0 ? "   <- kabhi nahi!" : ""), nFreeze > 0 ? #2962FF : #B71C1C)
+    f_row(14, "Unwind hua", str.tostring(nUnwind), nUnwind > 0 ? cBuy : cFlat)
+    f_row(15, isGold ? "Qawaid (GOLD - aapke apne)" : "Qawaid (khud naape hue)", "faida " + str.tostring(fishU, format.mintick) + " | ladder " + str.tostring(ladU, format.mintick) + " | turn " + str.tostring(turnU, format.mintick), cTxt)

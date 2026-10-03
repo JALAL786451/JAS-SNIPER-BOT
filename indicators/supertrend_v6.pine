@@ -1,0 +1,217 @@
+//@version=6
+// ============================================================================
+//  SUPERTREND — asli Pine v6, aur repaint ke baghair
+//
+//  Ye wohi mashhoor Supertrend hai jo aapne bheja. Do kaam kiye gaye hain:
+//
+//  1) ZABAAN THEEK KI
+//     Bheji hui file par //@version=6 likha tha magar andar ka code v2/v3 ka
+//     tha - study(), input(type=...), sma(tr,...), atr(), max(), transp=.
+//     Ye sab v6 mein khatam ho chuke hain, is liye woh chalta hi nahi tha.
+//     Hisaab bilkul wohi rakha gaya hai, ek number nahi badla.
+//
+//  2) LABEL SAHI JAGAH PAR  <- Jalal ne pakra, aur ye sab se bari baat hai
+//     Asli script Buy/Sell ka label BAND par lagata tha. Band wahan hota hai
+//     jahan se candle SHURU hui thi - jahan aap sauda kar hi nahi sakte thay.
+//     Misal: 1H par ek candle 4380 se 4240 tak giri. Label 4378 par laga.
+//     Dekhne mein lagta hai "4378 par sell mila". Haqeeqat: signal candle
+//     BAND hone par bana, jab price 4240 thi. 138 dollar pehle hi ja chuka.
+//     Yehi wajah hai ke Supertrend peeche ke chart par jaadu lagta hai.
+//     Ab label us qeemat par lagta hai jahan aap waqai daakhil ho sakte thay,
+//     aur ek nuqta-dar lakeer dikhati hai ke band kitna door reh gaya.
+//
+//  3) REPAINT BAND KIYA
+//     Asli script chalti candle ke close par trend palat deta tha. Chalta
+//     close har second badalta hai, to signal aata tha, phir gayab ho jata
+//     tha, phir aata tha. Peeche ke chart par ye nazar nahi aata - wahan har
+//     signal "sahi waqt par" lagta hai. Isi liye Supertrend peeche dekhne
+//     mein itna acha lagta hai aur live itna bura.
+//     Ab signal SIRF candle band hone par pakka hota hai.
+//
+//  IMANDARI KI BAAT:
+//  Supertrend ek TRAILING STOP hai, peshangoi karne wala aala nahi. Ye
+//  hamesha der se palatta hai - yehi uski banawat hai, kharabi nahi. Koi
+//  coding isko "aainda" batane wala nahi bana sakti.
+//  Ye kitna kaam ka hai, ye sirf Strategy Tester bata sakta hai. Kahein to
+//  ise strategy bana dein aur asli number dekh lein - jaise humne Tony wale
+//  EMA scalper ke saath kiya tha.
+// ============================================================================
+// timeframe = "" yahan nahi lag sakta: ye script table banata hai aur alert()
+// chalata hai, aur v6 in dono ke saath timeframe ki ijazat nahi deta (CE10080).
+// Nuqsan koi nahi - asli file mein resolution="" tha, jiska matlab bhi "wohi
+// timeframe jo chart par hai" tha. Yani pehle bhi kuch nahi kar raha tha.
+indicator("Supertrend", overlay = true, format = format.price, precision = 2, max_lines_count = 500)
+
+// ------------------------------------------------------- 1. ASLI SETTINGS --
+g1          = "1. Supertrend (asli settings)"
+Periods     = input.int(10,    "ATR Period", minval = 1, group = g1)
+src         = input.source(hl2, "Source", group = g1)
+Multiplier  = input.float(3.0, "ATR Multiplier", step = 0.1, minval = 0.1, group = g1)
+changeATR   = input.bool(true, "ATR ka tareeqa badlein? (ON = RMA, OFF = SMA)", group = g1)
+
+// ------------------------------------------------------------ 2. ACCURACY --
+g2          = "2. Accuracy"
+confirmBar  = input.bool(true,  "Signal sirf BAND candle par (repaint band)", group = g2)
+useHTF      = input.bool(false, "Bare timeframe ka filter lagayein", group = g2)
+htfTF       = input.timeframe("D", "Bara timeframe", group = g2)
+htfFast     = input.int(50,  "HTF EMA fast", minval = 1, group = g2)
+htfSlow     = input.int(200, "HTF EMA slow", minval = 1, group = g2)
+
+// ------------------------------------------------------------- 3. DIKHAWA --
+g3          = "3. Dikhawa"
+sigAtClose  = input.bool(true, "Label asli entry par (band par nahi)", group = g3)
+lblOff      = input.float(1.0, "Label candle se kitna door (ATR ka hissa)", minval = 0.0, maxval = 6.0, step = 0.25, group = g3)
+showLag     = input.bool(true, "Label se asli entry tak nuqta-dar lakeer", group = g3)
+showsignals = input.bool(true, "Buy/Sell labels", group = g3)
+highlighting= input.bool(true, "Highlighter on/off", group = g3)
+fillTransp  = input.int(85, "Highlighter ka halkapan", minval = 50, maxval = 98, group = g3)
+showPanel   = input.bool(true, "Hisaab ka panel", group = g3)
+cUp         = input.color(#089981, "Up",   group = g3, inline = "c")
+cDn         = input.color(#F23645, "Down", group = g3, inline = "c")
+
+// ============================================================================
+//  ASAL HISAAB - bheji hui file se bilkul wohi, sirf v6 ki zabaan mein
+// ============================================================================
+atr2 = ta.sma(ta.tr, Periods)
+atrV = changeATR ? ta.atr(Periods) : atr2
+
+up  = src - Multiplier * atrV
+up1 = nz(up[1], up)
+up := close[1] > up1 ? math.max(up, up1) : up
+
+dn  = src + Multiplier * atrV
+dn1 = nz(dn[1], dn)
+dn := close[1] < dn1 ? math.min(dn, dn1) : dn
+
+// Asli file mein: trend = 1 phir trend := nz(trend[1], trend).
+// v6 mein `var` isi kaam ko saaf tareeqe se karta hai - pehli candle par 1,
+// uske baad khud ba khud pichhli value. Natija bilkul wohi.
+var int trend = 1
+trend := trend == -1 and close > dn1 ? 1 : trend == 1 and close < up1 ? -1 : trend
+
+stLevel = trend == 1 ? up : dn
+
+// ============================================================================
+//  BARA TIMEFRAME KA FILTER - band candle par, is liye ye bhi repaint nahi karta
+// ============================================================================
+f_htf() =>
+    _f = ta.ema(close, htfFast)
+    _s = ta.ema(close, htfSlow)
+    [_f[1], _s[1]]
+
+[hF, hS] = request.security(syminfo.tickerid, htfTF, f_htf(), barmerge.gaps_off, barmerge.lookahead_off)
+
+htfReady = not na(hF) and not na(hS)
+htfLong  = not useHTF or (htfReady and hF > hS)
+htfShort = not useHTF or (htfReady and hF < hS)
+
+// ============================================================================
+//  SIGNAL - yahan repaint marta hai
+// ============================================================================
+flipUp = trend == 1  and trend[1] == -1
+flipDn = trend == -1 and trend[1] == 1
+ready  = not confirmBar or barstate.isconfirmed
+
+buySignal  = flipUp and ready and htfLong
+sellSignal = flipDn and ready and htfShort
+
+// Bara filter SIRF signal rokta hai. Supertrend ki lakeer apne hisaab se
+// palatti rahegi - woh trailing stop hai, use rokna ghalat hoga.
+// Ye nishan dikhate hain ke filter ne kya roka.
+blockUp = flipUp and ready and not htfLong
+blockDn = flipDn and ready and not htfShort
+
+// ============================================================================
+//  LABEL KAHAN LAGE, AUR "DER" KITNI HUI
+//
+//  Signal tab pakka hota hai jab candle BAND hoti hai. Us waqt qeemat close
+//  par hoti hai - yahi woh jagah hai jahan aap waqai daakhil ho sakte thay.
+//  Band (up/dn) wahan reh jaata hai jahan se candle chali thi.
+//  Dono ka farq = "der" - jitna faida/nuqsan signal milne se pehle ho chuka.
+// ============================================================================
+sigBand = buySignal ? up : dn
+buyY    = sigAtClose ? close : up
+sellY   = sigAtClose ? close : dn
+
+// Label candle se ATR ke hisaab se door. belowbar/abovebar kaafi nahi tha -
+// woh sirf USI candle se thora upar/neechey rakhta hai, to bagal ki lambi
+// candle label ko nigal leti thi. Ye faasla har jagah ek jaisa rehta hai.
+lblGap   = lblOff * atrV
+buyLblY  = low  - lblGap
+sellLblY = high + lblGap
+
+var float lastLag = na
+if buySignal or sellSignal
+    lastLag := math.abs(sigBand - close)
+    // Ek nuqta-dar lakeer label se asli entry tak. Buy par label neechey aur
+    // band bhi neechey, sell par dono upar - to ye lakeer band ke aar paar
+    // se guzarti hai. Yani ek hi lakeer teeno cheezein jor deti hai:
+    // label, band, aur woh qeemat jahan aap waqai daakhil ho sakte thay.
+    if showLag
+        line.new(bar_index, buySignal ? buyLblY : sellLblY, bar_index, close, color = color.new(buySignal ? cUp : cDn, 25), style = line.style_dotted, width = 1)
+
+// ============================================================================
+//  LAKEEREIN
+// ============================================================================
+// display.pane = sirf chart par bano, upar wali patti aur Data Window mein
+// mat aao. Warna patti par "Ø Ø Ø Ø Ø Ø" aur highlighter ka bemaqsad number
+// chhap jaata hai. (display.none NAHI - us se fill() ka rang gayab ho sakta
+// hai, kyunke fill in hi do lakeeron ke darmiyan bharta hai.)
+upPlot = plot(trend ==  1 ? up : na, "Up Trend",   style = plot.style_linebr, linewidth = 2, color = cUp, display = display.pane)
+dnPlot = plot(trend == -1 ? dn : na, "Down Trend", style = plot.style_linebr, linewidth = 2, color = cDn, display = display.pane)
+mPlot  = plot(ohlc4, "Highlighter anchor", style = plot.style_circles, linewidth = 1, color = color.new(color.white, 100), editable = false, display = display.pane)
+
+// Patti par sirf ek kaam ka number: Supertrend ki asli value. Ye chart par
+// kuch nahi banata, sirf upar likha aata hai.
+plot(stLevel, "Supertrend", display = display.data_window + display.status_line)
+
+fillUp = color.new(cUp, highlighting and trend ==  1 ? fillTransp : 100)
+fillDn = color.new(cDn, highlighting and trend == -1 ? fillTransp : 100)
+fill(mPlot, upPlot, title = "UpTrend Highlighter",   color = fillUp)
+fill(mPlot, dnPlot, title = "DownTrend Highlighter", color = fillDn)
+
+// Ye chhote gole THEEK us qeemat par hain jahan aap daakhil ho sakte thay.
+// Label ishara hai, ye gola hisaab hai.
+plotshape(buySignal  ? buyY  : na, "Entry (buy)",  location = location.absolute, style = shape.circle, size = size.small, color = cUp, display = display.pane)
+plotshape(sellSignal ? sellY : na, "Entry (sell)", location = location.absolute, style = shape.circle, size = size.small, color = cDn, display = display.pane)
+// Likhai candle ke BAHAR - belowbar/abovebar. Entry par rakhne se candle
+// label ke upar ban jaati thi aur "Buy" parha hi nahi jaata tha.
+// Asli qeemat batane ka kaam upar wala chhota gola aur nuqta-dar lakeer
+// karti hai; ye label sirf ishara hai ke is candle par signal bana.
+plotshape(buySignal  and showsignals ? buyLblY  : na, "Buy",  text = "Buy",  location = location.absolute, style = shape.labelup,   size = size.tiny, color = cUp, textcolor = color.white, display = display.pane)
+plotshape(sellSignal and showsignals ? sellLblY : na, "Sell", text = "Sell", location = location.absolute, style = shape.labeldown, size = size.tiny, color = cDn, textcolor = color.white, display = display.pane)
+plotshape(blockUp and showsignals ? buyLblY  : na, "Buy roka gaya",  text = "x", location = location.absolute, style = shape.labelup,   size = size.tiny, color = color.new(cUp, 55), textcolor = color.white, display = display.pane)
+plotshape(blockDn and showsignals ? sellLblY : na, "Sell roka gaya", text = "x", location = location.absolute, style = shape.labeldown, size = size.tiny, color = color.new(cDn, 55), textcolor = color.white, display = display.pane)
+
+// ============================================================================
+//  PANEL - Supertrend asal mein trailing stop hai, to uska faasla dikhayein
+// ============================================================================
+var table TB = table.new(position.top_right, 2, 6, border_width = 1)
+
+f_row(_r, _a, _b, _tc) =>
+    table.cell(TB, 0, _r, _a, text_color = #111111, text_size = size.small, text_halign = text.align_left,  bgcolor = #FFFFFFAA)
+    table.cell(TB, 1, _r, _b, text_color = _tc,     text_size = size.small, text_halign = text.align_right, bgcolor = #FFFFFFAA)
+
+if showPanel and barstate.islast
+    tCol = trend == 1 ? cUp : cDn
+    dist = math.abs(close - stLevel)
+    inAtr = atrV > 0 ? dist / atrV : 0.0
+    table.cell(TB, 0, 0, "SUPERTREND", text_color = color.white, text_size = size.normal, bgcolor = tCol)
+    table.cell(TB, 1, 0, str.tostring(Periods) + " / " + str.tostring(Multiplier, "#.#"), text_color = color.white, text_size = size.normal, bgcolor = tCol)
+    f_row(1, "Rukh", trend == 1 ? "UP" : "DOWN", tCol)
+    f_row(2, "ST (trailing stop)", str.tostring(stLevel, format.mintick), tCol)
+    f_row(3, "Faasla", str.tostring(dist, format.mintick) + "  (" + str.tostring(inAtr, "#.##") + " ATR)", #111111)
+    f_row(4, "Pichhle signal ki der", na(lastLag) ? "koi signal nahi" : str.tostring(lastLag, format.mintick) + "  (" + str.tostring(atrV > 0 ? lastLag / atrV : 0.0, "#.##") + " ATR)", na(lastLag) ? #787B86 : #111111)
+    f_row(5, "Bara filter", not useHTF ? "band hai (off)" : not htfReady ? "data nahi" : hF > hS ? "UP - sirf BUY" : "DOWN - sirf SELL", not useHTF ? #787B86 : hF > hS ? cUp : cDn)
+
+// ============================================================================
+//  ALERTS
+// ============================================================================
+alertcondition(buySignal,  title = "SuperTrend Buy",  message = "SuperTrend Buy!")
+alertcondition(sellSignal, title = "SuperTrend Sell", message = "SuperTrend Sell!")
+alertcondition(buySignal or sellSignal, title = "SuperTrend Direction Change", message = "SuperTrend has changed direction!")
+
+if buySignal
+    alert("SuperTrend BUY  " + syminfo.ticker + " " + timeframe.period + "  ST = " + str.tostring(stLevel, format.mintick), alert.freq_once_per_bar_close)
+if sellSignal
+    alert("SuperTrend SELL " + syminfo.ticker + " " + timeframe.period + "  ST = " + str.tostring(stLevel, format.mintick), alert.freq_once_per_bar_close)

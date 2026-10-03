@@ -1,0 +1,254 @@
+#!/usr/bin/env python3
+"""Static sanity checker for Pine Script v6 sources.
+
+Not a compiler - TradingView is the only Pine compiler that exists. This
+catches the failure classes that actually bite when you cannot compile:
+typos in identifiers, unbalanced brackets, tabs, bad block indentation,
+accidental line wrapping, and `:=` on a name that was never declared.
+"""
+import re
+import sys
+
+KEYWORDS = {
+    'if', 'else', 'for', 'to', 'by', 'in', 'while', 'switch', 'break',
+    'continue', 'return', 'var', 'varip', 'type', 'enum', 'method', 'import',
+    'export', 'and', 'or', 'not', 'true', 'false', 'na', 'series', 'simple',
+    'const', 'input',
+}
+
+TYPES = {'int', 'float', 'bool', 'string', 'color', 'line', 'label', 'box',
+         'table', 'linefill', 'polyline', 'array', 'matrix', 'map', 'chart'}
+
+NAMESPACES = {
+    'ta', 'math', 'str', 'array', 'matrix', 'map', 'color', 'box', 'line',
+    'label', 'table', 'linefill', 'polyline', 'chart', 'strategy', 'syminfo',
+    'timeframe', 'barstate', 'session', 'dayofweek', 'input', 'request',
+    'ticker', 'currency', 'order', 'plot', 'shape', 'location', 'size',
+    'position', 'text', 'display', 'format', 'scale', 'xloc', 'yloc',
+    'extend', 'alert', 'adjustment', 'earnings', 'dividends', 'splits',
+    'log', 'runtime', 'timezone', 'font', 'hline', 'math', 'barmerge',
+}
+
+BUILTIN_VARS = {
+    'open', 'high', 'low', 'close', 'volume', 'hl2', 'hlc3', 'ohlc4', 'hlcc4',
+    'time', 'time_close', 'time_tradingday', 'bar_index', 'last_bar_index',
+    'last_bar_time', 'timenow', 'year', 'month', 'weekofyear', 'dayofmonth',
+    'hour', 'minute', 'second', 'na',
+}
+
+BUILTIN_FUNCS = {
+    'indicator', 'strategy', 'library', 'plot', 'plotshape', 'plotchar',
+    'plotarrow', 'plotcandle', 'plotbar', 'fill', 'bgcolor', 'barcolor',
+    'hline', 'alertcondition', 'alert', 'nz', 'na', 'fixnan', 'int', 'float',
+    'bool', 'string', 'color', 'max_bars_back', 'timestamp',
+}
+
+KNOWN = KEYWORDS | TYPES | NAMESPACES | BUILTIN_VARS | BUILTIN_FUNCS
+
+
+def strip_noise(text):
+    """Blank out string literals and comments, preserving line structure."""
+    out, i, n = [], 0, len(text)
+    while i < n:
+        c = text[i]
+        if c == '"' or c == "'":
+            q = c
+            i += 1
+            while i < n and text[i] != q:
+                if text[i] == '\\':
+                    i += 1
+                i += 1
+            i += 1
+            out.append('""')
+        elif c == '/' and i + 1 < n and text[i + 1] == '/':
+            while i < n and text[i] != '\n':
+                i += 1
+        else:
+            out.append(c)
+            i += 1
+    return ''.join(out)
+
+
+def main(path):
+    raw = open(path, encoding='utf-8').read()
+    raw_lines = raw.split('\n')
+    problems = []
+
+    if not raw_lines[0].strip().startswith('//@version='):
+        problems.append('line 1: missing //@version= directive')
+
+    for i, ln in enumerate(raw_lines, 1):
+        if '\t' in ln:
+            problems.append(f'line {i}: contains a TAB - Pine wants spaces only')
+        if ln.rstrip() != ln and ln.strip():
+            problems.append(f'line {i}: trailing whitespace')
+        # v6 rejects linewidth < 1 (v2 accepted 0 to hide a plot). To hide a
+        # plot now, give it a fully transparent colour and width 1.
+        m = re.search(r'\blinewidth\s*=\s*(-?\d+)', ln)
+        if m and int(m.group(1)) < 1:
+            problems.append(
+                f'line {i}: linewidth = {m.group(1)} - Pine v6 needs 1 or more. '
+                f'To hide a plot use linewidth = 1 with a fully transparent colour.')
+
+    code = strip_noise(raw)
+    code_lines = code.split('\n')
+
+    # --- indicator(timeframe=) vs side effects (v6 CE10080) -----------------
+    # v6 refuses a timeframe/resolution argument on indicator() when the script
+    # also creates drawings or fires alerts, because those cannot be evaluated
+    # in another timeframe's context.
+    m = re.search(r'\b(indicator|strategy)\s*\(', code)
+    if m:
+        j, d = m.end(), 1
+        while j < len(code) and d > 0:
+            if code[j] == '(':
+                d += 1
+            elif code[j] == ')':
+                d -= 1
+            j += 1
+        head = code[m.end():j]
+        if re.search(r'\b(timeframe|resolution)\s*=', head):
+            effects = sorted({e for e in ('table.new', 'label.new', 'line.new',
+                                          'box.new', 'polyline.new', 'alert(')
+                              if e in code[j:]})
+            if effects:
+                ln = code[:m.start()].count('\n') + 1
+                problems.append(
+                    f'line {ln}: {m.group(1)}() takes a timeframe/resolution argument '
+                    f'while the script has side effects ({", ".join(effects)}). '
+                    f'Pine v6 rejects this (CE10080) - drop the argument.')
+
+    # --- bracket balance, and the continuation-indent trap --------------------
+    # Pine reads a wrapped line as a NEW BLOCK when its indent is a multiple of
+    # 4. So a continuation must be indented at something else (1, 2, 5, 6, ...),
+    # while an ordinary statement line must be at a multiple of 4. Which rule
+    # applies depends on whether a bracket is still open above it.
+    DANGLING = (',', '?', ':', '+', '-', '*', '/', '%', '=', 'and', 'or', 'not')
+    depth = 0
+    dangling = False
+    for i, ln in enumerate(code_lines, 1):
+        stripped = ln.strip()
+        leads = (stripped.startswith(('?', '+', '*', '/', '%', ',', ')', ']'))
+                 or (stripped.startswith(':') and not stripped.startswith(':='))
+                 or stripped.startswith(('and ', 'or ')))
+        continuation = depth > 0 or dangling or leads
+        if stripped:
+            indent = len(ln) - len(ln.lstrip(' '))
+            if continuation:
+                if indent % 4 == 0:
+                    problems.append(
+                        f'line {i}: continuation line indented {indent} (a multiple '
+                        f'of 4) - Pine will read it as a new block. Use 1, 2, 5 or 6 '
+                        f'spaces, or keep the statement on one line.')
+            elif indent % 4 != 0:
+                problems.append(f'line {i}: indent of {indent} is not a multiple of 4')
+        for c in ln:
+            if c in '([':
+                depth += 1
+            elif c in ')]':
+                depth -= 1
+            if depth < 0:
+                problems.append(f'line {i}: closing bracket with nothing open')
+                depth = 0
+        if stripped:
+            # A word operator only dangles when it IS the last word - not when
+            # it merely ends an identifier ("anchor" ends in "or", "showBand"
+            # ends in "and"). Symbols need no such care.
+            dangling = (not stripped.endswith('=>')
+                        and (any(stripped.endswith(t) for t in DANGLING
+                                 if not t.isalpha())
+                             or bool(re.search(r'(?<![A-Za-z0-9_])(and|or|not)$',
+                                               stripped))))
+    if depth != 0:
+        problems.append(f'end of file: {depth} bracket(s) never closed')
+
+    # --- "for i = 0 to array.size(x) - 1" on a possibly empty array ---------
+    # Pine picks the loop direction from the bounds, so on an empty array this
+    # becomes "for i = 0 to -1" and runs DOWNWARD through i = 0, which then
+    # reads element 0 of a zero-length array: RE10045 at runtime, nothing at
+    # compile time. Safe only behind a size guard, or when the array is built
+    # with array.from(...) and so can never be empty.
+    fixed = set(re.findall(r'(?m)(?:^|\s)([A-Za-z_]\w*)\s*=\s*array\.from\s*\(', code))
+    for m in re.finditer(r'(?m)^(\s*)for\s+[A-Za-z_]\w*\s*=\s*0\s+to\s+array\.size\s*\(\s*([A-Za-z_]\w*)\s*\)\s*-\s*1\b', code):
+        arr = m.group(2)
+        if arr in fixed:
+            continue
+        ln = code[:m.start()].count('\n') + 1
+        before = '\n'.join(code_lines[max(0, ln - 5):ln - 1])
+        guarded = re.search(r'array\.size\s*\(\s*' + re.escape(arr) + r'\s*\)\s*(?:>|!=|>=)', before)
+        if not guarded:
+            problems.append(
+                f'line {ln}: "for ... = 0 to array.size({arr}) - 1" with no size guard above it. '
+                f'On an empty array Pine runs this backwards through 0 and reads element 0 '
+                f'(RE10045). Wrap it in "if array.size({arr}) > 0".')
+
+    # --- collect declared names --------------------------------------------
+    declared = set()
+    # user functions + their parameters
+    for m in re.finditer(r'(?m)^([A-Za-z_]\w*)\s*\(([^)]*)\)\s*=>', code):
+        declared.add(m.group(1))
+        for part in m.group(2).split(','):
+            part = part.strip()
+            if part:
+                declared.add(re.split(r'[\s=]+', part)[-1] if '=' in part
+                             else part.split()[-1])
+    # types and their fields
+    for m in re.finditer(r'(?m)^type\s+([A-Za-z_]\w*)\s*$', code):
+        declared.add(m.group(1))
+    for m in re.finditer(r'(?m)^\s+[A-Za-z_][\w<>]*\s+([A-Za-z_]\w*)\s*$', code):
+        declared.add(m.group(1))
+    # loop counters
+    for m in re.finditer(r'\bfor\s+([A-Za-z_]\w*)\s*(?:=|\bin\b)', code):
+        declared.add(m.group(1))
+    # tuple destructuring: `[a, b] = f()` and `for [i, v] in arr`
+    for m in re.finditer(r'\[([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)+)\]\s*(?:=(?!=)|\bin\b)', code):
+        for part in m.group(1).split(','):
+            declared.add(part.strip())
+    # assignments, typed or bare, at any indent
+    decl_re = re.compile(
+        r'(?m)^\s*(?:var\s+|varip\s+)?'
+        r'(?:(?:int|float|bool|string|color|line|label|box|table|'
+        r'array<[^>]*>|map<[^>]*>|matrix<[^>]*>|[A-Z]\w*)'
+        r'(?:\s*\[\s*\])?\s+)?'
+        r'([A-Za-z_]\w*)\s*(?::=|=)(?!=)')
+    for m in decl_re.finditer(code):
+        declared.add(m.group(1))
+
+    # --- usage check --------------------------------------------------------
+    # drop named arguments (`foo(bar = 1)`) so they are not read as identifiers
+    usage_src = re.sub(r'#[0-9a-fA-F]{6,8}', ' ', code)  # hex colour literals
+    usage_src = re.sub(r'(?<=[(,])\s*[A-Za-z_]\w*\s*=(?!=)', ' ', usage_src)
+    # drop member access - `x.field` members are validated by Pine, not here
+    usage_src = re.sub(r'\.\s*[A-Za-z_]\w*', '', usage_src)
+
+    unknown = {}
+    for m in re.finditer(r'\b[A-Za-z_]\w*\b', usage_src):
+        name = m.group(0)
+        if name in KNOWN or name in declared:
+            continue
+        ln = usage_src[:m.start()].count('\n') + 1
+        unknown.setdefault(name, []).append(ln)
+
+    for name, lines in sorted(unknown.items()):
+        problems.append(f'undeclared identifier "{name}" used at line(s) '
+                        f'{", ".join(str(x) for x in lines[:6])}')
+
+    # --- `:=` must target something already declared ------------------------
+    for m in re.finditer(r'(?m)^\s*([A-Za-z_]\w*)\s*:=', code):
+        if m.group(1) not in declared:
+            ln = code[:m.start()].count('\n') + 1
+            problems.append(f'line {ln}: ":=" assigns to undeclared "{m.group(1)}"')
+
+    print(f'--- {path} ---')
+    print(f'{len(raw_lines)} lines, {len(declared)} declared names')
+    if problems:
+        print(f'\n{len(problems)} issue(s):')
+        for p in problems:
+            print('  !', p)
+        return 1
+    print('\nNo structural issues found.')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1]))
