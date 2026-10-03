@@ -4,7 +4,7 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE: neeche "SAB SE TAAZA (2 Oct raat): JasChakkarEA k1" dekho
+## SAB SE PEHLE: neeche "SAB SE TAAZA (3 Oct): JasChakkarEA k2 - BTC demo" dekho
 
 (Pakki kahani - accounts, qaide, sabaq, tools ka haal - `MERI-KAHANI.md` mein hai. Pehle woh parho.)
 
@@ -28,7 +28,13 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## SAB SE TAAZA (2 Oct raat): JasChakkarEA k1 - demo test baqi
+## SAB SE TAAZA (3 Oct): JasChakkarEA k2 - BTC demo (weekend)
+
+- 2 Oct raat: $5 step par ginti reset, pehla $5 chakkar khula (demo gold). User ne ek MQL5 article (Part 9, Fib pullback depth / H1 range / autocorr, NQ par) bheja - bataya: naapne ke aalaat hain, likhne wala khud kehta hai forward-return test nahi hua; EA nahi, indicator ka mashwara. User ne kaha: abhi chakkar EA ko behtar karo, BUY + SELL dono, weekend par BTC demo.
+- **k2 bana:** InpSide AUTO (H1 EMA50 rukh: upar = SELL chakkar, neeche = BUY chakkar, saaf nahi = intezar) / sirf SELL / sirf BUY. BUY chakkar = sab se upar wali BUY 0.01 band, qeemat step neeche = nayi BUY (jeet). Step: gold $5, BTC ATR(M15) x 1. Spread > step ka 15% = naya chakkar nahi. 24/7 symbol par Jumma qaida band. SELL/BUY alag ginti + fi chakkar ausat + CSV (MQL5\Files\JasChakkar_<symbol>.csv). InpMinProfit default -9999. k1 ki ginti SELL ke khaane mein chali jati hai.
+- **Agla:** k2 compile, BTC demo (BTCUSDm) par 5 BUY 0.01 + 5 SELL 0.01 alag alag, EA AUTO par. Peer ko CSV/panel dekh kar: kis taraf ka chakkar, rukh ke saath kitna.
+
+## (purana) 2 Oct raat: JasChakkarEA k1 - demo test
 
 - NFP guzar gaya. JasTide t4 ka test user ne kar liya (number abhi nahi bheje).
 - **Live kitab (2 Oct ~8 PM, qeemat ~4142):** 99 position, BUY 0.68 / SELL 0.68, NET 0, Close All **-2,920**. Subha -3,277 tha - user ne haath se SELL upar shift kar ke +355 behtar kiya. 4 hisse:
