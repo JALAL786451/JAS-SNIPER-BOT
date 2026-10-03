@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD k3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD k3a  <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|  JasChakkarEA.mq5  -  "trend ko dost bana kar"                    |
@@ -33,7 +33,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define K_BUILD "k3"
+#define K_BUILD "k3a"
 
 input group "=== 1 - Jhukao ==="
 input bool   InpTrade         = true;     // true = asal kaam; false = sirf panel par batao
@@ -342,6 +342,7 @@ bool TryJori()
       long want = (long)MathRound(vol[b] / step), got = 0;
       int  sel[]; ArrayResize(sel, nc); int ns = 0;
       double res = 0.0;
+      bool   calcOk = true;
       for(int k = 0; k < nc && got < want; k++)
         {
          int i = cand[k];
@@ -349,11 +350,12 @@ bool TryJori()
          if(got + u > want) continue;
          double r = 0.0;
          // jori ka nateeja = do lots ke khulne ke price ka farq
-         if(bigBuy) OrderCalcProfit(ORDER_TYPE_SELL, _Symbol, vol[i], px[i], px[b], r);
-         else       OrderCalcProfit(ORDER_TYPE_BUY,  _Symbol, vol[i], px[i], px[b], r);
+         bool calc = bigBuy ? OrderCalcProfit(ORDER_TYPE_SELL, _Symbol, vol[i], px[i], px[b], r)
+                            : OrderCalcProfit(ORDER_TYPE_BUY,  _Symbol, vol[i], px[i], px[b], r);
+         if(!calc) { calcOk = false; break; }
          sel[ns] = i; ns++; got += u; res += r;
         }
-      if(got != want || res < InpMinJori) continue;   // adhoori ya nuqsan wali jori - nahi
+      if(!calcOk || got != want || res < InpMinJori) continue;   // hisaab nahi bana, adhoori ya nuqsan wali jori - nahi
 
       long bigId = 0;
       if(PositionSelectByTicket(tk[b])) bigId = PositionGetInteger(POSITION_IDENTIFIER);
