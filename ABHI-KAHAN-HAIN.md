@@ -4,7 +4,7 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE: neeche "SAB SE TAAZA (3 Oct shaam): JasChakkarEA k3" dekho
+## SAB SE PEHLE: neeche "SAB SE TAAZA (4 Oct): JasChakkarEA k4 - Close All" dekho
 
 (Pakki kahani - accounts, qaide, sabaq, tools ka haal - `MERI-KAHANI.md` mein hai. Pehle woh parho.)
 
@@ -28,7 +28,14 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **User ka jori ka apna qaida (1 Oct raat):** SELL ko **sab se UPAR wali (mehngi) BUY** ke saath band karna, taake **neeche wali BUY bachi rahein** - JasJoriClose ne ulta kiya tha (sasti BUY pehle, behtareen nateeje ke liye). Pس-manzar: trade BUY se shuru ki, news ne neeche palta, user BUY ko neeche laya, qeemat bohot giri to BUY zyada khul gayin. Account us waqt **53,330 USC** tha. Imaandari se batana hai: jami kitab mein kaun si jori band ho, KUL nuqsan wahi rehta hai (sirf balance vs khula hisaab badalta hai); aur abhi dono taraf 0.55 hai - saari SELL ko BUY se jorne ka matlab poori kitab band. Option ke taur par script mein "upar wali BUY pehle" input - user ki manzoori ke baad hi
 
-## SAB SE TAAZA (3 Oct shaam): JasChakkarEA k3 - "trend ko dost bana kar"
+## SAB SE TAAZA (4 Oct): JasChakkarEA k4 - Close All
+
+- k3a BTC demo par chala (0 errors; pehle k3 ki 2 warnings - jori mein OrderCalcProfit unchecked - k3a mein theek). Pehle panel par 2 jori faide mein (+0.06), NET 0.
+- Kitab jama hoti gayi (Q0 + hedge = har dafa nayi lots). User ne apne qaide par haath se Close All kiye: 2 dafa, phir 274 lots par, phir 182 lots par **+30.16 USD**. User ka qaida: SELL+BUY mila kar faida ho to Close All, phir rukh ke hisaab se naya setup.
+- **k4:** Q9 Close All - symbol ki saari lots ka P/L >= `InpCloseAll` (default 30, demo par user ka number) par sab band, Close All adhoora ho to agle tick jari, phir hedge-thehrao ke baghair naya setup. Panel par "Close All: ginti (kul) | hadd, abhi"; CSV "closeall".
+- Agla: k4 compile + BTC demo par chalana.
+
+## (purana) 3 Oct shaam: JasChakkarEA k3 - "trend ko dost bana kar"
 
 - k2 test se pehle user ne naya naqsha diya: jami ki shart hatao, EA khud SELL/BUY khole aur band kare, sirf equity ka khayal; rukh ke khilaf nahi ("trend is our friend"), lot 0.01 se bari nahi, bari SELL jori se band, hedge zaroorat par magar zyada der nahi, seconds ka hisaab. Phir: **koi lot/jori nuqsan par band nahi, sirf 0 ya faida**; har sawal ka woh jawab jo 0/faida de ("asal maqsad profit").
 - Manzoor numbers: NET hadd 0.05, 1 step ulti chaal par hedge, equity (attach waqt ki) 95% rok / 90% hedge + ruk, jori = sab se zyada faide wali (bari SELL: sasti BUY pehle), nateeja >= 0. Hedge ke baad 300 sec thehrao, kaam ke beech 30 sec.

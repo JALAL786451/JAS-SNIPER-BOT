@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD k3a  <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD k4   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|  JasChakkarEA.mq5  -  "trend ko dost bana kar"                    |
@@ -20,6 +20,10 @@
 //|       Close By, sab se zyada faide wali jori - nateeja >= 0.      |
 //|   Q7  Seconds ka hisaab: har jhukao kitne second khula raha,      |
 //|       panel aur CSV mein.                                         |
+//|   Q9  CLOSE ALL (user ka apna qaida, 4 Oct): is symbol ki SAARI    |
+//|       lots ka mila hua P/L InpCloseAll tak pohnche to sab band,   |
+//|       phir khali kitab se rukh ke hisaab se naya setup.           |
+//|       (Q0 akeli lot ke liye hai; Close All mila kar faide mein.)  |
 //|   Q8  Equity (attach ke waqt ki equity se): 95% par naya jhukao   |
 //|       band, 90% par sab hedge aur EA ruk jata hai.                |
 //|                                                                   |
@@ -33,7 +37,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define K_BUILD "k3a"
+#define K_BUILD "k4"
 
 input group "=== 1 - Jhukao ==="
 input bool   InpTrade         = true;     // true = asal kaam; false = sirf panel par batao
@@ -54,6 +58,10 @@ input group "=== 3 - Rukh ==="
 input ENUM_TIMEFRAMES InpTrendTF   = PERIOD_H1;  // Rukh kis timeframe se
 input int             InpTrendEMA  = 50;         // EMA kitni
 input int             InpSlopeBars = 3;          // EMA ka jhukaav kitni candles par
+
+input group "=== 3b - Close All (Q9) ==="
+input bool   InpUseCloseAll = true;    // Saari lots mila kar faide mein hon to Close All
+input double InpCloseAll    = 30.0;    // Kitne faide par (account ki currency) - demo par user +30 par karta hai
 
 input group "=== 4 - Jori (bari lot) ==="
 input bool   InpJori      = true;    // Bari lot ki jori Close By se
@@ -102,6 +110,8 @@ long     g_epSecs = 0;
 int      g_jN = 0;    double g_jSum = 0.0;
 int      g_cN = 0;    double g_cSum = 0.0;   // akeli faide wali lots band
 int      g_oN = 0;                           // nayi lots kholi
+int      g_caN = 0;   double g_caSum = 0.0;  // Close All
+bool     g_closing = false;                  // Close All adhoora - agle tick par jari
 
 datetime g_lastAct = 0, g_lastTry = 0;
 string   g_msg = "Shuru", g_last = "";
@@ -130,7 +140,7 @@ void Save()
    SV("epEq", g_epEq); SV("epMax", g_epMax); SV("peak", g_peak); SV("lastAdd", g_lastAdd);
    SV("step", g_step); SV("hedgeAt", (double)g_hedgeAt);
    SV("epW", g_epW); SV("epL", g_epL); SV("epN", g_epN); SV("epSum", g_epSum); SV("epSecs", (double)g_epSecs);
-   SV("jN", g_jN); SV("jSum", g_jSum); SV("cN", g_cN); SV("cSum", g_cSum); SV("oN", g_oN);
+   SV("jN", g_jN); SV("jSum", g_jSum); SV("cN", g_cN); SV("cSum", g_cSum); SV("oN", g_oN); SV("caN", g_caN); SV("caSum", g_caSum);
   }
 
 void Load()
@@ -143,12 +153,12 @@ void Load()
    g_epW = (int)GV("epW", 0); g_epL = (int)GV("epL", 0); g_epN = (int)GV("epN", 0);
    g_epSum = GV("epSum", 0.0); g_epSecs = (long)GV("epSecs", 0);
    g_jN = (int)GV("jN", 0); g_jSum = GV("jSum", 0.0);
-   g_cN = (int)GV("cN", 0); g_cSum = GV("cSum", 0.0); g_oN = (int)GV("oN", 0);
+   g_cN = (int)GV("cN", 0); g_cSum = GV("cSum", 0.0); g_oN = (int)GV("oN", 0); g_caN = (int)GV("caN", 0); g_caSum = GV("caSum", 0.0);
   }
 
 void ResetStats()
   {
-   string n[] = {"epW", "epL", "epN", "epSum", "epSecs", "jN", "jSum", "cN", "cSum", "oN"};
+   string n[] = {"epW", "epL", "epN", "epSum", "epSecs", "jN", "jSum", "cN", "cSum", "oN", "caN", "caSum"};
    for(int i = 0; i < ArraySize(n); i++) GlobalVariableDel(Key(n[i]));
   }
 
@@ -427,12 +437,72 @@ bool FridayAfter(int hour)
   }
 
 //+------------------------------------------------------------------+
+//|  Q9 - Close All                                                   |
+//+------------------------------------------------------------------+
+double BookPL()
+  {
+   double pl = 0.0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      pl += PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP);
+     }
+   return(pl);
+  }
+
+bool TryCloseAll()
+  {
+   double b, sl; int nb, ns;
+   Book(b, sl, nb, ns);
+   int n = nb + ns;
+   if(n == 0) { g_closing = false; return(false); }
+   double pl = BookPL();
+   if(!g_closing && pl < InpCloseAll) return(false);
+   if(!InpTrade) { g_msg = StringFormat("SIRF DIKHANA: abhi Close All hota (%s)", M(pl)); return(false); }
+   if(TimeCurrent() - g_lastTry < 2) return(true);
+   g_lastTry = TimeCurrent();
+
+   double balBefore = AccountInfoDouble(ACCOUNT_BALANCE);
+   if(!g_closing) { g_closing = true; SV("caStartBal", balBefore); SV("caStartAt", (double)TimeCurrent()); SV("caLots", n); }
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(!trade.PositionClose(t)) Print("JAS CHAKKAR: Close All #", t, " nahi hua: ", trade.ResultRetcode());
+     }
+   Book(b, sl, nb, ns);
+   if(nb + ns > 0)
+     {
+      g_msg = StringFormat("Close All jari: %d lots baqi", nb + ns);
+      return(true);
+     }
+   double res  = AccountInfoDouble(ACCOUNT_BALANCE) - GV("caStartBal", balBefore);
+   long   secs = (long)(TimeCurrent() - (datetime)GV("caStartAt", (double)TimeCurrent()));
+   int    lots = (int)GV("caLots", n);
+   g_closing = false;
+   g_caN++; g_caSum += res;
+   EpEnd("Close All");
+   g_hedgeAt = 0;                                   // khali kitab: naya setup fauran
+   g_last = StringFormat("CLOSE ALL: %d lots, nateeja %s%s (%d second)", lots, Pick(res >= 0.0, "+", ""), M(res), (int)secs);
+   Print("JAS CHAKKAR: ", g_last);
+   Csv("closeall", res, secs, IntegerToString(lots) + " lots");
+   g_lastAct = TimeCurrent();
+   g_msg = "Close All ho gaya. Rukh dekh kar naya setup.";
+   Save();
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
 //|  Dimagh                                                           |
 //+------------------------------------------------------------------+
 void Brain(double net, double bid, double ask, double eqPct)
   {
    int    sn  = Sgn(net);
    double stp = StepNow();
+
+   //--- Q9: Close All - saari lots mila kar faide mein
+   if(InpUseCloseAll && TryCloseAll()) return;
 
    //--- Q8: equity ki aakhri hadd
    if(eqPct <= InpEqHaltPct && !g_halted)
@@ -539,6 +609,7 @@ void Panel(double buy, double sell, int nb, int ns, double bid, double ask, doub
                      (int)(g_epN > 0 ? g_epSecs / g_epN : 0));
    s += StringFormat("Faide wali 0.01 band: %d (%s)   nayi 0.01: %d\n", g_cN, M(g_cSum), g_oN);
    s += StringFormat("Jori: %d (%s)\n", g_jN, M(g_jSum));
+   s += StringFormat("Close All: %d (%s)   |   hadd +%s, abhi %s\n", g_caN, M(g_caSum), M(InpCloseAll), M(BookPL()));
    if(g_last != "") s += "Aakhri: " + g_last + "\n";
    s += "\n";
    if(!InpUseNews)       s += "News: band (input)\n";
