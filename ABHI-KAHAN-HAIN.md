@@ -25,6 +25,8 @@ User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 
 **Sabaq jo naape gaye (dobara mat sikhana):** chakkar asal mein 0.01 ki rukh wali shart hai (k1 gold demo $1 step: 47 chakkar, 20/27, -6.85, gold gira); $1 step par spread+slippage ~15%, $5 par ~3%. k3 mein Close All na hone se hedge har dafa nayi lots jorta tha (kitab 270+).
 
+**Naya kaam jo user ne 7 Oct ko manga (abhi shuru nahi hua):** "SMC Pro v2 jaisa naam, ~1530 lines" wali Pine script ko **`//@version=6`** mein karna, aur ho sake to behtar (tweak). Repo mein qareeb tareen: `indicators/smc_coach_pro_v3.pine` (pehle naam smc_coach_pro_v2, **1625 lines, abhi @version=5**). User se pehle poochha gaya: yahi file hai ya us ke computer ki koi aur (to paste kare)? aur "tweak" mein kya chahiye? - **jawab baqi**. v6 mein badalte waqt dhyan: `na` ko bool mein nahi rakh sakte, `int`/`float` ka khud badalna kam, `when=` hata, `transp` hata, `security` lookahead, `strategy` ke parameters; repo mein `tools/pinecheck.py` hai.
+
 **Raw link hamesha commit hash wala do.** Branch: `claude/gifted-faraday-zs7wcz`.
 
 ## Purani tafseel neeche (zarurat ho to)
