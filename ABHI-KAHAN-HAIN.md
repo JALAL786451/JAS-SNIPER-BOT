@@ -4,7 +4,30 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## SAB SE PEHLE: neeche "SAB SE TAAZA (4 Oct): JasChakkarEA k4 - Close All" dekho
+## >>> AGLI CHAT YAHAN SE SHURU KARE (7 Oct 2026) <<<
+
+User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
+
+| Cheez | Haal |
+|---|---|
+| Kaam | **`JasChakkarEA.mq5` build k4** (repo root). Demo par test |
+| Kahan chal raha | DEMO 472540009 (Exness-MT5Trial16, USD, hedge), **BTCUSDm** H1 chart (weekend gold band tha; gold `XAUUSDm` chart par bhi laga ho sakta hai) |
+| k4 compile? | **Pata nahi** - user ko k4 raw link diya, "D" ka jawab nahi aaya. Pehle poochho: compile hua? panel par `k4` aata hai? |
+| Khula sawal (user ka) | "Close All ke baad pehli lot par kitne nuqsan par hedge, kitne faide par band?" Jawab diya: nuqsan = 1 step (BTC ~$75 = $0.75 fi 0.01) par ulti lot se jami (band nahi, Q0); faida = koi fixed nahi, rukh ke saath har step +0.01 (NET 0.05 tak), chot se 1 step wapsi par faide wali lots band, baqi Close All +30 par. **Poocha: pehli lot ka fixed faida chahiye? A) +1 step par band phir naya setup, B) jaisa hai, C) aur number - JAWAB BAQI** |
+| Live kitab (cent, gold) | 2 Oct raat: 99 position, BUY 0.68 / SELL 0.68, NET 0, Close All ~-2,920 USC. Saara nuqsan 28 Sep ki 0.59 BUY @ ~4213. Us ke baad ka haal user ne nahi bataya - poochho |
+| Live par EA | **Koi nahi.** Live sirf tab jab demo par saaf nateeja ho |
+
+**k4 ke qaide (user ne khud diye, 3-4 Oct) - inhi par chalna, dobara mat poochna:**
+- **Q0:** koi akeli lot ya jori **nuqsan par band nahi** - sirf 0 ya faida. Har sawal ka woh jawab chuno jo "0 ya faida" de ("asal maqsad profit").
+- **Q1** rukh (H1 EMA50) ke khilaf kabhi nahi ("trend is our friend"). **Q2** rukh ke saath har step ek 0.01 (pehle faide wali ulti 0.01 band, warna nayi). **Q3** NET hadd 0.05. **Q4** lot kabhi 0.01 se bari nahi.
+- **Q5** hedge (NET 0) fauran: chot se 1 step wapsi, rukh badle, news se pehle, Jumma; phir 300 sec thehrao. **Q6** bari lot ki jori Close By, sab se faide wali, >= 0. **Q7** seconds ka hisaab (panel + CSV `MQL5\Files\JasChakkar_<symbol>.csv`). **Q8** equity attach-waqt ki 95% rok / 90% hedge + ruk.
+- **Q9 Close All** (user ka sab se purana qaida): symbol ki SAARI lots mila kar `InpCloseAll` (+30 demo) faide mein -> sab band -> rukh dekh kar naya setup. User demo par haath se 274 aur 182 lots par Close All kar chuka (+30.16 USD).
+
+**Sabaq jo naape gaye (dobara mat sikhana):** chakkar asal mein 0.01 ki rukh wali shart hai (k1 gold demo $1 step: 47 chakkar, 20/27, -6.85, gold gira); $1 step par spread+slippage ~15%, $5 par ~3%. k3 mein Close All na hone se hedge har dafa nayi lots jorta tha (kitab 270+).
+
+**Raw link hamesha commit hash wala do.** Branch: `claude/gifted-faraday-zs7wcz`.
+
+## Purani tafseel neeche (zarurat ho to)
 
 (Pakki kahani - accounts, qaide, sabaq, tools ka haal - `MERI-KAHANI.md` mein hai. Pehle woh parho.)
 
