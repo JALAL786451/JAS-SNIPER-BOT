@@ -184,8 +184,8 @@ def main(path):
 
     # --- collect declared names --------------------------------------------
     declared = set()
-    # user functions + their parameters
-    for m in re.finditer(r'(?m)^([A-Za-z_]\w*)\s*\(([^)]*)\)\s*=>', code):
+    # user functions and methods (`method name(Type this, ...) =>`) + their parameters
+    for m in re.finditer(r'(?m)^(?:method\s+)?([A-Za-z_]\w*)\s*\(([^)]*)\)\s*=>', code):
         declared.add(m.group(1))
         for part in m.group(2).split(','):
             part = part.strip()
