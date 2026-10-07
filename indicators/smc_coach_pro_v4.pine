@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  SMC COACH — PRO v4   (build v4.0, Pine v6)   pehle: smc_coach_pro_v3.pine
+//  SMC COACH — PRO v4   (build v4.1, Pine v6)   pehle: smc_coach_pro_v3.pine
 //  Scalp/Intraday SMC engine: Zones + BOS/CHOCH + FVG/LGB + Supertrend
 //  + HTF confluence + Risk Engine (SL/TP/RR) + Confluence Score
 //  + Virtual performance tracker + Alerts + MTF Dashboard (1m -> 1W)
@@ -93,12 +93,36 @@
 //       har 1 minute candle se 1D aur 1H candle ka RAASTA (upar kitne pip,
 //       neeche kitne pip, kul raasta, asal farq, kaam ka hissa) aur PRICE
 //       PROFILE (har pip par kitne minute / kitna volume, POC, value area).
+//
+//  v4.1 — TradingView par chal gaya (8 Oct). Phir 4 alag jaanch + har baat
+//  ko jhutlane wali doosri jaanch; jo sabit huin woh theek:
+//   h. 1m chart ke pehle ~13 candles mein MTF/15m signal aata to SL "na"
+//      hota - trade kabhi band na hoti aur 90% signal poore chart par band.
+//   i. Naye swing high ka BOS usi purane swing low par DOOSRA demand zone
+//      bana deta tha (c ka adhoora hissa). Ab har pivot se sirf ek zone.
+//   j. Chart ki pehli candle se pehle shuru hone wali hafte/din ki candle ka
+//      high/low adhoora tha (5k candle wale chart par Jumeraat se LIVE bhi):
+//      ab history mein na (koi signal nahi), aakhri candle par asli H/L.
+//   k. Baen table: bari TF ke FVG/LGB/Zone, market break mein, PICHLI candle
+//      ke the jab ke O/H/L is candle ke - ab dono chalti candle ke.
+//   l. DXY ka apna TF: EMA8/21 chart ki candles par lagti thi (asal mein
+//      "pichli DXY candle upar ya neeche") - ab DXY ki apni candles par.
+//   m. Purani trade khuli thi aur naya signal aaya to us ka naqsha / label
+//      kabhi nahi mit-ta tha - ab apne SL / TP3 / waqt par mit jata hai.
+//   n. "Retest window" input ka koi asar nahi tha (retest pehle hi 3 candle
+//      tak mehdood) - input hata diya, signal wahi.
+//   o. PIP: profile ab APNI candle ke andar, aakhri candle se baen taraf
+//      (1m par nazar aata hai; 1h/1D par purane din ki candles par nahi).
+//      Candle 10 chart candles se chhoti ho to sirf POC/VA lakeerein.
+//   p. PIP: 8 din, har andar ki candle apne waqt se ("kal" Jumma chhutti /
+//      1W chart par bhi poora). Volume na ho to POC "-" (din ka low nahi).
+//      POC/VA kabhi candle ke H/L se bahar nahi.
 // ============================================================================
 indicator("SMC Coach Pro v4 (Pine v6 + Pip hisaab)", shorttitle = "SMC Coach Pro v4",
      overlay = true, max_labels_count = 500, max_lines_count = 500,
      max_boxes_count = 500, max_bars_back = 1000, dynamic_requests = true)
 
-BUILD = "v4.0"   // pip table ke header mein bhi yahi
+BUILD = "v4.1"   // pip table ke header mein bhi yahi
 
 // ---------------- TF helper ----------------
 is1m  = timeframe.isminutes and timeframe.multiplier == 1
@@ -164,7 +188,8 @@ strictTrendClose = input.bool(false, "Trend needs price above/below EMA fast", g
 gFilter = "4 · Context Filters"
 enableHTF     = input.bool(true, "Use HTF confluence (4H/1D)", group=gFilter)
 htfAgreeMode  = input.string("Either", "HTF agree", options=["Both","Either"], group=gFilter)
-useClosedHTF  = input.bool(true, "HTF: use closed candles", group=gFilter)
+useClosedHTF  = input.bool(true, "HTF: use closed candles", group=gFilter,
+     tooltip="ON (theek): history aur live dono par 4H/1D ki pichli BAND candle. OFF: live par CHALTI candle magar history par band candle - history ke signal aur Exp line live se alag ho jate hain (repaint). Sirf dekhne ke liye band karein.")
 useDXY        = input.bool(true, "Use DXY filter (Gold only)", group=gFilter)
 dxyTF         = input.string("", "DXY TF (blank = chart TF)", group=gFilter)
 useVol        = input.bool(true,  "Relative volume filter", group=gFilter)
@@ -191,7 +216,6 @@ impulseATR       = input.float(0.95, "Impulse bar >= ATR *", step=0.05, minval=0
 enableEMARetest  = input.bool(true,  "Continuation: EMA retest entry", group=gBreak)
 emaRetestWhich   = input.string("MA21", "Retest MA", options=["MA21","MA63"], group=gBreak)
 emaRetestTol     = input.float(0.45, "Retest tolerance (x ATR)", step=0.01, minval=0.0, group=gBreak)
-retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1, maxval=50, group=gBreak)
 
 groupST       = "7 · Supertrend"
 enableST      = input.bool(true,  "Enable Supertrend", group=groupST)
@@ -350,6 +374,9 @@ var int   lastLoIdx = na
 // v4: is swing ne is rukh mein pehle hi tod de di? (naya swing aate hi saaf)
 var bool  hiUsed = false
 var bool  loUsed = false
+// v4.1: kis pivot ne aakhri zone banaya (ek pivot = ek zone)
+var int   zLoSrc = -1
+var int   zHiSrc = -1
 
 if not na(ph)
     lastHi    := ph
@@ -461,10 +488,14 @@ newZone(_idx,_price,_isSupport)=>
 
 // A demand zone is born at the low that produced an upside break (BOS or CHOCH),
 // a supply zone at the high that produced a downside break.
-if (bosUp or chochUp) and not na(lastLoIdx)
+// v4.1: naya swing high toote magar beech ka pullback low abhi pivot na bana
+// ho to lastLo wahi purana hai - pehle us par doosra zone ban jata tha.
+if (bosUp or chochUp) and not na(lastLoIdx) and lastLoIdx != zLoSrc
     newZone(lastLoIdx, lastLo, true)
-if (bosDn or chochDn) and not na(lastHiIdx)
+    zLoSrc := lastLoIdx
+if (bosDn or chochDn) and not na(lastHiIdx) and lastHiIdx != zHiSrc
     newZone(lastHiIdx, lastHi, false)
+    zHiSrc := lastHiIdx
 
 // --- maintain: extend, count touches, invalidate broken / stale / exhausted
 // Pehle extreme dhoondo: sab se ooncha supply top aur sab se neecha demand bottom.
@@ -679,12 +710,15 @@ dxySeriesTF = (str.length(dxyTF) == 0 ? timeframe.period : dxyTF)
 // v4: apna (bara) DXY TF chuna ho to BAND candle + lookahead_on - warna
 // history par ek candle purana number aur live par chalti candle (alag alag).
 dxySameTF   = timeframe.in_seconds(dxySeriesTF) == timeframe.in_seconds(timeframe.period)
-dxyLive     = request.security("TVC:DXY", dxySeriesTF, close,    barmerge.gaps_off, barmerge.lookahead_off)
-dxyDone     = request.security("TVC:DXY", dxySeriesTF, close[1], barmerge.gaps_off, barmerge.lookahead_on)
-dxyClose    = applyDXY ? (dxySameTF ? dxyLive : dxyDone) : na
-dxyEf       = ta.ema(dxyClose, 8)
-dxyEs       = ta.ema(dxyClose, 21)
-dxyDir      = applyDXY and not na(dxyClose) ? (dxyEf - dxyEs) : na
+// v4.1: EMA8/21 DXY ki APNI candles par (request ke andar). Pehle chart ki
+// candles par lagti thi: DXY TF 60 aur chart 1m par woh sirf "pichli DXY
+// candle upar gayi ya neeche" ban jati thi.
+f_dxyD() =>
+    _d = ta.ema(close, 8) - ta.ema(close, 21)
+    _d
+dxyDirLive  = request.security("TVC:DXY", dxySeriesTF, f_dxyD(),    barmerge.gaps_off, barmerge.lookahead_off)
+dxyDirDone  = request.security("TVC:DXY", dxySeriesTF, f_dxyD()[1], barmerge.gaps_off, barmerge.lookahead_on)
+dxyDir      = applyDXY ? (dxySameTF ? dxyDirLive : dxyDirDone) : na
 passDXYLong  = not applyDXY or (not na(dxyDir) and dxyDir < 0)
 passDXYShort = not applyDXY or (not na(dxyDir) and dxyDir > 0)
 
@@ -773,10 +807,11 @@ brkUpRaw = enableBreakout and recentUpStruct and trendState==1 and not na(lastHi
 brkDnRaw = enableBreakout and recentDownStruct and trendState==-1 and not na(lastLo) and close < (lastLo - atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_dn or LGB_up)
 
 emaRef  = emaRetestWhich=="MA63" ? emaS : emaF
-sinceUp = bsUp
-sinceDn = bsDn
-retestUpRaw = enableBreakout and enableEMARetest and trendState==1  and recentUpStruct   and (not na(sinceUp) and sinceUp <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close > emaRef and close > open
-retestDnRaw = enableBreakout and enableEMARetest and trendState==-1 and recentDownStruct and (not na(sinceDn) and sinceDn <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close < emaRef and close < open
+// v4.1: "Retest window" input hata diya - retest pehle hi recentUpStruct
+// (structLookback, 3 candle) ke andar hai, is liye woh 20 ho ya 50, asar nahi
+// tha. Signal bilkul wahi hain.
+retestUpRaw = enableBreakout and enableEMARetest and trendState==1  and recentUpStruct   and (math.abs(close-emaRef) <= atr*emaRetestTol) and close > emaRef and close > open
+retestDnRaw = enableBreakout and enableEMARetest and trendState==-1 and recentDownStruct and (math.abs(close-emaRef) <= atr*emaRetestTol) and close < emaRef and close < open
 
 momoBuyRaw  = brkUpRaw or retestUpRaw
 momoSellRaw = brkDnRaw or retestDnRaw
@@ -906,8 +941,16 @@ sigSellTotal = xSell and coolOK and roomSell
 // Only a ZONE entry consumes the zone's one-signal-per-zone slot. A breakout or
 // EMA-retest signal used to burn the demand/supply zone it never traded, so the
 // next genuine touch of that zone was silently blocked.
+// v4.1: har signal ka apna SL / TP3 yaad (naqsha khuli trade ka na ho to
+// isi se khud mit-ta hai)
+var int   sigDir = 0
+var float sigSL  = na
+var float sigT3  = na
 if sigBuyTotal or sigSellTotal
     lastSigBar := bar_index
+    sigDir := sigBuyTotal ? 1 : -1
+    sigSL  := sigBuyTotal ? planSLb : planSLs
+    sigT3  := sigBuyTotal ? planEntryB + planRb * tp3R : planEntryS - planRs * tp3R
     if sigBuyTotal and zoneBuyRaw and f_zoneValid(supIdx)
         array.set(zSig, supIdx, array.get(zSig, supIdx) + 1)
     if sigSellTotal and zoneSellRaw and f_zoneValid(resIdx)
@@ -1102,6 +1145,29 @@ if (sigBuyTotal or sigSellTotal) and tDir == 0 and useTracker
     hit3   := false
     nTrades += 1
 
+// v4.1: jo signal virtual trade nahi bana (pehle se trade khuli thi), us ka
+// naqsha aur BUY/SELL label apne SL / TP3 lagne par, ya tMaxBars ke baad, mit
+// jaye - warna woh sau candle tak chart par zinda lagta tha.
+_ownOpen = tDir != 0 and tBar == lastSigBar
+if showOnlyLast and useTracker and not na(lastSigBar) and bar_index > lastSigBar and not _ownOpen and (not na(lnE) or not na(lbSig))
+    _hitO = sigDir == 1 ? (low <= sigSL or high >= sigT3) : (high >= sigSL or low <= sigT3)
+    if _hitO or (tMaxBars > 0 and bar_index - lastSigBar > tMaxBars)
+        if planBar == lastSigBar
+            line.delete(lnE)
+            line.delete(lnS)
+            line.delete(lnT1)
+            line.delete(lnT2)
+            line.delete(lnT3)
+            label.delete(lbPlan)
+            lnE    := na
+            lnS    := na
+            lnT1   := na
+            lnT2   := na
+            lnT3   := na
+            lbPlan := na
+        label.delete(lbSig)
+        lbSig := na
+
 // keep the plan lines following price to the right while the plan is live
 // (with tracking off there is no position to close, so the last plan stays)
 // v4: sirf apni khuli trade ka naqsha aage chalta hai
@@ -1169,8 +1235,15 @@ f_tfLive() =>
     _bits  = (_fvgUp?1:0) + (_fvgDn?2:0) + (_lgbUp?4:0) + (_lgbDn?8:0) + (_bz?16:0) + (_sz?32:0)
     [open, high, low, close, _bits]
 
+// v4.1: bari TF par lookahead_on - aakhri candle (table) par CHALTI bari
+// candle. lookahead_off ke saath aakhri candle history ki ho (market break,
+// load ke foran baad) to pichli BAND candle aati thi, jab ke O/H/L is candle
+// ke. YE VALUES SIRF AAKHRI CANDLE PAR PARHO: history par lookahead_on aage
+// ka dikhata hai - kisi history signal mein mat lagana (1m/15m signal f_run
+// wale apne hisaab par chalta hai, aur doosre chart par signal hai hi nahi).
 f_req(_tf) =>
-    request.security(syminfo.tickerid, _tf, f_tfLive(), barmerge.gaps_off, barmerge.lookahead_off)
+    _look = timeframe.in_seconds(_tf) > timeframe.in_seconds() ? barmerge.lookahead_on : barmerge.lookahead_off
+    request.security(syminfo.tickerid, _tf, f_tfLive(), barmerge.gaps_off, _look)
 
 // Nau TF, har ek ki apni call (static - har call ek hi dafa ginti hoti hai)
 [o01, h01, l01, c01, b01] = f_req("1")
@@ -1231,59 +1304,69 @@ tzLbl      = input.string("Asia/Karachi", "Label par waqt kis zone mein", group=
 m15MaxBars = input.int(64, "15m: trade N candle baad khud band (64 = 16 ghante)", minval=0, group=gM15)
 
 // Chalti bari candle 1m candles se: open request se, high/low yahin jama.
+// v4.1: _full = ye bari candle chart par SHURU se maujood hai. Chart ki pehli
+// candle se pehle shuru hui candle ka high/low adhoora hai (sirf load hua
+// hissa) - 5k candle wale 1m chart par Jumeraat se hafte ki candle LIVE bhi.
 f_run(_tf) =>
     _o = request.security(syminfo.tickerid, _tf, open, barmerge.gaps_off, barmerge.lookahead_on)
-    var float _h = na
-    var float _l = na
-    if timeframe.change(_tf) or na(_h)
+    var float _h    = na
+    var float _l    = na
+    var bool  _full = false
+    _chg = timeframe.change(_tf)
+    if bar_index == 0 ? time == time(_tf) : _chg
+        _full := true
+    if _chg or na(_h)
         _h := high
         _l := low
     else
         _h := math.max(_h, high)
         _l := math.min(_l, low)
-    [_o, math.max(_h, nz(_o, _h)), math.min(_l, nz(_o, _l))]
+    [_o, math.max(_h, nz(_o, _h)), math.min(_l, nz(_o, _l)), _full]
 
-[ro01, rh01, rl01] = f_run("1")
-[ro05, rh05, rl05] = f_run("5")
-[ro15, rh15, rl15] = f_run("15")
-[ro30, rh30, rl30] = f_run("30")
-[ro60, rh60, rl60] = f_run("60")
-[ro3h, rh3h, rl3h] = f_run("180")
-[ro4h, rh4h, rl4h] = f_run("240")
-[ro1d, rh1d, rl1d] = f_run("D")
-[ro1w, rh1w, rl1w] = f_run("W")
+[ro01, rh01, rl01, rf01] = f_run("1")
+[ro05, rh05, rl05, rf05] = f_run("5")
+[ro15, rh15, rl15, rf15] = f_run("15")
+[ro30, rh30, rl30, rf30] = f_run("30")
+[ro60, rh60, rl60, rf60] = f_run("60")
+[ro3h, rh3h, rl3h, rf3h] = f_run("180")
+[ro4h, rh4h, rl4h, rf4h] = f_run("240")
+[ro1d, rh1d, rl1d, rf1d] = f_run("D")
+[ro1w, rh1w, rl1w, rf1w] = f_run("W")
 
 // 1m chart par apna joda hua hisaab; doosre chart par request wala.
 f_sel(_a, _b) => (is1m or is15m) ? _a : _b
+// High/low ke liye: adhoori bari candle par history mein na (us par signal
+// nahi banta), aakhri candle par request wala asli (chalti candle ka) H/L.
+f_selR(_run, _full, _req) => (is1m or is15m) ? (_full ? _run : barstate.islast ? _req : na) : _req
 f_pb(_h, _l) => (not na(_h) and not na(_l) and _h - _l >= minTk) ? (close - _l) / (_h - _l) * 100 : na
 
 xo01 = f_sel(ro01, o01)
-xh01 = f_sel(rh01, h01)
-xl01 = f_sel(rl01, l01)
+xh01 = f_selR(rh01, rf01, h01)
+xl01 = f_selR(rl01, rf01, l01)
 xo05 = f_sel(ro05, o05)
-xh05 = f_sel(rh05, h05)
-xl05 = f_sel(rl05, l05)
+xh05 = f_selR(rh05, rf05, h05)
+xl05 = f_selR(rl05, rf05, l05)
 xo15 = f_sel(ro15, o15)
-xh15 = f_sel(rh15, h15)
-xl15 = f_sel(rl15, l15)
+xh15 = f_selR(rh15, rf15, h15)
+xl15 = f_selR(rl15, rf15, l15)
 xo30 = f_sel(ro30, o30)
-xh30 = f_sel(rh30, h30)
-xl30 = f_sel(rl30, l30)
+xh30 = f_selR(rh30, rf30, h30)
+xl30 = f_selR(rl30, rf30, l30)
 xo60 = f_sel(ro60, o60)
-xh60 = f_sel(rh60, h60)
-xl60 = f_sel(rl60, l60)
+xh60 = f_selR(rh60, rf60, h60)
+xl60 = f_selR(rl60, rf60, l60)
 xo3h = f_sel(ro3h, o3h)
-xh3h = f_sel(rh3h, h3h)
-xl3h = f_sel(rl3h, l3h)
+xh3h = f_selR(rh3h, rf3h, h3h)
+xl3h = f_selR(rl3h, rf3h, l3h)
 xo4h = f_sel(ro4h, o4h)
-xh4h = f_sel(rh4h, h4h)
-xl4h = f_sel(rl4h, l4h)
+xh4h = f_selR(rh4h, rf4h, h4h)
+xl4h = f_selR(rl4h, rf4h, l4h)
 xo1d = f_sel(ro1d, o1d)
-xh1d = f_sel(rh1d, h1d)
-xl1d = f_sel(rl1d, l1d)
+xh1d = f_selR(rh1d, rf1d, h1d)
+xl1d = f_selR(rl1d, rf1d, l1d)
 xo1w = f_sel(ro1w, o1w)
-xh1w = f_sel(rh1w, h1w)
-xl1w = f_sel(rl1w, l1w)
+xh1w = f_selR(rh1w, rf1w, h1w)
+xl1w = f_selR(rl1w, rf1w, l1w)
 
 float[] mtfP = array.from(f_pb(xh01, xl01), f_pb(xh05, xl05), f_pb(xh15, xl15), f_pb(xh30, xl30), f_pb(xh60, xl60),
                           f_pb(xh3h, xl3h), f_pb(xh4h, xl4h), f_pb(xh1d, xl1d), f_pb(xh1w, xl1w))
@@ -1343,8 +1426,10 @@ m15NotX = m15Ext <= 0 or math.abs(close - emaF) <= atr * m15Ext
 goAll   = is15m ? (mtfNeedAll ? m4AllUp : true) : (mtfNeedAll ? mtfAllUp : true)
 goAllDn = is15m ? (mtfNeedAll ? m4AllDn : true) : (mtfNeedAll ? mtfAllDn : true)
 mtfGo      = barstate.isconfirmed and ((is1m and mtfOn and mtfCnt == 9) or (is15m and m15On and m4Cnt == 4 and m15NotX))
-mtfBuyRaw  = mtfGo and modeAvg >= modeMin and goAll and close > open and (not mtfNeedMA or close > emaF) and (not mtfRoom or mRoomB) and (not is15m or m15Up)
-mtfSellRaw = mtfGo and modeAvg <= 100 - modeMin and goAllDn and close < open and (not mtfNeedMA or close < emaF) and (not mtfRoom or mRoomS) and (not is15m or m15Dn)
+// v4.1: SL asli number aur sahi taraf ho tabhi plan (chart ke pehle ~13
+// candles mein ATR / lowest abhi na hote hain - trade kabhi band na hoti)
+mtfBuyRaw  = mtfGo and not na(mSLb) and close - mSLb > 0 and modeAvg >= modeMin and goAll and close > open and (not mtfNeedMA or close > emaF) and (not mtfRoom or mRoomB) and (not is15m or m15Up)
+mtfSellRaw = mtfGo and not na(mSLs) and mSLs - close > 0 and modeAvg <= 100 - modeMin and goAllDn and close < open and (not mtfNeedMA or close < emaF) and (not mtfRoom or mRoomS) and (not is15m or m15Dn)
 
 // --- chupa tracker: sirf MTF signal ke nateeje (R mein) ---
 // Chart par har trade ka POORA naqsha (2 Oct): laal dabba = Entry se SL
@@ -1418,6 +1503,13 @@ f_mStretch(_x2) =>
     label.set_x(mtS,  _x2)
     label.set_x(mtT1, _x2)
     label.set_x(mtT2, _x2)
+
+// v4.1: hifazat - SL / R kabhi na ya 0 ho to trade bina gine hata do
+if mDir != 0 and (na(mR) or mR <= 0)
+    f_mDel()
+    mlbR  := na
+    mInfo := "Koi khuli trade nahi - agle ishare ka intezar"
+    mDir  := 0
 
 if mDir != 0
     float _res = na
@@ -1569,7 +1661,7 @@ if showTables and barstate.islast and (showLegend or showPress)
             _ld = f_hasBit(_b, 3)
             _bz = f_hasBit(_b, 4)
             _sz = f_hasBit(_b, 5)
-            _ok   = not na(_c)
+            _ok   = not na(_c) and not na(_h) and not na(_l)
             _rg   = _ok ? _h - _l : na
             _flat = not _ok or math.abs(_c - _o) < minTk
             _up   = _ok and _c > _o
@@ -1729,8 +1821,8 @@ if barstate.islast
 //            POC = sab se zyada waqt (ya volume) wali qeemat. VA = POC ke
 //            gird woh patti jahan 70% waqt / volume guzra.
 //  Data: request.security_lower_tf (1 minute). TradingView ek chart par
-//  ~100,000 andar ki candles deta hai, is liye sirf aakhri 4 din gine jate
-//  hain (aaj aur kal ke liye kaafi). "Minute" column batata hai kitna data
+//  ~100,000 andar ki candles deta hai, is liye sirf aakhri 8 din gine jate
+//  hain (aaj aur kal ke liye kaafi, Jumma ki chhutti + weekend ke baad bhi). "Minute" column batata hai kitna data
 //  mila: gold ka poora din ~1380 minute - is se bohot kam ho to adhoora.
 //  Sirf dekhne aur samajhne ke liye - kisi signal par is ka asar nahi.
 // ============================================================================
@@ -1745,7 +1837,7 @@ pipTbl    = input.bool(true, "Pip hisaab ka table (har chart par)", group=gPip)
 pipPos    = input.string("Bottom Right", "Table ki jagah", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPip)
 pipDraw   = input.string("1D", "Chart par profile kis candle ka", options=["1D","1H","Koi nahi"], group=gPip)
 pipRows   = input.int(40, "Profile ki pattiyan (sirf dikhane ke liye)", minval=10, maxval=120, group=gPip)
-pipWidth  = input.int(60, "Sab se lambi patti (candles)", minval=5, maxval=300, group=gPip)
+pipWidth  = input.int(60, "Sab se lambi patti (candles) - candle apni lambai se zyada kabhi nahi", minval=5, maxval=300, group=gPip)
 pipLines  = input.bool(true, "POC / VA ki lakeerein", group=gPip)
 
 PIP_CAP  = 3000   // ek candle ke profile mein zyada se zyada khane (zyada hon to khana dugna)
@@ -1755,7 +1847,7 @@ pipBkt   = pipSz * pipRes
 pipIbUse = timeframe.in_seconds(timeframe.period) <= timeframe.in_seconds(pipIbTF) ? timeframe.period : pipIbTF
 pipIbMin = timeframe.in_seconds(pipIbUse) / 60.0
 
-[ibO, ibH, ibL, ibC, ibV, ibHr, ibDy] = request.security_lower_tf(syminfo.tickerid, pipIbUse, [open, high, low, close, volume, time("60"), time("D")])
+[ibO, ibH, ibL, ibC, ibV, ibHr, ibDy, ibT] = request.security_lower_tf(syminfo.tickerid, pipIbUse, [open, high, low, close, volume, time("60"), time("D"), time])
 
 // Ek candle (1D ya 1H) ka poora hisaab
 type PipLeg
@@ -1878,7 +1970,7 @@ method pPoc(PipLeg this, bool _byVol) =>
     array<float> a = _byVol ? this.vo : this.tm
     _n = array.size(a)
     int best = -1
-    float bv = -1.0
+    float bv = 0.0     // sab khane 0 (volume hai hi nahi) = -1, yani "-"
     if _n > 0
         for i = 0 to _n - 1
             _x = array.get(a, i)
@@ -1916,8 +2008,12 @@ var PipLeg dPrev = na
 var PipLeg hNow  = na
 var PipLeg hPrev = na
 
-// Sirf aakhri 4 din (aaj + kal ke liye kaafi, aur script tez rehta hai)
-pipWin = pipOn and time >= last_bar_time - 4 * 86400000
+// Sirf aakhri 8 din (aaj + kal ke liye kaafi, aur script tez rehta hai).
+// v4.1: har andar ki candle apne waqt se parkhi jati hai - 1W/1M chart par
+// bhi sirf yehi 8 din (pehle 1W par Peer ko "kal" khali, aur 1M par har tick
+// par poore mahine ka hisaab), aur Jumma ki chhutti ke baad "kal" poora.
+pipCut = math.max(last_bar_time, timenow) - 8 * 86400000
+pipWin = pipOn and time_close > pipCut
 if pipWin
     _n = array.size(ibO)
     if _n > 0
@@ -1928,7 +2024,7 @@ if pipWin
             _c  = array.get(ibC, i)
             _dk = array.get(ibDy, i)
             _hk = array.get(ibHr, i)
-            if not (na(_o) or na(_h) or na(_l) or na(_c) or na(_dk) or na(_hk))
+            if array.get(ibT, i) >= pipCut and not (na(_o) or na(_h) or na(_l) or na(_c) or na(_dk) or na(_hk))
                 if na(dNow) or dNow.key != _dk
                     dPrev := dNow
                     dNow  := f_legNew(_dk, bar_index, pipBkt)
@@ -1972,31 +2068,37 @@ if barstate.islast
             _mx = array.max(rs)
             [vaLo, vaHi] = L.pArea(_byV, pipVA)
             _poc  = L.pPoc(_byV)
-            // Candle mein jagah ho to us ki pehli candle se daen taraf, warna
-            // baen taraf - aakhri candle se aage kabhi nahi (chart nahi khinchta)
-            _room = bar_index - L.bar0 + 1 >= pipWidth
+            // v4.1: pattiyan APNI candle ke andar - aakhri candle se baen taraf,
+            // zyada se zyada candle ki apni lambai tak. 1m par hamesha nazar
+            // aati hain, aur 1h/1D par kisi doosre din ki candles ke upar nahi.
+            // Candle chart par 10 candles se chhoti ho (1D chart par 1D, 4H par
+            // 1D) to pattiyan nahi, sirf POC/VA lakeerein. Aakhri candle se aage
+            // kabhi nahi (chart nahi khinchta).
+            _span  = bar_index - L.bar0 + 1
+            _wMax  = math.min(pipWidth, _span)
+            _drawB = _span >= 10
             for r = 0 to _rows - 1
-                _w = _mx > 0 ? int(math.round(array.get(rs, r) / _mx * pipWidth)) : 0
-                if _w > 0
+                _w = _mx > 0 ? int(math.round(array.get(rs, r) / _mx * _wMax)) : 0
+                if _drawB and _w > 0
                     _i0 = r * _per
                     _i1 = math.min((r + 1) * _per, _nb) - 1
-                    _yb = (L.base + _i0) * L.bkt
-                    _yt = (L.base + _i1 + 1) * L.bkt
+                    _yb = math.max(L.l, (L.base + _i0) * L.bkt)
+                    _yt = math.min(L.h, (L.base + _i1 + 1) * L.bkt)
                     _isPoc = _poc >= _i0 and _poc <= _i1
                     _inVA  = _i1 >= vaLo and _i0 <= vaHi
                     _col   = _isPoc ? color.new(color.orange, 35) : _inVA ? color.new(color.blue, 72) : color.new(color.gray, 82)
-                    _x1    = _room ? L.bar0 : math.max(0, L.bar0 - _w)
-                    _x2    = _room ? L.bar0 + _w : L.bar0
-                    array.push(pipBx, box.new(_x1, _yt, _x2, _yb, xloc=xloc.bar_index, bgcolor=_col, border_color=color.new(color.gray, 100)))
+                    array.push(pipBx, box.new(bar_index - _w + 1, _yt, bar_index, _yb, xloc=xloc.bar_index, bgcolor=_col, border_color=color.new(color.gray, 100)))
             if pipLines and _poc >= 0
-                _xs = L.bar0 < bar_index ? L.bar0 : math.max(0, bar_index - pipWidth)
-                _pP = L.pPx(_poc)
-                _pH = (L.base + vaHi + 1) * L.bkt
-                _pL = (L.base + vaLo) * L.bkt
-                pipLP := line.new(_xs, _pP, bar_index, _pP, xloc=xloc.bar_index, color=color.new(color.orange, 0), width=2)
-                pipLH := line.new(_xs, _pH, bar_index, _pH, xloc=xloc.bar_index, color=color.new(color.blue, 30), width=1, style=line.style_dashed)
-                pipLL := line.new(_xs, _pL, bar_index, _pL, xloc=xloc.bar_index, color=color.new(color.blue, 30), width=1, style=line.style_dashed)
-                pipLb := label.new(bar_index, _pP, pipDraw + " POC " + f_px(_pP), xloc=xloc.bar_index, yloc=yloc.price,
+                // POC / VA candle ke asli H/L ke andar (khane ka kinara bahar ja sakta tha)
+                _xs = L.bar0
+                _xe = bar_index + futureBars
+                _pP = math.max(L.l, math.min(L.h, L.pPx(_poc)))
+                _pH = math.min(L.h, (L.base + vaHi + 1) * L.bkt)
+                _pL = math.max(L.l, (L.base + vaLo) * L.bkt)
+                pipLP := line.new(_xs, _pP, _xe, _pP, xloc=xloc.bar_index, color=color.new(color.orange, 0), width=2)
+                pipLH := line.new(_xs, _pH, _xe, _pH, xloc=xloc.bar_index, color=color.new(color.blue, 30), width=1, style=line.style_dashed)
+                pipLL := line.new(_xs, _pL, _xe, _pL, xloc=xloc.bar_index, color=color.new(color.blue, 30), width=1, style=line.style_dashed)
+                pipLb := label.new(_xe, _pP, (pipDraw == "1D" ? "1D POC (aaj ki candle) " : "1H POC (is ghante) ") + f_px(_pP), xloc=xloc.bar_index, yloc=yloc.price,
                      style=label.style_label_left, color=color.new(color.orange, 20), textcolor=color.white, size=size.small)
 
 // --- table ---
@@ -2025,8 +2127,9 @@ f_pipRow(int _r, string _name, PipLeg _L) =>
         array.set(v, 4, (_net > 0 ? "+" : "") + f_pipNum(_net) + (_net > 0 ? " ▲" : _net < 0 ? " ▼" : ""))
         array.set(v, 5, _path > 0 ? str.tostring(math.round(math.abs(_net) / _path * 100)) + "%" : "-")
         array.set(v, 6, f_pipNum(_L.h - _L.l))
-        array.set(v, 7, _poc >= 0 ? f_px(_L.pPx(_poc)) : "-")
-        array.set(v, 8, _poc >= 0 ? f_px((_L.base + _vl) * _L.bkt) + " - " + f_px((_L.base + _vh + 1) * _L.bkt) : "-")
+        // POC / VA candle ke asli H/L ke andar (khane ka kinara bahar ja sakta tha)
+        array.set(v, 7, _poc >= 0 ? f_px(math.max(_L.l, math.min(_L.h, _L.pPx(_poc)))) : "-")
+        array.set(v, 8, _poc >= 0 ? f_px(math.max(_L.l, (_L.base + _vl) * _L.bkt)) + " - " + f_px(math.min(_L.h, (_L.base + _vh + 1) * _L.bkt)) : "-")
         array.set(v, 9, str.tostring(_L.mins, "#"))
         array.set(tt, 1, f_pipUsd(_L.up))
         array.set(tt, 2, f_pipUsd(_L.dn))
