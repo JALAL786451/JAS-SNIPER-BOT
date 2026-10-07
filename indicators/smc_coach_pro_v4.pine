@@ -101,8 +101,10 @@
 //   i. Naye swing high ka BOS usi purane swing low par DOOSRA demand zone
 //      bana deta tha (c ka adhoora hissa). Ab har pivot se sirf ek zone.
 //   j. Chart ki pehli candle se pehle shuru hone wali hafte/din ki candle ka
-//      high/low adhoora tha (5k candle wale chart par Jumeraat se LIVE bhi):
-//      ab history mein na (koi signal nahi), aakhri candle par asli H/L.
+//      high/low adhoora tha (5k candle wale chart par Jumeraat se LIVE bhi).
+//      Hafte ke pichle din ab daily candles se (bina aage dekhe), is liye
+//      hafta chart ke doosre din se poora; sirf chart ka pehla adhoora din
+//      signal ke baghair. Signal sirf poori candles par - history = live.
 //   k. Baen table: bari TF ke FVG/LGB/Zone, market break mein, PICHLI candle
 //      ke the jab ke O/H/L is candle ke - ab dono chalti candle ke.
 //   l. DXY ka apna TF: EMA8/21 chart ki candles par lagti thi (asal mein
@@ -1333,6 +1335,30 @@ f_run(_tf) =>
 [ro1d, rh1d, rl1d, rf1d] = f_run("D")
 [ro1w, rh1w, rl1w, rf1w] = f_run("W")
 
+// Hafte ki candle chart se pehle shuru hui ho (5k candle wale 1m chart par
+// Budh/Jumeraat se) to us ke PICHLE dinon ka high/low daily candles se lo.
+// Har D candle par sirf us se PEHLE ke (band) dinon ka hisaab lautta hai -
+// aaj ka high/low shamil nahi - is liye lookahead_on se bhi aage ka kuch
+// nahi aata. Aaj ka hissa chart ki apni 1m candles (rh1d / rl1d) se.
+f_wkPrev() =>
+    var float _wh = na
+    var float _wl = na
+    if timeframe.change("W")
+        _wh := na
+        _wl := na
+    _ph = _wh
+    _pl = _wl
+    _wh := na(_wh) ? high : math.max(_wh, high)
+    _wl := na(_wl) ? low : math.min(_wl, low)
+    [_ph, _pl]
+
+[wkPH, wkPL] = request.security(syminfo.tickerid, "D", f_wkPrev(), barmerge.gaps_off, barmerge.lookahead_on)
+// Hafta poora maloom: chart par shuru se, ya aaj ka din chart par shuru se
+// (pichle din daily candles se). Sirf chart ka pehla adhoora din bacha.
+wkFull = rf1w or rf1d
+wkH    = rf1w ? rh1w : math.max(rh1d, nz(wkPH, rh1d), nz(ro1w, rh1d))
+wkL    = rf1w ? rl1w : math.min(rl1d, nz(wkPL, rl1d), nz(ro1w, rl1d))
+
 // 1m chart par apna joda hua hisaab; doosre chart par request wala.
 f_sel(_a, _b) => (is1m or is15m) ? _a : _b
 // High/low ke liye: adhoori bari candle par history mein na (us par signal
@@ -1365,8 +1391,8 @@ xo1d = f_sel(ro1d, o1d)
 xh1d = f_selR(rh1d, rf1d, h1d)
 xl1d = f_selR(rl1d, rf1d, l1d)
 xo1w = f_sel(ro1w, o1w)
-xh1w = f_selR(rh1w, rf1w, h1w)
-xl1w = f_selR(rl1w, rf1w, l1w)
+xh1w = f_selR(wkH, wkFull, h1w)
+xl1w = f_selR(wkL, wkFull, l1w)
 
 float[] mtfP = array.from(f_pb(xh01, xl01), f_pb(xh05, xl05), f_pb(xh15, xl15), f_pb(xh30, xl30), f_pb(xh60, xl60),
                           f_pb(xh3h, xl3h), f_pb(xh4h, xl4h), f_pb(xh1d, xl1d), f_pb(xh1w, xl1w))
@@ -1425,7 +1451,12 @@ m15Dn   = not m15NeedHTF or (not na(h1F) and h1F < h1S)
 m15NotX = m15Ext <= 0 or math.abs(close - emaF) <= atr * m15Ext
 goAll   = is15m ? (mtfNeedAll ? m4AllUp : true) : (mtfNeedAll ? mtfAllUp : true)
 goAllDn = is15m ? (mtfNeedAll ? m4AllDn : true) : (mtfNeedAll ? mtfAllDn : true)
-mtfGo      = barstate.isconfirmed and ((is1m and mtfOn and mtfCnt == 9) or (is15m and m15On and m4Cnt == 4 and m15NotX))
+// v4.1: signal sirf jab har TF ki candle POORI maloom ho - adhoori candle
+// par aakhri candle request wala H/L leti hai (table ke liye), magar signal
+// us par bane to reload ke baad gayab ho jata. Ab history aur live ek jaise;
+// sirf chart ka pehla adhoora din signal ke baghair.
+mFull      = is15m ? (rf15 and rf60 and rf4h and rf1d) : (rf01 and rf05 and rf15 and rf30 and rf60 and rf3h and rf4h and rf1d and wkFull)
+mtfGo      = barstate.isconfirmed and mFull and ((is1m and mtfOn and mtfCnt == 9) or (is15m and m15On and m4Cnt == 4 and m15NotX))
 // v4.1: SL asli number aur sahi taraf ho tabhi plan (chart ke pehle ~13
 // candles mein ATR / lowest abhi na hote hain - trade kabhi band na hoti)
 mtfBuyRaw  = mtfGo and not na(mSLb) and close - mSLb > 0 and modeAvg >= modeMin and goAll and close > open and (not mtfNeedMA or close > emaF) and (not mtfRoom or mRoomB) and (not is15m or m15Up)
@@ -2012,7 +2043,11 @@ var PipLeg hPrev = na
 // v4.1: har andar ki candle apne waqt se parkhi jati hai - 1W/1M chart par
 // bhi sirf yehi 8 din (pehle 1W par Peer ko "kal" khali, aur 1M par har tick
 // par poore mahine ka hisaab), aur Jumma ki chhutti ke baad "kal" poora.
-pipCut = math.max(last_bar_time, timenow) - 8 * 86400000
+// Khatam: aakhri candle ka band hona (1W/1M par abhi ka waqt, kyunke wahan
+// last_bar_time hafte/mahine ka shuru hai). Replay ya purane data par
+// timenow aakhri candle se bohot aage ho sakta hai - us se window khali na ho.
+pipEnd = math.max(last_bar_time, math.min(timenow, last_bar_time + timeframe.in_seconds() * 1000))
+pipCut = pipEnd - 8 * 86400000
 pipWin = pipOn and time_close > pipCut
 if pipWin
     _n = array.size(ibO)
@@ -2075,7 +2110,7 @@ if barstate.islast
             // 1D) to pattiyan nahi, sirf POC/VA lakeerein. Aakhri candle se aage
             // kabhi nahi (chart nahi khinchta).
             _span  = bar_index - L.bar0 + 1
-            _wMax  = math.min(pipWidth, _span)
+            _wMax  = math.min(pipWidth, _span - 1)
             _drawB = _span >= 10
             for r = 0 to _rows - 1
                 _w = _mx > 0 ? int(math.round(array.get(rs, r) / _mx * _wMax)) : 0
@@ -2087,10 +2122,12 @@ if barstate.islast
                     _isPoc = _poc >= _i0 and _poc <= _i1
                     _inVA  = _i1 >= vaLo and _i0 <= vaHi
                     _col   = _isPoc ? color.new(color.orange, 35) : _inVA ? color.new(color.blue, 72) : color.new(color.gray, 82)
-                    array.push(pipBx, box.new(bar_index - _w + 1, _yt, bar_index, _yb, xloc=xloc.bar_index, bgcolor=_col, border_color=color.new(color.gray, 100)))
+                    array.push(pipBx, box.new(bar_index - _w, _yt, bar_index, _yb, xloc=xloc.bar_index, bgcolor=_col, border_color=color.new(color.gray, 100)))
             if pipLines and _poc >= 0
                 // POC / VA candle ke asli H/L ke andar (khane ka kinara bahar ja sakta tha)
-                _xs = L.bar0
+                // candle aakhri candle par hi shuru hui aur aage jagah 0 ho to ek
+                // candle peeche se (warna lakeer sirf ek nuqta)
+                _xs = (L.bar0 < bar_index or futureBars > 0) ? L.bar0 : math.max(0, bar_index - 1)
                 _xe = bar_index + futureBars
                 _pP = math.max(L.l, math.min(L.h, L.pPx(_poc)))
                 _pH = math.min(L.h, (L.base + vaHi + 1) * L.bkt)
