@@ -5,7 +5,7 @@ dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
-Aakhri update: 7 October 2026.
+Aakhri update: 7 October 2026 (raat).
 
 ---
 
@@ -88,7 +88,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
 | `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
 | `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
-| `JasChakkarEA.mq5` k4 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30. Qaide Q0-Q9 `ABHI-KAHAN-HAIN.md` mein | BTC demo par. k1 (gold, sirf SELL chakkar) aur k3a demo par chale; **k4 compile ka jawab baqi** |
+| `JasChakkarEA.mq5` k5 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30, **pehli lot +1 step par band phir naya setup (Q10, user ka "A")**. Qaide Q0-Q10 `ABHI-KAHAN-HAIN.md` mein | BTC demo par. k1 (gold, sirf SELL chakkar) aur k3a demo par chale; **k5 compile ka jawab baqi** |
 | `JasBasketEA.mq5` b20 | Meri method ka EA, sirf apni (magic) lots | Haath ki lots ko nahi chhoota |
 | `JasDesk.mq5` | Button wala desk | User ne MT5 se hata diya |
 

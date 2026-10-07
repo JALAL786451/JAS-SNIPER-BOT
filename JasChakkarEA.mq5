@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD k4   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD k5   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|  JasChakkarEA.mq5  -  "trend ko dost bana kar"                    |
@@ -24,6 +24,11 @@
 //|       lots ka mila hua P/L InpCloseAll tak pohnche to sab band,   |
 //|       phir khali kitab se rukh ke hisaab se naya setup.           |
 //|       (Q0 akeli lot ke liye hai; Close All mila kar faide mein.)  |
+//|   Q10 PEHLI LOT (user ne 7 Oct ko "A" chuna): khali kitab par     |
+//|       kholi gayi pehli 0.01 akeli ho aur InpFirstTpSteps (1) step |
+//|       faide mein aaye to band, phir rukh dekh kar naya setup.     |
+//|       Akeli pehli lot ke saath doosri 0.01 nahi lagti - ya +1     |
+//|       step par band, ya 1 step ulti chaal par hedge (Q5).         |
 //|   Q8  Equity (attach ke waqt ki equity se): 95% par naya jhukao   |
 //|       band, 90% par sab hedge aur EA ruk jata hai.                |
 //|                                                                   |
@@ -37,7 +42,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define K_BUILD "k4"
+#define K_BUILD "k5"
 
 input group "=== 1 - Jhukao ==="
 input bool   InpTrade         = true;     // true = asal kaam; false = sirf panel par batao
@@ -62,6 +67,9 @@ input int             InpSlopeBars = 3;          // EMA ka jhukaav kitni candles
 input group "=== 3b - Close All (Q9) ==="
 input bool   InpUseCloseAll = true;    // Saari lots mila kar faide mein hon to Close All
 input double InpCloseAll    = 30.0;    // Kitne faide par (account ki currency) - demo par user +30 par karta hai
+
+input group "=== 3c - Pehli lot (Q10) ==="
+input double InpFirstTpSteps = 1.0;    // Khali kitab ki pehli 0.01 itne STEP faide mein ho to band, phir naya setup (0 = band)
 
 input group "=== 4 - Jori (bari lot) ==="
 input bool   InpJori      = true;    // Bari lot ki jori Close By se
@@ -111,6 +119,8 @@ int      g_jN = 0;    double g_jSum = 0.0;
 int      g_cN = 0;    double g_cSum = 0.0;   // akeli faide wali lots band
 int      g_oN = 0;                           // nayi lots kholi
 int      g_caN = 0;   double g_caSum = 0.0;  // Close All
+int      g_fN = 0;    double g_fSum = 0.0;   // Q10: pehli lot faide mein band
+bool     g_first = false;                    // kitab ki akeli lot khali kitab par kholi gayi thi
 bool     g_closing = false;                  // Close All adhoora - agle tick par jari
 
 datetime g_lastAct = 0, g_lastTry = 0;
@@ -141,6 +151,7 @@ void Save()
    SV("step", g_step); SV("hedgeAt", (double)g_hedgeAt);
    SV("epW", g_epW); SV("epL", g_epL); SV("epN", g_epN); SV("epSum", g_epSum); SV("epSecs", (double)g_epSecs);
    SV("jN", g_jN); SV("jSum", g_jSum); SV("cN", g_cN); SV("cSum", g_cSum); SV("oN", g_oN); SV("caN", g_caN); SV("caSum", g_caSum);
+   SV("fN", g_fN); SV("fSum", g_fSum); SV("first", g_first ? 1 : 0);
   }
 
 void Load()
@@ -154,11 +165,12 @@ void Load()
    g_epSum = GV("epSum", 0.0); g_epSecs = (long)GV("epSecs", 0);
    g_jN = (int)GV("jN", 0); g_jSum = GV("jSum", 0.0);
    g_cN = (int)GV("cN", 0); g_cSum = GV("cSum", 0.0); g_oN = (int)GV("oN", 0); g_caN = (int)GV("caN", 0); g_caSum = GV("caSum", 0.0);
+   g_fN = (int)GV("fN", 0); g_fSum = GV("fSum", 0.0); g_first = GV("first", 0) > 0.5;
   }
 
 void ResetStats()
   {
-   string n[] = {"epW", "epL", "epN", "epSum", "epSecs", "jN", "jSum", "cN", "cSum", "oN", "caN", "caSum"};
+   string n[] = {"epW", "epL", "epN", "epSum", "epSecs", "jN", "jSum", "cN", "cSum", "oN", "caN", "caSum", "fN", "fSum"};
    for(int i = 0; i < ArraySize(n); i++) GlobalVariableDel(Key(n[i]));
   }
 
@@ -494,12 +506,66 @@ bool TryCloseAll()
   }
 
 //+------------------------------------------------------------------+
+//|  Q10 - pehli lot: +InpFirstTpSteps step faide mein band           |
+//+------------------------------------------------------------------+
+//--- kitab mein sirf khali kitab par kholi gayi pehli 0.01 ho to us ka
+//--- ticket, taraf (+1 BUY / -1 SELL) aur band hone ki qeemat
+ulong SoloLot(int &side, double &target)
+  {
+   side = 0; target = 0.0;
+   if(InpFirstTpSteps <= 0.0 || !g_first) return(0);
+   ulong solo = 0; int n = 0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      n++; solo = t;
+     }
+   if(n != 1 || !PositionSelectByTicket(solo)) return(0);
+   if(MathAbs(PositionGetDouble(POSITION_VOLUME) - InpLot) > 1e-8) return(0);
+   double stp = (g_step > 0.0) ? g_step : StepNow();
+   if(stp <= 0.0) return(0);
+   side   = (PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY) ? 1 : -1;
+   target = PositionGetDouble(POSITION_PRICE_OPEN) + side * stp * InpFirstTpSteps;
+   return(solo);
+  }
+
+bool TrySolo(double bid, double ask)
+  {
+   int    side   = 0;
+   double target = 0.0;
+   ulong  tk = SoloLot(side, target);
+   if(tk == 0) return(false);
+   bool hit = (side > 0) ? (bid >= target) : (ask <= target);
+   if(!hit || !PositionSelectByTicket(tk)) return(false);
+   double pl = PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP);
+   if(pl < InpMinClose) return(false);                // Q0: nuqsan par kabhi nahi
+   if(!InpTrade) { g_msg = "SIRF DIKHANA: abhi pehli lot band hoti (" + M(pl) + ")"; return(true); }
+   if(TimeCurrent() - g_lastTry < 2) return(true);
+   g_lastTry = TimeCurrent();
+   if(!Ok(trade.PositionClose(tk))) return(true);
+   g_fN++; g_fSum += pl;
+   g_first = false;
+   EpEnd("pehli lot faide mein");
+   g_hedgeAt = 0;                                     // khali kitab: naya setup fauran
+   g_lastAct = TimeCurrent();
+   g_msg = "Pehli lot +" + M(pl) + " par band. Rukh dekh kar naya setup.";
+   Save();
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
 //|  Dimagh                                                           |
 //+------------------------------------------------------------------+
 void Brain(double net, double bid, double ask, double eqPct)
   {
    int    sn  = Sgn(net);
    double stp = StepNow();
+
+   //--- Q10: pehli lot tabhi tak "pehli" jab tak kitab mein akeli hai
+   double bb = 0.0, bs = 0.0; int nb = 0, ns = 0;
+   Book(bb, bs, nb, ns);
+   if(g_first && nb + ns != 1) { g_first = false; Save(); }
 
    //--- Q9: Close All - saari lots mila kar faide mein
    if(InpUseCloseAll && TryCloseAll()) return;
@@ -529,6 +595,9 @@ void Brain(double net, double bid, double ask, double eqPct)
       if(g_step <= 0.0) g_step = stp;
       if(sn > 0) g_peak = MathMax(g_peak, bid); else g_peak = MathMin(g_peak, ask);
 
+      //--- Q10: pehli lot faide mein -> band (hedge se pehle: 0/faida pehle)
+      if(TrySolo(bid, ask)) return;
+
       string why = "";
       if(sn > 0 && bid <= g_peak - g_step)           why = "1 step ulti chaal";
       else if(sn < 0 && ask >= g_peak + g_step)      why = "1 step ulti chaal";
@@ -545,6 +614,10 @@ void Brain(double net, double bid, double ask, double eqPct)
    //--- Q2: rukh ke saath agla 0.01
    if(g_trend == 0)                         { g_msg = Pick(sn == 0, "Intezar: rukh saaf nahi", "Jhukao chal raha"); return; }
    if(sn != 0 && sn != g_trend)             return;   // upar hedge ho chuka hoga
+   int    soloSide = 0;
+   double soloTp   = 0.0;
+   if(sn != 0 && SoloLot(soloSide, soloTp) > 0)       // Q10: pehli lot ke saath doosri 0.01 nahi
+     { g_msg = "Pehli lot: faide mein band jab qeemat " + Px(soloTp); return; }
    if(MathAbs(net) + InpLot > InpMaxNet + 1e-6) { g_msg = "Jhukao poora (NET hadd). Trailing chal raha."; return; }
    if(eqPct <= InpEqStopPct)                { g_msg = StringFormat("Rok: equity %.1f%% - naya jhukao nahi", eqPct); return; }
    if(g_newsBlock)                          { g_msg = "Rok: news - " + g_newsName; return; }
@@ -571,6 +644,7 @@ void Brain(double net, double bid, double ask, double eqPct)
    if(sn == 0) EpStart(g_trend, px);
    string w = "";
    if(!Unit(g_trend, w)) return;
+   if(nb + ns == 0) g_first = true;                   // Q10: khali kitab ki pehli lot
    g_lastAdd = px;
    g_lastAct = TimeCurrent();
    g_msg = "Jhukao: " + w;
@@ -600,6 +674,10 @@ void Panel(double buy, double sell, int nb, int ns, double bid, double ask, doub
       s += StringFormat("  Abhi tak: %s   |   hedge agar qeemat %s\n",
                         M(AccountInfoDouble(ACCOUNT_EQUITY) - g_epEq),
                         Px(g_epSide > 0 ? g_peak - g_step : g_peak + g_step));
+      int    fs  = 0;
+      double ftp = 0.0;
+      if(SoloLot(fs, ftp) > 0)
+         s += StringFormat("  Pehli lot: band agar qeemat %s (+%s step)\n", Px(ftp), DoubleToString(InpFirstTpSteps, 1));
      }
    else s += "JHUKAO: nahi (kitab jami)\n";
    s += "  " + g_msg + "\n";
@@ -610,6 +688,7 @@ void Panel(double buy, double sell, int nb, int ns, double bid, double ask, doub
    s += StringFormat("Faide wali 0.01 band: %d (%s)   nayi 0.01: %d\n", g_cN, M(g_cSum), g_oN);
    s += StringFormat("Jori: %d (%s)\n", g_jN, M(g_jSum));
    s += StringFormat("Close All: %d (%s)   |   hadd +%s, abhi %s\n", g_caN, M(g_caSum), M(InpCloseAll), M(BookPL()));
+   s += StringFormat("Pehli lot faide mein band: %d (%s)\n", g_fN, M(g_fSum));
    if(g_last != "") s += "Aakhri: " + g_last + "\n";
    s += "\n";
    if(!InpUseNews)       s += "News: band (input)\n";
@@ -622,6 +701,18 @@ void Panel(double buy, double sell, int nb, int ns, double bid, double ask, doub
 
 void DrawLine()
   {
+   int    fs  = 0;
+   double ftp = 0.0;
+   if(!InpLines || SoloLot(fs, ftp) == 0) ObjectDelete(0, "JCK_tp");
+   else
+     {
+      if(ObjectFind(0, "JCK_tp") < 0) ObjectCreate(0, "JCK_tp", OBJ_HLINE, 0, 0, ftp);
+      ObjectSetDouble(0, "JCK_tp", OBJPROP_PRICE, ftp);
+      ObjectSetInteger(0, "JCK_tp", OBJPROP_COLOR, clrLimeGreen);
+      ObjectSetInteger(0, "JCK_tp", OBJPROP_STYLE, STYLE_DASH);
+      ObjectSetInteger(0, "JCK_tp", OBJPROP_SELECTABLE, false);
+      ObjectSetString(0, "JCK_tp", OBJPROP_TOOLTIP, "Yahan pehli lot faide mein band (Q10)");
+     }
    if(!InpLines || !g_epOn || g_step <= 0.0) { ObjectDelete(0, "JCK_hedge"); return; }
    double p = (g_epSide > 0) ? g_peak - g_step : g_peak + g_step;
    if(ObjectFind(0, "JCK_hedge") < 0) ObjectCreate(0, "JCK_hedge", OBJ_HLINE, 0, 0, p);
@@ -687,6 +778,7 @@ void OnDeinit(const int reason)
    if(hEma != INVALID_HANDLE) IndicatorRelease(hEma);
    if(hAtr != INVALID_HANDLE) IndicatorRelease(hAtr);
    ObjectDelete(0, "JCK_hedge");
+   ObjectDelete(0, "JCK_tp");
    Comment("");
   }
 
