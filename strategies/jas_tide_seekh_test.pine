@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.3, Pine v6)
+//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.4, Pine v6)
 //
 //  indicators/jas_tide_seekh.pine ke BILKUL WOHI qawaid, Strategy Tester ke
 //  liye. Purani strategies/jas_tide_v1.pine waisi rakhi hai (us ka 458 /
@@ -34,7 +34,7 @@ strategy("JAS Tide Seekh — Strategy Test", shorttitle = "JAS Tide Test", overl
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "t1.3"
+BUILD = "t1.4"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -241,7 +241,10 @@ f_rr(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.00") + "R"
 f_row(_r, _a, _b, _c) =>
     table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
     table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small, text_halign = text.align_left)
-if barstate.islast
+// Strategy chalti (realtime) candle par us ke band hone tak nahi chalti, is liye
+// market khula ho to "islast" wali candle par kabhi nahi pohanchti - table
+// pichli band candle par bhi banao (islastconfirmedhistory).
+if barstate.islast or barstate.islastconfirmedhistory
     _ex = nEnt > 0 ? sumR / nEnt : na
     _pf = sumL > 0 ? sumW / sumL : na
     cOK = color.new(#1B5E20, 0)

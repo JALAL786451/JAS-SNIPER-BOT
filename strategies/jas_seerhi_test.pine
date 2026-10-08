@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS SEERHI — STRATEGY TEST  (build s1, Pine v6)
+//  JAS SEERHI — STRATEGY TEST  (build s1.2, Pine v6)
 //
 //  indicators/jas_seerhi.pine ke BILKUL WOHI qawaid (1D rukh -> pullback ->
 //  chhote swing ka toot), magar Pine STRATEGY ki shakal mein - taake
@@ -37,7 +37,7 @@ strategy("JAS Seerhi — Strategy Test", shorttitle = "JAS Seerhi Test", overlay
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "s1.1"
+BUILD = "s1.2"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -267,7 +267,10 @@ var table rt = table.new(position.top_right, 2, 10, border_width = 1, border_col
 f_row(_r, _a, _b, _c) =>
     table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
     table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small)
-if barstate.islast
+// Strategy chalti (realtime) candle par us ke band hone tak nahi chalti, is liye
+// market khula ho to "islast" wali candle par kabhi nahi pohanchti - table
+// pichli band candle par bhi banao (islastconfirmedhistory).
+if barstate.islast or barstate.islastconfirmedhistory
     _gp = strategy.grossprofit
     _gl = strategy.grossloss
     _pf = _gl > 0 ? _gp / _gl : na
