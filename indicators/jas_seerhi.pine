@@ -176,8 +176,8 @@ var int   wB = 0
 var int   wS = 0
 var float sB = 0.0
 var float sS = 0.0
-var float gW = 0.0
-var float gL = 0.0
+var float sumWin  = 0.0   // jeetne wali trades ka kul R
+var float sumLoss = 0.0   // haarne wali trades ka kul R (musbat)
 var int   lossRun = 0
 var int   lossMax = 0
 var label[] hist = array.new<label>()
@@ -222,9 +222,9 @@ if tDir != 0 and bar_index > tBar
             sS += _net
             wS += _net > 0 ? 1 : 0
         if _net > 0
-            gW += _net
+            sumWin += _net
         else
-            gL -= _net
+            sumLoss -= _net
         lossRun := _net < 0 ? lossRun + 1 : 0
         lossMax := math.max(lossMax, lossRun)
         if showHist and histN > 0
@@ -416,7 +416,7 @@ if barstate.islast
     _n  = nB + nS
     _w  = wB + wS
     _ex = _n > 0 ? (sB + sS) / _n : na
-    _pf = gL > 0 ? gW / gL : na
+    _pf = sumLoss > 0 ? sumWin / sumLoss : na
     f_row(10, "Nateeja (kharche ke baad)", _n == 0 ? "abhi koi band trade nahi" : str.tostring(_n) + " trades  ·  jeet " + str.tostring(math.round(100.0 * _w / _n)) + "%  ·  Exp " + f_r(_ex) + "  ·  kul " + f_r(sB + sS) + "  ·  PF " + (na(_pf) ? "-" : str.tostring(_pf, "#.##")), na(_ex) ? cMID : _ex > 0 ? cOK : cNO)
     f_row(11, "    BUY  |  SELL", "BUY " + str.tostring(nB) + (nB > 0 ? " (" + f_r(sB / nB) + ")" : "") + "   |   SELL " + str.tostring(nS) + (nS > 0 ? " (" + f_r(sS / nS) + ")" : "") + "   ·   lagatar haar max " + str.tostring(lossMax), cMID)
     f_row(12, "Lot", "Risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + ".  Lot = risk ÷ (SL $ × 100).  0.01 lot: $1 = 1 " + acctCur, cMID)

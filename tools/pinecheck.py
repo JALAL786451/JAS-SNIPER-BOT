@@ -233,6 +233,34 @@ def main(path):
         problems.append(f'undeclared identifier "{name}" used at line(s) '
                         f'{", ".join(str(x) for x in lines[:6])}')
 
+    # --- the same name declared twice at the top level (CE10095) ------------
+    # `x = ...` or `var float x = ...` at column 0 declares x; a second one is
+    # "already defined" in TradingView. (8 Oct: a group-name string gL and a
+    # running total gL collided.) Reassignment with := is not a declaration.
+    top_decl_re = re.compile(
+        r'^(?:var\s+|varip\s+)?'
+        r'(?:(?:int|float|bool|string|color|line|label|box|table|'
+        r'array<[^>]*>|map<[^>]*>|matrix<[^>]*>|[A-Z]\w*)(?:\s*\[\s*\])?\s+)?'
+        r'([A-Za-z_]\w*)\s*=(?!=)')
+    seen_top = {}
+    for i, ln in enumerate(code_lines, 1):
+        names = []
+        m = top_decl_re.match(ln)
+        if m:
+            names.append(m.group(1))
+        m = re.match(r'^\[([^\]]+)\]\s*=(?!=)', ln)
+        if m:
+            names += [n.strip() for n in m.group(1).split(',')]
+        m = re.match(r'^(?:method\s+)?([A-Za-z_]\w*)\s*\([^)]*\)\s*=>', ln)
+        if m and not ln.startswith('method'):
+            names.append(m.group(1))
+        for n in names:
+            if n in seen_top:
+                problems.append(f'line {i}: "{n}" is already defined at line {seen_top[n]} '
+                                f'(TradingView CE10095) - use another name')
+            else:
+                seen_top[n] = i
+
     # --- `:=` must target something already declared ------------------------
     for m in re.finditer(r'(?m)^\s*([A-Za-z_]\w*)\s*:=', code):
         if m.group(1) not in declared:
