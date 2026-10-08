@@ -35,7 +35,7 @@
 indicator("JAS Seerhi — 1D rukh, chart par entry", shorttitle = "JAS Seerhi", overlay = true,
      max_lines_count = 200, max_labels_count = 200, max_boxes_count = 50, max_bars_back = 500)
 
-BUILD = "s1"
+BUILD = "s1.1"
 
 // ============================================================================
 //  INPUTS
@@ -189,28 +189,37 @@ var float  trig  = na
 var string why   = "Shuru: rukh dekha ja raha hai"
 
 // ---- khuli trade ka intezam (pehle) ----
+// "rukh ulta" / "waqt khatam" se band hui candle par naya setup nahi dhoondte -
+// strategy mein bhi wahi candle band hone ki hoti hai (strategy jaisa rehne ke liye)
+bool justClosed = false
 if tDir != 0 and bar_index > tBar
     float  _res = na
     string _how = ""
     _hitSL = tDir == 1 ? low <= tSL : high >= tSL
     if _hitSL
-        _res := tH1 ? 0.5 * tp1R : -1.0
+        // candle SL ke paar KHULI ho (gap: Peer ki subha, news) to asal fill open par
+        _px  = tDir == 1 ? math.min(open, tSL) : math.max(open, tSL)
+        _slR = (tDir == 1 ? _px - tE : tE - _px) / tR
+        _res := tH1 ? 0.5 * tp1R + 0.5 * _slR : _slR
         _how := tH1 ? "TP1 ✓ phir BE" : "SL ✗"
     else
         if not tH1 and (tDir == 1 ? high >= tT1 : low <= tT1)
             tH1 := true
             tSL := tE
         if tDir == 1 ? high >= tT2 : low <= tT2
-            _res := 0.5 * tp1R + 0.5 * math.abs(tT2 - tE) / tR
+            _px2 = tDir == 1 ? math.max(open, tT2) : math.min(open, tT2)
+            _res := 0.5 * tp1R + 0.5 * math.abs(_px2 - tE) / tR
             _how := "TP2 ✓"
     if na(_res)
         _open = (tDir == 1 ? close - tE : tE - close) / tR
         if exitFlip and rukh == -tDir
             _res := tH1 ? 0.5 * tp1R + 0.5 * _open : _open
             _how := "rukh ulta"
+            justClosed := true
         else if maxBars > 0 and bar_index - tBar >= maxBars
             _res := tH1 ? 0.5 * tp1R + 0.5 * _open : _open
             _how := "waqt khatam"
+            justClosed := true
     if not na(_res)
         _net = _res - costUSD / tR
         if tDir == 1
@@ -241,7 +250,7 @@ if tDir != 0 and bar_index > tBar
 // ---- setup: pullback dhoondo, phir entry ----
 bool sigB = false
 bool sigS = false
-if tDir == 0
+if tDir == 0 and not justClosed
     if pbDir != 0 and rukh != pbDir
         pbDir := 0
         why := "Rukh badal gaya - pullback setup khatam"

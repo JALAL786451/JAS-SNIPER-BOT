@@ -14,13 +14,19 @@
 //  (0.5 - 3 ATR). TP1 = 1R par aadhi band, phir SL entry par (BE).
 //  TP2 = 2R ya rukh TF ka agla swing (jo pehle aaye). Rukh ulta = band.
 //  N candle baad khud band. Risk har trade % equity (default 1%).
+//  Size symbol ke qadam (mincontract) tak neeche gol; kam az kam 2 qadam
+//  (aadhi TP1 par band ho sake), warna trade nahi. Capital 100,000 taake
+//  1H gold ke bare SL par bhi size 2+ rahe.
+//  SL/TP isi entry wali candle par lag jate hain (agli candle bina hifazat
+//  nahi rehti). TP1 wali candle par SL entry par aata hai magar candle ke
+//  close par - us candle par chhota farq indicator se ho sakta hai.
 //  Kharcha: $0.30 fi oz (0.15 khulne + 0.15 band hone par) - commission mein.
 //
 //  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
 //  Ye sirf naap hai. Achha nateeja bhi aage ki zamanat nahi.
 // ============================================================================
 strategy("JAS Seerhi — Strategy Test", shorttitle = "JAS Seerhi Test", overlay = true,
-     initial_capital         = 10000,
+     initial_capital         = 100000,
      default_qty_type        = strategy.fixed,
      default_qty_value       = 1,
      pyramiding              = 0,
@@ -31,7 +37,7 @@ strategy("JAS Seerhi — Strategy Test", shorttitle = "JAS Seerhi Test", overlay
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "s1"
+BUILD = "s1.1"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -204,10 +210,11 @@ if strategy.position_size == 0
                 if _r0 > slMax * atr or not _room
                     pbDir := 0
                 else if inDates
-                    _q = (strategy.equity * riskPct / 100.0) / (_r * syminfo.pointvalue)
-                    if _q > 0
+                    _step = syminfo.mincontract > 0 ? syminfo.mincontract : 1.0
+                    _q = math.floor((strategy.equity * riskPct / 100.0) / (_r * syminfo.pointvalue) / _step) * _step
+                    if _q >= 2 * _step
                         _t2 = _e + pbDir * tp2R * _r
-                        strategy.entry(pbDir == 1 ? "L" : "S", pbDir == 1 ? strategy.long : strategy.short, qty = _q)
+                        _id = pbDir == 1 ? "L" : "S"
                         pDir := pbDir
                         pE   := _e
                         pR   := _r
@@ -217,8 +224,12 @@ if strategy.position_size == 0
                         pQ   := _q
                         pBar := bar_index
                         pH1  := false
+                        // entry aur us ke SL/TP isi candle par - agli candle par hifazat ho
+                        strategy.entry(_id, pbDir == 1 ? strategy.long : strategy.short, qty = _q)
+                        strategy.exit("TP1", from_entry = _id, limit = pT1, stop = pSL, qty_percent = 50)
+                        strategy.exit("TP2", from_entry = _id, limit = pT2, stop = pSL)
                         inTrade := true
-                        riskAmt := strategy.equity * riskPct / 100.0
+                        riskAmt := _q * _r * syminfo.pointvalue   // asal khatra (gol size ke baad)
                         npAt    := strategy.netprofit
                     pbDir := 0
                 else
