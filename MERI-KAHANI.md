@@ -84,6 +84,10 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   hai. Is liye: faisle ka qaida test se PEHLE likho, aur har aazmaish gino.
 - Tester ka "144 trades / 36.8% jeet" = har trade ke do tukre (TP1 aadhi +
   baqi). Asal ginti entries ki hai (72, jeet 43%).
+- **Kachhua (Tide) mein 2R par aadhi band karna nuqsan deh** (8 Oct, 1D gold,
+  ~459 trades): aadhi band = +274%, PF 1.59; poori chalne do = +506%, PF 1.68.
+  Girawat sirf 27% -> 24.5% kam hui. Trend system ki kamai chand BARI jeet se
+  aati hai - unhein kaatna mehenga. (Seerhi ke ulat: wahan 1R par aadhi.)
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 
