@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.2, Pine v6)
+//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.3, Pine v6)
 //
 //  indicators/jas_tide_seekh.pine ke BILKUL WOHI qawaid, Strategy Tester ke
 //  liye. Purani strategies/jas_tide_v1.pine waisi rakhi hai (us ka 458 /
@@ -34,7 +34,7 @@ strategy("JAS Tide Seekh — Strategy Test", shorttitle = "JAS Tide Test", overl
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "t1.2"
+BUILD = "t1.3"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -106,6 +106,15 @@ var int   nWinR   = 0
 var float sumR    = 0.0
 var float sumW    = 0.0
 var float sumL    = 0.0
+var float sumQ    = 0.0   // R ka square - Exp ki ghalti (SE) ke liye
+// daur-wise hisaab (entry ke saal se): 0 = 1970 se pehle, 1 = 1970-1999, 2 = 2000-2018, 3 = 2019-aaj
+var array<float> eN  = array.new<float>(4, 0.0)
+var array<float> eW  = array.new<float>(4, 0.0)
+var array<float> eS  = array.new<float>(4, 0.0)
+var array<float> eQ  = array.new<float>(4, 0.0)
+var array<float> eSW = array.new<float>(4, 0.0)
+var array<float> eSL = array.new<float>(4, 0.0)
+f_era(_y) => _y < 1970 ? 0 : _y < 2000 ? 1 : _y < 2019 ? 2 : 3
 var int   xSL     = 0
 var int   xTrail  = 0
 var int   xFlip   = 0
@@ -122,6 +131,7 @@ var float pT    = na
 var bool  pHalf = false
 var bool  pFlip = false
 var bool  pEnd  = false
+var int   pYear = na
 
 // pichli trade band ho gayi? -> hisaab
 if inTrade and strategy.position_size == 0
@@ -129,6 +139,16 @@ if inTrade and strategy.position_size == 0
     nEnt  += 1
     nWinR += _rr > 0 ? 1 : 0
     sumR  += _rr
+    sumQ  += _rr * _rr
+    _k = f_era(nz(pYear, year(time)))
+    array.set(eN, _k, array.get(eN, _k) + 1)
+    array.set(eW, _k, array.get(eW, _k) + (_rr > 0 ? 1 : 0))
+    array.set(eS, _k, array.get(eS, _k) + _rr)
+    array.set(eQ, _k, array.get(eQ, _k) + _rr * _rr)
+    if _rr > 0
+        array.set(eSW, _k, array.get(eSW, _k) + _rr)
+    else
+        array.set(eSL, _k, array.get(eSL, _k) - _rr)
     if _rr > 0
         sumW += _rr
     else
@@ -188,6 +208,7 @@ if strategy.position_size == 0 and not inTrade and inDates and (longSig or short
         pHalf := false
         pFlip := false
         pEnd  := false
+        pYear := year(time)
         ctAt  := strategy.closedtrades
         // entry aur us ke SL usi candle par - agli candle par hifazat ho
         strategy.entry(_id, _d == 1 ? strategy.long : strategy.short, qty = _q)
@@ -213,7 +234,10 @@ plot(loBrk, "SELL level", color = color.new(#B71C1C, 55), style = plot.style_ste
 //  CHHOTA NATEEJA TABLE (screenshot ke liye)
 // ============================================================================
 f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
-var table rt = table.new(f_pos(tblPos), 2, 12, border_width = 1, border_color = color.new(color.gray, 70))
+var table rt = table.new(f_pos(tblPos), 2, 16, border_width = 1, border_color = color.new(color.gray, 70))
+// Exp aur us ki 2 x SE (95% ke qareeb): Exp in hadon ke andar 0 ko chhoo le to faida sabit nahi
+f_se2(_n, _s, _q) => _n > 1 ? 2.0 * math.sqrt(math.max(_q - _s * _s / _n, 0.0) / (_n - 1)) / math.sqrt(_n) : na
+f_rr(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.00") + "R"
 f_row(_r, _a, _b, _c) =>
     table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
     table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small, text_halign = text.align_left)
@@ -227,9 +251,23 @@ if barstate.islast
     f_row(1, "Net profit", str.tostring(strategy.netprofit, "#,###") + " $  (" + str.tostring(100 * strategy.netprofit / strategy.initial_capital, "0.0") + "%)", strategy.netprofit >= 0 ? cOK : cNO)
     f_row(2, "Entries (asal trades)", str.tostring(nEnt) + "   (Tester ki ginti mein 2R aadhi alag row hai)", color.black)
     f_row(3, "Jeet % (entry ka kul nateeja > 0)", nEnt > 0 ? str.tostring(100.0 * nWinR / nEnt, "0.0") + "%" : "-", color.black)
-    f_row(4, "Exp (R fi trade, kharche samet)", na(_ex) ? "-" : (_ex > 0 ? "+" : "") + str.tostring(_ex, "0.00") + "R", na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
+    _se = f_se2(nEnt, sumR, sumQ)
+    f_row(4, "Exp (R fi trade, kharche samet)", na(_ex) ? "-" : f_rr(_ex) + (na(_se) ? "" : "  (± " + str.tostring(_se, "0.00") + ")"), na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
     f_row(5, "Profit Factor (R se)", na(_pf) ? "-" : str.tostring(_pf, "0.00"), na(_pf) ? color.black : _pf >= 1.3 ? cOK : _pf >= 1 ? color.new(#E65100, 0) : cNO)
     f_row(6, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", cNO)
     f_row(7, "Kaise band huin", "SL " + str.tostring(xSL) + "  ·  sarakta SL " + str.tostring(xTrail) + "  ·  D1 palta " + str.tostring(xFlip) + (usePart ? "  ·  2R aadhi " + str.tostring(nHalf) : "") + (xEnd > 0 ? "  ·  arsa khatam " + str.tostring(xEnd) : ""), color.black)
     f_row(8, "Qawaid", str.tostring(entryLen) + "/" + str.tostring(exitLen) + "/" + str.tostring(atrLen) + "/" + str.tostring(atrMult, "0.0") + " · risk " + str.tostring(riskPct, "0.0") + "% · kharcha $0.30/oz", color.black)
+    _names = array.from("1970 se pehle", "1970-1999", "2000-2018", "2019-aaj")
+    _row = 10
+    for _k = 0 to 3
+        _n = array.get(eN, _k)
+        if _n > 0 or _k > 0
+            _s   = array.get(eS, _k)
+            _exk = _n > 0 ? _s / _n : na
+            _sek = f_se2(_n, _s, array.get(eQ, _k))
+            _slk = array.get(eSL, _k)
+            _pfk = _slk > 0 ? array.get(eSW, _k) / _slk : na
+            _txt = _n == 0 ? "koi trade nahi" : str.tostring(_n, "#") + " trades · jeet " + str.tostring(100.0 * array.get(eW, _k) / _n, "0") + "% · Exp " + f_rr(_exk) + (na(_sek) ? "" : " (± " + str.tostring(_sek, "0.00") + ")") + " · PF " + (na(_pfk) ? "-" : str.tostring(_pfk, "0.00")) + " · kul " + f_rr(_s)
+            f_row(_row, "Daur " + array.get(_names, _k), _txt, na(_exk) ? color.black : _exk > 0 ? cOK : cNO)
+            _row += 1
     f_row(9, "Note", "Sirf naap. Swap shamil nahi (live cent swap-free)." + (nSkip > 0 ? "  CHHOOTI: " + str.tostring(nSkip) + " trades (size bohot chhota) - indicator se farq hoga." : "") + (syminfo.pointvalue != 1 ? "  DHYAN: is symbol par 1 qty = " + str.tostring(syminfo.pointvalue) + " oz - kharcha alag." : ""), cNO)
