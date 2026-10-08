@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS SEERHI  (build s1, Pine v6)  —  oopar se neeche: 1D rukh -> chart par entry
+//  JAS SEERHI  (build s1.2, Pine v6)  —  oopar se neeche: 1D rukh -> chart par entry
 //
 //  User ne 8 Oct 2026 ko manga: "pro level trade samajhne wala script", SL/TP
 //  wala sahi tareeqa, aur baqi faisle Claude par chhore. Ye SEEKHNE ka aala
@@ -31,11 +31,16 @@
 //  Ye peshangoi nahi. Pehle strategies/jas_seerhi_test.pine se Strategy Tester
 //  par naapein, phir demo. Signal ka hissa wahan jyon ka tyon hai - yahan
 //  badlein to wahan bhi badlein.
+//
+//  s1.1  CE10095 durust; gap par SL/TP2 open par; flip/waqt wali candle par
+//        naya setup nahi (strategy jaisa).
+//  s1.2  sirf panel: TradingView ke naam ke neeche na chhupe (khali rows),
+//        "Kaise band huin" row, naye pullback par "Aakhri baat". Signal wahi.
 // ============================================================================
 indicator("JAS Seerhi — 1D rukh, chart par entry", shorttitle = "JAS Seerhi", overlay = true,
      max_lines_count = 200, max_labels_count = 200, max_boxes_count = 50, max_bars_back = 500)
 
-BUILD = "s1.1"
+BUILD = "s1.2"
 
 // ============================================================================
 //  INPUTS
@@ -79,13 +84,14 @@ histN    = input.int(40, "Kitne purane nateeje", minval = 0, maxval = 150, group
 futBars  = input.int(5, "Aage kitni candle tak lakeerein (kam = chart nahi khinchta)", minval = 0, maxval = 30, group = gD)
 panelPos = input.string("Top Right", "Panel ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gD)
 panelSz  = input.string("Small", "Panel ka font", options = ["Tiny", "Small", "Normal"], group = gD)
+panelPad = input.int(2, "Panel: upar khali rows (TradingView ke naam ke neeche)", minval = 0, maxval = 8, group = gD)
 
 // ============================================================================
 //  HELPERS
 // ============================================================================
 f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
 f_px(x) => str.tostring(x, format.mintick)
-f_r(x) => (x > 0 ? "+" : "") + str.tostring(x, "#.##") + "R"
+f_r(x) => (x > 0 ? "+" : "") + str.tostring(x, "0.00") + "R"
 f_tfName(_t) => _t == "D" or _t == "1D" ? "1D" : _t == "W" or _t == "1W" ? "1W" : _t == "240" ? "4H" : _t == "60" ? "1H" : _t == "30" ? "30m" : _t == "15" ? "15m" : _t == "5" ? "5m" : _t == "1" ? "1m" : _t
 f_side(d) => d == 1 ? "BUY" : d == -1 ? "SELL" : "SAAF NAHI"
 f_lot(_dist) => _dist > 0 ? (acct * riskPct / 100.0) / (_dist * 100.0) : na
@@ -180,6 +186,12 @@ var float sumWin  = 0.0   // jeetne wali trades ka kul R
 var float sumLoss = 0.0   // haarne wali trades ka kul R (musbat)
 var int   lossRun = 0
 var int   lossMax = 0
+// trades kaise band huin (seekhne ke liye: nuqsan kahan se aata hai)
+var int   xSL   = 0
+var int   xBE   = 0
+var int   xTP2  = 0
+var int   xFlip = 0
+var int   xTime = 0
 var label[] hist = array.new<label>()
 // --- pullback setup ---
 var int    pbDir = 0
@@ -234,6 +246,16 @@ if tDir != 0 and bar_index > tBar
             sumWin += _net
         else
             sumLoss -= _net
+        if _how == "SL ✗"
+            xSL += 1
+        else if _how == "TP1 ✓ phir BE"
+            xBE += 1
+        else if _how == "TP2 ✓"
+            xTP2 += 1
+        else if _how == "rukh ulta"
+            xFlip += 1
+        else
+            xTime += 1
         lossRun := _net < 0 ? lossRun + 1 : 0
         lossMax := math.max(lossMax, lossRun)
         if showHist and histN > 0
@@ -262,6 +284,7 @@ if tDir == 0 and not justClosed
             pbBar := bar_index
             pbExt := rukh == 1 ? low : high
             trig  := rukh == 1 ? hh5 : ll5
+            why   := "Naya pullback: qeemat MA21 tak " + (rukh == 1 ? "neeche" : "upar") + " aayi. Ab entry trigger ka intezar."
     else
         pbExt := pbDir == 1 ? math.min(pbExt, low) : math.max(pbExt, high)
         if pbDir == 1 and not na(mph) and bar_index - tPiv >= pbBar
@@ -294,7 +317,7 @@ if tDir == 0 and not justClosed
                         _tgt := na(_tgt) ? rL1 : math.max(_tgt, rL1)
                 _room = na(_tgt) or math.abs(_tgt - _e) >= tp1R * _r
                 if _r0 > slMax * atr
-                    why := "Entry aayi magar SL bohot door (" + str.tostring(_r0 / atr, "#.#") + " ATR) - trade chhori. Khatra bara, faida chhota."
+                    why := "Entry aayi magar SL bohot door (" + str.tostring(_r0 / atr, "0.00") + " ATR, hadd " + str.tostring(slMax, "0.0") + ") - trade chhori. Khatra bara."
                     pbDir := 0
                 else if not _room
                     why := "Entry aayi magar TP1 tak jagah nahi: " + rName + " swing " + f_px(_tgt) + " bohot qareeb - trade chhori"
@@ -379,17 +402,20 @@ if barstate.islast
 // ============================================================================
 //  PANEL  —  har seerhi ka haal, saaf alfaaz mein
 // ============================================================================
-var table pt = table.new(f_pos(panelPos), 2, 16, border_width = 1, border_color = color.new(color.gray, 70))
+var table pt = table.new(f_pos(panelPos), 2, 24, border_width = 1, border_color = color.new(color.gray, 70))
 cOK  = color.new(#1B5E20, 0)
 cNO  = color.new(#B71C1C, 0)
 cMID = color.new(#37474F, 0)
 f_row(_r, _a, _b, _c) =>
-    table.cell(pt, 0, _r, _a, bgcolor = color.new(color.white, 8), text_color = color.black, text_size = PSZ, text_halign = text.align_left)
-    table.cell(pt, 1, _r, _b, bgcolor = color.new(color.white, 8), text_color = _c, text_size = PSZ, text_halign = text.align_left)
+    table.cell(pt, 0, panelPad + _r, _a, bgcolor = color.new(color.white, 8), text_color = color.black, text_size = PSZ, text_halign = text.align_left)
+    table.cell(pt, 1, panelPad + _r, _b, bgcolor = color.new(color.white, 8), text_color = _c, text_size = PSZ, text_halign = text.align_left)
 
 if barstate.islast
-    table.cell(pt, 0, 0, "JAS SEERHI " + BUILD + "  ·  chart " + cName + "  ·  rukh " + rName + " (band candle)", bgcolor = color.new(color.silver, 30), text_color = color.black, text_size = PSZ)
-    table.merge_cells(pt, 0, 0, 1, 0)
+    if panelPad > 0
+        for _k = 0 to panelPad - 1
+            table.cell(pt, 0, _k, " ", bgcolor = color.new(color.white, 100), text_size = PSZ)
+    table.cell(pt, 0, panelPad, "JAS SEERHI " + BUILD + "  ·  chart " + cName + "  ·  rukh " + rName + " (band candle)", bgcolor = color.new(color.silver, 30), text_color = color.black, text_size = PSZ)
+    table.merge_cells(pt, 0, panelPad, 1, panelPad)
     if not tfOK
         f_row(1, "Chart ka TF", "Chart " + rName + " se CHHOTA ho - 1H, 30m ya 15m kholein", cNO)
     else
@@ -413,7 +439,7 @@ if barstate.islast
             _sl0 = pbDir == 1 ? pbExt - slBuf * atr : pbExt + slBuf * atr
             _r0  = math.abs(trig - _sl0)
             _r   = math.max(_r0, slMin * atr)
-            _pl  = _r0 > slMax * atr ? "SL bohot door hoga (" + str.tostring(_r0 / atr, "#.#") + " ATR) - trade NAHI banegi" : "Entry ~" + f_px(trig) + "  SL " + f_px(trig - pbDir * _r) + "  TP1 " + f_px(trig + pbDir * tp1R * _r) + "  TP2 ≤" + f_px(trig + pbDir * tp2R * _r) + "  lot ~" + str.tostring(f_lot(_r), "#.##")
+            _pl  = _r0 > slMax * atr ? "SL bohot door hoga (" + str.tostring(_r0 / atr, "0.00") + " ATR, hadd " + str.tostring(slMax, "0.0") + ") - trade NAHI banegi" : "Entry ~" + f_px(trig) + "  SL " + f_px(trig - pbDir * _r) + "  TP1 " + f_px(trig + pbDir * tp1R * _r) + "  TP2 ≤" + f_px(trig + pbDir * tp2R * _r) + "  lot ~" + str.tostring(f_lot(_r), "#.##")
             f_row(7, "    Plan ka andaza", _pl, _r0 > slMax * atr ? cNO : cMID)
         else
             f_row(7, "    Plan ka andaza", "-", cMID)
@@ -428,5 +454,6 @@ if barstate.islast
     _pf = sumLoss > 0 ? sumWin / sumLoss : na
     f_row(10, "Nateeja (kharche ke baad)", _n == 0 ? "abhi koi band trade nahi" : str.tostring(_n) + " trades  ·  jeet " + str.tostring(math.round(100.0 * _w / _n)) + "%  ·  Exp " + f_r(_ex) + "  ·  kul " + f_r(sB + sS) + "  ·  PF " + (na(_pf) ? "-" : str.tostring(_pf, "#.##")), na(_ex) ? cMID : _ex > 0 ? cOK : cNO)
     f_row(11, "    BUY  |  SELL", "BUY " + str.tostring(nB) + (nB > 0 ? " (" + f_r(sB / nB) + ")" : "") + "   |   SELL " + str.tostring(nS) + (nS > 0 ? " (" + f_r(sS / nS) + ")" : "") + "   ·   lagatar haar max " + str.tostring(lossMax), cMID)
-    f_row(12, "Lot", "Risk " + str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + ".  Lot = risk ÷ (SL $ × 100).  0.01 lot: $1 = 1 " + acctCur, cMID)
-    f_row(13, "Yaad rakhein", "Sirf seekhne aur naapne ke liye. Pehle Strategy Tester (JAS Seerhi Test), phir demo. Peshangoi nahi.", cNO)
+    f_row(12, "    Kaise band huin", _n == 0 ? "-" : "SL " + str.tostring(xSL) + "  ·  TP1→BE " + str.tostring(xBE) + "  ·  TP2 " + str.tostring(xTP2) + "  ·  rukh ulta " + str.tostring(xFlip) + "  ·  waqt " + str.tostring(xTime), cMID)
+    f_row(13, "Lot", str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + "  ·  lot = risk ÷ (SL$ × 100)", cMID)
+    f_row(14, "Yaad rakhein", "Pehle Strategy Tester, phir demo. Peshangoi nahi.", cNO)
