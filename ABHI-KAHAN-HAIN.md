@@ -4,13 +4,13 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (7 Oct 2026, raat) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (8 Oct 2026, subha) <<<
 
 User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 
 | Cheez | Haal |
 |---|---|
-| **SAB SE PEHLA KAAM** | **`indicators/smc_coach_pro_v4.pine` build v4.1** (Pine **v6**). **v4.0 TradingView par COMPILE + CHAL GAYA (8 Oct, user ke 1h aur 1D screenshot)**: PIP HISAAB table ke number chart se milte the (1H Range 125.8 = H-L, 1D Minute 1355/1376). Phir 8-agent jaanch: 16 sabit (h-p, file ke header mein) -> **v4.1** bana; v4.1 ki doosri 6-agent jaanch se 5 aur theek (90% signal sirf poori TF candles par - history = live; hafte ke pichle din daily candles se `f_wkPrev` (bina aage dekhe); pip window replay/purane data par khali na ho; patti ek candle tang; futureBars 0 par POC lakeer). v4.1 ka compile **baqi** - pehle poochho: paste + Add to chart hua? `v4.1` table header mein? 1m chart par 1D profile aakhri candles par nazar aata hai? 1D chart par ab pattiyan nahi, sirf POC/VA lakeerein |
+| **SAB SE PEHLA KAAM** | **`indicators/smc_coach_pro_v4.pine` build v4.1** (Pine **v6**). **v4.0 TradingView par COMPILE + CHAL GAYA (8 Oct, user ke 1h aur 1D screenshot)**: PIP HISAAB table ke number chart se milte the (1H Range 125.8 = H-L, 1D Minute 1355/1376). Phir 8-agent jaanch: 16 sabit (h-p, file ke header mein) -> **v4.1** bana; v4.1 ki doosri 6-agent jaanch se 5 aur theek (90% signal sirf poori TF candles par - history = live; hafte ke pichle din daily candles se `f_wkPrev` (bina aage dekhe); pip window replay/purane data par khali na ho; patti ek candle tang; futureBars 0 par POC lakeer). **v4.1 COMPILE + CHAL RAHA (8 Oct ~10:20 PKT, user ke 1m/15m/1h/1D screenshot)**: "1D kal" chaaron chart par bilkul ek jaisa (16,608.3 / 17,161.4 / -553.1 / 1,034.7 / POC 4166.650 / VA 4111.400-4170.000 / 1376 min); VA ab H/L ke andar (4103.445 = din ka low); 1D range 399.8 = 1D header H-L; 1W row H 4184.385 / L 4066.535 = asli hafta. Profile: 1m par aakhri 60 candles, 15m par aaj ki candles ke andar, 1h (8 candle < 10) aur 1D par sirf POC/VA lakeer - jaisa socha tha. 1m main Exp "BUY - (0)" = 4H aur 1D dono neeche (HTF Either filter BUY rokta hai), kharabi nahi. **SMC kaam mukammal - ab sirf observation.** Agla kaam user se poochha (number se jawab): 1) JasChakkarEA k4, 2) live kitab ka haal, 3) kuch aur |
 | Ghalti jo hui (dobara na ho) | Nayi chat mein user ne sirf "A" likha. Claude ne use k4 wale sawal ka jawab samjha aur k5 (pehli lot +1 step) bana diya - **user ka matlab SMC Pine script tha**. k5 revert ho gaya (k4 waisa hi). Sabaq: chhota jawab (A/B/D) mile aur do khule sawal hon to ek line mein poochho kis ka jawab hai |
 | EA kaam (ruka hua) | **`JasChakkarEA.mq5` build k4** (repo root). Demo par test |
 | Kahan chal raha | DEMO 472540009 (Exness-MT5Trial16, USD, hedge), **BTCUSDm** H1 chart (weekend gold band tha; gold `XAUUSDm` chart par bhi laga ho sakta hai) |
