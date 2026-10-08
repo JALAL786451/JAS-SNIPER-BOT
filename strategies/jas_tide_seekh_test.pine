@@ -1,0 +1,215 @@
+//@version=6
+// ============================================================================
+//  JAS TIDE SEEKH — STRATEGY TEST  (build t1, Pine v6)
+//
+//  indicators/jas_tide_seekh.pine ke BILKUL WOHI qawaid, Strategy Tester ke
+//  liye. Purani strategies/jas_tide_v1.pine waisi rakhi hai (us ka 458 /
+//  PF 1.564 wala naap us mein likha hai) - us ki kharabiyan yahan durust:
+//   1. v1.1 mein 2R par aadhi band KABHI nahi hoti thi (entry wali candle par
+//      hi "aadhi ho gayi" maan leta tha). Yahan aadhi band hone ki pehchan
+//      strategy.closedtrades barhne se hai, aur switch "2R par aadhi" BAND
+//      (default) = wohi system jo 458 mein naapa gaya.
+//   2. 2R wale order par bhi SL laga hai - SL lage to POORI position band.
+//   3. SL entry wali candle par hi lag jata hai (v1.1 mein pehli candle bina
+//      SL ke rehti thi).
+//   4. Defaults 10/5/14/2.0 (458 wale). Kharcha $0.15 fi oz har taraf
+//      (commission), slippage 0. Swap Tester nahi ginta - live cent account
+//      swap-free hai; demo USD par BUY ka swap indicator mein daalein.
+//  Size: % equity risk, symbol ke qadam (mincontract) tak neeche gol. 2R
+//  aadhi chalu ho to kam az kam 2 qadam, warna trade nahi.
+//
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+//  Ye sirf naap hai. Achha nateeja bhi aage ki zamanat nahi.
+// ============================================================================
+strategy("JAS Tide Seekh — Strategy Test", shorttitle = "JAS Tide Test", overlay = true,
+     initial_capital         = 100000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true,
+     commission_type         = strategy.commission.cash_per_contract,
+     commission_value        = 0.15,
+     slippage                = 0,
+     margin_long             = 1,
+     margin_short            = 1)
+
+BUILD = "t1"
+
+// ============================================================================
+//  INPUTS (naam aur default wahi jo indicator mein)
+// ============================================================================
+grT = "0 · Test"
+riskPct  = input.float(1.0, "Risk fi trade (% equity)", minval = 0.1, maxval = 5, step = 0.1, group = grT)
+useDates = input.bool(false, "Sirf is arse mein", group = grT)
+dtFrom   = input.time(timestamp("2014-01-01"), "Shuru", group = grT)
+dtTo     = input.time(timestamp("2030-12-31"), "Khatam", group = grT)
+
+grQ = "1 · Qawaid (458 wale)"
+entryLen  = input.int(10, "Naali: kitni candle ka high/low tore", minval = 3, maxval = 200, group = grQ)
+exitLen   = input.int(5, "SL sarakna: kitni candle ka ulta low/high", minval = 2, maxval = 100, group = grQ)
+atrLen    = input.int(14, "ATR length", minval = 2, group = grQ)
+atrMult   = input.float(2.0, "Shuru ka SL (x ATR)", minval = 0.5, step = 0.1, group = grQ)
+exitOnHTF = input.bool(true, "D1 rukh palte to band", group = grQ)
+usePart   = input.bool(false, "2R par aadhi band (BAND = jo 458 mein naapa gaya)", group = grQ)
+partR     = input.float(2.0, "Aadhi kis R par", minval = 0.5, step = 0.5, group = grQ)
+
+grH = "2 · Rukh aur susti"
+useHTF    = input.bool(true, "Bare TF ka rukh zaroori", group = grH)
+htfTF     = input.timeframe("D", "Rukh ka TF", group = grH)
+htfFast   = input.int(50, "EMA fast", minval = 2, group = grH)
+htfSlow   = input.int(200, "EMA slow", minval = 3, group = grH)
+useFloor  = input.bool(true, "Bohot susti mein trade nahi", group = grH)
+minAtrPct = input.float(0.25, "Kam az kam ATR (% qeemat ka)", minval = 0.0, step = 0.05, group = grH)
+
+inDates = not useDates or (time >= dtFrom and time <= dtTo)
+
+// ============================================================================
+//  SIGNALS — indicator se jyon ke tyon (wahan badlein to yahan bhi)
+// ============================================================================
+atr    = ta.atr(atrLen)
+hiBrk  = ta.highest(high, entryLen)[1]
+loBrk  = ta.lowest(low, entryLen)[1]
+hiExit = ta.highest(high, exitLen)[1]
+loExit = ta.lowest(low, exitLen)[1]
+
+f_htf() =>
+    _f = ta.ema(close, htfFast)
+    _s = ta.ema(close, htfSlow)
+    [_f[1], _s[1]]
+[hF, hS] = request.security(syminfo.tickerid, htfTF, f_htf(), barmerge.gaps_off, barmerge.lookahead_off)
+
+htfOk  = not na(hF) and not na(hS)
+bull   = htfOk and hF > hS
+bear   = htfOk and hF < hS
+bullOK = not useHTF or bull
+bearOK = not useHTF or bear
+atrPct = atr / close * 100.0
+liveOk = not useFloor or atrPct >= minAtrPct
+brkUp  = not na(hiBrk) and close > hiBrk
+brkDn  = not na(loBrk) and close < loBrk
+longSig  = brkUp and bullOK and liveOk
+shortSig = brkDn and bearOK and liveOk
+
+// ============================================================================
+//  R ka hisaab har entry ka (kharche samet): (netprofit badla) / risk ki raqam
+// ============================================================================
+var bool  inTrade = false
+var float riskAmt = na
+var float npAt    = na
+var int   ctAt    = 0
+var int   nEnt    = 0
+var int   nWinR   = 0
+var float sumR    = 0.0
+var float sumW    = 0.0
+var float sumL    = 0.0
+var int   xSL     = 0
+var int   xTrail  = 0
+var int   xFlip   = 0
+var int   nHalf   = 0
+
+var int   pDir  = 0
+var float pE    = na
+var float pR    = na
+var float pSL   = na
+var float pSL0  = na
+var float pT    = na
+var bool  pHalf = false
+var bool  pFlip = false
+
+// pichli trade band ho gayi? -> hisaab
+if inTrade and strategy.position_size == 0
+    _rr = (strategy.netprofit - npAt) / riskAmt
+    nEnt  += 1
+    nWinR += _rr > 0 ? 1 : 0
+    sumR  += _rr
+    if _rr > 0
+        sumW += _rr
+    else
+        sumL -= _rr
+    if pFlip
+        xFlip += 1
+    else if pSL != pSL0
+        xTrail += 1
+    else
+        xSL += 1
+    inTrade := false
+    pDir    := 0
+
+// 2R par aadhi band hui? (position khuli hai magar ek closed trade barh gayi)
+if inTrade and strategy.position_size != 0 and not pHalf and strategy.closedtrades > ctAt
+    pHalf := true
+    nHalf += 1
+
+// khuli position: pehle D1 palta, warna SL aage sarkao aur orders dobara do
+if inTrade and strategy.position_size != 0
+    _id  = pDir == 1 ? "L" : "S"
+    _xid = pDir == 1 ? "XL" : "XS"
+    if exitOnHTF and useHTF and (pDir == 1 ? bear : bull)
+        pFlip := true
+        strategy.close_all(comment = "D1 rukh palta")
+    else
+        pSL := pDir == 1 ? math.max(pSL, nz(loExit, pSL)) : math.min(pSL, nz(hiExit, pSL))
+        if usePart and not pHalf
+            strategy.exit("P1", from_entry = _id, limit = pT, stop = pSL, qty_percent = 50)
+        strategy.exit(_xid, from_entry = _id, stop = pSL)
+
+// naya trade: koi position na ho (us candle ke close par band hone wali
+// position abhi size != 0 dikhati hai - is liye us candle par nayi nahi)
+if strategy.position_size == 0 and not inTrade and inDates and (longSig or shortSig) and atr > 0
+    _d    = longSig ? 1 : -1
+    _r0   = atrMult * atr
+    _step = syminfo.mincontract > 0 ? syminfo.mincontract : 1.0
+    _q    = math.floor((strategy.equity * riskPct / 100.0) / (_r0 * syminfo.pointvalue) / _step) * _step
+    if _q >= (usePart ? 2 : 1) * _step
+        _id  = _d == 1 ? "L" : "S"
+        _xid = _d == 1 ? "XL" : "XS"
+        pDir  := _d
+        pE    := close
+        pR    := _r0
+        pSL   := close - _d * _r0
+        pSL0  := pSL
+        pT    := close + _d * partR * _r0
+        pHalf := false
+        pFlip := false
+        ctAt  := strategy.closedtrades
+        // entry aur us ke SL usi candle par - agli candle par hifazat ho
+        strategy.entry(_id, _d == 1 ? strategy.long : strategy.short, qty = _q)
+        if usePart
+            strategy.exit("P1", from_entry = _id, limit = pT, stop = pSL, qty_percent = 50)
+        strategy.exit(_xid, from_entry = _id, stop = pSL)
+        inTrade := true
+        riskAmt := _q * _r0 * syminfo.pointvalue   // asal khatra (gol size ke baad)
+        npAt    := strategy.netprofit
+
+if useDates and time > dtTo and strategy.position_size != 0
+    strategy.close_all(comment = "Arsa khatam")
+
+plot(strategy.position_size != 0 ? pSL : na, "SL (sarakta)", color = color.new(#E65100, 0), style = plot.style_linebr, linewidth = 2)
+plot(strategy.position_size != 0 ? pE : na, "Entry", color = color.new(color.blue, 0), style = plot.style_linebr, linewidth = 1)
+plot(hiBrk, "BUY level", color = color.new(#1B5E20, 55), style = plot.style_stepline)
+plot(loBrk, "SELL level", color = color.new(#B71C1C, 55), style = plot.style_stepline)
+
+// ============================================================================
+//  CHHOTA NATEEJA TABLE (screenshot ke liye)
+// ============================================================================
+var table rt = table.new(position.top_right, 2, 12, border_width = 1, border_color = color.new(color.gray, 70))
+f_row(_r, _a, _b, _c) =>
+    table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
+    table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small, text_halign = text.align_left)
+if barstate.islast
+    _ex = nEnt > 0 ? sumR / nEnt : na
+    _pf = sumL > 0 ? sumW / sumL : na
+    cOK = color.new(#1B5E20, 0)
+    cNO = color.new(#B71C1C, 0)
+    table.cell(rt, 0, 0, "JAS TIDE TEST " + BUILD + " · chart " + timeframe.period + " · 2R aadhi: " + (usePart ? "CHALU" : "BAND (458 wala)"), bgcolor = color.new(color.silver, 40), text_color = color.black, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 1, 0)
+    f_row(1, "Net profit", str.tostring(strategy.netprofit, "#,###") + " $  (" + str.tostring(100 * strategy.netprofit / strategy.initial_capital, "0.0") + "%)", strategy.netprofit >= 0 ? cOK : cNO)
+    f_row(2, "Entries (asal trades)", str.tostring(nEnt) + "   (Tester ki ginti mein 2R aadhi alag row hai)", color.black)
+    f_row(3, "Jeet % (entry ka kul nateeja > 0)", nEnt > 0 ? str.tostring(100.0 * nWinR / nEnt, "0.0") + "%" : "-", color.black)
+    f_row(4, "Exp (R fi trade, kharche samet)", na(_ex) ? "-" : (_ex > 0 ? "+" : "") + str.tostring(_ex, "0.00") + "R", na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
+    f_row(5, "Profit Factor (R se)", na(_pf) ? "-" : str.tostring(_pf, "0.00"), na(_pf) ? color.black : _pf >= 1.3 ? cOK : _pf >= 1 ? color.new(#E65100, 0) : cNO)
+    f_row(6, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", cNO)
+    f_row(7, "Kaise band huin", "SL " + str.tostring(xSL) + "  ·  sarakta SL " + str.tostring(xTrail) + "  ·  D1 palta " + str.tostring(xFlip) + (usePart ? "  ·  2R aadhi " + str.tostring(nHalf) : ""), color.black)
+    f_row(8, "Qawaid", str.tostring(entryLen) + "/" + str.tostring(exitLen) + "/" + str.tostring(atrLen) + "/" + str.tostring(atrMult, "0.0") + " · risk " + str.tostring(riskPct, "0.0") + "% · kharcha $0.30/oz", color.black)
+    f_row(9, "Note", "Sirf naap. Swap shamil nahi (live cent swap-free).", cNO)
