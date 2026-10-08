@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE SEEKH  (build t1, Pine v6)  —  1D kachhua (Turtle), seekhne ke liye
+//  JAS TIDE SEEKH  (build t1.1, Pine v6)  —  1D kachhua (Turtle), seekhne ke liye
 //
 //  User ne 8 Oct 2026 ko manga: "458 trades wali 1D kachhua strategy" ko
 //  Seerhi jaisa seekhne wala panel do. Purani indicators/jas_tide_signal.pine
@@ -29,11 +29,14 @@
 //  Ek waqt mein ek trade. Koi grid, martingale, hedging ya averaging nahi.
 //  Tester ke liye strategies/jas_tide_seekh_test.pine - qaide wahan jyon ke
 //  tyon hain; yahan badlein to wahan bhi badlein. Peshangoi nahi.
+//
+//  t1.1  2R aadhi CHALU par: gap mein 2R open par pehle, aur ek candle mein
+//        SL + 2R dono hon to Tester wala raasta (pehle SL-first tha).
 // ============================================================================
 indicator("JAS Tide Seekh — 1D kachhua, seekhne ke liye", shorttitle = "JAS Tide Seekh", overlay = true,
      max_labels_count = 200, max_lines_count = 50, max_bars_back = 500)
 
-BUILD = "t1"
+BUILD = "t1.1"
 
 // ============================================================================
 //  INPUTS
@@ -151,27 +154,26 @@ float exPx      = na
 string how      = ""
 
 if barstate.isconfirmed and tDir != 0 and bar_index > tBar
-    // 1) Candle ke andar SL (pichhli band candle par jo SL tha). Gap ho to open par.
-    if tDir == 1 and low <= tSL
-        exPx := open < tSL ? open : tSL
-        how := tSL > tSL0 ? "sarakta SL" : "SL"
+    // 1-2) Candle ke andar: SL (pichhli band candle wala) aur 2R (switch chalu ho to).
+    //  Tester jaisa raasta: gap ho to open par. Ek candle mein dono hon to
+    //  TradingView ka qaida: open high ke qareeb = pehle upar phir neeche
+    //  (open -> high -> low -> close), warna pehle neeche.
+    _hitSL  = tDir == 1 ? low <= tSL : high >= tSL
+    _wantT  = usePart and not tHalf
+    _hitT   = _wantT and (tDir == 1 ? high >= tT : low <= tT)
+    _gapSL  = tDir == 1 ? open <= tSL : open >= tSL
+    _gapT   = _wantT and (tDir == 1 ? open >= tT : open <= tT)
+    _upFirst = (high - open) < (open - low)
+    _tFirst = _gapT or (_hitT and not _gapSL and (not _hitSL or (tDir == 1 ? _upFirst : not _upFirst)))
+    if _hitT and _tFirst
+        tHalf   := true
+        tHalfPx := _gapT ? open : tT
+        tHalfT  := time
+        nHalf   += 1
+    if _hitSL
+        exPx := _gapSL ? open : tSL
+        how := (tDir == 1 ? tSL > tSL0 : tSL < tSL0) ? "sarakta SL" : "SL"
         closedNow := true
-    else if tDir == -1 and high >= tSL
-        exPx := open > tSL ? open : tSL
-        how := tSL < tSL0 ? "sarakta SL" : "SL"
-        closedNow := true
-    // 2) 2R par aadhi (switch chalu ho to). Ek candle mein SL aur 2R dono hon to SL pehle.
-    if not closedNow and usePart and not tHalf
-        if tDir == 1 and high >= tT
-            tHalf   := true
-            tHalfPx := open > tT ? open : tT
-            tHalfT  := time
-            nHalf   += 1
-        else if tDir == -1 and low <= tT
-            tHalf   := true
-            tHalfPx := open < tT ? open : tT
-            tHalfT  := time
-            nHalf   += 1
     // 3) Close par: D1 rukh palta?
     if not closedNow and exitOnHTF and useHTF and (tDir == 1 ? bear : bull)
         exPx := close

@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.1, Pine v6)
+//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.2, Pine v6)
 //
 //  indicators/jas_tide_seekh.pine ke BILKUL WOHI qawaid, Strategy Tester ke
 //  liye. Purani strategies/jas_tide_v1.pine waisi rakhi hai (us ka 458 /
@@ -34,7 +34,7 @@ strategy("JAS Tide Seekh — Strategy Test", shorttitle = "JAS Tide Test", overl
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "t1.1"
+BUILD = "t1.2"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -110,6 +110,8 @@ var int   xSL     = 0
 var int   xTrail  = 0
 var int   xFlip   = 0
 var int   nHalf   = 0
+var int   xEnd    = 0
+var int   nSkip   = 0
 
 var int   pDir  = 0
 var float pE    = na
@@ -119,6 +121,7 @@ var float pSL0  = na
 var float pT    = na
 var bool  pHalf = false
 var bool  pFlip = false
+var bool  pEnd  = false
 
 // pichli trade band ho gayi? -> hisaab
 if inTrade and strategy.position_size == 0
@@ -130,7 +133,16 @@ if inTrade and strategy.position_size == 0
         sumW += _rr
     else
         sumL -= _rr
-    if pFlip
+    // 2R aadhi isi candle mein hui aur baqi bhi isi candle mein band? (P1 apni 2R qeemat par)
+    if usePart and not pHalf and strategy.closedtrades > ctAt
+        for _i = ctAt to strategy.closedtrades - 1
+            if strategy.closedtrades.exit_id(_i) == "P1" and pDir * (strategy.closedtrades.exit_price(_i) - pT) >= -syminfo.mintick
+                pHalf := true
+        if pHalf
+            nHalf += 1
+    if pEnd
+        xEnd += 1
+    else if pFlip
         xFlip += 1
     else if pSL != pSL0
         xTrail += 1
@@ -175,6 +187,7 @@ if strategy.position_size == 0 and not inTrade and inDates and (longSig or short
         pT    := close + _d * partR * _r0
         pHalf := false
         pFlip := false
+        pEnd  := false
         ctAt  := strategy.closedtrades
         // entry aur us ke SL usi candle par - agli candle par hifazat ho
         strategy.entry(_id, _d == 1 ? strategy.long : strategy.short, qty = _q)
@@ -184,8 +197,11 @@ if strategy.position_size == 0 and not inTrade and inDates and (longSig or short
         inTrade := true
         riskAmt := _q * _r0 * syminfo.pointvalue   // asal khatra (gol size ke baad)
         npAt    := strategy.netprofit
+    else
+        nSkip += 1   // size symbol ke qadam se chhota - indicator ye trade leta, Tester nahi
 
 if useDates and time > dtTo and strategy.position_size != 0
+    pEnd := true
     strategy.close_all(comment = "Arsa khatam")
 
 plot(strategy.position_size != 0 ? pSL : na, "SL (sarakta)", color = color.new(#E65100, 0), style = plot.style_linebr, linewidth = 2)
@@ -214,6 +230,6 @@ if barstate.islast
     f_row(4, "Exp (R fi trade, kharche samet)", na(_ex) ? "-" : (_ex > 0 ? "+" : "") + str.tostring(_ex, "0.00") + "R", na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
     f_row(5, "Profit Factor (R se)", na(_pf) ? "-" : str.tostring(_pf, "0.00"), na(_pf) ? color.black : _pf >= 1.3 ? cOK : _pf >= 1 ? color.new(#E65100, 0) : cNO)
     f_row(6, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", cNO)
-    f_row(7, "Kaise band huin", "SL " + str.tostring(xSL) + "  ·  sarakta SL " + str.tostring(xTrail) + "  ·  D1 palta " + str.tostring(xFlip) + (usePart ? "  ·  2R aadhi " + str.tostring(nHalf) : ""), color.black)
+    f_row(7, "Kaise band huin", "SL " + str.tostring(xSL) + "  ·  sarakta SL " + str.tostring(xTrail) + "  ·  D1 palta " + str.tostring(xFlip) + (usePart ? "  ·  2R aadhi " + str.tostring(nHalf) : "") + (xEnd > 0 ? "  ·  arsa khatam " + str.tostring(xEnd) : ""), color.black)
     f_row(8, "Qawaid", str.tostring(entryLen) + "/" + str.tostring(exitLen) + "/" + str.tostring(atrLen) + "/" + str.tostring(atrMult, "0.0") + " · risk " + str.tostring(riskPct, "0.0") + "% · kharcha $0.30/oz", color.black)
-    f_row(9, "Note", "Sirf naap. Swap shamil nahi (live cent swap-free).", cNO)
+    f_row(9, "Note", "Sirf naap. Swap shamil nahi (live cent swap-free)." + (nSkip > 0 ? "  CHHOOTI: " + str.tostring(nSkip) + " trades (size bohot chhota) - indicator se farq hoga." : "") + (syminfo.pointvalue != 1 ? "  DHYAN: is symbol par 1 qty = " + str.tostring(syminfo.pointvalue) + " oz - kharcha alag." : ""), cNO)
