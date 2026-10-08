@@ -39,7 +39,7 @@ iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
 | | Number | Qisam | Note |
 |---|---|---|---|
 | **LIVE** | 253687618 | Exness MT5 **StandardCent**, `XAUUSDc`, USC, Hedge, 1:2000 | **Swap-free (Islamic)**. 0.01 lot = $1 harkat par 1 USC |
-| **DEMO** | 472540009 | Exness-MT5Trial16, `XAUUSDm`, **USD** standard, Hedge | Swap lagta hai: BUY -513.2 points/lot/din (~-$51), Budh 3x, SELL 0 |
+| **DEMO** | 472540009 | Exness-MT5Trial16, `XAUUSDm`, **USD** standard, Hedge | Contract spec mein BUY swap -513.2 points/lot/din likha mila tha (2 Oct), **magar user kehta hai gold par swap nahi katta (8 Oct)** - hisaab mein swap 0. Shak ho to MT5 ka Swap column dekho |
 
 - Live par **koi EA trade nahi karta** jab tak demo par test na ho.
 - Mere computer par **do MT5** hain (live aur demo). MetaEditor hamesha **usi
@@ -96,6 +96,10 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   trades): 1970-99 +0.63R fi trade, 2000-18 +0.16R, 2019-aaj +0.30R. Saal
   mein ~8 trade -> 1% risk par aaj ke daur mein ~+2% saal ka andaza. Bara
   +506% zyada tar 1970s ki tezi aur 50 saal ke compounding se tha.
+- **Guzara trading se? (8 Oct, user ka sawal)** Chhote account par kisi bhi
+  system se nahi. ~$430 par +2%/saal = ~$9; 20%/saal (bohot achha) = ~$86.
+  ~$300 mahina ke liye ~$18,000 par 20% chahiye. Kamai capital se barhti hai,
+  risk barhane se nahi - risk barhana = August wala USD account.
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 

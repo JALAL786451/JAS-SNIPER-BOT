@@ -60,7 +60,7 @@ minAtrPct = input.float(0.25, "Kam az kam ATR (% qeemat ka)", minval = 0.0, step
 
 grK = "3 · Kharcha aur swap (R mein ghatte hain)"
 costUSD = input.float(0.30, "Kharcha $ fi oz (spread + commission, aana jana)", minval = 0, step = 0.05, group = grK)
-swapL   = input.float(0.0, "Swap BUY: $ fi oz har raat (live cent 0, demo USD ~0.51)", minval = 0, step = 0.01, group = grK)
+swapL   = input.float(0.0, "Swap BUY: $ fi oz har raat (0 agar account swap-free)", minval = 0, step = 0.01, group = grK)
 swapS   = input.float(0.0, "Swap SELL: $ fi oz har raat", minval = 0, step = 0.01, group = grK)
 
 grA = "4 · Lot ka hisaab"

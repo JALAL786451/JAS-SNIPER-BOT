@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.4, Pine v6)
+//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.5, Pine v6)
 //
 //  indicators/jas_tide_seekh.pine ke BILKUL WOHI qawaid, Strategy Tester ke
 //  liye. Purani strategies/jas_tide_v1.pine waisi rakhi hai (us ka 458 /
@@ -12,8 +12,9 @@
 //   2. 2R wale order par bhi SL laga hai - SL lage to POORI position band.
 //   3. SL entry wali candle par hi lag jata hai (v1.1 mein pehli candle bina
 //      SL ke rehti thi).
-//   4. Defaults 10/5/14/2.0 (458 wale). Kharcha $0.15 fi oz har taraf
-//      (commission), slippage 0. Swap Tester nahi ginta - live cent account
+//   4. Defaults 10/5/14/2.0 (458 wale). Kharcha 0.005% har taraf (gold
+//      $4000 par ~$0.20, aana jana ~$0.40) - % mein taake silver, BTC, FX,
+//      index sab par theek bane (t1.5; pehle $0.15 fi qty tha, sirf gold ke liye), slippage 0. Swap Tester nahi ginta - live cent account
 //      swap-free hai; demo USD par BUY ka swap indicator mein daalein.
 //  Size: % equity risk, symbol ke qadam (mincontract) tak neeche gol. 2R
 //  aadhi chalu ho to kam az kam 2 qadam, warna trade nahi.
@@ -28,13 +29,13 @@ strategy("JAS Tide Seekh — Strategy Test", shorttitle = "JAS Tide Test", overl
      pyramiding              = 0,
      calc_on_every_tick      = false,
      process_orders_on_close = true,
-     commission_type         = strategy.commission.cash_per_contract,
-     commission_value        = 0.15,
+     commission_type         = strategy.commission.percent,
+     commission_value        = 0.005,
      slippage                = 0,
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "t1.4"
+BUILD = "t1.5"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -259,7 +260,7 @@ if barstate.islast or barstate.islastconfirmedhistory
     f_row(5, "Profit Factor (R se)", na(_pf) ? "-" : str.tostring(_pf, "0.00"), na(_pf) ? color.black : _pf >= 1.3 ? cOK : _pf >= 1 ? color.new(#E65100, 0) : cNO)
     f_row(6, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", cNO)
     f_row(7, "Kaise band huin", "SL " + str.tostring(xSL) + "  ·  sarakta SL " + str.tostring(xTrail) + "  ·  D1 palta " + str.tostring(xFlip) + (usePart ? "  ·  2R aadhi " + str.tostring(nHalf) : "") + (xEnd > 0 ? "  ·  arsa khatam " + str.tostring(xEnd) : ""), color.black)
-    f_row(8, "Qawaid", str.tostring(entryLen) + "/" + str.tostring(exitLen) + "/" + str.tostring(atrLen) + "/" + str.tostring(atrMult, "0.0") + " · risk " + str.tostring(riskPct, "0.0") + "% · kharcha $0.30/oz", color.black)
+    f_row(8, "Qawaid", str.tostring(entryLen) + "/" + str.tostring(exitLen) + "/" + str.tostring(atrLen) + "/" + str.tostring(atrMult, "0.0") + " · risk " + str.tostring(riskPct, "0.0") + "% · kharcha 0.005% har taraf", color.black)
     _names = array.from("1970 se pehle", "1970-1999", "2000-2018", "2019-aaj")
     _row = 10
     for _k = 0 to 3
@@ -273,4 +274,4 @@ if barstate.islast or barstate.islastconfirmedhistory
             _txt = _n == 0 ? "koi trade nahi" : str.tostring(_n, "#") + " trades · jeet " + str.tostring(100.0 * array.get(eW, _k) / _n, "0") + "% · Exp " + f_rr(_exk) + (na(_sek) ? "" : " (± " + str.tostring(_sek, "0.00") + ")") + " · PF " + (na(_pfk) ? "-" : str.tostring(_pfk, "0.00")) + " · kul " + f_rr(_s)
             f_row(_row, "Daur " + array.get(_names, _k), _txt, na(_exk) ? color.black : _exk > 0 ? cOK : cNO)
             _row += 1
-    f_row(9, "Note", "Sirf naap. Swap shamil nahi (live cent swap-free)." + (nSkip > 0 ? "  CHHOOTI: " + str.tostring(nSkip) + " trades (size bohot chhota) - indicator se farq hoga." : "") + (syminfo.pointvalue != 1 ? "  DHYAN: is symbol par 1 qty = " + str.tostring(syminfo.pointvalue) + " oz - kharcha alag." : ""), cNO)
+    f_row(9, "Note", "Sirf naap. Swap shamil nahi (live cent swap-free)." + (nSkip > 0 ? "  CHHOOTI: " + str.tostring(nSkip) + " trades (size bohot chhota) - indicator se farq hoga." : "") + (syminfo.pointvalue != 1 ? "  (1 qty = " + str.tostring(syminfo.pointvalue) + " point value)" : ""), cNO)
