@@ -88,6 +88,10 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   ~459 trades): aadhi band = +274%, PF 1.59; poori chalne do = +506%, PF 1.68.
   Girawat sirf 27% -> 24.5% kam hui. Trend system ki kamai chand BARI jeet se
   aati hai - unhein kaatna mehenga. (Seerhi ke ulat: wahan 1R par aadhi.)
+- **Kachhua har daur mein musbat, magar aaj kal kam** (8 Oct, 1D gold, 459
+  trades): 1970-99 +0.63R fi trade, 2000-18 +0.16R, 2019-aaj +0.30R. Saal
+  mein ~8 trade -> 1% risk par aaj ke daur mein ~+2% saal ka andaza. Bara
+  +506% zyada tar 1970s ki tezi aur 50 saal ke compounding se tha.
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 
