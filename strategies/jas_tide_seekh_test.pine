@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE SEEKH — STRATEGY TEST  (build t1, Pine v6)
+//  JAS TIDE SEEKH — STRATEGY TEST  (build t1.1, Pine v6)
 //
 //  indicators/jas_tide_seekh.pine ke BILKUL WOHI qawaid, Strategy Tester ke
 //  liye. Purani strategies/jas_tide_v1.pine waisi rakhi hai (us ka 458 /
@@ -34,7 +34,7 @@ strategy("JAS Tide Seekh — Strategy Test", shorttitle = "JAS Tide Test", overl
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "t1"
+BUILD = "t1.1"
 
 // ============================================================================
 //  INPUTS (naam aur default wahi jo indicator mein)
@@ -61,6 +61,9 @@ htfFast   = input.int(50, "EMA fast", minval = 2, group = grH)
 htfSlow   = input.int(200, "EMA slow", minval = 3, group = grH)
 useFloor  = input.bool(true, "Bohot susti mein trade nahi", group = grH)
 minAtrPct = input.float(0.25, "Kam az kam ATR (% qeemat ka)", minval = 0.0, step = 0.05, group = grH)
+
+grV = "3 · Dikhawa"
+tblPos = input.string("Bottom Left", "Table ki jagah (indicator ka panel upar daayen hai)", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV)
 
 inDates = not useDates or (time >= dtFrom and time <= dtTo)
 
@@ -193,7 +196,8 @@ plot(loBrk, "SELL level", color = color.new(#B71C1C, 55), style = plot.style_ste
 // ============================================================================
 //  CHHOTA NATEEJA TABLE (screenshot ke liye)
 // ============================================================================
-var table rt = table.new(position.top_right, 2, 12, border_width = 1, border_color = color.new(color.gray, 70))
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
+var table rt = table.new(f_pos(tblPos), 2, 12, border_width = 1, border_color = color.new(color.gray, 70))
 f_row(_r, _a, _b, _c) =>
     table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
     table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small, text_halign = text.align_left)
