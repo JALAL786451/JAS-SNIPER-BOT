@@ -78,6 +78,12 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   nahi (qanoon L10). NFP = har mahine pehla Jumma 5:30 PM PKT; gold $15-40+
   hilta hai, pehla jhatka aksar palat-ta hai, spread barhta hai.
 - Martingale / grid / lot doubling **nahi**. August ka USD account aise gaya.
+- **72 trades se faisla nahi hota** (JAS Seerhi, 8 Oct): -0.09R ka asal matlab
+  "-0.35R se +0.17R ke darmiyan kahin". Settings badal badal kar 10 dafa
+  aazmao to ek qismat se +0.2R dikha degi - woh naye data par gayab ho jata
+  hai. Is liye: faisle ka qaida test se PEHLE likho, aur har aazmaish gino.
+- Tester ka "144 trades / 36.8% jeet" = har trade ke do tukre (TP1 aadhi +
+  baqi). Asal ginti entries ki hai (72, jeet 43%).
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 
@@ -86,7 +92,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasDeskView.mq5` v4.2 | **Sirf parhta hai.** Close-All ginti, lots by size, ausat, NET, BARI LOT KI JORI, PLAN A/B + "NET baad mein" | ✅ Live par chal raha. Kami: "ek taraf band" line sirf ek taraf ka fasla batati hai, poori kitab ka nahi |
 | `JasJoriClose.mq5` s1 | **Script.** Bari lot ki lot-barabar jori **Close By** se band, ek Yes/No | ✅ Demo 150/150, **live 64/64 (+550.70 USC, 1 Oct)**. Abhi sasti BUY pehle chunta hai - user upar wali BUY pehle chahta hai (option banana baqi) |
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
-| `indicators/jas_seerhi.pine` + `strategies/jas_seerhi_test.pine` | **Top-down seekhne ka script** (8 Oct, user ne faisle Claude par chhore): 1D rukh (structure + trend line + MA) -> 1H pullback -> 1H entry, SL/TP1(aadhi+BE)/TP2, lot, har qadam ka ✓/✗ panel. Strategy copy Tester ke liye | Bana, **compile baqi**. Pehle Tester, phir demo |
+| `indicators/jas_seerhi.pine` + `strategies/jas_seerhi_test.pine` | **Top-down seekhne ka script** (8 Oct, user ne faisle Claude par chhore): 1D rukh (structure + trend line + MA) -> 1H pullback -> 1H entry, SL/TP1(aadhi+BE)/TP2, lot, har qadam ka ✓/✗ panel. Strategy copy Tester ke liye | Compile ✅ (8 Oct, s1.2 panel). **1H Tester 2025-26: 72 trades, -5.7%, PF 0.86 = koi edge sabit nahi.** Settings ki tuning nahi; agla jaanch wala tester (ABHI-KAHAN-HAIN) |
 | `indicators/smc_coach_pro_v4.pine` | **v3 + Pine v6 + kharabiyan durust + PIP HISAAB** (1D/1H candle ka raasta pip mein + har pip par waqt/volume ka profile) | **v4.1 compile + chal raha (8 Oct)**, 1m/15m/1h/1D par number aapas mein milte hain. Sirf observation. v3 waisi rakhi hai |
 | `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
 | `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
