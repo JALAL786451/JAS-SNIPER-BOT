@@ -45,6 +45,11 @@ BARI LOT KI JORI: 1.15 SELL + 59 BUY (sasti pehle, ausat 4173.30) = **+106.30**,
 lots 4.25 -> 1.95, NET wahi +0.19, bachi kitab 99 position -4,670.90 (30 BUY
 upar wali shamil). PLAN A (1.15 SELL + 22 faide wali = +11.90) NET ko +0.89 kar
 deta hai - khatarnak.
+**1.15 SELL GHALTI SE lagi thi** (user 0.05 lagana chahta tha), phir qeemat tezi se
+upar gayi. User: "jaldi nahi karna", sawal: "nikal bhi jaon aur nuqsan bhi na ho" -
+jawab diya: jo nuqsan ho chuka woh kisi jori/hedge se nahi mit-ta, sirf qeemat
+(NET +0.19) ya aage ki kamai se; teen raaste taraazu ki misaal se. Mashwara: abhi
+RUKO, ghalti dobara na ho is liye MT5 mein One Click Trading band + default lot 0.01.
 
 (purana) 2 Oct raat ~8 PM:
 
