@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE RADAR  (build r2, Pine v6)  —  ek chart par 9 market ka kachhua
+//  JAS TIDE RADAR  (build r3, Pine v6)  —  ek chart par 9 market ka kachhua
 //
 //  User ne 9 Oct 2026 ko poocha: "turtle wala universal script jo gold aur
 //  USD ke saath sync ho - XAUUSD par BUY lagayein to un pairs par bhi faida
@@ -19,6 +19,10 @@
 //   5. (r2) MILA HUA hisaab: agar 9 market ek saath, har trade 1%, USD hadd
 //      ke saath chalti - kul R, saal ka R, sab se gehri girawat, musbat saal,
 //      sab se bura saal, 2019 se saal ka R; aur bina hadd moqable ke liye.
+//   6. (r3) Teen daur alag (sab / 2005 se / 2019 se): saal sirf woh gine
+//      jin mein trade band hui (1833 se khali saal nahi), girawat har daur
+//      ki apni choti se aur kin saalon mein; gold + silver ek hi trade
+//      (sync ~0.90); aur pehle se likha faisle ka qaida panel par.
 //
 //  Har market ka engine us market ki apni daily candles par chalta hai aur
 //  sirf BAND candle dekhta hai (pichli candle) - live par repaint nahi.
@@ -27,7 +31,7 @@
 // ============================================================================
 indicator("JAS Tide Radar — 9 market, gold ke saath", shorttitle = "JAS Tide Radar", overlay = true, max_bars_back = 500)
 
-BUILD = "r2"
+BUILD = "r3"
 
 // ============================================================================
 //  INPUTS
@@ -57,6 +61,9 @@ grS = "3 · Sync aur daao"
 corrLen = input.int(100, "Correlation: kitne din", minval = 20, maxval = 400, group = grS)
 usdCap  = input.int(3, "Ek USD taraf ki zyada se zyada khuli trades (har trade 1%)", minval = 1, maxval = 9, group = grS)
 dxySym  = input.symbol("TVC:DXY", "USD index", group = grS)
+metalOne = input.bool(true, "Gold + silver = ek trade (ek taraf mein ek waqt sirf ek)", group = grS)
+era1Y   = input.int(2005, "Daur 1: is saal se (faisle ka daur)", minval = 1900, maxval = 2100, group = grS)
+era2Y   = input.int(2019, "Daur 2: is saal se (aaj ka daur)", minval = 1900, maxval = 2100, group = grS)
 
 grV = "4 · Dikhawa"
 panelPos = input.string("Top Right", "Panel ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV)
@@ -246,44 +253,60 @@ float[] rrA = array.from(rr0, rr1, rr2, rr3, rr4, rr5, rr6, rr7, rr8)
 int[]   ccA = array.from(cc0, cc1, cc2, cc3, cc4, cc5, cc6, cc7, cc8)
 bool[]  enA = array.from(en0, en1, en2, en3, en4, en5, en6, en7, en8)
 
+// gold / silver: sync ~+0.90 = asal mein wohi trade. (r3) ek hi "metal" khana:
+// ek taraf mein ek waqt mein sirf ek metal trade (pehle gold).
+f_metal(_s) =>
+    _n = f_name(_s)
+    str.contains(_n, "XAU") or str.contains(_n, "XAG") or str.contains(_n, "GOLD") or str.contains(_n, "SILVER")
+var bool[] mtA = array.from(f_metal(s0), f_metal(s1), f_metal(s2), f_metal(s3), f_metal(s4), f_metal(s5), f_metal(s6), f_metal(s7), f_metal(s8))
+
 YEARMS = 365.25 * 86400000.0
 var float pR = 0.0
-var float pPeak = 0.0
-var float pDD = 0.0
 var int   pN = 0
 var int   pSkip = 0
+var int   mSkip = 0
 var float uR = 0.0
 var float uPeak = 0.0
 var float uDD = 0.0
 var int   uN = 0
 var bool  started = false
-var int   tStart = na
 var int   curY = na
 var float yStartR = 0.0
-var int   yrs = 0
-var int   yPos = 0
-var float yWorst = na
-var int   yWorstY = na
-var float p19 = na
-var float u19 = na
-var int   t19 = na
+var int   yN = 0
+// poore (khatam) saal jin mein kam az kam ek trade band hui: saal aur us ka R
+var int[]   yrY = array.new<int>()
+var float[] yrR = array.new<float>()
+// teen daur: 0 = sab (pehli trade se), 1 = era1Y se, 2 = era2Y se
+// har daur ki apni shuruat, choti, girawat aur girawat ke saal
+var int[]   wY0   = array.from(0, era1Y, era2Y)
+var bool[]  wOn   = array.new<bool>(3, false)
+var int[]   wT0   = array.new<int>(3, 0)
+var float[] wBase = array.new<float>(3, 0.0)
+var int[]   wNb   = array.new<int>(3, 0)
+var float[] wPeak = array.new<float>(3, 0.0)
+var int[]   wPkY  = array.new<int>(3, 0)
+var float[] wDD   = array.new<float>(3, 0.0)
+var int[]   wDdA  = array.new<int>(3, 0)
+var int[]   wDdB  = array.new<int>(3, 0)
 
 thisY = year(time)
-// saal badla: pichla saal poora gino (pehli trade ke baad se)
-if started and not na(curY) and thisY != curY
-    _yr = pR - yStartR
-    yrs  += 1
-    yPos += _yr > 0 ? 1 : 0
-    if na(yWorst) or _yr < yWorst
-        yWorst  := _yr
-        yWorstY := curY
+// saal badla: pichla saal tab gino jab us mein koi trade band hui
+if not na(curY) and thisY != curY and yN > 0
+    array.push(yrY, curY)
+    array.push(yrR, pR - yStartR)
 if na(curY) or thisY != curY
     curY    := thisY
     yStartR := pR
-if na(t19) and thisY >= 2019
-    t19 := time
-    p19 := pR
-    u19 := uR
+    yN      := 0
+// daur shuru (din ki trades se pehle)
+for w = 1 to 2
+    if not array.get(wOn, w) and thisY >= array.get(wY0, w)
+        array.set(wOn, w, true)
+        array.set(wT0, w, time)
+        array.set(wBase, w, pR)
+        array.set(wNb, w, pN)
+        array.set(wPeak, w, pR)
+        array.set(wPkY, w, thisY)
 // pehle band, phir nayi (ek hi din mein dono ho sakti hain)
 for i = 0 to 8
     if array.get(clA, i)
@@ -292,23 +315,46 @@ for i = 0 to 8
         if array.get(tk, i)
             pR += array.get(rrA, i)
             pN += array.get(ccA, i)
+            yN += array.get(ccA, i)
             array.set(tk, i, false)
 for i = 0 to 8
     if array.get(enA, i)
         _b = array.get(dA, i) * array.get(sgA, i)
+        bool _mt = false
+        if metalOne and array.get(mtA, i)
+            for j = 0 to 8
+                if j != i and array.get(tk, j) and array.get(mtA, j) and array.get(dA, j) == array.get(dA, i)
+                    _mt := true
         int _c = 0
         for j = 0 to 8
             if j != i and array.get(tk, j) and array.get(dA, j) * array.get(sgA, j) == _b
                 _c += 1
-        if _b == 0 or _c < usdCap
+        if _mt
+            mSkip += 1
+        else if _b == 0 or _c < usdCap
             array.set(tk, i, true)
-            if not started
-                started := true
-                tStart  := time
+            started := true
         else
             pSkip += 1
-pPeak := math.max(pPeak, pR)
-pDD   := math.max(pDD, pPeak - pR)
+// pehli trade aaj khuli: "sab" wala daur aaj se (abhi R 0 hai)
+if started and not array.get(wOn, 0)
+    array.set(wOn, 0, true)
+    array.set(wT0, 0, time)
+    array.set(wBase, 0, pR)
+    array.set(wNb, 0, pN)
+    array.set(wPeak, 0, pR)
+    array.set(wPkY, 0, thisY)
+// girawat: band trades ka hisaab, har daur ki apni choti se
+for w = 0 to 2
+    if array.get(wOn, w)
+        if pR > array.get(wPeak, w)
+            array.set(wPeak, w, pR)
+            array.set(wPkY, w, thisY)
+        _dd = array.get(wPeak, w) - pR
+        if _dd > array.get(wDD, w)
+            array.set(wDD, w, _dd)
+            array.set(wDdA, w, array.get(wPkY, w))
+            array.set(wDdB, w, thisY)
 uPeak := math.max(uPeak, uR)
 uDD   := math.max(uDD, uPeak - uR)
 
@@ -386,14 +432,42 @@ if barstate.islast
     table.cell(pt, 0, panelPad + 12, "Ek hi USD taraf ki kai trades = ek bari trade (sab saath jeetti, sab saath haarti). Sync badalta rehta hai. Naap sirf gold par sabit hai - baqi ka 'Purana naap' dekhein. BTC ka haal gold ke aakhri din tak. Pehle demo.",
          bgcolor = cBG, text_color = cNO, text_size = PSZ, text_halign = text.align_left)
     table.merge_cells(pt, 0, panelPad + 12, 5, panelPad + 12)
-    // mila hua hisaab
-    _yAll = started and not na(tStart) ? (time - tStart) / YEARMS : na
-    _y19  = not na(t19) ? (time - t19) / YEARMS : na
-    _pTxt = not started ? "abhi koi trade nahi" : str.tostring(pN) + " trades (hadd se chhooti " + str.tostring(pSkip) + ")  ·  kul " + f_r(pR) + "  ·  saal ~" + f_r(na(_yAll) or _yAll <= 0 ? na : pR / _yAll) + "  ·  sab se gehri girawat " + str.tostring(pDD, "0.0") + "R  ·  musbat saal " + str.tostring(yPos) + "/" + str.tostring(yrs) + "  ·  sab se bura saal " + (na(yWorstY) ? "-" : str.tostring(yWorstY) + " " + f_r(yWorst)) + "  ·  2019 se saal ~" + f_r(na(_y19) or _y19 <= 0 ? na : (pR - p19) / _y19)
-    table.cell(pt, 0, panelPad + 13, "MILA HUA (9 market, USD hadd " + str.tostring(usdCap) + ", har trade 1% = 1R): " + _pTxt,
-         bgcolor = color.new(color.silver, 60), text_color = pR > 0 ? cOK : cNO, text_size = PSZ, text_halign = text.align_left)
-    table.merge_cells(pt, 0, panelPad + 13, 5, panelPad + 13)
-    _uTxt = str.tostring(uN) + " trades  ·  kul " + f_r(uR) + "  ·  saal ~" + f_r(na(_yAll) or _yAll <= 0 ? na : uR / _yAll) + "  ·  sab se gehri girawat " + str.tostring(uDD, "0.0") + "R  ·  2019 se saal ~" + f_r(na(_y19) or _y19 <= 0 ? na : (uR - u19) / _y19)
-    table.cell(pt, 0, panelPad + 14, "Bina hadd (har market ki har trade, moqable ke liye): " + _uTxt,
+    // mila hua hisaab (r3): teen daur, sirf trade wale saal
+    int _nTy = array.size(yrY) + (yN > 0 ? 1 : 0)
+    for w = 0 to 2
+        _y0  = array.get(wY0, w)
+        _on  = array.get(wOn, w)
+        _dR  = pR - array.get(wBase, w)
+        _dN  = pN - array.get(wNb, w)
+        int   _ny = 0
+        int   _np = 0
+        float _wr = na
+        int   _wy = na
+        if array.size(yrY) > 0
+            for k = 0 to array.size(yrY) - 1
+                if w == 0 or array.get(yrY, k) >= _y0
+                    _v = array.get(yrR, k)
+                    _ny += 1
+                    _np += _v > 0 ? 1 : 0
+                    if na(_wr) or _v < _wr
+                        _wr := _v
+                        _wy := array.get(yrY, k)
+        _el  = (time - array.get(wT0, w)) / YEARMS
+        _py  = w == 0 ? (_nTy > 0 ? _dR / _nTy : na) : (_el > 0 ? _dR / _el : na)
+        _pc  = _ny > 0 ? 100.0 * _np / _ny : na
+        _lbl = w == 0 ? "SAB (sirf trade wale " + str.tostring(_nTy) + " saal)" : str.tostring(_y0) + " se"
+        _tx  = not _on ? "abhi koi trade nahi" : str.tostring(_dN) + " trades  ·  kul " + f_r(_dR) + "  ·  saal ~" + f_r(_py) + "  ·  sab se gehri girawat " + str.tostring(array.get(wDD, w), "0.0") + "R" + (array.get(wDD, w) > 0 ? " (" + str.tostring(array.get(wDdA, w)) + "-" + str.tostring(array.get(wDdB, w)) + ")" : "") + "  ·  musbat saal " + str.tostring(_np) + "/" + str.tostring(_ny) + (na(_pc) ? "" : " (" + str.tostring(_pc, "0") + "%)") + "  ·  sab se bura saal " + (na(_wy) ? "-" : str.tostring(_wy) + " " + f_r(_wr))
+        table.cell(pt, 0, panelPad + 13 + w, "MILA HUA " + _lbl + ": " + _tx,
+             bgcolor = color.new(color.silver, w == 1 ? 40 : 65), text_color = _dR > 0 ? cOK : cNO, text_size = PSZ, text_halign = text.align_left)
+        table.merge_cells(pt, 0, panelPad + 13 + w, 5, panelPad + 13 + w)
+        // faisle ka qaida (r2 ke baad, r3 se PEHLE likha - badalna mana):
+        // daur 1 mein girawat <= 25R aur kam az kam 70% poore saal musbat
+        if w == 1
+            _ok = _on and _ny >= 5 and array.get(wDD, w) <= 25.0 and _pc >= 70.0
+            table.cell(pt, 0, panelPad + 17, "FAISLA (pehle se likha qaida: " + str.tostring(_y0) + " se girawat <= 25R aur >= 70% saal musbat): " + (_ok ? "DEMO KE QABIL - pehle demo, 1% se kam risk" : "ABHI DEMO NAHI") + "  ·  abhi: girawat " + str.tostring(array.get(wDD, w), "0.0") + "R, musbat " + (na(_pc) ? "-" : str.tostring(_pc, "0") + "%") + "  ·  hadd " + str.tostring(usdCap) + " USD taraf + metal ek: chhooti " + str.tostring(pSkip) + " + " + str.tostring(mSkip),
+                 bgcolor = _ok ? color.new(color.green, 80) : color.new(color.red, 80), text_color = _ok ? cOK : cNO, text_size = PSZ, text_halign = text.align_left)
+            table.merge_cells(pt, 0, panelPad + 17, 5, panelPad + 17)
+    _uTxt = str.tostring(uN) + " trades  ·  kul " + f_r(uR) + "  ·  sab se gehri girawat " + str.tostring(uDD, "0.0") + "R"
+    table.cell(pt, 0, panelPad + 16, "Bina hadd (har market ki har trade, gold+silver dono, moqable ke liye): " + _uTxt,
          bgcolor = cBG, text_color = cMID, text_size = PSZ, text_halign = text.align_left)
-    table.merge_cells(pt, 0, panelPad + 14, 5, panelPad + 14)
+    table.merge_cells(pt, 0, panelPad + 16, 5, panelPad + 16)
