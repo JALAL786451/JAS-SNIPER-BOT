@@ -105,6 +105,10 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   har trade (har ek par ~120-560 trades). Har akeli chhoti, magar sab ek taraf.
   Silver gold ke saath +0.90 = wohi trade dugni; ek USD taraf ki kai trades =
   ek bari trade.
+- **9 market mila kar (9 Oct, Radar r2):** 2019 se ~+10R saal (1% risk par ~10%
+  saal), magar poori history mein sab se gehri girawat 90R - correlated
+  markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
+  demo/live nahi.
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 
