@@ -5,7 +5,7 @@ dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
-Aakhri update: 7 October 2026.
+Aakhri update: 9 October 2026 (raat).
 
 ---
 
@@ -109,6 +109,13 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   saal), magar poori history mein sab se gehri girawat 90R - correlated
   markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
   demo/live nahi.
+- **Radar r3 (9 Oct raat) - pehle se likha qaida PASS = demo ke qabil:** 2005
+  se 1254 trades, ~+6.8R saal, sab se gehri girawat 14.9R, 21 mein se 19 saal
+  musbat (qaida: girawat <= 25R aur >= 70% saal). 2019 se ~+6.7R saal (1% risk
+  par ~6.7%). Gold + silver ko ek trade gina (dohri trade hati) to 2019 ka
+  ~+9.7R -> ~+6.7R hua. Puri history mein 1987-2001 ki 72R girawat bhi hai -
+  lamba bura daur ho sakta hai. Girawat sirf band trades ki (asal zyada).
+  Agla: broker (Exness) data par MT5 Tester, phir demo - `JasTideRadarEA.mq5`.
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 
@@ -116,6 +123,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 |---|---|---|
 | `JasDeskView.mq5` v4.2 | **Sirf parhta hai.** Close-All ginti, lots by size, ausat, NET, BARI LOT KI JORI, PLAN A/B + "NET baad mein" | ✅ Live par chal raha. Kami: "ek taraf band" line sirf ek taraf ka fasla batati hai, poori kitab ka nahi |
 | `JasJoriClose.mq5` s1 | **Script.** Bari lot ki lot-barabar jori **Close By** se band, ek Yes/No | ✅ Demo 150/150, **live 64/64 (+550.70 USC, 1 Oct)**. Abhi sasti BUY pehle chunta hai - user upar wali BUY pehle chahta hai (option banana baqi) |
+| `indicators/jas_tide_radar.pine` r3 | **9 market ka kachhua ek 1D chart par** (trade nahi karta): har market ki trade/SL/agla toot, gold ke saath sync, USD daao, MILA HUA hisaab (sab / 2005 se / 2019 se), FAISLA row | ✅ r3 chal raha (9 Oct): **DEMO KE QABIL** |
+| `JasTideRadarEA.mq5` e1 | **Radar r3 ke qaide ka EA, ek chart se 9 market**, USD hadd 3, gold+silver ek, 1% risk (broker ka hisaab), SL server par + roz aage. Default SIRF DIKHANA. Tester ke aakhir mein Journal mein R ka hisaab + pehle se likha qaida | Bana (9 Oct), **compile baqi**. Phir Tester (Exness data), phir demo 472540009. Live nahi |
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
 | `docs/tide_rehnuma.html` | Tide Seekh ki Roman Urdu guide ([artifact](https://claude.ai/artifact/5w4xy7FcTuCnQqxbb3A6C2)): qaide, panel rows, roz ka kaam, MT5 order/SL, naap, demo plan | ✅ 8 Oct |
 | `indicators/jas_tide_seekh.pine` + `strategies/jas_tide_seekh_test.pine` | **Tide (kachhua 1D) ka seekhne wala panel** (8 Oct, user: B + nayi file): har qaida ✓/✗, plan, lot, sarakta SL, purane nateeje R mein, switch "2R par aadhi" (BAND = 458 wala). Strategy copy mein v1.1 ki kharabiyan durust | Bana, **compile baqi**. Pehle Tester, phir demo |
