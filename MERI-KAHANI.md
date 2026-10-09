@@ -100,6 +100,11 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   system se nahi. ~$430 par +2%/saal = ~$9; 20%/saal (bohot achha) = ~$86.
   ~$300 mahina ke liye ~$18,000 par 20% chahiye. Kamai capital se barhti hai,
   risk barhane se nahi - risk barhana = August wala USD account.
+- **Kachhua bohot markets par musbat** (9 Oct, JAS Tide Radar): gold +0.50R,
+  silver +0.26R, EURUSD/GBPUSD +0.15R, AUD/JPY/CHF ~+0.1R, S&P ~0, BTC +0.76R
+  har trade (har ek par ~120-560 trades). Har akeli chhoti, magar sab ek taraf.
+  Silver gold ke saath +0.90 = wohi trade dugni; ek USD taraf ki kai trades =
+  ek bari trade.
 
 ## 5. Mere tools (repo mein) - kya hai, kis haal mein
 
