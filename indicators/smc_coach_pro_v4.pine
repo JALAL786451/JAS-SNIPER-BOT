@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  SMC COACH — PRO v4   (build v4.1, Pine v6)   pehle: smc_coach_pro_v3.pine
+//  SMC COACH — PRO v4   (build v4.2, Pine v6)   pehle: smc_coach_pro_v3.pine
 //  Scalp/Intraday SMC engine: Zones + BOS/CHOCH + FVG/LGB + Supertrend
 //  + HTF confluence + Risk Engine (SL/TP/RR) + Confluence Score
 //  + Virtual performance tracker + Alerts + MTF Dashboard (1m -> 1W)
@@ -119,16 +119,28 @@
 //   p. PIP: 8 din, har andar ki candle apne waqt se ("kal" Jumma chhutti /
 //      1W chart par bhi poora). Volume na ho to POC "-" (din ka low nahi).
 //      POC/VA kabhi candle ke H/L se bahar nahi.
+//
+//  v4.2 — 9 Oct, user: "1D par 1m ki tarha legend, 1H par 15m ki tarha".
+//   q. Tables ab 1D aur 1H chart par bhi (default). 1D = 1m wali shakal (9 TF
+//      1m-1W, pressure 1m-1W / 90%), 1H = 15m wali shakal (15m/1H/4H/1D,
+//      pressure 80%, 1H rukh). Wahan ishara NAHI banta - ishare aur un ki
+//      Exp sirf 1m / 15m chart par (un ka naap wahin ka hai). Panel batata
+//      hai ishara kis chart par dekhna hai. Purani Exp line ab sirf 1m par.
 // ============================================================================
 indicator("SMC Coach Pro v4 (Pine v6 + Pip hisaab)", shorttitle = "SMC Coach Pro v4",
      overlay = true, max_labels_count = 500, max_lines_count = 500,
      max_boxes_count = 500, max_bars_back = 1000, dynamic_requests = true)
 
-BUILD = "v4.1"   // pip table ke header mein bhi yahi
+BUILD = "v4.2"   // pip table ke header mein bhi yahi
 
 // ---------------- TF helper ----------------
 is1m  = timeframe.isminutes and timeframe.multiplier == 1
 is15m = timeframe.isminutes and timeframe.multiplier == 15
+// v4.2: 1H = 15m wali shakal, 1D = 1m wali shakal (sirf tables, ishara nahi)
+is1h  = timeframe.isminutes and timeframe.multiplier == 60
+is1d  = timeframe.isdaily and timeframe.multiplier == 1
+m4set = is15m or is1h            // 4 TF wala legend / 80% pressure
+sigTF = is1m or is15m            // ishara (trade) sirf in do charts par
 
 // ============================================================================
 //  INPUTS
@@ -277,8 +289,8 @@ mR2 = input.float(0, "  Resistance 2", step=0.01, group=gPivot)
 mS1 = input.float(0, "  Support 1",  step=0.01, group=gPivot)
 mS2 = input.float(0, "  Support 2",  step=0.01, group=gPivot)
 
-gPanel = "12 · Panels (sirf 1m chart par)"
-only1m        = input.bool(true,  "Tables sirf 1m chart par dikhao", group=gPanel)
+gPanel = "12 · Panels (1m, 15m, 1H, 1D)"
+only1m        = input.bool(true,  "Tables sirf 1m / 15m / 1H / 1D chart par dikhao", group=gPanel)
 showLegend    = input.bool(true,  "Baen: har TF ki chalti candle", group=gPanel)
 legendPos     = input.string("Top Left",  "Baen table ki jagah",  options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
 showPress     = input.bool(true,  "Daen: sab TF ka mila hua BUY/SELL pressure (ek line)", group=gPanel)
@@ -311,7 +323,7 @@ atr   = ta.atr(14)
 atr1  = ta.tr(true)
 minTk = syminfo.mintick
 
-showTables = not only1m or is1m or is15m
+showTables = not only1m or is1m or is15m or is1h or is1d
 // 2H/3H/4H par SELL/plan/LGB ke label dhyan bhatkate the (2 Oct) - ab sirf 1m par
 marksOK    = not marks1m or is1m
 
@@ -1428,14 +1440,18 @@ m4Avg = m4Cnt > 0 ? m4Sum / m4Cnt : na
 [h1F, h1S] = request.security(syminfo.tickerid, "60", [ta.ema(close, emaFastLen)[1], ta.ema(close, emaSlowLen)[1]], barmerge.gaps_off, barmerge.lookahead_on)
 
 // Chart ke hisaab se kaunsa qaida: 1m = 9 TF / 90%, 15m = 4 TF / 80%
-modeAvg  = is15m ? m4Avg : mtfAvg
-modeMin  = is15m ? m15Min : mtfMin
-modeTag  = is15m ? "15m-1D" : "1m-1W"
-modeName = is15m ? "15m" : "MTF"
+// v4.2: 1H par 15m wala (4 TF / 80%), 1D par 1m wala (9 TF / 90%) hisaab
+modeAvg  = m4set ? m4Avg : mtfAvg
+modeMin  = m4set ? m15Min : mtfMin
+modeTag  = m4set ? "15m-1D" : "1m-1W"
+modeName = m4set ? "15m" : "MTF"
 modeMax  = is15m ? m15MaxBars : mtfMaxBars
-modeOn   = is15m ? m15On : mtfOn
-// purane signal ki Exp line sirf 1m par (15m par woh signal nahi dikhta)
-expOn    = showExp and not is15m
+// ishare ki 3 rows sirf jahan ishara banta hai (1m / 15m)
+modeOn   = sigTF and (is15m ? m15On : mtfOn)
+// 1H / 1D par ek row: ishara kis chart par dekhein
+noteOn   = not sigTF and (is1h or is1d)
+// purane signal ki Exp line sirf 1m par (baqi charts par us ke nishan nahi)
+expOn    = showExp and is1m
 
 // --- signal ---
 mSLb   = math.max(math.min(ta.lowest(low, mtfSwing) - atr * mtfBuf, close - atr * mtfMinSL), close - atr * mtfMaxSL)
@@ -1655,8 +1671,8 @@ if showTables and barstate.islast and (showLegend or showPress)
     float[]  aL  = array.from(xl01, xl05, xl15, xl30, xl60, xl3h, xl4h, xl1d, xl1w)
     float[]  aC  = array.from(close, close, close, close, close, close, close, close, close)
     int[]    aB  = array.from(b01, b05, b15, b30, b60, b3h, b4h, b1d, b1w)
-    // 15m chart par legend mein sirf wohi 4 TF jin se 15m ishara banta hai
-    if is15m
+    // 15m (aur v4.2 se 1H) chart par legend mein sirf wohi 4 TF jin se 15m ishara banta hai
+    if m4set
         tfs := array.from("15","60","240","D")
         aO  := array.from(xo15, xo60, xo4h, xo1d)
         aH  := array.from(xh15, xh60, xh4h, xh1d)
@@ -1667,7 +1683,7 @@ if showTables and barstate.islast and (showLegend or showPress)
     _hdrC = color.black
 
     // ---------------- BAEN: chalti candle ----------------
-    if showLegend and (is1m or is15m or not only1m)
+    if showLegend
         _rows = legendPad + 1 + _n
         if na(lTbl)
             lTbl := table.new(f_pos(legendPos), 10, _rows)
@@ -1725,7 +1741,7 @@ if showTables and barstate.islast and (showLegend or showPress)
     if showPress
         // Wohi ausat jis par MTF 90% signal chalta hai
         _avgB = na(modeAvg) ? na : int(math.round(modeAvg))
-        _rowsP = panelPad + 1 + (expOn ? 1 : 0) + (modeOn ? 3 : 0)
+        _rowsP = panelPad + 1 + (expOn ? 1 : 0) + (modeOn ? 3 : 0) + (noteOn ? 1 : 0)
         if na(pTbl)
             pTbl := table.new(f_pos(pressPos), 1, _rowsP)
         else
@@ -1753,6 +1769,10 @@ if showTables and barstate.islast and (showLegend or showPress)
                  bgcolor=bgPanel, text_color=mDir == 1 ? color.new(#1B5E20, 0) : mDir == -1 ? color.new(#B71C1C, 0) : color.new(#37474F, 0), text_size=PFS)
             table.cell(pTbl, 0, _rm + 2, "Exp  BUY " + f_expTxt(mExpB, mNB, mWB) + "   |   SELL " + f_expTxt(mExpS, mNS, mWS),
                  bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        if noteOn
+            _rn = _p0 + 1 + (expOn ? 1 : 0)
+            table.cell(pTbl, 0, _rn, (is1h ? "Ishara (80%) 15m chart par banta hai   |   1H rukh: " + (na(h1F) ? "-" : h1F > h1S ? "UP" : "DN") : "Ishara (90%) 1m chart par banta hai - yahan sirf haal"),
+                 bgcolor=bgPanel, text_color=color.new(#37474F, 0), text_size=PFS)
 
 // ============================================================================
 //  EXNESS-STYLE DAILY LEVELS (classic pivot points)

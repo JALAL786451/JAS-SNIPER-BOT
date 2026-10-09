@@ -159,7 +159,7 @@ svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight:
 
 <div class="wrap">
 <header class="hero">
-  <span class="eyebrow">SMC Coach Pro v4.1 · XAUUSD · aap ke 8 Oct ke number</span>
+  <span class="eyebrow">SMC Coach Pro v4.2 · XAUUSD · aap ke 8 Oct ke number</span>
   <h1>SMC Coach ko samjhein</h1>
   <p class="lead">Is safhe par script ki har cheez ka matlab aap ke apne chart ke number se samjhaya gaya hai: dono tables, chart ki lakeerein, PIP HISAAB (POC, VA, Kaam %), aur ye ke kis chart par rehna hai aur trade ka idea kaise lena hai.</p>
   <div class="answer">
@@ -209,8 +209,8 @@ svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight:
     <table>
       <thead><tr><th>Cheez</th><th>1m</th><th>15m</th><th>1h</th><th>1D</th></tr></thead>
       <tbody>
-        <tr><td>1 · Baen table</td><td class="c yes">9 row</td><td class="c yes">4 row</td><td class="c no">—</td><td class="c no">—</td></tr>
-        <tr><td>2 · Daen table</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>1 · Baen table</td><td class="c yes">9 row</td><td class="c yes">4 row</td><td class="c yes">4 row (15m jaisa)</td><td class="c yes">9 row (1m jaisa)</td></tr>
+        <tr><td>2 · Daen table</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">pressure + 1H rukh</td><td class="c yes">sirf pressure</td></tr>
         <tr><td>MA21 / MA63 lakeerein</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
         <tr><td>Hare / laal zone dabbe</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
         <tr><td>Pivot / Resistance / Support</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
@@ -222,7 +222,7 @@ svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight:
       </tbody>
     </table>
   </div>
-  <p class="note">Setting ka naam "Tables sirf 1m chart par" hai, magar script 15m par bhi tables dikhata hai. Ye jaan boojh kar hai.</p>
+  <p class="note">v4.2 (9 Oct) se tables 1h aur 1D par bhi aate hain: 1h par 15m wali shakal, 1D par 1m wali. Ishara (laal/hara dabba, BUY/SELL) phir bhi sirf 1m aur 15m chart par banta hai, kyunke us ka naap wahin ka hai. 1h aur 1D par daen table batata hai ke ishara kis chart par dekhna hai.</p>
 </section>
 
 <section id="lafz">
@@ -398,7 +398,7 @@ svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight:
   <div class="sec-head"><span class="eyebrow">Trade ka idea</span><h2>9 qadam, tarteeb se</h2><p class="muted">Har qadam ke saath likha hai ke screen par kya dekhna hai. Ye sab pehle DEMO par.</p></div>
   <ol class="steps">
     <li><h3>Khabar dekhein</h3><p>NFP, CPI, FOMC se 30 minute pehle se taqreeban 1 ghanta baad tak koi nayi trade nahi. Script mein khabar ka filter nahi, ye aap ko khud dekhna hai. NFP: 1 Nov ke baad 6:30 PM PKT.</p></li>
-    <li><h3>15m chart kholein, data check karein</h3><p>PIP table ke upar <span class="mono">v4.1</span> likha ho aur "1D abhi" ka Minute barh raha ho.</p></li>
+    <li><h3>15m chart kholein, data check karein</h3><p>PIP table ke upar <span class="mono">v4.2</span> likha ho aur "1D abhi" ka Minute barh raha ho.</p></li>
     <li><h3>Ijazat wali taraf likh lein</h3><p>Daen table: <span class="mono">1H rukh: UP</span> = sirf BUY, <span class="mono">DN</span> = sirf SELL. Har ghante dobara dekhein, ye har 1H candle ke band hone par badal sakta hai.</p></li>
     <li><h3>Pressure dekhein</h3><p>Ishare ke liye ausat apni taraf 80%+ ho aur chaaron TF (15m, 1H, 4H, 1D) usi taraf hon.</p><p class="note">8 Oct ki misaal: 1D candle 68% BUY par thi. Jab tak qeemat 1D ke beech (4123.435) se upar thi, 15m SELL ban hi nahi sakta tha.</p></li>
     <li><h3>Din ke level dekhein</h3><p>POC, VA ki lakeerein, pivot aur zone: kya TP1 se pehle koi level raaste mein hai? Script sirf zones dekhta hai. POC, VA aur pivot aap ko khud dekhne hain.</p></li>
@@ -452,6 +452,6 @@ svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight:
 </section>
 
 <footer>
-  SMC Coach Pro v4.1 (indicators/smc_coach_pro_v4.pine). Har baat script ke code se mila kar likhi gayi hai. Misaalein aap ke 8 Oct 2026 ke 1m, 15m, 1h aur 1D screenshots se hain. Ye guide trading ka mashwara nahi. Pehle demo, phir faisla.
+  SMC Coach Pro v4.2 (indicators/smc_coach_pro_v4.pine). Har baat script ke code se mila kar likhi gayi hai. Misaalein aap ke 8 Oct 2026 ke 1m, 15m, 1h aur 1D screenshots se hain. Ye guide trading ka mashwara nahi. Pehle demo, phir faisla.
 </footer>
 </div>
