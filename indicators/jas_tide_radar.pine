@@ -1,0 +1,272 @@
+//@version=6
+// ============================================================================
+//  JAS TIDE RADAR  (build r1, Pine v6)  —  ek chart par 9 market ka kachhua
+//
+//  User ne 9 Oct 2026 ko poocha: "turtle wala universal script jo gold aur
+//  USD ke saath sync ho - XAUUSD par BUY lagayein to un pairs par bhi faida
+//  ho". Ye script TRADE NAHI KARTA. Ye ek hi 1D chart par dikhata hai:
+//   1. Har market par JAS Tide ke wohi qaide (10/5/14/2.0, D1 EMA50/200,
+//      ATR >= 0.25%, 2R par aadhi NAHI) - abhi trade khuli hai ya nahi, SL,
+//      abhi kitne R, aur agla toot kahan.
+//   2. Har market ka purana naap: trades, Exp R, PF (kharcha 0.005% har
+//      taraf). Ye wohi "doosri markets par naapo" wala test hai - Tester
+//      har symbol par alag chalane ki zaroorat nahi.
+//   3. Gold ke saath "sync": pichle 100 din ki daily chaal ka correlation,
+//      USD ke hisaab se (USDJPY jaisa pair ulta gina jata hai). +1 = bilkul
+//      saath, 0 = koi rishta nahi, -1 = ulta. Ye badalta rehta hai.
+//   4. USD ka daao: kitni khuli trades ek hi taraf (USD neeche / USD upar)
+//      ki hain. Ek taraf ki 3 trades = asal mein ek 3% ki trade. Hadd 3.
+//
+//  Har market ka engine us market ki apni daily candles par chalta hai aur
+//  sirf BAND candle dekhta hai (pichli candle) - live par repaint nahi.
+//  Qaide indicators/jas_tide_seekh.pine (BAND switch) jaise hain.
+//  Peshangoi nahi. Pehle demo.
+// ============================================================================
+indicator("JAS Tide Radar — 9 market, gold ke saath", shorttitle = "JAS Tide Radar", overlay = true, max_bars_back = 500)
+
+BUILD = "r1"
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+grM = "1 · Markets (pehla = gold, moqable ke liye)"
+s0 = input.symbol("OANDA:XAUUSD", "1", group = grM)
+s1 = input.symbol("OANDA:XAGUSD", "2", group = grM)
+s2 = input.symbol("OANDA:EURUSD", "3", group = grM)
+s3 = input.symbol("OANDA:GBPUSD", "4", group = grM)
+s4 = input.symbol("OANDA:AUDUSD", "5", group = grM)
+s5 = input.symbol("OANDA:USDJPY", "6", group = grM)
+s6 = input.symbol("OANDA:USDCHF", "7", group = grM)
+s7 = input.symbol("OANDA:SPX500USD", "8", group = grM)
+s8 = input.symbol("COINBASE:BTCUSD", "9", group = grM)
+
+grQ = "2 · Qawaid (JAS Tide, 458 wale)"
+entryLen  = input.int(10, "Naali: kitni candle ka high/low", minval = 3, maxval = 200, group = grQ)
+exitLen   = input.int(5, "SL sarakna: kitni candle", minval = 2, maxval = 100, group = grQ)
+atrLen    = input.int(14, "ATR length", minval = 2, group = grQ)
+atrMult   = input.float(2.0, "Shuru ka SL (x ATR)", minval = 0.5, step = 0.1, group = grQ)
+emaFLen   = input.int(50, "Rukh EMA fast", minval = 2, group = grQ)
+emaSLen   = input.int(200, "Rukh EMA slow", minval = 3, group = grQ)
+minAtrPct = input.float(0.25, "Kam az kam ATR (% qeemat ka)", minval = 0, step = 0.05, group = grQ)
+costPct   = input.float(0.005, "Kharcha (% har taraf)", minval = 0, step = 0.001, group = grQ)
+
+grS = "3 · Sync aur daao"
+corrLen = input.int(100, "Correlation: kitne din", minval = 20, maxval = 400, group = grS)
+usdCap  = input.int(3, "Ek USD taraf ki zyada se zyada khuli trades (har trade 1%)", minval = 1, maxval = 9, group = grS)
+dxySym  = input.symbol("TVC:DXY", "USD index", group = grS)
+
+grV = "4 · Dikhawa"
+panelPos = input.string("Top Right", "Panel ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV)
+panelSz  = input.string("Small", "Panel ka font", options = ["Tiny", "Small", "Normal"], group = grV)
+panelPad = input.int(2, "Upar khali rows", minval = 0, maxval = 8, group = grV)
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+PSZ = panelSz == "Tiny" ? size.tiny : panelSz == "Normal" ? size.normal : size.small
+f_r(x) => na(x) ? "-" : (x > 0 ? "+" : "") + str.tostring(x, "0.00") + "R"
+f_px(x) => na(x) ? "-" : str.tostring(x, "#.#####")
+f_sg2(x) => (x >= 0 ? "+" : "") + str.tostring(x, "0.00")
+// "OANDA:EURUSD" -> "EURUSD"
+f_name(_s) =>
+    _p = str.split(_s, ":")
+    array.size(_p) > 1 ? array.get(_p, 1) : _s
+// USD ka rishta: XXXUSD par BUY = USD neeche (+1), USDXXX par BUY = USD upar (-1),
+// index / crypto = 0 (currency pair nahi)
+f_usd(_s) =>
+    _n = f_name(_s)
+    _alag = str.contains(_n, "SPX") or str.contains(_n, "NAS") or str.contains(_n, "US30") or str.contains(_n, "BTC") or str.contains(_n, "ETH")
+    _alag ? 0 : str.startswith(_n, "USD") ? -1 : str.endswith(_n, "USD") ? 1 : 0
+
+// ============================================================================
+//  ENGINE — har market ki apni daily candles par, sirf BAND candle
+//  (is candle par pichli candle ka hisaab: repaint nahi). Qaide jyon ke tyon
+//  indicators/jas_tide_seekh.pine (2R aadhi BAND) se.
+// ============================================================================
+f_tide() =>
+    // ta.* sab upar (Pine v6: shart ke andar nahi)
+    _atrA = ta.atr(atrLen)
+    _hbA  = ta.highest(high, entryLen)
+    _lbA  = ta.lowest(low, entryLen)
+    _hxA  = ta.highest(high, exitLen)
+    _lxA  = ta.lowest(low, exitLen)
+    _efA  = ta.ema(close, emaFLen)
+    _esA  = ta.ema(close, emaSLen)
+    // pichli (BAND) candle aur us waqt ke level
+    _o  = open[1]
+    _h  = high[1]
+    _l  = low[1]
+    _c  = close[1]
+    _a  = _atrA[1]
+    _hb = _hbA[2]
+    _lb = _lbA[2]
+    _hx = _hxA[2]
+    _lx = _lxA[2]
+    _ef = _efA[2]
+    _es = _esA[2]
+    var int   _d   = 0
+    var float _e   = na
+    var float _r   = na
+    var float _sl  = na
+    var int   _age = 0
+    var int   _n   = 0
+    var int   _w   = 0
+    var float _sR  = 0.0
+    var float _sW  = 0.0
+    var float _sL  = 0.0
+    bool  _cl  = false
+    bool  _atC = false
+    float _px  = na
+    if _d != 0 and not na(_c)
+        _age += 1
+        // candle ke andar SL (gap ho to open par)
+        if _d == 1 and _l <= _sl
+            _px := _o < _sl ? _o : _sl
+            _cl := true
+        else if _d == -1 and _h >= _sl
+            _px := _o > _sl ? _o : _sl
+            _cl := true
+        // close par: D1 rukh palta
+        if not _cl and not na(_ef) and not na(_es) and (_d == 1 ? _ef < _es : _ef > _es)
+            _px  := _c
+            _cl  := true
+            _atC := true
+        // close par: SL aage, close peeche ho to band
+        if not _cl
+            _sl := _d == 1 ? math.max(_sl, nz(_lx, _sl)) : math.min(_sl, nz(_hx, _sl))
+            if (_d == 1 and _c <= _sl) or (_d == -1 and _c >= _sl)
+                _px  := _c
+                _cl  := true
+                _atC := true
+    if _cl
+        _rr = _d * (_px - _e) / _r - 2.0 * costPct / 100.0 * _e / _r
+        _n  += 1
+        _sR += _rr
+        if _rr > 0
+            _w  += 1
+            _sW += _rr
+        else
+            _sL -= _rr
+        _d := 0
+    if _d == 0 and not _atC and not na(_c) and not na(_a) and _a > 0 and not na(_hb) and not na(_lb)
+        _bull = not na(_ef) and not na(_es) and _ef > _es
+        _bear = not na(_ef) and not na(_es) and _ef < _es
+        _live = _a / _c * 100.0 >= minAtrPct
+        _buy  = _c > _hb and _bull and _live
+        _sell = _c < _lb and _bear and _live
+        if _buy or _sell
+            _d   := _buy ? 1 : -1
+            _e   := _c
+            _r   := atrMult * _a
+            _sl  := _c - _d * _r
+            _age := 0
+    // aaj ke liye: agla toot, rukh, ATR (sab band candles se)
+    [_d, _e, _sl, _r, _age, _n, _w, _sR, _sW, _sL, _c, close, _hbA[1], _lbA[1], _efA[1], _esA[1], _atrA[1]]
+
+f_req(_s) => request.security(_s, "D", f_tide(), barmerge.gaps_off, barmerge.lookahead_off)
+
+[d0, e0, sl0, r0, g0, n0, w0, sr0, sw0, sl0s, c0, x0, hb0, lb0, ef0, es0, a0] = f_req(s0)
+[d1, e1, sl1, r1, g1, n1, w1, sr1, sw1, sl1s, c1, x1, hb1, lb1, ef1, es1, a1] = f_req(s1)
+[d2, e2, sl2, r2, g2, n2, w2, sr2, sw2, sl2s, c2, x2, hb2, lb2, ef2, es2, a2] = f_req(s2)
+[d3, e3, sl3, r3, g3, n3, w3, sr3, sw3, sl3s, c3, x3, hb3, lb3, ef3, es3, a3] = f_req(s3)
+[d4, e4, sl4, r4, g4, n4, w4, sr4, sw4, sl4s, c4, x4, hb4, lb4, ef4, es4, a4] = f_req(s4)
+[d5, e5, sl5, r5, g5, n5, w5, sr5, sw5, sl5s, c5, x5, hb5, lb5, ef5, es5, a5] = f_req(s5)
+[d6, e6, sl6, r6, g6, n6, w6, sr6, sw6, sl6s, c6, x6, hb6, lb6, ef6, es6, a6] = f_req(s6)
+[d7, e7, sl7, r7, g7, n7, w7, sr7, sw7, sl7s, c7, x7, hb7, lb7, ef7, es7, a7] = f_req(s7)
+[d8, e8, sl8, r8, g8, n8, w8, sr8, sw8, sl8s, c8, x8, hb8, lb8, ef8, es8, a8] = f_req(s8)
+
+// USD index ka rukh (pichli band candle ki EMA50 / EMA200)
+[dxF, dxS] = request.security(dxySym, "D", [ta.ema(close, emaFLen)[1], ta.ema(close, emaSLen)[1]], barmerge.gaps_off, barmerge.lookahead_off)
+
+// ============================================================================
+//  SYNC: gold ke saath daily chaal ka correlation (band candles), USD ke hisaab se
+// ============================================================================
+f_ret(_c) => not na(_c) and not na(_c[1]) and _c[1] > 0 ? math.log(_c / _c[1]) : 0.0
+rG = f_ret(c0)
+k1 = ta.correlation(rG, f_ret(c1), corrLen)
+k2 = ta.correlation(rG, f_ret(c2), corrLen)
+k3 = ta.correlation(rG, f_ret(c3), corrLen)
+k4 = ta.correlation(rG, f_ret(c4), corrLen)
+k5 = ta.correlation(rG, f_ret(c5), corrLen)
+k6 = ta.correlation(rG, f_ret(c6), corrLen)
+k7 = ta.correlation(rG, f_ret(c7), corrLen)
+k8 = ta.correlation(rG, f_ret(c8), corrLen)
+
+// ============================================================================
+//  PANEL
+// ============================================================================
+var table pt = table.new(f_pos(panelPos), 7, 26, border_width = 1, border_color = color.new(color.gray, 70))
+cOK  = color.new(#1B5E20, 0)
+cNO  = color.new(#B71C1C, 0)
+cMID = color.new(#37474F, 0)
+cBG  = color.new(color.white, 8)
+f_cell(_c, _r, _t, _col) =>
+    table.cell(pt, _c, panelPad + _r, _t, bgcolor = cBG, text_color = _col, text_size = PSZ, text_halign = text.align_left)
+
+// ek market ki row. _k = gold ke saath correlation (gold ki apni row par na)
+f_row(int _row, string _s, int _d, float _e, float _sl, float _r, int _age, int _n, int _w, float _sR, float _sW, float _sL, float _x, float _hb, float _lb, float _ef, float _es, float _a, float _k) =>
+    _sg   = f_usd(_s)
+    _name = f_name(_s)
+    _bull = not na(_ef) and not na(_es) and _ef > _es
+    _bear = not na(_ef) and not na(_es) and _ef < _es
+    _usdT = _sg == 1 ? "BUY = USD neeche" : _sg == -1 ? "BUY = USD upar" : "USD pair nahi"
+    _rk   = _bull ? "UPAR" : _bear ? "NEECHE" : "-"
+    string _tr = "intezar"
+    color  _tc = cMID
+    if _d != 0
+        _rNow = na(_r) or _r == 0 ? na : _d * (_x - _e) / _r
+        _tr := (_d == 1 ? "BUY" : "SELL") + " " + str.tostring(_age) + " din · SL " + f_px(_sl) + " · abhi " + f_r(_rNow)
+        _tc := _d == 1 ? cOK : cNO
+    else if (_bull or _bear) and not na(_a) and _a > 0
+        _lv = _bull ? _hb : _lb
+        _tr := "intezar · " + (_bull ? "BUY " : "SELL ") + f_px(_lv) + " (" + str.tostring(math.abs(_lv - _x) / _a, "0.0") + " ATR door)"
+    _sync = na(_k) ? "gold khud" : _sg == 0 ? f_sg2(_k) + " (seedha)" : f_sg2(_k * _sg) + (_k * _sg >= 0.3 ? " saath" : _k * _sg <= -0.3 ? " ulta" : " kamzor")
+    _kc   = na(_k) ? cMID : (_sg == 0 ? _k : _k * _sg) >= 0.3 ? cOK : (_sg == 0 ? _k : _k * _sg) <= -0.3 ? cNO : cMID
+    _ex   = _n > 0 ? _sR / _n : na
+    _pf   = _sL > 0 ? _sW / _sL : na
+    _hist = _n == 0 ? "-" : str.tostring(_n) + " · jeet " + str.tostring(math.round(100.0 * _w / _n)) + "% · Exp " + f_r(_ex) + " · PF " + (na(_pf) ? "-" : str.tostring(_pf, "0.00"))
+    f_cell(0, _row, _name, color.black)
+    f_cell(1, _row, _usdT, cMID)
+    f_cell(2, _row, _rk, _bull ? cOK : _bear ? cNO : cMID)
+    f_cell(3, _row, _tr, _tc)
+    f_cell(4, _row, _sync, _kc)
+    f_cell(5, _row, _hist, na(_ex) ? cMID : _ex > 0 ? cOK : cNO)
+    // USD daao: +1 = USD neeche wali trade, -1 = USD upar wali, 0 = koi nahi
+    _d * _sg
+
+if barstate.islast
+    if panelPad > 0
+        for _k = 0 to panelPad - 1
+            table.cell(pt, 0, _k, " ", bgcolor = color.new(color.white, 100), text_size = PSZ)
+    table.cell(pt, 0, panelPad, "JAS TIDE RADAR " + BUILD + "  ·  " + (timeframe.isdaily ? "1D chart" : "1D chart par lagayein") + "  ·  har market par wohi kachhua qaide  ·  trade nahi karta", bgcolor = color.new(color.silver, 30), text_color = timeframe.isdaily ? color.black : cNO, text_size = PSZ)
+    table.merge_cells(pt, 0, panelPad, 5, panelPad)
+    f_cell(0, 1, "Market", color.black)
+    f_cell(1, 1, "USD ka rishta", color.black)
+    f_cell(2, 1, "D1 rukh", color.black)
+    f_cell(3, 1, "Tide abhi", color.black)
+    f_cell(4, 1, "Gold ke saath (" + str.tostring(corrLen) + " din)", color.black)
+    f_cell(5, 1, "Purana naap (trades · jeet · Exp · PF)", color.black)
+    u0 = f_row(2,  s0, d0, e0, sl0, r0, g0, n0, w0, sr0, sw0, sl0s, x0, hb0, lb0, ef0, es0, a0, float(na))
+    u1 = f_row(3,  s1, d1, e1, sl1, r1, g1, n1, w1, sr1, sw1, sl1s, x1, hb1, lb1, ef1, es1, a1, k1)
+    u2 = f_row(4,  s2, d2, e2, sl2, r2, g2, n2, w2, sr2, sw2, sl2s, x2, hb2, lb2, ef2, es2, a2, k2)
+    u3 = f_row(5,  s3, d3, e3, sl3, r3, g3, n3, w3, sr3, sw3, sl3s, x3, hb3, lb3, ef3, es3, a3, k3)
+    u4 = f_row(6,  s4, d4, e4, sl4, r4, g4, n4, w4, sr4, sw4, sl4s, x4, hb4, lb4, ef4, es4, a4, k4)
+    u5 = f_row(7,  s5, d5, e5, sl5, r5, g5, n5, w5, sr5, sw5, sl5s, x5, hb5, lb5, ef5, es5, a5, k5)
+    u6 = f_row(8,  s6, d6, e6, sl6, r6, g6, n6, w6, sr6, sw6, sl6s, x6, hb6, lb6, ef6, es6, a6, k6)
+    u7 = f_row(9,  s7, d7, e7, sl7, r7, g7, n7, w7, sr7, sw7, sl7s, x7, hb7, lb7, ef7, es7, a7, k7)
+    u8 = f_row(10, s8, d8, e8, sl8, r8, g8, n8, w8, sr8, sw8, sl8s, x8, hb8, lb8, ef8, es8, a8, k8)
+    int[] us = array.from(u0, u1, u2, u3, u4, u5, u6, u7, u8)
+    int nDn = 0
+    int nUp = 0
+    for _u in us
+        nDn += _u > 0 ? 1 : 0
+        nUp += _u < 0 ? 1 : 0
+    _over = nDn > usdCap or nUp > usdCap
+    _dx   = na(dxF) or na(dxS) ? "-" : dxF > dxS ? "UPAR" : "NEECHE"
+    table.cell(pt, 0, panelPad + 11, "USD daao abhi: USD-neeche " + str.tostring(nDn) + " trade (" + str.tostring(nDn) + "%)  ·  USD-upar " + str.tostring(nUp) + " (" + str.tostring(nUp) + "%)  ·  hadd ek taraf " + str.tostring(usdCap) + (_over ? "  ·  ZYADA - nayi usi taraf mat kholein" : "") + "  ·  USD index (DXY) rukh: " + _dx,
+         bgcolor = _over ? color.new(color.red, 80) : cBG, text_color = _over ? cNO : cMID, text_size = PSZ, text_halign = text.align_left)
+    table.merge_cells(pt, 0, panelPad + 11, 5, panelPad + 11)
+    table.cell(pt, 0, panelPad + 12, "Ek hi USD taraf ki kai trades = ek bari trade (sab saath jeetti, sab saath haarti). Sync badalta rehta hai. Naap sirf gold par sabit hai - baqi ka 'Purana naap' dekhein. Pehle demo.",
+         bgcolor = cBG, text_color = cNO, text_size = PSZ, text_halign = text.align_left)
+    table.merge_cells(pt, 0, panelPad + 12, 5, panelPad + 12)
