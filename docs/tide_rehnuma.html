@@ -1,0 +1,309 @@
+<title>Tide Seekh Rehnuma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column like a trader's notebook; a sticky chip bar jumps between the parts of the daily routine. */
+:root {
+  --bg: #f4f5f1;
+  --surface: #ffffff;
+  --ink: #1c2230;
+  --muted: #5a6273;
+  --rule: #dcdfd6;
+  --gold: #a87a12;
+  --gold-soft: #f3e8cc;
+  --buy: #1b6e2a;
+  --sell: #b42020;
+  --poc: #e07a14;
+  --va: #2f67c9;
+  --ma21: #0a9bb0;
+  --ma63: #c2297a;
+  --lime: #6fae2e;
+  --grey-bar: #b9bdc6;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --surface: #1a1f28; --ink: #e8eaee; --muted: #a2a9b6; --rule: #2c3340;
+    --gold: #e2b850; --gold-soft: #2e2716; --buy: #5cc26b; --sell: #ef5c5c; --poc: #ffa24a;
+    --va: #79a8ff; --ma21: #46d1e3; --ma63: #f070ac; --lime: #9bd35a; --grey-bar: #5b6270;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --surface: #1a1f28; --ink: #e8eaee; --muted: #a2a9b6; --rule: #2c3340;
+  --gold: #e2b850; --gold-soft: #2e2716; --buy: #5cc26b; --sell: #ef5c5c; --poc: #ffa24a;
+  --va: #79a8ff; --ma21: #46d1e3; --ma63: #f070ac; --lime: #9bd35a; --grey-bar: #5b6270;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; padding-inline: 16px; padding-block: 0 64px; }
+.wrap { max-width: 780px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.45rem, 4.2vw, 1.9rem); font-weight: 800; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; }
+.num, code, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.92em; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.muted { color: var(--muted); }
+.buy { color: var(--buy); font-weight: 700; }
+.sell { color: var(--sell); font-weight: 700; }
+.pocc { color: var(--poc); font-weight: 700; }
+.vac { color: var(--va); font-weight: 700; }
+
+header.hero { padding-block: 40px 20px; display: grid; gap: 14px; }
+.lead { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+
+.answer { background: var(--surface); border: 2px solid var(--gold); border-radius: 12px; padding: 18px 20px; display: grid; gap: 10px; }
+.answer h2 { font-size: 1.25rem; }
+.answer ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+nav.chips { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; border-bottom: 1px solid var(--rule); margin-top: 22px; }
+nav.chips .row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; }
+nav.chips a { flex: none; text-decoration: none; color: var(--ink); border: 1px solid var(--rule); background: var(--surface); padding: 6px 12px; border-radius: 999px; font-size: 0.9rem; white-space: nowrap; }
+nav.chips a:hover, nav.chips a:focus-visible { border-color: var(--gold); outline: none; }
+
+section { padding-block: 40px 8px; display: grid; gap: 18px; scroll-margin-top: 64px; }
+.sec-head { display: grid; gap: 6px; border-top: 1px solid var(--rule); padding-top: 26px; }
+
+.fig { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; display: grid; gap: 10px; overflow-x: auto; }
+.fig svg { width: 100%; height: auto; display: block; min-width: 300px; }
+.fig figcaption { font-size: 0.9rem; color: var(--muted); }
+figure { margin: 0; }
+
+.three { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.three > div { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.three b { font-family: var(--font-display); font-size: 1.05rem; }
+
+.terms { display: grid; gap: 12px; }
+.term { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+.term .name { font-family: var(--font-display); font-weight: 600; font-size: 1.08rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.term .where { font-size: 0.82rem; color: var(--muted); font-family: var(--font-mono); }
+.term .ex { border-left: 3px solid var(--gold); padding-left: 10px; }
+.term .warn { font-size: 0.95rem; color: var(--muted); }
+.term .warn::before { content: "Dhyan: "; color: var(--sell); font-weight: 700; }
+.term .ex::before { content: "Aap ke chart par: "; font-weight: 700; color: var(--gold); }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { padding: 9px 11px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.c { text-align: center; }
+.nowrap td { white-space: nowrap; }
+.yes { color: var(--buy); font-weight: 700; }
+.no { color: var(--muted); }
+
+.row-decode { display: grid; grid-template-columns: repeat(10, minmax(66px, 1fr)); gap: 4px; min-width: 700px; }
+.row-decode .cell { background: color-mix(in srgb, var(--buy) 10%, var(--surface)); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 6px; font-family: var(--font-mono); font-size: 0.85rem; text-align: center; font-variant-numeric: tabular-nums; }
+.row-decode .cap { font-size: 0.75rem; color: var(--muted); text-align: center; line-height: 1.3; }
+
+.ladder { display: grid; gap: 8px; }
+.rung { display: grid; grid-template-columns: 88px 1fr; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.rung .tf { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
+.rung.home { border: 2px solid var(--gold); background: color-mix(in srgb, var(--gold-soft) 70%, var(--surface)); }
+.rung .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; margin-bottom: 4px; }
+
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 12px; }
+ol.steps > li { counter-increment: step; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px 14px 58px; position: relative; display: grid; gap: 6px; }
+ol.steps > li::before { content: counter(step); position: absolute; left: 14px; top: 13px; width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: var(--bg); font-family: var(--font-display); font-weight: 800; display: grid; place-items: center; }
+ol.steps h3 { font-size: 1.05rem; }
+
+ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.callout { background: color-mix(in srgb, var(--sell) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--sell) 35%, var(--rule)); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; }
+.note { font-size: 0.88rem; color: var(--muted); }
+footer { margin-top: 48px; border-top: 1px solid var(--rule); padding-top: 16px; font-size: 0.88rem; color: var(--muted); }
+
+/* SVG styling */
+svg text { font-family: var(--font-mono); fill: var(--ink); font-size: 12px; }
+svg .lbl.small { font-size: 11px; fill: var(--muted); }
+svg .lbl.strong { font-weight: 600; fill: var(--ink); }
+svg .lbl.up { fill: var(--buy); font-weight: 600; }
+svg .lbl.down { fill: var(--sell); font-weight: 600; }
+svg .lbl.poc { fill: var(--poc); font-weight: 600; }
+svg .lbl.va { fill: var(--va); font-weight: 600; }
+svg .wick { stroke: var(--ink); stroke-width: 2; }
+svg .wick-s { stroke: var(--muted); stroke-width: 1; }
+svg .body-up { fill: var(--buy); }
+svg .body-down { fill: var(--sell); }
+svg .tick { stroke: var(--muted); stroke-width: 1; }
+svg .brace { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+svg .gauge { fill: var(--rule); }
+svg .gauge-fill { fill: color-mix(in srgb, var(--buy) 60%, transparent); }
+svg .path { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linejoin: round; }
+svg .dot { fill: var(--gold); }
+svg .bar-poc { fill: var(--poc); }
+svg .bar-va { fill: color-mix(in srgb, var(--va) 55%, transparent); }
+svg .bar-out { fill: var(--grey-bar); }
+svg .poc-line { stroke: var(--poc); stroke-width: 2.5; }
+svg .va-line { stroke: var(--va); stroke-width: 1.5; stroke-dasharray: 6 4; }
+svg .now-line { stroke: var(--ink); stroke-width: 3; }
+svg .gap { fill: color-mix(in srgb, var(--muted) 25%, transparent); }
+svg .swing { stroke: var(--lime); stroke-width: 2; stroke-dasharray: 5 4; }
+svg .frame { fill: var(--surface); stroke: var(--rule); }
+svg .zone-sup { fill: color-mix(in srgb, var(--sell) 14%, transparent); }
+svg .zone-sup-l { stroke: var(--sell); stroke-width: 2; }
+svg .zone-dem { fill: color-mix(in srgb, var(--lime) 18%, transparent); }
+svg .zone-dem-l { stroke: var(--lime); stroke-width: 2; }
+svg .pivot { stroke: var(--muted); stroke-width: 2; }
+svg .ma21 { fill: none; stroke: var(--ma21); stroke-width: 2.2; }
+svg .ma63 { fill: none; stroke: var(--ma63); stroke-width: 2.2; }
+svg .tbl { fill: color-mix(in srgb, var(--bg) 85%, var(--surface)); stroke: var(--rule); }
+svg .tbl-row { fill: var(--rule); }
+svg .callout { fill: var(--gold); }
+svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight: 800; font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <span class="eyebrow">JAS Tide Seekh · XAUUSD 1D · 459 trades ka naap</span>
+  <h1>Kachhua system ko chalayein</h1>
+  <p class="lead">Ye safha batata hai ke JAS Tide Seekh ka panel kya kehta hai, roz kya karna hai, aur MT5 mein order kaise lagana hai. Har number aap ke 8 Oct 2026 ke Tester se hai.</p>
+  <div class="answer">
+    <h2>Mukhtasar</h2>
+    <ul>
+      <li><b>Chart: OANDA:XAUUSD, 1D.</b> Sirf indicator <span class="mono">JAS Tide Seekh</span> lagayein. Tester roz nahi chahiye.</li>
+      <li><b>Roz ek dafa, subah.</b> Din ki candle raat 2-3 baje (PKT) band hoti hai. Subah panel dekhein, 5 minute kaafi hain.</li>
+      <li><b>Trade sirf jab panel kahe.</b> Chart par <span class="buy">BUY</span> ya <span class="sell">SELL</span> ka teer aur panel mein "Khuli trade".</li>
+      <li><b>SL zaroor lagayein, TP nahi.</b> Har subah SL panel ke mutabiq aage sarkayein.</li>
+      <li><b>Saal mein taqreeban 8 trades.</b> 10 mein se 6 haarti hain. Kamai chand bari trades se aati hai. Pehle sirf DEMO.</li>
+    </ul>
+  </div>
+</header>
+
+<nav class="chips" aria-label="Safhe ke hisse">
+  <div class="row">
+    <a href="#pehle">Pehle ye</a>
+    <a href="#qaide">Chaar qaide</a>
+    <a href="#panel">Panel ki rows</a>
+    <a href="#roz">Roz ka kaam</a>
+    <a href="#mt5">MT5 mein order</a>
+    <a href="#naap">Naap kya kehta hai</a>
+    <a href="#demo">Demo aur live</a>
+    <a href="#ghalti">Aam ghaltiyan</a>
+  </div>
+</nav>
+
+<section id="pehle">
+  <div class="sec-head"><span class="eyebrow">Shuru karne se pehle</span><h2>Teen baatein</h2></div>
+  <div class="three">
+    <div><b>Indicator trade nahi karta</b><p>Ye sirf batata hai kab, kis qeemat par, kitna lot aur SL kahan. Order aap khud MT5 mein lagate hain.</p></div>
+    <div><b>Sirf BAND candle</b><p>Faisla din ki candle band hone ke baad hota hai. Chalti candle ka level chhoo lena kaafi nahi.</p></div>
+    <div><b>Haar zyada, jeet bari</b><p>Ye trend ka system hai. Aksar chhota nuqsan, kabhi kabhi bohot bari jeet. Bari jeet ko kaatna mana hai.</p></div>
+  </div>
+</section>
+
+<section id="qaide">
+  <div class="sec-head"><span class="eyebrow">Qaide</span><h2>Chaar qaide, isi tarteeb se</h2><p class="muted">Panel ki pehli chaar rows yahi chaar qaide hain.</p></div>
+  <ol class="steps">
+    <li><h3>Rukh: D1 ka EMA50 aur EMA200</h3><p>EMA50 upar ho to sirf BUY. Neeche ho to sirf SELL. Chart ka halka hara ya laal rang yahi batata hai.</p></li>
+    <li><h3>Bazaar zinda ho</h3><p>ATR(14) qeemat ka kam az kam 0.25% ho. Bohot susti mein breakout jhoote hote hain.</p></li>
+    <li><h3>Naali tooti</h3><p>Din ki candle pichhli 10 candles ke sab se oonche high ke <b>upar band</b> ho (BUY). SELL ke liye 10 candles ke sab se neeche low ke neeche. Chart ki hari aur laal seedhi lakeerein yahi do level hain.</p></li>
+    <li><h3>SL aur us ka sarakna</h3><p>Shuru ka SL entry se 2 &times; ATR door. Phir har din SL pichhli 5 candles ke sab se neeche low tak aage aata hai (SELL mein sab se oonche high tak). SL kabhi peeche nahi jata.</p></li>
+  </ol>
+  <p class="note">Trade band hoti hai: SL lagne par, sarakte SL par, ya D1 ka rukh palatne par. Koi TP nahi. 8 Oct ke Tester mein 459 mein se 420 trades sarakte SL par, 38 shuru wale SL par, aur 1 rukh palatne par band hui.</p>
+</section>
+
+<section id="panel">
+  <div class="sec-head"><span class="eyebrow">Panel</span><h2>Har row ka matlab, aur aap kya karein</h2><p class="muted">Panel chart ke upar daayen hota hai.</p></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Row</th><th>Kya batati hai</th><th>Aap kya karein</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1 · RUKH</td><td>UPAR ✓ = sirf BUY, NEECHE ✓ = sirf SELL, saath mein dono EMA</td><td>Kuch nahi. Sirf dekh lein kis taraf ki ijazat hai.</td></tr>
+        <tr><td class="mono">2 · Bazaar zinda?</td><td>ATR aur us ka % (hadd 0.25%)</td><td>✗ ho to us din koi trade nahi.</td></tr>
+        <tr><td class="mono">3 · Naali</td><td>BUY level aur SELL level, aur dono kitne ATR door hain</td><td>1 ATR se kam door = signal qareeb hai.</td></tr>
+        <tr><td class="mono">4 · Entry</td><td>Kis qeemat ke upar ya neeche din ki candle band honi chahiye</td><td>Intezar. Pehle se order na lagayein.</td></tr>
+        <tr><td class="mono">Plan ka andaza</td><td>Agar aaj signal bane to entry, SL aur lot taqreeban kitna hoga</td><td>Sirf andaza hai. Asal number signal ke baad aate hain.</td></tr>
+        <tr><td class="mono">Khuli trade</td><td>BUY/SELL, entry, kitni candle se khuli, abhi kitne R par, lot</td><td>Trade khuli hai to MT5 mein bhi khuli honi chahiye.</td></tr>
+        <tr><td class="mono">SL / 2R</td><td>Aaj ka SL. "SARAKA" likha ho to SL aage aaya hai</td><td>MT5 mein SL yahi kar dein. "AAJ qeemat SL chhu chuki" likha ho to MT5 mein trade band ho chuki hogi.</td></tr>
+        <tr><td class="mono">Der se entry?</td><td>Signal ke agle din, abhi ki qeemat par lot kitna ho</td><td>Subah entry karein to lot yahin se lein. "SL ke paar - entry NAHI" likha ho to chhor dein.</td></tr>
+        <tr><td class="mono">Aakhri baat</td><td>Aakhri waqia: trade kyun khuli, kyun band hui, ya breakout kyun nahi chala</td><td>Parh lein. Yahi seekhne ka hissa hai.</td></tr>
+        <tr><td class="mono">Nateeja</td><td>Is chart par saari purani trades: ginti, jeet %, Exp, kul R, PF</td><td>Ye Tester jaisa hi hisaab hai, R mein, kharche ke baad.</td></tr>
+        <tr><td class="mono">Kaise band huin</td><td>SL, sarakta SL, D1 palta</td><td>Kuch nahi.</td></tr>
+        <tr><td class="mono">Lot</td><td>1% risk kitne paise hai, aur lot ka formula</td><td>Settings mein apna balance likhein (neeche dekhein).</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="terms">
+    <div class="term"><div class="name">R kya hai</div><p>1R = shuru ka SL faasla (2 ATR). +3R ka matlab jitna khatra liya tha us ka teen guna kamaya. −1R = poora SL laga.</p></div>
+    <div class="term"><div class="name">Lot ka formula</div><p><span class="mono">lot = risk ÷ (SL ka faasla $ &times; 100)</span>. Cent account par 1.00 lot = $1 harkat par 100 USC. Standard par 1.00 lot = $1 harkat par $100. Dono par yahi formula chalta hai.</p><p class="warn">Lot 0.01 se kam nikle to trade na karein. Balance kam hai aur SL bara.</p></div>
+    <div class="term"><div class="name">Apni settings (ek dafa)</div><p>Panel ke naam par ⚙ → Inputs → <span class="mono">4 · Lot ka hisaab</span>: Balance (account ki currency mein), Currency (USC ya USD), Risk 1%. <span class="mono">3 · Kharcha aur swap</span> mein swap <b>0</b> rehne dein: aap ke account par gold ka swap nahi katta. Kabhi MT5 ke Swap column mein paisa kat-ta dikhe, tab wahi likhein.</p></div>
+  </div>
+</section>
+
+<section id="roz">
+  <div class="sec-head"><span class="eyebrow">Roz ka kaam</span><h2>Har subah, 5 minute</h2></div>
+  <ol class="steps">
+    <li><h3>Chart kholein</h3><p>OANDA:XAUUSD, <b>1D</b>. Panel ke upar "chart 1D (yahi naapa gaya)" aur "2R aadhi: BAND" likha ho.</p></li>
+    <li><h3>Khuli trade hai?</h3><p>Haan: "SL / 2R" row ka SL MT5 mein laga dein. "Aakhri baat" mein "D1 rukh palta" ya "band" likha ho to MT5 mein bhi trade band kar dein.</p></li>
+    <li><h3>Naya signal aaya?</h3><p>Chart par kal ki candle par BUY/SELL teer, aur "Aakhri baat" mein "BUY khuli" ya "SELL khuli". To MT5 mein order lagayein (agla hissa).</p></li>
+    <li><h3>Kuch nahi?</h3><p>Chart band kar dein. Zyada tar din yahi hoga. Hafton koi signal nahi aata, aur ye bilkul theek hai.</p></li>
+  </ol>
+</section>
+
+<section id="mt5">
+  <div class="sec-head"><span class="eyebrow">MT5</span><h2>Order lagana aur SL sarkana</h2></div>
+  <ol class="steps">
+    <li><h3>New Order</h3><p>XAUUSD par New Order kholein. Type: <b>Market Execution</b>. BUY signal par Buy, SELL par Sell.</p></li>
+    <li><h3>Volume</h3><p>Panel ki "Der se entry?" row wala lot. Ye abhi ki qeemat aur wahi SL se bana hai.</p></li>
+    <li><h3>Stop Loss</h3><p>Panel ka SL bilkul wahi likhein. <b>Take Profit khali chhor dein.</b></p></li>
+    <li><h3>Har subah SL badlein</h3><p>Positions mein trade par double-click → Modify → Stop Loss panel wala → Modify. SL sirf faide ki taraf jata hai.</p><p class="warn">MT5 naya SL qubool na kare kyunke qeemat pehle hi us ke paar hai, to trade usi waqt band kar dein. Tester bhi yahi karta hai.</p></li>
+  </ol>
+  <div class="callout"><b>Ek account, ek kaam.</b> Aap ki Fishing Lots tokri wale account par JasDeskView aur JasJoriClose har lot ginte hain. Woh Tide ki trade ko bhi jori mein daal sakte hain. Tide ki trade alag account par chalayein: abhi demo, baad mein alag live account.</div>
+</section>
+
+<section id="naap">
+  <div class="sec-head"><span class="eyebrow">Naap</span><h2>8 Oct ke Tester ne kya kaha</h2><p class="muted">OANDA:XAUUSD 1D, saari history, 1% risk, kharcha $0.30/oz. Har trade ka nateeja R mein.</p></div>
+  <div class="tbl-wrap">
+    <table class="nowrap">
+      <thead><tr><th>Daur</th><th class="c">Trades</th><th class="c">Jeet</th><th class="c">Exp har trade</th><th class="c">PF</th><th class="c">Kul</th></tr></thead>
+      <tbody>
+        <tr><td>1970-1999</td><td class="c num">234</td><td class="c num">37%</td><td class="c num buy">+0.63R (± 0.50)</td><td class="c num">2.38</td><td class="c num">+146R</td></tr>
+        <tr><td>2000-2018</td><td class="c num">158</td><td class="c num">44%</td><td class="c num buy">+0.16R (± 0.19)</td><td class="c num">1.49</td><td class="c num">+25R</td></tr>
+        <tr><td>2019-aaj</td><td class="c num">63</td><td class="c num">37%</td><td class="c num buy">+0.30R (± 0.41)</td><td class="c num">1.90</td><td class="c num">+19R</td></tr>
+        <tr><td><b>Sab (1970 se pehle ke 4 samet)</b></td><td class="c num"><b>459</b></td><td class="c num">40%</td><td class="c num buy"><b>+0.43R (± 0.27)</b></td><td class="c num">1.68</td><td class="c num">+198R</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="terms">
+    <div class="term"><div class="name">Is ka matlab</div>
+      <p>Teeno daur mein faida hua. Is liye system mazboot mana gaya. Ye qaida test se pehle likha gaya tha.</p>
+      <p>2000 ke baad faida chhota hai, taqreeban +0.20R har trade. Saal mein ~8 trades hain, to 1% risk par <b>taqreeban +2% saal</b> ka andaza hai. Woh +506% zyada tar 1970s ki tezi aur 50 saal ke compounding se aaya.</p>
+      <p class="warn">Tester mein sab se gehri girawat 27% thi. Lagatar kai haar aur saal bhar ka nuqsan is system mein aam hai.</p>
+    </div>
+    <div class="term"><div class="name">2R par aadhi band? Nahi.</div>
+      <p>Tester ne dono naape. 2R par aadhi band: +274%, PF 1.59. Poori trade chalne di: +506%, PF 1.68. Girawat sirf 27% se 24.5% hui. Is liye panel mein switch BAND hai.</p>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="sec-head"><span class="eyebrow">Demo aur live</span><h2>Pehle demo par haath saaf karein</h2></div>
+  <ul class="plain">
+    <li><b>Demo par maqsad paisa nahi, tareeqa hai.</b> Saal mein 8 trades se kuch "sabit" nahi hota. Sabit karne ka kaam 459 trades wala Tester kar chuka hai.</li>
+    <li><b>Har demo trade ke baad:</b> MT5 ka nateeja R mein nikalein (faida ÷ shuru ke SL ka paisa) aur panel ki label se milayein. 0.2R se zyada farq ho to wajah dhoondein: der se entry, ya SL na sarkaya.</li>
+    <li><b>Live tab:</b> jab kam az kam 3 trades shuru se aakhir tak bilkul panel ke mutabiq chal chuki hon (entry, lot, har subah SL).</li>
+    <li><b>Live par bhi risk 1% se zyada nahi.</b> Settings ghuma kar purane number achhe karna mana hai.</li>
+  </ul>
+</section>
+
+<section id="ghalti">
+  <div class="sec-head"><span class="eyebrow">Aam ghaltiyan</span><h2>Ye na karein</h2></div>
+  <ul class="plain">
+    <li><b>SL peeche le jana</b> "thora aur dekh lete hain" ke liye. SL sirf aage jata hai.</li>
+    <li><b>2R ya kisi bhi faide par khud band karna.</b> Bari jeet hi saari kamai hai.</li>
+    <li><b>Candle band hone se pehle entry.</b> Chalti candle naali ke upar ja kar wapas aa sakti hai.</li>
+    <li><b>1H ya 15m par lagana.</b> Ye sirf 1D par naapa gaya hai.</li>
+    <li><b>Signal chhor dena</b> kyunke pichli 3 haar gayin. Agli bari jeet wahi ho sakti hai.</li>
+    <li><b>Tide ki trade aur tokri ki lots ek account mein.</b> Desk ke tools dono ko mila dete hain.</li>
+  </ul>
+</section>
+
+<footer>
+  JAS Tide Seekh (indicators/jas_tide_seekh.pine) aur us ka Tester (strategies/jas_tide_seekh_test.pine). Number 8 Oct 2026 ke Tester ke screenshots se hain. Ye guide trading ka mashwara nahi. Pehle demo.
+</footer>
+</div>

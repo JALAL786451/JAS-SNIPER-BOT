@@ -1,0 +1,287 @@
+//@version=6
+// ============================================================================
+//  FISHING LOTS — NAAPNE KE LIYE
+//
+//  Ye Jalal ki apni method hai, jyon ki tyon, machine mein daal kar chalai
+//  gayi. Behtar banane ki koshish JAAN BOOJH KAR nahi ki gayi -- bilkul
+//  waise jaise Tony wale EMA scalper ke saath kiya tha. Maqsad ek hi hai:
+//
+//      "Meri method asli gold par chala kar dikhao. Number do."
+//
+//  Qawaid METHOD.md se liye gaye hain, andaze se nahi:
+//   Phase 1  Fishing  : EMA20 vs EMA50 se rukh. Ek lot. ~$1 faide par band.
+//   Phase 2  Trouble  : $3 ke nuqsan par dekhna shuru. $4 tak chalne dena.
+//   Phase 3  Turning  : ulte rukh ki lots
+//   Phase 4  FREEZE   : dono taraf barabar -> kitab jam gayi, hilti nahi
+//   Phase 5  Waiting  : swap sifar, is liye intezar muft
+//   Phase 6  Unwind   : sab kuch ek saath band, combined positive par
+//
+//  Ladder ka faasla METHOD.md ke asli sauday se naapa gaya:
+//  4362.951 / 4366.963 / 4370.163 / 4374.481 -- yani 4.01, 3.20, 4.32 dollar.
+//  Is liye default 3.50 rakha hai.
+//
+//  AHEM: yahan har "dollar" GOLD KI QEEMAT ka dollar hai, account ka nahi.
+//  Cent account par 0.01 lot ke liye gold ka $1 = 1 USC. Isi liye aapke
+//  "3 dollar ka nuqsan" ka matlab hota hai gold 3 dollar ulta gaya.
+//
+//  YE LIVE TRADE NAHI KARTA. Ye sirf naapta hai.
+//  Ye woh do cheezein naapta hai jo METHOD.md khud kehti hai kabhi naapi
+//  nahi gayin:
+//    - ek saath sab se zyada kitni lots khuli
+//    - kitab sab se gehri kahan tak gayi (max floating loss)
+//  Aur teesri, jo sab se ahem hai: kitna gold hilta to account khatam.
+// ============================================================================
+indicator("Fishing Lots — naapne ke liye", "FISHING", overlay = false, max_labels_count = 100)
+
+// -------------------------------------------------------------- 1. ACCOUNT
+gA        = "1. Account"
+accType   = input.string("Cent", "Account", options = ["Cent", "Standard"], group = gA)
+startBal  = input.float(500.0, "Shuru ka balance (USD)", minval = 10, group = gA)
+lotSize   = input.float(0.01, "Har lot ka size", minval = 0.01, step = 0.01, group = gA)
+spreadD   = input.float(0.26, "Spread + fees (gold dollars)", minval = 0.0, step = 0.01, group = gA)
+
+// ------------------------------------------------------------- 2. FISHING
+gF        = "2. Phase 1 — Fishing"
+emaFast   = input.int(20, "EMA fast", minval = 1, group = gF)
+emaSlow   = input.int(50, "EMA slow", minval = 2, group = gF)
+fishTgt   = input.float(1.0, "Ek lot kitne dollar faide par band", minval = 0.1, step = 0.1, group = gF)
+
+// --------------------------------------------------- 3. LADDER / TROUBLE
+gL        = "3. Phase 2-3 — Ladder aur Trouble"
+ladderGap = input.float(3.50, "Agli lot kitne dollar baad (METHOD.md: 3.20-4.32)", minval = 0.5, step = 0.1, group = gL)
+maxAdds   = input.int(12, "Ek taraf zyada se zyada kitni lots", minval = 1, maxval = 60, group = gL)
+turnLevel = input.float(4.0, "Kitne dollar nuqsan par ulti taraf lagana", minval = 0.5, step = 0.5, group = gL)
+
+// ------------------------------------------------------- 4. FREEZE / EXIT
+gX        = "4. Phase 4-6 — Freeze aur Unwind"
+doFreeze  = input.bool(true, "Dono taraf barabar kar ke jamaein (freeze)", group = gX)
+doUnwind  = input.bool(true, "Phase 6: rukh palatne par hedge lots band karein", group = gX)
+basketTgt = input.float(0.10, "Basket kitne USD faide par Close All (METHOD.md ki misal: +52.20 USC = $0.52)", minval = 0.01, step = 0.05, group = gX)
+
+// ---------------------------------------------------------------- 5. RANG
+gC        = "5. Dikhawa"
+cUp       = input.color(#089981, "Faida", group = gC, inline = "c")
+cDn       = input.color(#F23645, "Nuqsan", group = gC, inline = "c")
+cTxt      = input.color(#111111, "Likhai", group = gC, inline = "d")
+cBg       = input.color(#FFFFFFEE, "Panel", group = gC, inline = "d")
+
+// ============================================================================
+//  HISAAB KI BUNYAAD
+//  Cent par 1.00 lot = gold ke har $1 par $1. Standard par $100.
+// ============================================================================
+perLot = accType == "Cent" ? 1.0 : 100.0
+f_money(_goldDollars, _lots) => _goldDollars * _lots * perLot
+costPerLeg = f_money(spreadD, lotSize)
+
+emaF = ta.ema(close, emaFast)
+emaS = ta.ema(close, emaSlow)
+bias = emaF > emaS ? 1 : emaF < emaS ? -1 : 0
+
+// ============================================================================
+//  KITAB (book) — har leg alag
+// ============================================================================
+var array<int>   legDir = array.new<int>()
+var array<float> legPx  = array.new<float>()
+
+var float balance   = startBal
+var int   origDir   = 0
+var int   maxNet    = 0
+var int   baskets   = 0
+var int   bWin      = 0
+var int   bLoss     = 0
+var float grossWin  = 0.0
+var float grossLoss = 0.0
+var float maxFloat  = 0.0
+var int   maxLegs   = 0
+var float maxAdv    = 0.0
+var float peakEq    = startBal
+var float maxDD     = 0.0
+var float lastAdd   = na
+var bool  unwound   = false
+var float unwAt     = na
+var float feesPaid  = 0.0
+var int   frozenBars= 0
+var int   maxFrozen = 0
+
+// KHALI KITAB KA JAAL:
+// "for i = 0 to array.size(x) - 1" khali array par "for i = 0 to -1" ban
+// jata hai. Pine ise ULTA gin kar chalata hai, i = 0 par pohanchta hai, aur
+// khali array se maangta hai -> RE10045. Har aise loop se pehle size ka
+// pehra lazmi hai.
+f_netDir() =>
+    _n = 0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _n := _n + array.get(legDir, i)
+    _n
+
+f_floatUSD(_px) =>
+    _s = 0.0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _s := _s + f_money((_px - array.get(legPx, i)) * array.get(legDir, i), lotSize)
+    _s
+
+f_worstLegGold(_px) =>
+    _w = 0.0
+    if array.size(legDir) > 0
+        for i = 0 to array.size(legDir) - 1
+            _g = (_px - array.get(legPx, i)) * array.get(legDir, i)
+            _w := math.min(_w, _g)
+    _w
+
+// Sirf array mein daalta hai. Kharcha call karne wali jagah balance se kata
+// jata hai - Pine function ke andar global variable badla nahi ja sakta.
+f_open(_dir, _px) =>
+    array.push(legDir, _dir)
+    array.push(legPx, _px)
+
+f_clearBook() =>
+    array.clear(legDir)
+    array.clear(legPx)
+
+// ============================================================================
+//  SIMULATION — sirf band ho chuki candle par, taake koi jhankna na ho
+// ============================================================================
+if barstate.isconfirmed and bar_index > emaSlow + 2
+    px  = close
+    n   = array.size(legDir)
+    flt = f_floatUSD(px)
+
+    // --- naapne wale number: yehi METHOD.md ke "kabhi naapa nahi gaya" hain
+    maxFloat := math.min(maxFloat, flt)
+    maxLegs  := math.max(maxLegs, n)
+    maxAdv   := math.min(maxAdv, f_worstLegGold(px))
+    eqNow    = balance + flt
+    peakEq   := math.max(peakEq, eqNow)
+    maxDD    := math.max(maxDD, peakEq - eqNow)
+
+    netD = f_netDir()
+    if n > 0 and netD == 0
+        frozenBars := frozenBars + 1
+        maxFrozen  := math.max(maxFrozen, frozenBars)
+    else
+        frozenBars := 0
+
+    maxNet := math.max(maxNet, math.abs(netD))
+
+    if n == 0
+        // ---- PHASE 1: kaanta daalo ------------------------------------------
+        if bias != 0
+            f_open(bias, px)
+            balance := balance - costPerLeg
+            feesPaid := feesPaid + costPerLeg
+            origDir := bias
+            unwound := false
+            unwAt := na
+            lastAdd := px
+    else
+        worst = f_worstLegGold(px)
+
+        // ---- PHASE 6: Close All, combined positive par ----------------------
+        if flt >= basketTgt
+            balance := balance + flt
+            baskets := baskets + 1
+            if flt > 0
+                bWin := bWin + 1
+                grossWin := grossWin + flt
+            else
+                bLoss := bLoss + 1
+                grossLoss := grossLoss - flt
+            f_clearBook()
+            lastAdd := na
+            origDir := 0
+            unwound := false
+            unwAt := na
+            frozenBars := 0
+
+        // ---- PHASE 1 ka chhota faida: akeli lot ~$1 par ---------------------
+        else if n == 1 and (px - array.get(legPx, 0)) * array.get(legDir, 0) >= fishTgt
+            balance := balance + flt
+            baskets := baskets + 1
+            bWin := bWin + 1
+            grossWin := grossWin + flt
+            f_clearBook()
+            lastAdd := na
+            origDir := 0
+            unwound := false
+            unwAt := na
+
+        // ---- PHASE 6 ka pehla hissa: kitab jami hui hai aur rukh palat gaya.
+        // METHOD.md kehti hai "hedge lots chhote nuqsan par band, phir doosri
+        // taraf chal parti hai". Reversal ka signal METHOD.md mein tay nahi
+        // hai - is liye yahan EMA20/50 ka palatna istemal kiya gaya hai. Ye
+        // MERA farz kiya hua hai, aapka qaida nahi. Setting se band ho sakta.
+        else if doUnwind and netD == 0 and origDir != 0 and bias == origDir
+            _i = array.size(legDir) - 1
+            while _i >= 0
+                if array.get(legDir, _i) != origDir
+                    balance := balance + f_money((px - array.get(legPx, _i)) * array.get(legDir, _i), lotSize)
+                    array.remove(legDir, _i)
+                    array.remove(legPx, _i)
+                _i := _i - 1
+            lastAdd := px
+            // Phase 6 ke baad kitab dobara TABHI jam sakti hai jab nuqsan ek
+            // aur poora turn-level gehra ho jaye. Warna do kharabiyan: har
+            // candle par jamna-khulna (spread kha jata hai), ya kabhi dobara
+            // na jamna (kitab hamesha ke liye nangi). METHOD.md dono ke
+            // beech wali soorat batati hai: "the whole cycle restarts".
+            unwound := true
+            unwAt := f_worstLegGold(px)
+
+        // ---- PHASE 3-4: ulti taraf lagao, aur barabar kar ke jamao ----------
+        else if doFreeze and (not unwound or worst <= nz(unwAt, 0.0) - turnLevel) and worst <= -turnLevel and netD != 0 and n < maxAdds * 2
+            f_open(netD > 0 ? -1 : 1, px)
+            balance := balance - costPerLeg
+            feesPaid := feesPaid + costPerLeg
+            feesPaid := feesPaid + costPerLeg
+
+        // ---- PHASE 2-3: ladder, har ~3.50 dollar par agli lot --------------
+        else if netD != 0 and math.abs(netD) < maxAdds and not na(lastAdd) and math.abs(px - lastAdd) >= ladderGap
+            f_open(netD > 0 ? 1 : -1, px)
+            balance := balance - costPerLeg
+            feesPaid := feesPaid + costPerLeg
+            lastAdd := px
+
+equity = balance + f_floatUSD(close)
+
+// ============================================================================
+//  EQUITY CURVE — yehi asal jawab hai
+// ============================================================================
+plot(equity, "Equity", color = equity >= startBal ? cUp : cDn, linewidth = 2)
+plot(balance, "Balance (band ho chuka)", color = color.new(#2962FF, 20), linewidth = 1)
+hline(startBal, "Shuru ka balance", color = color.new(color.gray, 40), linestyle = hline.style_dashed)
+
+// ============================================================================
+//  PANEL
+// ============================================================================
+var table TB = table.new(position.top_right, 2, 15, border_width = 1)
+
+f_row(_r, _a, _b, _tc) =>
+    table.cell(TB, 0, _r, _a, text_color = cTxt, text_size = size.small, text_halign = text.align_left, bgcolor = cBg)
+    table.cell(TB, 1, _r, _b, text_color = _tc, text_size = size.small, text_halign = text.align_right, bgcolor = cBg)
+
+if barstate.islast
+    pf   = grossLoss > 0 ? grossWin / grossLoss : na
+    net  = equity - startBal
+    wipe = maxNet > 0 ? startBal / (maxNet * lotSize * perLot) : na
+    wr   = baskets > 0 ? bWin * 100.0 / baskets : 0.0
+    cNet = net >= 0 ? cUp : cDn
+
+    table.cell(TB, 0, 0, "FISHING LOTS", text_color = color.white, text_size = size.normal, bgcolor = cNet)
+    table.cell(TB, 1, 0, timeframe.period + "  " + accType, text_color = color.white, text_size = size.normal, bgcolor = cNet)
+    f_row(1, "Baskets band hue", str.tostring(baskets), cTxt)
+    f_row(2, "Jeete / Haare", str.tostring(bWin) + " / " + str.tostring(bLoss), bWin > bLoss ? cUp : cDn)
+    f_row(3, "Jeet ka %", str.tostring(wr, "#.0") + " %", wr >= 50 ? cUp : cDn)
+    f_row(4, "Profit factor", na(pf) ? (baskets > 0 ? "koi haar nahi" : "-") : str.tostring(pf, "#.###"), na(pf) ? cUp : pf >= 1 ? cUp : cDn)
+    f_row(5, "Net natija", "$" + str.tostring(net, "#.##"), cNet)
+    f_row(6, "Balance ab", "$" + str.tostring(balance, "#.##"), cTxt)
+    f_row(7, "Spread mein gaya", "-$" + str.tostring(feesPaid, "#.##"), cDn)
+    table.cell(TB, 0, 8, "KABHI NAAPA NAHI GAYA", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    table.cell(TB, 1, 8, "", text_color = color.white, text_size = size.small, bgcolor = #37474F)
+    f_row(9, "Ek saath sab se zyada lots", str.tostring(maxLegs) + "  (" + str.tostring(maxLegs * lotSize, "#.##") + " lot)", cTxt)
+    f_row(10, "Sab se zyada khula (net)", str.tostring(maxNet) + "  (" + str.tostring(maxNet * lotSize, "#.##") + " lot)", cTxt)
+    f_row(11, "Kitab sab se gehri", "$" + str.tostring(maxFloat, "#.##"), cDn)
+    f_row(12, "Sab se bara ulta gold move", "$" + str.tostring(maxAdv, "#.##"), cDn)
+    f_row(13, "Max drawdown", "$" + str.tostring(maxDD, "#.##") + "  (" + str.tostring(startBal > 0 ? maxDD * 100.0 / startBal : 0, "#.#") + "%)", cDn)
+    f_row(14, "Account khatam: gold hile", na(wipe) ? "-" : "$" + str.tostring(wipe, "#.#"), cDn)

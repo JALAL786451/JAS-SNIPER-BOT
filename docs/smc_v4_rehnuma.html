@@ -1,0 +1,457 @@
+<title>SMC Coach Rehnuma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column like a trader's notebook; a sticky chip bar jumps between the five parts of the screen. */
+:root {
+  --bg: #f4f5f1;
+  --surface: #ffffff;
+  --ink: #1c2230;
+  --muted: #5a6273;
+  --rule: #dcdfd6;
+  --gold: #a87a12;
+  --gold-soft: #f3e8cc;
+  --buy: #1b6e2a;
+  --sell: #b42020;
+  --poc: #e07a14;
+  --va: #2f67c9;
+  --ma21: #0a9bb0;
+  --ma63: #c2297a;
+  --lime: #6fae2e;
+  --grey-bar: #b9bdc6;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --surface: #1a1f28; --ink: #e8eaee; --muted: #a2a9b6; --rule: #2c3340;
+    --gold: #e2b850; --gold-soft: #2e2716; --buy: #5cc26b; --sell: #ef5c5c; --poc: #ffa24a;
+    --va: #79a8ff; --ma21: #46d1e3; --ma63: #f070ac; --lime: #9bd35a; --grey-bar: #5b6270;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --surface: #1a1f28; --ink: #e8eaee; --muted: #a2a9b6; --rule: #2c3340;
+  --gold: #e2b850; --gold-soft: #2e2716; --buy: #5cc26b; --sell: #ef5c5c; --poc: #ffa24a;
+  --va: #79a8ff; --ma21: #46d1e3; --ma63: #f070ac; --lime: #9bd35a; --grey-bar: #5b6270;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; padding-inline: 16px; padding-block: 0 64px; }
+.wrap { max-width: 780px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.45rem, 4.2vw, 1.9rem); font-weight: 800; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; }
+.num, code, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.92em; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.muted { color: var(--muted); }
+.buy { color: var(--buy); font-weight: 700; }
+.sell { color: var(--sell); font-weight: 700; }
+.pocc { color: var(--poc); font-weight: 700; }
+.vac { color: var(--va); font-weight: 700; }
+
+header.hero { padding-block: 40px 20px; display: grid; gap: 14px; }
+.lead { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+
+.answer { background: var(--surface); border: 2px solid var(--gold); border-radius: 12px; padding: 18px 20px; display: grid; gap: 10px; }
+.answer h2 { font-size: 1.25rem; }
+.answer ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+nav.chips { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; border-bottom: 1px solid var(--rule); margin-top: 22px; }
+nav.chips .row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; }
+nav.chips a { flex: none; text-decoration: none; color: var(--ink); border: 1px solid var(--rule); background: var(--surface); padding: 6px 12px; border-radius: 999px; font-size: 0.9rem; white-space: nowrap; }
+nav.chips a:hover, nav.chips a:focus-visible { border-color: var(--gold); outline: none; }
+
+section { padding-block: 40px 8px; display: grid; gap: 18px; scroll-margin-top: 64px; }
+.sec-head { display: grid; gap: 6px; border-top: 1px solid var(--rule); padding-top: 26px; }
+
+.fig { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; display: grid; gap: 10px; overflow-x: auto; }
+.fig svg { width: 100%; height: auto; display: block; min-width: 300px; }
+.fig figcaption { font-size: 0.9rem; color: var(--muted); }
+figure { margin: 0; }
+
+.three { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.three > div { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.three b { font-family: var(--font-display); font-size: 1.05rem; }
+
+.terms { display: grid; gap: 12px; }
+.term { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+.term .name { font-family: var(--font-display); font-weight: 600; font-size: 1.08rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.term .where { font-size: 0.82rem; color: var(--muted); font-family: var(--font-mono); }
+.term .ex { border-left: 3px solid var(--gold); padding-left: 10px; }
+.term .warn { font-size: 0.95rem; color: var(--muted); }
+.term .warn::before { content: "Dhyan: "; color: var(--sell); font-weight: 700; }
+.term .ex::before { content: "Aap ke chart par: "; font-weight: 700; color: var(--gold); }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { padding: 9px 11px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.c { text-align: center; }
+.nowrap td { white-space: nowrap; }
+.yes { color: var(--buy); font-weight: 700; }
+.no { color: var(--muted); }
+
+.row-decode { display: grid; grid-template-columns: repeat(10, minmax(66px, 1fr)); gap: 4px; min-width: 700px; }
+.row-decode .cell { background: color-mix(in srgb, var(--buy) 10%, var(--surface)); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 6px; font-family: var(--font-mono); font-size: 0.85rem; text-align: center; font-variant-numeric: tabular-nums; }
+.row-decode .cap { font-size: 0.75rem; color: var(--muted); text-align: center; line-height: 1.3; }
+
+.ladder { display: grid; gap: 8px; }
+.rung { display: grid; grid-template-columns: 88px 1fr; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.rung .tf { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
+.rung.home { border: 2px solid var(--gold); background: color-mix(in srgb, var(--gold-soft) 70%, var(--surface)); }
+.rung .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; margin-bottom: 4px; }
+
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 12px; }
+ol.steps > li { counter-increment: step; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px 14px 58px; position: relative; display: grid; gap: 6px; }
+ol.steps > li::before { content: counter(step); position: absolute; left: 14px; top: 13px; width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: var(--bg); font-family: var(--font-display); font-weight: 800; display: grid; place-items: center; }
+ol.steps h3 { font-size: 1.05rem; }
+
+ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.callout { background: color-mix(in srgb, var(--sell) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--sell) 35%, var(--rule)); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; }
+.note { font-size: 0.88rem; color: var(--muted); }
+footer { margin-top: 48px; border-top: 1px solid var(--rule); padding-top: 16px; font-size: 0.88rem; color: var(--muted); }
+
+/* SVG styling */
+svg text { font-family: var(--font-mono); fill: var(--ink); font-size: 12px; }
+svg .lbl.small { font-size: 11px; fill: var(--muted); }
+svg .lbl.strong { font-weight: 600; fill: var(--ink); }
+svg .lbl.up { fill: var(--buy); font-weight: 600; }
+svg .lbl.down { fill: var(--sell); font-weight: 600; }
+svg .lbl.poc { fill: var(--poc); font-weight: 600; }
+svg .lbl.va { fill: var(--va); font-weight: 600; }
+svg .wick { stroke: var(--ink); stroke-width: 2; }
+svg .wick-s { stroke: var(--muted); stroke-width: 1; }
+svg .body-up { fill: var(--buy); }
+svg .body-down { fill: var(--sell); }
+svg .tick { stroke: var(--muted); stroke-width: 1; }
+svg .brace { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+svg .gauge { fill: var(--rule); }
+svg .gauge-fill { fill: color-mix(in srgb, var(--buy) 60%, transparent); }
+svg .path { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linejoin: round; }
+svg .dot { fill: var(--gold); }
+svg .bar-poc { fill: var(--poc); }
+svg .bar-va { fill: color-mix(in srgb, var(--va) 55%, transparent); }
+svg .bar-out { fill: var(--grey-bar); }
+svg .poc-line { stroke: var(--poc); stroke-width: 2.5; }
+svg .va-line { stroke: var(--va); stroke-width: 1.5; stroke-dasharray: 6 4; }
+svg .now-line { stroke: var(--ink); stroke-width: 3; }
+svg .gap { fill: color-mix(in srgb, var(--muted) 25%, transparent); }
+svg .swing { stroke: var(--lime); stroke-width: 2; stroke-dasharray: 5 4; }
+svg .frame { fill: var(--surface); stroke: var(--rule); }
+svg .zone-sup { fill: color-mix(in srgb, var(--sell) 14%, transparent); }
+svg .zone-sup-l { stroke: var(--sell); stroke-width: 2; }
+svg .zone-dem { fill: color-mix(in srgb, var(--lime) 18%, transparent); }
+svg .zone-dem-l { stroke: var(--lime); stroke-width: 2; }
+svg .pivot { stroke: var(--muted); stroke-width: 2; }
+svg .ma21 { fill: none; stroke: var(--ma21); stroke-width: 2.2; }
+svg .ma63 { fill: none; stroke: var(--ma63); stroke-width: 2.2; }
+svg .tbl { fill: color-mix(in srgb, var(--bg) 85%, var(--surface)); stroke: var(--rule); }
+svg .tbl-row { fill: var(--rule); }
+svg .callout { fill: var(--gold); }
+svg .callout-t { fill: var(--bg); font-family: var(--font-display); font-weight: 800; font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <span class="eyebrow">SMC Coach Pro v4.2 · XAUUSD · aap ke 8 Oct ke number</span>
+  <h1>SMC Coach ko samjhein</h1>
+  <p class="lead">Is safhe par script ki har cheez ka matlab aap ke apne chart ke number se samjhaya gaya hai: dono tables, chart ki lakeerein, PIP HISAAB (POC, VA, Kaam %), aur ye ke kis chart par rehna hai aur trade ka idea kaise lena hai.</p>
+  <div class="answer">
+    <h2>Mukhtasar jawab</h2>
+    <ul>
+      <li><b>Ghar ka chart: 15m.</b> Isi par dono tables aur woh ishara hai jo 1H ka rukh bhi dekhta hai.</li>
+      <li><b>BUY ya SELL ki ijazat:</b> 15m ke daen table mein <span class="mono">1H rukh</span>. UP = sirf BUY, DN = sirf SELL.</li>
+      <li><b>Trade ka idea:</b> sirf jab daen table <span class="mono">15m 80%: BUY khuli</span> ya <span class="mono">SELL khuli</span> likhe aur chart par laal/hara dabba bane.</li>
+      <li><b>1m</b> sirf qareeb se dekhne ke liye. <b>1h aur 1D</b> din mein ek dafa bara naqsha dekhne ke liye.</li>
+      <li><b>Abhi kisi ishare ka faida sabit nahi.</b> Sab ke Exp 0 ke qareeb hain. Pehle sirf DEMO.</li>
+    </ul>
+  </div>
+</header>
+
+<nav class="chips" aria-label="Safhe ke hisse">
+  <div class="row">
+    <a href="#pehle">Pehle ye</a>
+    <a href="#naqsha">Screen ka naqsha</a>
+    <a href="#lafz">Bunyadi lafz</a>
+    <a href="#baen">1 · Baen table</a>
+    <a href="#daen">2 · Daen table</a>
+    <a href="#chart">3 · Chart ki lakeerein</a>
+    <a href="#pip">4-5 · PIP HISAAB</a>
+    <a href="#tf">Kis TF par</a>
+    <a href="#qadam">Trade ke qadam</a>
+    <a href="#saboot">Saboot kab</a>
+    <a href="#ghalti">Aam ghaltiyan</a>
+  </div>
+</nav>
+
+<section id="pehle">
+  <div class="sec-head"><span class="eyebrow">Shuru karne se pehle</span><h2>Teen baatein jo har jagah lagu hain</h2></div>
+  <div class="three">
+    <div><b>Script trade nahi karta</b><p>Ye sirf chart ka haal dikhata hai aur apne isharon ki khayali (virtual) trades gin-ta hai. MT5 mein koi order nahi jata.</p></div>
+    <div><b>Sab "chalti candle" hai</b><p>Tables us candle ka haal batate hain jo abhi bani nahi. Har tick par number badalte hain.</p></div>
+    <div><b>Koi % peshangoi nahi</b><p>Pressure, rang, POC, Kaam % sab ye batate hain ke ab tak kya hua. Ye nahi batate ke aage kya hoga.</p></div>
+  </div>
+</section>
+
+<section id="naqsha">
+  <div class="sec-head"><span class="eyebrow">Screen ka naqsha</span><h2>Kaun si cheez kahan hai</h2></div>
+  <figure class="fig">
+    <svg viewBox="0 0 640 380" role="img" aria-label="Screen ka naqsha: baen table, daen table, chart ki lakeerein, PIP HISAAB, profile"><rect class="frame" x="1" y="1" width="638" height="378" rx="10"/><rect class="zone-sup" x="250" y="88" width="388" height="22"/><line class="zone-sup-l" x1="250" y1="88" x2="638" y2="88"/><rect class="zone-dem" x="140" y="262" width="498" height="20"/><line class="zone-dem-l" x1="140" y1="282" x2="638" y2="282"/><line class="pivot" x1="300" y1="200" x2="560" y2="200"/><line class="wick-s" x1="40.0" y1="211.5" x2="40.0" y2="201.1"/><rect class="body-up" x="36.5" y="204.0" width="7" height="6.0"/><line class="wick-s" x1="51.2" y1="205.4" x2="51.2" y2="193.6"/><rect class="body-up" x="47.7" y="196.6" width="7" height="7.4"/><line class="wick-s" x1="62.4" y1="208.0" x2="62.4" y2="191.8"/><rect class="body-down" x="58.9" y="196.6" width="7" height="6.3"/><line class="wick-s" x1="73.6" y1="206.6" x2="73.6" y2="194.4"/><rect class="body-up" x="70.1" y="196.8" width="7" height="6.2"/><line class="wick-s" x1="84.8" y1="198.3" x2="84.8" y2="187.6"/><rect class="body-up" x="81.3" y="189.7" width="7" height="7.1"/><line class="wick-s" x1="96.0" y1="201.3" x2="96.0" y2="184.6"/><rect class="body-down" x="92.5" y="189.7" width="7" height="6.5"/><line class="wick-s" x1="107.2" y1="202.3" x2="107.2" y2="193.6"/><rect class="body-down" x="103.7" y="196.2" width="7" height="4.2"/><line class="wick-s" x1="118.4" y1="206.1" x2="118.4" y2="195.1"/><rect class="body-down" x="114.9" y="200.4" width="7" height="1.1"/><line class="wick-s" x1="129.6" y1="208.5" x2="129.6" y2="197.4"/><rect class="body-down" x="126.1" y="201.5" width="7" height="5.6"/><line class="wick-s" x1="140.8" y1="212.5" x2="140.8" y2="205.2"/><rect class="body-down" x="137.3" y="207.1" width="7" height="1.9"/><line class="wick-s" x1="152.0" y1="210.4" x2="152.0" y2="201.6"/><rect class="body-up" x="148.5" y="207.3" width="7" height="1.7"/><line class="wick-s" x1="163.2" y1="216.4" x2="163.2" y2="204.8"/><rect class="body-down" x="159.7" y="207.3" width="7" height="5.4"/><line class="wick-s" x1="174.4" y1="222.7" x2="174.4" y2="207.3"/><rect class="body-down" x="170.9" y="212.7" width="7" height="6.2"/><line class="wick-s" x1="185.6" y1="227.5" x2="185.6" y2="215.8"/><rect class="body-down" x="182.1" y="218.8" width="7" height="5.1"/><line class="wick-s" x1="196.8" y1="227.6" x2="196.8" y2="222.1"/><rect class="body-down" x="193.3" y="223.9" width="7" height="1.0"/><line class="wick-s" x1="208.0" y1="229.6" x2="208.0" y2="218.6"/><rect class="body-up" x="204.5" y="219.8" width="7" height="4.7"/><line class="wick-s" x1="219.2" y1="223.9" x2="219.2" y2="208.0"/><rect class="body-up" x="215.7" y="210.4" width="7" height="9.4"/><line class="wick-s" x1="230.4" y1="213.8" x2="230.4" y2="207.1"/><rect class="body-up" x="226.9" y="209.8" width="7" height="1.0"/><line class="wick-s" x1="241.6" y1="219.6" x2="241.6" y2="206.8"/><rect class="body-down" x="238.1" y="209.8" width="7" height="7.8"/><line class="wick-s" x1="252.8" y1="221.8" x2="252.8" y2="208.7"/><rect class="body-up" x="249.3" y="211.0" width="7" height="6.6"/><line class="wick-s" x1="264.0" y1="215.8" x2="264.0" y2="204.6"/><rect class="body-up" x="260.5" y="207.2" width="7" height="3.8"/><line class="wick-s" x1="275.2" y1="212.8" x2="275.2" y2="205.6"/><rect class="body-up" x="271.7" y="207.1" width="7" height="1.0"/><line class="wick-s" x1="286.4" y1="209.2" x2="286.4" y2="195.8"/><rect class="body-up" x="282.9" y="200.6" width="7" height="6.5"/><line class="wick-s" x1="297.6" y1="206.3" x2="297.6" y2="198.0"/><rect class="body-down" x="294.1" y="200.6" width="7" height="3.5"/><line class="wick-s" x1="308.8" y1="207.4" x2="308.8" y2="198.5"/><rect class="body-up" x="305.3" y="199.7" width="7" height="4.4"/><line class="wick-s" x1="320.0" y1="210.1" x2="320.0" y2="193.9"/><rect class="body-down" x="316.5" y="199.7" width="7" height="5.0"/><line class="wick-s" x1="331.2" y1="216.1" x2="331.2" y2="203.5"/><rect class="body-down" x="327.7" y="204.6" width="7" height="5.6"/><line class="wick-s" x1="342.4" y1="216.1" x2="342.4" y2="203.0"/><rect class="body-up" x="338.9" y="207.9" width="7" height="2.4"/><line class="wick-s" x1="353.6" y1="213.6" x2="353.6" y2="203.5"/><rect class="body-up" x="350.1" y="207.6" width="7" height="1.0"/><line class="wick-s" x1="364.8" y1="217.2" x2="364.8" y2="205.7"/><rect class="body-down" x="361.3" y="207.6" width="7" height="7.1"/><line class="wick-s" x1="376.0" y1="216.8" x2="376.0" y2="211.9"/><rect class="body-down" x="372.5" y="214.8" width="7" height="1.0"/><line class="wick-s" x1="387.2" y1="227.5" x2="387.2" y2="214.1"/><rect class="body-down" x="383.7" y="215.2" width="7" height="9.7"/><line class="wick-s" x1="398.4" y1="226.7" x2="398.4" y2="213.2"/><rect class="body-up" x="394.9" y="218.1" width="7" height="6.8"/><line class="wick-s" x1="409.6" y1="220.5" x2="409.6" y2="215.5"/><rect class="body-up" x="406.1" y="217.0" width="7" height="1.1"/><line class="wick-s" x1="420.8" y1="230.2" x2="420.8" y2="215.0"/><rect class="body-down" x="417.3" y="217.0" width="7" height="10.1"/><line class="wick-s" x1="432.0" y1="228.4" x2="432.0" y2="218.7"/><rect class="body-up" x="428.5" y="220.6" width="7" height="6.5"/><line class="wick-s" x1="443.2" y1="226.9" x2="443.2" y2="219.4"/><rect class="body-down" x="439.7" y="220.6" width="7" height="4.6"/><line class="wick-s" x1="454.4" y1="228.6" x2="454.4" y2="219.1"/><rect class="body-down" x="450.9" y="225.1" width="7" height="1.2"/><line class="wick-s" x1="465.6" y1="230.0" x2="465.6" y2="216.1"/><rect class="body-up" x="462.1" y="221.0" width="7" height="5.4"/><line class="wick-s" x1="476.8" y1="226.9" x2="476.8" y2="217.3"/><rect class="body-up" x="473.3" y="220.7" width="7" height="1.0"/><line class="wick-s" x1="488.0" y1="223.8" x2="488.0" y2="216.3"/><rect class="body-up" x="484.5" y="217.5" width="7" height="3.2"/><line class="wick-s" x1="499.2" y1="219.7" x2="499.2" y2="212.0"/><rect class="body-up" x="495.7" y="217.5" width="7" height="1.0"/><line class="wick-s" x1="510.4" y1="228.3" x2="510.4" y2="216.3"/><rect class="body-down" x="506.9" y="217.5" width="7" height="7.4"/><line class="wick-s" x1="521.6" y1="227.0" x2="521.6" y2="219.8"/><rect class="body-up" x="518.1" y="221.8" width="7" height="3.0"/><line class="wick-s" x1="532.8" y1="227.2" x2="532.8" y2="216.7"/><rect class="body-up" x="529.3" y="218.4" width="7" height="3.4"/><line class="wick-s" x1="544.0" y1="224.0" x2="544.0" y2="207.9"/><rect class="body-up" x="540.5" y="211.7" width="7" height="6.7"/><polyline class="ma21" points="40.0,204.0 51.2,201.9 62.4,202.2 73.6,200.7 84.8,197.5 96.0,197.1 107.2,198.1 118.4,199.0 129.6,201.3 140.8,203.5 152.0,204.6 163.2,206.9 174.4,210.3 185.6,214.2 196.8,217.1 208.0,217.9 219.2,215.8 230.4,214.1 241.6,215.1 252.8,213.9 264.0,212.0 275.2,210.6 286.4,207.8 297.6,206.7 308.8,204.7 320.0,204.7 331.2,206.3 342.4,206.7 353.6,207.0 364.8,209.2 376.0,210.9 387.2,214.9 398.4,215.8 409.6,216.2 420.8,219.3 432.0,219.6 443.2,221.2 454.4,222.7 465.6,222.2 476.8,221.8 488.0,220.6 499.2,219.7 510.4,221.1 521.6,221.3 532.8,220.5 544.0,218.0"/><polyline class="ma63" points="40.0,204.0 51.2,203.2 62.4,203.2 73.6,202.4 84.8,200.9 96.0,200.3 107.2,200.3 118.4,200.5 129.6,201.3 140.8,202.2 152.0,202.8 163.2,203.9 174.4,205.7 185.6,207.8 196.8,209.8 208.0,211.0 219.2,210.9 230.4,210.8 241.6,211.6 252.8,211.5 264.0,211.0 275.2,210.6 286.4,209.4 297.6,208.8 308.8,207.7 320.0,207.3 331.2,207.7 342.4,207.7 353.6,207.7 364.8,208.5 376.0,209.3 387.2,211.1 398.4,212.0 409.6,212.6 420.8,214.3 432.0,215.0 443.2,216.2 454.4,217.4 465.6,217.8 476.8,218.2 488.0,218.1 499.2,218.0 510.4,218.8 521.6,219.2 532.8,219.1 544.0,218.2"/><rect class="bar-va" x="511.0" y="250.0" width="33.0" height="7.5"/><rect class="bar-va" x="489.0" y="241.0" width="55.0" height="7.5"/><rect class="bar-va" x="456.0" y="232.0" width="88.0" height="7.5"/><rect class="bar-poc" x="434.0" y="223.0" width="110.0" height="7.5"/><rect class="bar-va" x="467.0" y="214.0" width="77.0" height="7.5"/><rect class="bar-va" x="478.0" y="205.0" width="66.0" height="7.5"/><rect class="bar-va" x="483.5" y="196.0" width="60.5" height="7.5"/><rect class="bar-va" x="500.0" y="187.0" width="44.0" height="7.5"/><rect class="bar-out" x="511.0" y="178.0" width="33.0" height="7.5"/><rect class="bar-out" x="522.0" y="169.0" width="22.0" height="7.5"/><rect class="bar-out" x="530.8" y="160.0" width="13.2" height="7.5"/><rect class="tbl" x="12" y="12" width="190" height="96" rx="6"/><rect class="tbl-row" x="20" y="34" width="174" height="10" rx="2"/><rect class="tbl-row" x="20" y="51" width="174" height="10" rx="2"/><rect class="tbl-row" x="20" y="68" width="174" height="10" rx="2"/><rect class="tbl-row" x="20" y="85" width="174" height="10" rx="2"/><rect class="tbl" x="410" y="12" width="218" height="64" rx="6"/><rect class="tbl-row" x="418" y="24" width="200" height="9" rx="2"/><rect class="tbl-row" x="418" y="40" width="170" height="9" rx="2"/><rect class="tbl-row" x="418" y="56" width="140" height="9" rx="2"/><rect class="tbl" x="330" y="296" width="298" height="72" rx="6"/><rect class="tbl-row" x="338" y="308" width="282" height="8" rx="2"/><rect class="tbl-row" x="338" y="322" width="282" height="8" rx="2"/><rect class="tbl-row" x="338" y="336" width="282" height="8" rx="2"/><rect class="tbl-row" x="338" y="350" width="282" height="8" rx="2"/><circle class="callout" cx="214" cy="24" r="12"/><text class="callout-t" x="214" y="29" text-anchor="middle">1</text><circle class="callout" cx="398" cy="24" r="12"/><text class="callout-t" x="398" y="29" text-anchor="middle">2</text><circle class="callout" cx="230" cy="150" r="12"/><text class="callout-t" x="230" y="155" text-anchor="middle">3</text><circle class="callout" cx="318" cy="308" r="12"/><text class="callout-t" x="318" y="313" text-anchor="middle">4</text><circle class="callout" cx="420" cy="232" r="12"/><text class="callout-t" x="420" y="237" text-anchor="middle">5</text></svg>
+    <figcaption>15m chart ka khaka. 1 = baen table, 2 = daen table, 3 = chart ki lakeerein (MA, zone, pivot), 4 = PIP HISAAB table, 5 = profile ki pattiyan.</figcaption>
+  </figure>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Cheez</th><th>1m</th><th>15m</th><th>1h</th><th>1D</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Baen table</td><td class="c yes">9 row</td><td class="c yes">4 row</td><td class="c yes">4 row (15m jaisa)</td><td class="c yes">9 row (1m jaisa)</td></tr>
+        <tr><td>2 · Daen table</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">pressure + 1H rukh</td><td class="c yes">sirf pressure</td></tr>
+        <tr><td>MA21 / MA63 lakeerein</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
+        <tr><td>Hare / laal zone dabbe</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
+        <tr><td>Pivot / Resistance / Support</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
+        <tr><td>BUY / SELL label + SL/TP lakeerein</td><td class="c yes">haan</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>FVG dabba, LGB label</td><td class="c yes">haan</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Ishare ka laal/hara dabba</td><td class="c yes">90% wala</td><td class="c yes">80% wala</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>4 · PIP HISAAB table</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td><td class="c yes">haan</td></tr>
+        <tr><td>5 · Profile ki pattiyan</td><td class="c yes">haan</td><td class="c yes">din ki 10 candle ke baad</td><td class="c">10vi ghante ke baad</td><td class="c no">sirf lakeerein</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">v4.2 (9 Oct) se tables 1h aur 1D par bhi aate hain: 1h par 15m wali shakal, 1D par 1m wali. Ishara (laal/hara dabba, BUY/SELL) phir bhi sirf 1m aur 15m chart par banta hai, kyunke us ka naap wahin ka hai. 1h aur 1D par daen table batata hai ke ishara kis chart par dekhna hai.</p>
+</section>
+
+<section id="lafz">
+  <div class="sec-head"><span class="eyebrow">Bunyadi lafz</span><h2>Ye samajh lein to baqi sab aasan hai</h2></div>
+  <figure class="fig">
+    <svg viewBox="0 0 560 280" role="img" aria-label="Aaj ki 1D candle: O H L C, Bhari aur Pressure"><line class="wick" x1="150" y1="28.0" x2="150" y2="243.9"/><rect class="body-up" x="128" y="85.9" width="44" height="107.9" rx="2"/><line class="tick" x1="176" y1="28.0" x2="190" y2="28.0"/><text class="lbl" x="194" y="32.0">H 4143.425 (sab se ooncha)</text><line class="tick" x1="176" y1="85.9" x2="190" y2="85.9"/><text class="lbl strong" x="194" y="89.9">C 4132.705 (abhi)</text><line class="tick" x1="176" y1="193.8" x2="190" y2="193.8"/><text class="lbl" x="194" y="197.8">O 4112.730 (khula)</text><line class="tick" x1="176" y1="243.9" x2="190" y2="243.9"/><text class="lbl" x="194" y="247.9">L 4103.445 (sab se neecha)</text><path class="brace" d="M116 85.9 h-8 V193.8 h8"/><text class="lbl small" x="104" y="143.8" text-anchor="end">body $19.98</text><path class="brace" d="M116 28.0 h-14 V243.9 h14"/><text class="lbl small" x="98" y="42.0" text-anchor="end">range</text><text class="lbl small" x="98" y="56.0" text-anchor="end">$39.98</text><rect class="gauge" x="500" y="28.0" width="16" height="215.9" rx="3"/><rect class="gauge-fill" x="500" y="85.9" width="16" height="158.0" rx="3"/><text class="lbl small" x="508" y="20.0" text-anchor="middle">100%</text><text class="lbl small" x="508" y="259.9" text-anchor="middle">0%</text><text class="lbl strong" x="508" y="273.9" text-anchor="middle">pressure 73% BUY</text><line class="tick" x1="490" y1="85.9" x2="500" y2="85.9"/></svg>
+    <figcaption>Aaj ki 1D candle (8 Oct, ~10:17). Hari candle: qeemat khulne (O) se upar hai. Bhari = body ÷ range = 19.98 ÷ 39.98 = 50%. Pressure = qeemat range mein kahan: (4132.705 − 4103.445) ÷ 39.98 = 73% BUY.</figcaption>
+  </figure>
+  <div class="terms">
+    <div class="term"><div class="name">O · H · L · C</div><p>O = candle khulne ki qeemat. H = sab se oonchi. L = sab se neechi. C = abhi ki qeemat (band hone par close).</p></div>
+    <div class="term"><div class="name">TF (timeframe)</div><p>Ek candle kitne waqt ki hai. 15m = har candle 15 minute. 1D = poora din. Gold ka din OANDA par ab ~03:00 PKT shuru hota hai (1 Nov ke baad ~04:00).</p></div>
+    <div class="term"><div class="name">Pip</div><p>Is script mein gold ka <b>1 pip = $0.10</b>. Yani $1 ki harkat = 10 pip. Cent account par 0.01 lot se 1 pip = 0.1 USC.</p></div>
+    <div class="term"><div class="name">R (khatre ki ikai)</div><p>Entry se SL tak ka fasla. Har nateeja isi mein gina jata hai: −1R = poora SL, +2R = khatre ka do guna faida.</p><p class="ex">Entry 4130, SL 4127 → 1R = $3. 0.01 lot par $3 (USD demo) ya 3 USC (cent). TP1 (1R) = 4133, TP2 (2R) = 4136.</p></div>
+    <div class="term"><div class="name">Exp (expectancy)</div><p>Band trades ka ausat nateeja, R mein. Musbat = ab tak ausat faida, manfi = nuqsan, 0 ke qareeb = barabar. Spread is mein shamil nahi.</p><p class="ex">SELL +0.25R (52) = 52 trades, kul taqreeban +13R.</p></div>
+    <div class="term"><div class="name">Swing, BOS, CHOCH</div><p>Swing high = woh candle jis ke 3 daen aur 3 baen candles us se neeche hon (3 candle baad pakka hota hai). Candle swing ke paar <b>band</b> ho to toot. Rukh ke saath toot = BOS. Rukh ke khilaf toot (rukh palat gaya) = CHOCH.</p><p class="warn">BOS/CHOCH chart par likhe nahi aate, magar zones aur ishare inhi se bante hain.</p></div>
+  </div>
+</section>
+
+<section id="baen">
+  <div class="sec-head"><span class="eyebrow">1 · Baen table</span><h2>Har TF ki chalti candle, ek row mein</h2><p class="muted">1m par 9 row (1m se 1W), 15m par 4 row (15m, 1H, 4H, 1D). Har row us TF ki <b>abhi wali</b> candle hai.</p></div>
+  <figure class="fig">
+    <div class="row-decode" aria-label="1D row ka matlab">
+      <div class="cell">1D ◄</div><div class="cell buy">▲ UP</div><div class="cell">4112.730</div><div class="cell">4143.425</div><div class="cell">4103.445</div><div class="cell buy">4132.705</div><div class="cell">50%</div><div class="cell">-</div><div class="cell buy">↓</div><div class="cell buy">BZ</div>
+      <div class="cap">TF + nishan</div><div class="cap">Rukh = candle ka rang</div><div class="cap">O khula</div><div class="cap">H ooncha</div><div class="cap">L neecha</div><div class="cap">C abhi</div><div class="cap">Bhari</div><div class="cap">FVG nahi</div><div class="cap">LGB ↓ (bullish)</div><div class="cap">Zone: swing low chhua</div>
+    </div>
+    <figcaption>Aap ki 1D row ka matlab: aaj gold 4112.73 par khula, 4143.43 tak gaya, 4103.45 tak gira, abhi 4132.71 par hai. Neeche ja kar pichle daily swing low ko chhua (BZ) aur wapas upar aa gaya (LGB ↓), is liye row hari hai.</figcaption>
+  </figure>
+  <div class="terms">
+    <div class="term"><div class="name">Rukh: ▲ UP · ▼ DN · = BARABAR</div><p>Abhi ki qeemat us candle ke open se upar (UP, hari), neeche (DN, laal), ya barabar.</p><p class="ex">1D ▲ UP: qeemat open 4112.73 se $19.98 upar. 3H ▼ DN: sirf $0.83 neeche.</p><p class="warn">Ye trend nahi, sirf adhoori candle ka rang. Asal rukh MA21/MA63 aur "1H rukh" batate hain.</p></div>
+    <div class="term"><div class="name">O · H · L · C</div><p>Us TF ki chalti candle ke khulne, oonche, neeche aur abhi ke daam. C har row mein ek hi hota hai (chart ki abhi ki qeemat).</p><p class="ex">1W: O 4141.605, H 4184.385, L 4066.535 = is hafte ka $117.85 ka range.</p></div>
+    <div class="term"><div class="name">Bhari</div><p>Body (|C − O|) range (H − L) ka kitna hissa hai. Zyada % = qeemat ek taraf gayi aur wahin rahi. Kam % = zyada wick, candle abhi faisla nahi kar payi.</p><p class="ex">3H 6%: $13.5 ghoom kar wapas open ke paas, taqreeban doji.</p><p class="warn">Upar ya neeche nahi batata. Woh Rukh mein hai.</p></div>
+    <div class="term"><div class="name">FVG ↑ / ↓</div><p>Teen candles mein khali jagah (gap). ↑ = tez upar chaal ne neeche khala chhora (hara). ↓ = tez neeche chaal (laal).</p><p class="ex">3H ↑: abhi ki 3H ka low (4128.545) do candle pehle wali 3H ke high se upar hai.</p><p class="warn">Sirf aakhri 3 candles dekhta hai. Qeemat khale mein aayi to mit jata hai.</p></div>
+    <div class="term"><div class="name">LGB ↑ / ↓ (liquidity grab)</div><p><b>↓ HARA hai:</b> qeemat pichle swing low ke neeche gayi aur wapas upar band ho rahi hai. Neeche ke stop saaf ho gaye, ye bullish ishara hai. <b>↑ LAAL hai:</b> swing high ke upar gayi aur wapas neeche aa gayi, ye bearish ishara hai.</p><p class="warn">Teer batata hai qeemat ne kahan jhaanka, trade ka rukh nahi. Candle band hone se pehle mit sakta hai.</p></div>
+    <div class="term"><div class="name">Zone: BZ · SZ</div><p>BZ = candle ka low us TF ke pichle swing low tak pohncha. SZ = high pichle swing high tak pohncha.</p><p class="warn">Ye chart ke rangeen zone dabbe nahi hain. BZ ke saath LGB ↓ ho to matlab chhu kar wapas aaya (bullish). Sirf BZ ho to shayad abhi toot raha hai.</p></div>
+    <div class="term"><div class="name">◄ aur row ka rang</div><p>Sirf FVG/LGB se banta hai. Hara = FVG ↑ ya LGB ↓. Laal = FVG ↓ ya LGB ↑. Narangi = dono. Baqi columns ka is par koi asar nahi.</p><p class="ex">3H hari (FVG ↑) halanke candle laal hai. 1W laal (FVG ↓).</p><p class="warn">Highlight hai, BUY/SELL ka hukm nahi.</p></div>
+  </div>
+  <figure class="fig">
+    <svg viewBox="0 0 560 230" role="img" aria-label="FVG: teen candles mein khali jagah. LGB: swing low ke neeche ja kar wapas"><rect class="gap" x="20" y="71.0" width="120" height="40.8"/><line class="wick" x1="30" y1="111.8" x2="30" y2="135.6"/><rect class="body-up" x="20" y="115.2" width="20" height="6.8" rx="2"/><line class="wick" x1="75" y1="40.4" x2="75" y2="115.2"/><rect class="body-up" x="65" y="43.8" width="20" height="68.0" rx="2"/><line class="wick" x1="120" y1="28.5" x2="120" y2="71.0"/><rect class="body-up" x="110" y="33.6" width="20" height="10.2" rx="2"/><text class="lbl small" x="150" y="95.4">← khali jagah</text><text class="lbl strong" x="80" y="215" text-anchor="middle">FVG ↑ (hara)</text><line class="swing" x1="260" y1="105.0" x2="520" y2="105.0"/><text class="lbl small" x="262" y="121.0">pichla swing low</text><line class="wick" x1="320" y1="64.2" x2="320" y2="101.6"/><rect class="body-down" x="310" y="71.0" width="20" height="23.8" rx="2"/><line class="wick" x1="370" y1="88.0" x2="370" y2="103.3"/><rect class="body-down" x="360" y="94.8" width="20" height="5.1" rx="2"/><line class="wick" x1="430" y1="77.8" x2="430" y2="128.8"/><rect class="body-up" x="420" y="84.6" width="20" height="13.6" rx="2"/><text class="lbl small" x="444" y="132.8">neeche ja kar</text><text class="lbl small" x="444" y="88.6">wapas upar band</text><text class="lbl strong" x="400" y="215" text-anchor="middle">LGB ↓ (hara, bullish)</text></svg>
+    <figcaption>Baen: FVG ↑, pehli candle ke high aur teesri ke low ke beech khali jagah. Daen: LGB ↓, qeemat swing low ke neeche gayi aur wapas upar band hui.</figcaption>
+  </figure>
+</section>
+
+<section id="daen">
+  <div class="sec-head"><span class="eyebrow">2 · Daen table</span><h2>Pressure, ishare ka haal, aur nateejon ka hisaab</h2></div>
+  <div class="terms">
+    <div class="term">
+      <div class="name"><span class="mono">SELL 55% (1m-1W)</span> · Pressure</div>
+      <p>Har TF ki chalti candle mein abhi ki qeemat kahan hai: low par 0% BUY, high par 100% BUY. Formula: (C − L) ÷ (H − L) × 100. Phir sab TF ka seedha ausat liya jata hai (1m chart par 9 TF, 15m par 4). Ausat 50 se upar ho to "BUY x%", neeche ho to "SELL (100 − x)%".</p>
+      <p class="ex">1D (4132.705 − 4103.445) ÷ 39.98 = 73% BUY. 3H 31% BUY. Sab ka ausat 45% BUY tha, is liye table ne "SELL 55%" likha.</p>
+      <p class="warn">Ye kharidaron ka volume nahi aur peshangoi bhi nahi. 1m ki candle 1W jitni ginti hai, is liye number jaldi uchhalta hai. 1m aur 15m par alag % aana ghalti nahi, dono alag TF ginte hain.</p>
+    </div>
+    <div class="term">
+      <div class="name">Pressure ka rang aur ◄ 90%+ / ◄ 80%+</div>
+      <p>55% se zyada BUY = hara, 45% se kam BUY = laal, beech mein grey. Isi liye "SELL 55%" grey tha aur 15m ka "SELL 58%" laal. Ausat ishare ki hadd tak pohnche (1m par 90, 15m par 80) to ◄ aur rangeen background aata hai.</p>
+      <p class="warn">◄ ka matlab trade khulna nahi. Ye sirf pehli shart hai.</p>
+    </div>
+    <div class="term">
+      <div class="name"><span class="mono">MTF 90%: intezar</span> · <span class="mono">15m 80%: intezar | 1H rukh: DN</span></div>
+      <p>Ishare ki khayali trade ka haal. <b>intezar</b> = abhi koi trade khuli nahi. <b>BUY khuli / SELL khuli</b> = trade chal rahi hai. <b>(TP1 ✓)</b> = aadhi TP1 par band ho gayi aur SL entry par aa gaya.</p>
+      <p><b>1H rukh</b> = pichli <b>band</b> 1H candle par MA21, MA63 se upar ho to UP, warna DN. 15m ka ishara sirf isi taraf banta hai.</p>
+      <p class="ex">1H rukh: DN tha, is liye us waqt sirf 15m SELL ban sakta tha.</p>
+    </div>
+    <div class="term">
+      <div class="name"><span class="mono">KHULI: SELL 08 Oct 11:42 @ …  SL …  TP1 …  TP2 …</span></div>
+      <p>Trade khulne par ye line poora plan likh deti hai. Waqt Pakistan ka hai aur us candle ke <b>khulne</b> ka hai. Entry us candle ka close hai (15m chart par 15 minute baad).</p>
+      <p class="warn">TP1 ke baad bhi is line mein purana SL likha rehta hai. Asal SL tab entry par hota hai, aur chart par "SL ab Entry par (BE)" likha aata hai.</p>
+    </div>
+    <div class="term">
+      <div class="name"><span class="mono">Exp BUY - (0) | SELL +0.25R (52)</span> · sirf 1m par</div>
+      <p>1m ke <b>main</b> ishare ka hisaab, yani 1m chart par BUY/SELL label wala ishara. Bracket mein band trades ki ginti. Nateeja: SL −1R, TP1 ke baad wapas entry 0R, TP3 +3R. Ulta BOS/CHOCH aaye ya 60 se zyada candle guzar jayen to jahan hai wahin band.</p>
+      <p class="ex">BUY (0): load hui history mein ek bhi BUY trade band nahi hui. Wajah ghaliban ye ke 4H aur 1D dono ka rukh neeche tha, aur filter tab BUY nahi hone deta.</p>
+    </div>
+    <div class="term">
+      <div class="name"><span class="mono">Exp BUY -0.25R (28, jeet 36%) | SELL +0.01R (46, jeet 50%)</span></div>
+      <p>90% (1m) ya 80% (15m) ishare ka hisaab. Nateeja: SL −1R. TP1 ke baad wapas entry +0.5R. TP2 +1.5R. Waqt khatam (1m par 120 candle, 15m par 64 candle) to jahan hai. <b>jeet</b> = jo trades 0 se upar khatam huin.</p>
+      <p class="ex">1m BUY: 28 trades, 36% jeet, ausat −0.25R, yani kul taqreeban −7R. 15m: BUY 0R (31), SELL +0.07R (38).</p>
+      <p class="warn">Sirf jeet % se dhoka hota hai: +0.5R wali trade bhi "jeet" ginti hai. Aap ka 75% jeet wala sabaq yaad rakhein.</p>
+    </div>
+    <div class="term">
+      <div class="name">KAMZOR</div>
+      <p>Jab kisi taraf 10 ya zyada trades ho chuki hon aur Exp 0 ya kam ho, to agle ishare ka label grey ho kar "KAMZOR: is qaide ki Exp manfi" likhta hai.</p>
+      <p class="ex">Abhi 1m BUY (−0.25R) aur 15m BUY (0R, + ka nishan nahi) dono par agla ishara KAMZOR hoga.</p>
+      <p class="warn">Ye trade nahi rokta, sirf khabardar karta hai.</p>
+    </div>
+  </div>
+</section>
+
+<section id="chart">
+  <div class="sec-head"><span class="eyebrow">3 · Chart ki lakeerein</span><h2>Chart par jo bana hai, us ka matlab</h2></div>
+  <div class="terms">
+    <div class="term"><div class="name"><span style="color:var(--ma21)">MA21</span> aur <span style="color:var(--ma63)">MA63</span></div><p>Neela-hara (cyan) MA21 aur gulabi (magenta) MA63, us chart ke apne TF ke close ki ausat lakeerein. Asal mein ye EMA hain, nayi candles ka wazan zyada. MA21 upar aur ADX 18 ya zyada = rukh UP. MA21 neeche aur ADX 18 ya zyada = rukh DN.</p><p class="warn">ADX chart par nahi dikhta. ADX 18 se kam ho to koi main ishara nahi banta, chahe lakeerein door hon.</p></div>
+    <div class="term"><div class="name"><span class="buy">Hare</span> aur <span class="sell">laal</span> zone dabbe</div><p>BOS/CHOCH hone par pichle swing par zone banta hai. Upar toot ho to neeche swing low par <b>hara (demand)</b> zone. Neeche toot ho to upar swing high par <b>laal (supply)</b> zone. Zone ke saath ki lakeer swing ki asal qeemat (wick ki nok) par hoti hai.</p><p>Zone mit jata hai jab candle us ke paar band ho, qeemat 8 ATR door chali jaye, 300 candle purana ho, ya teesri dafa chhua jaye. Zyada se zyada 10 zone rehte hain.</p><p class="warn">Har TF ke apne zone hote hain. 1m ke zone chhote aur qareeb, 1D ke bare aur door.</p></div>
+    <div class="term"><div class="name">FVG grey dabba aur LGB↑ / LGB↓ label</div><p>Sirf 1m chart par, sirf aakhri candle par. Matlab wahi jo baen table mein: LGB↓ hara = bullish, LGB↑ laal = bearish.</p></div>
+    <div class="term"><div class="name">BUY / SELL label + Entry/SL/TP lakeerein (sirf 1m)</div><p>Main SMC ishara: zone ko chhoona, toot (breakout), ya MA21 par wapsi. Ye 4H/1D rukh, DXY, Supertrend, ADX, volume, chop aur score 60+ jaise kai filters se guzarta hai. Entry neeli, SL laal dashed, TP1/TP2/TP3 hari. Label par "LONG Score 72/100" aur "Risk 1% ≈ N units" likha hota hai.</p><p class="warn">Score ek checklist ki ginti hai. 80/100 ka matlab 80% jeetne ka chance nahi. "units" $1000 ke khayali account par hain, aap ke account ke lot nahi.</p></div>
+    <div class="term"><div class="name">Ishare ka laal / hara dabba (1m par 90%, 15m par 80%)</div><p><b>Laal dabba</b> = entry se SL (khatre ka ilaqa). <b>Hara dabba</b> = entry se TP2 (faide ka ilaqa). "TP1 (aadhi band)" par aadhi trade band hoti hai. Label "ABHI KHULI · 15m SELL 85%". Trade khatam hote hi sab mit jata hai.</p></div>
+    <div class="term"><div class="name">Pivot · Resistance · Support</div><p>Kal ki daily candle ke H, L, C se: Pivot = (H + L + C) ÷ 3. Resistance = 2 × Pivot − L. Support = 2 × Pivot − H. Din bhar ek hi jagah rehti hain. Halki R2/S2 lakeerein par sirf qeemat likhi hoti hai.</p><p class="ex">Kal: H 4170.000, L 4066.535 → Pivot 4115.955, Resistance 4165.375, Support 4061.910.</p><p class="warn">Exness app ke number thore alag honge (din ka waqt alag). Setting "(khud)" mein Exness ke number likh sakte hain. In ka kisi ishare par asar nahi.</p></div>
+    <div class="term"><div class="name">Chhupi cheezein: Supertrend aur naali</div><p>Dono default band hain. Supertrend chhupa ho kar bhi main ishare ko rokta hai (BUY ke liye Supertrend upar chahiye). Naali sirf dikhawa hai, kisi ishare par asar nahi.</p></div>
+  </div>
+</section>
+
+<section id="pip">
+  <div class="sec-head"><span class="eyebrow">4 · PIP HISAAB table · 5 · Profile</span><h2>Candle ke andar ka har pip</h2><p class="muted">Ye table har chart par ek hi number dikhata hai, kyunke sab kuch 1 minute candles se ginta hai. Is ka kisi ishare par asar nahi.</p></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Candle</th><th>Upar</th><th>Neeche</th><th>Kul raasta</th><th>Asal farq</th><th>Kaam %</th><th>Range</th><th>POC</th><th>VA 70%</th><th>Minute</th></tr></thead>
+      <tbody class="num nowrap">
+        <tr><td>1D abhi</td><td>5,048.3</td><td>4,869.5</td><td>9,917.8</td><td class="buy">+178.8 ▲</td><td>2%</td><td>399.8</td><td class="pocc">4109.550</td><td class="vac">4103.445 – 4134.500</td><td>439</td></tr>
+        <tr><td>1D kal</td><td>16,608.3</td><td>17,161.4</td><td>33,769.7</td><td class="sell">−553.1 ▼</td><td>2%</td><td>1,034.7</td><td class="pocc">4166.650</td><td class="vac">4111.400 – 4170.000</td><td>1376</td></tr>
+        <tr><td>1H abhi</td><td>183.2</td><td>212.7</td><td>395.8</td><td class="sell">−29.5 ▼</td><td>7%</td><td>52.7</td><td class="pocc">4132.750</td><td class="vac">4131.200 – 4134.300</td><td>23</td></tr>
+        <tr><td>1H pichla</td><td>416.4</td><td>446.1</td><td>862.5</td><td class="sell">−29.7 ▼</td><td>3%</td><td>110.9</td><td class="pocc">4134.350</td><td class="vac">4130.945 – 4136.800</td><td>60</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Aap ke 1D chart ka table, 8 Oct ~10:22 PKT. 1D abhi = aaj ki chalti daily candle. 1D kal = pichla trading din (Peer ko Jumma). 1H abhi = chalta ghanta. 1H pichla = pichla poora ghanta.</p>
+
+  <figure class="fig">
+    <svg viewBox="0 0 440 280" role="img" aria-label="Ek 1 minute candle ka raasta: O se L, L se H, H se C"><line class="wick" x1="70" y1="54.0" x2="70" y2="234.0"/><rect class="body-up" x="54" y="78.0" width="32" height="96.0" rx="2"/><text class="lbl small" x="92" y="58.0">H 4131.0</text><text class="lbl small" x="92" y="82.0">C 4130.8</text><text class="lbl small" x="92" y="178.0">O 4130.0</text><text class="lbl small" x="92" y="238.0">L 4129.5</text><polyline class="path" points="200,174.0 250,234.0 330,54.0 390,78.0"/><circle class="dot" cx="200" cy="174.0" r="4"/><text class="lbl strong" x="200" y="164.0" text-anchor="middle">O</text><circle class="dot" cx="250" cy="234.0" r="4"/><text class="lbl strong" x="250" y="254.0" text-anchor="middle">L</text><circle class="dot" cx="330" cy="54.0" r="4"/><text class="lbl strong" x="330" y="44.0" text-anchor="middle">H</text><circle class="dot" cx="390" cy="78.0" r="4"/><text class="lbl strong" x="402" y="96.0" text-anchor="middle">C</text><text class="lbl down" x="211" y="210.0" text-anchor="end">−5 pip</text><text class="lbl up" x="264" y="144.0" text-anchor="end">+15 pip</text><text class="lbl down" x="360" y="100.0" text-anchor="middle">−2 pip</text></svg>
+    <figcaption>Ek hari 1 minute candle: O se pehle neeche L tak (−5 pip), phir upar H tak (+15), phir C tak (−2). Upar 15, Neeche 7, Kul raasta 22, Asal farq +8 = C − O. Laal candle ka raasta O → H → L → C. Poore din ki har minute candle aise jama hoti hai.</figcaption>
+  </figure>
+
+  <div class="terms">
+    <div class="term"><div class="name">Upar · Neeche</div><p>Candle ke andar saari upar wali chaalein jama (Upar) aur saari neeche wali (Neeche), pip mein.</p><p class="ex">Aaj Upar 5,048.3 pip ($504.83), Neeche 4,869.5 pip. Upar thora zyada, is liye din abhi tak upar hai.</p></div>
+    <div class="term"><div class="name">Kul raasta</div><p>Upar + Neeche. Gaari ke meter jaisa: qeemat jitna bhi aayi-gayi, sab gina gaya.</p><p class="ex">Aaj 9,917.8 pip ($991.78) ka safar. Kal 33,769.7 pip ($3,376.97).</p><p class="warn">Ye kam se kam andaza hai. Asal tick-by-tick safar is se bhi lamba tha.</p></div>
+    <div class="term"><div class="name">Asal farq ▲ ▼</div><p>Aakhri close − pehla open. Hamesha Upar − Neeche ke barabar.</p><p class="ex">Aaj +178.8 pip = +$17.88 (O 4112.73 se ~4130.6). Aaj ke open par 0.01 lot BUY hoti to cent account par taqreeban +17.88 USC (spread se pehle). Kal −553.1 = −$55.31.</p></div>
+    <div class="term"><div class="name">Kaam %</div><p>Asal farq ÷ Kul raasta × 100. Gaari ki misaal: aap ne kitne kilometre chalaye (Kul raasta) aur ghar se aakhir kitne door pohnche (Asal farq). Kaam % batata hai chalne ka kitna hissa kaam aaya.</p><p class="ex">Aaj 178.8 ÷ 9,917.8 = 2%. Kal 553.1 ÷ 33,769.7 = 2%. Dono din barabar "aaye-gaye".</p><p class="warn">Kal gold $55 gira phir bhi 2% aaya. Poore din ko 1 minute se ginein to % hamesha chhota aata hai, is liye 2% ka matlab "koi trend nahi" nahi. Sirf barabar lambai ki candles milayein: din se din, poore ghante se poora ghanta. 1H abhi (7%, 23 minute) ko 1H pichla (3%, 60 minute) se mat milayein.</p></div>
+    <div class="term"><div class="name">Range</div><p>H − L, pip mein. Candle ki poori oonchai.</p><p class="ex">Aaj 399.8 pip = $39.98 (4143.425 − 4103.445). Kal 1,034.7 pip = $103.47. Aaj ab tak kal ke range ka ~39% chala hai.</p></div>
+    <div class="term"><div class="name">Minute</div><p>Kitni 1 minute candles gini gayin. Data ki jaanch ke liye.</p><p class="ex">Kal 1376 = taqreeban poora din (gold ka din ~1380 minute). Aaj 439 = ~7 ghante 20 minute.</p><p class="warn">Aam din par "kal" 1380 se bohot kam ho to data adhoora hai (ya chhutti ka chhota din tha).</p></div>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 560 300" role="img" aria-label="Aaj ka profile: POC 4109.55, VA 4103.445 se 4134.5"><rect class="bar-va" x="226.5" y="279.5" width="103.5" height="6.1"/><rect class="bar-va" x="192.0" y="272.2" width="138.0" height="6.1"/><rect class="bar-va" x="169.0" y="265.0" width="161.0" height="6.1"/><rect class="bar-va" x="141.4" y="257.7" width="188.6" height="6.1"/><rect class="bar-va" x="123.0" y="250.5" width="207.0" height="6.1"/><rect class="bar-poc" x="100.0" y="243.2" width="230.0" height="6.1"/><rect class="bar-va" x="132.2" y="235.9" width="197.8" height="6.1"/><rect class="bar-va" x="164.4" y="228.7" width="165.6" height="6.1"/><rect class="bar-va" x="192.0" y="221.4" width="138.0" height="6.1"/><rect class="bar-va" x="203.5" y="214.2" width="126.5" height="6.1"/><rect class="bar-va" x="215.0" y="206.9" width="115.0" height="6.1"/><rect class="bar-va" x="210.4" y="199.6" width="119.6" height="6.1"/><rect class="bar-va" x="219.6" y="192.4" width="110.4" height="6.1"/><rect class="bar-va" x="226.5" y="185.1" width="103.5" height="6.1"/><rect class="bar-va" x="215.0" y="177.9" width="115.0" height="6.1"/><rect class="bar-va" x="203.5" y="170.6" width="126.5" height="6.1"/><rect class="bar-va" x="215.0" y="163.3" width="115.0" height="6.1"/><rect class="bar-va" x="224.2" y="156.1" width="105.8" height="6.1"/><rect class="bar-va" x="228.8" y="148.8" width="101.2" height="6.1"/><rect class="bar-va" x="219.6" y="141.6" width="110.4" height="6.1"/><rect class="bar-va" x="210.4" y="134.3" width="119.6" height="6.1"/><rect class="bar-va" x="215.0" y="127.0" width="115.0" height="6.1"/><rect class="bar-va" x="221.9" y="119.8" width="108.1" height="6.1"/><rect class="bar-va" x="215.0" y="112.5" width="115.0" height="6.1"/><rect class="bar-va" x="203.5" y="105.3" width="126.5" height="6.1"/><rect class="bar-va" x="192.0" y="98.0" width="138.0" height="6.1"/><rect class="bar-va" x="187.4" y="90.7" width="142.6" height="6.1"/><rect class="bar-va" x="178.2" y="83.5" width="151.8" height="6.1"/><rect class="bar-va" x="196.6" y="76.2" width="133.4" height="6.1"/><rect class="bar-out" x="261.0" y="69.0" width="69.0" height="6.1"/><rect class="bar-out" x="274.8" y="61.7" width="55.2" height="6.1"/><rect class="bar-out" x="288.6" y="54.4" width="41.4" height="6.1"/><rect class="bar-out" x="297.8" y="47.2" width="32.2" height="6.1"/><rect class="bar-out" x="304.7" y="39.9" width="25.3" height="6.1"/><rect class="bar-out" x="309.3" y="32.7" width="20.7" height="6.1"/><rect class="bar-out" x="313.9" y="25.4" width="16.1" height="6.1"/><rect class="bar-out" x="318.5" y="18.1" width="11.5" height="6.1"/><line class="poc-line" x1="70" y1="245.6" x2="330" y2="245.6"/><line class="va-line" x1="70" y1="80.9" x2="330" y2="80.9"/><line class="va-line" x1="70" y1="285.9" x2="330" y2="285.9"/><line class="now-line" x1="330" y1="104.0" x2="344" y2="104.0"/><text class="lbl small" x="348" y="26.0">H 4143.43</text><text class="lbl va" x="348" y="84.9">VA upar 4134.50</text><text class="lbl strong" x="348" y="118.0">abhi ~4131</text><text class="lbl poc" x="348" y="249.6">POC 4109.55</text><text class="lbl va" x="348" y="279.9">VA neeche = L 4103.45</text><text class="lbl small" x="72" y="26.0">grey = VA se bahar</text></svg>
+    <figcaption>Aaj ka profile. Har patti batati hai qeemat ne us daam par kitna waqt guzara. POC, VA, H aur L asal number hain. Pattiyon ki lambai sirf samjhane ke liye banayi gayi hai, asal chart se nahi li gayi.</figcaption>
+  </figure>
+
+  <div class="terms">
+    <div class="term"><div class="name"><span class="pocc">POC</span> (Point of Control)</div><p>Woh daam jahan qeemat ne sab se <b>zyada waqt</b> guzara. Har minute us minute ke low se high tak ke har pip par barabar baant diya jata hai, aur jis pip ke paas sab se zyada minute jama hon woh POC hai. Chart par narangi lakeer aur label "1D POC (aaj ki candle)".</p><p class="ex">Aaj POC 4109.550. Abhi qeemat ~4131 hai, yani POC se $21.5 upar, us jagah se door jahan aaj sab se zyada waqt guzra. Kal ka POC 4166.650 tha, aaj se ~$57 upar.</p><p class="warn">Bohot se traders POC ko us din ka "munasib daam" samajhte hain aur sochte hain ke beech ke bazaar mein qeemat us ki taraf wapas aati hai. Is script ne ye baat naapi nahi.</p></div>
+    <div class="term"><div class="name"><span class="vac">VA 70%</span> (Value Area)</div><p>POC ke ird-gird woh patti jahan kam az kam 70% waqt guzra. Chart par do neeli dashed lakeerein, upar aur neeche.</p><p class="ex">Aaj 4103.445 – 4134.500: aaj ke 439 minute mein se kam az kam 307 minute is $31 ki patti mein guzre. Neeche wala sira din ka low hi hai.</p>
+      <p><b>Traders ise aise parhte hain:</b></p>
+      <ul class="plain">
+        <li><b>VA ke andar:</b> bazaar "barabar" hai, qeemat VA ke upar aur neeche wale kinaron ke beech ghoom sakti hai.</li>
+        <li><b>VA ke upar nikal kar wahan waqt guzare:</b> naye daam "qubool" ho rahe hain (value upar ja rahi hai). Jaldi wapas andar aa jaye to "radd".</li>
+        <li><b>VA ke neeche:</b> yahi baat ulti.</li>
+      </ul>
+      <p class="ex">~4131 par qeemat aaj ki VA ke andar thi, upar wale kinare 4134.5 se ~$4 neeche. Agar 4134.5 ke upar nikle aur tike, to traders kahenge "aaj ki value se upar qubool".</p>
+      <p class="warn">Ye traders ka khayal hai, script ne test nahi kiya. VA khud bhi din bhar khiskti rehti hai.</p></div>
+    <div class="term"><div class="name">Pattiyon ke rang</div><p><span class="pocc">Narangi</span> = POC wali patti. <span class="vac">Neeli</span> = VA ke andar (thora sa bhi). Grey = VA se bahar. Pattiyan aakhri candle se baen taraf banti hain, sirf aaj ki candles ke upar. 1m par (din ke pehle 10 minute ke baad) hamesha dikhti hain. 1D chart par aaj ki candle akeli hai, is liye wahan sirf lakeerein.</p></div>
+    <div class="term"><div class="name">Tooltip (mouse rakhein)</div><p>Kisi khane par mouse rakhein to "Qeemat mein: …" yani dollar mein fasla dikhta hai. Range par H aur L bhi, Asal farq par O aur C bhi.</p><p class="warn">Ye qeemat ka fasla hai, account ka faida nahi. Cent account par 0.01 lot = $1 par 1 USC.</p></div>
+  </div>
+</section>
+
+<section id="tf">
+  <div class="sec-head"><span class="eyebrow">Kis TF par rahein</span><h2>Ghar 15m par, rukh 1H se, 1m sirf dekhne ke liye</h2></div>
+  <div class="ladder">
+    <div class="rung"><div class="tf">1D · 4H</div><div><span class="tag muted">Din mein 1 dafa</span><p>Bara naqsha: 1D zones, 1D ki MA21/63, kal ka POC. Yahan se trade ka idea nahi.</p></div></div>
+    <div class="rung"><div class="tf">1H</div><div><span class="tag muted">Rukh</span><p>Alag chart kholne ki zarurat nahi. 15m ke daen table mein "1H rukh: UP / DN" yahi batata hai.</p></div></div>
+    <div class="rung home"><div class="tf">15m</div><div><span class="tag" style="color:var(--gold)">Ghar</span><p>Yahin rahein. Yahan ka 80% ishara 1H rukh se milta hai aur peecha nahi karta: qeemat MA21 se 1.5 ATR se zyada door ho to ishara nahi banta.</p></div></div>
+    <div class="rung"><div class="tf">1m</div><div><span class="tag muted">Sirf dekhna</span><p>Ishara khulne ke baad qareeb se dekhne ke liye. Yahan se naya idea na lein.</p></div></div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Wajah</th><th>Kya kehti hai</th></tr></thead>
+      <tbody>
+        <tr><td>Aap ka apna record</td><td>Bara TF behtar: 1D 49.7% &gt; 4H 43.8% &gt; 1H 42% &gt; 1m 37.5% jeet. (15m naapa nahi gaya.)</td></tr>
+        <tr><td>Spread</td><td>1m ka SL $1-4 hota hai, is liye ~$0.26 spread ek R ka 5-25% kha jata hai. 15m par SL bara, spread ka hissa chhota. (Ye andaza hai, naapa nahi.)</td></tr>
+        <tr><td>Script ke number</td><td>1m ka 90% BUY: −0.25R (28). 15m: BUY 0R (31), SELL +0.07R (38). 15m thora behtar, magar dono 0 ke qareeb.</td></tr>
+        <tr><td>1h / 1D par</td><td>In charts par tables aur ishara nahi chalta. Ye sirf bare naqshe ke liye hain.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="qadam">
+  <div class="sec-head"><span class="eyebrow">Trade ka idea</span><h2>9 qadam, tarteeb se</h2><p class="muted">Har qadam ke saath likha hai ke screen par kya dekhna hai. Ye sab pehle DEMO par.</p></div>
+  <ol class="steps">
+    <li><h3>Khabar dekhein</h3><p>NFP, CPI, FOMC se 30 minute pehle se taqreeban 1 ghanta baad tak koi nayi trade nahi. Script mein khabar ka filter nahi, ye aap ko khud dekhna hai. NFP: 1 Nov ke baad 6:30 PM PKT.</p></li>
+    <li><h3>15m chart kholein, data check karein</h3><p>PIP table ke upar <span class="mono">v4.2</span> likha ho aur "1D abhi" ka Minute barh raha ho.</p></li>
+    <li><h3>Ijazat wali taraf likh lein</h3><p>Daen table: <span class="mono">1H rukh: UP</span> = sirf BUY, <span class="mono">DN</span> = sirf SELL. Har ghante dobara dekhein, ye har 1H candle ke band hone par badal sakta hai.</p></li>
+    <li><h3>Pressure dekhein</h3><p>Ishare ke liye ausat apni taraf 80%+ ho aur chaaron TF (15m, 1H, 4H, 1D) usi taraf hon.</p><p class="note">8 Oct ki misaal: 1D candle 68% BUY par thi. Jab tak qeemat 1D ke beech (4123.435) se upar thi, 15m SELL ban hi nahi sakta tha.</p></li>
+    <li><h3>Din ke level dekhein</h3><p>POC, VA ki lakeerein, pivot aur zone: kya TP1 se pehle koi level raaste mein hai? Script sirf zones dekhta hai. POC, VA aur pivot aap ko khud dekhne hain.</p></li>
+    <li><h3>Bazaar ka mizaaj dekhein</h3><p>PIP table ka Kaam % aur Range. Sirf maloomat ke liye: kisi Kaam % ki hadd ko filter ke taur par test nahi kiya gaya.</p></li>
+    <li><h3>Ishare ka intezar karein</h3><p>Khud pehle mat kudein. Daen table <span class="mono">15m 80%: SELL khuli</span> (ya BUY) likhe aur chart par dabba bane, tab. Screen ghoorne ke bajaye alert lagayein: Create Alert → SMC Coach Pro v4 → "MTF 90% SELL" ya "MTF 90% BUY", Once Per Bar Close. 15m chart par yehi naam 15m ishare ke liye kaam karte hain.</p></li>
+    <li><h3>Exp aur KAMZOR dekhein</h3><p>Aakhri line mein us taraf ka Exp dekhein. KAMZOR ho to bhi demo par lein aur alag likhein, taake ginti poori rahe.</p></li>
+    <li><h3>Demo par, script jaisa, phir likhein</h3><p>Do alag 0.01 lot (har ek 0.01 hi). TP1 par ek band karein aur doosri ka SL entry par le aayein. TP2 par doosri band. SL lage to band. 64 candle (16 ghante bazaar) mein na SL na TP2 ho to band. Har trade likhein: waqt, taraf, %, entry, SL, TP1, TP2, kaise band hui, kitne R, kitna spread.</p><p class="note">OANDA aur Exness ke daam thore alag hain, is liye plan dollar ke fasle se copy karein. Lot kabhi na barhayein, nuqsan ke baad dugna na karein.</p></li>
+  </ol>
+</section>
+
+<section id="saboot">
+  <div class="sec-head"><span class="eyebrow">Saboot kab</span><h2>Abhi koi ishara sabit nahi</h2></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Ishara</th><th>Abhi ka Exp</th><th>Trades</th><th>Shor (andaza)</th><th>Faisla</th></tr></thead>
+      <tbody class="num">
+        <tr><td>1m main SELL</td><td class="buy">+0.25R</td><td>52</td><td>±0.2R</td><td>dekhte rahein, saboot nahi</td></tr>
+        <tr><td>1m 90% BUY</td><td class="sell">−0.25R</td><td>28</td><td>±0.19R</td><td>kamzor lagta hai, sabit nahi</td></tr>
+        <tr><td>1m 90% SELL</td><td>+0.01R</td><td>46</td><td>±0.15R</td><td>barabar</td></tr>
+        <tr><td>15m BUY</td><td>0R</td><td>31</td><td>±0.18R</td><td>barabar</td></tr>
+        <tr><td>15m SELL</td><td>+0.07R</td><td>38</td><td>±0.16R</td><td>0 se alag nahi</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Shor ka andaza: 1R ÷ √(trades). Nateeja tabhi kuch kehta hai jab shor ka taqreeban do guna ho, aur woh bhi spread ke baad. Ye number spread ke baghair hain aur sirf chart par load hui history ke hain.</p>
+  <div class="callout">
+    <h3>15m ishare ko tab sabit maanein jab:</h3>
+    <ul class="plain">
+      <li>DEMO par aage se 100+ trades, bilkul inhi qaidon se.</li>
+      <li>Spread ke baad ausat kam az kam +0.2R.</li>
+      <li>Pehli 50 aur aakhri 50 trades, dono musbat.</li>
+      <li>Beech mein koi setting nahi badli. Purane number ke liye setting ghumana overfitting hai.</li>
+    </ul>
+    <p>15m par taqreeban 1 ishara roz aata hai, is liye ye 3-4 mahine ka demo hai. Tez jaanch ke liye 15m qaide ki Pine <b>strategy</b> copy ban sakti hai jo Strategy Tester mein naap de. Woh abhi nahi bani.</p>
+  </div>
+</section>
+
+<section id="ghalti">
+  <div class="sec-head"><span class="eyebrow">Aam ghaltiyan</span><h2>Ye cheezein ulti samajh aati hain</h2></div>
+  <ul class="plain">
+    <li><b>Baen table ka "Rukh"</b> sirf chalti candle ka rang hai, trend nahi. Trend = MA21/MA63 aur "1H rukh".</li>
+    <li><b>LGB ↓ hara hai aur bullish</b>, LGB ↑ laal aur bearish. Teer ulta lagta hai.</li>
+    <li><b>BZ / SZ</b> chart ke zone dabbe nahi, sirf us TF ka pichla swing hain.</li>
+    <li><b>Score 80/100</b> ka matlab 80% chance nahi.</li>
+    <li><b>Jeet %</b> faida nahi batata, Exp batata hai.</li>
+    <li><b>Kaam % 2%</b> ka matlab "trend nahi" nahi. Poora din hamesha chhota % deta hai.</li>
+    <li><b>Pressure</b> volume ya peshangoi nahi. 1m aur 15m ka alag % aana theek hai.</li>
+    <li><b>KHULI line</b> mein TP1 ke baad bhi purana SL likha rehta hai. Asal SL entry par hota hai.</li>
+    <li><b>Script ka ishara aur aap ka Fishing Lots alag rakhein.</b> Script ka ishara SL ke saath hai (−1R). Aap ki tokri ka qaida "nuqsan par band nahi" hai. Dono mila dein to kisi ka hisaab sahi nahi rehta.</li>
+  </ul>
+</section>
+
+<footer>
+  SMC Coach Pro v4.2 (indicators/smc_coach_pro_v4.pine). Har baat script ke code se mila kar likhi gayi hai. Misaalein aap ke 8 Oct 2026 ke 1m, 15m, 1h aur 1D screenshots se hain. Ye guide trading ka mashwara nahi. Pehle demo, phir faisla.
+</footer>
+</div>

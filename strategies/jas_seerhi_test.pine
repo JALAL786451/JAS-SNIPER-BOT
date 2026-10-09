@@ -1,0 +1,291 @@
+//@version=6
+// ============================================================================
+//  JAS SEERHI — STRATEGY TEST  (build s1.2, Pine v6)
+//
+//  indicators/jas_seerhi.pine ke BILKUL WOHI qawaid (1D rukh -> pullback ->
+//  chhote swing ka toot), magar Pine STRATEGY ki shakal mein - taake
+//  TradingView ka Strategy Tester asal hisaab de: Net profit, trades, jeet %,
+//  Profit Factor, Drawdown, aur har trade ka nateeja R mein.
+//
+//  Chart: 1H (ya 30m / 15m). Strategy Tester utni history naapta hai jitni
+//  chart par load hai.
+//
+//  Trade: Entry band candle ke close par. SL pullback ka low/high + 0.2 ATR
+//  (0.5 - 3 ATR). TP1 = 1R par aadhi band, phir SL entry par (BE).
+//  TP2 = 2R ya rukh TF ka agla swing (jo pehle aaye). Rukh ulta = band.
+//  N candle baad khud band. Risk har trade % equity (default 1%).
+//  Size symbol ke qadam (mincontract) tak neeche gol; kam az kam 2 qadam
+//  (aadhi TP1 par band ho sake), warna trade nahi. Capital 100,000 taake
+//  1H gold ke bare SL par bhi size 2+ rahe.
+//  SL/TP isi entry wali candle par lag jate hain (agli candle bina hifazat
+//  nahi rehti). TP1 wali candle par SL entry par aata hai magar candle ke
+//  close par - us candle par chhota farq indicator se ho sakta hai.
+//  Kharcha: $0.30 fi oz (0.15 khulne + 0.15 band hone par) - commission mein.
+//
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+//  Ye sirf naap hai. Achha nateeja bhi aage ki zamanat nahi.
+// ============================================================================
+strategy("JAS Seerhi — Strategy Test", shorttitle = "JAS Seerhi Test", overlay = true,
+     initial_capital         = 100000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true,
+     commission_type         = strategy.commission.cash_per_contract,
+     commission_value        = 0.15,
+     margin_long             = 1,
+     margin_short            = 1)
+
+BUILD = "s1.2"
+
+// ============================================================================
+//  INPUTS (naam aur default wahi jo indicator mein)
+// ============================================================================
+gT = "0 · Test"
+riskPct  = input.float(1.0, "Risk fi trade (% equity)", minval = 0.1, maxval = 5, step = 0.1, group = gT)
+useDates = input.bool(false, "Sirf is arse mein", group = gT)
+dtFrom   = input.time(timestamp("2015-01-01"), "Shuru", group = gT)
+dtTo     = input.time(timestamp("2030-12-31"), "Khatam", group = gT)
+
+gR = "1 · Rukh (bara TF)"
+rTF    = input.timeframe("D", "Rukh kis TF se", group = gR)
+rPiv   = input.int(3, "Swing: dono taraf kitni candles", minval = 1, maxval = 10, group = gR)
+maFLen = input.int(21, "MA fast (EMA)", minval = 2, group = gR)
+maSLen = input.int(63, "MA slow (EMA)", minval = 3, group = gR)
+needTL = input.bool(true, "Trend line ka salamat hona zaroori", group = gR)
+needMA = input.bool(true, "MA21 / MA63 ka usi taraf hona zaroori", group = gR)
+
+gE = "2 · Jagah aur entry (chart ka TF)"
+pbMax  = input.int(60, "Pullback kitni candles tak zinda rahe", minval = 5, maxval = 300, group = gE)
+pbDeep = input.float(1.0, "Pullback MA63 se itni ATR paar chala jaye to setup khatam", minval = 0, step = 0.1, group = gE)
+tPiv   = input.int(2, "Entry trigger: chhota swing, dono taraf kitni candles", minval = 1, maxval = 5, group = gE)
+
+gS = "3 · SL / TP"
+slBuf    = input.float(0.2, "SL buffer (x ATR)", minval = 0, step = 0.05, group = gS)
+slMin    = input.float(0.5, "SL kam az kam (x ATR)", minval = 0.2, step = 0.1, group = gS)
+slMax    = input.float(3.0, "SL is se door ho to trade nahi (x ATR)", minval = 0.5, step = 0.1, group = gS)
+tp1R     = input.float(1.0, "TP1 (R) - aadhi band + SL entry par", minval = 0.3, step = 0.1, group = gS)
+tp2R     = input.float(2.0, "TP2 (R)", minval = 0.5, step = 0.1, group = gS)
+useTgt   = input.bool(true, "TP2: rukh TF ka agla swing pehle aaye to wahin", group = gS)
+exitFlip = input.bool(true, "Rukh ulta ho jaye to trade band", group = gS)
+maxBars  = input.int(100, "N candle baad khud band (0 = kabhi nahi)", minval = 0, group = gS)
+showMA   = input.bool(true, "MA21 / MA63 dikhao", group = gS)
+
+f_px(x) => str.tostring(x, format.mintick)
+f_tfName(_t) => _t == "D" or _t == "1D" ? "1D" : _t == "W" or _t == "1W" ? "1W" : _t == "240" ? "4H" : _t == "60" ? "1H" : _t == "30" ? "30m" : _t == "15" ? "15m" : _t
+inDates = not useDates or (time >= dtFrom and time <= dtTo)
+tfOK    = timeframe.in_seconds() < timeframe.in_seconds(rTF)
+
+// ============================================================================
+//  SIGNALS — indicator se jyon ke tyon (wahan badlein to yahan bhi)
+// ============================================================================
+f_rukh() =>
+    _ph = ta.pivothigh(high, rPiv, rPiv)
+    _pl = ta.pivotlow(low, rPiv, rPiv)
+    var float h1  = na
+    var float h0  = na
+    var int   th1 = na
+    var int   th0 = na
+    var float l1  = na
+    var float l0  = na
+    var int   tl1 = na
+    var int   tl0 = na
+    if not na(_ph)
+        h0  := h1
+        th0 := th1
+        h1  := _ph
+        th1 := time[rPiv]
+    if not na(_pl)
+        l0  := l1
+        tl0 := tl1
+        l1  := _pl
+        tl1 := time[rPiv]
+    _ef = ta.ema(close, maFLen)
+    _es = ta.ema(close, maSLen)
+    _both = not na(h0) and not na(l0)
+    _st = _both and h1 > h0 and l1 > l0 and close > l1 ? 1 : _both and h1 < h0 and l1 < l0 and close < h1 ? -1 : 0
+    float _tlU = na
+    float _tlD = na
+    if not na(l0) and tl1 > tl0 and l1 > l0
+        _tlU := l0 + (l1 - l0) * (time - tl0) / (tl1 - tl0)
+    if not na(h0) and th1 > th0 and h1 < h0
+        _tlD := h0 + (h1 - h0) * (time - th0) / (th1 - th0)
+    _tlUOk = not na(_tlU) and close > _tlU
+    _tlDOk = not na(_tlD) and close < _tlD
+    _ma = _ef > _es ? 1 : _ef < _es ? -1 : 0
+    _buy  = _st == 1 and (not needTL or _tlUOk) and (not needMA or _ma == 1)
+    _sell = _st == -1 and (not needTL or _tlDOk) and (not needMA or _ma == -1)
+    _r = _buy ? 1 : _sell ? -1 : 0
+    [_r[1], h1[1], h0[1], l1[1], l0[1]]
+
+[rRaw, rH1, rH0, rL1, rL0] = request.security(syminfo.tickerid, rTF, f_rukh(), barmerge.gaps_off, barmerge.lookahead_on)
+rukh = tfOK ? rRaw : 0
+
+atr  = ta.atr(14)
+emaF = ta.ema(close, maFLen)
+emaS = ta.ema(close, maSLen)
+hh5  = ta.highest(high, 5)
+ll5  = ta.lowest(low, 5)
+mph  = ta.pivothigh(high, tPiv, tPiv)
+mpl  = ta.pivotlow(low, tPiv, tPiv)
+plot(showMA ? emaF : na, "MA21", color = color.new(color.aqua, 0), linewidth = 2)
+plot(showMA ? emaS : na, "MA63", color = color.new(color.fuchsia, 0), linewidth = 2)
+
+// ============================================================================
+//  R ka hisaab har entry ka (kharche samet): (netprofit badla) / risk ki raqam
+// ============================================================================
+var bool  inTrade = false
+var float riskAmt = na
+var float npAt    = na
+var int   nEnt    = 0
+var int   nWinR   = 0
+var float sumR    = 0.0
+if inTrade and strategy.position_size == 0
+    _rr = (strategy.netprofit - npAt) / riskAmt
+    nEnt  += 1
+    nWinR += _rr > 0 ? 1 : 0
+    sumR  += _rr
+    inTrade := false
+
+// ============================================================================
+//  SETUP + ASAL ORDERS
+// ============================================================================
+var int   pbDir = 0
+var int   pbBar = na
+var float pbExt = na
+var float trig  = na
+
+var float pE   = na
+var float pSL  = na
+var float pR   = na
+var float pT1  = na
+var float pT2  = na
+var float pQ   = na
+var int   pBar = na
+var int   pDir = 0
+var bool  pH1  = false
+
+if strategy.position_size == 0
+    pE  := na
+    pH1 := false
+    if pbDir != 0 and rukh != pbDir
+        pbDir := 0
+    if pbDir == 0
+        _deepNow = rukh == 1 ? close < emaS - pbDeep * atr : close > emaS + pbDeep * atr
+        if rukh != 0 and not _deepNow and (rukh == 1 ? low <= emaF : high >= emaF)
+            pbDir := rukh
+            pbBar := bar_index
+            pbExt := rukh == 1 ? low : high
+            trig  := rukh == 1 ? hh5 : ll5
+    else
+        pbExt := pbDir == 1 ? math.min(pbExt, low) : math.max(pbExt, high)
+        if pbDir == 1 and not na(mph) and bar_index - tPiv >= pbBar
+            trig := mph
+        if pbDir == -1 and not na(mpl) and bar_index - tPiv >= pbBar
+            trig := mpl
+        _deep = pbDir == 1 ? close < emaS - pbDeep * atr : close > emaS + pbDeep * atr
+        _old  = bar_index - pbBar > pbMax
+        if _deep or _old
+            pbDir := 0
+        else
+            _go = pbDir == 1 ? close > trig and close > open : close < trig and close < open
+            if _go and barstate.isconfirmed
+                _e   = close
+                _sl0 = pbDir == 1 ? pbExt - slBuf * atr : pbExt + slBuf * atr
+                _r0  = math.abs(_e - _sl0)
+                _r   = math.max(_r0, slMin * atr)
+                float _tgt = na
+                if pbDir == 1
+                    if not na(rH0) and rH0 > _e
+                        _tgt := rH0
+                    if not na(rH1) and rH1 > _e
+                        _tgt := na(_tgt) ? rH1 : math.min(_tgt, rH1)
+                else
+                    if not na(rL0) and rL0 < _e
+                        _tgt := rL0
+                    if not na(rL1) and rL1 < _e
+                        _tgt := na(_tgt) ? rL1 : math.max(_tgt, rL1)
+                _room = na(_tgt) or math.abs(_tgt - _e) >= tp1R * _r
+                if _r0 > slMax * atr or not _room
+                    pbDir := 0
+                else if inDates
+                    _step = syminfo.mincontract > 0 ? syminfo.mincontract : 1.0
+                    _q = math.floor((strategy.equity * riskPct / 100.0) / (_r * syminfo.pointvalue) / _step) * _step
+                    if _q >= 2 * _step
+                        _t2 = _e + pbDir * tp2R * _r
+                        _id = pbDir == 1 ? "L" : "S"
+                        pDir := pbDir
+                        pE   := _e
+                        pR   := _r
+                        pSL  := _e - pbDir * _r
+                        pT1  := _e + pbDir * tp1R * _r
+                        pT2  := useTgt and not na(_tgt) ? (pbDir == 1 ? math.min(_t2, _tgt) : math.max(_t2, _tgt)) : _t2
+                        pQ   := _q
+                        pBar := bar_index
+                        pH1  := false
+                        // entry aur us ke SL/TP isi candle par - agli candle par hifazat ho
+                        strategy.entry(_id, pbDir == 1 ? strategy.long : strategy.short, qty = _q)
+                        strategy.exit("TP1", from_entry = _id, limit = pT1, stop = pSL, qty_percent = 50)
+                        strategy.exit("TP2", from_entry = _id, limit = pT2, stop = pSL)
+                        inTrade := true
+                        riskAmt := _q * _r * syminfo.pointvalue   // asal khatra (gol size ke baad)
+                        npAt    := strategy.netprofit
+                    pbDir := 0
+                else
+                    pbDir := 0
+
+// TP1 ho gaya? (position aadhi reh gayi) -> SL entry par
+if not na(pQ) and strategy.position_size != 0 and math.abs(strategy.position_size) < pQ * 0.9 and not pH1
+    pH1 := true
+    pSL := pE
+
+if strategy.position_size > 0
+    if not pH1
+        strategy.exit("TP1", from_entry = "L", limit = pT1, stop = pSL, qty_percent = 50)
+    strategy.exit("TP2", from_entry = "L", limit = pT2, stop = pSL)
+if strategy.position_size < 0
+    if not pH1
+        strategy.exit("TP1", from_entry = "S", limit = pT1, stop = pSL, qty_percent = 50)
+    strategy.exit("TP2", from_entry = "S", limit = pT2, stop = pSL)
+
+if strategy.position_size != 0 and exitFlip and rukh == -pDir
+    strategy.close_all(comment = "Rukh ulta")
+if strategy.position_size != 0 and maxBars > 0 and bar_index - pBar >= maxBars
+    strategy.close_all(comment = "Waqt khatam")
+if useDates and time > dtTo and strategy.position_size != 0
+    strategy.close_all(comment = "Arsa khatam")
+
+plot(strategy.position_size != 0 ? pSL : na, "SL", color = color.new(color.red, 0), style = plot.style_linebr, linewidth = 2)
+plot(strategy.position_size != 0 ? pE  : na, "Entry", color = color.new(color.blue, 0), style = plot.style_linebr, linewidth = 1)
+plot(strategy.position_size != 0 ? pT2 : na, "TP2", color = color.new(color.green, 0), style = plot.style_linebr, linewidth = 1)
+
+// ============================================================================
+//  CHHOTA NATEEJA TABLE (Strategy Tester ka khulasa, screenshot ke liye)
+// ============================================================================
+var table rt = table.new(position.top_right, 2, 10, border_width = 1, border_color = color.new(color.gray, 70))
+f_row(_r, _a, _b, _c) =>
+    table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
+    table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small)
+// Strategy chalti (realtime) candle par us ke band hone tak nahi chalti, is liye
+// market khula ho to "islast" wali candle par kabhi nahi pohanchti - table
+// pichli band candle par bhi banao (islastconfirmedhistory).
+if barstate.islast or barstate.islastconfirmedhistory
+    _gp = strategy.grossprofit
+    _gl = strategy.grossloss
+    _pf = _gl > 0 ? _gp / _gl : na
+    _ex = nEnt > 0 ? sumR / nEnt : na
+    cOK = color.new(#1B5E20, 0)
+    cNO = color.new(#B71C1C, 0)
+    table.cell(rt, 0, 0, "JAS SEERHI TEST " + BUILD + " · chart " + f_tfName(timeframe.period) + " · rukh " + f_tfName(rTF), bgcolor = color.new(color.silver, 40), text_color = color.black, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 1, 0)
+    if not tfOK
+        f_row(1, "Chart ka TF", "Rukh TF se chhota chart kholein (1H / 30m / 15m)", cNO)
+    f_row(2, "Net profit", str.tostring(strategy.netprofit, "#,###") + " $  (" + str.tostring(100 * strategy.netprofit / strategy.initial_capital, "#.#") + "%)", strategy.netprofit >= 0 ? cOK : cNO)
+    f_row(3, "Entries (trades)", str.tostring(nEnt), color.black)
+    f_row(4, "Jeet % (entry ka kul nateeja > 0)", nEnt > 0 ? str.tostring(100.0 * nWinR / nEnt, "#.#") + "%" : "-", color.black)
+    f_row(5, "Exp (R fi trade, kharche samet)", na(_ex) ? "-" : (_ex > 0 ? "+" : "") + str.tostring(_ex, "#.##") + "R", na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
+    f_row(6, "Profit Factor", na(_pf) ? "-" : str.tostring(_pf, "#.##"), na(_pf) ? color.black : _pf >= 1.3 ? cOK : _pf >= 1 ? color.new(#E65100, 0) : cNO)
+    f_row(7, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", cNO)
+    f_row(8, "Risk fi trade", str.tostring(riskPct, "#.#") + "%  |  TP1 " + str.tostring(tp1R, "#.#") + "R + BE, TP2 " + str.tostring(tp2R, "#.#") + "R / swing", color.black)
+    f_row(9, "Note", "Sirf naap. Tester ki 'List of trades' mein har exit alag (TP1 aadhi).", cNO)

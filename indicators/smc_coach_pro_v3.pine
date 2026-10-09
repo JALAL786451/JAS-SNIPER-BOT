@@ -1,0 +1,1625 @@
+//@version=5
+// ============================================================================
+//  SMC COACH — PRO v3   (pehle "Pro v2"; file ka naam bhi v3)
+//  Scalp/Intraday SMC engine: Zones + BOS/CHOCH + FVG/LGB + Supertrend
+//  + HTF confluence + Risk Engine (SL/TP/RR) + Confluence Score
+//  + Virtual performance tracker + Alerts + MTF Dashboard (1m -> 1W)
+//
+//  v2 changes over v1:
+//   - Risk engine: structural/ATR stop, TP1/2/3 by R-multiples, live RR label
+//   - Confluence SCORE (0-100) with a minimum-score gate (quality over quantity)
+//   - Signal cooldown + one-signal-per-zone + strict Buy/Sell mutual exclusion
+//   - Zone lifecycle: freshness, touch count, mitigation, correct array sync
+//   - Correct non-repaint HTF (shift inside the security context, not outside)
+//   - Session (killzone) filter, relative-volume filter, chop/regime filter
+//   - Virtual trade tracker -> live hit-rate / expectancy stats on chart
+//   - alert() with dynamic Entry/SL/TP payload + alertcondition() hooks
+//
+//  Teacher-panel fix (earlier patch):
+//   - "BUY/SELL missing" list ab teen aur gates check karti hai jo pehle
+//     chhupe hue the: candle band (bar not closed), one-signal-per-zone,
+//     aur TP1 tak room (opposing zone bohot qareeb). Pehle in teeno mein se
+//     koi bhi block karta to panel sirf generic "Same bar align nahi hui"
+//     dikhata tha — ab exact wajah dikhti hai.
+//
+//  v2.1 bug-fix pass (this patch):
+//   1. Dashboard LGB column could NEVER light up. The sweep reference was
+//      ta.highest(high, N), which includes the bar being tested, so
+//      "high > highest(high, N)" is impossible. The reference now excludes
+//      that bar and uses the same confirmed swing (pivot) as the chart labels.
+//   2. Dashboard FVG/LGB read the same bar the chart draws them on. Before,
+//      the closed-candle setting shifted them one HTF bar back, so a 4H row
+//      said "-" while an LGB label sat on the live 4H candle. Trend gates
+//      (L/S) still use closed candles; the header now says which is which.
+//   3. The optional 5/15/30/4H/1D rows came from a second, differently
+//      defined copy of the logic (hard-coded pivot 5, high>high[1] sweep).
+//      They now decode the same packed value as the dashboard.
+//   4. Display toggles no longer change signal logic: "Draw S/R zones" and
+//      the FVG/LGB switches only control drawing now. Turning them off used
+//      to stop zone creation / FVG / LGB detection outright, which silently
+//      disabled the "Confirm + (FVG or LGB)" entry mode and the score.
+//   5. FVG box and LGB label leaked one object per live bar (the delete only
+//      ran on historical bars, which never re-run once the chart is live).
+//   6. Zone entries had their own structure window added. A demand zone is
+//      created BY a BOS and retested many bars later, so requiring the BOS
+//      within structLookback (3) bars of the touch killed nearly every
+//      zone entry.
+//   7. A breakout / EMA-retest signal used to burn the zone's
+//      one-signal-per-zone slot even though it did not come from the zone.
+//   8. The TP1 room test used the FAR edge of the opposing zone and mishandled
+//      a zone straddling entry; it now measures to the nearest edge ahead.
+//   9. Entry/SL/TP plan is drawn for every signal, not only when the virtual
+//      tracker happened to be flat; "Track virtual results" now actually
+//      gates tracking (open trades are still managed to completion).
+//  10. Buy and Sell with an equal score cancelled each other silently; the
+//      tie is now broken by trend/Supertrend, and the Teacher panel reports
+//      both the tie and the DXY gate, which it never mentioned before.
+//
+//  v3 — 1m dashboard (2 Oct 2026, user ka manzoor naqsha):
+//   - Saare tables SIRF 1m chart par. Baqi TF par koi table/likhai nahi.
+//   - TF list: 1m, 5m, 15m, 30m, 1H, 3H, 4H, 1D, 1W.
+//   - Baen table: har TF ki CHALTI candle - O/H/L/C, upar/neeche, body kitni
+//     bhari, FVG, LGB, BZ/SZ.
+//   - Daen: 1m-1W sab TF ka mila hua pressure EK line mein - jo taraf
+//     zyada ho wahi ("BUY 61%" / "SELL 57%"). Naali default band.
+//   - Hata diye: Teacher panel ("BUY/SELL missing"), HTF line, LIVE CANDLE
+//     panel, extra rows, stats panel, "chal rahi" label, debug label.
+//   - Virtual tracker andar chupa chalta hai; sirf ek line: BUY / SELL
+//     expectancy (daen table ke neeche).
+//   - EMA20/50 + band ki jagah MA21 / MA63 (chart ke apne TF ki).
+//   - Zone dabbe, BUY/SELL nishan, SL/TP, pivot lines wahi hain.
+// ============================================================================
+indicator("SMC Coach Pro v3 (MTF Pressure + 15m Signal)", shorttitle = "SMC Coach Pro v3",
+     overlay = true, max_labels_count = 500, max_lines_count = 500,
+     max_boxes_count = 500, max_bars_back = 1000, dynamic_requests = true)
+
+// ---------------- TF helper ----------------
+is1m  = timeframe.isminutes and timeframe.multiplier == 1
+is15m = timeframe.isminutes and timeframe.multiplier == 15
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+gChart  = "0 · Chart"
+futureBars = input.int(5, "Aage kitni candle tak lines/label banayein (kam = candles nahi sikurtin)", minval=0, maxval=60, group=gChart, tooltip="TradingView us aakhri cheez tak chart ko khenchta hai jo indicator banata hai. Ye number jitna bara, candles utni sikurti hain. 0 = bilkul aage kuch nahi.")
+
+gStruct = "1 · Structure & Zones"
+pivotLR       = input.int(3,  "Pivot L/R (swings)", minval=1, group=gStruct)
+maxZones      = input.int(10, "Keep last N zones", minval=2, maxval=100, group=gStruct)
+zonePadATR    = input.float(0.15, "Zone padding (x ATR)", minval=0, step=0.01, group=gStruct)
+zoneMaxTouch  = input.int(2, "Kill zone after N touches", minval=1, maxval=10, group=gStruct)
+zoneMaxAge    = input.int(300, "Kill zone after N bars", minval=20, group=gStruct)
+zoneToWick    = input.bool(true, "Zone ko wick tak le jao (band candle ko chhue)", group=gStruct)
+zoneKeepExtr  = input.bool(true, "Sab se ooncha/neecha zone umar/touch se na maro", group=gStruct)
+zoneFarATR    = input.float(8.0, "Zone itni ATR se door ho to hata do (0 = kabhi nahi)", minval=0, step=0.5, group=gStruct)
+zoneShowLine  = input.bool(true,  "Zone ke beech wali lakeer dikhao (dayein tak jati hai)", group=gStruct)
+zoneShowBrdr  = input.bool(true,  "Zone ke border dikhao", group=gStruct)
+zoneFade      = input.int(86, "Zone ki shade kitni halki (zyada = halki)", minval=70, maxval=97, group=gStruct)
+freshMaxTouch = input.int(0, "\"Fresh\" zone = touches <= N", minval=0, maxval=5, group=gStruct)
+useCloseBreak = input.bool(true, "BOS/CHOCH needs CLOSE beyond swing", group=gStruct)
+showSR        = input.bool(true,  "Draw S/R zones", group=gStruct)
+showFVG       = input.bool(true,  "FVG (current bar only)", group=gStruct)
+showLGB       = input.bool(true,  "LGB / liquidity sweep (current bar only)", group=gStruct)
+
+gEntry = "2 · Entry Logic"
+entryMode = input.string("Confirm + (FVG or LGB)", "Entry Mode", options=[
+     "Touch only","Confirm (Touch+Struct+Trend)","Confirm + (FVG or LGB)"], group=gEntry)
+structLookback         = input.int(3,  "Structure lookback bars (breakout/retest)", minval=1, maxval=20, group=gEntry)
+zoneStructLook         = input.int(30, "Zone entry: structure lookback bars", minval=1, maxval=200, group=gEntry)
+useCloseTouch          = input.bool(false, "Zone touch: require CLOSE inside zone", group=gEntry)
+confirmMomo            = input.bool(false, "Confirm FVG/LGB on bar close", group=gEntry)
+confirmSignalsOnClose  = input.bool(true,  "Signals only after bar close (no repaint)", group=gEntry)
+cooldownBars           = input.int(5, "Cooldown bars between signals", minval=0, maxval=100, group=gEntry)
+onePerZone             = input.bool(true, "Max one signal per zone", group=gEntry)
+
+gTrend = "3 · Trend / Momentum"
+emaFastLen    = input.int(21, "MA fast (21)", minval=2, group=gTrend)
+emaSlowLen    = input.int(63, "MA slow (63)", minval=3, group=gTrend)
+
+// --- Candle ko chipakne wali naali (low/high channel) ---
+// Aam MA candle ke CLOSE par banti hai, is liye woh candle ke BEECH se
+// guzarti hai aur kisi kinare ko nahi chhuti. Ye naali low aur high par
+// banti hai, is liye neeche wali lakeer candles ke neeche aur oopar wali
+// candles ke oopar chipki rehti hai.
+showHL        = input.bool(false, "Candle-chipku naali dikhao (low/high channel)", group=gTrend)
+hlLen         = input.int(20, "Naali ki length", minval=2, maxval=200, group=gTrend)
+hlSmooth      = input.string("EMA", "Naali ka hisaab", options=["EMA","SMA","WMA"], group=gTrend)
+hlFillOn      = input.bool(true,  "Naali ke andar halka rang bharo", group=gTrend)
+hlFade        = input.int(92, "Naali ki shade kitni halki (zyada = halki)", minval=70, maxval=99, group=gTrend)
+hlWidth       = input.int(2, "Naali ki lakeer ki motai", minval=1, maxval=4, group=gTrend)
+hlMarks       = input.bool(true, "Naali tootne par nishan lagao (dono taraf)", group=gTrend)
+useAdx        = input.bool(true, "Use ADX filter", group=gTrend)
+adxLen        = input.int(14, "ADX DI length", minval=2, group=gTrend)
+adxSmooth     = input.int(14, "ADX smoothing", minval=1, group=gTrend)
+adxMin        = input.float(18, "ADX min", step=0.5, minval=1, group=gTrend)
+strictTrendClose = input.bool(false, "Trend needs price above/below EMA fast", group=gTrend)
+
+gFilter = "4 · Context Filters"
+enableHTF     = input.bool(true, "Use HTF confluence (4H/1D)", group=gFilter)
+htfAgreeMode  = input.string("Either", "HTF agree", options=["Both","Either"], group=gFilter)
+useClosedHTF  = input.bool(true, "HTF: use closed candles", group=gFilter)
+useDXY        = input.bool(true, "Use DXY filter (Gold only)", group=gFilter)
+dxyTF         = input.string("", "DXY TF (blank = chart TF)", group=gFilter)
+useVol        = input.bool(true,  "Relative volume filter", group=gFilter)
+volLen        = input.int(20, "Volume MA length", minval=2, group=gFilter)
+volMin        = input.float(0.8, "Min relative volume", step=0.05, minval=0.1, group=gFilter)
+useChop       = input.bool(true,  "Skip choppy / compressed regime", group=gFilter)
+chopLook      = input.int(20, "Chop lookback", minval=5, group=gFilter)
+chopMinATR    = input.float(2.5, "Min range (x ATR) to trade", step=0.1, minval=0.5, group=gFilter)
+
+gSess = "5 · Sessions (Killzones)"
+useSession    = input.bool(false, "Trade only inside selected sessions", group=gSess)
+sessTZ        = input.string("UTC", "Session timezone", group=gSess)
+sessA_on      = input.bool(false, "Asia",   inline="sa", group=gSess)
+sessA         = input.session("0000-0600", "", inline="sa", group=gSess)
+sessL_on      = input.bool(true,  "London", inline="sl", group=gSess)
+sessL         = input.session("0700-1100", "", inline="sl", group=gSess)
+sessN_on      = input.bool(true,  "New York", inline="sn", group=gSess)
+sessN         = input.session("1200-1600", "", inline="sn", group=gSess)
+
+gBreak = "6 · Momentum / Breakout entries"
+enableBreakout   = input.bool(true,  "Enable Momentum/Breakout entries", group=gBreak)
+brkBufATR        = input.float(0.10, "Breakout buffer (x ATR)", step=0.01, minval=0.0, group=gBreak)
+impulseATR       = input.float(0.95, "Impulse bar >= ATR *", step=0.05, minval=0.5, group=gBreak)
+enableEMARetest  = input.bool(true,  "Continuation: EMA retest entry", group=gBreak)
+emaRetestWhich   = input.string("MA21", "Retest MA", options=["MA21","MA63"], group=gBreak)
+emaRetestTol     = input.float(0.45, "Retest tolerance (x ATR)", step=0.01, minval=0.0, group=gBreak)
+retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1, maxval=50, group=gBreak)
+
+groupST       = "7 · Supertrend"
+enableST      = input.bool(true,  "Enable Supertrend", group=groupST)
+useSTFilter   = input.bool(true,  "Use ST as extra filter", group=groupST)
+stShowPlots   = input.bool(false, "Plot ST lines (chart par ST ki lakeerein)", group=groupST)
+stShowSignals = input.bool(false, "Show ST Buy/Sell labels", group=groupST)
+stPeriod      = input.int(10, "ATR Period", minval=1, group=groupST)
+stMult        = input.float(3.0, "ATR Multiplier", step=0.1, group=groupST)
+stSrc         = input.source(hl2, "ST Source", group=groupST)
+stUseATR      = input.bool(true, "Use ta.atr() (else SMA(TR))", group=groupST)
+
+gScore = "8 · Confluence Score"
+useScore      = input.bool(true, "Gate signals by score", group=gScore)
+minScore      = input.int(60, "Minimum score to fire (0-100)", minval=0, maxval=100, group=gScore)
+wTrend        = input.int(20, "Weight: EMA trend",     minval=0, maxval=40, group=gScore)
+wStruct       = input.int(15, "Weight: BOS/CHOCH",     minval=0, maxval=40, group=gScore)
+wMomo         = input.int(15, "Weight: FVG / LGB",     minval=0, maxval=40, group=gScore)
+wHTF          = input.int(20, "Weight: HTF alignment", minval=0, maxval=40, group=gScore)
+wST           = input.int(10, "Weight: Supertrend",    minval=0, maxval=40, group=gScore)
+wAdx          = input.int(10, "Weight: ADX strength",  minval=0, maxval=40, group=gScore)
+wZone         = input.int(5,  "Weight: Fresh zone",    minval=0, maxval=40, group=gScore)
+wVol          = input.int(5,  "Weight: Volume",        minval=0, maxval=40, group=gScore)
+
+gRisk = "9 · Risk Engine"
+showRisk      = input.bool(true, "Draw Entry / SL / TP", group=gRisk)
+slMode        = input.string("Structure + ATR buffer", "Stop mode",
+                 options=["Structure + ATR buffer","ATR only","Zone edge"], group=gRisk)
+slSwingLook   = input.int(10, "Structure lookback for stop", minval=2, maxval=50, group=gRisk)
+slBufATR      = input.float(0.25, "Stop buffer (x ATR)", step=0.05, minval=0.0, group=gRisk)
+slAtrMult     = input.float(1.50, "ATR-only stop (x ATR)", step=0.1, minval=0.2, group=gRisk)
+minSLatr      = input.float(0.60, "Min stop distance (x ATR)", step=0.05, minval=0.1, group=gRisk)
+maxSLatr      = input.float(3.50, "Max stop distance (x ATR)", step=0.1, minval=0.5, group=gRisk)
+tp1R          = input.float(1.0, "TP1 (R)", step=0.1, minval=0.2, group=gRisk)
+tp2R          = input.float(2.0, "TP2 (R)", step=0.1, minval=0.2, group=gRisk)
+tp3R          = input.float(3.0, "TP3 (R)", step=0.1, minval=0.2, group=gRisk)
+minRRzone     = input.float(1.2, "Reject signal if TP1 blocked below R", step=0.1, minval=0.0, group=gRisk)
+acctSize      = input.float(1000, "Account size", step=100, minval=1, group=gRisk)
+riskPct       = input.float(1.0, "Risk per trade (%)", step=0.1, minval=0.01, group=gRisk)
+
+gStats = "10 · Performance Tracker (chupa hua)"
+useTracker    = input.bool(true, "Virtual nateeje gino (sirf BUY/SELL expectancy line)", group=gStats)
+beAfterTP1   = input.bool(true, "Move stop to BE after TP1", group=gStats)
+exitOnFlip    = input.bool(true, "Trend palat jaye to purana virtual trade band karo", group=gStats)
+tMaxBars      = input.int(60, "Virtual trade N candle ke baad khud band (0 = kabhi nahi)", minval=0, group=gStats)
+
+gPivot = "11b · Exness-style daily levels"
+showPiv   = input.bool(true,  "Kal ke din se banne wali S/R lines dikhao", group=gPivot)
+pivTF     = input.string("D", "Kis din se", options=["D","W"], group=gPivot)
+pivShowR2 = input.bool(true,  "Door wali R2 / S2 bhi dikhao", group=gPivot)
+pivBack   = input.int(60, "Pivot lines kitni candle peeche tak khinchein", minval=5, maxval=500, group=gPivot)
+pivMethod = input.string("Classic", "Hisaab ka tareeqa", options=["Classic","Fibonacci","Camarilla"], group=gPivot)
+pivSwapCol= input.bool(false, "Rang ulta karo - POORA chart (Exness jaisa: resistance green, support red)", group=gPivot)
+pivManual = input.bool(false, "Khud apne number daalo (Exness ke number yahan likh dein)", group=gPivot)
+mP  = input.float(0, "  Pivot",      step=0.01, group=gPivot)
+mR1 = input.float(0, "  Resistance 1", step=0.01, group=gPivot)
+mR2 = input.float(0, "  Resistance 2", step=0.01, group=gPivot)
+mS1 = input.float(0, "  Support 1",  step=0.01, group=gPivot)
+mS2 = input.float(0, "  Support 2",  step=0.01, group=gPivot)
+
+gPanel = "12 · Panels (sirf 1m chart par)"
+only1m        = input.bool(true,  "Tables sirf 1m chart par dikhao", group=gPanel)
+showLegend    = input.bool(true,  "Baen: har TF ki chalti candle", group=gPanel)
+legendPos     = input.string("Top Left",  "Baen table ki jagah",  options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
+showPress     = input.bool(true,  "Daen: sab TF ka mila hua BUY/SELL pressure (ek line)", group=gPanel)
+pressPos      = input.string("Top Right", "Daen table ki jagah", options=["Top Right","Top Left","Bottom Right","Bottom Left"], group=gPanel)
+showExp       = input.bool(true,  "Daen table ke neeche BUY / SELL expectancy line", group=gPanel)
+panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=100, group=gPanel)
+panelPad      = input.int(1,  "Daen panel: upar khali rows", minval=0, maxval=10, group=gPanel)
+legendPad     = input.int(4,  "Baen legend: upar khali rows (TradingView ke BUY/SELL dabbe ke neeche)", minval=0, maxval=10, group=gPanel)
+marks1m       = input.bool(true, "BUY/SELL, plan (SL/TP), LGB, FVG ke nishan bhi sirf 1m par", group=gPanel)
+panelFont     = input.string("Small", "Panel font size", options=["Tiny","Small","Normal","Large"], group=gPanel)
+pressFont     = input.string("Normal", "Pressure table ka font", options=["Tiny","Small","Normal","Large"], group=gPanel)
+pressDark     = input.bool(true, "PRESSURE ke rang gehre rakho (safed chart par saaf)", group=gPanel)
+hlMomoRow     = input.bool(true, "Baen: jis TF par FVG ya LGB ho us row ko numaya karo", group=gPanel)
+hlShade       = input.int(90, "Baen: numaya row ki shade kitni halki (zyada = halki)", minval=70, maxval=97, group=gPanel)
+// Purane Buy/Sell aur ST ke nishaan chart par jama hote rehte the — kai hafton
+// ke signals ek sath nazar aate the jab ke kaam ka sirf aakhri wala hota hai.
+// Ab sirf mojooda nishaan rehta hai; naya aate hi purana mit jata hai.
+showOnlyLast  = input.bool(true, "Sirf mojooda signal dikhao (purane mit jayein)", group=gPanel)
+
+// ============================================================================
+//  HELPERS / COLORS
+// ============================================================================
+f_size(s)=> s=="Tiny"?size.tiny:s=="Small"?size.small:s=="Normal"?size.normal:size.large
+PFS = f_size(panelFont)
+PRS = f_size(pressFont)
+f_pos(s)=> s=="Top Left"?position.top_left:s=="Top Right"?position.top_right:s=="Bottom Left"?position.bottom_left:position.bottom_right
+f_px(x) => str.tostring(x, format.mintick)
+
+atr   = ta.atr(14)
+atr1  = ta.tr(true)
+minTk = syminfo.mintick
+
+showTables = not only1m or is1m or is15m
+// 2H/3H/4H par SELL/plan/LGB ke label dhyan bhatkate the (2 Oct) - ab sirf 1m par
+marksOK    = not marks1m or is1m
+
+colSRBull = color.new(color.lime,  0)
+colSRBear = color.new(color.red,   0)
+bgPanel   = color.new(color.white, panelTrans)
+bgPanel2  = color.new(color.white, math.max(panelTrans-5,0))
+
+f_adx(len, smooth)=>
+    [_p,_m,_adx] = ta.dmi(len, smooth)
+    _adx
+
+f_labTF(_tf)=>
+    _tf=="W"?"1W":_tf=="D"?"1D":_tf=="240"?"4H":_tf=="180"?"3H":_tf=="120"?"2H":_tf=="60"?"1H":_tf=="30"?"30m":_tf=="15"?"15m":_tf=="5"?"5m":_tf=="3"?"3m":_tf=="1"?"1m":_tf
+
+// ============================================================================
+//  SUPERTREND
+// ============================================================================
+var int stTrend = 1
+stATRsrc = stUseATR ? ta.atr(stPeriod) : ta.sma(ta.tr(true), stPeriod)
+stUp  = stSrc - (stMult * stATRsrc)
+stUp1 = nz(stUp[1], stUp)
+stUp  := close[1] > stUp1 ? math.max(stUp, stUp1) : stUp
+stDn  = stSrc + (stMult * stATRsrc)
+stDn1 = nz(stDn[1], stDn)
+stDn  := close[1] < stDn1 ? math.min(stDn, stDn1) : stDn
+stTrend := nz(stTrend[1], stTrend)
+stTrend := stTrend == -1 and close > stDn1 ? 1 : stTrend == 1 and close < stUp1 ? -1 : stTrend
+stBuySig  = enableST and stTrend == 1 and stTrend[1] == -1
+stSellSig = enableST and stTrend == -1 and stTrend[1] == 1
+
+plot(enableST and stShowPlots and stTrend == 1 ? stUp : na, title="ST Up",  style=plot.style_linebr, linewidth=2, color=color.new(color.green, 0))
+plot(enableST and stShowPlots and stTrend == -1 ? stDn : na, title="ST Dn", style=plot.style_linebr, linewidth=2, color=color.new(color.red, 0))
+plotshape((enableST and stShowSignals and not showOnlyLast) ? (stBuySig ? stUp : na) : na,  title="ST Buy",  text="ST",  style=shape.labelup,   location=location.absolute, color=color.new(color.green,0), textcolor=color.white, size=size.tiny)
+plotshape((enableST and stShowSignals and not showOnlyLast) ? (stSellSig ? stDn : na) : na, title="ST Sell", text="ST", style=shape.labeldown, location=location.absolute, color=color.new(color.red,0),   textcolor=color.white, size=size.tiny)
+
+// Sirf aakhri ST palat — naya aate hi purana mit jata hai
+var label lbST = na
+if marksOK and enableST and stShowSignals and showOnlyLast and (stBuySig or stSellSig)
+    label.delete(lbST)
+    lbST := label.new(bar_index, stBuySig ? stUp : stDn, "ST", xloc=xloc.bar_index, yloc=yloc.price, style=stBuySig ? label.style_label_up : label.style_label_down, color=color.new(stBuySig ? color.green : color.red, 0), textcolor=color.white, size=size.tiny)
+
+// The legend's optional extra rows used to run their own copy of this logic
+// (hard-coded pivot 5/5, a high>high[1] "sweep", a trend that always demanded
+// close beyond the EMA). Three definitions of the same thing disagreed with
+// each other and with the chart, so those rows now decode f_tfPacked() too —
+// see the LEGEND section.
+
+// ============================================================================
+//  SWINGS + BOS / CHOCH
+// ============================================================================
+ph = ta.pivothigh(high, pivotLR, pivotLR)
+pl = ta.pivotlow (low,  pivotLR, pivotLR)
+
+var float lastHi = na
+var float lastLo = na
+var int   lastHiIdx = na
+var int   lastLoIdx = na
+
+if not na(ph)
+    lastHi    := ph
+    lastHiIdx := bar_index - pivotLR
+if not na(pl)
+    lastLo    := pl
+    lastLoIdx := bar_index - pivotLR
+
+f_breakAbove(_ref, useClose)=> na(_ref) ? false : ((useClose?close:high) > _ref)
+f_breakBelow(_ref, useClose)=> na(_ref) ? false : ((useClose?close:low)  < _ref)
+
+aboveHi = f_breakAbove(lastHi, useCloseBreak)
+belowLo = f_breakBelow(lastLo, useCloseBreak)
+
+var int  trendStruct = 0
+var bool bosUp=false, bosDn=false, chochUp=false, chochDn=false
+bosUp:=false, bosDn:=false, chochUp:=false, chochDn:=false
+
+// Only flag a break once per swing (avoid a BOS firing every bar while price
+// stays above the old swing high).
+brokeUp = aboveHi and not aboveHi[1]
+brokeDn = belowLo and not belowLo[1]
+
+if brokeUp
+    if trendStruct == -1
+        chochUp := true
+    else
+        bosUp := true
+    trendStruct := 1
+if brokeDn
+    if trendStruct == 1
+        chochDn := true
+    else
+        bosDn := true
+    trendStruct := -1
+
+bsUp = ta.barssince(bosUp or chochUp)
+bsDn = ta.barssince(bosDn or chochDn)
+recentUpStruct   = not na(bsUp) and bsUp <= structLookback
+recentDownStruct = not na(bsDn) and bsDn <= structLookback
+
+// ============================================================================
+//  ZONES (with lifecycle: age, touches, mitigation)
+// ============================================================================
+var box[]  zBoxes = array.new_box()
+var line[] zLines = array.new_line()
+var bool[] zIsSup = array.new_bool()
+var int[]  zTouch = array.new_int()
+var int[]  zBorn  = array.new_int()
+var int[]  zSig   = array.new_int()     // signals already taken from this zone
+
+f_zoneKill(i) =>
+    box.delete(array.get(zBoxes, i))
+    line.delete(array.get(zLines, i))
+    array.remove(zBoxes, i)
+    array.remove(zLines, i)
+    array.remove(zIsSup, i)
+    array.remove(zTouch, i)
+    array.remove(zBorn,  i)
+    array.remove(zSig,   i)
+
+// showSR only controls whether the zone is VISIBLE. Zones are always created
+// and tracked, otherwise unticking "Draw S/R zones" silently switched off every
+// zone entry, the freshness score and the TP1 room test.
+newZone(_idx,_price,_isSupport)=>
+    pad  = atr * zonePadATR
+    // Zone ka anchor: pivot ki price. zoneToWick ON ho to band ko us candle ki
+    // asli wick tak khencha jata hai, taake band wick ke sire ko sach much
+    // chhue (sirf +/- pad lagane se lambi wick band se bahar reh jati thi).
+    _off  = math.max(0, bar_index - _idx)
+    _wick = _isSupport ? low[_off] : high[_off]
+    _body = _isSupport ? math.min(open[_off], close[_off]) : math.max(open[_off], close[_off])
+    top   = zoneToWick ? (_isSupport ? math.max(_body, _price) + pad : math.max(_wick, _price))
+             : _price + pad
+    bot   = zoneToWick ? (_isSupport ? math.min(_wick, _price) : math.min(_body, _price) - pad)
+             : _price - pad
+    // Rang wahi convention follow karta hai jo pivot lines ka hai, warna ek
+    // hi chart par green ke do ulte matlab ban jate thay: neeche wala zone
+    // green (support) aur oopar wali pivot line bhi green (resistance).
+    _cSup = pivSwapCol ? colSRBear : colSRBull
+    _cRes = pivSwapCol ? colSRBull : colSRBear
+    col  = _isSupport ? _cSup : _cRes
+    // Border aur beech wali lakeer default band hain. Un ki wajah se chart par
+    // "digital signal" jaisi seerhiyan ban jati thin aur shor lagta tha. Ab
+    // sirf ek narm si patti rehti hai.
+    fill = showSR ? color.new(col, zoneFade) : color.new(color.gray, 100)
+    bcol = showSR and zoneShowBrdr ? color.new(col, 70) : color.new(col, 100)
+    lcol = showSR and zoneShowLine ? col : color.new(col, 100)
+    b = box.new(_idx, top, bar_index, bot, xloc=xloc.bar_index, bgcolor=fill, border_color=bcol)
+    l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=lcol, width=2)
+    array.push(zBoxes, b)
+    array.push(zLines, l)
+    array.push(zIsSup, _isSupport)
+    array.push(zTouch, 0)
+    array.push(zBorn,  bar_index)
+    array.push(zSig,   0)
+
+// A demand zone is born at the low that produced an upside break (BOS or CHOCH),
+// a supply zone at the high that produced a downside break.
+if (bosUp or chochUp) and not na(lastLoIdx)
+    newZone(lastLoIdx, lastLo, true)
+if (bosDn or chochDn) and not na(lastHiIdx)
+    newZone(lastHiIdx, lastHi, false)
+
+// --- maintain: extend, count touches, invalidate broken / stale / exhausted
+// Pehle extreme dhoondo: sab se ooncha supply top aur sab se neecha demand bottom.
+// zoneKeepExtr ON ho to ye do zones umar ya touch se nahi marte (break se marte hain),
+// warna chart ka sab se aham high/low band gayab ho jata tha.
+float _extSupTop = na
+float _extDemBot = na
+if zoneKeepExtr and array.size(zBoxes) > 0
+    for j = 0 to array.size(zBoxes) - 1
+        _bj = array.get(zBoxes, j)
+        if array.get(zIsSup, j)
+            _bj2 = box.get_bottom(_bj)
+            _extDemBot := na(_extDemBot) ? _bj2 : math.min(_extDemBot, _bj2)
+        else
+            _tj = box.get_top(_bj)
+            _extSupTop := na(_extSupTop) ? _tj : math.max(_extSupTop, _tj)
+if array.size(zBoxes) > 0
+    for i = array.size(zBoxes) - 1 to 0
+        _b     = array.get(zBoxes, i)
+        _isSup = array.get(zIsSup, i)
+        _top   = box.get_top(_b)
+        _bot   = box.get_bottom(_b)
+        box.set_right(_b, bar_index + 1)
+        // touch registration (a new touch only after price left the zone)
+        _inside     = high >= _bot and low <= _top
+        _insidePrev = high[1] >= _bot and low[1] <= _top
+        if _inside and not _insidePrev
+            array.set(zTouch, i, array.get(zTouch, i) + 1)
+        _broke = _isSup ? close < _bot : close > _top
+        _stale = (bar_index - array.get(zBorn, i)) > zoneMaxAge
+        _spent = array.get(zTouch, i) > zoneMaxTouch
+        _isExt = zoneKeepExtr and (_isSup ? (not na(_extDemBot) and _bot <= _extDemBot)
+                 : (not na(_extSupTop) and _top >= _extSupTop))
+        // Bohot door ka zone hata do. Warna 4360 wali red band chart par
+        // padi rehti thi jab ke price 4310 par thi aur EMA20/50 buy ka
+        // rukh dikha rahe thay - dono aapas mein ulte lagte thay.
+        _gap   = _isSup ? (close - _top) : (_bot - close)
+        _far   = zoneFarATR > 0 and _gap > atr * zoneFarATR
+        if _broke or _far or ((_stale or _spent) and not _isExt)
+            f_zoneKill(i)
+
+// Cap: sab se purana zone hatao, lekin extreme wale ko bacha kar rakho.
+while array.size(zBoxes) > maxZones
+    int _victim = 0
+    if zoneKeepExtr
+        for k = 0 to array.size(zBoxes) - 1
+            _bk = array.get(zBoxes, k)
+            _ke = array.get(zIsSup, k) ? (not na(_extDemBot) and box.get_bottom(_bk) <= _extDemBot)
+                   : (not na(_extSupTop) and box.get_top(_bk) >= _extSupTop)
+            if not _ke
+                _victim := k
+                break
+    f_zoneKill(_victim)
+
+f_lastZoneIdx(_isSupport)=>
+    int ret = -1
+    _n = array.size(zBoxes)
+    if _n > 0
+        for i = _n - 1 to 0
+            if array.get(zIsSup, i) == _isSupport
+                ret := i
+                break
+    ret
+
+supIdx = f_lastZoneIdx(true)
+resIdx = f_lastZoneIdx(false)
+
+// Pine does NOT short-circuit `and`/`or` or the ternary operator: every branch
+// is evaluated. So `_i >= 0 ? array.get(a, _i) : na` still runs array.get(a, -1)
+// and throws on bar 0 while the zone arrays are still empty. Every read of a
+// zone array has to go through these bounds-checked accessors instead.
+f_zoneValid(_i) =>
+    bool ok = false
+    if _i >= 0
+        ok := _i < array.size(zBoxes)
+    ok
+
+f_zoneTop(_i) =>
+    float r = na
+    if f_zoneValid(_i)
+        r := box.get_top(array.get(zBoxes, _i))
+    r
+
+f_zoneBot(_i) =>
+    float r = na
+    if f_zoneValid(_i)
+        r := box.get_bottom(array.get(zBoxes, _i))
+    r
+
+// ============================================================================
+//  FVG / LGB (current bar)
+// ============================================================================
+var box   fvgBox = na
+var label lgbLbl = na
+
+// Detection ALWAYS runs — showFVG / showLGB are drawing switches. Computing
+// these inside "if showFVG" left FVG_up/FVG_dn false when the box was hidden,
+// which disabled the "Confirm + (FVG or LGB)" entry mode and the momentum
+// points in the score.
+FVG_up = bar_index > 2 and (low  > high[2])
+FVG_dn = bar_index > 2 and (high < low [2])
+LGB_up = not na(lastHi) and high > lastHi and close < lastHi   // sweep of buy-side liquidity
+LGB_dn = not na(lastLo) and low  < lastLo and close > lastLo   // sweep of sell-side liquidity
+
+// Drawing: current bar only. The previous object is deleted first — the old
+// code only deleted on `not barstate.islast` bars, which never execute again
+// once the chart is live, so every new live bar leaked one box / one label.
+if barstate.islast
+    box.delete(fvgBox)
+    fvgBox := na
+    if marksOK and showFVG and FVG_up
+        fvgBox := box.new(bar_index-2, high[2], bar_index, low,  xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+    else if marksOK and showFVG and FVG_dn
+        fvgBox := box.new(bar_index-2, low [2], bar_index, high, xloc=xloc.bar_index, bgcolor=color.new(color.gray,86), border_color=color.new(color.gray,60))
+    label.delete(lgbLbl)
+    lgbLbl := na
+    if marksOK and showLGB and LGB_up
+        lgbLbl := label.new(bar_index, lastHi, "LGB↑", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_down, color=color.new(color.red,0),  textcolor=color.white, size=size.tiny)
+    else if marksOK and showLGB and LGB_dn
+        lgbLbl := label.new(bar_index, lastLo, "LGB↓", xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_up,   color=color.new(color.lime,0), textcolor=color.black, size=size.tiny)
+
+// ============================================================================
+//  TREND / ADX / PRESSURE
+// ============================================================================
+emaF = ta.ema(close, emaFastLen)
+emaS = ta.ema(close, emaSlowLen)
+adxV = f_adx(adxLen, adxSmooth)
+
+longOK  = (emaF > emaS) and (strictTrendClose ? close > emaF : true) and (useAdx ? adxV >= adxMin : true)
+shortOK = (emaF < emaS) and (strictTrendClose ? close < emaF : true) and (useAdx ? adxV >= adxMin : true)
+trendState = longOK ? 1 : shortOK ? -1 : 0
+
+// MA21 / MA63: har chart par sirf usi chart ke APNE TF ki do lakeerein.
+// Purana EMA20/50 aur un ke beech ka band hata diya gaya (v3).
+plot(emaF, title="MA21", color=color.new(color.aqua, 0), linewidth=2)
+plot(emaS, title="MA63", color=color.new(color.fuchsia, 0), linewidth=2)
+
+// ============================================================================
+//  CANDLE-CHIPKU NAALI (low / high channel)
+//  Neeche wali lakeer candles ke LOW ka ausat hai, oopar wali HIGH ka.
+//  Uptrend mein price neeche wali par baar baar tap karti hai - wahi support.
+//  Downtrend mein oopar wali resistance ban jati hai. Naali toot jaye to
+//  trend badalne ka ishara.
+//  YE SIRF DIKHAWA HAI - kisi signal, score ya gate par iska koi asar nahi.
+//  Signals ab bhi MA21/63 (close par) se hi bante hain.
+// ============================================================================
+f_hlMa(_src, _len) =>
+    hlSmooth == "SMA" ? ta.sma(_src, _len) : hlSmooth == "WMA" ? ta.wma(_src, _len) : ta.ema(_src, _len)
+
+hlLo = f_hlMa(low,  hlLen)
+hlHi = f_hlMa(high, hlLen)
+
+// Rang naali ke rukh se: dono lakeerein upar ja rahi hon to sabz, neeche to laal.
+hlUp   = hlLo > hlLo[1] and hlHi > hlHi[1]
+hlDn   = hlLo < hlLo[1] and hlHi < hlHi[1]
+hlCol  = hlUp ? color.green : hlDn ? color.red : color.gray
+
+pHL = plot(showHL ? hlLo : na, title="Naali neeche (low)",  color=color.new(showHL ? color.green : color.gray, showHL ? 10 : 100), linewidth=hlWidth)
+pHH = plot(showHL ? hlHi : na, title="Naali oopar (high)", color=color.new(showHL ? color.red   : color.gray, showHL ? 10 : 100), linewidth=hlWidth)
+fill(pHL, pHH, color = (showHL and hlFillOn) ? color.new(hlCol, hlFade) : color.new(color.gray, 100), title="Naali ka andar")
+
+// --- Naali tootne ke nishan ---
+// Masla: naali ka rang sirf us ke apne rukh se banta hai, aur MA hamesha
+// peeche chalti hai. Girawat ke waqt price naali se door chali jati hai, phir
+// jab woh palat kar upar aati hai to naali abhi oopar hi hoti hai - is liye
+// TALE par koi wakia nazar nahi aata, jab ke CHOTI par saaf dikhta hai.
+// Hal: dono taraf ka ek hi qism ka wakia ginna - price ka naali ko torna.
+hlBrkUp = showHL and ta.crossover(close,  hlHi)   // oopar wali tor kar bahar = kharidaar
+hlBrkDn = showHL and ta.crossunder(close, hlLo)   // neeche wali tor kar bahar = bechne wale
+
+plotshape(hlMarks and hlBrkUp, title="Naali tooti UPAR", style=shape.triangleup,
+     location=location.belowbar, color=color.new(color.green, 0), size=size.tiny)
+plotshape(hlMarks and hlBrkDn, title="Naali tooti NEECHE", style=shape.triangledown,
+     location=location.abovebar, color=color.new(color.red, 0), size=size.tiny)
+
+alertcondition(hlBrkUp, "Naali tooti UPAR",  "Price ne low/high naali ko upar se tora")
+alertcondition(hlBrkDn, "Naali tooti NEECHE", "Price ne low/high naali ko neeche se tora")
+
+// Safed chart par lime aur halka grey parhe nahi jate. pressDark on ho to
+// gehre rang: gehra sabz, gehra laal, gehra slaty.
+f_pressCol(_b) =>
+    pressDark ? (_b > 55 ? color.new(#1B5E20, 0) : _b < 45 ? color.new(#B71C1C, 0) : color.new(#37474F, 0))
+             : (_b > 55 ? color.new(color.lime, 0) : _b < 45 ? color.new(color.red, 0) : color.new(color.gray, 0))
+
+// ============================================================================
+//  CONTEXT FILTERS: volume / chop / session / DXY
+// ============================================================================
+volMA  = ta.sma(volume, volLen)
+relVol = (na(volume) or na(volMA) or volMA == 0) ? na : volume / volMA
+volOK  = not useVol or na(relVol) or relVol >= volMin
+
+rngLook  = ta.highest(high, chopLook) - ta.lowest(low, chopLook)
+isChop   = not na(rngLook) and rngLook < atr * chopMinATR
+regimeOK = not useChop or not isChop
+
+f_inSess(_on, _s) => _on and not na(time(timeframe.period, _s, sessTZ))
+sessAnyOn = sessA_on or sessL_on or sessN_on
+inSess    = f_inSess(sessA_on, sessA) or f_inSess(sessL_on, sessL) or f_inSess(sessN_on, sessN)
+sessOK    = not useSession or not sessAnyOn or inSess
+
+isGoldSym   = str.contains(str.upper(syminfo.ticker), "XAU") or str.contains(str.upper(syminfo.ticker), "GOLD")
+applyDXY    = useDXY and isGoldSym
+dxySeriesTF = (str.length(dxyTF) == 0 ? timeframe.period : dxyTF)
+dxyClose    = applyDXY ? request.security("TVC:DXY", dxySeriesTF, close, barmerge.gaps_off, barmerge.lookahead_off) : na
+dxyDir      = applyDXY and not na(dxyClose) ? (ta.ema(dxyClose, 8) - ta.ema(dxyClose, 21)) : na
+passDXYLong  = not applyDXY or (not na(dxyDir) and dxyDir < 0)
+passDXYShort = not applyDXY or (not na(dxyDir) and dxyDir > 0)
+
+// ============================================================================
+//  HTF CONFLUENCE — single packed security call per TF, shift INSIDE context
+// ============================================================================
+f_htfDir(_useClosed) =>
+    _f = ta.ema(close, emaFastLen)
+    _s = ta.ema(close, emaSlowLen)
+    _a = f_adx(adxLen, adxSmooth)
+    _c = close
+    _fx = _useClosed ? _f[1] : _f
+    _sx = _useClosed ? _s[1] : _s
+    _ax = _useClosed ? _a[1] : _a
+    _cx = _useClosed ? _c[1] : _c
+    _long  = _fx>_sx and (strictTrendClose ? _cx>_fx : true) and (useAdx ? nz(_ax,0)>=adxMin : true)
+    _short = _fx<_sx and (strictTrendClose ? _cx<_fx : true) and (useAdx ? nz(_ax,0)>=adxMin : true)
+    _long ? 1 : _short ? -1 : 0
+
+st4h = enableHTF ? int(nz(request.security(syminfo.tickerid, "240", f_htfDir(useClosedHTF), barmerge.gaps_off, barmerge.lookahead_off), 0)) : 0
+std  = enableHTF ? int(nz(request.security(syminfo.tickerid, "D",   f_htfDir(useClosedHTF), barmerge.gaps_off, barmerge.lookahead_off), 0)) : 0
+
+needBoth    = (htfAgreeMode=="Both")
+agreeLong   = (st4h==1?1:0) + (std==1?1:0)
+agreeShort  = (st4h==-1?1:0) + (std==-1?1:0)
+passHTFLong  = not enableHTF or (needBoth ? (agreeLong==2)  : (agreeLong>=1))
+passHTFShort = not enableHTF or (needBoth ? (agreeShort==2) : (agreeShort>=1))
+
+// ============================================================================
+//  ZONE TOUCH
+// ============================================================================
+f_touch(_i)=>
+    bool res = false
+    if f_zoneValid(_i)
+        _top = f_zoneTop(_i)
+        _bot = f_zoneBot(_i)
+        res := useCloseTouch ? (close>=_bot and close<=_top) : (high>=_bot and low<=_top)
+    res
+
+// The current touch is already counted, so a first-time test reads zTouch == 1.
+f_zoneFresh(_i)=>
+    bool res = false
+    if f_zoneValid(_i)
+        res := array.get(zTouch, _i) <= freshMaxTouch + 1
+    res
+
+f_zoneUnused(_i)=>
+    bool res = true
+    if onePerZone and f_zoneValid(_i)
+        res := array.get(zSig, _i) == 0
+    res
+
+longTouch  = f_touch(supIdx)
+shortTouch = f_touch(resIdx)
+
+// ============================================================================
+//  BASE + MOMENTUM SIGNALS
+// ============================================================================
+momoUp_rt = (FVG_up or LGB_dn)
+momoDn_rt = (FVG_dn or LGB_up)
+momoUp    = confirmMomo ? (momoUp_rt and barstate.isconfirmed) : momoUp_rt
+momoDn    = confirmMomo ? (momoDn_rt and barstate.isconfirmed) : momoDn_rt
+
+// A demand zone is CREATED by an up-break and is retested many bars later, so
+// asking for that break within structLookback (3) bars of the touch killed
+// almost every zone entry. Zone entries get their own, wider window; the
+// breakout / EMA-retest paths keep the tight one.
+zoneUpStruct   = not na(bsUp) and bsUp <= zoneStructLook
+zoneDownStruct = not na(bsDn) and bsDn <= zoneStructLook
+
+baseBuy  = entryMode=="Touch only" ? longTouch : (longTouch and zoneUpStruct and trendState==1)
+baseSell = entryMode=="Touch only" ? shortTouch: (shortTouch and zoneDownStruct and trendState==-1)
+
+zoneBuyRaw  = (entryMode=="Confirm + (FVG or LGB)" ? (baseBuy  and momoUp) : baseBuy)  and f_zoneUnused(supIdx)
+zoneSellRaw = (entryMode=="Confirm + (FVG or LGB)" ? (baseSell and momoDn) : baseSell) and f_zoneUnused(resIdx)
+
+brkUpRaw = enableBreakout and recentUpStruct and trendState==1 and not na(lastHi) and close > (lastHi + atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_up or LGB_dn)
+brkDnRaw = enableBreakout and recentDownStruct and trendState==-1 and not na(lastLo) and close < (lastLo - atr*brkBufATR) and (atr1 >= atr*impulseATR or FVG_dn or LGB_up)
+
+emaRef  = emaRetestWhich=="MA63" ? emaS : emaF
+sinceUp = bsUp
+sinceDn = bsDn
+retestUpRaw = enableBreakout and enableEMARetest and trendState==1  and recentUpStruct   and (not na(sinceUp) and sinceUp <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close > emaRef and close > open
+retestDnRaw = enableBreakout and enableEMARetest and trendState==-1 and recentDownStruct and (not na(sinceDn) and sinceDn <= retestWindow) and (math.abs(close-emaRef) <= atr*emaRetestTol) and close < emaRef and close < open
+
+momoBuyRaw  = brkUpRaw or retestUpRaw
+momoSellRaw = brkDnRaw or retestDnRaw
+
+// ============================================================================
+//  CONFLUENCE SCORE (0-100)
+// ============================================================================
+adxStrong = nz(adxV, 0) >= adxMin
+f_score(_dir) =>
+    _okTrend  = _dir == 1 ? (trendState == 1)      : (trendState == -1)
+    _okStruct = _dir == 1 ? recentUpStruct         : recentDownStruct
+    _okMomo   = _dir == 1 ? (FVG_up or LGB_dn)     : (FVG_dn or LGB_up)
+    _okST     = _dir == 1 ? (stTrend == 1)         : (stTrend == -1)
+    _okZone   = f_zoneFresh(_dir == 1 ? supIdx : resIdx)
+    _okVol    = not na(relVol) and relVol >= volMin
+    _htf      = _dir == 1 ? agreeLong : agreeShort
+    _pts      = 0
+    _pts := _pts + (_okTrend  ? wTrend  : 0)
+    _pts := _pts + (_okStruct ? wStruct : 0)
+    _pts := _pts + (_okMomo   ? wMomo   : 0)
+    _pts := _pts + (_htf == 2 ? wHTF : _htf == 1 ? int(wHTF / 2) : 0)
+    _pts := _pts + (_okST     ? wST     : 0)
+    _pts := _pts + (adxStrong ? wAdx    : 0)
+    _pts := _pts + (_okZone   ? wZone   : 0)
+    _pts := _pts + (_okVol    ? wVol    : 0)
+    _wMax = wTrend + wStruct + wMomo + wHTF + wST + wAdx + wZone + wVol
+    _wMax > 0 ? int(math.round(100.0 * _pts / _wMax)) : 0
+
+scoreBuy  = f_score(1)
+scoreSell = f_score(-1)
+scoreOKb  = not useScore or scoreBuy  >= minScore
+scoreOKs  = not useScore or scoreSell >= minScore
+
+// ============================================================================
+//  CONTEXT GATES -> RAW SIGNALS
+// ============================================================================
+ctxLong  = passHTFLong  and passDXYLong  and volOK and regimeOK and sessOK and ((not (enableST and useSTFilter)) or stTrend == 1)
+ctxShort = passHTFShort and passDXYShort and volOK and regimeOK and sessOK and ((not (enableST and useSTFilter)) or stTrend == -1)
+
+rawBuy  = (zoneBuyRaw  or momoBuyRaw)  and ctxLong  and scoreOKb
+rawSell = (zoneSellRaw or momoSellRaw) and ctxShort and scoreOKs
+
+// close-confirmation
+cBuy  = confirmSignalsOnClose ? (rawBuy  and barstate.isconfirmed) : rawBuy
+cSell = confirmSignalsOnClose ? (rawSell and barstate.isconfirmed) : rawSell
+
+// Mutual exclusion: never both on the same bar. On an exact score tie the old
+// code dropped BOTH signals without a word; the tie is now broken by the EMA
+// trend, then by Supertrend, and only a true 0/0 tie suppresses the bar.
+tieDir = trendState != 0 ? trendState : (enableST ? stTrend : 0)
+xBuy  = cBuy  and (not cSell or scoreBuy  > scoreSell or (scoreBuy == scoreSell and tieDir ==  1))
+xSell = cSell and (not cBuy  or scoreSell > scoreBuy  or (scoreSell == scoreBuy and tieDir == -1))
+
+// cooldown
+var int lastSigBar = na
+coolOK = na(lastSigBar) or (bar_index - lastSigBar) >= cooldownBars
+
+// ============================================================================
+//  RISK ENGINE
+// ============================================================================
+f_slLong() =>
+    _sw    = ta.lowest(low, slSwingLook)
+    _zb    = f_zoneBot(supIdx)
+    _anchor = math.min(nz(_zb, _sw), _sw)
+    _byATR  = close - atr * slAtrMult
+    _byZone = nz(_zb, _sw) - atr * slBufATR
+    _byStr  = _anchor - atr * slBufATR
+    _base  = slMode == "ATR only" ? _byATR : slMode == "Zone edge" ? _byZone : _byStr
+    _near  = close - atr * minSLatr
+    _far   = close - atr * maxSLatr
+    math.max(math.min(_base, _near), _far)
+
+f_slShort() =>
+    _sw    = ta.highest(high, slSwingLook)
+    _zt    = f_zoneTop(resIdx)
+    _anchor = math.max(nz(_zt, _sw), _sw)
+    _byATR  = close + atr * slAtrMult
+    _byZone = nz(_zt, _sw) + atr * slBufATR
+    _byStr  = _anchor + atr * slBufATR
+    _base  = slMode == "ATR only" ? _byATR : slMode == "Zone edge" ? _byZone : _byStr
+    _near  = close + atr * minSLatr
+    _far   = close + atr * maxSLatr
+    math.min(math.max(_base, _near), _far)
+
+planEntryB = close
+planSLb    = f_slLong()
+planRb     = planEntryB - planSLb
+planEntryS = close
+planSLs    = f_slShort()
+planRs     = planSLs - planEntryS
+
+// A long is rejected if the nearest opposing zone sits inside TP1 (no room).
+// The obstacle is the NEAREST edge of that zone that is still ahead of entry:
+// the old test used the far edge (zone top for a long), which under-measured a
+// zone right above price and mis-read a zone straddling the entry.
+resTop  = f_zoneTop(resIdx)
+resBot  = f_zoneBot(resIdx)
+supTop  = f_zoneTop(supIdx)
+supBot  = f_zoneBot(supIdx)
+float obsUp = na
+float obsDn = na
+if not na(resBot)
+    obsUp := resBot > planEntryB ? resBot : (resTop > planEntryB ? resTop : obsUp)
+if not na(supTop)
+    obsDn := supTop < planEntryS ? supTop : (supBot < planEntryS ? supBot : obsDn)
+roomBuy  = planRb > 0 and (na(obsUp) or (obsUp - planEntryB) >= planRb * minRRzone)
+roomSell = planRs > 0 and (na(obsDn) or (planEntryS - obsDn) >= planRs * minRRzone)
+
+sigBuyTotal  = xBuy  and coolOK and roomBuy
+sigSellTotal = xSell and coolOK and roomSell
+
+// Only a ZONE entry consumes the zone's one-signal-per-zone slot. A breakout or
+// EMA-retest signal used to burn the demand/supply zone it never traded, so the
+// next genuine touch of that zone was silently blocked.
+if sigBuyTotal or sigSellTotal
+    lastSigBar := bar_index
+    if sigBuyTotal and zoneBuyRaw and f_zoneValid(supIdx)
+        array.set(zSig, supIdx, array.get(zSig, supIdx) + 1)
+    if sigSellTotal and zoneSellRaw and f_zoneValid(resIdx)
+        array.set(zSig, resIdx, array.get(zSig, resIdx) + 1)
+
+plotshape(marksOK and sigBuyTotal  and not showOnlyLast, title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal,0),   size=size.tiny, text="Buy")
+plotshape(marksOK and sigSellTotal and not showOnlyLast, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple,0), size=size.tiny, text="Sell")
+
+// Sirf aakhri signal ka nishaan
+var label lbSig = na
+if marksOK and (sigBuyTotal or sigSellTotal) and showOnlyLast
+    label.delete(lbSig)
+    lbSig := label.new(bar_index, sigBuyTotal ? low : high, sigBuyTotal ? "BUY" : "SELL", xloc=xloc.bar_index, yloc=yloc.price, style=sigBuyTotal ? label.style_label_up : label.style_label_down, color=color.new(sigBuyTotal ? color.teal : color.purple, 0), textcolor=color.white, size=size.small)
+
+// ============================================================================
+//  VIRTUAL TRADE TRACKER (live hit-rate / expectancy)
+// ============================================================================
+var int   tDir    = 0
+var float tEntry  = na
+var float tSL     = na
+var float tR      = na
+var float tTP1    = na
+var float tTP2    = na
+var float tTP3    = na
+var int   tBar    = na
+var bool  hit1    = false
+var bool  hit2    = false
+var bool  hit3    = false
+
+var int nTrades = 0
+var int nTP1 = 0
+var int nTP2 = 0
+var int nTP3 = 0
+var int nSLh = 0
+var int nBE  = 0
+var int nFlip = 0
+var float sumR = 0.0
+// BUY aur SELL ka alag hisaab - sirf expectancy line ke liye (band trades)
+var int   nDoneB = 0
+var int   nDoneS = 0
+var float sumRB  = 0.0
+var float sumRS  = 0.0
+
+var line  lnE  = na
+var line  lnS  = na
+var line  lnT1 = na
+var line  lnT2 = na
+var line  lnT3 = na
+var label lbPlan = na
+
+// --- manage the open virtual trade BEFORE opening a new one
+// (runs whenever a trade is open, so disabling the tracker mid-chart cannot
+//  strand a position and block every later signal)
+if tDir != 0
+    _closed = false
+    _r0     = sumR
+    if tDir == 1
+        if low <= tSL
+            if tSL >= tEntry
+                nBE += 1
+                sumR += (tSL - tEntry) / tR
+            else
+                nSLh += 1
+                sumR += -1.0
+            _closed := true
+        else
+            if not hit1 and high >= tTP1
+                hit1 := true
+                nTP1 += 1
+                if beAfterTP1
+                    tSL := tEntry
+            if not hit2 and high >= tTP2
+                hit2 := true
+                nTP2 += 1
+            if not hit3 and high >= tTP3
+                hit3 := true
+                nTP3 += 1
+                sumR += tp3R
+                _closed := true
+    else
+        if high >= tSL
+            if tSL <= tEntry
+                nBE += 1
+                sumR += (tEntry - tSL) / tR
+            else
+                nSLh += 1
+                sumR += -1.0
+            _closed := true
+        else
+            if not hit1 and low <= tTP1
+                hit1 := true
+                nTP1 += 1
+                if beAfterTP1
+                    tSL := tEntry
+            if not hit2 and low <= tTP2
+                hit2 := true
+                nTP2 += 1
+            if not hit3 and low <= tTP3
+                hit3 := true
+                nTP3 += 1
+                sumR += tp3R
+                _closed := true
+    // Structure ulti taraf tootne par, ya bohot der ho jaane par, purana
+    // virtual trade zabardasti band. Warna 4320 wali SELL 52 candle tak
+    // chart par zinda rehti thi jab ke price upar ja chuki thi.
+    _flipOut = exitOnFlip and (tDir == 1 ? (bosDn or chochDn) : (bosUp or chochUp))
+    _timeOut = tMaxBars > 0 and not na(tBar) and (bar_index - tBar) > tMaxBars
+    if not _closed and (_flipOut or _timeOut)
+        sumR += ((tDir == 1 ? close - tEntry : tEntry - close) / tR)
+        nFlip += 1
+        _closed := true
+    if _closed
+        if tDir == 1
+            nDoneB += 1
+            sumRB  += sumR - _r0
+        else
+            nDoneS += 1
+            sumRS  += sumR - _r0
+        tDir := 0
+        // Trade khatam — uski Entry/SL/TP lines bhi chali jayein. Warna wo
+        // wahin padi rehti thin aur 170 candle purani plan chart par zinda
+        // lagti thi.
+        if showOnlyLast
+            line.delete(lnE)
+            line.delete(lnS)
+            line.delete(lnT1)
+            line.delete(lnT2)
+            line.delete(lnT3)
+            label.delete(lbPlan)
+            label.delete(lbSig)
+            lbSig := na
+            lnE   := na
+            lnS   := na
+            lnT1  := na
+            lnT2  := na
+            lnT3  := na
+            lbPlan := na
+
+// --- draw the Entry / SL / TP plan for EVERY signal
+// (this used to live inside the tracker's "open a trade" block, so a signal
+//  fired while a virtual trade was still open — or with tracking off — printed
+//  an arrow with no plan at all)
+if marksOK and (sigBuyTotal or sigSellTotal) and showRisk
+    _dir   = sigBuyTotal ? 1 : -1
+    _pe    = close
+    _psl   = _dir == 1 ? planSLb : planSLs
+    _pr    = math.abs(_pe - _psl)
+    _pt1   = _dir == 1 ? _pe + _pr*tp1R : _pe - _pr*tp1R
+    _pt2   = _dir == 1 ? _pe + _pr*tp2R : _pe - _pr*tp2R
+    _pt3   = _dir == 1 ? _pe + _pr*tp3R : _pe - _pr*tp3R
+    line.delete(lnE)
+    line.delete(lnS)
+    line.delete(lnT1)
+    line.delete(lnT2)
+    line.delete(lnT3)
+    label.delete(lbPlan)
+    _colT  = color.new(color.green, 0)
+    lnE   := line.new(bar_index, _pe,  bar_index + futureBars, _pe,  color=color.new(color.blue, 0), width=2)
+    lnS   := line.new(bar_index, _psl, bar_index + futureBars, _psl, color=color.new(color.red, 0),  width=2, style=line.style_dashed)
+    lnT1  := line.new(bar_index, _pt1, bar_index + futureBars, _pt1, color=_colT, width=1)
+    lnT2  := line.new(bar_index, _pt2, bar_index + futureBars, _pt2, color=_colT, width=1, style=line.style_dotted)
+    lnT3  := line.new(bar_index, _pt3, bar_index + futureBars, _pt3, color=_colT, width=1, style=line.style_dotted)
+    _units = _pr > 0 ? (acctSize * riskPct / 100.0) / _pr : na
+    _txt = (_dir==1 ? "LONG" : "SHORT") + "  Score " + str.tostring(_dir==1 ? scoreBuy : scoreSell) + "/100" +
+           "\nEntry " + f_px(_pe) + "   SL " + f_px(_psl) +
+           "\nTP1 " + f_px(_pt1) + " (" + str.tostring(tp1R,"#.#") + "R)" +
+           "\nTP2 " + f_px(_pt2) + " (" + str.tostring(tp2R,"#.#") + "R)" +
+           "\nTP3 " + f_px(_pt3) + " (" + str.tostring(tp3R,"#.#") + "R)" +
+           "\nRisk " + str.tostring(riskPct,"#.##") + "%  ≈ " + str.tostring(_units, "#.####") + " units"
+    _colBg = color.new(_dir == 1 ? color.teal : color.purple, 15)
+    lbPlan := label.new(bar_index + futureBars, _pe, _txt, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left, color=_colBg, textcolor=color.white, size=size.tiny)
+
+// --- open a new virtual trade on signal (only while tracking is on; a trade
+//     opened earlier is still managed above, so nothing can get stranded)
+if (sigBuyTotal or sigSellTotal) and tDir == 0 and useTracker
+    _dir = sigBuyTotal ? 1 : -1
+    tDir   := _dir
+    tEntry := close
+    tSL    := _dir==1 ? planSLb : planSLs
+    tR     := math.abs(tEntry - tSL)
+    tTP1   := _dir==1 ? tEntry + tR*tp1R : tEntry - tR*tp1R
+    tTP2   := _dir==1 ? tEntry + tR*tp2R : tEntry - tR*tp2R
+    tTP3   := _dir==1 ? tEntry + tR*tp3R : tEntry - tR*tp3R
+    tBar   := bar_index
+    hit1   := false
+    hit2   := false
+    hit3   := false
+    nTrades += 1
+
+// keep the plan lines following price to the right while the plan is live
+// (with tracking off there is no position to close, so the last plan stays)
+if showRisk and barstate.islast and not na(lnE) and (tDir != 0 or not useTracker)
+    line.set_x2(lnE,  bar_index + futureBars)
+    line.set_x2(lnS,  bar_index + futureBars)
+    line.set_x2(lnT1, bar_index + futureBars)
+    line.set_x2(lnT2, bar_index + futureBars)
+    line.set_x2(lnT3, bar_index + futureBars)
+    label.set_x(lbPlan, bar_index + futureBars)
+
+// Tracker chupa chalta hai (v3): koi panel ya "chal rahi" label nahi, sirf
+// band trades se BUY / SELL expectancy (R fi trade).
+expRB = nDoneB > 0 ? sumRB / nDoneB : na
+expRS = nDoneS > 0 ? sumRS / nDoneS : na
+
+// ============================================================================
+//  ALERTS
+// ============================================================================
+if sigBuyTotal
+    alert("BUY " + syminfo.ticker + " " + timeframe.period +
+          " | Entry " + f_px(planEntryB) + " | SL " + f_px(planSLb) +
+          " | TP1 " + f_px(planEntryB + planRb*tp1R) +
+          " | TP2 " + f_px(planEntryB + planRb*tp2R) +
+          " | TP3 " + f_px(planEntryB + planRb*tp3R) +
+          " | Score " + str.tostring(scoreBuy), alert.freq_once_per_bar_close)
+if sigSellTotal
+    alert("SELL " + syminfo.ticker + " " + timeframe.period +
+          " | Entry " + f_px(planEntryS) + " | SL " + f_px(planSLs) +
+          " | TP1 " + f_px(planEntryS - planRs*tp1R) +
+          " | TP2 " + f_px(planEntryS - planRs*tp2R) +
+          " | TP3 " + f_px(planEntryS - planRs*tp3R) +
+          " | Score " + str.tostring(scoreSell), alert.freq_once_per_bar_close)
+
+alertcondition(sigBuyTotal,  "SMC Coach BUY",  "SMC Coach: BUY signal")
+alertcondition(sigSellTotal, "SMC Coach SELL", "SMC Coach: SELL signal")
+alertcondition(stBuySig,     "Supertrend UP",  "Supertrend flipped UP")
+alertcondition(stSellSig,    "Supertrend DOWN","Supertrend flipped DOWN")
+
+// ============================================================================
+//  MTF DASHBOARD (v3) — SIRF 1m chart par
+//  Baen: har TF ki CHALTI candle (O/H/L/C, rukh, body kitni bhari, FVG, LGB,
+//        BZ/SZ). Daen: sab TF ka mila hua BUY/SELL, ek line.
+//  Pressure = close candle ki range mein kahan khara hai: neeche (low) = 0%
+//  BUY, oopar (high) = 100% BUY. Ye peshengoi nahi, sirf abhi ka haal hai.
+// ============================================================================
+f_hasBit(n, k) => int(math.floor(n / math.pow(2, k))) % 2 == 1
+
+// Har cheez us TF ke apne context mein, us ki CHALTI candle par - wahi
+// definitions jo chart FVG box / LGB label ke liye istemal karta hai.
+//   bits: 0 FVG↑, 1 FVG↓, 2 LGB↑, 3 LGB↓, 4 BZ touch, 5 SZ touch
+f_tfLive() =>
+    _phv  = ta.pivothigh(high, pivotLR, pivotLR)
+    _plv  = ta.pivotlow (low,  pivotLR, pivotLR)
+    _swHi = ta.valuewhen(not na(_phv), _phv, 0)
+    _swLo = ta.valuewhen(not na(_plv), _plv, 0)
+    _has2 = not na(high[2]) and not na(low[2])
+    _fvgUp = _has2 and low  > high[2]
+    _fvgDn = _has2 and high < low[2]
+    // Liquidity sweep = aakhri pakka swing toro aur close wapas andar
+    _lgbUp = not na(_swHi) and high > _swHi and close < _swHi
+    _lgbDn = not na(_swLo) and low  < _swLo and close > _swLo
+    _bz    = not na(_swLo) and low  <= _swLo
+    _sz    = not na(_swHi) and high >= _swHi
+    _bits  = (_fvgUp?1:0) + (_fvgDn?2:0) + (_lgbUp?4:0) + (_lgbDn?8:0) + (_bz?16:0) + (_sz?32:0)
+    [open, high, low, close, _bits]
+
+f_req(_tf) =>
+    request.security(syminfo.tickerid, _tf, f_tfLive(), barmerge.gaps_off, barmerge.lookahead_off)
+
+// Nau TF, har ek ki apni call (static - har call ek hi dafa ginti hoti hai)
+[o01, h01, l01, c01, b01] = f_req("1")
+[o05, h05, l05, c05, b05] = f_req("5")
+[o15, h15, l15, c15, b15] = f_req("15")
+[o30, h30, l30, c30, b30] = f_req("30")
+[o60, h60, l60, c60, b60] = f_req("60")
+[o3h, h3h, l3h, c3h, b3h] = f_req("180")
+[o4h, h4h, l4h, c4h, b4h] = f_req("240")
+[o1d, h1d, l1d, c1d, b1d] = f_req("D")
+[o1w, h1w, l1w, c1w, b1w] = f_req("W")
+
+// ============================================================================
+//  MTF 90% SIGNAL (sirf 1m chart) — user ka qaida, 2 Oct 2026
+//  Jab 1m se 1W tak SAB TF ka mila hua pressure ek taraf 90%+ ho, 1m par
+//  trade ka plan banta hai: Entry, SL, TP1, TP2 + us qaide ki apni expectancy.
+//
+//  Pressure har TF ki CHALTI candle se: (close - low) / (high - low).
+//  1m chart par har bari candle ka high/low yahin 1m candles se joda jata hai
+//  (open request se, lookahead_on - open shuru mein hi pakka hota hai, is
+//  liye mustaqbil nahi dekhta). Is tarah purani history aur live dono par
+//  bilkul wohi hisaab chalta hai - expectancy ki ginti sachi rehti hai.
+//
+//  Pro qawaid jo saath lagaye:
+//   - Har TF usi taraf ho (sirf ausat nahi) - ek bara TF ulta ho to signal nahi
+//   - 1m candle BAND ho aur usi taraf band ho, aur 1m close MA21 ke sahi taraf
+//   - SL: aakhri N candles ka swing + ATR buffer, 0.8-3.0 ATR ke beech
+//   - Ulta 1m zone TP1 se pehle ho to signal nahi (jagah nahi)
+//   - TP1 par aadhi band + SL entry par (BE), baqi TP2 tak
+//   - Ek waqt mein ek hi MTF trade; cooldown; N candle baad khud band
+//   - 10+ trades ke baad expectancy manfi ho to label "KAMZOR" likhta hai
+//  Ye sirf TEST/SEEKHNE ke liye hai. Pehle demo, phir faisla.
+// ============================================================================
+gMtf = "13 · MTF 90% signal (sirf 1m)"
+mtfOn      = input.bool(true,  "MTF 90% signal chalao", group=gMtf)
+mtfMin     = input.int(90, "Mila hua pressure kam az kam (%)", minval=55, maxval=99, group=gMtf)
+mtfNeedAll = input.bool(true,  "Har TF usi taraf ho (50% se upar/neeche)", group=gMtf)
+mtfNeedMA  = input.bool(true,  "1m close MA21 ke sahi taraf ho", group=gMtf)
+mtfRoom    = input.bool(true,  "Ulta zone TP1 se pehle ho to signal nahi", group=gMtf)
+mtfSwing   = input.int(15, "SL: kitni 1m candles ka swing", minval=3, maxval=100, group=gMtf)
+mtfBuf     = input.float(0.25, "SL buffer (x ATR)", step=0.05, minval=0, group=gMtf)
+mtfMinSL   = input.float(0.8, "SL kam az kam (x ATR)", step=0.1, minval=0.2, group=gMtf)
+mtfMaxSL   = input.float(3.0, "SL zyada se zyada (x ATR)", step=0.1, minval=0.5, group=gMtf)
+mtfT1      = input.float(1.0, "TP1 (R)", step=0.1, minval=0.3, group=gMtf)
+mtfT2      = input.float(2.0, "TP2 (R)", step=0.1, minval=0.5, group=gMtf)
+mtfMaxBars = input.int(120, "Trade N candle baad khud band (0 = kabhi nahi)", minval=0, group=gMtf)
+mtfCool    = input.int(15, "Do signal ke beech kam az kam candles", minval=0, group=gMtf)
+
+// 15m chart (2 Oct): rukh bare TF se, entry 15m par. Bias = 15m/1H/4H/1D ka
+// ausat pressure 80%+, 1H ki MA21/63 usi taraf. SL/TP/BE/zone wale qawaid
+// wohi jo upar 1m ke liye hain; 15m par sirf ye alag hain.
+gM15 = "14 · 15m signal (15m/1H/4H/1D pressure)"
+m15On      = input.bool(true,  "15m chart par signal chalao", group=gM15)
+m15Min     = input.int(80, "Mila hua pressure kam az kam (%)", minval=55, maxval=99, group=gM15)
+m15NeedHTF = input.bool(true,  "1H par MA21 / MA63 usi taraf ho (band 1H candle)", group=gM15)
+m15Ext     = input.float(1.5, "Price MA21 se itni ATR se door ho to peecha mat karo (0 = band)", step=0.1, minval=0, group=gM15)
+tzLbl      = input.string("Asia/Karachi", "Label par waqt kis zone mein", group=gM15)
+m15MaxBars = input.int(64, "15m: trade N candle baad khud band (64 = 16 ghante)", minval=0, group=gM15)
+
+// Chalti bari candle 1m candles se: open request se, high/low yahin jama.
+f_run(_tf) =>
+    _o = request.security(syminfo.tickerid, _tf, open, barmerge.gaps_off, barmerge.lookahead_on)
+    var float _h = na
+    var float _l = na
+    if timeframe.change(_tf) or na(_h)
+        _h := high
+        _l := low
+    else
+        _h := math.max(_h, high)
+        _l := math.min(_l, low)
+    [_o, math.max(_h, nz(_o, _h)), math.min(_l, nz(_o, _l))]
+
+[ro01, rh01, rl01] = f_run("1")
+[ro05, rh05, rl05] = f_run("5")
+[ro15, rh15, rl15] = f_run("15")
+[ro30, rh30, rl30] = f_run("30")
+[ro60, rh60, rl60] = f_run("60")
+[ro3h, rh3h, rl3h] = f_run("180")
+[ro4h, rh4h, rl4h] = f_run("240")
+[ro1d, rh1d, rl1d] = f_run("D")
+[ro1w, rh1w, rl1w] = f_run("W")
+
+// 1m chart par apna joda hua hisaab; doosre chart par request wala.
+f_sel(_a, _b) => (is1m or is15m) ? _a : _b
+f_pb(_h, _l) => (not na(_h) and not na(_l) and _h - _l >= minTk) ? (close - _l) / (_h - _l) * 100 : na
+
+xo01 = f_sel(ro01, o01)
+xh01 = f_sel(rh01, h01)
+xl01 = f_sel(rl01, l01)
+xo05 = f_sel(ro05, o05)
+xh05 = f_sel(rh05, h05)
+xl05 = f_sel(rl05, l05)
+xo15 = f_sel(ro15, o15)
+xh15 = f_sel(rh15, h15)
+xl15 = f_sel(rl15, l15)
+xo30 = f_sel(ro30, o30)
+xh30 = f_sel(rh30, h30)
+xl30 = f_sel(rl30, l30)
+xo60 = f_sel(ro60, o60)
+xh60 = f_sel(rh60, h60)
+xl60 = f_sel(rl60, l60)
+xo3h = f_sel(ro3h, o3h)
+xh3h = f_sel(rh3h, h3h)
+xl3h = f_sel(rl3h, l3h)
+xo4h = f_sel(ro4h, o4h)
+xh4h = f_sel(rh4h, h4h)
+xl4h = f_sel(rl4h, l4h)
+xo1d = f_sel(ro1d, o1d)
+xh1d = f_sel(rh1d, h1d)
+xl1d = f_sel(rl1d, l1d)
+xo1w = f_sel(ro1w, o1w)
+xh1w = f_sel(rh1w, h1w)
+xl1w = f_sel(rl1w, l1w)
+
+float[] mtfP = array.from(f_pb(xh01, xl01), f_pb(xh05, xl05), f_pb(xh15, xl15), f_pb(xh30, xl30), f_pb(xh60, xl60),
+                          f_pb(xh3h, xl3h), f_pb(xh4h, xl4h), f_pb(xh1d, xl1d), f_pb(xh1w, xl1w))
+float mtfSum   = 0.0
+int   mtfCnt   = 0
+bool  mtfAllUp = true
+bool  mtfAllDn = true
+for i = 0 to array.size(mtfP) - 1
+    _v = array.get(mtfP, i)
+    if not na(_v)
+        mtfSum   += _v
+        mtfCnt   += 1
+        mtfAllUp := mtfAllUp and _v > 50
+        mtfAllDn := mtfAllDn and _v < 50
+mtfAvg = mtfCnt > 0 ? mtfSum / mtfCnt : na
+
+// --- 15m mode: sirf 15m, 1H, 4H, 1D ---
+float[] m4P = array.from(f_pb(xh15, xl15), f_pb(xh60, xl60), f_pb(xh4h, xl4h), f_pb(xh1d, xl1d))
+float m4Sum   = 0.0
+int   m4Cnt   = 0
+bool  m4AllUp = true
+bool  m4AllDn = true
+for i = 0 to array.size(m4P) - 1
+    _v = array.get(m4P, i)
+    if not na(_v)
+        m4Sum   += _v
+        m4Cnt   += 1
+        m4AllUp := m4AllUp and _v > 50
+        m4AllDn := m4AllDn and _v < 50
+m4Avg = m4Cnt > 0 ? m4Sum / m4Cnt : na
+
+// 1H ka rukh: aakhri BAND 1H candle ki MA21 / MA63 ([1] + lookahead_on = repaint nahi)
+[h1F, h1S] = request.security(syminfo.tickerid, "60", [ta.ema(close, emaFastLen)[1], ta.ema(close, emaSlowLen)[1]], barmerge.gaps_off, barmerge.lookahead_on)
+
+// Chart ke hisaab se kaunsa qaida: 1m = 9 TF / 90%, 15m = 4 TF / 80%
+modeAvg  = is15m ? m4Avg : mtfAvg
+modeMin  = is15m ? m15Min : mtfMin
+modeTag  = is15m ? "15m-1D" : "1m-1W"
+modeName = is15m ? "15m" : "MTF"
+modeMax  = is15m ? m15MaxBars : mtfMaxBars
+modeOn   = is15m ? m15On : mtfOn
+// purane signal ki Exp line sirf 1m par (15m par woh signal nahi dikhta)
+expOn    = showExp and not is15m
+
+// --- signal ---
+mSLb   = math.max(math.min(ta.lowest(low, mtfSwing) - atr * mtfBuf, close - atr * mtfMinSL), close - atr * mtfMaxSL)
+mSLs   = math.min(math.max(ta.highest(high, mtfSwing) + atr * mtfBuf, close + atr * mtfMinSL), close + atr * mtfMaxSL)
+mRoomB = na(obsUp) or (obsUp - close) >= (close - mSLb) * mtfT1
+mRoomS = na(obsDn) or (close - obsDn) >= (mSLs - close) * mtfT1
+
+// 15m par pro hifazat: (1) 1H ka rukh, (2) price MA21 se bohot door ho to
+// peecha nahi - 80% pressure aksar kinare par hota hai, wahan se peecha
+// karna mehnga parta hai.
+m15Up   = not m15NeedHTF or (not na(h1F) and h1F > h1S)
+m15Dn   = not m15NeedHTF or (not na(h1F) and h1F < h1S)
+m15NotX = m15Ext <= 0 or math.abs(close - emaF) <= atr * m15Ext
+goAll   = is15m ? (mtfNeedAll ? m4AllUp : true) : (mtfNeedAll ? mtfAllUp : true)
+goAllDn = is15m ? (mtfNeedAll ? m4AllDn : true) : (mtfNeedAll ? mtfAllDn : true)
+mtfGo      = barstate.isconfirmed and ((is1m and mtfOn and mtfCnt == 9) or (is15m and m15On and m4Cnt == 4 and m15NotX))
+mtfBuyRaw  = mtfGo and modeAvg >= modeMin and goAll and close > open and (not mtfNeedMA or close > emaF) and (not mtfRoom or mRoomB) and (not is15m or m15Up)
+mtfSellRaw = mtfGo and modeAvg <= 100 - modeMin and goAllDn and close < open and (not mtfNeedMA or close < emaF) and (not mtfRoom or mRoomS) and (not is15m or m15Dn)
+
+// --- chupa tracker: sirf MTF signal ke nateeje (R mein) ---
+// Chart par har trade ka POORA naqsha (2 Oct): laal dabba = Entry se SL
+// (nuqsan ka ilaqa), hara dabba = Entry se TP2 (faide ka ilaqa), aur har
+// lakeer ke sire par rangeen dabbe mein us ki qeemat. (Price-scale plot
+// hata diya: trade band hone ke baad bhi aakhri qeemat wahan atki rehti thi.)
+// Naqsha SIRF khuli trade ka; trade band hote hi sab mit jata hai.
+var int    mDir  = 0
+var float  mE    = na
+var float  mSL   = na
+var float  mSL0  = na
+var float  mR    = na
+var float  mT1   = na
+var float  mT2   = na
+var int    mBar  = na
+var int    mTm   = na
+var int    mPct  = na
+var bool   mHit1 = false
+var int    mLast = na
+var int    mNB   = 0
+var int    mNS   = 0
+var int    mWB   = 0
+var int    mWS   = 0
+var float  mSumB = 0.0
+var float  mSumS = 0.0
+var string mInfo = "Koi khuli trade nahi - agle ishare ka intezar"
+var line   mlE   = na
+var line   mlS   = na
+var line   mlT1  = na
+var line   mlT2  = na
+var box    mbR   = na
+var box    mbG   = na
+var label  mtE   = na
+var label  mtS   = na
+var label  mtT1  = na
+var label  mtT2  = na
+var label  mlbG  = na
+var label  mlbR  = na
+
+f_hm(_t) => str.format_time(_t, "dd MMM HH:mm", tzLbl)
+f_dirTxt(_d) => _d == 1 ? "BUY" : "SELL"
+
+f_mDel() =>
+    line.delete(mlE)
+    line.delete(mlS)
+    line.delete(mlT1)
+    line.delete(mlT2)
+    box.delete(mbR)
+    box.delete(mbG)
+    label.delete(mtE)
+    label.delete(mtS)
+    label.delete(mtT1)
+    label.delete(mtT2)
+    label.delete(mlbG)
+    label.delete(mlbR)
+
+// Qeemat ka saaf dabba: rangeen pas-manzar, safed likhai
+f_tag(_x, _y, _t, _c) =>
+    label.new(_x, _y, _t, xloc=xloc.bar_index, yloc=yloc.price, style=label.style_label_left,
+         color=_c, textcolor=color.white, size=size.normal)
+
+// Naqsha khinch kar _x2 tak le jao (khuli trade: aage tak; band: exit candle tak)
+f_mStretch(_x2) =>
+    line.set_x2(mlE,  _x2)
+    line.set_x2(mlS,  _x2)
+    line.set_x2(mlT1, _x2)
+    line.set_x2(mlT2, _x2)
+    box.set_right(mbR, _x2)
+    box.set_right(mbG, _x2)
+    label.set_x(mtE,  _x2)
+    label.set_x(mtS,  _x2)
+    label.set_x(mtT1, _x2)
+    label.set_x(mtT2, _x2)
+
+if mDir != 0
+    float _res = na
+    string _why = ""
+    if mDir == 1
+        if low <= mSL
+            _res := mHit1 ? 0.5 * mtfT1 : -1.0
+            _why := mHit1 ? "TP1 ✓ phir BE" : "SL ✗"
+        else
+            if not mHit1 and high >= mT1
+                mHit1 := true
+                mSL   := mE
+            if high >= mT2
+                _res := 0.5 * mtfT1 + 0.5 * mtfT2
+                _why := "TP2 ✓"
+    else
+        if high >= mSL
+            _res := mHit1 ? 0.5 * mtfT1 : -1.0
+            _why := mHit1 ? "TP1 ✓ phir BE" : "SL ✗"
+        else
+            if not mHit1 and low <= mT1
+                mHit1 := true
+                mSL   := mE
+            if low <= mT2
+                _res := 0.5 * mtfT1 + 0.5 * mtfT2
+                _why := "TP2 ✓"
+    // TP1 lag gaya: SL ki lakeer entry par aa jati hai
+    if mHit1 and not na(mlS)
+        line.set_y1(mlS, mE)
+        line.set_y2(mlS, mE)
+        label.set_y(mtS, mE)
+        label.set_text(mtS, "SL ab Entry par (BE) " + f_px(mE))
+        label.set_text(mtT1, "TP1 " + f_px(mT1) + " ✓")
+    if na(_res) and modeMax > 0 and bar_index - mBar >= modeMax
+        _opn = (mDir == 1 ? close - mE : mE - close) / mR
+        _res := mHit1 ? 0.5 * mtfT1 + 0.5 * _opn : _opn
+        _why := "Waqt khatam"
+    if not na(_res)
+        if mDir == 1
+            mNB   += 1
+            mSumB += _res
+            mWB   += _res > 0 ? 1 : 0
+        else
+            mNS   += 1
+            mSumS += _res
+            mWS   += _res > 0 ? 1 : 0
+        // Trade band: us ka saara naqsha mita do (user: purane ki zaroorat nahi)
+        f_mDel()
+        mlbR := na
+        mInfo := "Koi khuli trade nahi - agle ishare ka intezar"
+        mDir := 0
+
+mExpB = mNB > 0 ? mSumB / mNB : na
+mExpS = mNS > 0 ? mSumS / mNS : na
+f_expTxt(_e, _n, _w) => na(_e) ? "- (0)" : (_e > 0 ? "+" : "") + str.tostring(_e, "#.##") + "R (" + str.tostring(_n) + ", jeet " + str.tostring(int(math.round(100.0 * _w / _n))) + "%)"
+
+mCoolOK = na(mLast) or bar_index - mLast >= mtfCool
+mtfBuy  = mtfBuyRaw  and mDir == 0 and mCoolOK
+mtfSell = mtfSellRaw and mDir == 0 and mCoolOK and not mtfBuy
+
+if mtfBuy or mtfSell
+    _d    = mtfBuy ? 1 : -1
+    mDir  := _d
+    mE    := close
+    mSL   := _d == 1 ? mSLb : mSLs
+    mSL0  := mSL
+    mR    := math.abs(mE - mSL)
+    mT1   := mE + _d * mR * mtfT1
+    mT2   := mE + _d * mR * mtfT2
+    mBar  := bar_index
+    mTm   := time
+    mLast := bar_index
+    mHit1 := false
+    mPct  := int(math.round(_d == 1 ? modeAvg : 100 - modeAvg))
+    f_mDel()
+    mlbR := na
+    _x2   = bar_index + futureBars
+    mbR  := box.new(bar_index, mE, _x2, mSL0, xloc=xloc.bar_index, bgcolor=color.new(color.red, 85), border_color=color.new(color.red, 100))
+    mbG  := box.new(bar_index, mE, _x2, mT2,  xloc=xloc.bar_index, bgcolor=color.new(color.green, 85), border_color=color.new(color.green, 100))
+    mlE  := line.new(bar_index, mE,  _x2, mE,  color=color.new(color.blue, 0), width=2)
+    mlS  := line.new(bar_index, mSL, _x2, mSL, color=color.new(color.red, 0), width=2, style=line.style_dashed)
+    mlT1 := line.new(bar_index, mT1, _x2, mT1, color=color.new(color.green, 0), width=2)
+    mlT2 := line.new(bar_index, mT2, _x2, mT2, color=color.new(color.green, 0), width=2, style=line.style_dotted)
+    mtE  := f_tag(_x2, mE,  "Entry " + f_px(mE), color.new(color.blue, 0))
+    mtS  := f_tag(_x2, mSL, "SL " + f_px(mSL), color.new(color.red, 0))
+    mtT1 := f_tag(_x2, mT1, "TP1 " + f_px(mT1) + "  (aadhi band)", color.new(#2E7D32, 0))
+    mtT2 := f_tag(_x2, mT2, "TP2 " + f_px(mT2), color.new(#1B5E20, 0))
+    _eX  = _d == 1 ? mExpB : mExpS
+    _nX  = _d == 1 ? mNB : mNS
+    _weak = _nX >= 10 and not na(_eX) and _eX <= 0
+    mlbG := label.new(bar_index, _d == 1 ? low : high,
+         "ABHI KHULI · " + modeName + " " + f_dirTxt(_d) + " " + str.tostring(mPct) + "%\n" + f_hm(mTm) + "  @ " + f_px(mE) + (_weak ? "\nKAMZOR: is qaide ki Exp manfi" : ""),
+         xloc=xloc.bar_index, yloc=yloc.price, style=_d == 1 ? label.style_label_up : label.style_label_down,
+         color=color.new(_weak ? color.gray : _d == 1 ? color.teal : color.purple, 0), textcolor=color.white, size=size.normal)
+    mInfo := "KHULI: " + f_dirTxt(_d) + " " + f_hm(mTm) + " @ " + f_px(mE) + "  SL " + f_px(mSL) + "  TP1 " + f_px(mT1) + "  TP2 " + f_px(mT2)
+    alert(modeName + " " + f_dirTxt(_d) + " " + syminfo.ticker + " " + str.tostring(mPct) + "% | Entry " + f_px(mE) +
+          " | SL " + f_px(mSL) + " | TP1 " + f_px(mT1) + " | TP2 " + f_px(mT2), alert.freq_once_per_bar_close)
+
+// Khuli trade ka naqsha aakhri candle ke saath aage chalta rahe
+if barstate.islast and mDir != 0 and not na(mlE)
+    f_mStretch(bar_index + futureBars)
+
+alertcondition(mtfBuy,  "MTF 90% BUY",  "SMC Coach: MTF 90% BUY")
+alertcondition(mtfSell, "MTF 90% SELL", "SMC Coach: MTF 90% SELL")
+
+var table lTbl = na
+var table pTbl = na
+if showTables and barstate.islast and (showLegend or showPress)
+    string[] tfs = array.from("1","5","15","30","60","180","240","D","W")
+    float[]  aO  = array.from(xo01, xo05, xo15, xo30, xo60, xo3h, xo4h, xo1d, xo1w)
+    float[]  aH  = array.from(xh01, xh05, xh15, xh30, xh60, xh3h, xh4h, xh1d, xh1w)
+    float[]  aL  = array.from(xl01, xl05, xl15, xl30, xl60, xl3h, xl4h, xl1d, xl1w)
+    float[]  aC  = array.from(close, close, close, close, close, close, close, close, close)
+    int[]    aB  = array.from(b01, b05, b15, b30, b60, b3h, b4h, b1d, b1w)
+    // 15m chart par legend mein sirf wohi 4 TF jin se 15m ishara banta hai
+    if is15m
+        tfs := array.from("15","60","240","D")
+        aO  := array.from(xo15, xo60, xo4h, xo1d)
+        aH  := array.from(xh15, xh60, xh4h, xh1d)
+        aL  := array.from(xl15, xl60, xl4h, xl1d)
+        aC  := array.from(close, close, close, close)
+        aB  := array.from(b15, b60, b4h, b1d)
+    _n    = array.size(tfs)
+    _hdrC = color.black
+
+    // ---------------- BAEN: chalti candle ----------------
+    if showLegend and (is1m or is15m or not only1m)
+        _rows = legendPad + 1 + _n
+        if na(lTbl)
+            lTbl := table.new(f_pos(legendPos), 10, _rows)
+        else
+            table.clear(lTbl, 0, 0, 9, _rows - 1)
+        if legendPad > 0
+            for r = 0 to legendPad - 1
+                table.cell(lTbl, 0, r, " ", bgcolor=bgPanel, text_size=PFS)
+        _r0 = legendPad
+        string[] hdr = array.from("TF","Rukh","O","H","L","C","Bhari","FVG","LGB","Zone")
+        for k = 0 to 9
+            table.cell(lTbl, k, _r0, array.get(hdr, k), bgcolor=bgPanel2, text_color=_hdrC, text_size=PFS)
+        for i = 0 to _n - 1
+            _o = array.get(aO, i)
+            _h = array.get(aH, i)
+            _l = array.get(aL, i)
+            _c = array.get(aC, i)
+            _b = nz(array.get(aB, i))
+            _fu = f_hasBit(_b, 0)
+            _fd = f_hasBit(_b, 1)
+            _lu = f_hasBit(_b, 2)
+            _ld = f_hasBit(_b, 3)
+            _bz = f_hasBit(_b, 4)
+            _sz = f_hasBit(_b, 5)
+            _ok   = not na(_c)
+            _rg   = _ok ? _h - _l : na
+            _flat = not _ok or math.abs(_c - _o) < minTk
+            _up   = _ok and _c > _o
+            _dirT = not _ok ? "-" : _flat ? "= BARABAR" : _up ? "▲ UP" : "▼ DN"
+            _body = (_ok and _rg >= minTk) ? str.tostring(int(math.round(math.abs(_c - _o) / _rg * 100))) + "%" : "-"
+            _fvg  = _fu ? "↑" : _fd ? "↓" : "-"
+            _lgb  = _lu ? "↑" : _ld ? "↓" : "-"
+            _zn   = (_bz and _sz) ? "BZ SZ" : _bz ? "BZ" : _sz ? "SZ" : "-"
+            // Bullish: FVG↑ ya LGB↓ (neeche ke stop saaf). Bearish: FVG↓ ya LGB↑.
+            _mU   = _fu or _ld
+            _mD   = _fd or _lu
+            _hl   = hlMomoRow and (_mU or _mD)
+            _rowBg = not _hl ? bgPanel : (_mU and _mD) ? color.new(color.orange, hlShade) : _mU ? color.new(color.green, hlShade) : color.new(color.red, hlShade)
+            _colD  = _flat ? color.new(#37474F, 0) : _up ? color.new(#1B5E20, 0) : color.new(#B71C1C, 0)
+            _rr    = _r0 + 1 + i
+            table.cell(lTbl, 0, _rr, f_labTF(array.get(tfs, i)) + (_hl ? " ◄" : ""), bgcolor=_rowBg, text_color=color.black, text_size=PFS)
+            table.cell(lTbl, 1, _rr, _dirT, bgcolor=_rowBg, text_color=_colD, text_size=PFS)
+            table.cell(lTbl, 2, _rr, _ok ? f_px(_o) : "-", bgcolor=_rowBg, text_color=color.black, text_size=PFS)
+            table.cell(lTbl, 3, _rr, _ok ? f_px(_h) : "-", bgcolor=_rowBg, text_color=color.black, text_size=PFS)
+            table.cell(lTbl, 4, _rr, _ok ? f_px(_l) : "-", bgcolor=_rowBg, text_color=color.black, text_size=PFS)
+            table.cell(lTbl, 5, _rr, _ok ? f_px(_c) : "-", bgcolor=_rowBg, text_color=_colD, text_size=PFS)
+            table.cell(lTbl, 6, _rr, _body, bgcolor=_rowBg, text_color=color.black, text_size=PFS)
+            table.cell(lTbl, 7, _rr, _fvg, bgcolor=_rowBg, text_color=_fu ? color.new(#1B5E20, 0) : _fd ? color.new(#B71C1C, 0) : color.black, text_size=PFS)
+            table.cell(lTbl, 8, _rr, _lgb, bgcolor=_rowBg, text_color=_ld ? color.new(#1B5E20, 0) : _lu ? color.new(#B71C1C, 0) : color.black, text_size=PFS)
+            table.cell(lTbl, 9, _rr, _zn, bgcolor=_rowBg, text_color=_bz and not _sz ? color.new(#1B5E20, 0) : _sz and not _bz ? color.new(#B71C1C, 0) : color.black, text_size=PFS)
+
+    // ---------------- DAEN: sab TF ka MILA HUA pressure, ek line ----------------
+    // 1m se 1W tak har TF ka BUY% (close candle ki range mein kahan) jama kar
+    // ke ausat. Jo taraf zyada ho sirf wahi likhi jati hai: "BUY 61%" ya "SELL 57%".
+    if showPress
+        // Wohi ausat jis par MTF 90% signal chalta hai
+        _avgB = na(modeAvg) ? na : int(math.round(modeAvg))
+        _rowsP = panelPad + 1 + (expOn ? 1 : 0) + (modeOn ? 3 : 0)
+        if na(pTbl)
+            pTbl := table.new(f_pos(pressPos), 1, _rowsP)
+        else
+            table.clear(pTbl, 0, 0, 0, _rowsP - 1)
+        if panelPad > 0
+            for r = 0 to panelPad - 1
+                table.cell(pTbl, 0, r, "", bgcolor=bgPanel, text_size=PRS)
+        _p0  = panelPad
+        _txt = na(_avgB) ? "PRESSURE  -" : _avgB > 50 ? "BUY " + str.tostring(_avgB) + "%" : _avgB < 50 ? "SELL " + str.tostring(100 - _avgB) + "%" : "BARABAR 50%"
+        _col = na(_avgB) ? color.new(#37474F, 0) : f_pressCol(_avgB)
+        _hot = not na(_avgB) and (_avgB >= modeMin or _avgB <= 100 - modeMin)
+        table.cell(pTbl, 0, _p0, _txt + "  (" + modeTag + ")" + (_hot ? "  ◄ " + str.tostring(modeMin) + "%+" : ""),
+             bgcolor=_hot ? color.new(_avgB > 50 ? color.green : color.red, 80) : bgPanel2, text_color=_col, text_size=PRS)
+        if expOn
+            _re  = _p0 + 1
+            _txB = useTracker ? (na(expRB) ? "-" : (expRB > 0 ? "+" : "") + str.tostring(expRB, "#.##") + "R") + " (" + str.tostring(nDoneB) + ")" : "off"
+            _txS = useTracker ? (na(expRS) ? "-" : (expRS > 0 ? "+" : "") + str.tostring(expRS, "#.##") + "R") + " (" + str.tostring(nDoneS) + ")" : "off"
+            table.cell(pTbl, 0, _re, "Exp  BUY " + _txB + "  |  SELL " + _txS, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+        if modeOn
+            _rm = _p0 + 1 + (expOn ? 1 : 0)
+            _st = mDir == 0 ? "intezar" : (mDir == 1 ? "BUY khuli" : "SELL khuli") + (mHit1 ? " (TP1 ✓)" : "")
+            table.cell(pTbl, 0, _rm, modeName + " " + str.tostring(modeMin) + "%: " + _st + (is15m ? "   |   1H rukh: " + (na(h1F) ? "-" : h1F > h1S ? "UP" : "DN") : ""),
+                 bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+            table.cell(pTbl, 0, _rm + 1, mInfo,
+                 bgcolor=bgPanel, text_color=mDir == 1 ? color.new(#1B5E20, 0) : mDir == -1 ? color.new(#B71C1C, 0) : color.new(#37474F, 0), text_size=PFS)
+            table.cell(pTbl, 0, _rm + 2, "Exp  BUY " + f_expTxt(mExpB, mNB, mWB) + "   |   SELL " + f_expTxt(mExpS, mNS, mWS),
+                 bgcolor=bgPanel, text_color=color.black, text_size=PFS)
+
+// ============================================================================
+//  EXNESS-STYLE DAILY LEVELS (classic pivot points)
+//  Ye zones se alag cheez hai. Ye kal ke din ki High/Low/Close se ginti hai,
+//  poore din ek hi jagah khari rehti hai, aur agle din nayi ban jati hai —
+//  bilkul waisi hi jaisi Exness ki app mein Resistance / Pivot / Support
+//  aati hain. Zones market ke rukne ki jagah batate hain, ye lines din ka
+//  naqsha batati hain. Dono saath chalte hain, ek doosre ka muqabla nahi.
+// ============================================================================
+[pvH, pvL, pvC] = request.security(syminfo.tickerid, pivTF, [high[1], low[1], close[1]],
+     lookahead = barmerge.lookahead_on)
+
+pvRg = pvH - pvL
+// Teen mashhoor tareeqe. Har broker apna chunta hai, is liye number alag
+// aate hain. Exness apna alag (private) tareeqa istemal karta hai, us se
+// hamara bilkul match nahi hoga — is liye neeche "khud number daalo" ka
+// option bhi rakha hai.
+_cP  = (pvH + pvL + pvC) / 3.0
+_cR1 = pivMethod == "Fibonacci" ? _cP + 0.382 * pvRg
+       : pivMethod == "Camarilla" ? pvC + pvRg * 1.1 / 12.0
+       : 2.0 * _cP - pvL
+_cS1 = pivMethod == "Fibonacci" ? _cP - 0.382 * pvRg
+       : pivMethod == "Camarilla" ? pvC - pvRg * 1.1 / 12.0
+       : 2.0 * _cP - pvH
+_cR2 = pivMethod == "Fibonacci" ? _cP + 0.618 * pvRg
+       : pivMethod == "Camarilla" ? pvC + pvRg * 1.1 / 6.0
+       : _cP + pvRg
+_cS2 = pivMethod == "Fibonacci" ? _cP - 0.618 * pvRg
+       : pivMethod == "Camarilla" ? pvC - pvRg * 1.1 / 6.0
+       : _cP - pvRg
+
+// Manual mode: sirf wohi number chalte hain jo aap ne khud likhe (0 = khali).
+pvP  = pivManual ? (mP  > 0 ? mP  : na) : _cP
+pvR1 = pivManual ? (mR1 > 0 ? mR1 : na) : _cR1
+pvS1 = pivManual ? (mS1 > 0 ? mS1 : na) : _cS1
+pvR2 = pivManual ? (mR2 > 0 ? mR2 : na) : _cR2
+pvS2 = pivManual ? (mS2 > 0 ? mS2 : na) : _cS2
+
+pivColR = pivSwapCol ? color.green : color.red
+pivColS = pivSwapCol ? color.red   : color.green
+
+// Pehle ye plot() se bante thay, is liye poori chart history par khinchte
+// thay. Pivot roz badalta hai, to har din ek qadam - mil kar "digital
+// signal" jaisi seerhiyan ban jati thin. Ab ye sirf mojooda din ki seedhi
+// lakeerein hain, aakhri candle par khinchi hui.
+var line lnP  = na
+var line lnR1 = na
+var line lnS1 = na
+var line lnR2 = na
+var line lnS2 = na
+f_pivLine(_old, _y, _col, _w, _on) =>
+    line.delete(_old)
+    _on and not na(_y) ? line.new(bar_index - pivBack, _y, bar_index + futureBars, _y, xloc=xloc.bar_index, color=_col, width=_w) : na
+if barstate.islast
+    lnP  := f_pivLine(lnP,  pvP,  color.new(color.gray, 0), 2, showPiv)
+    lnR1 := f_pivLine(lnR1, pvR1, color.new(pivColR, 20),   2, showPiv)
+    lnS1 := f_pivLine(lnS1, pvS1, color.new(pivColS, 20),   2, showPiv)
+    lnR2 := f_pivLine(lnR2, pvR2, color.new(pivColR, 55),   1, showPiv and pivShowR2)
+    lnS2 := f_pivLine(lnS2, pvS2, color.new(pivColS, 55),   1, showPiv and pivShowR2)
+
+// Har level par uska naam aur qeemat, sirf aakhri candle par.
+var label lbP  = na
+var label lbR1 = na
+var label lbS1 = na
+var label lbR2 = na
+var label lbS2 = na
+f_pivLbl(_old, _y, _txt, _col, _on) =>
+    label.delete(_old)
+    _on ? label.new(bar_index + math.min(futureBars, 3), _y, _txt, xloc=xloc.bar_index, yloc=yloc.price,
+           style=label.style_label_left, color=color.new(color.black, 100),
+           textcolor=_col, size=size.small) : na
+if barstate.islast
+    // Label saaf batata hai number kahan se aaya: (khud) = aap ke likhe hue,
+    // (auto) = script ka apna hisaab. Script naya paste karne par settings
+    // reset ho jati hain aur (khud) wale number gum ho jate hain - ab woh
+    // chupke se nahi hota, label foran bata dega.
+    _pvSrc = pivManual ? " (khud)" : " (auto)"
+    lbP  := f_pivLbl(lbP,  pvP,  "Pivot: " + f_px(pvP) + _pvSrc, color.new(color.gray, 0), showPiv and not na(pvP))
+    lbR1 := f_pivLbl(lbR1, pvR1, "Resistance: " + f_px(pvR1), color.new(pivColR, 0),  showPiv and not na(pvR1))
+    lbS1 := f_pivLbl(lbS1, pvS1, "Support: " + f_px(pvS1),    color.new(pivColS, 0),  showPiv and not na(pvS1))
+    lbR2 := f_pivLbl(lbR2, pvR2, f_px(pvR2),                  color.new(pivColR, 40), showPiv and pivShowR2 and not na(pvR2))
+    lbS2 := f_pivLbl(lbS2, pvS2, f_px(pvS2),                  color.new(pivColS, 40), showPiv and pivShowR2 and not na(pvS2))

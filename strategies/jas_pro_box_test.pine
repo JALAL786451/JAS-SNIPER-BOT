@@ -1,0 +1,352 @@
+//@version=5
+// ============================================================================
+//  JAS PRO BOX — STRATEGY TEST (2 Oct 2026)
+//
+//  indicators/jas_pro_box.pine ke BILKUL WOHI qawaid (A · MA, B · Candle,
+//  C · SMC aur ITTIFAQ), magar Pine STRATEGY ki shakal mein - taake
+//  TradingView ka Strategy Tester 1D par 2015 se aaj tak ka asal hisaab
+//  ek dafa mein de de: Net profit, trades, jeet %, Profit Factor, Drawdown.
+//
+//  Ek waqt mein EK tareeqa test hota hai ("Kis ko test karna hai" input).
+//  Ittifaq ke liye A/B/C andar chupke se apni virtual trades chalate hain
+//  (bilkul indicator ki tarah); asal order sirf chune hue tareeqe ka lagta hai.
+//
+//  Trade: Entry band candle ke close par. SL swing + ATR buffer.
+//  TP1 = 1R par aadhi band, phir SL entry par (BE). TP2 = 2R par baqi.
+//  N candle baad khud band. Risk har trade % equity (default 1%).
+//  Spread/kharcha: $0.30 fi oz (0.15 khulne + 0.15 band hone par).
+//
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+//  Ye sirf naap hai. Achha nateeja bhi aage ki zamanat nahi.
+// ============================================================================
+strategy("JAS Pro Box — Strategy Test", shorttitle = "JAS Pro Box Test", overlay = true,
+     initial_capital         = 10000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true,
+     commission_type         = strategy.commission.cash_per_contract,
+     commission_value        = 0.15,
+     margin_long             = 1,
+     margin_short            = 1)
+
+// ============================================================================
+//  INPUTS (naam wahi jo indicator mein, taake qawaid ek jaise rahein)
+// ============================================================================
+gT   = "0 · Test"
+which   = input.string("ITTIFAQ", "Kis ko test karna hai", options = ["ITTIFAQ", "A · MA", "B · Candle", "C · SMC"], group = gT)
+riskPct = input.float(1.0, "Risk fi trade (% equity)", minval = 0.1, maxval = 5, step = 0.1, group = gT)
+useDates = input.bool(true, "Sirf is arse mein", group = gT)
+dtFrom  = input.time(timestamp("2015-01-01"), "Shuru", group = gT)
+dtTo    = input.time(timestamp("2030-12-31"), "Khatam", group = gT)
+
+gF   = "2 · Pro filter"
+useHTF  = input.bool(true, "Sirf bare TF ke rukh mein (MA21 vs MA63)", group = gF)
+htfIn   = input.string("Auto", "Bara TF (Auto = chart ke hisaab se khud)", options = ["Auto", "15", "60", "240", "D", "W"], group = gF)
+maFLen  = input.int(21, "MA fast", minval = 2, group = gF)
+maSLen  = input.int(63, "MA slow", minval = 3, group = gF)
+pivLen  = input.int(3, "Swing: dono taraf kitni candles", minval = 1, maxval = 10, group = gF)
+
+gR   = "3 · SL / TP"
+swLook  = input.int(10, "SL: kitni candles ka swing", minval = 3, maxval = 50, group = gR)
+slBuf   = input.float(0.2, "SL buffer (x ATR)", minval = 0, step = 0.05, group = gR)
+slMin   = input.float(0.5, "SL kam az kam (x ATR)", minval = 0.2, step = 0.1, group = gR)
+slMax   = input.float(3.5, "SL zyada se zyada (x ATR)", minval = 0.5, step = 0.1, group = gR)
+tp1R    = input.float(1.0, "TP1 (R) - aadhi band + BE", minval = 0.3, step = 0.1, group = gR)
+tp2R    = input.float(2.0, "TP2 (R)", minval = 0.5, step = 0.1, group = gR)
+spreadU = input.float(0.30, "Virtual ginti ka spread ($) - asal kharcha upar commission mein", minval = 0, step = 0.05, group = gR)
+maxBars = input.int(64, "N candle baad khud band (0 = kabhi nahi)", minval = 0, group = gR)
+coolBar = input.int(5, "Trade band hone ke baad kitni candle ruko", minval = 0, group = gR)
+showMA  = input.bool(true, "MA21 / MA63 dikhao", group = gR)
+
+f_px(x) => str.tostring(x, format.mintick)
+inDates = not useDates or (time >= dtFrom and time <= dtTo)
+selK = which == "A · MA" ? 0 : which == "B · Candle" ? 1 : which == "C · SMC" ? 2 : 3
+
+// ============================================================================
+//  SIGNALS — indicator se jyon ke tyon
+// ============================================================================
+atr  = ta.atr(14)
+emaF = ta.ema(close, maFLen)
+emaS = ta.ema(close, maSLen)
+plot(showMA ? emaF : na, "MA21", color = color.new(color.aqua, 0), linewidth = 2)
+plot(showMA ? emaS : na, "MA63", color = color.new(color.fuchsia, 0), linewidth = 2)
+
+// Bare TF ka rukh: aakhri BAND candle ([1] + lookahead_on = repaint nahi)
+// Auto: bara TF chart se kam az kam 4 guna bara (2H/4H chart par 1H "bara" nahi hota)
+_cs = timeframe.in_seconds()
+htfTF = htfIn != "Auto" ? htfIn : _cs <= 60 ? "15" : _cs <= 900 ? "60" : _cs <= 3600 ? "240" : _cs <= 14400 ? "D" : _cs <= 86400 ? "W" : "M"
+f_tfName(_t) => _t == "15" ? "15m" : _t == "60" ? "1H" : _t == "240" ? "4H" : _t == "D" ? "1D" : _t == "W" ? "1W" : _t == "M" ? "1M" : _t
+htfName = f_tfName(htfTF)
+[hF, hS] = request.security(syminfo.tickerid, htfTF, [ta.ema(close, maFLen)[1], ta.ema(close, maSLen)[1]], barmerge.gaps_off, barmerge.lookahead_on)
+htfUp = not useHTF or (not na(hF) and hF > hS)
+htfDn = not useHTF or (not na(hF) and hF < hS)
+
+// Pakke swing (pivot): pivLen candles baad pakka hota hai
+ph = ta.pivothigh(high, pivLen, pivLen)
+pl = ta.pivotlow(low, pivLen, pivLen)
+var float lastHi = na
+var float lastLo = na
+if not na(ph)
+    lastHi := ph
+if not na(pl)
+    lastLo := pl
+
+conf = barstate.isconfirmed
+
+// ============================================================================
+//  A · MA PULLBACK
+// ============================================================================
+aBuy  = emaF > emaS and emaF > emaF[3] and low <= emaF + atr * 0.1 and close > emaF and close > open and close[1] > emaS
+aSell = emaF < emaS and emaF < emaF[3] and high >= emaF - atr * 0.1 and close < emaF and close < open and close[1] < emaS
+
+// ============================================================================
+//  B · CANDLE PATTERN SWING PAR
+// ============================================================================
+cRng  = math.max(high - low, syminfo.mintick)
+cBody = math.abs(close - open)
+loWk  = math.min(open, close) - low
+upWk  = high - math.max(open, close)
+bullEng = close > open and close[1] < open[1] and close >= open[1] and open <= close[1]
+bearEng = close < open and close[1] > open[1] and close <= open[1] and open >= close[1]
+bullPin = loWk >= 2 * cBody and loWk >= 0.55 * cRng and close >= low + 0.5 * cRng
+bearPin = upWk >= 2 * cBody and upWk >= 0.55 * cRng and close <= high - 0.5 * cRng
+nearSup = not na(lastLo) and low <= lastLo + atr * 0.5 and low >= lastLo - atr * 1.0
+nearRes = not na(lastHi) and high >= lastHi - atr * 0.5 and high <= lastHi + atr * 1.0
+bBuy  = nearSup and (bullEng or bullPin)
+bSell = nearRes and (bearEng or bearPin)
+
+// ============================================================================
+//  C · SMC: sweep → CHOCH → FVG retest
+//  BUY ki tayyari (u*) aur SELL ki tayyari (d*) alag alag chalti hai.
+// ============================================================================
+var int   uSwB = na   // sweep wali candle
+var float uSwL = na   // sweep ka low (SL isi ke neeche)
+var int   uChB = na   // CHOCH wali candle
+var float uFT  = na   // FVG ka upar wala kinara
+var float uFB  = na   // FVG ka neeche wala kinara
+var int   dSwB = na
+var float dSwH = na
+var int   dChB = na
+var float dFT  = na
+var float dFB  = na
+
+// Naya sweep = nayi tayyari (purani mit jati hai)
+if not na(lastLo) and low < lastLo and close > lastLo
+    uSwB := bar_index
+    uSwL := low
+    uChB := na
+    uFT  := na
+    uFB  := na
+if not na(lastHi) and high > lastHi and close < lastHi
+    dSwB := bar_index
+    dSwH := high
+    dChB := na
+    dFT  := na
+    dFB  := na
+
+// Sweep ke baad bana FVG yaad rakho; phir CHOCH ka intezar
+if not na(uSwB) and bar_index > uSwB
+    if low > high[2]
+        uFT := low
+        uFB := high[2]
+    if na(uChB) and not na(lastHi) and close > lastHi
+        uChB := bar_index
+if not na(dSwB) and bar_index > dSwB
+    if high < low[2]
+        dFT := low[2]
+        dFB := high
+    if na(dChB) and not na(lastLo) and close < lastLo
+        dChB := bar_index
+
+// Tayyari ki umar: sweep ke 30 candle mein CHOCH, CHOCH ke 20 candle mein entry.
+// ">=" zaroori hai: sweep wali candle ka low khud uSwL hai. Pehle ">" tha, is
+// liye tayyari usi candle par mar jati thi aur C ki ginti hamesha 0 rehti thi.
+uAlive = not na(uSwB) and (na(uChB) ? bar_index - uSwB <= 30 : bar_index - uChB <= 20) and low >= uSwL
+dAlive = not na(dSwB) and (na(dChB) ? bar_index - dSwB <= 30 : bar_index - dChB <= 20) and high <= dSwH
+
+cBuy  = uAlive and not na(uChB) and bar_index > uChB and not na(uFT) and low <= uFT and close >= uFB and close > open
+cSell = dAlive and not na(dChB) and bar_index > dChB and not na(dFB) and high >= dFB and close <= dFT and close < open
+
+if not na(uSwB) and not uAlive
+    uSwB := na
+if not na(dSwB) and not dAlive
+    dSwB := na
+
+// ============================================================================
+//  SL (swing + buffer, hadd ke andar)
+// ============================================================================
+slB  = math.max(math.min(ta.lowest(low, swLook) - atr * slBuf, close - atr * slMin), close - atr * slMax)
+slS  = math.min(math.max(ta.highest(high, swLook) + atr * slBuf, close + atr * slMin), close + atr * slMax)
+// SMC ka SL sweep ke peeche; bohot door ho to trade nahi
+slCB = math.min(nz(uSwL, low) - atr * slBuf, close - atr * slMin)
+slCS = math.max(nz(dSwH, high) + atr * slBuf, close + atr * slMin)
+cBOk = close - slCB <= atr * slMax
+cSOk = slCS - close <= atr * slMax
+
+// ============================================================================
+//  VIRTUAL ENGINE (A, B, C, ITTIFAQ) — indicator wala hisaab, bina dabbon ke
+// ============================================================================
+var int[]   tDir = array.from(0, 0, 0, 0)
+var float[] tE   = array.new_float(4, na)
+var float[] tSL  = array.new_float(4, na)
+var float[] tR   = array.new_float(4, na)
+var float[] tT1  = array.new_float(4, na)
+var float[] tT2  = array.new_float(4, na)
+var int[]   tBar = array.from(0, 0, 0, 0)
+var bool[]  tH1  = array.from(false, false, false, false)
+var int[]   tEnd = array.from(-100000, -100000, -100000, -100000)
+
+f_vopen(_k, _d, _sl) =>
+    _r = math.abs(close - _sl)
+    array.set(tDir, _k, _d)
+    array.set(tE,   _k, close)
+    array.set(tSL,  _k, _sl)
+    array.set(tR,   _k, _r)
+    array.set(tT1,  _k, close + _d * _r * tp1R)
+    array.set(tT2,  _k, close + _d * _r * tp2R)
+    array.set(tBar, _k, bar_index)
+    array.set(tH1,  _k, false)
+    true
+
+f_vmanage(_k) =>
+    _d = array.get(tDir, _k)
+    if _d != 0
+        _sl  = array.get(tSL, _k)
+        _t1  = array.get(tT1, _k)
+        _t2  = array.get(tT2, _k)
+        bool _done = false
+        if (_d == 1 and low <= _sl) or (_d == -1 and high >= _sl)
+            _done := true
+        else
+            if not array.get(tH1, _k) and ((_d == 1 and high >= _t1) or (_d == -1 and low <= _t1))
+                array.set(tH1, _k, true)
+                array.set(tSL, _k, array.get(tE, _k))
+            if (_d == 1 and high >= _t2) or (_d == -1 and low <= _t2)
+                _done := true
+        if not _done and maxBars > 0 and bar_index - array.get(tBar, _k) >= maxBars
+            _done := true
+        if _done
+            array.set(tDir, _k, 0)
+            array.set(tEnd, _k, bar_index)
+    true
+
+f_vmanage(0)
+f_vmanage(1)
+f_vmanage(2)
+f_vmanage(3)
+
+f_free(_k) => array.get(tDir, _k) == 0 and bar_index - array.get(tEnd, _k) >= coolBar
+
+goAB = conf and aBuy  and htfUp and f_free(0)
+goAS = conf and aSell and htfDn and f_free(0) and not goAB
+goBB = conf and bBuy  and htfUp and f_free(1)
+goBS = conf and bSell and htfDn and f_free(1) and not goBB
+goCB = conf and cBuy  and htfUp and cBOk and f_free(2)
+goCS = conf and cSell and htfDn and cSOk and f_free(2) and not goCB
+
+if goAB
+    f_vopen(0, 1, slB)
+else if goAS
+    f_vopen(0, -1, slS)
+if goBB
+    f_vopen(1, 1, slB)
+else if goBS
+    f_vopen(1, -1, slS)
+if goCB
+    f_vopen(2, 1, slCB)
+else if goCS
+    f_vopen(2, -1, slCS)
+
+f_cnt(_d) => (array.get(tDir, 0) == _d ? 1 : 0) + (array.get(tDir, 1) == _d ? 1 : 0) + (array.get(tDir, 2) == _d ? 1 : 0)
+nOpB = f_cnt(1)
+nOpS = f_cnt(-1)
+ittB = conf and (goAB or goBB or goCB) and nOpB >= 2 and nOpS == 0 and f_free(3)
+ittS = conf and (goAS or goBS or goCS) and nOpS >= 2 and nOpB == 0 and f_free(3) and not ittB
+if ittB
+    f_vopen(3, 1, slB)
+else if ittS
+    f_vopen(3, -1, slS)
+
+if cBuy and conf
+    uSwB := na
+if cSell and conf
+    dSwB := na
+
+// Chune hue tareeqe ka ishara is candle par?
+sigB = selK == 0 ? goAB : selK == 1 ? goBB : selK == 2 ? goCB : ittB
+sigS = selK == 0 ? goAS : selK == 1 ? goBS : selK == 2 ? goCS : ittS
+sigSL = sigB ? (selK == 2 ? slCB : slB) : (selK == 2 ? slCS : slS)
+
+// ============================================================================
+//  ASAL ORDERS (Strategy Tester inhi ko ginta hai)
+// ============================================================================
+var float pE   = na
+var float pSL  = na
+var float pR   = na
+var float pQ   = na
+var int   pBar = na
+var bool  pH1  = false
+
+if strategy.position_size == 0
+    pE  := na
+    pH1 := false
+
+if strategy.position_size == 0 and inDates and (sigB or sigS)
+    _d  = sigB ? 1 : -1
+    _r  = math.abs(close - sigSL)
+    _q  = _r > 0 ? (strategy.equity * riskPct / 100.0) / (_r * syminfo.pointvalue) : 0.0
+    if _q > 0
+        strategy.entry(_d == 1 ? "L" : "S", _d == 1 ? strategy.long : strategy.short, qty = _q)
+        pE   := close
+        pSL  := sigSL
+        pR   := _r
+        pQ   := _q
+        pBar := bar_index
+        pH1  := false
+
+// TP1 ho gaya? (position aadhi reh gayi) -> SL entry par
+if not na(pQ) and strategy.position_size != 0 and math.abs(strategy.position_size) < pQ * 0.9 and not pH1
+    pH1 := true
+    pSL := pE
+
+if strategy.position_size > 0
+    if not pH1
+        strategy.exit("TP1", from_entry = "L", limit = pE + pR * tp1R, stop = pSL, qty_percent = 50)
+    strategy.exit("TP2", from_entry = "L", limit = pE + pR * tp2R, stop = pSL)
+if strategy.position_size < 0
+    if not pH1
+        strategy.exit("TP1", from_entry = "S", limit = pE - pR * tp1R, stop = pSL, qty_percent = 50)
+    strategy.exit("TP2", from_entry = "S", limit = pE - pR * tp2R, stop = pSL)
+
+if strategy.position_size != 0 and maxBars > 0 and bar_index - pBar >= maxBars
+    strategy.close_all(comment = "Waqt khatam")
+if useDates and time > dtTo and strategy.position_size != 0
+    strategy.close_all(comment = "Arsa khatam")
+
+plot(strategy.position_size != 0 ? pSL : na, "SL", color = color.new(color.red, 0), style = plot.style_linebr, linewidth = 2)
+plot(strategy.position_size != 0 ? pE  : na, "Entry", color = color.new(color.blue, 0), style = plot.style_linebr, linewidth = 1)
+
+// ============================================================================
+//  CHHOTA NATEEJA TABLE (Strategy Tester ka khulasa, screenshot ke liye)
+// ============================================================================
+var table rt = table.new(position.top_right, 2, 8, border_width = 1, border_color = color.new(color.gray, 70))
+f_row(_r, _a, _b, _c) =>
+    table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
+    table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small)
+if barstate.islast
+    _n  = strategy.closedtrades
+    _w  = strategy.wintrades
+    _gp = strategy.grossprofit
+    _gl = strategy.grossloss
+    _pf = _gl > 0 ? _gp / _gl : na
+    table.cell(rt, 0, 0, "JAS PRO BOX TEST · " + which + " · " + timeframe.period + " · rukh " + htfName, bgcolor = color.new(color.silver, 40), text_color = color.black, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 1, 0)
+    f_row(1, "Net profit", str.tostring(strategy.netprofit, "#,###") + " $  (" + str.tostring(100 * strategy.netprofit / strategy.initial_capital, "#.#") + "%)", strategy.netprofit >= 0 ? color.new(#1B5E20, 0) : color.new(#B71C1C, 0))
+    f_row(2, "Trades", str.tostring(_n), color.black)
+    f_row(3, "Jeet %", _n > 0 ? str.tostring(100.0 * _w / _n, "#.#") + "%" : "-", color.black)
+    f_row(4, "Profit Factor", na(_pf) ? "-" : str.tostring(_pf, "#.##"), na(_pf) ? color.black : _pf >= 1.3 ? color.new(#1B5E20, 0) : _pf >= 1 ? color.new(#E65100, 0) : color.new(#B71C1C, 0))
+    f_row(5, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", color.new(#B71C1C, 0))
+    f_row(6, "Risk fi trade", str.tostring(riskPct, "#.#") + "%   |   TP1 " + str.tostring(tp1R, "#.#") + "R + BE, TP2 " + str.tostring(tp2R, "#.#") + "R", color.black)
+    f_row(7, "Note", "Sirf naap. Asal hisaab Strategy Tester mein.", color.new(#B71C1C, 0))

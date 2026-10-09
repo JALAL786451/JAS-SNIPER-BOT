@@ -1,0 +1,459 @@
+//@version=6
+// ============================================================================
+//  JAS SEERHI  (build s1.2, Pine v6)  —  oopar se neeche: 1D rukh -> chart par entry
+//
+//  User ne 8 Oct 2026 ko manga: "pro level trade samajhne wala script", SL/TP
+//  wala sahi tareeqa, aur baqi faisle Claude par chhore. Ye SEEKHNE ka aala
+//  hai: har qadam chart aur panel par likha hota hai, taake samajh aaye ke
+//  trade KYUN bani ya KYUN nahi bani. Chart: 1H (30m / 15m bhi chalta hai).
+//
+//  TEEN SEERHIYAN
+//   1. RUKH (1D, sirf BAND candles - repaint nahi). Teeno ka ittifaq zaroori:
+//      - Structure: aakhri do swing high aur do swing low. HH + HL = BUY,
+//        LH + LL = SELL. Qeemat aakhri HL ke upar (SELL: aakhri LH ke neeche).
+//      - Trend line: BUY mein aakhri do swing low ko jorne wali lakeer, band
+//        candle us ke upar. SELL mein do swing high wali lakeer, candle neeche.
+//      - MA21 / MA63 (EMA): BUY mein 21 upar, SELL mein neeche.
+//   2. JAGAH (chart TF): rukh ki taraf bhaagti qeemat ke peeche nahi jaate.
+//      BUY rukh mein qeemat MA21 tak wapas aaye (pullback) - SELL mein upar.
+//   3. ENTRY (chart TF): pullback ke andar ka aakhri chhota swing toote.
+//      BUY: candle us chhote swing high ke UPAR hari band ho = pullback khatam,
+//      rukh wapas. Entry usi band candle ke close par.
+//  SL : pullback ka sab se neecha low - 0.2 ATR (BUY). 0.5 ATR se kam ho to
+//       0.5 ATR. 3 ATR se zyada door ho to trade NAHI (khatra bara).
+//  TP1: 1R par aadhi band, baqi ka SL entry par (BE).
+//  TP2: 2R, ya rukh TF ka agla swing (BUY: upar wala swing high) agar woh
+//       pehle aaye. Woh swing TP1 se bhi qareeb ho to trade NAHI (jagah nahi).
+//  Band: SL, TP2, rukh ulta ho jaye, ya N candle.
+//  Har nateeje se kharcha (spread + commission) R mein ghata kar gina jata hai.
+//
+//  Ek waqt mein ek trade. Koi grid, martingale, hedging ya averaging nahi.
+//  Ye peshangoi nahi. Pehle strategies/jas_seerhi_test.pine se Strategy Tester
+//  par naapein, phir demo. Signal ka hissa wahan jyon ka tyon hai - yahan
+//  badlein to wahan bhi badlein.
+//
+//  s1.1  CE10095 durust; gap par SL/TP2 open par; flip/waqt wali candle par
+//        naya setup nahi (strategy jaisa).
+//  s1.2  sirf panel: TradingView ke naam ke neeche na chhupe (khali rows),
+//        "Kaise band huin" row, naye pullback par "Aakhri baat". Signal wahi.
+// ============================================================================
+indicator("JAS Seerhi — 1D rukh, chart par entry", shorttitle = "JAS Seerhi", overlay = true,
+     max_lines_count = 200, max_labels_count = 200, max_boxes_count = 50, max_bars_back = 500)
+
+BUILD = "s1.2"
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+gR = "1 · Rukh (bara TF)"
+rTF    = input.timeframe("D", "Rukh kis TF se", group = gR)
+rPiv   = input.int(3, "Swing: dono taraf kitni candles", minval = 1, maxval = 10, group = gR)
+maFLen = input.int(21, "MA fast (EMA)", minval = 2, group = gR)
+maSLen = input.int(63, "MA slow (EMA)", minval = 3, group = gR)
+needTL = input.bool(true, "Trend line ka salamat hona zaroori", group = gR)
+needMA = input.bool(true, "MA21 / MA63 ka usi taraf hona zaroori", group = gR)
+
+gE = "2 · Jagah aur entry (chart ka TF)"
+pbMax  = input.int(60, "Pullback kitni candles tak zinda rahe", minval = 5, maxval = 300, group = gE)
+pbDeep = input.float(1.0, "Pullback MA63 se itni ATR paar chala jaye to setup khatam", minval = 0, step = 0.1, group = gE)
+tPiv   = input.int(2, "Entry trigger: chhota swing, dono taraf kitni candles", minval = 1, maxval = 5, group = gE)
+
+gS = "3 · SL / TP"
+slBuf   = input.float(0.2, "SL buffer (x ATR)", minval = 0, step = 0.05, group = gS)
+slMin   = input.float(0.5, "SL kam az kam (x ATR)", minval = 0.2, step = 0.1, group = gS)
+slMax   = input.float(3.0, "SL is se door ho to trade nahi (x ATR)", minval = 0.5, step = 0.1, group = gS)
+tp1R    = input.float(1.0, "TP1 (R) - aadhi band + SL entry par", minval = 0.3, step = 0.1, group = gS)
+tp2R    = input.float(2.0, "TP2 (R)", minval = 0.5, step = 0.1, group = gS)
+useTgt  = input.bool(true, "TP2: rukh TF ka agla swing pehle aaye to wahin", group = gS)
+exitFlip = input.bool(true, "Rukh ulta ho jaye to trade band", group = gS)
+maxBars = input.int(100, "N candle baad khud band (0 = kabhi nahi)", minval = 0, group = gS)
+costUSD = input.float(0.30, "Kharcha fi trade ($ fi oz: spread + commission)", minval = 0, step = 0.05, group = gS)
+
+gL = "4 · Lot ka hisaab"
+acct    = input.float(50000, "Balance", minval = 1, group = gL)
+acctCur = input.string("USC", "Currency", options = ["USC", "USD"], group = gL)
+riskPct = input.float(1.0, "Risk fi trade (%)", minval = 0.1, maxval = 5, step = 0.1, group = gL)
+
+gD = "5 · Dikhawa"
+showTL   = input.bool(true, "Rukh TF ki trend lines", group = gD)
+showSw   = input.bool(true, "Rukh TF ke HH / HL / LH / LL", group = gD)
+showMA   = input.bool(true, "Chart ki MA21 / MA63", group = gD)
+showPB   = input.bool(true, "Pullback ke waqt halka rang", group = gD)
+showHist = input.bool(true, "Purani trades ke nateeje chart par", group = gD)
+histN    = input.int(40, "Kitne purane nateeje", minval = 0, maxval = 150, group = gD)
+futBars  = input.int(5, "Aage kitni candle tak lakeerein (kam = chart nahi khinchta)", minval = 0, maxval = 30, group = gD)
+panelPos = input.string("Top Right", "Panel ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gD)
+panelSz  = input.string("Small", "Panel ka font", options = ["Tiny", "Small", "Normal"], group = gD)
+panelPad = input.int(2, "Panel: upar khali rows (TradingView ke naam ke neeche)", minval = 0, maxval = 8, group = gD)
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_px(x) => str.tostring(x, format.mintick)
+f_r(x) => (x > 0 ? "+" : "") + str.tostring(x, "0.00") + "R"
+f_tfName(_t) => _t == "D" or _t == "1D" ? "1D" : _t == "W" or _t == "1W" ? "1W" : _t == "240" ? "4H" : _t == "60" ? "1H" : _t == "30" ? "30m" : _t == "15" ? "15m" : _t == "5" ? "5m" : _t == "1" ? "1m" : _t
+f_side(d) => d == 1 ? "BUY" : d == -1 ? "SELL" : "SAAF NAHI"
+f_lot(_dist) => _dist > 0 ? (acct * riskPct / 100.0) / (_dist * 100.0) : na
+PSZ   = panelSz == "Tiny" ? size.tiny : panelSz == "Normal" ? size.normal : size.small
+rName = f_tfName(rTF)
+cName = f_tfName(timeframe.period)
+tfOK  = timeframe.in_seconds() < timeframe.in_seconds(rTF)
+
+// ============================================================================
+//  1 · RUKH  —  rukh TF ki BAND candle par ([1] + lookahead_on = repaint nahi)
+// ============================================================================
+f_rukh() =>
+    _ph = ta.pivothigh(high, rPiv, rPiv)
+    _pl = ta.pivotlow(low, rPiv, rPiv)
+    var float h1  = na
+    var float h0  = na
+    var int   th1 = na
+    var int   th0 = na
+    var float l1  = na
+    var float l0  = na
+    var int   tl1 = na
+    var int   tl0 = na
+    if not na(_ph)
+        h0  := h1
+        th0 := th1
+        h1  := _ph
+        th1 := time[rPiv]
+    if not na(_pl)
+        l0  := l1
+        tl0 := tl1
+        l1  := _pl
+        tl1 := time[rPiv]
+    _ef = ta.ema(close, maFLen)
+    _es = ta.ema(close, maSLen)
+    _both = not na(h0) and not na(l0)
+    _st = _both and h1 > h0 and l1 > l0 and close > l1 ? 1 : _both and h1 < h0 and l1 < l0 and close < h1 ? -1 : 0
+    // Trend line: BUY = do uthte swing low, SELL = do girte swing high
+    float _tlU = na
+    float _tlD = na
+    if not na(l0) and tl1 > tl0 and l1 > l0
+        _tlU := l0 + (l1 - l0) * (time - tl0) / (tl1 - tl0)
+    if not na(h0) and th1 > th0 and h1 < h0
+        _tlD := h0 + (h1 - h0) * (time - th0) / (th1 - th0)
+    _tlUOk = not na(_tlU) and close > _tlU
+    _tlDOk = not na(_tlD) and close < _tlD
+    _ma = _ef > _es ? 1 : _ef < _es ? -1 : 0
+    _buy  = _st == 1 and (not needTL or _tlUOk) and (not needMA or _ma == 1)
+    _sell = _st == -1 and (not needTL or _tlDOk) and (not needMA or _ma == -1)
+    _r = _buy ? 1 : _sell ? -1 : 0
+    [_r[1], _st[1], _tlUOk[1], _tlDOk[1], _ma[1], h1[1], h0[1], l1[1], l0[1], th1[1], th0[1], tl1[1], tl0[1], close[1]]
+
+[rRaw, rSt, rTlU, rTlD, rMa, rH1, rH0, rL1, rL0, rTH1, rTH0, rTL1, rTL0, rClose] = request.security(syminfo.tickerid, rTF, f_rukh(), barmerge.gaps_off, barmerge.lookahead_on)
+rukh = tfOK ? rRaw : 0
+
+// Trend line ki abhi ki qeemat (chart ke waqt par) - sirf dikhane ke liye
+tlUNow = not na(rL0) and rTL1 > rTL0 and rL1 > rL0 ? rL0 + (rL1 - rL0) * (time - rTL0) / (rTL1 - rTL0) : na
+tlDNow = not na(rH0) and rTH1 > rTH0 and rH1 < rH0 ? rH0 + (rH1 - rH0) * (time - rTH0) / (rTH1 - rTH0) : na
+
+// ============================================================================
+//  2-3 · JAGAH aur ENTRY  —  chart ka TF
+// ============================================================================
+atr  = ta.atr(14)
+emaF = ta.ema(close, maFLen)
+emaS = ta.ema(close, maSLen)
+hh5  = ta.highest(high, 5)
+ll5  = ta.lowest(low, 5)
+mph  = ta.pivothigh(high, tPiv, tPiv)
+mpl  = ta.pivotlow(low, tPiv, tPiv)
+
+pF = plot(showMA ? emaF : na, "MA21", color = color.new(color.aqua, 0), linewidth = 2)
+pS = plot(showMA ? emaS : na, "MA63", color = color.new(color.fuchsia, 0), linewidth = 2)
+fill(pF, pS, color = showMA ? color.new(color.gray, 90) : color.new(color.gray, 100), title = "MA21-63 ke beech (jagah)")
+
+// --- khuli virtual trade ---
+var int   tDir = 0
+var float tE   = na
+var float tSL  = na
+var float tSL0 = na
+var float tR   = na
+var float tT1  = na
+var float tT2  = na
+var int   tBar = na
+var bool  tH1  = false
+// --- nateeja (kharche ke baad, R mein) ---
+var int   nB = 0
+var int   nS = 0
+var int   wB = 0
+var int   wS = 0
+var float sB = 0.0
+var float sS = 0.0
+var float sumWin  = 0.0   // jeetne wali trades ka kul R
+var float sumLoss = 0.0   // haarne wali trades ka kul R (musbat)
+var int   lossRun = 0
+var int   lossMax = 0
+// trades kaise band huin (seekhne ke liye: nuqsan kahan se aata hai)
+var int   xSL   = 0
+var int   xBE   = 0
+var int   xTP2  = 0
+var int   xFlip = 0
+var int   xTime = 0
+var label[] hist = array.new<label>()
+// --- pullback setup ---
+var int    pbDir = 0
+var int    pbBar = na
+var float  pbExt = na
+var float  trig  = na
+var string why   = "Shuru: rukh dekha ja raha hai"
+
+// ---- khuli trade ka intezam (pehle) ----
+// "rukh ulta" / "waqt khatam" se band hui candle par naya setup nahi dhoondte -
+// strategy mein bhi wahi candle band hone ki hoti hai (strategy jaisa rehne ke liye)
+bool justClosed = false
+if tDir != 0 and bar_index > tBar
+    float  _res = na
+    string _how = ""
+    _hitSL = tDir == 1 ? low <= tSL : high >= tSL
+    if _hitSL
+        // candle SL ke paar KHULI ho (gap: Peer ki subha, news) to asal fill open par
+        _px  = tDir == 1 ? math.min(open, tSL) : math.max(open, tSL)
+        _slR = (tDir == 1 ? _px - tE : tE - _px) / tR
+        _res := tH1 ? 0.5 * tp1R + 0.5 * _slR : _slR
+        _how := tH1 ? "TP1 ✓ phir BE" : "SL ✗"
+    else
+        if not tH1 and (tDir == 1 ? high >= tT1 : low <= tT1)
+            tH1 := true
+            tSL := tE
+        if tDir == 1 ? high >= tT2 : low <= tT2
+            _px2 = tDir == 1 ? math.max(open, tT2) : math.min(open, tT2)
+            _res := 0.5 * tp1R + 0.5 * math.abs(_px2 - tE) / tR
+            _how := "TP2 ✓"
+    if na(_res)
+        _open = (tDir == 1 ? close - tE : tE - close) / tR
+        if exitFlip and rukh == -tDir
+            _res := tH1 ? 0.5 * tp1R + 0.5 * _open : _open
+            _how := "rukh ulta"
+            justClosed := true
+        else if maxBars > 0 and bar_index - tBar >= maxBars
+            _res := tH1 ? 0.5 * tp1R + 0.5 * _open : _open
+            _how := "waqt khatam"
+            justClosed := true
+    if not na(_res)
+        _net = _res - costUSD / tR
+        if tDir == 1
+            nB += 1
+            sB += _net
+            wB += _net > 0 ? 1 : 0
+        else
+            nS += 1
+            sS += _net
+            wS += _net > 0 ? 1 : 0
+        if _net > 0
+            sumWin += _net
+        else
+            sumLoss -= _net
+        if _how == "SL ✗"
+            xSL += 1
+        else if _how == "TP1 ✓ phir BE"
+            xBE += 1
+        else if _how == "TP2 ✓"
+            xTP2 += 1
+        else if _how == "rukh ulta"
+            xFlip += 1
+        else
+            xTime += 1
+        lossRun := _net < 0 ? lossRun + 1 : 0
+        lossMax := math.max(lossMax, lossRun)
+        if showHist and histN > 0
+            _lb = label.new(bar_index, tDir == 1 ? high : low, f_r(_net), xloc = xloc.bar_index, yloc = yloc.price,
+                 style = tDir == 1 ? label.style_label_down : label.style_label_up,
+                 color = color.new(_net > 0 ? #1B5E20 : #B71C1C, 10), textcolor = color.white, size = size.tiny,
+                 tooltip = f_side(tDir) + " @ " + f_px(tE) + "  SL " + f_px(tSL0) + "  TP1 " + f_px(tT1) + "  TP2 " + f_px(tT2) + "\n" + _how + " · kharche ke baad " + f_r(_net))
+            array.push(hist, _lb)
+            if array.size(hist) > histN
+                label.delete(array.shift(hist))
+        why := "Pichli trade band: " + f_side(tDir) + " " + _how + " = " + f_r(_net) + " (kharche ke baad)"
+        tDir := 0
+
+// ---- setup: pullback dhoondo, phir entry ----
+bool sigB = false
+bool sigS = false
+if tDir == 0 and not justClosed
+    if pbDir != 0 and rukh != pbDir
+        pbDir := 0
+        why := "Rukh badal gaya - pullback setup khatam"
+    if pbDir == 0
+        // MA21 chhua, magar itna gehra nahi ke setup foran khatam ho
+        _deepNow = rukh == 1 ? close < emaS - pbDeep * atr : close > emaS + pbDeep * atr
+        if rukh != 0 and not _deepNow and (rukh == 1 ? low <= emaF : high >= emaF)
+            pbDir := rukh
+            pbBar := bar_index
+            pbExt := rukh == 1 ? low : high
+            trig  := rukh == 1 ? hh5 : ll5
+            why   := "Naya pullback: qeemat MA21 tak " + (rukh == 1 ? "neeche" : "upar") + " aayi. Ab entry trigger ka intezar."
+    else
+        pbExt := pbDir == 1 ? math.min(pbExt, low) : math.max(pbExt, high)
+        if pbDir == 1 and not na(mph) and bar_index - tPiv >= pbBar
+            trig := mph
+        if pbDir == -1 and not na(mpl) and bar_index - tPiv >= pbBar
+            trig := mpl
+        _deep = pbDir == 1 ? close < emaS - pbDeep * atr : close > emaS + pbDeep * atr
+        _old  = bar_index - pbBar > pbMax
+        if _deep or _old
+            why := _deep ? "Pullback bohot gehra (MA63 se " + str.tostring(pbDeep, "#.#") + " ATR paar) - setup khatam, rukh shak mein" : "Pullback " + str.tostring(pbMax) + " candle se purana - setup khatam"
+            pbDir := 0
+        else
+            _go = pbDir == 1 ? close > trig and close > open : close < trig and close < open
+            if _go and barstate.isconfirmed
+                _e   = close
+                _sl0 = pbDir == 1 ? pbExt - slBuf * atr : pbExt + slBuf * atr
+                _r0  = math.abs(_e - _sl0)
+                _r   = math.max(_r0, slMin * atr)
+                // agla swing rukh TF ka (BUY: entry se upar wala sab se qareeb swing high)
+                float _tgt = na
+                if pbDir == 1
+                    if not na(rH0) and rH0 > _e
+                        _tgt := rH0
+                    if not na(rH1) and rH1 > _e
+                        _tgt := na(_tgt) ? rH1 : math.min(_tgt, rH1)
+                else
+                    if not na(rL0) and rL0 < _e
+                        _tgt := rL0
+                    if not na(rL1) and rL1 < _e
+                        _tgt := na(_tgt) ? rL1 : math.max(_tgt, rL1)
+                _room = na(_tgt) or math.abs(_tgt - _e) >= tp1R * _r
+                if _r0 > slMax * atr
+                    why := "Entry aayi magar SL bohot door (" + str.tostring(_r0 / atr, "0.00") + " ATR, hadd " + str.tostring(slMax, "0.0") + ") - trade chhori. Khatra bara."
+                    pbDir := 0
+                else if not _room
+                    why := "Entry aayi magar TP1 tak jagah nahi: " + rName + " swing " + f_px(_tgt) + " bohot qareeb - trade chhori"
+                    pbDir := 0
+                else
+                    _t2  = _e + pbDir * tp2R * _r
+                    tDir := pbDir
+                    tE   := _e
+                    tR   := _r
+                    tSL  := _e - pbDir * _r
+                    tSL0 := tSL
+                    tT1  := _e + pbDir * tp1R * _r
+                    tT2  := useTgt and not na(_tgt) ? (pbDir == 1 ? math.min(_t2, _tgt) : math.max(_t2, _tgt)) : _t2
+                    tBar := bar_index
+                    tH1  := false
+                    sigB := pbDir == 1
+                    sigS := pbDir == -1
+                    why  := "Trade khuli: " + f_side(tDir) + " - ab sirf SL / TP ka intezar. Haath mat lagayein."
+                    pbDir := 0
+
+plotshape(sigB, "Entry BUY", shape.triangleup, location.belowbar, color = color.new(#1B5E20, 0), size = size.small)
+plotshape(sigS, "Entry SELL", shape.triangledown, location.abovebar, color = color.new(#B71C1C, 0), size = size.small)
+bgcolor(showPB and pbDir == 1 ? color.new(color.green, 93) : showPB and pbDir == -1 ? color.new(color.red, 93) : na, title = "Pullback chal raha")
+
+alertcondition(sigB, "JAS Seerhi BUY", "JAS Seerhi: BUY entry (band candle par)")
+alertcondition(sigS, "JAS Seerhi SELL", "JAS Seerhi: SELL entry (band candle par)")
+if sigB or sigS
+    alert("JAS Seerhi " + f_side(tDir) + " " + syminfo.ticker + " " + cName + " | Entry " + f_px(tE) + " | SL " + f_px(tSL) + " | TP1 " + f_px(tT1) + " | TP2 " + f_px(tT2) + " | lot " + str.tostring(f_lot(tR), "#.##"), alert.freq_once_per_bar_close)
+
+// ============================================================================
+//  DRAWINGS (aakhri candle par mita kar dobara)
+// ============================================================================
+var line[]  dL = array.new<line>()
+var label[] dT = array.new<label>()
+var box[]   dB = array.new<box>()
+f_tag(_x, _y, _t, _c) =>
+    label.new(_x, _y, _t, xloc = xloc.bar_index, yloc = yloc.price, style = label.style_label_left, color = _c, textcolor = color.white, size = size.small)
+
+if barstate.islast
+    while array.size(dL) > 0
+        line.delete(array.pop(dL))
+    while array.size(dT) > 0
+        label.delete(array.pop(dT))
+    while array.size(dB) > 0
+        box.delete(array.pop(dB))
+    _x2 = bar_index + futBars
+    // rukh TF ki trend lines
+    if showTL and tfOK
+        if not na(rL0) and rTL1 > rTL0 and rL1 > rL0
+            array.push(dL, line.new(rTL0, rL0, rTL1, rL1, xloc = xloc.bar_time, extend = extend.right, color = color.new(#1B5E20, rukh == 1 ? 0 : 60), width = rukh == 1 ? 3 : 1))
+            array.push(dT, label.new(rTL1, rL1, rName + " trend line (BUY)", xloc = xloc.bar_time, yloc = yloc.price, style = label.style_label_up, color = color.new(#1B5E20, rukh == 1 ? 10 : 60), textcolor = color.white, size = size.tiny))
+        if not na(rH0) and rTH1 > rTH0 and rH1 < rH0
+            array.push(dL, line.new(rTH0, rH0, rTH1, rH1, xloc = xloc.bar_time, extend = extend.right, color = color.new(#B71C1C, rukh == -1 ? 0 : 60), width = rukh == -1 ? 3 : 1))
+            array.push(dT, label.new(rTH1, rH1, rName + " trend line (SELL)", xloc = xloc.bar_time, yloc = yloc.price, style = label.style_label_down, color = color.new(#B71C1C, rukh == -1 ? 10 : 60), textcolor = color.white, size = size.tiny))
+    // rukh TF ke swing: HH / LH aur HL / LL
+    if showSw and tfOK
+        if not na(rH1) and not na(rH0)
+            array.push(dT, label.new(rTH1, rH1, rH1 > rH0 ? "HH" : "LH", xloc = xloc.bar_time, yloc = yloc.price, style = label.style_label_down, color = color.new(rH1 > rH0 ? #1B5E20 : #B71C1C, 30), textcolor = color.white, size = size.small, tooltip = rName + " ka aakhri swing high " + f_px(rH1) + (rH1 > rH0 ? " - pichle se OONCHA (Higher High)" : " - pichle se NEECHA (Lower High)")))
+            array.push(dT, label.new(rTH0, rH0, "H", xloc = xloc.bar_time, yloc = yloc.price, style = label.style_label_down, color = color.new(color.gray, 50), textcolor = color.white, size = size.tiny, tooltip = rName + " ka pichla swing high " + f_px(rH0)))
+        if not na(rL1) and not na(rL0)
+            array.push(dT, label.new(rTL1, rL1, rL1 > rL0 ? "HL" : "LL", xloc = xloc.bar_time, yloc = yloc.price, style = label.style_label_up, color = color.new(rL1 > rL0 ? #1B5E20 : #B71C1C, 30), textcolor = color.white, size = size.small, tooltip = rName + " ka aakhri swing low " + f_px(rL1) + (rL1 > rL0 ? " - pichle se OONCHA (Higher Low)" : " - pichle se NEECHA (Lower Low)")))
+            array.push(dT, label.new(rTL0, rL0, "L", xloc = xloc.bar_time, yloc = yloc.price, style = label.style_label_up, color = color.new(color.gray, 50), textcolor = color.white, size = size.tiny, tooltip = rName + " ka pichla swing low " + f_px(rL0)))
+    // pullback chal raha: entry ki lakeer aur pullback ka kinara
+    if pbDir != 0
+        array.push(dL, line.new(pbBar, trig, _x2, trig, xloc = xloc.bar_index, color = color.new(color.blue, 0), width = 2, style = line.style_dotted))
+        array.push(dT, f_tag(_x2, trig, "ENTRY: candle is ke " + (pbDir == 1 ? "UPAR" : "NEECHE") + " band ho " + f_px(trig), color.new(color.blue, 10)))
+        array.push(dL, line.new(pbBar, pbExt, _x2, pbExt, xloc = xloc.bar_index, color = color.new(color.red, 30), width = 1, style = line.style_dotted))
+        array.push(dT, f_tag(_x2, pbExt, "pullback ka " + (pbDir == 1 ? "low " : "high ") + f_px(pbExt) + " (SL is ke peeche)", color.new(color.red, 30)))
+    // khuli trade ka poora naqsha
+    if tDir != 0
+        array.push(dB, box.new(tBar, tE, _x2, tSL0, xloc = xloc.bar_index, bgcolor = color.new(color.red, 85), border_color = color.new(color.red, 100)))
+        array.push(dB, box.new(tBar, tE, _x2, tT2, xloc = xloc.bar_index, bgcolor = color.new(color.green, 85), border_color = color.new(color.green, 100)))
+        array.push(dL, line.new(tBar, tE, _x2, tE, xloc = xloc.bar_index, color = color.new(color.blue, 0), width = 2))
+        array.push(dL, line.new(tBar, tSL, _x2, tSL, xloc = xloc.bar_index, color = color.new(color.red, 0), width = 2, style = line.style_dashed))
+        array.push(dL, line.new(tBar, tT1, _x2, tT1, xloc = xloc.bar_index, color = color.new(color.green, 0), width = 2))
+        array.push(dL, line.new(tBar, tT2, _x2, tT2, xloc = xloc.bar_index, color = color.new(color.green, 0), width = 2, style = line.style_dotted))
+        array.push(dT, f_tag(_x2, tE, "Entry " + f_px(tE) + "  lot " + str.tostring(f_lot(tR), "#.##"), color.new(color.blue, 0)))
+        array.push(dT, f_tag(_x2, tSL, tH1 ? "SL ab Entry par (BE) " + f_px(tSL) : "SL " + f_px(tSL), color.new(color.red, 0)))
+        array.push(dT, f_tag(_x2, tT1, "TP1 " + f_px(tT1) + (tH1 ? " ✓" : "  (aadhi band)"), color.new(#2E7D32, 0)))
+        array.push(dT, f_tag(_x2, tT2, "TP2 " + f_px(tT2), color.new(#1B5E20, 0)))
+
+// ============================================================================
+//  PANEL  —  har seerhi ka haal, saaf alfaaz mein
+// ============================================================================
+var table pt = table.new(f_pos(panelPos), 2, 24, border_width = 1, border_color = color.new(color.gray, 70))
+cOK  = color.new(#1B5E20, 0)
+cNO  = color.new(#B71C1C, 0)
+cMID = color.new(#37474F, 0)
+f_row(_r, _a, _b, _c) =>
+    table.cell(pt, 0, panelPad + _r, _a, bgcolor = color.new(color.white, 8), text_color = color.black, text_size = PSZ, text_halign = text.align_left)
+    table.cell(pt, 1, panelPad + _r, _b, bgcolor = color.new(color.white, 8), text_color = _c, text_size = PSZ, text_halign = text.align_left)
+
+if barstate.islast
+    if panelPad > 0
+        for _k = 0 to panelPad - 1
+            table.cell(pt, 0, _k, " ", bgcolor = color.new(color.white, 100), text_size = PSZ)
+    table.cell(pt, 0, panelPad, "JAS SEERHI " + BUILD + "  ·  chart " + cName + "  ·  rukh " + rName + " (band candle)", bgcolor = color.new(color.silver, 30), text_color = color.black, text_size = PSZ)
+    table.merge_cells(pt, 0, panelPad, 1, panelPad)
+    if not tfOK
+        f_row(1, "Chart ka TF", "Chart " + rName + " se CHHOTA ho - 1H, 30m ya 15m kholein", cNO)
+    else
+        // 1 · RUKH
+        f_row(1, "1 · RUKH (" + rName + ")", rukh == 1 ? "BUY ✓  - sirf BUY dhoondo" : rukh == -1 ? "SELL ✓  - sirf SELL dhoondo" : "SAAF NAHI ✗  - koi trade nahi", rukh == 1 ? cOK : rukh == -1 ? cNO : cMID)
+        _hTxt = na(rH0) ? "-" : rH1 > rH0 ? "HH" : "LH"
+        _lTxt = na(rL0) ? "-" : rL1 > rL0 ? "HL" : "LL"
+        _stOk = rSt != 0
+        f_row(2, "    Structure", _hTxt + " + " + _lTxt + (rSt == 1 ? "  = upar ki seerhi ✓" : rSt == -1 ? "  = neeche ki seerhi ✓" : "  = mila jula / toota ✗"), _stOk ? (rSt == 1 ? cOK : cNO) : cMID)
+        _tlTxt = rSt == 1 ? (rTlU ? "BUY line salamat ✓  (abhi ~" + f_px(tlUNow) + ", is ke upar)" : na(tlUNow) ? "BUY line nahi bani ✗" : "BUY line TOOT gayi ✗") : rSt == -1 ? (rTlD ? "SELL line salamat ✓  (abhi ~" + f_px(tlDNow) + ", is ke neeche)" : na(tlDNow) ? "SELL line nahi bani ✗" : "SELL line TOOT gayi ✗") : "-"
+        f_row(3, "    Trend line", _tlTxt + (needTL ? "" : "  (zaroori nahi - setting)"), (rSt == 1 and rTlU) or (rSt == -1 and rTlD) ? (rSt == 1 ? cOK : cNO) : cMID)
+        f_row(4, "    MA21 / MA63", rMa == 1 ? "21 upar  = BUY taraf" + (rSt == 1 ? " ✓" : "") : rMa == -1 ? "21 neeche  = SELL taraf" + (rSt == -1 ? " ✓" : "") : "barabar", rMa == 1 ? cOK : rMa == -1 ? cNO : cMID)
+        // 2 · JAGAH
+        _jg = rukh == 0 ? "-  (pehle rukh chahiye)" : tDir != 0 ? "trade khuli hai" : pbDir != 0 ? "Pullback chal raha ✓  (" + str.tostring(bar_index - pbBar) + " candle,  " + (pbDir == 1 ? "low " : "high ") + f_px(pbExt) + ")" : "Intezar: qeemat MA21 (" + f_px(emaF) + ") tak " + (rukh == 1 ? "NEECHE" : "UPAR") + " wapas aaye. Peeche mat bhaagein."
+        f_row(5, "2 · JAGAH (" + cName + ")", _jg, pbDir != 0 ? cOK : cMID)
+        // 3 · ENTRY
+        _en = pbDir == 1 ? "Candle " + f_px(trig) + " ke UPAR hari band ho" : pbDir == -1 ? "Candle " + f_px(trig) + " ke NEECHE laal band ho" : tDir != 0 ? "ho chuki" : "-"
+        f_row(6, "3 · ENTRY (" + cName + ")", _en, pbDir != 0 ? color.new(color.blue, 0) : cMID)
+        // plan ka andaza (agar abhi trigger ho)
+        if pbDir != 0
+            _sl0 = pbDir == 1 ? pbExt - slBuf * atr : pbExt + slBuf * atr
+            _r0  = math.abs(trig - _sl0)
+            _r   = math.max(_r0, slMin * atr)
+            _pl  = _r0 > slMax * atr ? "SL bohot door hoga (" + str.tostring(_r0 / atr, "0.00") + " ATR, hadd " + str.tostring(slMax, "0.0") + ") - trade NAHI banegi" : "Entry ~" + f_px(trig) + "  SL " + f_px(trig - pbDir * _r) + "  TP1 " + f_px(trig + pbDir * tp1R * _r) + "  TP2 ≤" + f_px(trig + pbDir * tp2R * _r) + "  lot ~" + str.tostring(f_lot(_r), "#.##")
+            f_row(7, "    Plan ka andaza", _pl, _r0 > slMax * atr ? cNO : cMID)
+        else
+            f_row(7, "    Plan ka andaza", "-", cMID)
+        // khuli trade
+        _ot = tDir == 0 ? "koi nahi" : f_side(tDir) + " @ " + f_px(tE) + "  SL " + f_px(tSL) + (tH1 ? " (BE)" : "") + "  TP1 " + f_px(tT1) + (tH1 ? " ✓" : "") + "  TP2 " + f_px(tT2) + "  ·  abhi " + f_r((tDir == 1 ? close - tE : tE - close) / tR)
+        f_row(8, "Khuli trade", _ot, tDir == 1 ? cOK : tDir == -1 ? cNO : cMID)
+    f_row(9, "Aakhri baat", why, cMID)
+    // nateeja
+    _n  = nB + nS
+    _w  = wB + wS
+    _ex = _n > 0 ? (sB + sS) / _n : na
+    _pf = sumLoss > 0 ? sumWin / sumLoss : na
+    f_row(10, "Nateeja (kharche ke baad)", _n == 0 ? "abhi koi band trade nahi" : str.tostring(_n) + " trades  ·  jeet " + str.tostring(math.round(100.0 * _w / _n)) + "%  ·  Exp " + f_r(_ex) + "  ·  kul " + f_r(sB + sS) + "  ·  PF " + (na(_pf) ? "-" : str.tostring(_pf, "#.##")), na(_ex) ? cMID : _ex > 0 ? cOK : cNO)
+    f_row(11, "    BUY  |  SELL", "BUY " + str.tostring(nB) + (nB > 0 ? " (" + f_r(sB / nB) + ")" : "") + "   |   SELL " + str.tostring(nS) + (nS > 0 ? " (" + f_r(sS / nS) + ")" : "") + "   ·   lagatar haar max " + str.tostring(lossMax), cMID)
+    f_row(12, "    Kaise band huin", _n == 0 ? "-" : "SL " + str.tostring(xSL) + "  ·  TP1→BE " + str.tostring(xBE) + "  ·  TP2 " + str.tostring(xTP2) + "  ·  rukh ulta " + str.tostring(xFlip) + "  ·  waqt " + str.tostring(xTime), cMID)
+    f_row(13, "Lot", str.tostring(riskPct, "#.#") + "% = " + str.tostring(acct * riskPct / 100.0, "#") + " " + acctCur + "  ·  lot = risk ÷ (SL$ × 100)", cMID)
+    f_row(14, "Yaad rakhein", "Pehle Strategy Tester, phir demo. Peshangoi nahi.", cNO)
