@@ -26,7 +26,18 @@ Aakhri update: 9 October 2026 (raat).
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
-## 1b. Live kitab ka haal (2 Oct raat ~8 PM)
+## 1b. Live kitab ka haal
+
+**9 Oct (JasDeskView v4.2, XAUUSDc, qeemat ~4185.46):** 160 position, BUY 102 /
+2.21 lot (ausat 4188.779) / SELL 58 / 2.05 lot (ausat 4167.154), **NET +0.16
+(LONG - jami nahi, $1 = 16 USC)**, kul 4.26 lot, **Close All -4,532.20 USC**
+(faide wali 46 = +1,754.70, nuqsan wali 114 = -6,286.90). BUY band = -730.60,
+SELL band = -3,801.60. Nuqsan zyada tar SELL mein: 0.01 x 49 = -1,508.00, ek
+**1.15 SELL @ 4174.488 = -1,289.30**, 0.05 x 5 = -792.80. BUY mein 0.05 x 22 =
+-667.60. Barabar ka price 4465.84 ($280 upar). 2 Oct se kitab ~3 guna bari
+(1.36 -> 4.26 lot) aur nuqsan -2,920 -> -4,532.
+
+(purana) 2 Oct raat ~8 PM:
 
 99 position, BUY 0.68 (ausat 4204.75) / SELL 0.68 (ausat 4162.05), **NET 0 (jami)**,
 Close All **-2,920 USC** (subha -3,277 tha; user ne haath se SELL upar shift kiye).
