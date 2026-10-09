@@ -6,6 +6,11 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## >>> AGLI CHAT YAHAN SE SHURU KARE (9 Oct 2026, raat) <<<
 
+**MONDAY (12 Oct) KE DO KAAM - user ne khud kaha, yaad rakhna:**
+1. **Radar EA (JasTideRadarEA e1) ka Tester nateeja:** OnTester +40.39R (bina swap, 2019 se) magar paise mein sirf +312 / PF 1.02 - shayad demo ke SWAP ki wajah se TradingView jaisa nahi aaya. Tester Journal ki aakhri 6 "JAS TIDE RADAR e1" lines (MARKET x2, SAAL, CHHOOTI, KUL, QAIDA - swap R alag) mangwa kar PASS/FAIL aur swap ka hissa.
+2. **Chakkar / Fishing EA ka JALD nateeja (live account ke liye):** `JasFishingEA.mq5` f1 (user ke apne qaide, sirf apni magic lots) - sab se tez raasta **MT5 Strategy Tester** (pichle 3-6 mahine XAUUSDm, minuton mein, weekend par bhi), phir demo. k4 ka bhi Tester mein moqabla. Faisle ka qaida Tester se PEHLE likha hua (neeche).
+
+
 User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 
 | Cheez | Haal |
