@@ -37,6 +37,15 @@ SELL band = -3,801.60. Nuqsan zyada tar SELL mein: 0.01 x 49 = -1,508.00, ek
 -667.60. Barabar ka price 4465.84 ($280 upar). 2 Oct se kitab ~3 guna bari
 (1.36 -> 4.26 lot) aur nuqsan -2,920 -> -4,532.
 
+**9 Oct, thori der baad (qeemat 4184.65):** user ne beech mein 2 SELL band, 1 BUY
+khola -> 159 position, BUY 103 / 2.22 (ausat 4188.772), SELL 56 / 2.03 (ausat
+4166.936), NET +0.19, Close All -4,564.60, barabar 4422.08. **User ne kaha: "ab
+mashware se kaam karunga"** (bina mashware lot na kholna/band karna). Panel ka
+BARI LOT KI JORI: 1.15 SELL + 59 BUY (sasti pehle, ausat 4173.30) = **+106.30**,
+lots 4.25 -> 1.95, NET wahi +0.19, bachi kitab 99 position -4,670.90 (30 BUY
+upar wali shamil). PLAN A (1.15 SELL + 22 faide wali = +11.90) NET ko +0.89 kar
+deta hai - khatarnak.
+
 (purana) 2 Oct raat ~8 PM:
 
 99 position, BUY 0.68 (ausat 4204.75) / SELL 0.68 (ausat 4162.05), **NET 0 (jami)**,
