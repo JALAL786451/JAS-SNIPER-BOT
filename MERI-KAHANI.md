@@ -50,6 +50,14 @@ upar gayi. User: "jaldi nahi karna", sawal: "nikal bhi jaon aur nuqsan bhi na ho
 jawab diya: jo nuqsan ho chuka woh kisi jori/hedge se nahi mit-ta, sirf qeemat
 (NET +0.19) ya aage ki kamai se; teen raaste taraazu ki misaal se. Mashwara: abhi
 RUKO, ghalti dobara na ho is liye MT5 mein One Click Trading band + default lot 0.01.
+**9 Oct shaam (Exness mobile app, user ne khud mazeed lots kholi/band kin):** 3:50 PM -
+172 position (BUY 107 / SELL 65), Close All -4,717.12, equity 43,494.68. 4:16 PM -
+**167 position (BUY 103 / SELL 64), app par "Fully hedged" (NET 0, jami)**, Close
+All **-4,845.48**, **equity 43,409.42** (balance ~48,254.90), aaj ki band trades
++1,742.90. Beech ki trades: naye BUY 4174-4177, SELL ~4179.99, chhote faide band
+(+2.40, +11.80, +9.10, +0.90, +5.60). **Sabaq (dikhaya): asal score EQUITY hai** -
+3:50 se 4:16 equity -85 (bori: band faida +, khula utna hi -). 28 Sep wali 0.01
+BUY @ 4367.366 (-186) abhi khuli. Mobile par One-click BAND.
 
 (purana) 2 Oct raat ~8 PM:
 
