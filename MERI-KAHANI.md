@@ -144,6 +144,10 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   saal), magar poori history mein sab se gehri girawat 90R - correlated
   markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
   demo/live nahi.
+- **Chakkar k4 Tester mein FAIL** (10 Oct, wahi 3 mahine): -5,561, **jeet 94%**
+  phir bhi nuqsan - ausat jeet +7 vs ausat haar -136. Balance +20,739 tak
+  barha magar equity shuru se kabhi upar nahi gayi (DD 5,618). "75% jeet phir
+  bhi nuqsan" wala sabaq aur bhi bara: jeet ki ginti nahi, haar ka size.
 - **Fishing EA f1 (user ke apne qaide) Tester mein FAIL** (10 Oct, XAUUSDm M1 real
   ticks, Jul-Sep 2026): kul -711.68, kitab 20 lots par atak gayi (khula -7,411).
   Sarkao ne +6,695 balance mein dikhaya magar 10 SELL @ ~3,962 aur 10 BUY @ ~4,695
@@ -185,7 +189,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `indicators/smc_coach_pro_v4.pine` | **v3 + Pine v6 + kharabiyan durust + PIP HISAAB** (1D/1H candle ka raasta pip mein + har pip par waqt/volume ka profile) | **v4.1 compile + chal raha (8 Oct)**, 1m/15m/1h/1D par number aapas mein milte hain. Sirf observation. v3 waisi rakhi hai |
 | `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
 | `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
-| `JasChakkarEA.mq5` k4 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30. Qaide Q0-Q9 `ABHI-KAHAN-HAIN.md` mein | BTC demo par. k1 (gold, sirf SELL chakkar) aur k3a demo par chale; **k4 compile ka jawab baqi** |
+| `JasChakkarEA.mq5` k4 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30. Qaide Q0-Q9 `ABHI-KAHAN-HAIN.md` mein | Compile ✅ (9 Oct). **Tester FAIL (10 Oct, Jul-Oct 2026 real ticks): -5,561, jeet 94%, equity DD 5,618, aakhir mein darjanon lots phansi.** Live nahi; demo se hatana |
 | `JasBasketEA.mq5` b20 | Meri method ka EA, sirf apni (magic) lots | Haath ki lots ko nahi chhoota |
 | `JasDesk.mq5` | Button wala desk | User ne MT5 se hata diya |
 
