@@ -144,6 +144,12 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   saal), magar poori history mein sab se gehri girawat 90R - correlated
   markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
   demo/live nahi.
+- **Radar EA ka MT5 Tester (10 Oct, Exness data, 2019 se) - pehle se likha qaida
+  PASS:** 414 trades, +40.39R bina swap, girawat 12.7R, 6/8 saal musbat. Magar
+  **saara faida BTC se** (+44.2R); baqi 7 market mila kar -3.9R (FX -17.3R,
+  gold +12.5R). Demo ka swap -22R kha gaya (is liye paise mein breakeven). Agar
+  live cent par BTC nahi to live ke liye abhi qabil NAHI. Andar ke nateeje dekh
+  kar market hatana/chunna mana (overfitting).
 - **JAS SMC Trend ka "advance ishara" gold par kaam ka NAHI** (10 Oct, pehle se
   likha qaida, OANDA:XAUUSD): 15m 140 ishare FARK -1.1% (2SE 8.0%), 1H 207
   ishare FARK -1.7% (2SE 6.6%) - aam candle jaisa, balke zara bura. BTC par bhi
@@ -165,7 +171,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasJoriClose.mq5` s1 | **Script.** Bari lot ki lot-barabar jori **Close By** se band, ek Yes/No | ✅ Demo 150/150, **live 64/64 (+550.70 USC, 1 Oct)**. Abhi sasti BUY pehle chunta hai - user upar wali BUY pehle chahta hai (option banana baqi) |
 | `indicators/jas_tide_radar.pine` r3 | **9 market ka kachhua ek 1D chart par** (trade nahi karta): har market ki trade/SL/agla toot, gold ke saath sync, USD daao, MILA HUA hisaab (sab / 2005 se / 2019 se), FAISLA row | ✅ r3 chal raha (9 Oct): **DEMO KE QABIL** |
 | `indicators/smc_trend_pro.pine` t3 | **JAS SMC Trend (10 Oct):** SMC v4 ke hisson se ek rukh (score -100..+100, 5 haal) + **advance ishara** (chhota CHOCH, bari TF ke khilaf nahi, jaan wali candle). t3: **MA50 ka rang** = ishara (hara/laal chalu, sleti khatam) + **narangi S/R lakeer** (yahan band candle par rang badal sakta hai) + sleti nuqte wali (yahan kabhi nahi); table mein har TF ka apna rukh number. Andar naap: 2 ATR pehle vs aam candle, pehle se likha qaida | t1/t2 compile + chal gaye. **BTC 1H/4H/1D: FARK +0.1/+0.0/+3.5% = SABIT NAHI.** t3 **compile + chal gaya** (10 Oct). **Gold imtihan (pehle se likha qaida): XAUUSD 15m FARK -1.1%, 1H -1.7% = SABIT NAHI** -> sirf dekhne ka, trade/Tester/demo nahi, settings nahi ghumani |
-| `JasTideRadarEA.mq5` e1 | **Radar r3 ke qaide ka EA, ek chart se 9 market**, USD hadd 3, gold+silver ek, 1% risk (broker ka hisaab), SL server par + roz aage. Default SIRF DIKHANA. Tester ke aakhir mein Journal mein R ka hisaab + pehle se likha qaida | **Compile ✅ (9 Oct)**, demo 472716649 ke XAUUSDm D1 chart par SIRF DIKHANA mein laga. Phir Tester (Exness data), phir demo par trade. Live nahi |
+| `JasTideRadarEA.mq5` e1 | **Radar r3 ke qaide ka EA, ek chart se 9 market**, USD hadd 3, gold+silver ek, 1% risk (broker ka hisaab), SL server par + roz aage. Default SIRF DIKHANA. Tester ke aakhir mein Journal mein R ka hisaab + pehle se likha qaida | **Compile ✅ (9 Oct). Tester ✅ QAIDA PASS (10 Oct): 2019 se 414 trades, +40.39R bina swap, girawat 12.7R - magar BTC +44.2R, baqi 7 market -3.9R.** Demo trade Peer 12 Oct se (pehle k4 hatana - takraao). Live cent nahi (BTC shayad wahan nahi) |
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
 | `docs/tide_rehnuma.html` | Tide Seekh ki Roman Urdu guide ([artifact](https://claude.ai/artifact/5w4xy7FcTuCnQqxbb3A6C2)): qaide, panel rows, roz ka kaam, MT5 order/SL, naap, demo plan | ✅ 8 Oct |
 | `indicators/jas_tide_seekh.pine` + `strategies/jas_tide_seekh_test.pine` | **Tide (kachhua 1D) ka seekhne wala panel** (8 Oct, user: B + nayi file): har qaida ✓/✗, plan, lot, sarakta SL, purane nateeje R mein, switch "2R par aadhi" (BAND = 458 wala). Strategy copy mein v1.1 ki kharabiyan durust | Bana, **compile baqi**. Pehle Tester, phir demo |
