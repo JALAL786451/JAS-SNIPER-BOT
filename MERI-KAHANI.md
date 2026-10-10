@@ -144,6 +144,14 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   saal), magar poori history mein sab se gehri girawat 90R - correlated
   markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
   demo/live nahi.
+- **Jami kitab ka nateeja = (ausat SELL - ausat BUY) x lots** - qeemat se nahi
+  badalta (10 Oct, do misaal ek hi din): demo 472540009 mein SELL ausat BUY se
+  $0.63 UPAR -> 55 jori par ~+20 (spread ke baad) tay; Fishing EA Tester mein
+  SELL @ ~3,962 aur BUY @ ~4,695 (SELL $733 NEECHE) -> ~-7,330 tay. User ka
+  khayal "SELL upar, BUY neeche rakho" (Fishing logic ke liye, 10 Oct) range
+  mein yahi plus deta hai, magar trend mein qeemat wapas na aaye to BUY SELL ke
+  neeche khulna mumkin hi nahi rehta. Farq sirf is ka hai ke qeemat wapas aayi
+  ya nahi. User: "real ke waqt aap ki advice yaad rakhunga".
 - **Chakkar k4 Tester mein FAIL** (10 Oct, wahi 3 mahine): -5,561, **jeet 94%**
   phir bhi nuqsan - ausat jeet +7 vs ausat haar -136. Balance +20,739 tak
   barha magar equity shuru se kabhi upar nahi gayi (DD 5,618). "75% jeet phir
