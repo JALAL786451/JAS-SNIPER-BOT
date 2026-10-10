@@ -1,6 +1,6 @@
 # JAS Tide + SMC - naqsha (10 Oct 2026)
 
-Halat: **user ki "D" ka intezar.** Faisle Claude ne kiye (MERI-KAHANI: faisle Claude kare).
+Halat: **manzoor ("D", 10 Oct raat) - BAN GAYA:** `indicators/jas_tide_smc.pine` s1 + user ki farmaish par Tester `strategies/jas_tide_smc_test.pine` s1 (faisla 1D, amal chart TF par - 1D vs 15m ka moqabla). Compile baqi. Faisle Claude ne kiye (MERI-KAHANI: faisle Claude kare).
 
 User ka sawal (10 Oct raat): "Tide wali script gold par overall kaam karti hai (test kiya).
 Tide ke hisaab se script bana dein, BTC chart par idea leta rahoon - MA21/63, DZ/SZ,

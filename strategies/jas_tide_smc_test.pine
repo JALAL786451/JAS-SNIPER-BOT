@@ -1,0 +1,301 @@
+//@version=6
+// ============================================================================
+//  JAS TIDE + SMC — TEST  (build s1, Pine v6)
+//  10 Oct 2026 - user: "aik tester bhi bana dein takey check karon ke overall
+//  1D par kitni trade leta hai, aur 1D par bara TF hai to trade ka idea 15m
+//  par execute karne se bhi result shayad wohi hona chahiye."
+//
+//  FAISLA HAMESHA 1D SE, AMAL CHART KI TF PAR.
+//   - Tide ke qaide (indicators/jas_tide_smc.pine wale, 459 wale, BAND):
+//     daily candle band ho to: 10 din ka toot + D1 EMA50/200 rukh + ATR >= 0.25%
+//     = entry us daily close par; shuru SL 2 ATR; har daily close par SL 5 din
+//     ke low/high tak sirf aage; D1 rukh palte to daily close par bahar.
+//   - 1D chart par: har candle = ek din -> strategies/jas_tide_seekh_test.pine
+//     (t1.5, switch BAND) jaisa hi nateeja aana chahiye.
+//   - 15m (ya 1H, 5m...) chart par: wohi faisle sirf din ki AAKHRI candle ke
+//     band hone par (= daily close), magar SL har 15m candle par check hota
+//     hai. Entry wohi qeemat (daily close = aakhri 15m candle ka close).
+//   - SMC nishan (MA21/63, BOS/CHOCH, DZ/SZ, FVG, LGB) yahan NAHI hain - woh
+//     Tide ko na rokte hain na chalate, is liye naap par asar zero.
+//
+//  1D vs 15m ka moqabla: TradingView par 15m ki history chhoti hoti hai. Dono
+//  par "Sirf is arse mein" CHALU aur wohi Shuru date rakhein (15m chart ki
+//  pehli candle ke baad ki koi date - table mein likhi hoti hai).
+//  Repaint nahi: daily values (lookahead_on) sirf din ki aakhri candle par
+//  parhi jati hain, jab woh din mukammal ho chuka hota hai.
+//
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+//  Ye sirf naap hai. Achha nateeja bhi aage ki zamanat nahi.
+// ============================================================================
+strategy("JAS Tide + SMC — Test (1D faisla)", shorttitle = "JAS Tide 1D Test", overlay = true,
+     initial_capital         = 100000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true,
+     commission_type         = strategy.commission.percent,
+     commission_value        = 0.005,
+     slippage                = 0,
+     margin_long             = 1,
+     margin_short            = 1)
+
+BUILD = "s1"
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+grT = "0 · Test"
+riskPct  = input.float(1.0, "Risk fi trade (% equity)", minval = 0.1, maxval = 5, step = 0.1, group = grT, display = display.none)
+useDates = input.bool(false, "Sirf is arse mein (1D vs 15m: dono par CHALU, wahi dates)", group = grT, display = display.none)
+dtFrom   = input.time(timestamp("2026-01-01"), "Shuru", group = grT, display = display.none)
+dtTo     = input.time(timestamp("2030-12-31"), "Khatam", group = grT, display = display.none)
+
+grQ = "1 · Tide qawaid (459 wale - mat badlein)"
+entryLen  = input.int(10, "Naali: kitne din ka high/low", minval = 3, maxval = 200, group = grQ, display = display.none)
+exitLen   = input.int(5, "SL sarakna: kitne din", minval = 2, maxval = 100, group = grQ, display = display.none)
+atrLen    = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+atrMult   = input.float(2.0, "Shuru ka SL (x ATR)", minval = 0.5, step = 0.1, group = grQ, display = display.none)
+emaFLen   = input.int(50, "D1 rukh EMA fast", minval = 2, group = grQ, display = display.none)
+emaSLen   = input.int(200, "D1 rukh EMA slow", minval = 3, group = grQ, display = display.none)
+minAtrPct = input.float(0.25, "Kam az kam ATR (% qeemat ka)", minval = 0.0, step = 0.05, group = grQ, display = display.none)
+
+grV = "2 · Dikhawa"
+showLines = input.bool(true, "Entry / SL lakeer", group = grV, display = display.none)
+tblPos    = input.string("Bottom Left", "Table ki jagah (Tide+SMC indicator ki table neeche daayen)", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_rr(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.00") + "R"
+f_px(_x) => na(_x) ? "-" : str.tostring(_x, format.mintick)
+f_day(_t) => na(_t) ? "-" : str.format_time(_t, "dd MMM yyyy", "UTC")
+// Exp aur us ki 2 x SE (95% ke qareeb): Exp in hadon ke andar 0 ko chhoo le to faida sabit nahi
+f_se2(_n, _s, _q) => _n > 1 ? 2.0 * math.sqrt(math.max(_q - _s * _s / _n, 0.0) / (_n - 1)) / math.sqrt(_n) : na
+f_era(_y) => _y < 1970 ? 0 : _y < 2000 ? 1 : _y < 2019 ? 2 : 3
+
+// ============================================================================
+//  DAILY DATA — 1D candles par, har din ke BAND hone ki halat
+//  (seekh_test jaisa: toot/SL ke level pichle din tak, EMA pichle din ki,
+//  ATR aur close aaj ke din ke)
+// ============================================================================
+f_d() =>
+    _a  = ta.atr(atrLen)
+    _hb = ta.highest(high, entryLen)
+    _lb = ta.lowest(low, entryLen)
+    _hx = ta.highest(high, exitLen)
+    _lx = ta.lowest(low, exitLen)
+    _ef = ta.ema(close, emaFLen)
+    _es = ta.ema(close, emaSLen)
+    [_a, _hb[1], _lb[1], _hx[1], _lx[1], _ef[1], _es[1], close, time_close]
+// lookahead_on: din ke andar ki candles par ye aage ka data hai - is liye
+// sirf din ki AAKHRI candle par parha jata hai (us waqt din mukammal hai)
+[dA, dHb, dLb, dHx, dLx, dEf, dEs, dC, dTC] = request.security(syminfo.tickerid, "D", f_d(), barmerge.gaps_off, barmerge.lookahead_on)
+
+isD1 = timeframe.isdaily and timeframe.multiplier == 1
+okTF = isD1 or timeframe.isintraday
+
+// din ki aakhri candle? (1D par har candle). Kisi din aakhri candle na mile
+// (chhutti / data ka khala) to agle din ki pehli candle par pichle din ka
+// faisla - "der se" gina jata hai.
+var float doneTC = na
+endNow  = okTF and (isD1 or (not na(dTC) and time_close >= dTC and dTC != doneTC))
+lateNow = timeframe.isintraday and not endNow and not na(dTC[1]) and dTC != dTC[1] and doneTC != dTC[1]
+dayOn   = endNow or lateNow
+
+xA  = lateNow ? dA[1]  : dA
+xHb = lateNow ? dHb[1] : dHb
+xLb = lateNow ? dLb[1] : dLb
+xHx = lateNow ? dHx[1] : dHx
+xLx = lateNow ? dLx[1] : dLx
+xEf = lateNow ? dEf[1] : dEf
+xEs = lateNow ? dEs[1] : dEs
+xC  = lateNow ? dC[1]  : dC
+xTD = lateNow ? time_tradingday[1] : time_tradingday   // faisle wala din (har TF par ek jaisa)
+
+var int nDays = 0
+var int nLate = 0
+if dayOn
+    doneTC := lateNow ? dTC[1] : dTC
+    nDays  += 1
+    nLate  += lateNow ? 1 : 0
+
+inDates = not useDates or (xTD >= dtFrom and xTD <= dtTo)
+
+htfOk  = not na(xEf) and not na(xEs)
+bull   = htfOk and xEf > xEs
+bear   = htfOk and xEf < xEs
+liveOk = not na(xA) and xC > 0 and xA / xC * 100.0 >= minAtrPct
+longSig  = dayOn and not na(xHb) and xC > xHb and bull and liveOk
+shortSig = dayOn and not na(xLb) and xC < xLb and bear and liveOk
+
+// ============================================================================
+//  R ka hisaab har entry ka (kharche samet): (netprofit badla) / risk ki raqam
+//  (seekh_test t1.5 jaisa)
+// ============================================================================
+var bool  inTrade = false
+var float riskAmt = na
+var float npAt    = na
+var int   nEnt    = 0
+var int   nWinR   = 0
+var float sumR    = 0.0
+var float sumW    = 0.0
+var float sumL    = 0.0
+var float sumQ    = 0.0
+var array<float> eN  = array.new<float>(4, 0.0)
+var array<float> eW  = array.new<float>(4, 0.0)
+var array<float> eS  = array.new<float>(4, 0.0)
+var array<float> eQ  = array.new<float>(4, 0.0)
+var array<float> eSW = array.new<float>(4, 0.0)
+var array<float> eSL = array.new<float>(4, 0.0)
+var int   xSL    = 0
+var int   xTrail = 0
+var int   xFlip  = 0
+var int   xEnd   = 0
+var int   nSkip  = 0
+var int   firstT = time
+var int   tFirst = na
+var int   tLast  = na
+var array<string> logT = array.new<string>()
+
+var int   pDir  = 0
+var float pE    = na
+var float pSL   = na
+var float pSL0  = na
+var bool  pFlip = false
+var bool  pEnd  = false
+var int   pYear = na
+var int   pDay  = na
+
+// pichli trade band ho gayi? -> hisaab
+if inTrade and strategy.position_size == 0
+    _rr = (strategy.netprofit - npAt) / riskAmt
+    nEnt  += 1
+    nWinR += _rr > 0 ? 1 : 0
+    sumR  += _rr
+    sumQ  += _rr * _rr
+    _k = f_era(nz(pYear, year(time)))
+    array.set(eN, _k, array.get(eN, _k) + 1)
+    array.set(eW, _k, array.get(eW, _k) + (_rr > 0 ? 1 : 0))
+    array.set(eS, _k, array.get(eS, _k) + _rr)
+    array.set(eQ, _k, array.get(eQ, _k) + _rr * _rr)
+    if _rr > 0
+        array.set(eSW, _k, array.get(eSW, _k) + _rr)
+        sumW += _rr
+    else
+        array.set(eSL, _k, array.get(eSL, _k) - _rr)
+        sumL -= _rr
+    string _why = pEnd ? "arsa khatam" : pFlip ? "D1 palta" : pSL != pSL0 ? "sarakta SL" : "SL"
+    if pEnd
+        xEnd += 1
+    else if pFlip
+        xFlip += 1
+    else if pSL != pSL0
+        xTrail += 1
+    else
+        xSL += 1
+    _xp = strategy.closedtrades > 0 ? strategy.closedtrades.exit_price(strategy.closedtrades - 1) : na
+    array.push(logT, f_day(pDay) + (pDir == 1 ? "  ▲ " : "  ▼ ") + f_px(pE) + " → " + f_px(_xp) + "  " + f_rr(_rr) + " · " + _why)
+    if array.size(logT) > 6
+        array.shift(logT)
+    inTrade := false
+    pDir    := 0
+
+// khuli position, din band hua: pehle D1 palta, warna SL aage sarkao
+if inTrade and strategy.position_size != 0 and dayOn
+    _id  = pDir == 1 ? "L" : "S"
+    _xid = pDir == 1 ? "XL" : "XS"
+    if (pDir == 1 ? bear : bull)
+        pFlip := true
+        strategy.close_all(comment = "D1 rukh palta")
+    else
+        pSL := pDir == 1 ? math.max(pSL, nz(xLx, pSL)) : math.min(pSL, nz(xHx, pSL))
+        strategy.exit(_xid, from_entry = _id, stop = pSL)
+
+// naya trade: sirf din band hone par, koi position na ho (us din ke close par
+// band hone wali position abhi size != 0 dikhati hai - is liye us din nayi nahi)
+if strategy.position_size == 0 and not inTrade and inDates and (longSig or shortSig) and xA > 0
+    _d    = longSig ? 1 : -1
+    _r0   = atrMult * xA
+    _step = syminfo.mincontract > 0 ? syminfo.mincontract : 1.0
+    _q    = math.floor((strategy.equity * riskPct / 100.0) / (_r0 * syminfo.pointvalue) / _step) * _step
+    if _q >= _step
+        _id  = _d == 1 ? "L" : "S"
+        _xid = _d == 1 ? "XL" : "XS"
+        pDir  := _d
+        pE    := close
+        pSL   := close - _d * _r0
+        pSL0  := pSL
+        pFlip := false
+        pEnd  := false
+        pDay  := xTD
+        pYear := year(xTD, "UTC")
+        tFirst := na(tFirst) ? xTD : tFirst
+        tLast  := xTD
+        // entry aur us ka SL usi candle par - agli candle se hifazat
+        strategy.entry(_id, _d == 1 ? strategy.long : strategy.short, qty = _q)
+        strategy.exit(_xid, from_entry = _id, stop = pSL)
+        inTrade := true
+        riskAmt := _q * _r0 * syminfo.pointvalue   // asal khatra (gol size ke baad)
+        npAt    := strategy.netprofit
+    else
+        nSkip += 1   // size symbol ke qadam se chhota
+
+if useDates and dayOn and xTD > dtTo and strategy.position_size != 0
+    pEnd := true
+    strategy.close_all(comment = "Arsa khatam")
+
+plot(showLines and strategy.position_size != 0 ? pSL : na, "SL (sarakta)", color = color.new(#E65100, 0), style = plot.style_linebr, linewidth = 2, display = display.pane)
+plot(showLines and strategy.position_size != 0 ? pE : na, "Entry", color = color.new(color.blue, 0), style = plot.style_linebr, linewidth = 1, display = display.pane)
+
+// ============================================================================
+//  NATEEJA TABLE (screenshot ke liye)
+// ============================================================================
+var table rt = table.new(f_pos(tblPos), 2, 22, border_width = 1, border_color = color.new(color.gray, 70))
+f_row(_r, _a, _b, _c) =>
+    table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
+    table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small, text_halign = text.align_left)
+// Strategy chalti candle par nahi chalti - table pichli band candle par bhi banao
+if barstate.islast or barstate.islastconfirmedhistory
+    table.clear(rt, 0, 0, 1, 21)
+    cOK = color.new(#1B5E20, 0)
+    cNO = color.new(#B71C1C, 0)
+    cMD = color.new(#E65100, 0)
+    _amal = isD1 ? "1D candles par (seekh_test jaisa)" : timeframe.period + " candles par (SL har candle, faisla daily close par)"
+    table.cell(rt, 0, 0, "JAS TIDE TEST " + BUILD + " · faisla 1D · amal " + _amal, bgcolor = color.new(color.silver, 40), text_color = color.black, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 1, 0)
+    if not okTF
+        f_row(1, "TF ghalat", "Ye test sirf 1D ya chhoti TF (4H, 1H, 15m...) par chalta hai", cNO)
+    else
+        _ex = nEnt > 0 ? sumR / nEnt : na
+        _pf = sumL > 0 ? sumW / sumL : na
+        _se = f_se2(nEnt, sumR, sumQ)
+        f_row(1, "Net profit", str.tostring(strategy.netprofit, "#,###") + " $  (" + str.tostring(100 * strategy.netprofit / strategy.initial_capital, "0.0") + "%)", strategy.netprofit >= 0 ? cOK : cNO)
+        f_row(2, "Trades (entries)", str.tostring(nEnt) + (strategy.position_size != 0 ? "  + 1 abhi khuli" : ""), color.black)
+        f_row(3, "Jeet %", nEnt > 0 ? str.tostring(100.0 * nWinR / nEnt, "0.0") + "%" : "-", color.black)
+        f_row(4, "Exp (R fi trade, kharche samet)", na(_ex) ? "-" : f_rr(_ex) + (na(_se) ? "" : "  (± " + str.tostring(_se, "0.00") + ")"), na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
+        f_row(5, "Profit Factor · kul R", (na(_pf) ? "-" : str.tostring(_pf, "0.00")) + "  ·  " + f_rr(sumR), na(_pf) ? color.black : _pf >= 1.3 ? cOK : _pf >= 1 ? cMD : cNO)
+        f_row(6, "Max drawdown", str.tostring(strategy.max_drawdown, "#,###") + " $", cNO)
+        f_row(7, "Kaise band huin", "SL " + str.tostring(xSL) + "  ·  sarakta SL " + str.tostring(xTrail) + "  ·  D1 palta " + str.tostring(xFlip) + (xEnd > 0 ? "  ·  arsa khatam " + str.tostring(xEnd) : ""), color.black)
+        f_row(8, "Arsa", "chart ki pehli candle " + f_day(firstT) + (useDates ? "  ·  test " + f_day(dtFrom) + " se" : "") + "  ·  trades " + f_day(tFirst) + " → " + f_day(tLast), color.black)
+        f_row(9, "Faisle (din band)", str.tostring(nDays) + " din" + (nLate > 0 ? "  ·  " + str.tostring(nLate) + " der se (din ki aakhri candle nahi mili)" : ""), nLate > 0 ? cMD : color.black)
+        _names = array.from("1970 se pehle", "1970-1999", "2000-2018", "2019-aaj")
+        _row = 10
+        for _k = 0 to 3
+            _n = array.get(eN, _k)
+            if _n > 0
+                _s   = array.get(eS, _k)
+                _exk = _s / _n
+                _sek = f_se2(_n, _s, array.get(eQ, _k))
+                _slk = array.get(eSL, _k)
+                _pfk = _slk > 0 ? array.get(eSW, _k) / _slk : na
+                _txt = str.tostring(_n, "#") + " trades · jeet " + str.tostring(100.0 * array.get(eW, _k) / _n, "0") + "% · Exp " + f_rr(_exk) + (na(_sek) ? "" : " (± " + str.tostring(_sek, "0.00") + ")") + " · PF " + (na(_pfk) ? "-" : str.tostring(_pfk, "0.00")) + " · kul " + f_rr(_s)
+                f_row(_row, "Daur " + array.get(_names, _k), _txt, _exk > 0 ? cOK : cNO)
+                _row += 1
+        _nl = array.size(logT)
+        if _nl > 0
+            for _i = _nl - 1 to 0
+                f_row(_row, _i == _nl - 1 ? "Aakhri trades (1D vs 15m milayein)" : "", array.get(logT, _i), color.black)
+                _row += 1
+        f_row(_row, "Note", "Sirf naap. SMC nishan naap mein nahi (dikhawa). Swap shamil nahi." + (nSkip > 0 ? "  CHHOOTI: " + str.tostring(nSkip) + " (size bohot chhota)." : "") + (syminfo.pointvalue != 1 ? "  (1 qty = " + str.tostring(syminfo.pointvalue) + " point value)" : ""), cNO)
