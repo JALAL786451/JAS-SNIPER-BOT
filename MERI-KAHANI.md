@@ -173,6 +173,12 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   gold +12.5R). Demo ka swap -22R kha gaya (is liye paise mein breakeven). Agar
   live cent par BTC nahi to live ke liye abhi qabil NAHI. Andar ke nateeje dekh
   kar market hatana/chunna mana (overfitting).
+- **BTC par Kachhua 2019 ke baad bhi musbat - pehle se likhe qaide par SABIT**
+  (10 Oct, TradingView CRYPTO:BTCUSD 1D): 2019-aaj 81 trades, jeet 43%, Exp
+  +0.58R (+-0.47), PF 2.67, kul +47R. MT5 (Exness) par bhi 79 trades +44R - do
+  alag data, ek jaisa. Magar ye wohi purani history hai (naya saboot nahi) aur
+  +-0.47 bara hai; asal imtihan demo par aage ki trades. 2010-18 ke jungli
+  saal (+2.41R) ko aaj ki umeed mat samjho.
 - **JAS SMC Trend ka "advance ishara" gold par kaam ka NAHI** (10 Oct, pehle se
   likha qaida, OANDA:XAUUSD): 15m 140 ishare FARK -1.1% (2SE 8.0%), 1H 207
   ishare FARK -1.7% (2SE 6.6%) - aam candle jaisa, balke zara bura. BTC par bhi
