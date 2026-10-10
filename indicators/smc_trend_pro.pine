@@ -345,6 +345,9 @@ if barstate.isconfirmed
 
 // Ishara rukh (UPAR / NEECHE) se kitni candle PEHLE aaya? Sirf woh ishare
 // gine jo RANGE ya ulte rukh mein aaye (pehle se rukh mein = advance nahi).
+// Ek KOSHISH = pehla aisa ishara; usi taraf ke agle ishare usi koshish mein
+// (waqt pehle ishare se). leadTry = khatam hui koshishein (rukh bana, ulta
+// gaya, ya ulte ishare ne jagah li) - khuli koshish ginti mein nahi.
 var int leadDir   = 0
 var int leadStart = na
 var int leadSum   = 0
@@ -354,21 +357,26 @@ if barstate.isconfirmed
     if leadDir == 1 and score >= 30
         leadSum += bar_index - leadStart
         leadN   += 1
+        leadTry += 1
         leadDir := 0
     else if leadDir == -1 and score <= -30
         leadSum += bar_index - leadStart
         leadN   += 1
+        leadTry += 1
         leadDir := 0
     else if (leadDir == 1 and score <= -30) or (leadDir == -1 and score >= 30)
+        leadTry += 1
         leadDir := 0
-    if sigUp
+    if sigUp and leadDir != 1
+        if leadDir == -1
+            leadTry += 1
         leadDir   := score < 30 ? 1 : 0
         leadStart := bar_index
-    if sigDn
+    if sigDn and leadDir != -1
+        if leadDir == 1
+            leadTry += 1
         leadDir   := score > -30 ? -1 : 0
         leadStart := bar_index
-    if (sigUp or sigDn) and leadDir != 0
-        leadTry += 1
 
 // ============================================================================
 //  CHART (default: sirf advance MA lakeer)
