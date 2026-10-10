@@ -140,6 +140,22 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   har trade (har ek par ~120-560 trades). Har akeli chhoti, magar sab ek taraf.
   Silver gold ke saath +0.90 = wohi trade dugni; ek USD taraf ki kai trades =
   ek bari trade.
+- **BTC Tide "kitna musbat"? (11 Oct, user ka sawal, 4-agent jaanch)** 2019-aaj
+  81 trades / 7.77 saal = ~10 trade saal, +0.58R fi trade = **~+6R saal**
+  (2SE: +1R se +11R saal; ek akela saal -7R tak bhi mumkin). 0.5% risk par
+  43,409 USC: 1R = ~217 USC -> **~1,300 USC (~$13) saal = ~3%**; 1% par ~6%.
+  Number umeed se zyada ho sakte hain: BTC 9 market mein sab se acha nikla
+  (chun kar dekhna), aur 'SABIT' wala qaida MT5 ka BTC nateeja dekhne ke BAAD
+  likha gaya tha -> mansooba +0.1 se +0.3R fi trade par. 164 trades / +824%
+  wala headline 81% R 2010-18 ke jungli saalon se. 3 mahine demo = sirf 2-3
+  BTC trades = amal ki jaanch, faide ka saboot nahi.
+- **Tide ke SAARE qaide 15m/5m/1m candles par = naya system, koi setting 1D
+  jaisa nateeja nahi degi** (11 Oct): 10 candle ka toot 15m par 2.5 ghante,
+  1m par 10 minute; EMA200 15m par 50 ghante (7 mahine ka rukh nahi); 15m
+  par ~500-1,000 trade saal -> sirf spread ~13-33R saal (1D ka kul faida
+  ~+6R) - sqrt andaza, naapa nahi. Settings ghuma kar milana = Seerhi wala
+  overfitting (50 koshishon mein ~92% chance koi ek qismat se pass). 1D ka
+  faisla chhoti candle par = wohi nateeja (neeche) - wohi rasta hai.
 - **Kachhue ka 1D faisla chhoti TF par chalao = WOHI nateeja** (10 Oct, user ka
   andaza, pehle se likhe qaide par PASS): BTC 1 Jan - 10 Oct 2026, 1D / 1h / 30m
   teeno par 6 trades, 4/6, +6,720.93 - cent tak ek jaise. Faisla daily close
