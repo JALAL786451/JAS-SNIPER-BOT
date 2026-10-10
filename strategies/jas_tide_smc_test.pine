@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC — TEST  (build s1, Pine v6)
+//  JAS TIDE + SMC — TEST  (build s1.1, Pine v6)
 //  10 Oct 2026 - user: "aik tester bhi bana dein takey check karon ke overall
 //  1D par kitni trade leta hai, aur 1D par bara TF hai to trade ka idea 15m
 //  par execute karne se bhi result shayad wohi hona chahiye."
@@ -40,7 +40,7 @@ strategy("JAS Tide + SMC — Test (1D faisla)", shorttitle = "JAS Tide 1D Test",
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "s1"
+BUILD = "s1.1"
 
 // ============================================================================
 //  INPUTS
@@ -99,7 +99,10 @@ okTF = isD1 or timeframe.isintraday
 // din ki aakhri candle? (1D par har candle). Kisi din aakhri candle na mile
 // (chhutti / data ka khala) to agle din ki pehli candle par pichle din ka
 // faisla - "der se" gina jata hai.
-var float doneTC = na
+// s1.1: pehle "var float doneTC = na" tha - Pine mein na se moqabla (!=)
+// kabhi true nahi hota, is liye 1D se chhoti TF par koi din process hi nahi
+// hota tha (0 trades). Ab 0 se shuru (koi asal waqt 0 nahi).
+var int doneTC = 0
 endNow  = okTF and (isD1 or (not na(dTC) and time_close >= dTC and dTC != doneTC))
 lateNow = timeframe.isintraday and not endNow and not na(dTC[1]) and dTC != dTC[1] and doneTC != dTC[1]
 dayOn   = endNow or lateNow
