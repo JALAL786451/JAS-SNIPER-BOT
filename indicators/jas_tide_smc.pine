@@ -178,6 +178,10 @@ f_tide() =>
 // ticker.standard: Heikin Ashi / Renko chart par bhi asal daily candles.
 [tD, tE, tR, tSL, tAge, tN, tW, tSR, tSQ, tSW, tSLs, tLR, tRk, tUp, tDn, tAtr, tLx1, tHx1] = request.security(ticker.standard(syminfo.tickerid), "D", f_tide(), barmerge.gaps_off, barmerge.lookahead_on)
 
+// Chart TF ki ASAL candles (Heikin Ashi / Renko chart par bhi) - table ki
+// jaanch Tide jaisi candles par ho. Aam chart par ye bilkul open/high/low/close.
+[stO, stH, stL, stC] = request.security(ticker.standard(syminfo.tickerid), timeframe.period, [open, high, low, close])
+
 // AAJ ka din (chart ki candles se, aage ka data nahi): engine aaj ka SL chhoona
 // kal subah dikhata hai - table ke liye abhi pakro. 1D chart par = isi candle.
 newDayC = ta.change(time("D")) != 0
@@ -185,12 +189,12 @@ var float dOp = na
 var float dLo = na
 var float dHi = na
 if newDayC or na(dLo)
-    dOp := open
-    dLo := low
-    dHi := high
+    dOp := stO
+    dLo := stL
+    dHi := stH
 else
-    dLo := math.min(dLo, low)
-    dHi := math.max(dHi, high)
+    dLo := math.min(dLo, stL)
+    dHi := math.max(dHi, stH)
 slHit = tD != 0 and not na(tSL) and (tD == 1 ? dLo <= tSL : dHi >= tSL)
 slPx  = slHit ? (tD == 1 ? math.min(dOp, tSL) : math.max(dOp, tSL)) : na   // gap ho to open par (engine jaisa)
 dCloseT = time_close("D")
@@ -419,14 +423,14 @@ if showTable and barstate.islast
     table.clear(tb, 0, 0, 1, 8)
     bool  dDone = not na(dCloseT) and timenow >= dCloseT   // bazaar band (hafta / gold ka break): aaj ki candle mukammal
     float slR   = slHit and not na(tR) and tR > 0 ? tD * (slPx - tE) / tR - 2.0 * costPct / 100.0 * tE / tR : na
-    float rNow  = slHit ? slR : tD != 0 and not na(tR) and tR > 0 ? tD * (close - tE) / tR : na
+    float rNow  = slHit ? slR : tD != 0 and not na(tR) and tR > 0 ? tD * (stC - tE) / tR : na
     float csT   = tD == 1 ? math.max(tSL, nz(tLx1, tSL)) : tD == -1 ? math.min(tSL, nz(tHx1, tSL)) : na   // aaj close par SL
-    bool liveT = not na(tAtr) and close > 0 and tAtr / close * 100.0 >= minAtrPct
+    bool liveT = not na(tAtr) and stC > 0 and tAtr / stC * 100.0 >= minAtrPct
     string tTxt = slHit ? "AAJ SL CHHU GAYA - trade band (qaide se)" : tD == 1 ? "▲ BUY chalu · " + str.tostring(tAge) + " din" : tD == -1 ? "▼ SELL chalu · " + str.tostring(tAge) + " din" : "Intezar (koi trade nahi)"
     color  tBg  = slHit ? (nz(slR) > 0 ? C_BULL : C_BEAR) : tD == 1 ? C_BULL : tD == -1 ? C_BEAR : bgW
     string nxt = ""
     if dDone
-        string hint = tD == 0 and tRk == 1 and close > tUp ? " · BUY ka imkaan (close " + f_px(tUp) + " ke upar)" : tD == 0 and tRk == -1 and close < tDn ? " · SELL ka imkaan (close " + f_px(tDn) + " ke neeche)" : tD != 0 and not slHit and (tRk == -tD or (tD == 1 ? close <= csT : close >= csT)) ? " · trade band hone ka imkaan" : ""
+        string hint = tD == 0 and tRk == 1 and stC > tUp ? " · BUY ka imkaan (close " + f_px(tUp) + " ke upar)" : tD == 0 and tRk == -1 and stC < tDn ? " · SELL ka imkaan (close " + f_px(tDn) + " ke neeche)" : tD != 0 and not slHit and (tRk == -tD or (tD == 1 ? stC <= csT : stC >= csT)) ? " · trade band hone ka imkaan" : ""
         nxt := "Aaj ki daily candle BAND ho chuki - Tide ka faisla agle session ki pehli candle par" + hint
     else if slHit
         nxt := "SL " + f_px(tSL) + " aaj chhu gaya: MT5 mein bhi band. Nayi trade sirf band daily candle ke toot se"
@@ -437,11 +441,11 @@ if showTable and barstate.islast
     else if not liveT
         nxt := "Bazaar susat (ATR kam) - trade nahi"
     else if tRk == 1
-        float dU = na(tAtr) or tAtr <= 0 ? na : (tUp - close) / tAtr
-        nxt := na(dU) or dU > 0 ? "BUY: aaj ki daily candle " + f_px(tUp) + " ke upar band" + (na(dU) ? "" : " (" + str.tostring(dU, "0.0") + " ATR door)") : "BUY: qeemat abhi " + f_px(tUp) + " ke UPAR - daily candle isi tarah band hui to BUY"
+        float dU = na(tAtr) or tAtr <= 0 ? na : (tUp - stC) / tAtr
+        nxt := na(dU) or dU >= 0 ? "BUY: aaj ki daily candle " + f_px(tUp) + " ke upar band" + (na(dU) ? "" : " (" + str.tostring(dU, "0.0") + " ATR door)") : "BUY: qeemat abhi " + f_px(tUp) + " ke UPAR - daily candle isi tarah band hui to BUY"
     else if tRk == -1
-        float dD = na(tAtr) or tAtr <= 0 ? na : (close - tDn) / tAtr
-        nxt := na(dD) or dD > 0 ? "SELL: aaj ki daily candle " + f_px(tDn) + " ke neeche band" + (na(dD) ? "" : " (" + str.tostring(dD, "0.0") + " ATR door)") : "SELL: qeemat abhi " + f_px(tDn) + " ke NEECHE - daily candle isi tarah band hui to SELL"
+        float dD = na(tAtr) or tAtr <= 0 ? na : (stC - tDn) / tAtr
+        nxt := na(dD) or dD >= 0 ? "SELL: aaj ki daily candle " + f_px(tDn) + " ke neeche band" + (na(dD) ? "" : " (" + str.tostring(dD, "0.0") + " ATR door)") : "SELL: qeemat abhi " + f_px(tDn) + " ke NEECHE - daily candle isi tarah band hui to SELL"
     else
         nxt := "D1 rukh saaf nahi"
     exT = tN > 0 ? tSR / tN : na
