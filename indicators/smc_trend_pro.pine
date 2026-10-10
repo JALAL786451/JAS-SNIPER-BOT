@@ -1,0 +1,431 @@
+//@version=6
+// ============================================================================
+//  JAS SMC TREND   (build t1, Pine v6)
+//  10 Oct 2026 - user ka khayal: "SMC Coach v4 ke hisaab se advance trend",
+//  shart: "chart bilkul saaf nazar aaye, mujhe ADVANCE ISHARA chahiye".
+//  SMC Coach v4 (indicators/smc_coach_pro_v4.pine) ko haath nahi lagaya.
+//
+//  Chart par SIRF: chhota ▲ / ▼ (advance ishara) + kone mein ek chhoti table.
+//  Qila lakeer aur candle ka rang settings mein hain, default BAND.
+//
+//  RUKH (score -100..+100) - SMC Coach v4 ke hisse, sab BAND candle par:
+//   Structure  35 : bara swing (pivot 3/3). Rukh tab palta hai jab candle
+//                   QILA ke paar BAND ho. Qila = upar rukh mein woh swing low
+//                   jahan se aakhri BOS chala (neeche rukh mein swing high).
+//   MA21/63    20 : MA21 > MA63 (+10), close > MA21 (+10), ulta = minus
+//   Supertrend 15 : 10 / 3.0 (v4 wala)
+//   ADX        10 : ADX >= 18 ho to +DI / -DI ki taraf
+//   Bari TF    20 : bari TF (15m chart -> 1H) ka apna rukh UPAR / NEECHE ho to
+//  Haal: >= 70 TEZ UPAR, >= 30 UPAR, beech RANGE, <= -30 NEECHE, <= -70 TEZ NEECHE
+//
+//  ADVANCE ISHARA ▲ (▼ bilkul ulta), band candle par, teeno shartein:
+//   1. Chhota structure (pivot 2/2) neeche se UPAR palta (andar ka CHOCH) =
+//      pullback / girawat khatam. Ye MA cross, Supertrend aur bare structure
+//      se PEHLE aata hai - is liye "advance".
+//   2. Bari TF ka rukh NEECHE nahi (UPAR ya RANGE).
+//   3. Toorne wali candle mein jaan: hari candle aur body >= 0.5 ATR, ya FVG.
+//   Ek palte par sirf ek ishara. Repaint nahi: sirf band candle, aur bari TF
+//   [1] + lookahead_on (v4 wala pakka tareeqa).
+//
+//  NAAP - pehle se likha qaida (10 Oct, ishare dekhne se PEHLE; badalna mana):
+//   Har ishare ke baad: qeemat pehle 2 ATR ishare ki taraf gayi (jeet) ya
+//   1 ATR ulti (haar)? Ek hi candle mein dono = haar. 100 candle mein kuch
+//   nahi = gina nahi. Yahi ginti HAR aam candle par usi taraf = buniyad
+//   (bina hunar ke kitni dafa 2 ATR pehle aata hai).
+//   FARK = ishara % - buniyad %.
+//     100+ ishare aur FARK > 2SE   -> KAAM KA: strategy copy + Tester
+//     100+ ishare aur FARK <= 2SE  -> SABIT NAHI: sirf dekhna, trade nahi
+//     100 se kam                   -> GINTI KAM
+//   Faisla sirf default settings par. Koi setting badli to table batata hai
+//   aur faisla nahi deta (har badli hui setting = ek aur koshish, Seerhi ka
+//   sabaq).
+// ============================================================================
+indicator("JAS SMC Trend", shorttitle = "JAS Trend", overlay = true, max_bars_back = 1000)
+
+BUILD = "t1"
+
+// Naap ke number - test se pehle likhe, input nahi (taake ghumaye na ja sakein)
+TP_ATR   = 2.0
+SL_ATR   = 1.0
+MAX_BARS = 100
+NEED_N   = 100
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+gIsh  = "1. Advance ishara"
+gRukh = "2. Rukh (SMC Coach v4 ke hisse)"
+gShow = "3. Dikhawa (default: chart saaf)"
+
+showMarks = input.bool(true, "Chart par ▲ / ▼ ishara", group = gIsh)
+intLR     = input.int(2, "Chhota structure: pivot L/R", minval = 1, maxval = 10, group = gIsh,
+     tooltip = "Ishara isi chhote structure ke palatne par banta hai. Default 2 par hi naap ka faisla hota hai.")
+dispATR   = input.float(0.5, "Toorne wali candle: body >= x ATR (ya FVG)", minval = 0.0, step = 0.05, group = gIsh)
+htfIn     = input.timeframe("", "Bari TF (khali = khud)", group = gIsh,
+     tooltip = "Khali: 1m -> 15m, 3m-15m -> 1H, 30m/1H -> 4H, 2H-4H -> 1D, 1D -> 1W")
+
+mainLR     = input.int(3, "Bara structure: pivot L/R", minval = 1, maxval = 20, group = gRukh)
+emaFastLen = input.int(21, "MA fast", minval = 2, group = gRukh)
+emaSlowLen = input.int(63, "MA slow", minval = 3, group = gRukh)
+stPeriod   = input.int(10, "Supertrend ATR", minval = 1, group = gRukh)
+stMult     = input.float(3.0, "Supertrend multiplier", minval = 0.1, step = 0.1, group = gRukh)
+adxLen     = input.int(14, "ADX length", minval = 2, group = gRukh)
+adxMin     = input.float(18, "ADX min", minval = 1, step = 0.5, group = gRukh)
+
+showTable = input.bool(true, "Table dikhao", group = gShow)
+tablePos  = input.string("Bottom Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gShow)
+tableFont = input.string("Small", "Table ka font", options = ["Tiny", "Small", "Normal"], group = gShow)
+showNaap  = input.bool(true, "Table mein naap ki rows", group = gShow)
+showQila  = input.bool(false, "Qila lakeer dikhao", group = gShow)
+colorBars = input.bool(false, "Candles ko rukh ke rang mein rango", group = gShow)
+
+isDef = intLR == 2 and dispATR == 0.5 and htfIn == "" and mainLR == 3 and emaFastLen == 21 and
+     emaSlowLen == 63 and stPeriod == 10 and stMult == 3.0 and adxLen == 14 and adxMin == 18
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_size(string s) => s == "Tiny" ? size.tiny : s == "Small" ? size.small : size.normal
+f_pos(string s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_px(float x) => na(x) ? "-" : str.tostring(x, format.mintick)
+f_pct(float x) => na(x) ? "-" : str.tostring(x * 100, "0.0") + "%"
+f_sgn(float x) => na(x) ? "-" : (x >= 0 ? "+" : "") + str.tostring(x * 100, "0.0") + "%"
+
+f_lab(string tf) =>
+    int s = timeframe.in_seconds(tf)
+    s < 3600 ? str.tostring(math.round(s / 60)) + "m" : s < 86400 ? str.tostring(math.round(s / 3600)) + "H" :
+     s < 604800 ? str.tostring(math.round(s / 86400)) + "D" : s < 2419200 ? "1W" : "1M"
+
+f_autoHTF() =>
+    int s = timeframe.in_seconds(timeframe.period)
+    s <= 60 ? "15" : s <= 900 ? "60" : s <= 3600 ? "240" : s <= 14400 ? "D" : s <= 86400 ? "W" : "M"
+
+f_stTxt(float s) => s >= 70 ? "TEZ UPAR" : s >= 30 ? "UPAR" : s > -30 ? "RANGE" : s > -70 ? "NEECHE" : "TEZ NEECHE"
+f_stCol(float s) =>
+    s >= 70 ? color.new(#1B5E20, 0) : s >= 30 ? color.new(#43A047, 0) : s > -30 ? color.new(#78909C, 0) :
+     s > -70 ? color.new(#E53935, 0) : color.new(#B71C1C, 0)
+
+htf   = htfIn == "" ? f_autoHTF() : htfIn
+htfOK = timeframe.in_seconds(htf) > timeframe.in_seconds(timeframe.period)
+
+// ============================================================================
+//  BARA STRUCTURE: rukh + qila (har call ki apni alag yaad)
+// ============================================================================
+// Ek swing ek dafa tootta hai (toot-te hi bhula diya, v4 ka sabaq c).
+// pullLo = aakhri swing high ke BAAD sab se neecha low (us ka pullback) -
+// BOS upar par yahi qila banta hai. Pichla "swing low" seedha nahi liya: woh
+// beech mein toot chuka ho sakta hai aur qila qeemat ke upar ban jata (Python
+// jaanch ne pakra, 10 Oct). pullHi ulta.
+// legHi = aakhri UPAR wale toot ke baad sab se ooncha high (upar ki chaal ki
+// choti), legLo = aakhri NEECHE wale toot ke baad sab se neecha low.
+f_struct(int lr) =>
+    var float sh     = na
+    var float sl     = na
+    var int   dir    = 0
+    var float qila   = na
+    var float pullLo = na
+    var float pullHi = na
+    var float legHi  = na
+    var float legLo  = na
+    ph     = ta.pivothigh(high, lr, lr)
+    pl     = ta.pivotlow(low, lr, lr)
+    lowLR  = ta.lowest(low, lr + 1)
+    highLR = ta.highest(high, lr + 1)
+    if not na(ph)
+        sh     := ph
+        pullLo := lowLR
+    if not na(pl)
+        sl     := pl
+        pullHi := highLR
+    pullLo := na(pullLo) ? na : math.min(pullLo, low)
+    pullHi := na(pullHi) ? na : math.max(pullHi, high)
+    legHi  := na(legHi) ? high : math.max(legHi, high)
+    legLo  := na(legLo) ? low : math.min(legLo, low)
+    if dir == 1 and close < qila
+        // CHOCH neeche: naya qila = upar wali chaal ki choti
+        dir   := -1
+        qila  := legHi
+        legLo := low
+        sl    := na
+    else if dir == -1 and close > qila
+        // CHOCH upar: naya qila = neeche wali chaal ki tah
+        dir   := 1
+        qila  := legLo
+        legHi := high
+        sh    := na
+    else if dir >= 0 and not na(sh) and close > sh
+        // BOS upar (ya pehla toot): qila = toote swing high ke baad ka low
+        qila  := pullLo
+        dir   := 1
+        legHi := high
+        sh    := na
+    else if dir <= 0 and not na(sl) and close < sl
+        // BOS neeche: qila = toote swing low ke baad ka high
+        qila  := pullHi
+        dir   := -1
+        legLo := low
+        sl    := na
+    [dir, qila]
+
+// Score ke apne 80 number (bari TF ke 20 alag). Sab ta.* har candle par.
+f_local(int lr) =>
+    [sDir, sQila] = f_struct(lr)
+    e1 = ta.ema(close, emaFastLen)
+    e2 = ta.ema(close, emaSlowLen)
+    [stLine, stDir] = ta.supertrend(stMult, stPeriod)
+    [diP, diM, adx] = ta.dmi(adxLen, adxLen)
+    float s = sDir * 35.0
+    s += (e1 > e2 ? 10.0 : -10.0)
+    s += (close > e1 ? 10.0 : -10.0)
+    s += (stDir < 0 ? 15.0 : -15.0)
+    s += (adx >= adxMin ? (diP > diM ? 10.0 : -10.0) : 0.0)
+    [s, sDir, sQila]
+
+// ============================================================================
+//  CHHOTA STRUCTURE: andar ka CHOCH (ishare ki jaan)
+// ============================================================================
+// flip = +1 jab chhota structure neeche (ya shuru) se UPAR palte, -1 ulta.
+// iSL / iSH = aakhri chhota swing low / high = ishare ka qudrati SL.
+f_internal(int lr) =>
+    var float ish  = na
+    var float isl  = na
+    var int   idir = 0
+    ph = ta.pivothigh(high, lr, lr)
+    pl = ta.pivotlow(low, lr, lr)
+    if not na(ph)
+        ish := ph
+    if not na(pl)
+        isl := pl
+    int flip = 0
+    if not na(ish) and close > ish
+        if idir <= 0
+            flip := 1
+        idir := 1
+        ish  := na
+    else if not na(isl) and close < isl
+        if idir >= 0
+            flip := -1
+        idir := -1
+        isl  := na
+    [idir, flip, isl, ish]
+
+// ============================================================================
+//  RUKH: chart TF + bari TF
+// ============================================================================
+f_htfScore() =>
+    [s, d, q] = f_local(mainLR)
+    s[1]
+
+htfRaw  = request.security(syminfo.tickerid, htf, f_htfScore(), barmerge.gaps_off, barmerge.lookahead_on)
+htfS    = htfOK ? nz(htfRaw) * 100.0 / 80.0 : 0.0
+htfPart = htfS >= 30 ? 20.0 : htfS <= -30 ? -20.0 : 0.0
+
+[locS, mDir, mQila] = f_local(mainLR)
+score = htfOK ? locS + htfPart : locS * 100.0 / 80.0
+
+// ============================================================================
+//  ADVANCE ISHARA
+// ============================================================================
+atr14  = ta.atr(14)
+body   = math.abs(close - open)
+fvgUp  = low > high[2]
+fvgDn  = high < low[2]
+dispUp = close > open and (body >= dispATR * atr14 or fvgUp)
+dispDn = close < open and (body >= dispATR * atr14 or fvgDn)
+
+[iDir, iFlip, iSL, iSH] = f_internal(intLR)
+htfNotDn = not htfOK or htfS > -30
+htfNotUp = not htfOK or htfS < 30
+sigUp = barstate.isconfirmed and iFlip == 1 and dispUp and htfNotDn
+sigDn = barstate.isconfirmed and iFlip == -1 and dispDn and htfNotUp
+
+var int   lastDir = 0
+var int   lastBar = na
+var float lastPx  = na
+var float lastSL  = na
+if sigUp
+    lastDir := 1
+    lastBar := bar_index
+    lastPx  := close
+    lastSL  := na(iSL) ? low : iSL
+if sigDn
+    lastDir := -1
+    lastBar := bar_index
+    lastPx  := close
+    lastSL  := na(iSH) ? high : iSH
+
+// ============================================================================
+//  NAAP: ishara vs aam candle (2 ATR pehle ya 1 ATR ulta)
+// ============================================================================
+// Har khuli aazmaish: target, stop, taraf, kis candle par khuli, qisam
+// (0 = aam candle / buniyad, 1 = ishara). cnt ke 8 khane:
+// qisam*4 + (UPAR 0 / NEECHE 2) + (jeet 0 / haar 1)
+var array<float> tTgt  = array.new<float>()
+var array<float> tStp  = array.new<float>()
+var array<int>   tDir  = array.new<int>()
+var array<int>   tBar  = array.new<int>()
+var array<int>   tKind = array.new<int>()
+var array<int>   cnt   = array.new<int>(8, 0)
+
+f_open(int d, int kind) =>
+    array.push(tTgt, close + d * TP_ATR * atr14)
+    array.push(tStp, close - d * SL_ATR * atr14)
+    array.push(tDir, d)
+    array.push(tBar, bar_index)
+    array.push(tKind, kind)
+
+if barstate.isconfirmed
+    // pehle purani aazmaishein is candle ke high/low se (nayi isi candle ke
+    // close par khulti hain, is liye woh agli candle se ginti hain)
+    int n = array.size(tTgt)
+    if n > 0
+        for k = n - 1 to 0
+            d    = array.get(tDir, k)
+            tg   = array.get(tTgt, k)
+            sp   = array.get(tStp, k)
+            hitT = d == 1 ? high >= tg : low <= tg
+            hitS = d == 1 ? low <= sp : high >= sp
+            age  = bar_index - array.get(tBar, k)
+            int res = 0
+            if hitS
+                res := -1
+            else if hitT
+                res := 1
+            else if age >= MAX_BARS
+                res := 2
+            if res != 0
+                if res != 2
+                    idx = array.get(tKind, k) * 4 + (d == 1 ? 0 : 2) + (res == 1 ? 0 : 1)
+                    array.set(cnt, idx, array.get(cnt, idx) + 1)
+                array.remove(tTgt, k)
+                array.remove(tStp, k)
+                array.remove(tDir, k)
+                array.remove(tBar, k)
+                array.remove(tKind, k)
+    if not na(atr14) and atr14 > 0
+        f_open(1, 0)
+        f_open(-1, 0)
+        if sigUp
+            f_open(1, 1)
+        if sigDn
+            f_open(-1, 1)
+
+// Ishara rukh (UPAR / NEECHE) se kitni candle PEHLE aaya? Sirf woh ishare
+// gine jo RANGE ya ulte rukh mein aaye (pehle se rukh mein = advance nahi).
+var int leadDir   = 0
+var int leadStart = na
+var int leadSum   = 0
+var int leadN     = 0
+if barstate.isconfirmed
+    if leadDir == 1 and score >= 30
+        leadSum += bar_index - leadStart
+        leadN   += 1
+        leadDir := 0
+    else if leadDir == -1 and score <= -30
+        leadSum += bar_index - leadStart
+        leadN   += 1
+        leadDir := 0
+    else if (leadDir == 1 and score <= -30) or (leadDir == -1 and score >= 30)
+        leadDir := 0
+    if sigUp
+        leadDir   := score < 30 ? 1 : 0
+        leadStart := bar_index
+    if sigDn
+        leadDir   := score > -30 ? -1 : 0
+        leadStart := bar_index
+
+// ============================================================================
+//  CHART (default: sirf ishara)
+// ============================================================================
+plotshape(showMarks and sigUp, title = "Advance ishara BUY", style = shape.triangleup,
+     location = location.belowbar, color = color.new(#00897B, 0), size = size.small, display = display.pane)
+plotshape(showMarks and sigDn, title = "Advance ishara SELL", style = shape.triangledown,
+     location = location.abovebar, color = color.new(#D81B60, 0), size = size.small, display = display.pane)
+
+plot(showQila ? mQila : na, title = "Qila", color = mDir == 1 ? color.new(#2E7D32, 30) : color.new(#C62828, 30),
+     style = plot.style_stepline, linewidth = 1, display = display.pane)
+barcolor(colorBars ? f_stCol(score) : na)
+
+alertcondition(sigUp, title = "JAS Trend: BUY ishara", message = "JAS Trend ▲ BUY ishara {{ticker}} {{interval}} @ {{close}}")
+alertcondition(sigDn, title = "JAS Trend: SELL ishara", message = "JAS Trend ▼ SELL ishara {{ticker}} {{interval}} @ {{close}}")
+if sigUp
+    alert("JAS Trend ▲ BUY ishara " + syminfo.ticker + " " + f_lab(timeframe.period) + " @ " + f_px(close) +
+         " | SL " + f_px(lastSL) + " | Rukh " + f_stTxt(score), alert.freq_once_per_bar_close)
+if sigDn
+    alert("JAS Trend ▼ SELL ishara " + syminfo.ticker + " " + f_lab(timeframe.period) + " @ " + f_px(close) +
+         " | SL " + f_px(lastSL) + " | Rukh " + f_stTxt(score), alert.freq_once_per_bar_close)
+
+// ============================================================================
+//  TABLE (ek kone mein)
+// ============================================================================
+var table tb = table.new(f_pos(tablePos), 2, 10, border_width = 1, border_color = color.new(#CFD8DC, 0))
+
+f_row(table t, int r, string a, string b, color bgB, color fgB, string fs) =>
+    table.cell(t, 0, r, a, text_color = color.new(#263238, 0), bgcolor = color.new(#FFFFFF, 10),
+         text_size = fs, text_halign = text.align_left)
+    table.cell(t, 1, r, b, text_color = fgB, bgcolor = bgB, text_size = fs, text_halign = text.align_left)
+
+if showTable and barstate.islast
+    fs    = f_size(tableFont)
+    bgW   = color.new(#FFFFFF, 10)
+    txD   = color.new(#263238, 0)
+    table.clear(tb, 0, 0, 1, 9)
+    // chalti candle par aakhri BAND candle ka rukh / qila (ishare jaisa)
+    sc    = barstate.isconfirmed ? score : score[1]
+    qv    = barstate.isconfirmed ? mQila : mQila[1]
+
+    // naap ka hisaab
+    bWU = array.get(cnt, 0)
+    bLU = array.get(cnt, 1)
+    bWD = array.get(cnt, 2)
+    bLD = array.get(cnt, 3)
+    iWU = array.get(cnt, 4)
+    iLU = array.get(cnt, 5)
+    iWD = array.get(cnt, 6)
+    iLD = array.get(cnt, 7)
+    pU    = bWU + bLU > 0 ? float(bWU) / (bWU + bLU) : 0.0
+    pD    = bWD + bLD > 0 ? float(bWD) / (bWD + bLD) : 0.0
+    nU    = iWU + iLU
+    nD    = iWD + iLD
+    nI    = nU + nD
+    expW  = nU * pU + nD * pD
+    varW  = nU * pU * (1 - pU) + nD * pD * (1 - pD)
+    iRate = nI > 0 ? float(iWU + iWD) / nI : na
+    bRate = nI > 0 ? expW / nI : na
+    fark  = nI > 0 ? (iWU + iWD - expW) / nI : na
+    se2   = nI > 0 ? 2 * math.sqrt(varW) / nI : na
+
+    string fTxt = ""
+    color  fCol = na
+    if not isDef
+        fTxt := "SETTINGS BADLI - faisla nahi"
+        fCol := color.new(#FB8C00, 0)
+    else if nI < NEED_N
+        fTxt := "GINTI KAM " + str.tostring(nI) + "/" + str.tostring(NEED_N)
+        fCol := color.new(#78909C, 0)
+    else if fark > se2
+        fTxt := "KAAM KA -> Tester"
+        fCol := color.new(#1B5E20, 0)
+    else
+        fTxt := "SABIT NAHI -> sirf dekhna"
+        fCol := color.new(#B71C1C, 0)
+
+    string ishTxt = lastDir == 0 ? "abhi nahi" : (lastDir == 1 ? "▲ BUY" : "▼ SELL") + " · " +
+         str.tostring(bar_index - lastBar) + " candle pehle · " + f_px(lastPx)
+
+    f_row(tb, 0, "JAS TREND", BUILD + (isDef ? "" : " (settings badli)"), bgW, txD, fs)
+    f_row(tb, 1, "Rukh " + f_lab(timeframe.period), f_stTxt(sc) + " " + str.tostring(math.round(sc)),
+         f_stCol(sc), color.white, fs)
+    if htfOK
+        f_row(tb, 2, "Rukh " + f_lab(htf), f_stTxt(htfS) + " " + str.tostring(math.round(htfS)), f_stCol(htfS), color.white, fs)
+    else
+        f_row(tb, 2, "Bari TF", "chart se bari TF chunein", color.new(#FB8C00, 0), color.white, fs)
+    f_row(tb, 3, "Ishara", ishTxt, lastDir == 1 ? color.new(#00897B, 0) : lastDir == -1 ? color.new(#D81B60, 0) : bgW,
+         lastDir == 0 ? txD : color.white, fs)
+    f_row(tb, 4, "SL · Qila", f_px(lastDir == 0 ? na : lastSL) + " · " + f_px(qv), bgW, txD, fs)
+    if showNaap
+        f_row(tb, 5, "Naap: 2 ATR pehle", f_pct(iRate) + " (" + str.tostring(nI) + ") · aam " + f_pct(bRate), bgW, txD, fs)
+        f_row(tb, 6, "FARK", f_sgn(fark) + "  (2SE " + f_pct(se2) + ")", bgW, txD, fs)
+        f_row(tb, 7, "Faisla", fTxt, fCol, color.white, fs)
+        f_row(tb, 8, "Rukh se pehle", leadN > 0 ? "~" + str.tostring(float(leadSum) / leadN, "0.0") + " candle (" +
+             str.tostring(leadN) + ")" : "-", bgW, txD, fs)

@@ -4,7 +4,19 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (9 Oct 2026, raat) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (10 Oct 2026) <<<
+
+**Branch ab `claude/gallant-heisenberg-phv3v4`** (10 Oct ki chat; gifted-faraday ka saara kaam is mein aa gaya, naya kaam yahin).
+
+**10 Oct (Hafta) - NAYA: `indicators/smc_trend_pro.pine` t1 "JAS SMC Trend" (compile baqi).** User ka khayal: "SMC Coach v4 ke hisaab se advance trend". User ne naqsha "D" kiya, shart: **"chart bilkul saaf, mujhe ADVANCE ISHARA chahiye"**. Is liye chart par SIRF chhota ▲/▼ + kone mein table; qila lakeer aur candle rang settings mein BAND; 5 TF wali table chhota kar ke sirf chart TF + bari TF.
+- **Rukh score -100..+100:** bara structure pivot 3 (35, rukh QILA ke paar band candle par palta - qila = toote swing high ke baad ka low), MA21/63 (20), Supertrend 10/3 (15), ADX >= 18 (10), bari TF (20; auto 1m->15m, 3-15m->1H, 30m/1H->4H, 2-4H->1D). Haal: TEZ UPAR >= 70, UPAR >= 30, RANGE, NEECHE <= -30, TEZ NEECHE <= -70.
+- **Advance ishara ▲:** chhota structure (pivot 2) neeche se UPAR palta (andar ka CHOCH) + bari TF NEECHE nahi + toorne wali hari candle body >= 0.5 ATR ya FVG. Ek palte par ek. Band candle, repaint nahi. Alert bhi.
+- **Pehle se likha qaida (10 Oct, ishare dekhne se PEHLE, badalna mana; number code mein constant):** har ishare ke baad 2 ATR pehle (jeet) ya 1 ATR ulta (haar), ek candle mein dono = haar, 100 candle = gina nahi; buniyad = har aam candle usi taraf. **100+ ishare aur FARK > 2SE = KAAM KA -> strategy copy + Tester; 100+ aur FARK <= 2SE = SABIT NAHI (sirf dekhna); kam = GINTI KAM.** Settings badli to table faisla nahi deta. Pehle XAUUSD 15m, phir 1H.
+- **Jaanch:** pinecheck saaf. Python port `tools/trend_check.py` (random qeemat 12 x 5000): pehli shakal mein qila kabhi qeemat ke ghalat taraf banta tha (purana toota swing low yaad rehta tha) -> theek (pullLo). Ab random par FARK +1.1% (2SE 1.8%) = jhoota faida nahi; drift par buniyad UPAR/NEECHE alag aur FARK ~0. Random par ~1 ishara / 20 candle (bari TF filter se kam).
+- **Agla qadam (user):** TradingView par paste (Pine Editor -> naya indicator -> sab hata kar paste -> Save -> Add to chart), XAUUSD **15m**, table ka screenshot.
+
+**Radar Journal (Monday wala kaam 1) abhi baqi** - user ne naya khayal pehle liya.
+
 
 **MONDAY (12 Oct) KE DO KAAM - user ne khud kaha, yaad rakhna:**
 1. **Radar EA (JasTideRadarEA e1) ka Tester nateeja:** OnTester +40.39R (bina swap, 2019 se) magar paise mein sirf +312 / PF 1.02 - shayad demo ke SWAP ki wajah se TradingView jaisa nahi aaya. Tester Journal ki aakhri 6 "JAS TIDE RADAR e1" lines (MARKET x2, SAAL, CHHOOTI, KUL, QAIDA - swap R alag) mangwa kar PASS/FAIL aur swap ka hissa.
@@ -45,7 +57,7 @@ User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 
 **(purana) Kaam jo user ne 7 Oct ko manga tha:** "SMC Pro v2 jaisa naam, ~1530 lines" wali Pine script ko **`//@version=6`** mein karna, aur ho sake to behtar (tweak). Repo mein qareeb tareen: `indicators/smc_coach_pro_v3.pine` (pehle naam smc_coach_pro_v2, **1625 lines, abhi @version=5**). User se poochha gaya: yahi file hai ya us ke computer ki koi aur (to paste kare)? - **file ka jawab baqi** (nayi chat mein pehle yahi poochho). User ki do shartein (7 Oct): (1) **ek bhi kharabi na rahe**; (2) **"1H ya 1D TF mein jitne bhi pips hote hain, har pip ka hisaab script mein rakhe"** - matlab poochha gaya (candle ke andar upar/neeche ka poora raasta pips mein? har price level par waqt/volume (profile)? ya sirf range?) - **user ne "dono" kaha = raasta (upar/neeche pips, asal farq) + price profile (har qeemat par waqt/volume)**; is ke liye `request.security_lower_tf` (1m/5m candles) lagega, 1D par 1m ki had ~ chand din. v6 mein badalte waqt dhyan: `na` ko bool mein nahi rakh sakte, `int`/`float` ka khud badalna kam, `when=` hata, `transp` hata, `security` lookahead, `strategy` ke parameters; repo mein `tools/pinecheck.py` hai.
 
-**Raw link hamesha commit hash wala do.** Branch: `claude/gifted-faraday-zs7wcz`.
+**Raw link hamesha commit hash wala do.** Branch: `claude/gallant-heisenberg-phv3v4` (10 Oct se; pehle `claude/gifted-faraday-zs7wcz`).
 
 ## Purani tafseel neeche (zarurat ho to)
 
@@ -182,4 +194,4 @@ User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 - **Pehle poochho, phir file banao** — file ke baad sawal nahi
 - SBS = ek qadam, user "D" likhe, phir agla
 - Roman Urdu, chhota aur saaf
-- Branch: `claude/gifted-faraday-zs7wcz`
+- Branch: `claude/gallant-heisenberg-phv3v4` (10 Oct se)

@@ -5,7 +5,7 @@ dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
-Aakhri update: 9 October 2026 (raat).
+Aakhri update: 10 October 2026.
 
 ---
 
@@ -23,6 +23,8 @@ Aakhri update: 9 October 2026 (raat).
 - Link hamesha **click hone wala** do (markdown link), aur raw link mein
   commit hash wala bhi do (GitHub kabhi purani copy dikhata hai).
 - Mujhe baar baar "aaraam karo" mat kaho - jab thakunga khud bata doonga.
+- **Chart bilkul saaf chahiye (10 Oct):** indicator chart par sirf ishara dikhaye;
+  lakeerein, rang, lambi tables settings mein BAND rakho (Tide Seekh bhi "bohot text" se napasand hua tha).
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
@@ -157,6 +159,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasDeskView.mq5` v4.2 | **Sirf parhta hai.** Close-All ginti, lots by size, ausat, NET, BARI LOT KI JORI, PLAN A/B + "NET baad mein" | ✅ Live par chal raha. Kami: "ek taraf band" line sirf ek taraf ka fasla batati hai, poori kitab ka nahi |
 | `JasJoriClose.mq5` s1 | **Script.** Bari lot ki lot-barabar jori **Close By** se band, ek Yes/No | ✅ Demo 150/150, **live 64/64 (+550.70 USC, 1 Oct)**. Abhi sasti BUY pehle chunta hai - user upar wali BUY pehle chahta hai (option banana baqi) |
 | `indicators/jas_tide_radar.pine` r3 | **9 market ka kachhua ek 1D chart par** (trade nahi karta): har market ki trade/SL/agla toot, gold ke saath sync, USD daao, MILA HUA hisaab (sab / 2005 se / 2019 se), FAISLA row | ✅ r3 chal raha (9 Oct): **DEMO KE QABIL** |
+| `indicators/smc_trend_pro.pine` t1 | **JAS SMC Trend (10 Oct):** SMC v4 ke hisson se ek rukh (score -100..+100, 5 haal) + **advance ishara ▲/▼** (chhota CHOCH, bari TF ke khilaf nahi, jaan wali candle). Chart par sirf ishara + chhoti table. Andar naap: 2 ATR pehle vs aam candle, pehle se likha qaida | Bana, **compile baqi**. Pehle 15m XAUUSD par naap - trade nahi |
 | `JasTideRadarEA.mq5` e1 | **Radar r3 ke qaide ka EA, ek chart se 9 market**, USD hadd 3, gold+silver ek, 1% risk (broker ka hisaab), SL server par + roz aage. Default SIRF DIKHANA. Tester ke aakhir mein Journal mein R ka hisaab + pehle se likha qaida | **Compile ✅ (9 Oct)**, demo 472716649 ke XAUUSDm D1 chart par SIRF DIKHANA mein laga. Phir Tester (Exness data), phir demo par trade. Live nahi |
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
 | `docs/tide_rehnuma.html` | Tide Seekh ki Roman Urdu guide ([artifact](https://claude.ai/artifact/5w4xy7FcTuCnQqxbb3A6C2)): qaide, panel rows, roz ka kaam, MT5 order/SL, naap, demo plan | ✅ 8 Oct |
@@ -200,7 +203,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - "Usage credits" switch OFF. $100 cloud credit muft mila (claim karna).
   "Full reset" muft button Oct 22 tak.
 - Lambi chat zyada usage khati hai - kaam bara ho to **nayi chat** + code:
-  `JAS-DESK-V3-0110 — ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo. Branch: claude/gifted-faraday-zs7wcz`
+  `JAS-DESK-V3-0110 — ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo. Branch: claude/gallant-heisenberg-phv3v4`
 
 ## 8. Ye file kaise zinda rahe
 
