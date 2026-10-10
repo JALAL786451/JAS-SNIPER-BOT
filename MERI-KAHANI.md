@@ -73,7 +73,7 @@ iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
 
 | | Number | Qisam | Note |
 |---|---|---|---|
-| **LIVE** | 253687618 | Exness MT5 **StandardCent**, `XAUUSDc`, USC, Hedge, 1:2000 | **Swap-free (Islamic)**. 0.01 lot = $1 harkat par 1 USC |
+| **LIVE** | 253687618 | Exness MT5 **StandardCent**, `XAUUSDc`, USC, Hedge, 1:2000 | **Swap-free (Islamic)**. 0.01 lot = $1 harkat par 1 USC. **Symbols: XAUUSD, BTC, ETH** (10 Oct; BTCUSDc 0.01 lot = $1 par 0.01 USC). BTC ka swap abhi dekhna hai |
 | **DEMO** | 472540009 (9 Oct screenshot mein **472716649**, Exness-MT5Trial16, Hedge - JasTideRadarEA isi par) | Exness-MT5Trial16, `XAUUSDm`, **USD** standard, Hedge | Contract spec mein BUY swap -513.2 points/lot/din likha mila tha (2 Oct), **magar user kehta hai gold par swap nahi katta (8 Oct)** - hisaab mein swap 0. Shak ho to MT5 ka Swap column dekho |
 
 - Live par **koi EA trade nahi karta** jab tak demo par test na ho.
@@ -171,7 +171,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   PASS:** 414 trades, +40.39R bina swap, girawat 12.7R, 6/8 saal musbat. Magar
   **saara faida BTC se** (+44.2R); baqi 7 market mila kar -3.9R (FX -17.3R,
   gold +12.5R). Demo ka swap -22R kha gaya (is liye paise mein breakeven). Agar
-  live cent par BTC nahi to live ke liye abhi qabil NAHI. Andar ke nateeje dekh
+  live cent par BTC hai (10 Oct) -> demo ke baad live ka raasta khula. Andar ke nateeje dekh
   kar market hatana/chunna mana (overfitting).
 - **BTC par Kachhua 2019 ke baad bhi musbat - pehle se likhe qaide par SABIT**
   (10 Oct, TradingView CRYPTO:BTCUSD 1D): 2019-aaj 81 trades, jeet 43%, Exp
