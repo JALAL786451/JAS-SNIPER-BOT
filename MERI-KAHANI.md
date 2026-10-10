@@ -149,6 +149,24 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   likha gaya tha -> mansooba +0.1 se +0.3R fi trade par. 164 trades / +824%
   wala headline 81% R 2010-18 ke jungli saalon se. 3 mahine demo = sirf 2-3
   BTC trades = amal ki jaanch, faide ka saboot nahi.
+- **BTC Tide ki "fail" aur "der wali" trades - koi kharabi NAHI** (11 Oct, user
+  ke 3 screenshot Oct 2025 - Jun 2026, 6-agent workflow: 3 parhne wale + 3
+  judge). 8 nazar aane wali trades: +0.41, -0.64, ~-0.45, -0.55, ~+4.05,
+  March ki do mila kar ~-1.16, +3.27 = **~+4.9R / 8 = ~+0.6R fi trade =
+  wohi naapa hua ausat.** Ausat haar ~0.6R, ausat jeet ~2.15R -> barabari
+  sirf ~22% jeet par; Tide ~43% jeetta hai. Der ki wajah: (1) sab se bari -
+  D1 EMA50/200 filter top/bottom ke hafton baad palat-ta hai (BUY 26 Oct
+  top ke 3 hafte baad; pehli SELL 31% girawat ke baad); (2) 10 din ke high
+  ke upar BAND candle ka intezar (~1.7R chaal entry se pehle - random data
+  andaza); (3) label ek candle dayen - BTC par us candle ka open = entry,
+  waqt ka nuqsan 0. Chart ki neeli/jamni lakeerein EMA21/63 (SMC dikhawa)
+  hain, Tide ka filter NAHI. Is arse mein SELL ~+5.2R, BUY ~+0.2R - "sirf
+  BUY" karte to saara faida jata. 10 trades se faisla nahi hota (+-1.3R fi
+  trade). Har "fix" (jaldi entry, tez filter, tang SL, jaldi faida, SELL
+  chhorna) = naya system / overfitting -> **qaide nahi badle.** Sirf
+  dikhawe ki kharabi mili: `plot.style_stepline_diamond` (L207-208) khali
+  jagah bhar deta hai -> purani hari 'BUY toot' lakeer (~107.5k) poori
+  girawat mein, aur SELL ke gird gulabi dabbe; exit label wajah nahi likhta.
 - **Tide ke SAARE qaide 15m/5m/1m candles par = naya system, koi setting 1D
   jaisa nateeja nahi degi** (11 Oct): 10 candle ka toot 15m par 2.5 ghante,
   1m par 10 minute; EMA200 15m par 50 ghante (7 mahine ka rukh nahi); 15m
