@@ -13,7 +13,8 @@
 //   HARA  = aakhri ishara ▲ aur chhota structure abhi tak UPAR (ishara chalu)
 //   LAAL  = aakhri ishara ▼ aur chhota structure abhi tak NEECHE
 //   SLETI = ishara khatam: chhota structure ishare ke khilaf palat gaya, ya
-//           candle ishare ke SL ke paar band hui
+//           candle ishare ke SL ke paar band hui. Agle ishare tak sleti.
+//           Rang sirf ishare par hara/laal hota hai, aur kabhi nahi.
 //           (t1 mein BTC 4H par aakhri ▲ ka SL 83134 toot chuka tha magar
 //           table "▲ BUY" hi dikha raha tha - ab table "khatam" likhta hai)
 //  Rang sirf BAND candle par badalta hai (chalti candle par pichla rang).
@@ -273,15 +274,18 @@ if sigDn
 // Advance haal: +1 hara, -1 laal, 0 sleti. Sirf band candle par badle
 // (chalti candle par var pichla pakka rang rakhta hai - repaint nahi).
 // Khatam = chhota structure ishare ke khilaf palta YA candle ishare ke SL ke
-// paar band hui (dono mein se jo pehle). SL toota to agle ishare tak sleti.
-var int  adv    = 0
-var bool slGone = false
+// paar band hui (jo pehle ho). Khatam hua to AGLE ISHARE tak sleti - warna
+// filter se ruka hua palta (jaan nahi / bari TF khilaf) bina ishare ke lakeer
+// dobara hari kar deta tha (agent jaanch, 10 Oct). Ishare wali candle par
+// iDir hamesha lastDir jaisa hota hai.
+var int  adv   = 0
+var bool ended = false
 if barstate.isconfirmed
     if sigUp or sigDn
-        slGone := false
-    else if (lastDir == 1 and close < lastSL) or (lastDir == -1 and close > lastSL)
-        slGone := true
-    adv := slGone ? 0 : lastDir == 1 and iDir == 1 ? 1 : lastDir == -1 and iDir == -1 ? -1 : 0
+        ended := false
+    else if (lastDir == 1 and (close < lastSL or iDir != 1)) or (lastDir == -1 and (close > lastSL or iDir != -1))
+        ended := true
+    adv := ended ? 0 : lastDir
 
 // ============================================================================
 //  NAAP: ishara vs aam candle (2 ATR pehle ya 1 ATR ulta)
@@ -345,6 +349,7 @@ var int leadDir   = 0
 var int leadStart = na
 var int leadSum   = 0
 var int leadN     = 0
+var int leadTry   = 0
 if barstate.isconfirmed
     if leadDir == 1 and score >= 30
         leadSum += bar_index - leadStart
@@ -362,6 +367,8 @@ if barstate.isconfirmed
     if sigDn
         leadDir   := score > -30 ? -1 : 0
         leadStart := bar_index
+    if (sigUp or sigDn) and leadDir != 0
+        leadTry += 1
 
 // ============================================================================
 //  CHART (default: sirf advance MA lakeer)
@@ -406,6 +413,8 @@ if showTable and barstate.islast
     // chalti candle par aakhri BAND candle ka rukh / qila (ishare jaisa)
     sc    = barstate.isconfirmed ? score : score[1]
     qv    = barstate.isconfirmed ? mQila : mQila[1]
+    md    = barstate.isconfirmed ? mDir : mDir[1]
+    hs    = barstate.isconfirmed ? htfS : htfS[1]
 
     // naap ka hisaab
     bWU = array.get(cnt, 0)
@@ -450,15 +459,21 @@ if showTable and barstate.islast
     f_row(tb, 1, "Rukh " + f_lab(timeframe.period), f_stTxt(sc) + " " + str.tostring(math.round(sc)),
          f_stCol(sc), color.white, fs)
     if htfOK
-        f_row(tb, 2, "Rukh " + f_lab(htf), f_stTxt(htfS) + " " + str.tostring(math.round(htfS)), f_stCol(htfS), color.white, fs)
+        f_row(tb, 2, "Rukh " + f_lab(htf), f_stTxt(hs) + " " + str.tostring(math.round(hs)), f_stCol(hs), color.white, fs)
     else
         f_row(tb, 2, "Bari TF", "chart se bari TF chunein", color.new(#FB8C00, 0), color.white, fs)
     f_row(tb, 3, "Ishara", ishTxt, adv == 1 ? color.new(#00897B, 0) : adv == -1 ? color.new(#D81B60, 0) :
          lastDir == 0 ? bgW : color.new(#90A4AE, 0), lastDir == 0 ? txD : color.white, fs)
-    f_row(tb, 4, "SL · Qila", f_px(lastDir == 0 ? na : lastSL) + " · " + f_px(qv), bgW, txD, fs)
+    // SL = aakhri ishare ka (chhota swing); qila = BARE rukh ka - dono ki
+    // taraf alag ho sakti hai, is liye dono par nishan
+    f_row(tb, 4, "SL · Qila", (lastDir == 1 ? "▲ " : lastDir == -1 ? "▼ " : "") + f_px(lastDir == 0 ? na : lastSL) +
+         " · " + f_px(qv) + (md == 1 ? " (bara rukh ▲)" : md == -1 ? " (bara rukh ▼)" : ""), bgW, txD, fs)
     if showNaap
-        f_row(tb, 5, "Naap: 2 ATR pehle", f_pct(iRate) + " (" + str.tostring(nI) + ") · aam " + f_pct(bRate), bgW, txD, fs)
+        f_row(tb, 5, "Naap 2 ATR / 1 ATR", f_pct(iRate) + " (" + str.tostring(nI) + ") · aam " + f_pct(bRate), bgW, txD, fs)
         f_row(tb, 6, "FARK", f_sgn(fark) + "  (2SE " + f_pct(se2) + ")", bgW, txD, fs)
         f_row(tb, 7, "Faisla", fTxt, fCol, color.white, fs)
         f_row(tb, 8, "Rukh se pehle", leadN > 0 ? "~" + str.tostring(float(leadSum) / leadN, "0.0") + " candle (" +
-             str.tostring(leadN) + ")" : "-", bgW, txD, fs)
+             str.tostring(leadN) + "/" + str.tostring(leadTry) + " mein rukh bana)" : "-", bgW, txD, fs)
+    // neeche kone mein TradingView ke apne button aakhri row dhaank dete the
+    if str.startswith(tablePos, "Bottom")
+        table.cell(tb, 0, 9, " ", bgcolor = color.new(#FFFFFF, 100), text_size = fs)

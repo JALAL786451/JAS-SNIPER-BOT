@@ -101,7 +101,7 @@ def run(o, h, l, c, intLR=2, mainLR=3, dispATR=0.5, TP=2.0, SL=1.0, MAXB=100):
     tests = []  # [tgt, stp, dir, bar, kind]
     cnt = [0] * 8
     sigs = 0
-    lastDir, lastSL, slGone, adv = 0, None, False, 0   # t2: MA lakeer ka rang
+    lastDir, lastSL, ended, adv = 0, None, False, 0   # t2: MA lakeer ka rang
     for t in range(len(c)):
         keep = []
         for tg, sp, d, b, kind in tests:
@@ -125,9 +125,12 @@ def run(o, h, l, c, intLR=2, mainLR=3, dispATR=0.5, TP=2.0, SL=1.0, MAXB=100):
         idir = it[t][0]
         if sigUp: lastDir, lastSL = 1, (it[t][2] if it[t][2] is not None else l[t])
         if sigDn: lastDir, lastSL = -1, (it[t][3] if it[t][3] is not None else h[t])
-        if sigUp or sigDn: slGone = False
-        elif (lastDir == 1 and c[t] < lastSL) or (lastDir == -1 and c[t] > lastSL): slGone = True
-        adv = 0 if slGone else (1 if lastDir == 1 and idir == 1 else (-1 if lastDir == -1 and idir == -1 else 0))
+        prevAdv = adv
+        if sigUp or sigDn: ended = False
+        elif (lastDir == 1 and (c[t] < lastSL or idir != 1)) or (lastDir == -1 and (c[t] > lastSL or idir != -1)): ended = True
+        adv = 0 if ended else lastDir
+        # lakeer sirf ishare wali candle par rangeen hoti hai (sleti -> hara/laal)
+        if prevAdv != adv and adv != 0: assert sigUp or sigDn, (t, prevAdv, adv)
         # rangeen lakeer kabhi SL ke ghalat taraf wali band candle par nahi
         if adv == 1: assert c[t] >= lastSL and idir == 1, (t, c[t], lastSL)
         if adv == -1: assert c[t] <= lastSL and idir == -1, (t, c[t], lastSL)
