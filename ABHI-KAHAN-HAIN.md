@@ -8,6 +8,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/gallant-heisenberg-phv3v4. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
+**t3 BAN GAYA (10 Oct):** `indicators/smc_trend_pro.pine` build t3 - MA50 (EMA; rang = ishara), narangi S/R (yahan band candle par rang badal sakta hai) + sleti nuqte S/R (yahan kabhi nahi), table: har TF ka apna rukh, "Narangi lakeer", "Qila (bara rukh)", "khatam N candle pehle". Ishara + naap t2 jaise. Jaanch: pinecheck saaf; `tools/trend_sr_check.py` (12 x 5000, nakli bari TF): rang badla 2733/2733 narangi par, sleti ke paar 0, S/R ghalat taraf 0, chup narangi crossing 19 (sab nayi swing wali candle par). **TradingView compile baqi.** User: paste -> purana indicator HATA kar dobara lagaye (warna purana EMA21 input reh sakta hai) -> XAUUSD 15m + 1H screenshot. Jaanch: 15m chart ki "Rukh 1H" row = 1H chart ki "Rukh 1H".
+
 **Abhi ka haal (10 Oct, user ka session limit khatam ho raha tha):**
 1. **JAS SMC Trend t3** (`indicators/smc_trend_pro.pine`): user ne link manga = naqsha manzoor. t3 = MA50 (rang = ishara) + narangi/sleti S/R lakeer + har TF ka apna rukh number (spec `docs/smc_trend_t3_naqsha.md`). Is chat mein bana ho to neeche "t3 BAN GAYA" dekho; warna spec se banao. User ka agla qadam: t3 paste, purana indicator HATA kar dobara lagaye, **XAUUSD 15m + 1H** ke 2 screenshot (pehle se likha milane wala qaida neeche).
 2. **Radar EA (JasTideRadarEA e1):** Strategy Tester Journal ki aakhri 6 "JAS TIDE RADAR e1" lines baqi -> 3 mein se baqi 2 shartein (2019 se trades 366-610, girawat <= 25R) ka PASS/FAIL. Paise mein abhi ~breakeven (+312, PF 1.02).
