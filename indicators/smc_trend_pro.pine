@@ -1,12 +1,24 @@
 //@version=6
 // ============================================================================
-//  JAS SMC TREND   (build t1, Pine v6)
+//  JAS SMC TREND   (build t2, Pine v6)
 //  10 Oct 2026 - user ka khayal: "SMC Coach v4 ke hisaab se advance trend",
 //  shart: "chart bilkul saaf nazar aaye, mujhe ADVANCE ISHARA chahiye".
 //  SMC Coach v4 (indicators/smc_coach_pro_v4.pine) ko haath nahi lagaya.
 //
-//  Chart par SIRF: chhota ▲ / ▼ (advance ishara) + kone mein ek chhoti table.
-//  Qila lakeer aur candle ka rang settings mein hain, default BAND.
+//  Chart par SIRF: ek ADVANCE MA lakeer (MA21) + kone mein ek chhoti table.
+//  Teer (▲/▼), qila lakeer aur candle ka rang settings mein hain, default BAND.
+//
+//  t2 (10 Oct, user ne t1 BTC 4H par chalaya): "teer nahi, bas aik MA wali
+//  line chahiye". Ishara ab MA21 lakeer ka RANG hai:
+//   HARA  = aakhri ishara ▲ aur chhota structure abhi tak UPAR (ishara chalu)
+//   LAAL  = aakhri ishara ▼ aur chhota structure abhi tak NEECHE
+//   SLETI = ishara khatam: chhota structure ishare ke khilaf palat gaya, ya
+//           candle ishare ke SL ke paar band hui
+//           (t1 mein BTC 4H par aakhri ▲ ka SL 83134 toot chuka tha magar
+//           table "▲ BUY" hi dikha raha tha - ab table "khatam" likhta hai)
+//  Rang sirf BAND candle par badalta hai (chalti candle par pichla rang).
+//  Ishara khud (kab banta hai) aur NAAP bilkul t1 jaisa - t1 ka naap wahi.
+//  Inputs ki lambi qataar chart ke naam ke saath nahi aati (display.none).
 //
 //  RUKH (score -100..+100) - SMC Coach v4 ke hisse, sab BAND candle par:
 //   Structure  35 : bara swing (pivot 3/3). Rukh tab palta hai jab candle
@@ -42,7 +54,7 @@
 // ============================================================================
 indicator("JAS SMC Trend", shorttitle = "JAS Trend", overlay = true, max_bars_back = 1000)
 
-BUILD = "t1"
+BUILD = "t2"
 
 // Naap ke number - test se pehle likhe, input nahi (taake ghumaye na ja sakein)
 TP_ATR   = 2.0
@@ -57,27 +69,31 @@ gIsh  = "1. Advance ishara"
 gRukh = "2. Rukh (SMC Coach v4 ke hisse)"
 gShow = "3. Dikhawa (default: chart saaf)"
 
-showMarks = input.bool(true, "Chart par ▲ / ▼ ishara", group = gIsh)
 intLR     = input.int(2, "Chhota structure: pivot L/R", minval = 1, maxval = 10, group = gIsh,
-     tooltip = "Ishara isi chhote structure ke palatne par banta hai. Default 2 par hi naap ka faisla hota hai.")
-dispATR   = input.float(0.5, "Toorne wali candle: body >= x ATR (ya FVG)", minval = 0.0, step = 0.05, group = gIsh)
+     tooltip = "Ishara isi chhote structure ke palatne par banta hai. Default 2 par hi naap ka faisla hota hai.", display = display.none)
+dispATR   = input.float(0.5, "Toorne wali candle: body >= x ATR (ya FVG)", minval = 0.0, step = 0.05, group = gIsh, display = display.none)
 htfIn     = input.timeframe("", "Bari TF (khali = khud)", group = gIsh,
-     tooltip = "Khali: 1m -> 15m, 3m-15m -> 1H, 30m/1H -> 4H, 2H-4H -> 1D, 1D -> 1W")
+     tooltip = "Khali: 1m -> 15m, 3m-15m -> 1H, 30m/1H -> 4H, 2H-4H -> 1D, 1D -> 1W", display = display.none)
 
-mainLR     = input.int(3, "Bara structure: pivot L/R", minval = 1, maxval = 20, group = gRukh)
-emaFastLen = input.int(21, "MA fast", minval = 2, group = gRukh)
-emaSlowLen = input.int(63, "MA slow", minval = 3, group = gRukh)
-stPeriod   = input.int(10, "Supertrend ATR", minval = 1, group = gRukh)
-stMult     = input.float(3.0, "Supertrend multiplier", minval = 0.1, step = 0.1, group = gRukh)
-adxLen     = input.int(14, "ADX length", minval = 2, group = gRukh)
-adxMin     = input.float(18, "ADX min", minval = 1, step = 0.5, group = gRukh)
+mainLR     = input.int(3, "Bara structure: pivot L/R", minval = 1, maxval = 20, group = gRukh, display = display.none)
+emaFastLen = input.int(21, "MA fast", minval = 2, group = gRukh, display = display.none)
+emaSlowLen = input.int(63, "MA slow", minval = 3, group = gRukh, display = display.none)
+stPeriod   = input.int(10, "Supertrend ATR", minval = 1, group = gRukh, display = display.none)
+stMult     = input.float(3.0, "Supertrend multiplier", minval = 0.1, step = 0.1, group = gRukh, display = display.none)
+adxLen     = input.int(14, "ADX length", minval = 2, group = gRukh, display = display.none)
+adxMin     = input.float(18, "ADX min", minval = 1, step = 0.5, group = gRukh, display = display.none)
 
-showTable = input.bool(true, "Table dikhao", group = gShow)
-tablePos  = input.string("Bottom Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gShow)
-tableFont = input.string("Small", "Table ka font", options = ["Tiny", "Small", "Normal"], group = gShow)
-showNaap  = input.bool(true, "Table mein naap ki rows", group = gShow)
-showQila  = input.bool(false, "Qila lakeer dikhao", group = gShow)
-colorBars = input.bool(false, "Candles ko rukh ke rang mein rango", group = gShow)
+showLine  = input.bool(true, "Advance MA lakeer (rang = ishara)", group = gShow, display = display.none)
+lineLen   = input.int(21, "Lakeer ki MA (EMA)", minval = 2, group = gShow,
+     tooltip = "Sirf dikhawa. Ishara aur naap is se nahi badalte.", display = display.none)
+lineWidth = input.int(2, "Lakeer ki motai", minval = 1, maxval = 4, group = gShow, display = display.none)
+showMarks = input.bool(false, "Teer (▲ / ▼) bhi dikhao", group = gShow, display = display.none)
+showTable = input.bool(true, "Table dikhao", group = gShow, display = display.none)
+tablePos  = input.string("Bottom Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gShow, display = display.none)
+tableFont = input.string("Small", "Table ka font", options = ["Tiny", "Small", "Normal"], group = gShow, display = display.none)
+showNaap  = input.bool(true, "Table mein naap ki rows", group = gShow, display = display.none)
+showQila  = input.bool(false, "Qila lakeer dikhao", group = gShow, display = display.none)
+colorBars = input.bool(false, "Candles ko rukh ke rang mein rango", group = gShow, display = display.none)
 
 isDef = intLR == 2 and dispATR == 0.5 and htfIn == "" and mainLR == 3 and emaFastLen == 21 and
      emaSlowLen == 63 and stPeriod == 10 and stMult == 3.0 and adxLen == 14 and adxMin == 18
@@ -254,6 +270,19 @@ if sigDn
     lastPx  := close
     lastSL  := na(iSH) ? high : iSH
 
+// Advance haal: +1 hara, -1 laal, 0 sleti. Sirf band candle par badle
+// (chalti candle par var pichla pakka rang rakhta hai - repaint nahi).
+// Khatam = chhota structure ishare ke khilaf palta YA candle ishare ke SL ke
+// paar band hui (dono mein se jo pehle). SL toota to agle ishare tak sleti.
+var int  adv    = 0
+var bool slGone = false
+if barstate.isconfirmed
+    if sigUp or sigDn
+        slGone := false
+    else if (lastDir == 1 and close < lastSL) or (lastDir == -1 and close > lastSL)
+        slGone := true
+    adv := slGone ? 0 : lastDir == 1 and iDir == 1 ? 1 : lastDir == -1 and iDir == -1 ? -1 : 0
+
 // ============================================================================
 //  NAAP: ishara vs aam candle (2 ATR pehle ya 1 ATR ulta)
 // ============================================================================
@@ -335,8 +364,12 @@ if barstate.isconfirmed
         leadStart := bar_index
 
 // ============================================================================
-//  CHART (default: sirf ishara)
+//  CHART (default: sirf advance MA lakeer)
 // ============================================================================
+advMA  = ta.ema(close, lineLen)
+advCol = adv == 1 ? color.new(#00897B, 0) : adv == -1 ? color.new(#D81B60, 0) : color.new(#90A4AE, 0)
+plot(showLine ? advMA : na, title = "Advance MA", color = advCol, linewidth = lineWidth, display = display.pane)
+
 plotshape(showMarks and sigUp, title = "Advance ishara BUY", style = shape.triangleup,
      location = location.belowbar, color = color.new(#00897B, 0), size = size.small, display = display.pane)
 plotshape(showMarks and sigDn, title = "Advance ishara SELL", style = shape.triangledown,
@@ -410,8 +443,8 @@ if showTable and barstate.islast
         fTxt := "SABIT NAHI -> sirf dekhna"
         fCol := color.new(#B71C1C, 0)
 
-    string ishTxt = lastDir == 0 ? "abhi nahi" : (lastDir == 1 ? "▲ BUY" : "▼ SELL") + " · " +
-         str.tostring(bar_index - lastBar) + " candle pehle · " + f_px(lastPx)
+    string ishTxt = lastDir == 0 ? "abhi nahi" : (lastDir == 1 ? "▲ BUY" : "▼ SELL") + (adv == 0 ? " (khatam)" : " (chalu)") +
+         " · " + str.tostring(bar_index - lastBar) + " candle pehle · " + f_px(lastPx)
 
     f_row(tb, 0, "JAS TREND", BUILD + (isDef ? "" : " (settings badli)"), bgW, txD, fs)
     f_row(tb, 1, "Rukh " + f_lab(timeframe.period), f_stTxt(sc) + " " + str.tostring(math.round(sc)),
@@ -420,8 +453,8 @@ if showTable and barstate.islast
         f_row(tb, 2, "Rukh " + f_lab(htf), f_stTxt(htfS) + " " + str.tostring(math.round(htfS)), f_stCol(htfS), color.white, fs)
     else
         f_row(tb, 2, "Bari TF", "chart se bari TF chunein", color.new(#FB8C00, 0), color.white, fs)
-    f_row(tb, 3, "Ishara", ishTxt, lastDir == 1 ? color.new(#00897B, 0) : lastDir == -1 ? color.new(#D81B60, 0) : bgW,
-         lastDir == 0 ? txD : color.white, fs)
+    f_row(tb, 3, "Ishara", ishTxt, adv == 1 ? color.new(#00897B, 0) : adv == -1 ? color.new(#D81B60, 0) :
+         lastDir == 0 ? bgW : color.new(#90A4AE, 0), lastDir == 0 ? txD : color.white, fs)
     f_row(tb, 4, "SL · Qila", f_px(lastDir == 0 ? na : lastSL) + " · " + f_px(qv), bgW, txD, fs)
     if showNaap
         f_row(tb, 5, "Naap: 2 ATR pehle", f_pct(iRate) + " (" + str.tostring(nI) + ") · aam " + f_pct(bRate), bgW, txD, fs)

@@ -101,6 +101,7 @@ def run(o, h, l, c, intLR=2, mainLR=3, dispATR=0.5, TP=2.0, SL=1.0, MAXB=100):
     tests = []  # [tgt, stp, dir, bar, kind]
     cnt = [0] * 8
     sigs = 0
+    lastDir, lastSL, slGone, adv = 0, None, False, 0   # t2: MA lakeer ka rang
     for t in range(len(c)):
         keep = []
         for tg, sp, d, b, kind in tests:
@@ -121,6 +122,15 @@ def run(o, h, l, c, intLR=2, mainLR=3, dispATR=0.5, TP=2.0, SL=1.0, MAXB=100):
         _, flip, isl, ish = it[t]
         sigUp = flip == 1 and dispUp
         sigDn = flip == -1 and dispDn
+        idir = it[t][0]
+        if sigUp: lastDir, lastSL = 1, (it[t][2] if it[t][2] is not None else l[t])
+        if sigDn: lastDir, lastSL = -1, (it[t][3] if it[t][3] is not None else h[t])
+        if sigUp or sigDn: slGone = False
+        elif (lastDir == 1 and c[t] < lastSL) or (lastDir == -1 and c[t] > lastSL): slGone = True
+        adv = 0 if slGone else (1 if lastDir == 1 and idir == 1 else (-1 if lastDir == -1 and idir == -1 else 0))
+        # rangeen lakeer kabhi SL ke ghalat taraf wali band candle par nahi
+        if adv == 1: assert c[t] >= lastSL and idir == 1, (t, c[t], lastSL)
+        if adv == -1: assert c[t] <= lastSL and idir == -1, (t, c[t], lastSL)
         # invariant: internal SL must be on the losing side of the entry
         if sigUp and isl is not None: assert isl < c[t], (t, isl, c[t])
         if sigDn and ish is not None: assert ish > c[t], (t, ish, c[t])
