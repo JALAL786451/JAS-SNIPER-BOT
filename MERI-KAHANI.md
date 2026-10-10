@@ -144,6 +144,12 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   saal), magar poori history mein sab se gehri girawat 90R - correlated
   markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
   demo/live nahi.
+- **Fishing EA f1 (user ke apne qaide) Tester mein FAIL** (10 Oct, XAUUSDm M1 real
+  ticks, Jul-Sep 2026): kul -711.68, kitab 20 lots par atak gayi (khula -7,411).
+  Sarkao ne +6,695 balance mein dikhaya magar 10 SELL @ ~3,962 aur 10 BUY @ ~4,695
+  jami ho kar ~-7,330 ki "bori" ban gayin - wahi naqsha jo live kitab ka hai.
+  Close All ka din kabhi nahi aaya. Sabaq dobara: asal score EQUITY / KUL hai,
+  band hue faide nahi; jami kitab ka nuqsan har qeemat par wahi rehta hai.
 - **Radar EA ka MT5 Tester (10 Oct, Exness data, 2019 se) - pehle se likha qaida
   PASS:** 414 trades, +40.39R bina swap, girawat 12.7R, 6/8 saal musbat. Magar
   **saara faida BTC se** (+44.2R); baqi 7 market mila kar -3.9R (FX -17.3R,
