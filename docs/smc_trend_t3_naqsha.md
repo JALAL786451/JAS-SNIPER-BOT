@@ -1,6 +1,6 @@
 # JAS SMC Trend t3 - naqsha (10 Oct 2026)
 
-Halat: **user ki "D" ka intezar.** Ye naqsha 6-agent workflow (2 jaanch + 3 alag naqshe + judge) se bana.
+Halat: **manzoor (10 Oct, user ne link manga) - t3 BAN GAYA `indicators/smc_trend_pro.pine` mein, TradingView compile baqi.** Ye naqsha 6-agent workflow (2 jaanch + 3 alag naqshe + judge) se bana.
 User ka sawal: "kya is line ki jagah MA50 aur S/R ki lines bhi (advance) bana sakte hain?"
 Ishara, NAAP aur pehle se likha qaida t2 jaise rahenge - sirf dikhawa badlega.
 

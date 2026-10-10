@@ -1,15 +1,36 @@
 //@version=6
 // ============================================================================
-//  JAS SMC TREND   (build t2, Pine v6)
+//  JAS SMC TREND   (build t3, Pine v6)
 //  10 Oct 2026 - user ka khayal: "SMC Coach v4 ke hisaab se advance trend",
 //  shart: "chart bilkul saaf nazar aaye, mujhe ADVANCE ISHARA chahiye".
 //  SMC Coach v4 (indicators/smc_coach_pro_v4.pine) ko haath nahi lagaya.
 //
-//  Chart par SIRF: ek ADVANCE MA lakeer (MA21) + kone mein ek chhoti table.
-//  Teer (▲/▼), qila lakeer aur candle ka rang settings mein hain, default BAND.
+//  Chart par SIRF: ek ADVANCE MA lakeer (MA50) + do S/R lakeerein (sirf abhi
+//  ki) + kone mein ek chhoti table.
+//  Teer (▲/▼), qila lakeer, candle ka rang aur S/R ka price settings mein hain,
+//  default BAND.
+//
+//  t3 (10 Oct, user: "line ki jagah MA50 aur S/R ki lines (advance)"):
+//   - MA21 lakeer ki jagah MA50 (EMA default, SMA option). Rang wahi ishara.
+//     MA ki JAGAH (qeemat upar ya neeche) ka koi matlab nahi, sirf RANG.
+//   - Do S/R lakeerein CHHOTE structure (pivot 2/2) se - wohi structure jis se
+//     ishara banta hai. Sirf abhi ki, aakhri BAND candle se pakki. S hamesha
+//     qeemat ke neeche, R upar.
+//     NARANGI     = yahan BAND candle par MA ka rang badal sakta hai.
+//                   Hara/laal: is ke paar band = ishara khatam (pakka).
+//                   Sleti: is ke paar band + jaan = naya ishara (darwaza),
+//                   agar bari TF khilaf na ho.
+//     SLETI NUQTE = is ke paar rang kabhi nahi badalta (usi taraf ka BOS, ya
+//                   bari TF se ruka darwaza).
+//     ~1% edge: isi candle par nayi chhoti swing ban kar lakeer khud hat jati
+//     hai (narangi ke paar band, rang nahi badla).
+//   - Rukh table mein har TF ka APNA number (80 -> 100), is liye ek TF ka
+//     number har chart par ek jaisa. "Rukh se pehle" ab bhi mila hua score.
+//   - Peshangoi / bounce ka daawa nahi. Ishara, naap aur pehle se likha qaida
+//     t1/t2 jaise - t3 sirf dikhawa hai.
 //
 //  t2 (10 Oct, user ne t1 BTC 4H par chalaya): "teer nahi, bas aik MA wali
-//  line chahiye". Ishara ab MA21 lakeer ka RANG hai:
+//  line chahiye". Ishara ab MA lakeer ka RANG hai:
 //   HARA  = aakhri ishara ▲ aur chhota structure abhi tak UPAR (ishara chalu)
 //   LAAL  = aakhri ishara ▼ aur chhota structure abhi tak NEECHE
 //   SLETI = ishara khatam: chhota structure ishare ke khilaf palat gaya, ya
@@ -55,7 +76,7 @@
 // ============================================================================
 indicator("JAS SMC Trend", shorttitle = "JAS Trend", overlay = true, max_bars_back = 1000)
 
-BUILD = "t2"
+BUILD = "t3"
 
 // Naap ke number - test se pehle likhe, input nahi (taake ghumaye na ja sakein)
 TP_ATR   = 2.0
@@ -85,9 +106,13 @@ adxLen     = input.int(14, "ADX length", minval = 2, group = gRukh, display = di
 adxMin     = input.float(18, "ADX min", minval = 1, step = 0.5, group = gRukh, display = display.none)
 
 showLine  = input.bool(true, "Advance MA lakeer (rang = ishara)", group = gShow, display = display.none)
-lineLen   = input.int(21, "Lakeer ki MA (EMA)", minval = 2, group = gShow,
-     tooltip = "Sirf dikhawa. Ishara aur naap is se nahi badalte.", display = display.none)
+lineType  = input.string("EMA", "MA ki qisam", options = ["EMA", "SMA"], group = gShow, display = display.none)
+lineLen   = input.int(50, "MA ki lambai", minval = 2, group = gShow,
+     tooltip = "Sirf dikhawa. Ishara, rukh (MA21/63) aur naap is se nahi badalte. MA ki JAGAH ka koi matlab nahi, sirf RANG.", display = display.none)
 lineWidth = input.int(2, "Lakeer ki motai", minval = 1, maxval = 4, group = gShow, display = display.none)
+showSR    = input.bool(true, "S/R lakeerein (narangi = yahan band candle par rang badal sakta hai)", group = gShow, display = display.none)
+showDot   = input.bool(true, "Doosri S/R (sleti nuqte) bhi", group = gShow, display = display.none)
+showSRLab = input.bool(false, "S/R ke saath chhota price likho", group = gShow, display = display.none)
 showMarks = input.bool(false, "Teer (▲ / ▼) bhi dikhao", group = gShow, display = display.none)
 showTable = input.bool(true, "Table dikhao", group = gShow, display = display.none)
 tablePos  = input.string("Bottom Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = gShow, display = display.none)
@@ -203,16 +228,21 @@ f_local(int lr) =>
 // ============================================================================
 // flip = +1 jab chhota structure neeche (ya shuru) se UPAR palte, -1 ulta.
 // iSL / iSH = aakhri chhota swing low / high = ishare ka qudrati SL.
+// iSLB / iSHB = woh candle jis par ye swing bani (t3: S/R lakeer wahan se).
 f_internal(int lr) =>
     var float ish  = na
     var float isl  = na
     var int   idir = 0
+    var int   ishB = na
+    var int   islB = na
     ph = ta.pivothigh(high, lr, lr)
     pl = ta.pivotlow(low, lr, lr)
     if not na(ph)
-        ish := ph
+        ish  := ph
+        ishB := bar_index - lr
     if not na(pl)
-        isl := pl
+        isl  := pl
+        islB := bar_index - lr
     int flip = 0
     if not na(ish) and close > ish
         if idir <= 0
@@ -224,21 +254,33 @@ f_internal(int lr) =>
             flip := -1
         idir := -1
         isl  := na
-    [idir, flip, isl, ish]
+    [idir, flip, isl, ish, islB, ishB]
 
 // ============================================================================
 //  RUKH: chart TF + bari TF
 // ============================================================================
+// s[1] = ishare / score / filter ka (repaint nahi). s aur time_close sirf
+// dikhawe ke liye (neeche hsShow).
 f_htfScore() =>
     [s, d, q] = f_local(mainLR)
-    s[1]
+    [s[1], s, time_close]
 
-htfRaw  = request.security(syminfo.tickerid, htf, f_htfScore(), barmerge.gaps_off, barmerge.lookahead_on)
+[htfRaw, htfNowRaw, htfTC] = request.security(syminfo.tickerid, htf, f_htfScore(), barmerge.gaps_off, barmerge.lookahead_on)
 htfS    = htfOK ? nz(htfRaw) * 100.0 / 80.0 : 0.0
 htfPart = htfS >= 30 ? 20.0 : htfS <= -30 ? -20.0 : 0.0
 
 [locS, mDir, mQila] = f_local(mainLR)
 score = htfOK ? locS + htfPart : locS * 100.0 / 80.0
+
+// t3: table mein har TF ka APNA number (80 -> 100). t2 row 1 mein apna + bari
+// TF ke 20 dikhata tha aur row 2 mein bari TF ka apna x 100/80 - is liye ek hi
+// TF (4H) do chart par alag (-60 / -100) aata tha. Hisaab wahi, sirf dikhawa.
+ownS = locS * 100.0 / 80.0
+// SIRF DIKHAWA (table row 2 + S/R ka ruka/khula). KABHI ishare, naap ya score mein nahi:
+// htfNowRaw lookahead_on ke saath BINA [1] hai - sirf aakhri candle par, jab bari candle sach mein mukammal ho
+// (market band, masalan gold ka weekend). Warna htfS = wohi filter jo agla band candle dekhega.
+htfDone = htfOK and barstate.islast and barstate.isconfirmed and not na(htfTC) and (time_close >= htfTC or timenow >= htfTC)
+hsShow  = htfDone ? nz(htfNowRaw) * 100.0 / 80.0 : htfS
 
 // ============================================================================
 //  ADVANCE ISHARA
@@ -250,7 +292,7 @@ fvgDn  = high < low[2]
 dispUp = close > open and (body >= dispATR * atr14 or fvgUp)
 dispDn = close < open and (body >= dispATR * atr14 or fvgDn)
 
-[iDir, iFlip, iSL, iSH] = f_internal(intLR)
+[iDir, iFlip, iSL, iSH, iSLB, iSHB] = f_internal(intLR)
 htfNotDn = not htfOK or htfS > -30
 htfNotUp = not htfOK or htfS < 30
 sigUp = barstate.isconfirmed and iFlip == 1 and dispUp and htfNotDn
@@ -271,6 +313,13 @@ if sigDn
     lastPx  := close
     lastSL  := na(iSH) ? high : iSH
 
+// t3: ishare ka SL kis candle se aaya (S/R lakeer wahan se shuru)
+var int lastSLBar = na
+if sigUp
+    lastSLBar := na(iSL) ? bar_index : iSLB
+if sigDn
+    lastSLBar := na(iSH) ? bar_index : iSHB
+
 // Advance haal: +1 hara, -1 laal, 0 sleti. Sirf band candle par badle
 // (chalti candle par var pichla pakka rang rakhta hai - repaint nahi).
 // Khatam = chhota structure ishare ke khilaf palta YA candle ishare ke SL ke
@@ -280,12 +329,47 @@ if sigDn
 // iDir hamesha lastDir jaisa hota hai.
 var int  adv   = 0
 var bool ended = false
+bool endedPrev = ended
 if barstate.isconfirmed
     if sigUp or sigDn
         ended := false
     else if (lastDir == 1 and (close < lastSL or iDir != 1)) or (lastDir == -1 and (close > lastSL or iDir != -1))
         ended := true
     adv := ended ? 0 : lastDir
+
+// t3: ishara kis candle par khatam hua (table: "khatam N candle pehle")
+var int endBar = na
+if barstate.isconfirmed and ended and not endedPrev
+    endBar := bar_index
+
+// t3: S/R lakeerein - sirf BAND candle par likhi jati hain (chalti candle par
+// iDir/iSL/iSH kachche hain, un se kabhi seedha nahi banti).
+// Hara tab khatam hota hai jab close lastSL ya isl (iDir palta) ke neeche ho -
+// is liye khatam ki lakeer = max(lastSL, isl). Laal ulta: min(lastSL, ish).
+// Sleti mein darwaza (CHOCH) sirf iDir ki ulti taraf hota hai.
+var float srS    = na
+var int   srSB   = na
+var float srR    = na
+var int   srRB   = na
+var int   srAdv  = 0
+var int   srIDir = 0
+if barstate.isconfirmed
+    float nS  = iSL
+    int   nSB = iSLB
+    float nR  = iSH
+    int   nRB = iSHB
+    if adv == 1 and (na(iSL) or lastSL > iSL)
+        nS  := lastSL
+        nSB := lastSLBar
+    if adv == -1 and (na(iSH) or lastSL < iSH)
+        nR  := lastSL
+        nRB := lastSLBar
+    srS    := nS
+    srSB   := nSB
+    srR    := nR
+    srRB   := nRB
+    srAdv  := adv
+    srIDir := iDir
 
 // ============================================================================
 //  NAAP: ishara vs aam candle (2 ATR pehle ya 1 ATR ulta)
@@ -379,9 +463,12 @@ if barstate.isconfirmed
         leadStart := bar_index
 
 // ============================================================================
-//  CHART (default: sirf advance MA lakeer)
+//  CHART (default: advance MA lakeer + do S/R lakeerein)
 // ============================================================================
-advMA  = ta.ema(close, lineLen)
+// v6 lazy: dono MA har candle par, phir chunao
+maE    = ta.ema(close, lineLen)
+maS    = ta.sma(close, lineLen)
+advMA  = lineType == "SMA" ? maS : maE
 advCol = adv == 1 ? color.new(#00897B, 0) : adv == -1 ? color.new(#D81B60, 0) : color.new(#90A4AE, 0)
 plot(showLine ? advMA : na, title = "Advance MA", color = advCol, linewidth = lineWidth, display = display.pane)
 
@@ -392,21 +479,59 @@ plotshape(showMarks and sigDn, title = "Advance ishara SELL", style = shape.tria
 
 plot(showQila ? mQila : na, title = "Qila", color = mDir == 1 ? color.new(#2E7D32, 30) : color.new(#C62828, 30),
      style = plot.style_stepline, linewidth = 1, display = display.pane)
-barcolor(colorBars ? f_stCol(score) : na)
+barcolor(colorBars ? f_stCol(ownS) : na)
+
+// S/R: narangi = yahan band candle par rang badal sakta hai; sleti nuqte = kabhi
+// nahi. Chalti candle par hsShow = htfS = wohi filter jo yeh band candle dekhegi.
+sellRuka = htfOK and hsShow >= 30
+buyRuka  = htfOK and hsShow <= -30
+srSOr    = srAdv == 1 or (srAdv == 0 and srIDir >= 0 and not sellRuka)
+srROr    = srAdv == -1 or (srAdv == 0 and srIDir <= 0 and not buyRuka)
+
+SR_EXT = 5
+C_OR   = color.new(#FB8C00, 0)
+C_DOT  = color.new(#90A4AE, 30)
+var line  lnS = na
+var line  lnR = na
+var label lbS = na
+var label lbR = na
+if barstate.islast
+    line.delete(lnS)
+    line.delete(lnR)
+    label.delete(lbS)
+    label.delete(lbR)
+    lnS := na
+    lnR := na
+    lbS := na
+    lbR := na
+    if showSR and not na(srS) and (srSOr or showDot)
+        color cS = srSOr ? C_OR : C_DOT
+        lnS := line.new(x1 = math.max(nz(srSB, bar_index), bar_index - 499), y1 = srS, x2 = bar_index + SR_EXT, y2 = srS,
+             xloc = xloc.bar_index, extend = extend.none, color = cS, style = srSOr ? line.style_solid : line.style_dotted, width = 1)
+        if showSRLab
+            lbS := label.new(x = bar_index + SR_EXT, y = srS, text = "S " + f_px(srS), xloc = xloc.bar_index,
+                 style = label.style_label_left, color = color.new(#FFFFFF, 100), textcolor = cS, size = size.tiny)
+    if showSR and not na(srR) and (srROr or showDot)
+        color cR = srROr ? C_OR : C_DOT
+        lnR := line.new(x1 = math.max(nz(srRB, bar_index), bar_index - 499), y1 = srR, x2 = bar_index + SR_EXT, y2 = srR,
+             xloc = xloc.bar_index, extend = extend.none, color = cR, style = srROr ? line.style_solid : line.style_dotted, width = 1)
+        if showSRLab
+            lbR := label.new(x = bar_index + SR_EXT, y = srR, text = "R " + f_px(srR), xloc = xloc.bar_index,
+                 style = label.style_label_left, color = color.new(#FFFFFF, 100), textcolor = cR, size = size.tiny)
 
 alertcondition(sigUp, title = "JAS Trend: BUY ishara", message = "JAS Trend ▲ BUY ishara {{ticker}} {{interval}} @ {{close}}")
 alertcondition(sigDn, title = "JAS Trend: SELL ishara", message = "JAS Trend ▼ SELL ishara {{ticker}} {{interval}} @ {{close}}")
 if sigUp
     alert("JAS Trend ▲ BUY ishara " + syminfo.ticker + " " + f_lab(timeframe.period) + " @ " + f_px(close) +
-         " | SL " + f_px(lastSL) + " | Rukh " + f_stTxt(score), alert.freq_once_per_bar_close)
+         " | SL " + f_px(lastSL) + " | Rukh " + f_stTxt(ownS), alert.freq_once_per_bar_close)
 if sigDn
     alert("JAS Trend ▼ SELL ishara " + syminfo.ticker + " " + f_lab(timeframe.period) + " @ " + f_px(close) +
-         " | SL " + f_px(lastSL) + " | Rukh " + f_stTxt(score), alert.freq_once_per_bar_close)
+         " | SL " + f_px(lastSL) + " | Rukh " + f_stTxt(ownS), alert.freq_once_per_bar_close)
 
 // ============================================================================
 //  TABLE (ek kone mein)
 // ============================================================================
-var table tb = table.new(f_pos(tablePos), 2, 10, border_width = 1, border_color = color.new(#CFD8DC, 0))
+var table tb = table.new(f_pos(tablePos), 2, 11, border_width = 1, border_color = color.new(#CFD8DC, 0))
 
 f_row(table t, int r, string a, string b, color bgB, color fgB, string fs) =>
     table.cell(t, 0, r, a, text_color = color.new(#263238, 0), bgcolor = color.new(#FFFFFF, 10),
@@ -417,12 +542,14 @@ if showTable and barstate.islast
     fs    = f_size(tableFont)
     bgW   = color.new(#FFFFFF, 10)
     txD   = color.new(#263238, 0)
-    table.clear(tb, 0, 0, 1, 9)
-    // chalti candle par aakhri BAND candle ka rukh / qila (ishare jaisa)
-    sc    = barstate.isconfirmed ? score : score[1]
+    table.clear(tb, 0, 0, 1, 10)
+    // chalti candle par aakhri BAND candle ka rukh / qila (ishare jaisa).
+    // hs = hsShow: chalti candle par htfS (t2 ka htfS[1] har nayi bari candle ki
+    // pehli chart candle par ek bari candle purana tha).
+    sc    = barstate.isconfirmed ? ownS : ownS[1]
     qv    = barstate.isconfirmed ? mQila : mQila[1]
     md    = barstate.isconfirmed ? mDir : mDir[1]
-    hs    = barstate.isconfirmed ? htfS : htfS[1]
+    hs    = hsShow
 
     // naap ka hisaab
     bWU = array.get(cnt, 0)
@@ -460,28 +587,55 @@ if showTable and barstate.islast
         fTxt := "SABIT NAHI -> sirf dekhna"
         fCol := color.new(#B71C1C, 0)
 
-    string ishTxt = lastDir == 0 ? "abhi nahi" : (lastDir == 1 ? "▲ BUY" : "▼ SELL") + (adv == 0 ? " (khatam)" : " (chalu)") +
-         " · " + str.tostring(bar_index - lastBar) + " candle pehle · " + f_px(lastPx)
+    string ishTxt = lastDir == 0 ? "abhi nahi" : (lastDir == 1 ? "▲ BUY" : "▼ SELL") + " · " + str.tostring(bar_index - lastBar) +
+         " candle pehle · " + f_px(lastPx) + (adv == 0 ? " · khatam" + (na(endBar) ? "" : " " + str.tostring(bar_index - endBar) +
+         " candle pehle") : " · chalu")
+
+    // narangi lakeer ka matlab
+    string waitTxt = "abhi nahi · nayi chhoti swing ka intezar"
+    string nTxt = ""
+    if srAdv == 1
+        nTxt := "S " + f_px(srS) + " · neeche band = BUY khatam"
+    else if srAdv == -1
+        nTxt := "R " + f_px(srR) + " · upar band = SELL khatam"
+    else if srSOr and srROr
+        nTxt := "S " + f_px(srS) + " · R " + f_px(srR)
+    else if srSOr
+        nTxt := na(srS) ? waitTxt : "S " + f_px(srS) + " · neeche band + jaan = ▼ SELL ho sakta"
+    else if srROr
+        nTxt := na(srR) ? waitTxt : "R " + f_px(srR) + " · upar band + jaan = ▲ BUY ho sakta"
+    else
+        nTxt := "abhi nahi · " + f_lab(htf) + " " + f_stTxt(hs) + (srIDir == 1 ? ", ▼ ruka" : ", ▲ ruka")
+    bool orLine = (srSOr and not na(srS)) or (srROr and not na(srR))
 
     f_row(tb, 0, "JAS TREND", BUILD + (isDef ? "" : " (settings badli)"), bgW, txD, fs)
     f_row(tb, 1, "Rukh " + f_lab(timeframe.period), f_stTxt(sc) + " " + str.tostring(math.round(sc)),
          f_stCol(sc), color.white, fs)
+    table.cell_set_tooltip(tb, 1, 1, "Sirf is TF ka apna rukh: structure 35 + MA21/63 20 + Supertrend 15 + ADX 10 = 80, 100 par. Is liye ek TF ka number har chart par ek jaisa.")
     if htfOK
         f_row(tb, 2, "Rukh " + f_lab(htf), f_stTxt(hs) + " " + str.tostring(math.round(hs)), f_stCol(hs), color.white, fs)
+        table.cell_set_tooltip(tb, 1, 2, "Bari TF ka apna number - yahi ishare ka filter dekhta hai (BUY ke liye > -30, SELL ke liye < 30).")
     else
         f_row(tb, 2, "Bari TF", "chart se bari TF chunein", color.new(#FB8C00, 0), color.white, fs)
     f_row(tb, 3, "Ishara", ishTxt, adv == 1 ? color.new(#00897B, 0) : adv == -1 ? color.new(#D81B60, 0) :
          lastDir == 0 ? bgW : color.new(#90A4AE, 0), lastDir == 0 ? txD : color.white, fs)
-    // SL = aakhri ishare ka (chhota swing); qila = BARE rukh ka - dono ki
-    // taraf alag ho sakti hai, is liye dono par nishan
-    f_row(tb, 4, "SL · Qila", (lastDir == 1 ? "▲ " : lastDir == -1 ? "▼ " : "") + f_px(lastDir == 0 ? na : lastSL) +
-         " · " + f_px(qv) + (md == 1 ? " (bara rukh ▲)" : md == -1 ? " (bara rukh ▼)" : ""), bgW, txD, fs)
+    f_row(tb, 4, "Narangi lakeer", nTxt, bgW, orLine ? color.new(#E65100, 0) : color.new(#78909C, 0), fs)
+    table.cell_set_text_color(tb, 0, 4, color.new(#E65100, 0))
+    table.cell_set_tooltip(tb, 1, 4, "Narangi: is ke paar BAND candle par MA ka rang badal sakta hai. Hara/laal ho to khatam (pakka). " +
+         "Sleti ho to naya ishara sirf jab candle mein jaan ho (body >= " + str.tostring(dispATR, "0.0#") +
+         " ATR ya FVG) aur bari TF khilaf na ho. Sleti nuqte wali ke paar rang kabhi nahi badalta. " +
+         "~1% dafa isi candle par nayi chhoti swing ban kar lakeer khud hat jati hai. " +
+         "Peshangoi nahi: ye nahi batati ke qeemat kis taraf jayegi.")
+    // qila = BARE rukh ka (pivot 3); t2 ka purana "SL" hata - khatam ishare ka SL ab kaam ka nahi
+    f_row(tb, 5, "Qila (bara rukh)", (md == 1 ? "▲ " : md == -1 ? "▼ " : "") + f_px(qv), bgW, txD, fs)
+    table.cell_set_tooltip(tb, 1, 5, "Bare structure (pivot 3) ka qila: is ke paar BAND candle = bara rukh palta (rukh ke 35 number).")
     if showNaap
-        f_row(tb, 5, "Naap 2 ATR / 1 ATR", f_pct(iRate) + " (" + str.tostring(nI) + ") · aam " + f_pct(bRate), bgW, txD, fs)
-        f_row(tb, 6, "FARK", f_sgn(fark) + "  (2SE " + f_pct(se2) + ")", bgW, txD, fs)
-        f_row(tb, 7, "Faisla", fTxt, fCol, color.white, fs)
-        f_row(tb, 8, "Rukh se pehle", leadN > 0 ? "~" + str.tostring(float(leadSum) / leadN, "0.0") + " candle (" +
+        f_row(tb, 6, "Naap 2 ATR / 1 ATR", f_pct(iRate) + " (" + str.tostring(nI) + ") · aam " + f_pct(bRate), bgW, txD, fs)
+        f_row(tb, 7, "FARK", f_sgn(fark) + "  (2SE " + f_pct(se2) + ")", bgW, txD, fs)
+        f_row(tb, 8, "Faisla", fTxt, fCol, color.white, fs)
+        f_row(tb, 9, "Rukh se pehle", leadN > 0 ? "~" + str.tostring(float(leadSum) / leadN, "0.0") + " candle (" +
              str.tostring(leadN) + "/" + str.tostring(leadTry) + " mein rukh bana)" : "-", bgW, txD, fs)
+        table.cell_set_tooltip(tb, 1, 9, "Yahan rukh bana = mila hua score (apni TF 80 + bari TF 20) >= 30 / <= -30, t1/t2 wala hisaab.")
     // neeche kone mein TradingView ke apne button aakhri row dhaank dete the
     if str.startswith(tablePos, "Bottom")
-        table.cell(tb, 0, 9, " ", bgcolor = color.new(#FFFFFF, 100), text_size = fs)
+        table.cell(tb, 0, 10, " ", bgcolor = color.new(#FFFFFF, 100), text_size = fs)
