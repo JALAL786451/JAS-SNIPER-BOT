@@ -8,6 +8,10 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 **Branch ab `claude/gallant-heisenberg-phv3v4`** (10 Oct ki chat; gifted-faraday ka saara kaam is mein aa gaya, naya kaam yahin).
 
+**10 Oct - GOLD IMTIHAN KA MILANE WALA QAIDA (screenshot se PEHLE likha, badalna mana):** sirf XAUUSD 15m + 1H, t2/t3 default settings (OANDA:XAUUSD, zyada se zyada history). **KAAM KA sirf tab jab 15m ka Faisla "KAAM KA" ho AUR 1H ka FARK 0 se upar ho. Warna SABIT NAHI** - koi teesra TF ya symbol nahi ginega (BTC 1H/4H/1D sirf maloomat). KAAM KA ho to bhi: strategy copy + Tester (kharche ke saath; 15m par spread ~$0.30 ka matlab ishara ko aam se ~2-3 point zyada chahiye) + demo, live sab se aakhir. SABIT NAHI ho to: ishara sirf dekhne ka, settings ghuma kar dobara nahi.
+**Workflow ka nateeja (10 Oct):** (1) hisaab mein koi ghalti nahi - har number code se banta hai; -60/-100 sirf dikhane ka farq (t3 mein theek); lakeer ke rang qaide ke mutabiq (pixel scan); teeno ishare SL se nahi, chhote structure ke palatne se khatam hue (is liye 1D TEZ UPAR ke saath lakeer sleti = pullback shuru, rukh khatam nahi); aam ~33.5% = random ka 1/3 = naap mein aage dekhne ki ghalti nahi. (2) Statistics: teeno mila kar FARK +1.1 point (2SE 5-9) = zero; 1D ka +3.5 teen mein sab se acha shor + BTC ki tezi; 120-140 ishare sirf bara (11+ point) faida pakar sakte hain - SABIT NAHI ka matlab "dikha nahi", "sabit bekar" nahi. "Advance" = jaldi, faida nahi: sirf 26-37% koshishon ke baad rukh bana. (3) **t3 naqsha (MA50 + narangi/sleti S/R) `docs/smc_trend_t3_naqsha.md` mein - user ki "D" ka intezar.** Rukh ko filter ki tarah naapna (H2) gold ke baad.
+**Agla qadam:** user t3 naqshe par "D" de -> t3 banao (spec docs mein) -> user paste, purana indicator HATA kar dobara lagaye -> XAUUSD 15m aur 1H ke 2 screenshot.
+
 **10 Oct (~11:18 PKT) - JAS SMC Trend t2 COMPILE + CHAL GAYA (user ke 3 screenshot, BTCUSD CRYPTO):** lakeer chart par hari/sleti theek, table (khatam), SL/qila ke nishan, X/Y sab aaye.
 | BTC | Rukh (chart / bari TF) | Ishara | Naap n | Ishara % | Aam % | FARK (2SE) | Faisla |
 |---|---|---|---|---|---|---|---|
