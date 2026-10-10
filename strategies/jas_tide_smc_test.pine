@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC — TEST  (build s1.1, Pine v6)
+//  JAS TIDE + SMC — TEST  (build s1.2, Pine v6)
 //  10 Oct 2026 - user: "aik tester bhi bana dein takey check karon ke overall
 //  1D par kitni trade leta hai, aur 1D par bara TF hai to trade ka idea 15m
 //  par execute karne se bhi result shayad wohi hona chahiye."
@@ -40,7 +40,7 @@ strategy("JAS Tide + SMC — Test (1D faisla)", shorttitle = "JAS Tide 1D Test",
      margin_long             = 1,
      margin_short            = 1)
 
-BUILD = "s1.1"
+BUILD = "s1.2"
 
 // ============================================================================
 //  INPUTS
@@ -91,7 +91,8 @@ f_d() =>
     [_a, _hb[1], _lb[1], _hx[1], _lx[1], _ef[1], _es[1], close, time_close]
 // lookahead_on: din ke andar ki candles par ye aage ka data hai - is liye
 // sirf din ki AAKHRI candle par parha jata hai (us waqt din mukammal hai)
-[dA, dHb, dLb, dHx, dLx, dEf, dEs, dC, dTC] = request.security(syminfo.tickerid, "D", f_d(), barmerge.gaps_off, barmerge.lookahead_on)
+// s1.2: ticker.standard - Heikin Ashi / Renko chart par bhi faisla asal daily candles se
+[dA, dHb, dLb, dHx, dLx, dEf, dEs, dC, dTC] = request.security(ticker.standard(syminfo.tickerid), "D", f_d(), barmerge.gaps_off, barmerge.lookahead_on)
 
 isD1 = timeframe.isdaily and timeframe.multiplier == 1
 okTF = isD1 or timeframe.isintraday
