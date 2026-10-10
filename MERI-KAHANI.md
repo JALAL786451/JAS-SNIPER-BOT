@@ -161,6 +161,10 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   teeno par 6 trades, 4/6, +6,720.93 - cent tak ek jaise. Faisla daily close
   par hai, chhoti TF sirf SL ko bareeki se dekhti hai. 15m par "behtar entry"
   dhoondna (pullback ka intezar) NAYA system hoga - alag naap chahiye.
+  Saalon ka "1m test" bhi ho chuka: MT5 Tester (Exness, 1 minute OHLC,
+  2017-2026) ne yahi daily faisla minute data par chalaya - BTC 2019 se 79
+  trades +44.2R vs TradingView daily 81 trades +47.1R. TradingView par
+  15m/5m/1m ki history chhoti hai (15m sirf 1 Aug 2026 se).
 - **9 market mila kar (9 Oct, Radar r2):** 2019 se ~+10R saal (1% risk par ~10%
   saal), magar poori history mein sab se gehri girawat 90R - correlated
   markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
