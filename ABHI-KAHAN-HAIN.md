@@ -6,7 +6,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 ## >>> AGLI CHAT YAHAN SE SHURU KARE (10 Oct 2026, raat ~23:30 PKT) <<<
 
-**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/zen-maxwell-7ypyqg. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/sleepy-lovelace-wyj2ez. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
 **KHULASA (10 Oct raat - is chat ka aakhir):**
 - **JAS Tide + SMC** (`indicators/jas_tide_smc.pine` s1.1) compile + BTC 1D/4H/1h/15m par chal raha: ishara sirf Tide (1D), SMC sirf dikhawa. Tester (`strategies/jas_tide_smc_test.pine` s1.2): 1D = 1h = 30m cent tak (pehle se likha qaida PASS); BTC 2019-aaj 81 trades Exp +0.58R (+-0.47) = SABIT (purani history, naya saboot demo dega). Tafseel neeche item 000.
@@ -42,7 +42,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 4. Live kitab: koi EA nahi. Aakhri haal 9 Oct (167 position, jami, Close All -4,845, equity 43,409).
 
 
-**Branch ab `claude/zen-maxwell-7ypyqg`** (10 Oct, t3 wali chat; gallant-heisenberg ka saara kaam is mein aa gaya, naya kaam yahin). Pehle: `claude/gallant-heisenberg-phv3v4`, us se pehle `claude/gifted-faraday-zs7wcz`.
+**Branch ab `claude/sleepy-lovelace-wyj2ez`** (10 Oct raat ~23:35 PKT, nayi chat; zen-maxwell ka saara kaam is mein aa gaya, naya kaam yahin). Pehle: `claude/zen-maxwell-7ypyqg`, `claude/gallant-heisenberg-phv3v4`, us se pehle `claude/gifted-faraday-zs7wcz`.
 
 **10 Oct - KACHHUA (JAS Tide) vs JAS SMC Trend - user ka sawal, 3-agent jaanch ke baad faisla:**
 - "459 trades" = Pine, gold ~1970-2026 (~56 saal, 4 trade 1970 se pehle), 10 saal nahi. 458 = purani jas_tide_v1 (p1Done bug), 459 = naya t1.2 (BAND) - wohi system.
@@ -116,7 +116,7 @@ User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 
 **(purana) Kaam jo user ne 7 Oct ko manga tha:** "SMC Pro v2 jaisa naam, ~1530 lines" wali Pine script ko **`//@version=6`** mein karna, aur ho sake to behtar (tweak). Repo mein qareeb tareen: `indicators/smc_coach_pro_v3.pine` (pehle naam smc_coach_pro_v2, **1625 lines, abhi @version=5**). User se poochha gaya: yahi file hai ya us ke computer ki koi aur (to paste kare)? - **file ka jawab baqi** (nayi chat mein pehle yahi poochho). User ki do shartein (7 Oct): (1) **ek bhi kharabi na rahe**; (2) **"1H ya 1D TF mein jitne bhi pips hote hain, har pip ka hisaab script mein rakhe"** - matlab poochha gaya (candle ke andar upar/neeche ka poora raasta pips mein? har price level par waqt/volume (profile)? ya sirf range?) - **user ne "dono" kaha = raasta (upar/neeche pips, asal farq) + price profile (har qeemat par waqt/volume)**; is ke liye `request.security_lower_tf` (1m/5m candles) lagega, 1D par 1m ki had ~ chand din. v6 mein badalte waqt dhyan: `na` ko bool mein nahi rakh sakte, `int`/`float` ka khud badalna kam, `when=` hata, `transp` hata, `security` lookahead, `strategy` ke parameters; repo mein `tools/pinecheck.py` hai.
 
-**Raw link hamesha commit hash wala do.** Branch: `claude/zen-maxwell-7ypyqg` (10 Oct t3 se; pehle `claude/gallant-heisenberg-phv3v4`, `claude/gifted-faraday-zs7wcz`).
+**Raw link hamesha commit hash wala do.** Branch: `claude/sleepy-lovelace-wyj2ez` (10 Oct raat se; pehle `claude/zen-maxwell-7ypyqg`, `claude/gallant-heisenberg-phv3v4`, `claude/gifted-faraday-zs7wcz`).
 
 ## Purani tafseel neeche (zarurat ho to)
 
@@ -253,4 +253,4 @@ User ko kuch dobara batana NA pare. Abhi ka haal, ek nazar mein:
 - **Pehle poochho, phir file banao** — file ke baad sawal nahi
 - SBS = ek qadam, user "D" likhe, phir agla
 - Roman Urdu, chhota aur saaf
-- Branch: `claude/zen-maxwell-7ypyqg` (10 Oct t3 se)
+- Branch: `claude/sleepy-lovelace-wyj2ez` (10 Oct raat se; pehle `claude/zen-maxwell-7ypyqg`)

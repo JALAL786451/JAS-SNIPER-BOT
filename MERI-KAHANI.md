@@ -249,7 +249,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - "Usage credits" switch OFF. $100 cloud credit muft mila (claim karna).
   "Full reset" muft button Oct 22 tak.
 - Lambi chat zyada usage khati hai - kaam bara ho to **nayi chat** + code:
-  `JAS-DESK-V3-0110 — ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo. Branch: claude/zen-maxwell-7ypyqg`
+  `JAS-DESK-V3-0110 — ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo. Branch: claude/sleepy-lovelace-wyj2ez`
 
 ## 8. Ye file kaise zinda rahe
 
