@@ -4,9 +4,18 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (10 Oct 2026, raat ~23:30 PKT) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (11 Oct 2026, raat ~02:30 PKT) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/sleepy-lovelace-wyj2ez. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+
+**KHULASA (11 Oct raat - sleepy-lovelace chat ka aakhir, session limit):**
+- **BTC swap-free hai** (live XAUUSDc spec mein bhi -523.3 likha magar gold par swap nahi kata) -> BTC demo ke baad live ke qaide mein. Aakhri tasdeeq: pehli BTC BUY jo hafte ke din raat guzaare, Swap column 0.
+- **BTC Tide kitna musbat:** 2019 se ~+6R saal, 0.5% risk par ~3% (~$13) saal; mansooba +0.1..+0.3R/trade. "Fail" trades = design (ausat haar 0.6R, jeet 2.15R; 8 nazar aane wali trades = +0.6R/trade). Qaide NAHI badle.
+- **458 gold script** = `strategies/jas_tide_v1.pine` (10/5 par); saaf = `strategies/jas_tide_seekh_test.pine` t1.5 (gold 1D 459, +722%, PF 1.78).
+- **User ne t1.5 ko 4H/5m par chalaya:** 4H = NAYA system, SABIT NAHI (BTC 4H +0.22R ±0.23, gold 4H +0.27R ±0.22 sirf ek tezi ka daur). 4H ka qaida PEHLE SE LIKHA (neeche 11 Oct item). TradingView par mazeed TF/symbol combos NAHI.
+- **NAYA - adhoora: `indicators/jas_tide_tf_smc.pine` build tf1** (user ne manga: "t1.5 ka script Tide SMC jaisa"). t1.5 ke qaide CHART ki candle par + Tide+SMC ka SMC dikhawa + table (1D ke ilawa "NAYA system, SABIT NAHI"). Durustiyan: toot lakeer `style_steplinebr` (purani hari lakeer nahi), band label par wajah, SL lakeer band candle samet. pinecheck saaf. **3-agent jaanch (Python trade-ba-trade vs t1.5, compile, dikhawa) chal rahi thi jab session khatam hua - agli chat: jaanch dobara chalao (ya user ka TradingView nateeja dekho), ghaltiyan theek, tab user ko link.** User ke liye milane wala qaida (badalna mana): table ki "Naap" rows Tester se milein - BTC 1D sab 164 · +1.51R, 2019 se 81 · +0.58R (±0.47) · kul +47.14R; BTC 4H 2019 se 183 · jeet 35% · +0.22R (±0.23) · kul +39.86R; gold 1D 459 trades; gold 4H 173 · jeet 45% · +0.27R (±0.22) · kul ~+45.95R. Ginti ya R farq = engine ki ghalti dhoondo.
+- **Pichhla dikhawe ka sawal (Tide+SMC s1.1 durusti) ab tf1 mein hi hai** - s1.1 ko na chhero jab tak user na kahe.
+- **AGLA QADAM (Peer 12 Oct subha, SBS):** (1) demo MT5 kholo + poori window ka screenshot (Radar EA ka XAUUSDm,Daily chart khula hai?); (2) Radar EA InpTrade = true; (3) sirf DEMO MT5 mein Algo hara. LIVE Algo hamesha laal. 4H par koi trade nahi. Live sirf demo ke baad, ALAG cent account par ('ek account, ek kaam'), risk 0.5% (EA default 1% balance - badalna).
 
 **KHULASA (10 Oct raat - is chat ka aakhir):**
 - **JAS Tide + SMC** (`indicators/jas_tide_smc.pine` s1.1) compile + BTC 1D/4H/1h/15m par chal raha: ishara sirf Tide (1D), SMC sirf dikhawa. Tester (`strategies/jas_tide_smc_test.pine` s1.2): 1D = 1h = 30m cent tak (pehle se likha qaida PASS); BTC 2019-aaj 81 trades Exp +0.58R (+-0.47) = SABIT (purani history, naya saboot demo dega). Tafseel neeche item 000.
