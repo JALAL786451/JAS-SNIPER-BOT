@@ -82,7 +82,7 @@ iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
 
 | | Number | Qisam | Note |
 |---|---|---|---|
-| **LIVE** | 253687618 | Exness MT5 **StandardCent**, `XAUUSDc`, USC, Hedge, 1:2000 | **Swap-free (Islamic)**. 0.01 lot = $1 harkat par 1 USC. **56 symbols** (XAUUSDc, BTCUSDc, ETH, EURUSDc, USDJPYc...; 10 Oct). **BTCUSDc:** 0.01 lot = $1 par 0.01 USC, 24/7, **swap long -1763.7 points = BUY 1 lot -17.6 USC/din (Jumma 3x), swap short 0** - swap-free BTC BUY par lagu NAHI |
+| **LIVE** | 253687618 | Exness MT5 **StandardCent**, `XAUUSDc`, USC, Hedge, 1:2000 | **Swap-free (Islamic)**. 0.01 lot = $1 harkat par 1 USC. **56 symbols** (XAUUSDc, BTCUSDc, ETH, EURUSDc, USDJPYc...; 10 Oct). **BTCUSDc:** 0.01 lot = $1 par 0.01 USC, 24/7, **swap long -1763.7 points = BUY 1 lot -17.6 USC/din (Jumma 3x), swap short 0** (ye Specification ka number hai; **asal katauti pakki NAHI** - 11 Oct durusti neeche) |
 | **DEMO** | 472540009 (110 jami lots, k1) aur **472716649** (Exness-MT5Trial16, Hedge - **Radar EA demo isi par**); teesra **474651829 Pro** (Exness-MT5Trial15). **User (11 Oct): sirf StandardCent wala LIVE hai, baqi sab DEMO - testing ke liye khole.** Demo MT5 mein live 253687618 bhi saved hai - EA wale chart ke saath live par login kabhi nahi | Exness-MT5Trial16, `XAUUSDm`, **USD** standard, Hedge | Contract spec mein BUY swap -513.2 points/lot/din likha mila tha (2 Oct), **magar user kehta hai gold par swap nahi katta (8 Oct)** - hisaab mein swap 0. Shak ho to MT5 ka Swap column dekho |
 
 - Live par **koi EA trade nahi karta** jab tak demo par test na ho.
@@ -191,7 +191,14 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - **Mashhoor 15m ORB (Crabel) gold par SABIT NUQSAN** (11 Oct, 1995 trades 2019-26): Exp -0.08R (±0.06), sirf 2022 musbat. Gold par har intraday idea ab tak manfi ya sifar (Pro Box, SMC Trend, Seerhi, Fishing, Chakkar, ORB); sirf daily trend (Kachhua) musbat. Har nayi koshish ke saath qismat wala PASS ka imkaan barhta hai - koshishein gino.
 - **Connors RSI(2): S&P par SABIT, gold par sifar** (11 Oct, pehle se likha sakht qaida): S&P 2003-26 257 trades +0.114R (±0.049), 2019 ke baad bhi musbat (kitaab 2008 ki = naya data). Gold 2000 se +0.005R (±0.048), net -19%. Har idea har market par nahi chalta - idea ke apne market par naapo. Faida chhota (~1.2R saal), DD bhi chhota (3%).
 - **ETH par Kachhua SABIT NAHI** (11 Oct, pehle se likha qaida): 2019 se ~88 trades, Exp +0.22R (±0.39) - musbat magar shor se alag nahi. MT5 (Exness) par bhi 86 trades +0.19R - do data ek jaise. BTC (+0.58R) jaisa nahi; ETH ko Radar mein nahi jorna.
-- **BTC ki BUY lots par swap katta hai - live cent par bhi** (10 Oct, BTCUSDc
+- **Swap: Specification ka number = asal katauti NAHI** (11 Oct durusti, user: "Muslim mulkon mein
+  Exness swap nahi kaat-ta"). Saboot: demo 472716649 ki 18 gold lots (9 Oct Jumma ko khuli,
+  Jumma ka rollover guzra) - equity - balance = -89.03 = sirf Profit column, yani swap 0,
+  halanke spec mein gold BUY -513.2 likha hai. Swap-free account par spec phir bhi number
+  dikhata hai. Neeche wali BTC baat isi liye SHAK mein hai: pakka tab jab raat-bhar BTC/US500
+  position ke **Swap column** mein asal number dikhe (Trade tab -> right-click -> Columns -> Swap).
+  Tester (Radar EA) spec ka swap kaat-ta hai - is liye faisle 'bina swap' par sahi the.
+- (10 Oct, ab shak mein) **BTC ki BUY lots par swap katta hai - live cent par bhi** (BTCUSDc
   Specification): swap long -1763.7 points, short 0. 0.01 lot BUY = -0.18 USC
   roz, 0.78 lot = -13.8 USC roz (~-96 hafta, Jumma teen guna) = qeemat ka ~7.7%
   saal. Method ka "intezar muft hai (swap-free)" GOLD par sahi, BTC BUY par
