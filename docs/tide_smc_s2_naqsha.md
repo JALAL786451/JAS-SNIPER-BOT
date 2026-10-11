@@ -1,6 +1,6 @@
 # JAS Tide + SMC s2 - naqsha (11 Oct 2026)
 
-Halat: **BAN GAYA** (`indicators/jas_tide_smc.pine` build s2). Compile user karega (cloud mein Pine nahi chalta).
+Halat: **BAN GAYA** (`indicators/jas_tide_smc.pine` build s2.1). Compile user karega (cloud mein Pine nahi chalta).
 
 User (11 Oct): "Is script par agents aur judges lagaein. Script universal ho, har timeframe par trade lena
 aasan ho. Pehle samjhein kis concept par bani hai, phir 1H par entry box theek karein, chart par clear samajh aaye."
@@ -9,6 +9,16 @@ Kaam ka tareeqa (workflow): 3 agent ne script parhi (concept / chart ki safai / 
 alag zaviye se naqsha banaya (A novice-first, B MT5-execution-first, C minimal + risk-first), 3 judge
 (imaandari, novice, Pine engineering) ne har naqshe ko 5 cheezon par 1-10 diya. Kul: A 114, B 115, C 116;
 judges ke winner C / A / B. Neeche ka spec C par bana, A/B ki achhi cheezein aur har judge ka must-fix shamil.
+
+## s2.1 - jaanch ke baad (11 Oct, 4 lens + har dawe ka mukhalif: 21 sahi, 4 ghalat)
+Sab dikhawa/likhai; Tide engine aur trades wahi.
+- Bazaar band (gold ka roz ka break / hafta): faisla **agle session ki PEHLI candle** par dikhta hai (spec ki "agli daily close" ghalat thi - gold ki trade chhoot sakti thi).
+- Toot ka level number mein (SHART dabba + RISK row "Toot X").
+- Close wala nikalna (qaida 3): "aaj close X ke neeche = BAND" dabba aur MT5 row mein; qeemat paar ho to pehle khabardar; agle din "MT5 mein khuli ho to ABHI band karein" (D1 palta / close SL ke paar).
+- Entry ke din der se: lot abhi ki qeemat se SL tak (zyada door ho to) - risk % se zyada kabhi nahi; "NAAPA NAHI".
+- Aage wale kinare candle ginti se (xloc.bar_index) - gold ke hafte mein dabba simat-ta nahi; RISK dabba entry ke baad ki pehli candle se.
+- Usi din dobara khuli trade (SL chhu kar phir toot) ka "khuli" alert; "SL sarkao" ghalat nahi.
+- HAAL ka rang SL chhoone par nateeje se (faida = hara); tick chart par chart ki apni candles; vSym 'BTCUSDc' bhi maane; susat bazaar ka dabba khud se nahi takrata.
 
 ## Build mein spec se farq (Claude ke faisle)
 - Dabbe ki chaurai 12 nahi **20 candle** (text ke liye jagah); text dabbe ke andar, wrap auto.
