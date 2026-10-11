@@ -1,0 +1,433 @@
+//@version=6
+// ============================================================================
+//  STRATEGY TEST copy - signal code indicator se jyon ka tyon (badlein to dono)
+//  SMC Coach — Pro (SCALP 1H + MTF Dashboard 1m→1W + Supertrend)
+//  build sc6.1 (Pine v6, 12 Oct 2026; sc6.1: EMA 50/100) — user ki bheji v5 file ka v6 roop
+//
+//  Durustiyan (v5 se):
+//   1. COMPILE errors: DXY block aur Legend block ki ghalat indentation
+//      (1 / 5 space) - Pine ise block samajhta hi nahi tha.
+//   2. BOS/CHOCH: v5 mein jab tak close swing ke upar rehta, HAR candle par
+//      dobara BOS ban-ta tha. Ab ek swing = ek toot (SMC ka asal qaida).
+//   3. LGB (liquidity sweep, ICT): sirf us swing ka jo abhi toota nahi.
+//   4. HTF / Dashboard "closed": v5 lookahead_off + [1] se live par ek candle
+//      peeche aur history par alag tha. Ab expr[1] + lookahead_on = history
+//      aur live ek jaise, repaint nahi.
+//   5. Dashboard: request.security loop ke andar + packed number ki jagah
+//      har TF ki seedhi tuple request (global, compile-safe).
+//   6. FVG box / LGB label live candle par har tick naya ban kar jama hota
+//      tha - ab purana mita kar ek.
+//   7. Signal default sirf BAND candle par (live par jhoota ishara nahi).
+//   8. Zone ki line aur box ek saath mit-te hain (pehle alag ginti).
+// ============================================================================
+strategy("SMC Coach Scalp TEST sc6.1", overlay=true, initial_capital=100000, default_qty_type=strategy.fixed, commission_type=strategy.commission.percent, commission_value=0.01, slippage=0, process_orders_on_close=false, calc_on_every_tick=false, max_labels_count=500, max_lines_count=500, max_boxes_count=300, dynamic_requests=true)
+
+// ---------------- TF helper ----------------
+is1H = timeframe.isminutes and timeframe.multiplier == 60
+
+// ============== Inputs ==============
+pivotLR       = input.int(3,  "Pivot L/R (swings)", minval=1)
+maxZones      = input.int(10, "Keep last N zones", minval=2, maxval=100)
+zonePadATR    = input.float(0.15, "Zone padding (x ATR)", minval=0, step=0.01)
+
+showFVG       = input.bool(true,  "FVG (current bar only)")
+showLGB       = input.bool(true,  "LGB (current bar only)")
+showSR        = input.bool(true,  "S/R shading (light)")
+
+entryMode = input.string("Confirm + (FVG or LGB)", "Entry Mode", options=["Touch only", "Confirm (Touch+Struct+Trend)", "Confirm + (FVG or LGB)"])
+structLookback         = input.int(3,  "Structure lookback bars", minval=1, maxval=20)
+useCloseTouch          = input.bool(false, "Zone touch: require CLOSE inside zone")
+confirmMomo            = input.bool(false, "Confirm FVG/LGB on bar close")
+confirmSignalsOnClose  = input.bool(true,  "Show Buy/Sell only after bar close (no repaint)")
+
+// Trend + ADX
+emaFastLen    = input.int(50, "EMA fast", minval=2)
+emaSlowLen    = input.int(100, "EMA slow", minval=3)
+useAdx        = input.bool(true, "Use ADX filter")
+adxLen        = input.int(14, "ADX DI length", minval=2)
+adxSmooth     = input.int(14, "ADX smoothing", minval=1)
+adxMin        = input.float(18, "ADX min", step=0.5, minval=1)
+strictTrendClose = input.bool(false, "Trend needs price above/below EMA fast")
+
+// HTF
+enableHTF     = input.bool(true, "Use HTF confluence (4H/1D)")
+htfAgreeMode  = input.string("Either", "HTF agree", options=["Both", "Either"])
+useClosedHTF  = input.bool(true, "HTF: use closed candles")
+
+// DXY
+useDXY        = input.bool(true, "Use DXY filter")
+dxyTF         = input.timeframe("", "DXY TF (blank = chart TF)")
+
+// Momentum / Breakout
+enableBreakout   = input.bool(true,  "Enable Momentum/Breakout entries")
+brkBufATR        = input.float(0.10, "Breakout buffer (x ATR)", step=0.01, minval=0.0)
+impulseATR       = input.float(0.95, "Impulse bar ≥ ATR *", step=0.05, minval=0.5)
+enableEMARetest  = input.bool(true,  "Continuation: EMA retest entry")
+emaRetestWhich   = input.string("EMA fast", "Retest EMA", options=["EMA fast", "EMA slow"])
+emaRetestTol     = input.float(0.45, "Retest tolerance (x ATR)", step=0.01, minval=0.0)
+retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1, maxval=50)
+
+// Supertrend
+groupST       = "Supertrend (optional)"
+enableST      = input.bool(true,  "Enable Supertrend", group=groupST)
+useSTFilter   = input.bool(true,  "Use ST as extra filter (Buy needs ST Up, Sell needs ST Down)", group=groupST)
+stShowPlots   = input.bool(true,  "Plot ST lines", group=groupST)
+stShowSignals = input.bool(true,  "Show ST Buy/Sell labels", group=groupST)
+stPeriod      = input.int(10, "ATR Period", minval=1, group=groupST)
+stMult        = input.float(3.0, "ATR Multiplier", step=0.1, group=groupST)
+stSrc         = input.source(hl2, "ST Source", group=groupST)
+stUseATR      = input.bool(true, "Use ta.atr() (else SMA(TR))", group=groupST)
+
+// Dashboard gates
+gateUseAdx     = input.bool(false, "Dash gates: use ADX filter")
+gateAdxMin     = input.float(14,   "Dash gates: ADX min", step=0.5)
+gateNeedClose  = input.bool(false, "Dash gates: need price above/below EMA fast")
+gateMinSepATR  = input.float(0.01, "Dash gates: min EMA fast/slow sep (ATR x)", step=0.01)
+gateAtrLen     = input.int(14,     "Dash gates: ATR length", minval=1)
+gateUseClosed  = input.bool(true,  "Dashboard uses CLOSED candles")
+
+// Panels
+showTeacher   = input.bool(true,  "Show Teacher panel")
+showLegend    = input.bool(true,  "Show Legend panel")
+showRows      = input.bool(false, "Legend: extra TF rows (5/15/30/4H/1D)")
+teacherPos    = input.string("Top Right", "Teacher position", options=["Top Right", "Top Left", "Bottom Right", "Bottom Left"])
+legendPos     = input.string("Top Left",  "Legend position", options=["Top Right", "Top Left", "Bottom Right", "Bottom Left"])
+panelTrans    = input.int(95, "Panel bg transparency (0-100)", minval=0, maxval=100)
+panelPad      = input.int(1,  "Panel top padding rows", minval=0, maxval=6)
+panelFont     = input.string("Small", "Panel font size", options=["Tiny", "Small", "Normal", "Large"])
+
+showDebug     = input.bool(false, "DEBUG heartbeat")
+
+// ============== Helpers / Colors ==============
+f_size(s) => s == "Tiny" ? size.tiny : s == "Small" ? size.small : s == "Normal" ? size.normal : size.large
+PFS = f_size(panelFont)
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_lbl(int st) => st == 1 ? "UT" : st == -1 ? "DT" : "NT"
+
+atr   = ta.atr(14)
+barRange = high - low
+minTk = syminfo.mintick
+
+colSRBull = color.new(color.lime, 0)
+colSRBear = color.new(color.red,  0)
+bgPanel  = color.new(color.white, panelTrans)
+bgPanel2 = color.new(color.white, math.max(panelTrans - 5, 0))
+
+f_adx(len, smooth) =>
+    [_p, _m, _adx] = ta.dmi(len, smooth)
+    _adx
+
+f_labTF(_tf) =>
+    _tf == "W" ? "1W" : _tf == "D" ? "1D" : _tf == "240" ? "4H" : _tf == "120" ? "2H" : _tf == "60" ? "1H" : _tf == "30" ? "30m" : _tf == "15" ? "15m" : _tf == "5" ? "5m" : _tf == "3" ? "3m" : _tf == "1" ? "1m" : _tf
+
+// "closed" = pichli band candle, history aur live ek jaise
+OFF = gateUseClosed ? 1 : 0
+LA  = gateUseClosed ? barmerge.lookahead_on : barmerge.lookahead_off
+
+// ---------- Supertrend ----------
+var int stTrend = 1
+stATRsrc = stUseATR ? ta.atr(stPeriod) : ta.sma(ta.tr(true), stPeriod)
+stUp  = stSrc - (stMult * stATRsrc)
+stUp1 = nz(stUp[1], stUp)
+stUp  := close[1] > stUp1 ? math.max(stUp, stUp1) : stUp
+stDn  = stSrc + (stMult * stATRsrc)
+stDn1 = nz(stDn[1], stDn)
+stDn  := close[1] < stDn1 ? math.min(stDn, stDn1) : stDn
+stTrend := stTrend == -1 and close > stDn1 ? 1 : stTrend == 1 and close < stUp1 ? -1 : stTrend
+stBuySig  = enableST and stTrend == 1 and stTrend[1] == -1
+stSellSig = enableST and stTrend == -1 and stTrend[1] == 1
+
+plot(enableST and stShowPlots and stTrend == 1  ? stUp : na, title="ST Up", style=plot.style_linebr, linewidth=2, color=color.new(color.green, 0))
+plot(enableST and stShowPlots and stTrend == -1 ? stDn : na, title="ST Dn", style=plot.style_linebr, linewidth=2, color=color.new(color.red, 0))
+plotshape(stShowSignals and stBuySig  ? stUp : na, title="ST Buy",  text="ST Buy",  style=shape.labelup,   location=location.absolute, color=color.new(color.green, 0), textcolor=color.white, size=size.tiny)
+plotshape(stShowSignals and stSellSig ? stDn : na, title="ST Sell", text="ST Sell", style=shape.labeldown, location=location.absolute, color=color.new(color.red, 0),   textcolor=color.white, size=size.tiny)
+
+// ============== Swings + BOS/CHOCH (ek swing = ek toot) ==============
+ph = ta.pivothigh(high, pivotLR, pivotLR)
+pl = ta.pivotlow(low,  pivotLR, pivotLR)
+
+var float lastHi    = na
+var float lastLo    = na
+var int   lastHiIdx = na
+var int   lastLoIdx = na
+var bool  hiBroken  = true
+var bool  loBroken  = true
+
+if not na(ph)
+    lastHi    := ph
+    lastHiIdx := bar_index - pivotLR
+    hiBroken  := false
+if not na(pl)
+    lastLo    := pl
+    lastLoIdx := bar_index - pivotLR
+    loBroken  := false
+
+// Liquidity sweep (ICT): wick swing ke paar, close wapas andar - swing salamat
+sweepBuy  = not hiBroken and not na(lastHi) and high > lastHi and close < lastHi
+sweepSell = not loBroken and not na(lastLo) and low  < lastLo and close > lastLo
+
+// Toot sirf CLOSE se (body close = SMC ka qaida)
+aboveHi = not hiBroken and not na(lastHi) and close > lastHi
+belowLo = not loBroken and not na(lastLo) and close < lastLo
+if aboveHi
+    hiBroken := true
+if belowLo
+    loBroken := true
+
+var int trendStruct = 0
+bool bosUp   = false
+bool bosDn   = false
+bool chochUp = false
+bool chochDn = false
+if aboveHi
+    if trendStruct == -1
+        chochUp := true
+    else
+        bosUp := true
+    trendStruct := 1
+if belowLo
+    if trendStruct == 1
+        chochDn := true
+    else
+        bosDn := true
+    trendStruct := -1
+
+bsUp = ta.barssince(bosUp or chochUp)
+bsDn = ta.barssince(bosDn or chochDn)
+recentUpStruct   = not na(bsUp) and bsUp <= structLookback
+recentDownStruct = not na(bsDn) and bsDn <= structLookback
+
+// ============== Zones from swings ==============
+// Toot ke baad us se pehle wala ulta swing = zone (BOS up -> demand, BOS dn -> supply)
+var array<box>  zBoxes = array.new<box>()
+var array<bool> zIsSup = array.new<bool>()
+var array<line> zLines = array.new<line>()
+
+newZone(int _idx, float _price, bool _isSupport) =>
+    pad  = atr * zonePadATR
+    col  = _isSupport ? colSRBull : colSRBear
+    fill = color.new(_isSupport ? color.lime : color.red, 86)
+    b = box.new(_idx, _price + pad, bar_index, _price - pad, xloc=xloc.bar_index, extend=extend.right, bgcolor=fill, border_color=color.new(col, 70))
+    l = line.new(_idx, _price, bar_index, _price, extend=extend.right, color=col, width=2)
+    array.push(zBoxes, b)
+    array.push(zIsSup, _isSupport)
+    array.push(zLines, l)
+
+if showSR and (bosUp or chochUp) and not na(lastLoIdx)
+    newZone(lastLoIdx, lastLo, true)
+if showSR and (bosDn or chochDn) and not na(lastHiIdx)
+    newZone(lastHiIdx, lastHi, false)
+
+while array.size(zBoxes) > maxZones
+    box.delete(array.shift(zBoxes))
+    array.shift(zIsSup)
+    line.delete(array.shift(zLines))
+
+f_lastZone(bool _isSupport) =>
+    box ret = na
+    _n = array.size(zBoxes)
+    if _n > 0
+        for i = _n - 1 to 0
+            if array.get(zIsSup, i) == _isSupport
+                ret := array.get(zBoxes, i)
+                break
+    ret
+
+// ============== FVG / LGB (current bar) ==============
+FVG_up = showFVG and bar_index > 2 and low  > high[2]
+FVG_dn = showFVG and bar_index > 2 and high < low[2]
+LGB_up = showLGB and sweepBuy     // buy-side liquidity li (upar ka sweep) -> bearish
+LGB_dn = showLGB and sweepSell    // sell-side liquidity li (neeche ka sweep) -> bullish
+
+var box   fvgBox = na
+var label lgbLbl = na
+if barstate.islast
+    box.delete(fvgBox)
+    fvgBox := na
+    label.delete(lgbLbl)
+    lgbLbl := na
+    if FVG_up
+        fvgBox := box.new(bar_index - 2, low, bar_index, high[2], bgcolor=color.new(color.gray, 86), border_color=color.new(color.gray, 60))
+    if FVG_dn
+        fvgBox := box.new(bar_index - 2, low[2], bar_index, high, bgcolor=color.new(color.gray, 86), border_color=color.new(color.gray, 60))
+    if LGB_up
+        lgbLbl := label.new(bar_index, lastHi, "LGB↑", style=label.style_label_down, color=color.new(color.red, 0), textcolor=color.white, size=size.tiny)
+    if LGB_dn
+        lgbLbl := label.new(bar_index, lastLo, "LGB↓", style=label.style_label_up, color=color.new(color.lime, 0), textcolor=color.black, size=size.tiny)
+
+// ============== Trend (EMA/ADX) + Pressure% ==============
+emaF = ta.ema(close, emaFastLen)
+emaS = ta.ema(close, emaSlowLen)
+adxV = f_adx(adxLen, adxSmooth)
+
+longOK  = emaF > emaS and (strictTrendClose ? close > emaF : true) and (useAdx ? adxV >= adxMin : true)
+shortOK = emaF < emaS and (strictTrendClose ? close < emaF : true) and (useAdx ? adxV >= adxMin : true)
+trendState = longOK ? 1 : shortOK ? -1 : 0
+
+plot(emaF, title="EMA fast", color=color.new(color.aqua, 0))
+plot(emaS, title="EMA slow", color=color.new(color.fuchsia, 0))
+
+f_press(float f, float s, float a) =>
+    _dist  = (f - s) / math.max(a, minTk)
+    _slope = ((f - f[1]) - (s - s[1])) / math.max(a, minTk)
+    int(math.round(100 / (1.0 + math.exp(-(0.75 * _dist + 0.25 * _slope)))))
+
+pressBuy  = f_press(emaF, emaS, atr)
+pressSell = 100 - pressBuy
+pressCol  = pressBuy > 55 ? color.new(color.lime, 0) : pressBuy < 45 ? color.new(color.red, 0) : color.new(color.gray, 0)
+
+// =========== DXY filter ===========
+f_dxyDir(int off) =>
+    _d = ta.ema(close, 8) - ta.ema(close, 21)
+    _d[off]
+dxyLive = request.security("TVC:DXY", dxyTF, f_dxyDir(0))
+dxyCl   = request.security("TVC:DXY", dxyTF, f_dxyDir(1), lookahead=barmerge.lookahead_on)
+dxyDir  = dxyTF == "" ? dxyLive : dxyCl
+passDXYLong  = not useDXY or (not na(dxyDir) and dxyDir < 0)
+passDXYShort = not useDXY or (not na(dxyDir) and dxyDir > 0)
+
+// ============== HTF Confluence (4H & 1D) ==============
+f_dirExpr(int off) =>
+    _f = ta.ema(close, emaFastLen)
+    _s = ta.ema(close, emaSlowLen)
+    _a = f_adx(adxLen, adxSmooth)
+    _long  = _f > _s and (strictTrendClose ? close > _f : true) and (useAdx ? _a >= adxMin : true)
+    _short = _f < _s and (strictTrendClose ? close < _f : true) and (useAdx ? _a >= adxMin : true)
+    _d = _long ? 1 : _short ? -1 : 0
+    _d[off]
+
+st4hC = request.security(syminfo.tickerid, "240", f_dirExpr(1), lookahead=barmerge.lookahead_on)
+st4hL = request.security(syminfo.tickerid, "240", f_dirExpr(0))
+stDC  = request.security(syminfo.tickerid, "D",   f_dirExpr(1), lookahead=barmerge.lookahead_on)
+stDL  = request.security(syminfo.tickerid, "D",   f_dirExpr(0))
+st4h = enableHTF ? nz(useClosedHTF ? st4hC : st4hL) : 0
+std  = enableHTF ? nz(useClosedHTF ? stDC  : stDL)  : 0
+needBoth    = htfAgreeMode == "Both"
+agreeLong   = (st4h == 1 ? 1 : 0)  + (std == 1 ? 1 : 0)
+agreeShort  = (st4h == -1 ? 1 : 0) + (std == -1 ? 1 : 0)
+passHTFLong  = not enableHTF or (needBoth ? agreeLong == 2  : agreeLong >= 1)
+passHTFShort = not enableHTF or (needBoth ? agreeShort == 2 : agreeShort >= 1)
+
+// ============== Touch helpers ==============
+f_touch(bool _isSupport) =>
+    b = f_lastZone(_isSupport)
+    bool res = false
+    if not na(b)
+        top = box.get_top(b)
+        bot = box.get_bottom(b)
+        res := useCloseTouch ? (close >= bot and close <= top) : (high >= bot and low <= top)
+    res
+
+// ============== Base Signals ==============
+longTouch  = f_touch(true)
+shortTouch = f_touch(false)
+
+momoUp_rt = FVG_up or LGB_dn
+momoDn_rt = FVG_dn or LGB_up
+momoUp    = confirmMomo ? (momoUp_rt and barstate.isconfirmed) : momoUp_rt
+momoDn    = confirmMomo ? (momoDn_rt and barstate.isconfirmed) : momoDn_rt
+
+baseBuy  = entryMode == "Touch only" ? longTouch  : (longTouch  and recentUpStruct   and trendState == 1)
+baseSell = entryMode == "Touch only" ? shortTouch : (shortTouch and recentDownStruct and trendState == -1)
+
+needMomo = entryMode == "Confirm + (FVG or LGB)"
+sigBuy  = (needMomo ? (baseBuy  and momoUp) : baseBuy)  and passHTFLong  and passDXYLong
+sigSell = (needMomo ? (baseSell and momoDn) : baseSell) and passHTFShort and passDXYShort
+
+// ===== Momentum / Breakout =====
+brkUpRaw = enableBreakout and recentUpStruct   and trendState == 1  and not na(lastHi) and close > lastHi + atr * brkBufATR and (barRange >= atr * impulseATR or FVG_up or LGB_dn)
+brkDnRaw = enableBreakout and recentDownStruct and trendState == -1 and not na(lastLo) and close < lastLo - atr * brkBufATR and (barRange >= atr * impulseATR or FVG_dn or LGB_up)
+
+emaRef = emaRetestWhich == "EMA slow" ? emaS : emaF
+retestUpRaw = enableBreakout and enableEMARetest and trendState == 1  and not na(bsUp) and bsUp <= retestWindow and math.abs(low  - emaRef) <= atr * emaRetestTol and close > emaRef and close > open
+retestDnRaw = enableBreakout and enableEMARetest and trendState == -1 and not na(bsDn) and bsDn <= retestWindow and math.abs(high - emaRef) <= atr * emaRetestTol and close < emaRef and close < open
+
+mbBuy  = (brkUpRaw or retestUpRaw) and passHTFLong  and passDXYLong
+mbSell = (brkDnRaw or retestDnRaw) and passHTFShort and passDXYShort
+
+// ===== Supertrend filter =====
+passSTLong  = not (enableST and useSTFilter) or stTrend == 1
+passSTShort = not (enableST and useSTFilter) or stTrend == -1
+
+closeGate = confirmSignalsOnClose ? barstate.isconfirmed : true
+sigBuyTotal  = (sigBuy  or mbBuy)  and passSTLong  and closeGate
+sigSellTotal = (sigSell or mbSell) and passSTShort and closeGate
+// Dono ek saath = koi ishara nahi (ulta faisla)
+bothSig = sigBuyTotal and sigSellTotal
+
+plotshape(sigBuyTotal  and not bothSig, title="Buy",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.teal, 0),   size=size.tiny, text="Buy")
+plotshape(sigSellTotal and not bothSig, title="Sell", style=shape.triangledown, location=location.abovebar, color=color.new(color.purple, 0), size=size.tiny, text="Sell")
+// alertcondition(sigBuyTotal  and not bothSig, "SMC Buy",  "SMC Coach: Buy")
+// alertcondition(sigSellTotal and not bothSig, "SMC Sell", "SMC Coach: Sell")
+
+// ============== STRATEGY (naap) ==============
+// Pehle se likha qaida (12 Oct, test se PEHLE): XAUUSD 1H, 2019 se,
+// trades >= 100 aur Exp - 2SE > 0 = PASS. Warna FAIL. Settings ghuma kar dobara nahi.
+grpT     = "Test"
+riskPct  = input.float(1.0, "Risk % har trade", minval=0.1, maxval=2, group=grpT)
+slATR    = input.float(1.5, "SL (x ATR14)", minval=0.5, step=0.1, group=grpT)
+tpR      = input.float(2.0, "TP (R)", minval=0.5, step=0.5, group=grpT)
+fromYear = input.int(2019, "Hisaab kis saal se", group=grpT)
+
+inTest = year(time) >= fromYear
+var float riskMoney = na
+var array<float> rList = array.new<float>()
+var int doneTC = 0
+
+if strategy.closedtrades > doneTC
+    for k = doneTC to strategy.closedtrades - 1
+        if not na(riskMoney) and riskMoney > 0
+            array.push(rList, strategy.closedtrades.profit(k) / riskMoney)
+    doneTC := strategy.closedtrades
+
+goLong  = sigBuyTotal  and not bothSig and inTest and strategy.position_size == 0
+goShort = sigSellTotal and not bothSig and inTest and strategy.position_size == 0
+slDist  = atr * slATR
+if (goLong or goShort) and slDist > 0
+    riskMoney := strategy.equity * riskPct / 100
+    qty = riskMoney / (slDist * syminfo.pointvalue)
+    if goLong
+        strategy.entry("L", strategy.long, qty=qty)
+        strategy.exit("Lx", "L", stop=close - slDist, limit=close + slDist * tpR)
+    else
+        strategy.entry("S", strategy.short, qty=qty)
+        strategy.exit("Sx", "S", stop=close + slDist, limit=close - slDist * tpR)
+
+// Ulta ishara = band
+if strategy.position_size > 0 and sigSellTotal
+    strategy.close("L", comment="ulta")
+if strategy.position_size < 0 and sigBuyTotal
+    strategy.close("S", comment="ulta")
+
+var table rt = table.new(position.bottom_right, 2, 7, bgcolor=color.new(color.white, 10), border_width=1)
+if barstate.islastconfirmedhistory or barstate.islast
+    n = array.size(rList)
+    float mean = n > 0 ? array.avg(rList) : na
+    float sd   = n > 1 ? array.stdev(rList, false) : na
+    float se2  = n > 1 ? 2 * sd / math.sqrt(n) : na
+    int wins = 0
+    float gp = 0.0
+    float gl = 0.0
+    if n > 0
+        for v in rList
+            if v > 0
+                wins += 1
+                gp += v
+            else
+                gl -= v
+    pf = gl > 0 ? gp / gl : na
+    pass = n >= 100 and not na(se2) and mean - se2 > 0
+    table.cell(rt, 0, 0, "SMC Scalp TEST sc6.1", text_size=size.small)
+    table.cell(rt, 1, 0, str.tostring(fromYear) + " se", text_size=size.small)
+    table.cell(rt, 0, 1, "Trades", text_size=size.small)
+    table.cell(rt, 1, 1, str.tostring(n), text_size=size.small)
+    table.cell(rt, 0, 2, "Jeet %", text_size=size.small)
+    table.cell(rt, 1, 2, n > 0 ? str.tostring(100.0 * wins / n, "#.0") + "%" : "-", text_size=size.small)
+    table.cell(rt, 0, 3, "Exp R (±2SE)", text_size=size.small)
+    table.cell(rt, 1, 3, na(mean) ? "-" : str.tostring(mean, "#.000") + " (±" + (na(se2) ? "-" : str.tostring(se2, "#.000")) + ")", text_size=size.small)
+    table.cell(rt, 0, 4, "PF (R)", text_size=size.small)
+    table.cell(rt, 1, 4, na(pf) ? "-" : str.tostring(pf, "#.00"), text_size=size.small)
+    table.cell(rt, 0, 5, "Kul R", text_size=size.small)
+    table.cell(rt, 1, 5, n > 0 ? str.tostring(array.sum(rList), "#.0") : "-", text_size=size.small)
+    table.cell(rt, 0, 6, "QAIDA", text_size=size.small)
+    table.cell(rt, 1, 6, pass ? "PASS" : "FAIL", text_color=pass ? color.green : color.red, text_size=size.small)

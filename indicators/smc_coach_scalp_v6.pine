@@ -1,7 +1,7 @@
 //@version=6
 // ============================================================================
 //  SMC Coach — Pro (SCALP 1H + MTF Dashboard 1m→1W + Supertrend)
-//  build sc6.0 (Pine v6, 12 Oct 2026) — user ki bheji v5 file ka v6 roop
+//  build sc6.1 (Pine v6, 12 Oct 2026; sc6.1: EMA 50/100) — user ki bheji v5 file ka v6 roop
 //
 //  Durustiyan (v5 se):
 //   1. COMPILE errors: DXY block aur Legend block ki ghalat indentation
@@ -41,8 +41,8 @@ confirmMomo            = input.bool(false, "Confirm FVG/LGB on bar close")
 confirmSignalsOnClose  = input.bool(true,  "Show Buy/Sell only after bar close (no repaint)")
 
 // Trend + ADX
-emaFastLen    = input.int(20, "EMA fast", minval=2)
-emaSlowLen    = input.int(50, "EMA slow", minval=3)
+emaFastLen    = input.int(50, "EMA fast", minval=2)
+emaSlowLen    = input.int(100, "EMA slow", minval=3)
 useAdx        = input.bool(true, "Use ADX filter")
 adxLen        = input.int(14, "ADX DI length", minval=2)
 adxSmooth     = input.int(14, "ADX smoothing", minval=1)
@@ -63,7 +63,7 @@ enableBreakout   = input.bool(true,  "Enable Momentum/Breakout entries")
 brkBufATR        = input.float(0.10, "Breakout buffer (x ATR)", step=0.01, minval=0.0)
 impulseATR       = input.float(0.95, "Impulse bar ≥ ATR *", step=0.05, minval=0.5)
 enableEMARetest  = input.bool(true,  "Continuation: EMA retest entry")
-emaRetestWhich   = input.string("EMA20", "Retest EMA", options=["EMA20", "EMA50"])
+emaRetestWhich   = input.string("EMA fast", "Retest EMA", options=["EMA fast", "EMA slow"])
 emaRetestTol     = input.float(0.45, "Retest tolerance (x ATR)", step=0.01, minval=0.0)
 retestWindow     = input.int(20, "Retest window bars after BOS/CHOCH", minval=1, maxval=50)
 
@@ -81,8 +81,8 @@ stUseATR      = input.bool(true, "Use ta.atr() (else SMA(TR))", group=groupST)
 // Dashboard gates
 gateUseAdx     = input.bool(false, "Dash gates: use ADX filter")
 gateAdxMin     = input.float(14,   "Dash gates: ADX min", step=0.5)
-gateNeedClose  = input.bool(false, "Dash gates: need price above/below EMA20")
-gateMinSepATR  = input.float(0.01, "Dash gates: min EMA20/50 sep (ATR x)", step=0.01)
+gateNeedClose  = input.bool(false, "Dash gates: need price above/below EMA fast")
+gateMinSepATR  = input.float(0.01, "Dash gates: min EMA fast/slow sep (ATR x)", step=0.01)
 gateAtrLen     = input.int(14,     "Dash gates: ATR length", minval=1)
 gateUseClosed  = input.bool(true,  "Dashboard uses CLOSED candles")
 
@@ -338,7 +338,7 @@ sigSell = (needMomo ? (baseSell and momoDn) : baseSell) and passHTFShort and pas
 brkUpRaw = enableBreakout and recentUpStruct   and trendState == 1  and not na(lastHi) and close > lastHi + atr * brkBufATR and (barRange >= atr * impulseATR or FVG_up or LGB_dn)
 brkDnRaw = enableBreakout and recentDownStruct and trendState == -1 and not na(lastLo) and close < lastLo - atr * brkBufATR and (barRange >= atr * impulseATR or FVG_dn or LGB_up)
 
-emaRef = emaRetestWhich == "EMA50" ? emaS : emaF
+emaRef = emaRetestWhich == "EMA slow" ? emaS : emaF
 retestUpRaw = enableBreakout and enableEMARetest and trendState == 1  and not na(bsUp) and bsUp <= retestWindow and math.abs(low  - emaRef) <= atr * emaRetestTol and close > emaRef and close > open
 retestDnRaw = enableBreakout and enableEMARetest and trendState == -1 and not na(bsDn) and bsDn <= retestWindow and math.abs(high - emaRef) <= atr * emaRetestTol and close < emaRef and close < open
 
@@ -444,7 +444,7 @@ if showTeacher and barstate.islast
     stateTxt  = liveBuy and liveSell ? "ULTA - WAIT" : liveBuy ? "BUY ✅" : liveSell ? "SELL ✅" : "WAIT"
     stateTxt += (liveBuy or liveSell) and confirmSignalsOnClose and not barstate.isconfirmed ? " (candle band hone do)" : ""
     table.cell(tTbl, 0, r0 + 0, "TEACHER | " + timeframe.period + " — " + stateTxt + "  [" + entryMode + "]  |  " + presetTxt, bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
-    table.cell(tTbl, 0, r0 + 1, "PRESSURE (EMA20/50):  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%", bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
+    table.cell(tTbl, 0, r0 + 1, "PRESSURE (EMA" + str.tostring(emaFastLen) + "/" + str.tostring(emaSlowLen) + "):  Buy " + str.tostring(pressBuy) + "%  |  Sell " + str.tostring(pressSell) + "%", bgcolor=bgPanel, text_color=pressCol, text_size=PFS, text_halign=text.align_center)
 
     stTxt = enableST ? (" | ST: " + (stTrend == 1 ? "UP" : "DN")) : ""
     string reason = ""
@@ -521,7 +521,7 @@ if showLegend and barstate.islast
         table.cell(lTbl, 0, rL + 3, "4H   →  " + m240, bgcolor=bgPanel, text_color=color.black, text_size=PFS)
         table.cell(lTbl, 0, rL + 4, "1D   →  " + mD,   bgcolor=bgPanel, text_color=color.black, text_size=PFS)
         rL += 5
-    table.cell(lTbl, 0, rL, "DASHBOARD (" + (gateUseClosed ? "closed" : "live") + "): EMA20/50" + (gateUseAdx ? (" + ADX≥" + str.tostring(gateAdxMin)) : "") + " | sepATR×" + str.tostring(gateMinSepATR), bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
+    table.cell(lTbl, 0, rL, "DASHBOARD (" + (gateUseClosed ? "closed" : "live") + "): EMA" + str.tostring(emaFastLen) + "/" + str.tostring(emaSlowLen) + (gateUseAdx ? (" + ADX≥" + str.tostring(gateAdxMin)) : "") + " | sepATR×" + str.tostring(gateMinSepATR), bgcolor=bgPanel2, text_color=color.black, text_size=PFS)
     f_dashCell(lTbl, rL + 1,  "1",   a1st, a1l, a1s, a1fu, a1fd, a1lu, a1ld, a1p)
     f_dashCell(lTbl, rL + 2,  "3",   a2st, a2l, a2s, a2fu, a2fd, a2lu, a2ld, a2p)
     f_dashCell(lTbl, rL + 3,  "5",   a3st, a3l, a3s, a3fu, a3fd, a3lu, a3ld, a3p)
