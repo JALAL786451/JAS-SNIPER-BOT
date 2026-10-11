@@ -37,6 +37,13 @@ Aakhri update: 11 October 2026 (raat).
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
+## 1a. Maqsad aur dil ki baat (11 Oct raat)
+
+- User trading se **ghar (kitchen) ka mahana kharcha** nikalna chahta hai, isi liye baar baar intraday/15m poochta hai. Claude ne hisaab dikhaya: live ~$430 par sabit tareeqe (~5-10%/saal) = mahine ka ~1,000 Rs; is capital par kharcha trading se mumkin nahi; dabao = bari lot (1.15 ghalti, August USD account).
+- **User ka faisla: koshish isi mein jaari** - kuch paisa hai, kuch dost interested hain; 'raasta sahi nikal aaye to isi se baqi kaam'. Claude: faisla user ka; doston ka paisa sirf demo qaida PASS ke baad, aur unke APNE account mein (paisa un ka, faisla un ka).
+- YouTube/podcast/championship: sab jhoot nahi, magar survivorship bias; asli pehchan = saalon ka verified record (Myfxbook) + risk/girawat ki khuli baat.
+- Is chat ke sawal-jawab: Hunt bhai (sabaq, tareeqa nahi); RSI2 vs Kachhua ulte hain (dip vs breakout) - gold trend wala = Kachhua, S&P = RSI2; Darwinex SP500 = wahi S&P chhota data (doosri tasdeeq).
+
 ## 1b. Live kitab ka haal
 
 **9 Oct (JasDeskView v4.2, XAUUSDc, qeemat ~4185.46):** 160 position, BUY 102 /
