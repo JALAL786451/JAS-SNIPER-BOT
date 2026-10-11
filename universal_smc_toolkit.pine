@@ -1,0 +1,202 @@
+//@version=5
+indicator("Universal SMC Toolkit + SL/TP", overlay=true, max_boxes_count=500, max_lines_count=500, max_labels_count=500, max_bars_back=500)
+
+// ==================== Inputs ====================
+grp1 = "1. Last 3 Candles"
+showLast3Low  = input.bool(true,  "Show Last 3 Low", group=grp1)
+showLast3Zone = input.bool(false, "Show Last 3 Zone", group=grp1)
+useHTF        = input.bool(false, "Use Higher Timeframe", group=grp1)
+htf           = input.timeframe("D", "Higher Timeframe", group=grp1)
+
+grp2 = "2. Order Block"
+showOB = input.bool(true, "Show Order Blocks", group=grp2)
+
+grp3 = "3. Swing + S/R"
+showSwing = input.bool(true, "Show Swing + S/R Lines", group=grp3)
+swingLen  = input.int(5, "Swing Length", minval=3, maxval=20, group=grp3)
+
+grp4 = "4. BOS / CHoCH + SL/TP"
+showBOS   = input.bool(true, "Show BOS", group=grp4)
+showCHoCH = input.bool(true, "Show CHoCH", group=grp4)
+showSLTP  = input.bool(true, "Show SL/TP Box on Signal", group=grp4)
+showBS    = input.bool(true, "Show Current B/S Labels", group=grp4)
+slMode    = input.string("Structure (Swing Leg)", "SL Mode", options=["Structure (Swing Leg)", "Last 3 Candles", "Swing Pivot (Old)", "ATR"], group=grp4,
+     tooltip="Structure: lowest low (buy) / highest high (sell) since the swing that was broken.\nLast 3 Candles: same level as the Last 3 Low/High line.\nSwing Pivot (Old): last confirmed pivot, lags by Swing Length bars.\nATR: entry -/+ ATR x multiplier.")
+slBufAtr  = input.float(0.0, "SL Buffer (x ATR)", minval=0.0, step=0.1, group=grp4)
+atrLen    = input.int(14, "ATR Length", minval=1, group=grp4)
+atrMult   = input.float(1.5, "ATR SL Multiplier", minval=0.1, step=0.1, group=grp4)
+rr1       = input.float(1.0, "TP1 RR", minval=0.5, step=0.5, group=grp4)
+rr2       = input.float(2.0, "TP2 RR", minval=1.0, step=0.5, group=grp4)
+rr3       = input.float(3.0, "TP3 RR", minval=1.5, step=0.5, group=grp4)
+boxLength = input.int(12, "Box Length (Bars)", minval=5, maxval=50, group=grp4)
+
+// ==================== Swing Detection ====================
+ph = ta.pivothigh(high, swingLen, swingLen)
+pl = ta.pivotlow(low, swingLen, swingLen)
+
+var float sh = na
+var float sl = na
+var int shBar = na
+var int slBar = na
+var line resLine = na
+var line supLine = na
+
+if not na(ph)
+    sh := ph
+    shBar := bar_index - swingLen
+    if showSwing
+        if not na(resLine)
+            line.delete(resLine)
+        resLine := line.new(bar_index[swingLen], ph, bar_index + 15, ph, color=color.red, width=1)
+
+if not na(pl)
+    sl := pl
+    slBar := bar_index - swingLen
+    if showSwing
+        if not na(supLine)
+            line.delete(supLine)
+        supLine := line.new(bar_index[swingLen], pl, bar_index + 15, pl, color=color.green, width=1)
+
+// ==================== Bias ====================
+var int bias = 0
+
+bullBOS   = not na(sh) and close > sh and close[1] <= sh and bias >= 0
+bearBOS   = not na(sl) and close < sl and close[1] >= sl and bias <= 0
+bullCHoCH = not na(sh) and close > sh and close[1] <= sh and bias < 0
+bearCHoCH = not na(sl) and close < sl and close[1] >= sl and bias > 0
+
+if bullBOS or bullCHoCH
+    bias := 1
+if bearBOS or bearCHoCH
+    bias := -1
+
+// ==================== Last 3 Low ====================
+last3Low  = ta.lowest(low, 3)
+last3High = ta.highest(high, 3)
+htfLast3  = request.security(syminfo.tickerid, htf, ta.lowest(low, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+htfLast3H = request.security(syminfo.tickerid, htf, ta.highest(high, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+plotLow   = useHTF ? htfLast3 : last3Low
+plotHigh  = useHTF ? htfLast3H : last3High
+
+lowColor = bias > 0 ? color.green : color.red
+plot(showLast3Low ? plotLow : na, "Last 3 Low", color=lowColor, linewidth=2)
+
+// ==================== Order Blocks ====================
+bullOB = close > open and close[1] < open[1] and (close - open) > (high[1] - low[1]) * 0.5
+bearOB = close < open and close[1] > open[1] and (open - close) > (high[1] - low[1]) * 0.5
+
+if showOB and bullOB
+    box.new(bar_index[1], high[1], bar_index[1], low[1], bgcolor=color.new(color.teal, 88), border_color=color.new(color.teal, 100))
+
+if showOB and bearOB
+    box.new(bar_index[1], high[1], bar_index[1], low[1], bgcolor=color.new(color.maroon, 88), border_color=color.new(color.maroon, 100))
+
+// ==================== SL Levels ====================
+// A pivot is only confirmed swingLen bars after it forms, so the pullback low/high
+// right before a breakout is usually not a pivot yet and `sl`/`sh` point to an older,
+// much deeper swing. Structure mode measures the leg since the broken swing instead.
+atr = ta.atr(atrLen)
+
+bullLegLen  = na(shBar) ? 1 : math.min(bar_index - shBar + 1, 500)
+bearLegLen  = na(slBar) ? 1 : math.min(bar_index - slBar + 1, 500)
+bullLegLow  = ta.lowest(low, bullLegLen)
+bearLegHigh = ta.highest(high, bearLegLen)
+
+float bullStop = switch slMode
+    "Structure (Swing Leg)" => bullLegLow
+    "Last 3 Candles"        => plotLow
+    "Swing Pivot (Old)"     => sl
+    => close - atr * atrMult
+bullStop -= nz(atr) * slBufAtr
+// SL must be below entry for a buy, otherwise the box gets drawn upside down
+if na(bullStop) or bullStop >= close
+    bullStop := close - atr * atrMult
+
+float bearStop = switch slMode
+    "Structure (Swing Leg)" => bearLegHigh
+    "Last 3 Candles"        => plotHigh
+    "Swing Pivot (Old)"     => sh
+    => close + atr * atrMult
+bearStop += nz(atr) * slBufAtr
+// SL must be above entry for a sell
+if na(bearStop) or bearStop <= close
+    bearStop := close + atr * atrMult
+
+// ==================== SL/TP + Prices + B/S (Only Latest) ====================
+var box tpBox1 = na
+var box tpBox2 = na
+var box tpBox3 = na
+var box slBox  = na
+var label buyLabel = na
+var label sellLabel = na
+var label priceLabel = na
+
+if (bullBOS or bullCHoCH or bearBOS or bearCHoCH)
+    if not na(tpBox1)
+        box.delete(tpBox1)
+    if not na(tpBox2)
+        box.delete(tpBox2)
+    if not na(tpBox3)
+        box.delete(tpBox3)
+    if not na(slBox)
+        box.delete(slBox)
+    if not na(buyLabel)
+        label.delete(buyLabel)
+    if not na(sellLabel)
+        label.delete(sellLabel)
+    if not na(priceLabel)
+        label.delete(priceLabel)
+
+// Bullish
+if showSLTP and (bullBOS or bullCHoCH) and not na(bullStop)
+    entry = close
+    stop  = bullStop
+    risk  = math.abs(entry - stop)
+    tp1   = entry + risk * rr1
+    tp2   = entry + risk * rr2
+    tp3   = entry + risk * rr3
+
+    slBox  := box.new(bar_index, entry, bar_index + boxLength, stop, bgcolor=color.new(color.red, 92), border_color=color.new(color.red, 100))
+    tpBox1 := box.new(bar_index, tp1, bar_index + boxLength, entry, bgcolor=color.new(color.green, 94), border_color=color.new(color.green, 100))
+    tpBox2 := box.new(bar_index, tp2, bar_index + boxLength, tp1, bgcolor=color.new(color.green, 96), border_color=color.new(color.green, 100))
+    tpBox3 := box.new(bar_index, tp3, bar_index + boxLength, tp2, bgcolor=color.new(color.green, 98), border_color=color.new(color.green, 100))
+
+    priceLabel := label.new(bar_index + boxLength, entry,
+         "Entry: " + str.tostring(entry, format.mintick) + "\n" +
+         "SL: " + str.tostring(stop, format.mintick) + "\n" +
+         "TP1: " + str.tostring(tp1, format.mintick) + "\n" +
+         "TP2: " + str.tostring(tp2, format.mintick) + "\n" +
+         "TP3: " + str.tostring(tp3, format.mintick),
+         color=color.new(color.black, 20), textcolor=color.white, size=size.small, style=label.style_label_left)
+
+if showBS and (bullBOS or bullCHoCH)
+    buyLabel := label.new(bar_index, low, "B", color=color.green, textcolor=color.white, size=size.normal, style=label.style_label_up)
+
+// Bearish
+if showSLTP and (bearBOS or bearCHoCH) and not na(bearStop)
+    entry = close
+    stop  = bearStop
+    risk  = math.abs(stop - entry)
+    tp1   = entry - risk * rr1
+    tp2   = entry - risk * rr2
+    tp3   = entry - risk * rr3
+
+    slBox  := box.new(bar_index, stop, bar_index + boxLength, entry, bgcolor=color.new(color.red, 92), border_color=color.new(color.red, 100))
+    tpBox1 := box.new(bar_index, entry, bar_index + boxLength, tp1, bgcolor=color.new(color.green, 94), border_color=color.new(color.green, 100))
+    tpBox2 := box.new(bar_index, tp1, bar_index + boxLength, tp2, bgcolor=color.new(color.green, 96), border_color=color.new(color.green, 100))
+    tpBox3 := box.new(bar_index, tp2, bar_index + boxLength, tp3, bgcolor=color.new(color.green, 98), border_color=color.new(color.green, 100))
+
+    priceLabel := label.new(bar_index + boxLength, entry,
+         "Entry: " + str.tostring(entry, format.mintick) + "\n" +
+         "SL: " + str.tostring(stop, format.mintick) + "\n" +
+         "TP1: " + str.tostring(tp1, format.mintick) + "\n" +
+         "TP2: " + str.tostring(tp2, format.mintick) + "\n" +
+         "TP3: " + str.tostring(tp3, format.mintick),
+         color=color.new(color.black, 20), textcolor=color.white, size=size.small, style=label.style_label_left)
+
+if showBS and (bearBOS or bearCHoCH)
+    sellLabel := label.new(bar_index, high, "S", color=color.red, textcolor=color.white, size=size.normal, style=label.style_label_down)
+
+// ==================== Alerts ====================
+alertcondition(bullBOS or bullCHoCH, title="Buy Signal", message="Buy Signal")
+alertcondition(bearBOS or bearCHoCH, title="Sell Signal", message="Sell Signal")
