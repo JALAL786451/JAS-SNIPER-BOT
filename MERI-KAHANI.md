@@ -25,6 +25,12 @@ Aakhri update: 10 October 2026.
 - Mujhe baar baar "aaraam karo" mat kaho - jab thakunga khud bata doonga.
 - **Chart bilkul saaf chahiye (10 Oct):** indicator chart par sirf ishara dikhaye;
   lakeerein, rang, lambi tables settings mein BAND rakho (Tide Seekh bhi "bohot text" se napasand hua tha).
+- **Usage limit bachao (11 Oct):** hafte ki limit 1 din mein 28% gayi. Wajah: kai
+  agent wale workflow (har ek 0.6-2.5 million token) aur bohot lambi chat. Qaida:
+  (1) **agent/workflow sirf jab user khud naam le kar maange**; aam jaanch Claude
+  khud ek dafa kare. (2) Chat lambi ho jaye (ek bara kaam khatam) to **nayi chat**
+  `JAS-DESK-V3-0110` code se - har naya message poori purani chat dobara parhta hai.
+  (3) Jawab chhote. (4) Chhote qadam (paste / screenshot check) ek message mein.
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
