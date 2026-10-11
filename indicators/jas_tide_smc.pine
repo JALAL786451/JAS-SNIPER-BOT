@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.1, Pine v6)
+//  JAS TIDE + SMC   (build s2.2, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -32,6 +32,10 @@
 //  der se entry ka lot abhi ki qeemat se (risk % se zyada nahi); aage wale
 //  kinare candle ginti se (hafte mein simatte nahi); usi din dobara khuli trade
 //  ka "khuli" alert; HAAL rang nateeje se; tick chart; vSym BTCUSDc bhi maane.
+//  s2.2 (11 Oct, teesri jaanch): RISK dabbe ka bayan kinara 9999 candle se
+//  peeche nahi (1m/5m par purani trade se script nahi rukti); "chart se pehle"
+//  wapas; entry ke din ki close ho chuki ho (hafta/break) to "der se entry
+//  NAHI" aur lot nahi.
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -41,7 +45,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.1"
+BUILD = "s2.2"
 
 // ============================================================================
 //  INPUTS
@@ -350,8 +354,9 @@ if barstate.islast
             lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
         // --- RISK: trade chalu (laal = entry se shuru ke SL tak = 1R) ---------
         if tD != 0 and not na(tE) and not na(tR) and tR > 0
-            int    lft   = nz(eBar, 0)
-            bool   clamp = na(eBar)
+            // bar_index wala kinara 9999 candle se peeche nahi ja sakta (warna script ruk jati)
+            int    lft   = math.max(nz(eBar, 0), bar_index - 9999)
+            bool   clamp = (not na(tET) and tET < firstT) or lft != nz(eBar, 0)
             bool   pastCs = not na(csT) and not na(stC) and (tD == 1 ? stC <= csT : stC >= csT)
             float  sl0   = tE - tD * tR
             float  rSL   = tD * (tSL - tE) / tR - 2.0 * costPct / 100.0 * tE / tR
@@ -630,7 +635,7 @@ if showTable and barstate.islast
         // Row 2: MT5 MEIN (sirf yahi karna hai)
         string mt5 = ""
         bool   pastCs = tD != 0 and not na(csT) and not na(stC) and (tD == 1 ? stC <= csT : stC >= csT)
-        string csRule = not na(csT) and csT != tSL ? " · aaj close " + f_px(csT) + (tD == 1 ? " ke neeche" : " ke upar") + " = BAND, warna kal se SL " + f_px(csT) : ""
+        string csRule = na(csT) or csT == tSL ? "" : dDone ? " · agle session se SL " + f_px(csT) : " · aaj close " + f_px(csT) + (tD == 1 ? " ke neeche" : " ke upar") + " = BAND, warna kal se SL " + f_px(csT)
         if slHit
             mt5 := "SL chhu gaya · MT5 mein band hui? check karein · nayi trade sirf band daily candle ke toot se"
         else if dDone and tD != 0 and (tRk == -tD or pastCs)
@@ -639,6 +644,8 @@ if showTable and barstate.islast
             mt5 := "D1 rukh palta · aaj daily close (" + closeTxt + ") par BAND karein"
         else if tD != 0 and pastCs
             mt5 := "Qeemat naye SL " + f_px(csT) + " ke paar · daily close aisa raha to close par BAND karein (abhi SL " + f_px(tSL) + ")"
+        else if dDone and tD != 0 and tAge == 0
+            mt5 := "Entry ka din BAND ho chuka · der se entry NAHI · SL " + f_px(tSL) + csRule + " · agle session ki PEHLI candle par table dekhein"
         else if tD != 0 and tAge == 0
             mt5 := sdTxt + " kholein · SL " + f_px(tSL) + " · TP khali" + csRule
         else if tD != 0
@@ -658,7 +665,7 @@ if showTable and barstate.islast
         f_row(tb, 4, "RISK", rsk, bgW, C_TXT, fs, "1R = entry se shuru ke SL tak (2 ATR). R mein kharcha gina, swap/spread nahi.")
         // Row 5: LOT (MT5) - TradingView broker ka contract nahi janta: V aap bharein
         string lotTxt = ""
-        if tD != 0 and tAge >= 1 and not slHit
+        if tD != 0 and (tAge >= 1 or dDone) and not slHit
             lotTxt := "Is trade mein nayi entry NAHI (lot nahi)"
         else if bal <= 0 or vMove <= 0
             lotTxt := "Balance aur V bharein (Settings → 4 · Lot)"
@@ -683,7 +690,7 @@ if showTable and barstate.islast
         string dh = ""
         if not utc0 and not na(dCt)
             dh := "Feed ka din " + str.format_time(dCt, "HH:mm", "UTC") + " UTC par band · MT5 (00:00 UTC) ka level thora alag"
-        if tD != 0 and tAge == 0 and not slHit and not na(rNow)
+        if tD != 0 and tAge == 0 and not slHit and not dDone and not na(rNow)
             dh := dh + (dh == "" ? "" : "\n") + (rNow <= -1 ? "Qeemat SL ke paar · entry NAHI" : "Entry daily close par thi · abhi farq " + f_r(rNow) + " · der se entry NAAPA NAHI")
         if dh != ""
             f_row(tb, 7, "DHYAN", dh, bgW, C_BEAR, fs, "Ye baatein faisla nahi badaltin, sirf hoshiyari.")

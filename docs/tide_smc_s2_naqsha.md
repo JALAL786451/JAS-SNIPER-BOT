@@ -1,6 +1,6 @@
 # JAS Tide + SMC s2 - naqsha (11 Oct 2026)
 
-Halat: **BAN GAYA** (`indicators/jas_tide_smc.pine` build s2.1). Compile user karega (cloud mein Pine nahi chalta).
+Halat: **BAN GAYA** (`indicators/jas_tide_smc.pine` build s2.2 - teesri jaanch: RISK dabba 9999 candle ki hadd, 'chart se pehle' wapas, entry-din band ho chuka ho to 'der se entry NAHI'). Compile user karega (cloud mein Pine nahi chalta).
 
 User (11 Oct): "Is script par agents aur judges lagaein. Script universal ho, har timeframe par trade lena
 aasan ho. Pehle samjhein kis concept par bani hai, phir 1H par entry box theek karein, chart par clear samajh aaye."
