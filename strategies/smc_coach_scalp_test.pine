@@ -1,5 +1,6 @@
 //@version=6
 // ============================================================================
+//  sc6.2: margin 1% (leverage) - pehle 100% margin par har order "paise kam" se radd = 0 trades
 //  STRATEGY TEST copy - signal code indicator se jyon ka tyon (badlein to dono)
 //  SMC Coach — Pro (SCALP 1H + MTF Dashboard 1m→1W + Supertrend)
 //  build sc6.1 (Pine v6, 12 Oct 2026; sc6.1: EMA 50/100) — user ki bheji v5 file ka v6 roop
@@ -20,7 +21,7 @@
 //   7. Signal default sirf BAND candle par (live par jhoota ishara nahi).
 //   8. Zone ki line aur box ek saath mit-te hain (pehle alag ginti).
 // ============================================================================
-strategy("SMC Coach Scalp TEST sc6.1", overlay=true, initial_capital=100000, default_qty_type=strategy.fixed, commission_type=strategy.commission.percent, commission_value=0.01, slippage=0, process_orders_on_close=false, calc_on_every_tick=false, max_labels_count=500, max_lines_count=500, max_boxes_count=300, dynamic_requests=true)
+strategy("SMC Coach Scalp TEST sc6.2", overlay=true, initial_capital=100000, margin_long=1, margin_short=1, default_qty_type=strategy.fixed, commission_type=strategy.commission.percent, commission_value=0.01, slippage=0, process_orders_on_close=false, calc_on_every_tick=false, max_labels_count=500, max_lines_count=500, max_boxes_count=300, dynamic_requests=true)
 
 // ---------------- TF helper ----------------
 is1H = timeframe.isminutes and timeframe.multiplier == 60
@@ -417,7 +418,7 @@ if barstate.islastconfirmedhistory or barstate.islast
                 gl -= v
     pf = gl > 0 ? gp / gl : na
     pass = n >= 100 and not na(se2) and mean - se2 > 0
-    table.cell(rt, 0, 0, "SMC Scalp TEST sc6.1", text_size=size.small)
+    table.cell(rt, 0, 0, "SMC Scalp TEST sc6.2", text_size=size.small)
     table.cell(rt, 1, 0, str.tostring(fromYear) + " se", text_size=size.small)
     table.cell(rt, 0, 1, "Trades", text_size=size.small)
     table.cell(rt, 1, 1, str.tostring(n), text_size=size.small)
