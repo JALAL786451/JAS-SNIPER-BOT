@@ -286,9 +286,10 @@ newT     = tD != 0 and (nz(tD[1]) != tD or tE != tE[1] or tN != tN[1])   // nayi
 var int eBar = na      // entry ke baad pehli chart candle - RISK dabba yahan se
 if newT
     eBar := bar_index
+dayT = time("D")       // aaj ki daily candle ka shuru (har candle par ek dafa)
 var int exDay = na     // jis din pata chala ke trade close par band hui (MT5 mein khud band nahi hoti)
 if endTrade
-    exDay := time("D")
+    exDay := dayT
 if nMarks > 0 and not isHi and endTrade
     array.push(tideMarks, label.new(bar_index, tD[1] == 1 ? high : low, "Tide " + f_r(tLR),
          style = tD[1] == 1 ? label.style_label_down : label.style_label_up, size = size.tiny,
@@ -642,7 +643,7 @@ if showTable and barstate.islast
             mt5 := sdTxt + " kholein · SL " + f_px(tSL) + " · TP khali" + csRule
         else if tD != 0
             mt5 := "Nayi entry NAHI · SL " + f_px(tSL) + csRule + " · TP nahi"
-        else if not na(exDay) and exDay == time("D") and (lWhy == 2 or lWhy == 3)
+        else if not na(exDay) and exDay == dayT and (lWhy == 2 or lWhy == 3)
             mt5 := "Tide trade pichli daily close par band (" + (lWhy == 2 ? "D1 rukh palta" : "close SL ke paar") + ") · MT5 mein khuli ho to ABHI band karein"
         else if dDone
             mt5 := "Kuch nahi abhi · agle session ki PEHLI candle par table dekhein"
