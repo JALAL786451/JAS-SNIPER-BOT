@@ -188,6 +188,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
   alag data, ek jaisa. Magar ye wohi purani history hai (naya saboot nahi) aur
   +-0.47 bara hai; asal imtihan demo par aage ki trades. 2010-18 ke jungli
   saal (+2.41R) ko aaj ki umeed mat samjho.
+- **ETH par Kachhua SABIT NAHI** (11 Oct, pehle se likha qaida): 2019 se ~88 trades, Exp +0.22R (±0.39) - musbat magar shor se alag nahi. MT5 (Exness) par bhi 86 trades +0.19R - do data ek jaise. BTC (+0.58R) jaisa nahi; ETH ko Radar mein nahi jorna.
 - **BTC ki BUY lots par swap katta hai - live cent par bhi** (10 Oct, BTCUSDc
   Specification): swap long -1763.7 points, short 0. 0.01 lot BUY = -0.18 USC
   roz, 0.78 lot = -13.8 USC roz (~-96 hafta, Jumma teen guna) = qeemat ka ~7.7%
