@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.3, Pine v6)
+//  JAS TIDE + SMC   (build s2.4, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -39,6 +39,9 @@
 //  s2.3 (11 Oct, user ka 1H screenshot): SHART aur RISK dabbe ki likhai ab
 //  label mein (small, safed pas-e-manzar) - patle dabbe mein toot kar column
 //  nahi banti. SHART: toot ke level par; RISK: abhi ke SL par (qeemat ke qareeb).
+//  s2.4 (11 Oct, user: zoom par dabbe upar chhup jate): SHART/RISK ki likhai
+//  ab ABHI ki qeemat par (label_left) - zoom par bhi nazar aaye; "abhi ±R"
+//  RISK label mein. Dabba khud level/SL tak hi rehta hai.
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -48,7 +51,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.3"
+BUILD = "s2.4"
 
 // ============================================================================
 //  INPUTS
@@ -359,8 +362,9 @@ if barstate.islast
                  border_color = C_PLAN, border_style = liveT ? line.style_dotted : line.style_dashed, border_width = 1,
                  bgcolor = color.new(C_PLAN, 100))
             // likhai toot ke level par, dabbe ke andar ki taraf (BUY: level ke neeche, SELL: upar)
-            lbPlan := label.new(pL, lvl, l1 + "\n" + l2 + "\n" + l3 + "\n" + l4, xloc = xloc.bar_index,
-                 style = tRk == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = size.small,
+            // likhai ABHI ki qeemat par (zoom karne par bhi nazar aaye; level ka number likhai mein hai)
+            lbPlan := label.new(pL, stC, l1 + "\n" + l2 + "\n" + l3 + "\n" + l4, xloc = xloc.bar_index,
+                 style = label.style_label_left, size = size.small,
                  color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
         // --- RISK: trade chalu (laal = entry se shuru ke SL tak = 1R) ---------
@@ -373,22 +377,22 @@ if barstate.islast
             float  rSL   = tD * (tSL - tE) / tR - 2.0 * costPct / 100.0 * tE / tR
             float  slR   = slHit ? tD * (slPx - tE) / tR - 2.0 * costPct / 100.0 * tE / tR : na
             string eDay  = na(tETd) ? "" : str.format_time(tETd, "dd MMM", "UTC")
-            string t1 = (tD == 1 ? "▲ TIDE BUY" : "▼ TIDE SELL") + " · din " + str.tostring(tAge) + " · entry " + f_px(tE) + " (" + eDay + " daily close" + (clamp ? ", chart se pehle" : "") + ")"
+            string t1 = (tD == 1 ? "▲ TIDE BUY" : "▼ TIDE SELL") + " · din " + str.tostring(tAge) + (slHit or na(stC) ? "" : " · abhi " + f_r(tD * (stC - tE) / tR)) + " · entry " + f_px(tE) + " (" + eDay + " daily close" + (clamp ? ", chart se pehle" : "") + ")"
             string t2 = slHit ? "AAJ SL CHHU GAYA @ " + f_px(slPx) + " · ~" + f_r(slR) + " (qaide se) · MT5 mein band karein" : "SL abhi " + f_px(tSL) + " · SL par band ~" + f_r(rSL) + " (qaide se; gap ho to kam, swap/spread nahi gina)" + (not na(csT) and csT != tSL ? "\nAaj DAILY close " + f_px(csT) + (tD == 1 ? " ke neeche" : " ke upar") + " = BAND" : "") + (tRk == -tD ? "\nD1 rukh palta: aaj daily close par BAND" : "")
             string t3 = "Laal = 1R risk (shuru ka SL " + f_px(sl0) + ") · TP NAHI: SL roz aage"
             bxRisk := box.new(lft, math.max(tE, sl0), rgt, math.min(tE, sl0), xloc = xloc.bar_index,
                  border_color = color.new(C_BEAR, 30), border_style = slHit ? line.style_dashed : line.style_solid, border_width = 1,
                  bgcolor = color.new(C_BEAR, 85))
             // likhai abhi ke SL par (qeemat ke qareeb rehta hai), SL ke us taraf jidhar nuqsan
-            lbRisk := label.new(bar_index + 2, slHit ? slPx : tSL, t1 + "\n" + t2 + "\n" + t3, xloc = xloc.bar_index,
-                 style = tD == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = size.small,
+            lbRisk := label.new(bar_index + 2, nz(stC, tSL), t1 + "\n" + t2 + "\n" + t3, xloc = xloc.bar_index,
+                 style = label.style_label_left, size = size.small,
                  color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             // ABHI: entry se abhi ki qeemat tak (halka - ye faida/nuqsan hai, rukh nahi)
             if not slHit and not na(stC)
                 float rNowV = tD * (stC - tE) / tR
                 color cNow  = rNowV >= 0 ? C_BULL : C_BEAR
                 bxNow := box.new(bar_index, math.max(tE, stC), rgt, math.min(tE, stC), xloc = xloc.bar_index,
-                     border_color = color.new(cNow, 60), bgcolor = color.new(cNow, 93), text = "abhi " + f_r(rNowV),
+                     border_color = color.new(cNow, 60), bgcolor = color.new(cNow, 93), text = "",
                      text_size = size.tiny, text_color = cNow, text_halign = text.align_left, text_valign = text.align_center)
             // kal ka SL: aaj ke daily close ke baad SL yahan sarkega (qeemat paar ho to dashed = close aisa raha to BAND)
             if not slHit and not na(csT) and csT != tSL and tRk != -tD
