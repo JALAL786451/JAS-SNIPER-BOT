@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.2, Pine v6)
+//  JAS TIDE + SMC   (build s2.3, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -36,6 +36,9 @@
 //  peeche nahi (1m/5m par purani trade se script nahi rukti); "chart se pehle"
 //  wapas; entry ke din ki close ho chuki ho (hafta/break) to "der se entry
 //  NAHI" aur lot nahi.
+//  s2.3 (11 Oct, user ka 1H screenshot): SHART aur RISK dabbe ki likhai ab
+//  label mein (small, safed pas-e-manzar) - patle dabbe mein toot kar column
+//  nahi banti. SHART: toot ke level par; RISK: abhi ke SL par (qeemat ke qareeb).
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -45,7 +48,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.2"
+BUILD = "s2.3"
 
 // ============================================================================
 //  INPUTS
@@ -312,6 +315,8 @@ var box  bxNow  = na
 var line lnNext = na
 var box  bxRes  = na
 var line lnDay  = na
+var label lbPlan = na   // dabbe ki likhai label mein (dabba patla ho to bhi nahi toot-ti)
+var label lbRisk = na
 
 if barstate.islast
     box.delete(bxPlan)
@@ -321,6 +326,8 @@ if barstate.islast
     line.delete(lnNext)
     box.delete(bxRes)
     line.delete(lnDay)
+    label.delete(lbPlan)
+    label.delete(lbRisk)
     bxPlan := na
     lnPlan := na
     bxRisk := na
@@ -328,6 +335,8 @@ if barstate.islast
     lnNext := na
     bxRes  := na
     lnDay  := na
+    lbPlan := na
+    lbRisk := na
     if showBox and not isHi and bd > 0
         bool   dDone    = not na(dCt) and timenow >= dCt
         string closeTxt = dDone ? "agle session ki PEHLI candle" : str.format_time(dCt, "HH:mm", tz) + " " + tzName
@@ -348,9 +357,11 @@ if barstate.islast
             string l4 = sdTxt + " Stop / pending order mat lagayein"
             bxPlan := box.new(pL, math.max(lvl, slp), pR, math.min(lvl, slp), xloc = xloc.bar_index,
                  border_color = C_PLAN, border_style = liveT ? line.style_dotted : line.style_dashed, border_width = 1,
-                 bgcolor = color.new(C_PLAN, 100), text = l1 + "\n" + l2 + "\n" + l3 + "\n" + l4, text_size = size.tiny,
-                 text_color = C_TXT, text_halign = text.align_left, text_valign = tRk == 1 ? text.align_top : text.align_bottom,
-                 text_wrap = text.wrap_auto)
+                 bgcolor = color.new(C_PLAN, 100))
+            // likhai toot ke level par, dabbe ke andar ki taraf (BUY: level ke neeche, SELL: upar)
+            lbPlan := label.new(pL, lvl, l1 + "\n" + l2 + "\n" + l3 + "\n" + l4, xloc = xloc.bar_index,
+                 style = tRk == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = size.small,
+                 color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
         // --- RISK: trade chalu (laal = entry se shuru ke SL tak = 1R) ---------
         if tD != 0 and not na(tE) and not na(tR) and tR > 0
@@ -367,8 +378,11 @@ if barstate.islast
             string t3 = "Laal = 1R risk (shuru ka SL " + f_px(sl0) + ") · TP NAHI: SL roz aage"
             bxRisk := box.new(lft, math.max(tE, sl0), rgt, math.min(tE, sl0), xloc = xloc.bar_index,
                  border_color = color.new(C_BEAR, 30), border_style = slHit ? line.style_dashed : line.style_solid, border_width = 1,
-                 bgcolor = color.new(C_BEAR, 85), text = t1 + "\n" + t2 + "\n" + t3, text_size = size.tiny, text_color = C_TXT,
-                 text_halign = text.align_right, text_valign = tD == 1 ? text.align_bottom : text.align_top, text_wrap = text.wrap_auto)
+                 bgcolor = color.new(C_BEAR, 85))
+            // likhai abhi ke SL par (qeemat ke qareeb rehta hai), SL ke us taraf jidhar nuqsan
+            lbRisk := label.new(bar_index + 2, slHit ? slPx : tSL, t1 + "\n" + t2 + "\n" + t3, xloc = xloc.bar_index,
+                 style = tD == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = size.small,
+                 color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             // ABHI: entry se abhi ki qeemat tak (halka - ye faida/nuqsan hai, rukh nahi)
             if not slHit and not na(stC)
                 float rNowV = tD * (stC - tE) / tR
