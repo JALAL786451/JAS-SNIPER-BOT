@@ -31,6 +31,9 @@ Aakhri update: 10 October 2026.
   khud ek dafa kare. (2) Chat lambi ho jaye (ek bara kaam khatam) to **nayi chat**
   `JAS-DESK-V3-0110` code se - har naya message poori purani chat dobara parhta hai.
   (3) Jawab chhote. (4) Chhote qadam (paste / screenshot check) ek message mein.
+  (5) Purani chats (left list) idle hon to usage NAHI khaatin - sirf chalti chat
+  khaati hai; 11 Oct ko koi Routine bhi chalu nahi tha. (6) Har chat 'xhigh' effort
+  par thi - rozmarra ke kaam ke liye 'high' ya 'medium' kaafi.
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
