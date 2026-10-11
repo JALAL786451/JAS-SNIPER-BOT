@@ -361,7 +361,7 @@ plotshape(sigSellTotal and not bothSig, title="Sell", style=shape.triangledown, 
 // alertcondition(sigSellTotal and not bothSig, "SMC Sell", "SMC Coach: Sell")
 
 // ============== STRATEGY (naap) ==============
-// Pehle se likha qaida (12 Oct, test se PEHLE): XAUUSD 1H, 2019 se,
+// Pehle se likha qaida (12 Oct, test se PEHLE): XAUUSD 15m (user: daily/1H nahi), jitna data mile,
 // trades >= 100 aur Exp - 2SE > 0 = PASS. Warna FAIL. Settings ghuma kar dobara nahi.
 grpT     = "Test"
 riskPct  = input.float(1.0, "Risk % har trade", minval=0.1, maxval=2, group=grpT)
