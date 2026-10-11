@@ -20,6 +20,7 @@ usi taraf chalta hai. Claude ka design nahi, ek purana aam qaida.
 | 4 | **TP nahi.** Band: SL, ya 15:50 NY waqt (raat ko trade nahi) |
 | 5 | **Lot** = 1% risk (broker ka OrderCalcProfit). Spread asli (Tester ka). Grid / martingale / averaging nahi |
 | 6 | Koi filter nahi (rukh, ATR, din). Har filter = naya tuning ka darwaza |
+| 7 | (Amal, 'D' ke baad likha) Sirf Peer-Jumma NY din. Entry 9:45 se 15:50 tak. Toot = bid range ke paar (BUY ask par bharti = spread shamil). US chhuttiyan alag nahi gini: range candle mile to trade. R = (faida + swap + commission) / shuru ke SL tak ka paisa |
 
 ## Kahan test: MT5 Tester (TradingView nahi)
 
