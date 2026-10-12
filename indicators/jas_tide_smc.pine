@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.5, Pine v6)
+//  JAS TIDE + SMC   (build s2.6, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -52,6 +52,10 @@
 //  umeed ki taraf (high ka sweep = LGB↓ laal; SMC Coach mein usi ko LGB↑ kehte).
 //  Mota label trend ki ulti taraf (BUY: qeemat ke neeche) taake table ke neeche
 //  na chhupe. Jaanch (4 agent): text_formatting sirf seedhe constant se. Engine WAHI.
+//  s2.6 (12 Oct raat, user ka screenshot): SHART ka KHALI dabba (toot level se
+//  SL tak, sleti nuqte wala) aur us ke kinare wali SL lakeer default BAND -
+//  likhai mein level aur SL pehle se hain. Wapas chahiye to Settings → 2 ·
+//  'SHART ka khali dabba'. Engine WAHI.
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -61,7 +65,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.5"
+BUILD = "s2.6"
 
 // ============================================================================
 //  INPUTS
@@ -79,6 +83,7 @@ statYear  = input.int(2019, "Naap: is saal se alag ginti", minval = 1990, maxval
 
 grT = "2 · Tide chart par"
 showBox    = input.bool(true, "Tide dabba (shart / trade / nateeja)", group = grT, display = display.none)
+showPlanBx = input.bool(false, "SHART ka khali dabba (level se SL tak)", tooltip = "s2.6: default BAND - level aur SL likhai mein pehle se hain.", group = grT, display = display.none)
 showSLplot = input.bool(true, "Sarakta SL ki lakeer", group = grT, display = display.none)
 showFaisla = input.bool(true, "Faisle ka waqt (daily close) - khari lakeer", group = grT, display = display.none)
 nMarks     = input.int(5, "Purane nateeje (±R) kitne", minval = 0, maxval = 10, group = grT, display = display.none)
@@ -377,9 +382,11 @@ if barstate.islast
             string l2 = "DAILY close " + f_px(lvl) + (tRk == 1 ? " ke UPAR" : " ke NEECHE") + (liveT ? "" : " + ATR >= " + str.tostring(minAtrPct) + "%") + " = " + sdTxt + (dDone ? "" : " (" + closeTxt + ")")
             string l3 = "SL ~" + f_px(slp) + " (kal ki ATR) · 1R ~" + f_px(atrMult * tAtr)
             string l4 = sdTxt + " Stop / pending order mat lagayein"
-            bxPlan := box.new(pL, math.max(lvl, slp), pR, math.min(lvl, slp), xloc = xloc.bar_index,
-                 border_color = C_PLAN, border_style = liveT ? line.style_dotted : line.style_dashed, border_width = 1,
-                 bgcolor = color.new(C_PLAN, 100))
+            // s2.6: khali dabba default BAND (user: chart saaf) - Settings se wapas
+            if showPlanBx
+                bxPlan := box.new(pL, math.max(lvl, slp), pR, math.min(lvl, slp), xloc = xloc.bar_index,
+                     border_color = C_PLAN, border_style = liveT ? line.style_dotted : line.style_dashed, border_width = 1,
+                     bgcolor = color.new(C_PLAN, 100))
             // likhai toot ke level par, dabbe ke andar ki taraf (BUY: level ke neeche, SELL: upar)
             // likhai ABHI ki qeemat par (zoom karne par bhi nazar aaye; level ka number likhai mein hai)
             // s2.5: NAZAR WALI baat (toot level + SL) mota rangeen label qeemat ke UPAR, tafseel NEECHE
@@ -392,7 +399,8 @@ if barstate.islast
             lbPlan := label.new(pL, stC, l3 + "\n" + l4, xloc = xloc.bar_index,
                  style = tRk == 1 ? label.style_label_lower_left : label.style_label_upper_left, size = fsC,
                  color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
-            lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
+            if showPlanBx
+                lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
         // --- RISK: trade chalu (laal = entry se shuru ke SL tak = 1R) ---------
         if tD != 0 and not na(tE) and not na(tR) and tR > 0
             // bar_index wala kinara 9999 candle se peeche nahi ja sakta (warna script ruk jati)

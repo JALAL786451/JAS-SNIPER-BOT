@@ -4,7 +4,17 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
+
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+
+**BRANCH BADLI:** sara kaam ab `claude/blissful-planck-f5z439` par (is mein `claude/confident-noether-brkdsl` ka sab kuch + neeche wala s2.6).
+
+- **Tide+SMC s2.5 compile ✅** (user ka gold screenshot: laal mota label 'SHART · abhi trade NAHI · DAILY close 4066.535 ke NEECHE = SELL (02:00 PKT) · SL ~4237.983' chal raha).
+- **User: label ke peeche khali sleti nuqte wala dabba (black teer) khatam karo.** Ye SHART dabba (`bxPlan`) tha - toot level 4066.535 se SL 4237.983 tak (2 ATR), andar kuch nahi. **s2.6:** ye dabba + us ke upar wali SL ki nuqte wali lakeer (`lnPlan`) default BAND; Settings -> '2 · Tide chart par' -> 'SHART ka khali dabba (level se SL tak)' se wapas. Level aur SL dono label mein pehle se hain. RISK / NATEEJA dabbe, engine, table WAHI. pinecheck saaf; **compile baqi.**
+- **AGLA QADAM:** TradingView mein JAS Tide+SMC ka code s2.6 se badal kar Save -> gold 1D screenshot (dabba gayab, label wahi). Phir 19 Oct ko demo panels.
+
+## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/confident-noether-brkdsl. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
