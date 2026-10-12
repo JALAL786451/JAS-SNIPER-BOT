@@ -37,10 +37,13 @@ var array<int> wF = array.new<int>(5, 0)
 var array<int> aN = array.new<int>(5, 0)
 var array<int> aF = array.new<int>(5, 0)
 
+loN = ta.lowest(low, lookN)
+hiN = ta.highest(high, lookN)
+fillL = loN <= low[lookN]
+fillU = hiN >= high[lookN]
+
 // N din pehle ka waqia, ab us ka faisla (sirf band candles)
 if barstate.isconfirmed and bar_index > lookN + 20 and year(time[lookN]) >= fromYear
-    fillL = ta.lowest(low, lookN) <= low[lookN]
-    fillU = ta.highest(high, lookN) >= high[lookN]
     bL = f_b(dL[lookN])
     bU = f_b(dU[lookN])
     if bL >= 0
