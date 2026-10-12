@@ -1,0 +1,75 @@
+//@version=6
+// ============================================================================
+//  JAS GHANTA GINTI  (build h1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//  Idea dhoondne ka aala: gold ka har GHANTA (PKT) aur har DIN kaisa chalta hai.
+//  Chart: 1H (zaroori). Har candle apne PKT ghante mein ginti hoti hai.
+//
+//  Columns:
+//   Ginti  = kitni candles
+//   Harkat = ausat (high - low) % mein  -> kab bazaar zyada hilta hai
+//   Rukh   = ausat (close - open) % mein, ±2SE  -> kya koi ghanta upar/neeche jhukta hai
+//   Upar   = kitni candles hari
+//   ★      = |Rukh| > 2SE (shor se alag). 24 ghanton mein ~1 ★ ITTEFAQ se bhi
+//            aa jata hai - ★ sirf IDEA hai, saboot nahi. Har idea ka alag
+//            pehle se likha test hoga.
+// ============================================================================
+indicator("JAS Ghanta Ginti h1", overlay=true)
+
+fromYear = input.int(2019, "Kis saal se")
+tz       = input.string("Asia/Karachi", "Waqt ka zone")
+
+var array<int>   hN  = array.new<int>(24, 0)
+var array<float> hR  = array.new<float>(24, 0.0)
+var array<float> hR2 = array.new<float>(24, 0.0)
+var array<float> hHL = array.new<float>(24, 0.0)
+var array<int>   hUp = array.new<int>(24, 0)
+var array<int>   dN  = array.new<int>(7, 0)
+var array<float> dR  = array.new<float>(7, 0.0)
+var array<float> dR2 = array.new<float>(7, 0.0)
+var array<float> dHL = array.new<float>(7, 0.0)
+var array<int>   dUp = array.new<int>(7, 0)
+
+if barstate.isconfirmed and year(time) >= fromYear and open > 0
+    h = hour(time, tz)
+    d = dayofweek(time, tz) - 1
+    r  = (close - open) / open * 100
+    hl = (high - low) / open * 100
+    array.set(hN, h, array.get(hN, h) + 1)
+    array.set(hR, h, array.get(hR, h) + r)
+    array.set(hR2, h, array.get(hR2, h) + r * r)
+    array.set(hHL, h, array.get(hHL, h) + hl)
+    array.set(hUp, h, array.get(hUp, h) + (close > open ? 1 : 0))
+    array.set(dN, d, array.get(dN, d) + 1)
+    array.set(dR, d, array.get(dR, d) + r)
+    array.set(dR2, d, array.get(dR2, d) + r * r)
+    array.set(dHL, d, array.get(dHL, d) + hl)
+    array.set(dUp, d, array.get(dUp, d) + (close > open ? 1 : 0))
+
+f_row(table t, int row, string name, int n, float s, float s2, float shl, int up) =>
+    float m   = n > 0 ? s / n : na
+    float sd  = n > 1 ? math.sqrt(math.max(s2 - s * s / n, 0) / (n - 1)) : na
+    float se2 = n > 1 ? 2 * sd / math.sqrt(n) : na
+    bool star = not na(se2) and math.abs(m) > se2
+    color c = na(m) ? color.gray : star ? (m > 0 ? color.green : color.red) : color.black
+    table.cell(t, 0, row, name, text_size=size.tiny)
+    table.cell(t, 1, row, str.tostring(n), text_size=size.tiny)
+    table.cell(t, 2, row, n > 0 ? str.tostring(shl / n, "#.000") + "%" : "-", text_size=size.tiny)
+    table.cell(t, 3, row, na(m) ? "-" : str.tostring(m, "+#.0000;-#.0000") + " ±" + str.tostring(se2, "#.0000") + (star ? " ★" : ""), text_color=c, text_size=size.tiny)
+    table.cell(t, 4, row, n > 0 ? str.tostring(100.0 * up / n, "#.0") + "%" : "-", text_size=size.tiny)
+
+var table t = table.new(position.top_right, 5, 34, bgcolor=color.new(color.white, 5), border_width=1)
+if barstate.islastconfirmedhistory or barstate.islast
+    table.clear(t, 0, 0, 4, 33)
+    ok = timeframe.isminutes and timeframe.multiplier == 60
+    table.cell(t, 0, 0, "GHANTA h1" + (ok ? "" : " (1H chart lagayein!)"), text_size=size.tiny, text_color=ok ? color.black : color.red)
+    table.cell(t, 1, 0, "Ginti", text_size=size.tiny)
+    table.cell(t, 2, 0, "Harkat", text_size=size.tiny)
+    table.cell(t, 3, 0, "Rukh % (±2SE)", text_size=size.tiny)
+    table.cell(t, 4, 0, "Upar", text_size=size.tiny)
+    for h = 0 to 23
+        f_row(t, 1 + h, str.format("{0,number,00}:00 PKT", h), array.get(hN, h), array.get(hR, h), array.get(hR2, h), array.get(hHL, h), array.get(hUp, h))
+    days = array.from("Itwar", "Peer", "Mangal", "Budh", "Jumerat", "Jumma", "Hafta")
+    table.cell(t, 0, 25, "DIN", text_size=size.tiny)
+    for d = 0 to 6
+        f_row(t, 26 + d, array.get(days, d), array.get(dN, d), array.get(dR, d), array.get(dR2, d), array.get(dHL, d), array.get(dUp, d))
+    table.cell(t, 0, 33, str.tostring(fromYear) + " se · ★ = idea, saboot nahi", text_size=size.tiny)
