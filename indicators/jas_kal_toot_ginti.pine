@@ -1,0 +1,79 @@
+//@version=6
+// ============================================================================
+//  JAS KAL-TOOT GINTI  (build k1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//  Sawal: aaj kal ke HIGH ke upar BAND hua -> agle din / agle 5 din kya hua?
+//         (aur ulta: kal ke LOW ke neeche band; aur beech mein band)
+//  Chart: 1D (zaroori). Sirf band candles.
+//
+//  Columns:
+//   Ginti      = kitne din
+//   Agla din   = agle din ka ausat close-se-close % (±2SE)
+//   5 din      = agle 5 din ka ausat % (±2SE)
+//   Upar       = agla din kitni dafa upar band hua
+//   FARK       = "Agla din" minus SAB dinon ka ausat (gold ki aam tezi hata kar)
+//   ★          = |FARK| > 2SE -> sirf IDEA (3 groups mein ittefaq bhi ho sakta hai)
+// ============================================================================
+indicator("JAS Kal-Toot Ginti k1", overlay=true)
+
+fromYear = input.int(2000, "Kis saal se")
+
+// group: 1 = kal ke high ke upar band, -1 = kal ke low ke neeche band, 0 = beech mein
+f_grp(int k) => close[k] > high[k + 1] ? 1 : close[k] < low[k + 1] ? -1 : 0
+
+var array<int>   n1 = array.new<int>(3, 0)
+var array<float> s1 = array.new<float>(3, 0.0)
+var array<float> q1 = array.new<float>(3, 0.0)
+var array<int>   u1 = array.new<int>(3, 0)
+var array<int>   n5 = array.new<int>(3, 0)
+var array<float> s5 = array.new<float>(3, 0.0)
+var array<float> q5 = array.new<float>(3, 0.0)
+
+if barstate.isconfirmed and year(time) >= fromYear and bar_index > 7
+    g1 = f_grp(1) + 1
+    r1 = (close - close[1]) / close[1] * 100
+    array.set(n1, g1, array.get(n1, g1) + 1)
+    array.set(s1, g1, array.get(s1, g1) + r1)
+    array.set(q1, g1, array.get(q1, g1) + r1 * r1)
+    array.set(u1, g1, array.get(u1, g1) + (r1 > 0 ? 1 : 0))
+    g5 = f_grp(5) + 1
+    r5 = (close - close[5]) / close[5] * 100
+    array.set(n5, g5, array.get(n5, g5) + 1)
+    array.set(s5, g5, array.get(s5, g5) + r5)
+    array.set(q5, g5, array.get(q5, g5) + r5 * r5)
+
+f_m(float s, int n) => n > 0 ? s / n : na
+f_se2(float s, float q, int n) => n > 1 ? 2 * math.sqrt(math.max(q - s * s / n, 0) / (n - 1)) / math.sqrt(n) : na
+f_txt(float m, float e) => na(m) ? "-" : str.tostring(m, "+#.000;-#.000") + "% ±" + str.tostring(e, "#.000")
+
+var table t = table.new(position.top_right, 6, 6, bgcolor=color.new(color.white, 5), border_width=1)
+if barstate.islastconfirmedhistory or barstate.islast
+    table.clear(t, 0, 0, 5, 5)
+    ok = timeframe.isdaily and timeframe.multiplier == 1
+    nAll = array.sum(n1)
+    mAll = nAll > 0 ? array.sum(s1) / nAll : na
+    table.cell(t, 0, 0, "KAL-TOOT k1" + (ok ? "" : " (1D chart!)"), text_color=ok ? color.black : color.red, text_size=size.small)
+    table.cell(t, 1, 0, "Ginti", text_size=size.small)
+    table.cell(t, 2, 0, "Agla din", text_size=size.small)
+    table.cell(t, 3, 0, "5 din", text_size=size.small)
+    table.cell(t, 4, 0, "Upar", text_size=size.small)
+    table.cell(t, 5, 0, "FARK (agla din)", text_size=size.small)
+    names = array.from("Kal LOW ke neeche band", "Beech mein band", "Kal HIGH ke upar band")
+    for g = 2 to 0
+        row = 3 - g
+        n = array.get(n1, g)
+        m = f_m(array.get(s1, g), n)
+        e = f_se2(array.get(s1, g), array.get(q1, g), n)
+        m5 = f_m(array.get(s5, g), array.get(n5, g))
+        e5 = f_se2(array.get(s5, g), array.get(q5, g), array.get(n5, g))
+        fk = na(m) ? na : m - mAll
+        star = not na(fk) and not na(e) and math.abs(fk) > e
+        table.cell(t, 0, row, array.get(names, g), text_size=size.small)
+        table.cell(t, 1, row, str.tostring(n), text_size=size.small)
+        table.cell(t, 2, row, f_txt(m, e), text_size=size.small)
+        table.cell(t, 3, row, f_txt(m5, e5), text_size=size.small)
+        table.cell(t, 4, row, n > 0 ? str.tostring(100.0 * array.get(u1, g) / n, "#.0") + "%" : "-", text_size=size.small)
+        table.cell(t, 5, row, na(fk) ? "-" : str.tostring(fk, "+#.000;-#.000") + "%" + (star ? " ★" : ""), text_color=star ? (fk > 0 ? color.green : color.red) : color.black, text_size=size.small)
+    table.cell(t, 0, 4, "SAB din (buniyad)", text_size=size.small)
+    table.cell(t, 1, 4, str.tostring(nAll), text_size=size.small)
+    table.cell(t, 2, 4, na(mAll) ? "-" : str.tostring(mAll, "+#.000;-#.000") + "%", text_size=size.small)
+    table.cell(t, 0, 5, str.tostring(fromYear) + " se · ★ = idea, saboot nahi", text_size=size.small)
