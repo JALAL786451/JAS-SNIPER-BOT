@@ -1,0 +1,155 @@
+//@version=6
+// ============================================================================
+//  JAS Swing Fail GINTI  (build g1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//
+//  User ka sawal: low 100 -> high 150 -> pullback mein 100 toota (80 tak)
+//  -> wapas 150 toota? (ICT Judas swing / SFP / Raschke "Turtle Soup")
+//
+//  Ginti (har toot ek waqia):
+//   - Swing pivot L/R (default 3). Pehle low L, us ke BAAD high H.
+//   - Close L ke neeche = waqia shuru (bullish SFP ka imtihan).
+//   - A = pehle close H ke UPAR (aap wali shakal)
+//   - B = pehle close L - (H - L) ke NEECHE (utna hi fasla neeche)
+//   - Dono fasle barabar hain, is liye ittefaq = ~50% A.
+//   - Ulta bhi (high toota -> pehle low toota = A).
+//   - Dono taraf mila kar ginte hain taake gold ki upar wali tezi (drift)
+//     ek taraf ko faida na de.
+//
+//  Pehle se likha qaida (12 Oct, ginti se PEHLE):
+//   waqiat >= 200 aur A% - 2SE > 50%  = "SHAKAL ASLI" (strategy ke qabil)
+//   warna "ITTEFAQ". Settings / TF ghuma kar dobara faisla nahi.
+// ============================================================================
+indicator("JAS Swing Fail GINTI g1", overlay=true, max_labels_count=500)
+
+pivLR   = input.int(3, "Swing pivot L/R", minval=1)
+showLbl = input.bool(false, "Chart par A/B nishan")
+
+ph = ta.pivothigh(high, pivLR, pivLR)
+pl = ta.pivotlow(low, pivLR, pivLR)
+
+var float lastHi = na
+var float lastLo = na
+var int   hiIdx  = na
+var int   loIdx  = na
+var bool  hiUsed = true
+var bool  loUsed = true
+
+if not na(ph)
+    lastHi := ph
+    hiIdx  := bar_index - pivLR
+    hiUsed := false
+if not na(pl)
+    lastLo := pl
+    loIdx  := bar_index - pivLR
+    loUsed := false
+
+// waqia: bullish (low toota), bearish (high toota)
+var bool  bOn = false
+var float bH  = na
+var float bL  = na
+var bool  sOn = false
+var float sH  = na
+var float sL  = na
+
+var array<int> yrs = array.new<int>()
+var array<int> yA  = array.new<int>()
+var array<int> yN  = array.new<int>()
+var int nA_b = 0
+var int nN_b = 0
+var int nA_s = 0
+var int nN_s = 0
+
+f_add(int y, bool isA) =>
+    idx = array.indexof(yrs, y)
+    if idx < 0
+        array.push(yrs, y)
+        array.push(yA, isA ? 1 : 0)
+        array.push(yN, 1)
+    else
+        array.set(yA, idx, array.get(yA, idx) + (isA ? 1 : 0))
+        array.set(yN, idx, array.get(yN, idx) + 1)
+
+// pehle chalu waqiat ka faisla (isi candle ke close par)
+if bOn
+    if close > bH
+        bOn := false
+        nA_b += 1
+        nN_b += 1
+        f_add(year(time), true)
+        if showLbl
+            label.new(bar_index, low, "A", style=label.style_label_up, color=color.new(color.green, 0), textcolor=color.white, size=size.tiny)
+    else if close < bL - (bH - bL)
+        bOn := false
+        nN_b += 1
+        f_add(year(time), false)
+        if showLbl
+            label.new(bar_index, high, "B", style=label.style_label_down, color=color.new(color.red, 0), textcolor=color.white, size=size.tiny)
+if sOn
+    if close < sL
+        sOn := false
+        nA_s += 1
+        nN_s += 1
+        f_add(year(time), true)
+        if showLbl
+            label.new(bar_index, high, "A", style=label.style_label_down, color=color.new(color.green, 0), textcolor=color.white, size=size.tiny)
+    else if close > sH + (sH - sL)
+        sOn := false
+        nN_s += 1
+        f_add(year(time), false)
+        if showLbl
+            label.new(bar_index, low, "B", style=label.style_label_up, color=color.new(color.red, 0), textcolor=color.white, size=size.tiny)
+
+// naye waqiat: low L pehle, high H baad mein, phir close L ke neeche
+if not bOn and not loUsed and not na(lastLo) and not na(lastHi) and hiIdx > loIdx and lastHi > lastLo and close < lastLo
+    bOn := true
+    bH := lastHi
+    bL := lastLo
+    loUsed := true
+// ulta: high pehle, low baad mein, phir close H ke upar
+if not sOn and not hiUsed and not na(lastLo) and not na(lastHi) and loIdx > hiIdx and lastHi > lastLo and close > lastHi
+    sOn := true
+    sH := lastHi
+    sL := lastLo
+    hiUsed := true
+
+// ============== TABLE ==============
+f_pct(int a, int n) => n > 0 ? str.tostring(100.0 * a / n, "#.0") + "%" : "-"
+f_se2(int n) => n > 0 ? 2 * math.sqrt(0.25 / n) * 100 : na
+
+var table t = table.new(position.top_right, 4, 20, bgcolor=color.new(color.white, 10), border_width=1)
+if barstate.islastconfirmedhistory or barstate.islast
+    table.clear(t, 0, 0, 3, 19)
+    nA = nA_b + nA_s
+    nN = nN_b + nN_s
+    pA = nN > 0 ? 100.0 * nA / nN : na
+    se = f_se2(nN)
+    asli = nN >= 200 and not na(pA) and pA - se > 50
+    table.cell(t, 0, 0, "SWING FAIL g1", text_size=size.small)
+    table.cell(t, 1, 0, "Waqiat", text_size=size.small)
+    table.cell(t, 2, 0, "A (wapas toota)", text_size=size.small)
+    table.cell(t, 3, 0, "A %", text_size=size.small)
+    table.cell(t, 0, 1, "Low toota → high?", text_size=size.small)
+    table.cell(t, 1, 1, str.tostring(nN_b), text_size=size.small)
+    table.cell(t, 2, 1, str.tostring(nA_b), text_size=size.small)
+    table.cell(t, 3, 1, f_pct(nA_b, nN_b), text_size=size.small)
+    table.cell(t, 0, 2, "High toota → low?", text_size=size.small)
+    table.cell(t, 1, 2, str.tostring(nN_s), text_size=size.small)
+    table.cell(t, 2, 2, str.tostring(nA_s), text_size=size.small)
+    table.cell(t, 3, 2, f_pct(nA_s, nN_s), text_size=size.small)
+    table.cell(t, 0, 3, "MILA (faisla)", text_size=size.small)
+    table.cell(t, 1, 3, str.tostring(nN), text_size=size.small)
+    table.cell(t, 2, 3, str.tostring(nA), text_size=size.small)
+    table.cell(t, 3, 3, na(pA) ? "-" : str.tostring(pA, "#.0") + "% (±" + str.tostring(se, "#.0") + ")", text_size=size.small)
+    table.cell(t, 0, 4, "QAIDA", text_size=size.small)
+    table.cell(t, 1, 4, "ittefaq = 50%", text_size=size.small)
+    table.cell(t, 2, 4, nN >= 200 ? "" : "waqiat < 200", text_size=size.small)
+    table.cell(t, 3, 4, asli ? "SHAKAL ASLI" : "ITTEFAQ", text_color=asli ? color.green : color.red, text_size=size.small)
+    n = math.min(array.size(yrs), 14)
+    start = array.size(yrs) - n
+    if n > 0
+        for k = 0 to n - 1
+            i = start + k
+            table.cell(t, 0, 5 + k, str.tostring(array.get(yrs, i)), text_size=size.small)
+            table.cell(t, 1, 5 + k, str.tostring(array.get(yN, i)), text_size=size.small)
+            table.cell(t, 2, 5 + k, str.tostring(array.get(yA, i)), text_size=size.small)
+            table.cell(t, 3, 5 + k, f_pct(array.get(yA, i), array.get(yN, i)), text_size=size.small)
