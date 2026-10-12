@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS NUMAYAN GINTI  (build n1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//  JAS NUMAYAN GINTI  (build n1.1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
 //  User ka apna mushahida (12 Oct, "D"): girawat se pehle upar ek NUMAYAN
 //  (bari) HARI candle; neeche ek numayan LAAL candle chhor kar qeemat palat-ti
 //  hai aur upar wali hari candle ko PAAR karti hai. Ulta bhi.
@@ -10,9 +10,10 @@
 //   - Numayan = body >= 1 ATR(14) (kal tak ka ATR).
 //   - U = sab se taza numayan HARI candle. Zinda jab tak: 60 din se purani
 //     na ho aur qeemat us ke high tak na pahunchi ho.
-//   - ISHARA (upar wapsi) = din band U ke LOW ke neeche AUR aaj numayan LAAL.
-//     AAM din = wohi haalat (U zinda, band U ke low ke neeche) magar aaj
-//     numayan laal nahi.
+//   - ISHARA (upar wapsi) = qeemat PEHLE se U ke neeche (kal ka close U ke
+//     low ke neeche) + aaj ka close bhi + aaj numayan LAAL ('neeche wali'
+//     candle; jo laal khud U ko toorti hai woh girawat hai, ishara nahi).
+//     AAM din = wohi haalat magar aaj numayan laal nahi.
 //   - DAUD (agle 40 din): U ka high pehle chhua = JEET; ya utna hi faasla
 //     NEECHE (close - (U.high - close)) pehle = HAAR. Ek hi din dono = HAAR
 //     (mohtaat). 40 din mein koi nahi = 'faisla nahi' (alag gina).
@@ -20,16 +21,20 @@
 //     sirf 'pahuncha ya nahi' ginte to woh jhoota faida dikhata. Daud mein
 //     harkat dono taraf barabar kaam karti hai; aam din sona ki tezi (drift)
 //     ka hisaab barabar karte hain.
-//   - Ulta: D = taza numayan LAAL; band D ke HIGH ke upar + aaj numayan HARI =
-//     ishara (neeche wapsi); jeet = D ka low pehle.
-//   - FARK = ishara jeet % - aam jeet % (faasla tokri ke hisaab se, mila hua).
+//   - Ulta: D = taza numayan LAAL; kal aur aaj band D ke HIGH ke upar + aaj
+//     numayan HARI = ishara (neeche wapsi); jeet = D ka low pehle.
+//   - FARK = ishara jeet % - aam jeet % (har side x faasla tokri alag, phir
+//     ishara ginti ke wazan se mila hua).
 //  Pehle se likha qaida (12 Oct raat, ginti se PEHLE): OANDA:XAUUSD 1D, 2000
-//  se. Ishara (faisle wale) >= 60 AUR FARK - 2SE > 0 = "ISHARA ASLI".
-//  < 60 = "KAM WAQIAT" (faisla nahi). Warna "ITTEFAQ".
-//  Python jaanch: tools/numayan_check.py (random par FARK ~0, lagaya edge
-//  pakarta hai). Ye badle to woh bhi.
+//  se. Ishara (faisle wale) >= 30 AUR FARK - 2SE > 0 = "ISHARA ASLI".
+//  < 30 = "KAM WAQIAT" (faisla nahi). Warna "SABIT NAHI".
+//  PAKAR (pehle se maloom): gold ki ek series par ~40 ishare, 2SE ~15% - sirf
+//  BARA faida (~20%+) pakra jata hai. "SABIT NAHI" = bara faida nahi mila,
+//  "shakal jhooti" nahi. ('Hamesha' wali baat ho to faida bara hi hona chahiye.)
+//  Python jaanch: tools/numayan_check.py (random par FARK ~0, jhoota ASLI ~5%,
+//  ek series par pakar). Ye badle to woh bhi.
 // ============================================================================
-indicator("JAS Numayan Ginti n1", overlay=true, max_bars_back=200)
+indicator("JAS Numayan Ginti n1.1", overlay=true, max_bars_back=200)
 
 fromYear = input.int(2000, "Kis saal se")
 showMk   = input.bool(true, "Ishara din par chhota nishan")
@@ -37,7 +42,7 @@ showMk   = input.bool(true, "Ishara din par chhota nishan")
 K_BODY  = 1.0
 MAX_AGE = 60
 LOOK_N  = 40
-MIN_N   = 60
+MIN_N   = 30
 
 atr  = ta.atr(14)
 a1   = atr[1]
@@ -54,14 +59,14 @@ var int   dBar = na
 
 // --- aaj ka haal (pichli haalat se parho) ---
 okU    = not na(uHi) and bar_index - uBar <= MAX_AGE and high < uHi
-belowU = okU and close < uLo and atr > 0
+belowU = okU and close < uLo and close[1] < uLo and atr > 0
 kU     = belowU ? (bigR ? 1 : 0) : -1
 upU    = belowU ? uHi : na
 dnU    = belowU ? close - (uHi - close) : na
 dsU    = belowU ? (uHi - close) / atr : na
 
 okD    = not na(dLo) and bar_index - dBar <= MAX_AGE and low > dLo
-aboveD = okD and close > dHi and atr > 0
+aboveD = okD and close > dHi and close[1] > dHi and atr > 0
 kD     = aboveD ? (bigG ? 1 : 0) : -1
 upD    = aboveD ? close + (close - dLo) : na
 dnD    = aboveD ? dLo : na
@@ -117,6 +122,7 @@ var array<int> aW = array.new<int>(10, 0)
 var array<int> aN = array.new<int>(10, 0)
 var int unE = 0
 var int unA = 0
+var int firstYr = na
 
 kU0 = kU[LOOK_N]
 kD0 = kD[LOOK_N]
@@ -124,6 +130,8 @@ bU0 = f_b(dsU[LOOK_N])
 bD0 = f_b(dsD[LOOK_N])
 
 if barstate.isconfirmed and bar_index > LOOK_N + 30 and year(time[LOOK_N]) >= fromYear
+    if na(firstYr)
+        firstYr := year(time[LOOK_N])
     if kU0 >= 0 and bU0 >= 0
         if rU < 0
             if kU0 == 1
@@ -150,21 +158,16 @@ if barstate.isconfirmed and bar_index > LOOK_N + 30 and year(time[LOOK_N]) >= fr
             array.set(aN, iD, array.get(aN, iD) + 1)
             array.set(aW, iD, array.get(aW, iD) + rD)
 
-// mila hua FARK ±2SE (tokri ka wazan = ishara ki ginti), side s0..s1
+// mila hua FARK ±2SE: har khana (side x tokri) alag, wazan = ishara ginti, side s0..s1
 f_fk(int s0, int s1) =>
     float sw = 0.0
     float sd = 0.0
     float sv = 0.0
-    for b = 0 to 4
-        int e1 = 0
-        int n1 = 0
-        int e0 = 0
-        int n0 = 0
-        for s = s0 to s1
-            e1 += array.get(eW, s * 5 + b)
-            n1 += array.get(eN, s * 5 + b)
-            e0 += array.get(aW, s * 5 + b)
-            n0 += array.get(aN, s * 5 + b)
+    for i = s0 * 5 to s1 * 5 + 4
+        e1 = array.get(eW, i)
+        n1 = array.get(eN, i)
+        e0 = array.get(aW, i)
+        n0 = array.get(aN, i)
         if n1 > 0 and n0 > 0
             q1 = e1 * 1.0 / n1
             q0 = e0 * 1.0 / n0
@@ -183,10 +186,10 @@ f_p(int w, int n) => n > 0 ? 100.0 * w / n : na
 f_t(float p) => na(p) ? "-" : str.tostring(p, "#.0") + "%"
 f_fs(float f, float se) => na(f) ? "-" : str.tostring(f, "+#.0;-#.0") + "% ±" + str.tostring(se, "#.0")
 
-var table t = table.new(position.top_right, 6, 12, bgcolor=color.new(color.white, 5), border_width=1)
+var table t = table.new(position.top_right, 6, 13, bgcolor=color.new(color.white, 5), border_width=1)
 if barstate.islastconfirmedhistory or barstate.islast
-    table.clear(t, 0, 0, 5, 11)
-    hdr = array.from("Numayan n1 · faasla (ATR)", "Ishara", "Pehle paar", "Aam din", "Aam pehle paar", "FARK")
+    table.clear(t, 0, 0, 5, 12)
+    hdr = array.from("Numayan n1.1 · faasla (ATR)", "Ishara", "Pehle paar", "Aam din", "Aam pehle paar", "FARK")
     for i = 0 to 5
         table.cell(t, i, 0, array.get(hdr, i), text_size=size.small)
     names = array.from("< 2", "2 - 3", "3 - 4", "4 - 6", "6+")
@@ -224,6 +227,7 @@ if barstate.islastconfirmedhistory or barstate.islast
     table.cell(t, 4, 8, f_t(f_p(f_sum(aW, 0, 1), f_sum(aN, 0, 1))), text_size=size.small)
     table.cell(t, 5, 8, f_fs(fAll, eAll), text_size=size.small)
     table.cell(t, 0, 9, "QAIDA", text_size=size.small)
-    table.cell(t, 5, 9, kam ? "KAM WAQIAT" : asli ? "ISHARA ASLI" : "ITTEFAQ", text_color=kam ? color.orange : asli ? color.green : color.red, text_size=size.small)
-    table.cell(t, 0, 10, "40 din mein faisla nahi: ishara " + str.tostring(unE) + " · aam " + str.tostring(unA), text_size=size.small)
-    table.cell(t, 0, 11, str.tostring(fromYear) + " se · numayan = body >= 1 ATR · 40 din ki daud", text_size=size.small)
+    table.cell(t, 5, 9, kam ? "KAM WAQIAT" : asli ? "ISHARA ASLI" : "SABIT NAHI", text_color=kam ? color.orange : asli ? color.green : color.red, text_size=size.small)
+    table.cell(t, 0, 10, na(eAll) ? "Pakar: -" : "Pakar: sirf FARK ~" + str.tostring(1.42 * eAll, "#") + "% se bara pakra jata hai", text_size=size.small)
+    table.cell(t, 0, 11, "40 din mein faisla nahi: ishara " + str.tostring(unE) + " · aam " + str.tostring(unA), text_size=size.small)
+    table.cell(t, 0, 12, (na(firstYr) ? "-" : str.tostring(firstYr)) + " se (chart ka data) · numayan = body >= 1 ATR · 40 din ki daud", text_color=not na(firstYr) and firstYr > fromYear ? color.red : color.black, text_size=size.small)

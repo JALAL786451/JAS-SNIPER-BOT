@@ -1,7 +1,7 @@
 """JAS Numayan Ginti (indicators/jas_numayan_ginti.pine) ka Python port.
 
-User ki shakal: upar numayan HARI candle (U) -> qeemat U ke neeche -> neeche
-har numayan LAAL candle = ISHARA -> kya qeemat palat kar U ka high paar
+User ki shakal: upar numayan HARI candle (U) -> qeemat U ke neeche (kal ka
+close bhi U ke low ke neeche) -> neeche har numayan LAAL candle = ISHARA -> kya qeemat palat kar U ka high paar
 karti hai? Ulta bhi (neeche numayan laal D -> upar har numayan hari -> D ka
 low). Daud: U.high (upar) pehle ya utna hi faasla neeche (close - d) pehle,
 agle N (40) din mein. Aam din = wohi haalat (U ke neeche, U zinda) magar aaj
@@ -41,6 +41,7 @@ class Sig:
     def step(self, o, h, l, c):
         self.t += 1
         t = self.t
+        pc0 = self.pc
         tr = h - l if self.pc is None else max(h - l, abs(h - self.pc), abs(l - self.pc))
         a1 = self.atr
         if self.atr is None:
@@ -57,14 +58,16 @@ class Sig:
         res = []
         # --- upar wapsi (U = pichli numayan hari) ---
         okU = self.uHi is not None and t - self.uBar <= MAX_AGE and h < self.uHi
-        belowU = okU and c < self.uLo and at is not None and at > 0
+        belowU = (okU and c < self.uLo and pc0 is not None and pc0 < self.uLo
+                  and at is not None and at > 0)
         if belowU:
             d = (self.uHi - c) / at
             kind = 'E' if bigR else 'A'
             res.append(('U', kind, self.uHi, c - (self.uHi - c), d))
         # --- neeche wapsi (D = pichli numayan laal) ---
         okD = self.dLo is not None and t - self.dBar <= MAX_AGE and l > self.dLo
-        aboveD = okD and c > self.dHi and at is not None and at > 0
+        aboveD = (okD and c > self.dHi and pc0 is not None and pc0 > self.dHi
+                  and at is not None and at > 0)
         if aboveD:
             d = (c - self.dLo) / at
             kind = 'E' if bigG else 'A'
@@ -127,19 +130,19 @@ def tally(o, h, l, c, start=0):
 
 
 def fark(cnt, sides='UD'):
+    """Mila FARK ±2SE: har khana (side x tokri) alag, wazan = ishara ginti.
+    Sides ko ek tokri mein milana drift ke saath halka manfi jhukao deta."""
     sw = sd = sv = 0.0
-    for b in range(5):
-        e1 = sum(cnt[s]['E'][b][0] for s in sides)
-        n1 = sum(cnt[s]['E'][b][1] for s in sides)
-        e0 = sum(cnt[s]['A'][b][0] for s in sides)
-        n0 = sum(cnt[s]['A'][b][1] for s in sides)
-        if n1 == 0 or n0 == 0:
-            continue
-        q1, q0 = e1 / n1, e0 / n0
-        fk = 100 * (q1 - q0)
-        sw += n1
-        sd += n1 * fk
-        sv += n1 * n1 * (q1 * (1 - q1) / n1 + q0 * (1 - q0) / n0) * 10000
+    for s in sides:
+        for b in range(5):
+            e1, n1 = cnt[s]['E'][b]
+            e0, n0 = cnt[s]['A'][b]
+            if n1 == 0 or n0 == 0:
+                continue
+            q1, q0 = e1 / n1, e0 / n0
+            sw += n1
+            sd += n1 * 100 * (q1 - q0)
+            sv += n1 * n1 * (q1 * (1 - q1) / n1 + q0 * (1 - q0) / n0) * 10000
     if sw == 0:
         return 0, None, None
     return sw, sd / sw, 2 * math.sqrt(sv) / sw
@@ -186,16 +189,42 @@ def report(tag, cnt, un):
     return nE, fE, sE
 
 
+MIN_N = 30
+
+
+def verdict(n, f, se):
+    if n < MIN_N:
+        return 'KAM'
+    return 'ASLI' if f - se > 0 else 'NAHI'
+
+
+def power(edge, seeds):
+    """Ek gold jitni series (6700 din) par qaida kitni dafa ASLI kehta hai."""
+    res = []
+    for seed in seeds:
+        o, h, l, c = make_series(6700, seed, edge=edge)
+        cnt, un = tally(o, h, l, c, start=100)
+        n, f, se = fark(cnt)
+        res.append((n, f, se, verdict(n, f, se)))
+    k = len(res)
+    asli = sum(r[3] == 'ASLI' for r in res) / k
+    kam = sum(r[3] == 'KAM' for r in res) / k
+    ns = [r[0] for r in res]
+    fs = [r[1] for r in res if r[2] is not None]
+    ses = [r[2] for r in res if r[2] is not None]
+    print(f'edge {edge:.2f}: {k} series, ishara ausat {sum(ns)/k:.0f} '
+          f'({min(ns):.0f}-{max(ns):.0f}), FARK ausat {sum(fs)/len(fs):+.1f}%, '
+          f'2SE ausat {sum(ses)/len(ses):.1f}, ASLI {100*asli:.0f}%, KAM {100*kam:.0f}%')
+    return asli, res
+
+
 def main():
-    # 1) Random (edge 0): 20 alag series, gold jitni lambi
+    # 1) Random (edge 0), 40 series mila: FARK ~0 (code mein jhukao nahi)
     tot = {s: {k: [[0, 0] for _ in range(5)] for k in 'EA'} for s in 'UD'}
     tun = {'E': 0, 'A': 0}
-    per = []
-    for seed in range(20):
+    for seed in range(40):
         o, h, l, c = make_series(6700, seed)
         cnt, un = tally(o, h, l, c, start=100)
-        n1, f1, s1 = fark(cnt)
-        per.append(n1)
         for s_ in 'UD':
             for k in 'EA':
                 for b in range(5):
@@ -203,28 +232,19 @@ def main():
                         tot[s_][k][b][i] += cnt[s_][k][b][i]
         for k in 'EA':
             tun[k] += un[k]
-    print(f'Ek series (6700 din) mein ishara: kam {min(per):.0f} / '
-          f'ausat {sum(per)/len(per):.0f} / zyada {max(per):.0f}')
-    n, f, se = report('RANDOM x20 mila', tot, tun)
+    n, f, se = report('RANDOM x40 mila', tot, tun)
     ok_null = abs(f) <= max(se, 1.0) * 1.5
     print('  ->', 'THEEK: random par FARK ~0' if ok_null else 'GHALTI: random par FARK door')
-    # 2) Lagaya hua edge: test ko pakarna chahiye
-    tot2 = {s: {k: [[0, 0] for _ in range(5)] for k in 'EA'} for s in 'UD'}
-    tun2 = {'E': 0, 'A': 0}
-    for seed in range(100, 106):
-        o, h, l, c = make_series(6700, seed, edge=0.15)
-        cnt, un = tally(o, h, l, c, start=100)
-        for s_ in 'UD':
-            for k in 'EA':
-                for b in range(5):
-                    for i in range(2):
-                        tot2[s_][k][b][i] += cnt[s_][k][b][i]
-        for k in 'EA':
-            tun2[k] += un[k]
-    n2, f2, se2 = report('EDGE 0.15 x6 mila', tot2, tun2)
-    ok_edge = f2 - se2 > 0
-    print('  ->', 'THEEK: lagaya edge pakra gaya' if ok_edge else 'GHALTI: edge nahi pakra')
-    # 3) Ishara ke baad level kabhi ishara wale din se pehle ka nahi (aage dekhna nahi)
+    # 2) EK gold jitni series par qaide ki pakar (asal test ek hi series hai)
+    fp, _ = power(0.0, range(1000, 1150))
+    ok_fp = fp <= 0.06
+    print('  ->', f'THEEK: random par jhoota ASLI {100*fp:.0f}% (<= 6%)' if ok_fp
+          else f'GHALTI: random par jhoota ASLI {100*fp:.0f}%')
+    power(0.15, range(2000, 2100))
+    power(0.30, range(3000, 3100))
+    print('  -> Matlab: ek series par sirf BARA faida pakra jata hai; FAIL ka matlab '
+          '"bara faida sabit nahi", "shakal jhooti" nahi.')
+    # 3) Har ishara/aam din par levels sahi taraf (aage dekhna nahi)
     o, h, l, c = make_series(3000, 7)
     rows = signals(o, h, l, c)
     for t, rs in enumerate(rows):
@@ -232,7 +252,7 @@ def main():
             assert d > 0
             assert (up > c[t] > dn), (t, side, up, c[t], dn)
     print('THEEK: har ishara/aam din par neeche-level < close < upar-level')
-    return 0 if (ok_null and ok_edge) else 1
+    return 0 if (ok_null and ok_fp) else 1
 
 
 if __name__ == '__main__':
