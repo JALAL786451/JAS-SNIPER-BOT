@@ -12,6 +12,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 **ABHI KA KAAM (user kar raha hai, Claude ki zaroorat sirf nateeje par):** RSI2 index tokri ka MT5 imtihan - JasRsi2EA, Strategy Tester (Ctrl+R): Expert JasRsi2EA, Symbol har dafa badlo (USTECm, US30m, DE30m, UK100m, STOXX50m, JP225m, AUS200m, HK50m), Daily, Custom 2019.01.01-2026.10.09, 1 minute OHLC, 10000 USD, Optimization Disabled, Visual mode band, Inputs na chhoo. Har run ke baad Journal ki `JAS RSI2 c1 | <symbol> | KUL:` line. **Saare 8 ek message mein** nayi chat ko. Faisla: neeche wala pehle se likha qaida (bina-swap Exp = (kul - swap+comm)/trades; ausat > 0 aur >= 6/8 musbat = PASS).
 
+- **MT5 INDEX IMTIHAN = NA-MUMKIN (12 Oct raat ~22:45, user ke Journal):** Exness demo par index ka M1 data sirf **2025.09.21** se ('history data begins from 2025.09.21', 'start time changed to 2026.01.16'). USTECm, USTEC_x100m, US500m sab 228 bars: USTECm 5 trades +0.56R, US500m 4 trades +0.84R, USTEC_x100m 0. Settings sahi thin (screenshot). Na PASS na FAIL - broker data hai hi nahi. Faisla sirf TradingView PASS (bal-bal) par; agla imtihan = DEMO (aage ki trades), qaida likhna baqi.
+
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
