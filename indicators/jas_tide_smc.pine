@@ -42,6 +42,13 @@
 //  s2.4 (11 Oct, user: zoom par dabbe upar chhup jate): SHART/RISK ki likhai
 //  ab ABHI ki qeemat par (label_left) - zoom par bhi nazar aaye; "abhi ±R"
 //  RISK label mein. Dabba khud level/SL tak hi rehta hai.
+//  s2.5 (13 Oct, user): SMC rang - UPAR wale (FVG↑, DZ, BOS↑/CHOCH↑, LGB↑)
+//  HARE, NEECHE wale (FVG↓, SZ, BOS↓/CHOCH↓, LGB↓) LAAL; SMC ki likhai box ke
+//  bahar label mein (patle dabbe mein ghaib na ho); likhai bari (Settings →
+//  5 · 'Chart ki likhai', default Normal; table default Normal + Large).
+//  Dabbon mein NAZAR WALI baat alag mota rangeen label (SHART: toot level + SL;
+//  TRADE: rukh, abhi R, SL, close par BAND ka level), baqi tafseel neeche.
+//  Table mein HAAL / MT5 MEIN / RISK mote. LGB default chalu. Engine WAHI.
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -51,7 +58,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.4"
+BUILD = "s2.5"
 
 // ============================================================================
 //  INPUTS
@@ -79,7 +86,7 @@ showMA   = input.bool(false, "MA21 / MA63 (chart TF) - Tide ka rukh NAHI", group
 showBOS  = input.bool(true, "BOS / CHOCH (aakhri 2)", group = grS, display = display.none)
 showZone = input.bool(true, "DZ / SZ (qareeb wala 1-1)", group = grS, display = display.none)
 showFVG  = input.bool(true, "FVG (qareeb wale 2)", group = grS, display = display.none)
-showLGB  = input.bool(false, "LGB (liquidity sweep)", group = grS, display = display.none)
+showLGB  = input.bool(true, "LGB (liquidity sweep)", group = grS, display = display.none)
 swLen    = input.int(5, "Swing: pivot left/right", minval = 2, maxval = 20, group = grS, display = display.none)
 keepN    = input.int(3, "Har qisam ke kitne yaad rakhne", minval = 1, maxval = 8, group = grS, display = display.none)
 fvgMin   = input.float(0.1, "FVG kam az kam (x ATR)", minval = 0, step = 0.05, group = grS, display = display.none)
@@ -95,7 +102,8 @@ vSym    = input.string("", "V kis symbol ki (jaise XAUUSD ya BTCUSD, bina c/m)",
 grV = "5 · Table"
 showTable = input.bool(true, "Table dikhao", group = grV, display = display.none)
 tablePos  = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
-tableFont = input.string("Small", "Table ka font", options = ["Tiny", "Small", "Normal"], group = grV, display = display.none)
+tableFont = input.string("Normal", "Table ka font", options = ["Tiny", "Small", "Normal", "Large"], group = grV, display = display.none)
+chartFont = input.string("Normal", "Chart ki likhai (SMC + Tide dabba)", options = ["Small", "Normal", "Large"], group = grV, display = display.none)
 tz        = input.string("Asia/Karachi", "Waqt ka zone", group = grV, display = display.none)
 tzName    = input.string("PKT", "Zone ka naam", group = grV, display = display.none)
 
@@ -103,7 +111,7 @@ tzName    = input.string("PKT", "Zone ka naam", group = grV, display = display.n
 //  HELPERS
 // ============================================================================
 f_pos(string s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
-f_size(string s) => s == "Tiny" ? size.tiny : s == "Small" ? size.small : size.normal
+f_size(string s) => s == "Tiny" ? size.tiny : s == "Small" ? size.small : s == "Large" ? size.large : size.normal
 f_px(float x) => na(x) ? "-" : str.tostring(x, format.mintick)
 f_r(float x) => na(x) ? "-" : (x > 0 ? "+" : "") + str.tostring(x, "0.00") + "R"
 f_dur(int ms) =>
@@ -113,10 +121,12 @@ f_dur(int ms) =>
 
 C_BULL = color.new(#26A69A, 0)
 C_BEAR = color.new(#EF5350, 0)
-C_SMC  = color.new(#90A4AE, 0)
 C_PLAN = color.new(#78909C, 0)
 C_SL   = color.new(#E65100, 0)
 C_TXT  = color.new(#37474F, 0)
+C_UP   = color.new(#00A86B, 0)   // SMC upar wale (hara)
+C_DN   = color.new(#E53935, 0)   // SMC neeche wale (laal)
+fsC    = f_size(chartFont)
 
 // ============================================================================
 //  TIDE ENGINE — 1D candles par, sirf BAND candle (radar r3 ka f_tide; qaide
@@ -302,8 +312,8 @@ if endTrade
     exDay := dayT
 if nMarks > 0 and not isHi and endTrade
     array.push(tideMarks, label.new(bar_index, tD[1] == 1 ? high : low, "Tide " + f_r(tLR),
-         style = tD[1] == 1 ? label.style_label_down : label.style_label_up, size = size.tiny,
-         color = color.new(#FFFFFF, 100), textcolor = nz(tLR) > 0 ? C_BULL : C_BEAR))
+         style = tD[1] == 1 ? label.style_label_down : label.style_label_up, size = fsC,
+         color = color.new(#FFFFFF, 100), textcolor = nz(tLR) > 0 ? C_BULL : C_BEAR, text_formatting = text.format_bold))
 f_keep(tideMarks, nMarks)
 
 // ============================================================================
@@ -320,6 +330,8 @@ var box  bxRes  = na
 var line lnDay  = na
 var label lbPlan = na   // dabbe ki likhai label mein (dabba patla ho to bhi nahi toot-ti)
 var label lbRisk = na
+var label lbPlanH = na  // s2.5: nazar wali baat - mota rangeen label (qeemat ke UPAR)
+var label lbRiskH = na
 
 if barstate.islast
     box.delete(bxPlan)
@@ -331,6 +343,8 @@ if barstate.islast
     line.delete(lnDay)
     label.delete(lbPlan)
     label.delete(lbRisk)
+    label.delete(lbPlanH)
+    label.delete(lbRiskH)
     bxPlan := na
     lnPlan := na
     bxRisk := na
@@ -340,6 +354,8 @@ if barstate.islast
     lnDay  := na
     lbPlan := na
     lbRisk := na
+    lbPlanH := na
+    lbRiskH := na
     if showBox and not isHi and bd > 0
         bool   dDone    = not na(dCt) and timenow >= dCt
         string closeTxt = dDone ? "agle session ki PEHLI candle" : str.format_time(dCt, "HH:mm", tz) + " " + tzName
@@ -363,8 +379,13 @@ if barstate.islast
                  bgcolor = color.new(C_PLAN, 100))
             // likhai toot ke level par, dabbe ke andar ki taraf (BUY: level ke neeche, SELL: upar)
             // likhai ABHI ki qeemat par (zoom karne par bhi nazar aaye; level ka number likhai mein hai)
-            lbPlan := label.new(pL, stC, l1 + "\n" + l2 + "\n" + l3 + "\n" + l4, xloc = xloc.bar_index,
-                 style = label.style_label_left, size = size.small,
+            // s2.5: NAZAR WALI baat (toot level + SL) mota rangeen label qeemat ke UPAR, tafseel NEECHE
+            lbPlanH := label.new(pL, stC, l2 + "\nSL ~" + f_px(slp), xloc = xloc.bar_index,
+                 style = label.style_label_lower_left, size = fsC,
+                 color = color.new(tRk == 1 ? C_BULL : C_BEAR, 10), textcolor = color.white, textalign = text.align_left,
+                 text_formatting = text.format_bold)
+            lbPlan := label.new(pL, stC, l1 + "\n" + l3 + "\n" + l4, xloc = xloc.bar_index,
+                 style = label.style_label_upper_left, size = fsC,
                  color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
         // --- RISK: trade chalu (laal = entry se shuru ke SL tak = 1R) ---------
@@ -384,8 +405,15 @@ if barstate.islast
                  border_color = color.new(C_BEAR, 30), border_style = slHit ? line.style_dashed : line.style_solid, border_width = 1,
                  bgcolor = color.new(C_BEAR, 85))
             // likhai abhi ke SL par (qeemat ke qareeb rehta hai), SL ke us taraf jidhar nuqsan
+            // s2.5: NAZAR WALI baat mota rangeen label qeemat ke UPAR (BUY hara, SELL laal), tafseel NEECHE
+            string h1 = (tD == 1 ? "▲ BUY" : "▼ SELL") + (slHit ? " · AAJ SL CHHU GAYA" : na(stC) ? "" : " · abhi " + f_r(tD * (stC - tE) / tR))
+            string h2 = slHit ? "Band @ " + f_px(slPx) + " · ~" + f_r(slR) : "SL " + f_px(tSL) + (tRk == -tD ? "\nD1 palta: aaj DAILY close par BAND" : not na(csT) and csT != tSL ? "\nDAILY close " + f_px(csT) + (tD == 1 ? " ke neeche" : " ke upar") + " = BAND" : "")
+            lbRiskH := label.new(bar_index + 2, nz(stC, tSL), h1 + "\n" + h2, xloc = xloc.bar_index,
+                 style = label.style_label_lower_left, size = fsC,
+                 color = color.new(tD == 1 ? C_BULL : C_BEAR, 10), textcolor = color.white, textalign = text.align_left,
+                 text_formatting = text.format_bold)
             lbRisk := label.new(bar_index + 2, nz(stC, tSL), t1 + "\n" + t2 + "\n" + t3, xloc = xloc.bar_index,
-                 style = label.style_label_left, size = size.small,
+                 style = label.style_label_upper_left, size = fsC,
                  color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             // ABHI: entry se abhi ki qeemat tak (halka - ye faida/nuqsan hai, rukh nahi)
             if not slHit and not na(stC)
@@ -402,8 +430,9 @@ if barstate.islast
             string why = lWhy == 1 ? "SL" : lWhy == 4 ? "sarakta SL" : lWhy == 2 ? "D1 rukh palta" : lWhy == 3 ? "close SL ke paar" : "band"
             color  cRes = nz(tLR) > 0 ? C_BULL : C_BEAR
             bxRes := box.new(math.max(nz(lEt, firstT), firstT), math.max(lE, lX), lXt, math.min(lE, lX), xloc = xloc.bar_time,
-                 border_color = color.new(C_PLAN, 40), bgcolor = color.new(cRes, 92), text = "Tide " + f_r(tLR) + " · " + why,
-                 text_size = size.tiny, text_color = cRes, text_halign = text.align_center, text_valign = text.align_center)
+                 border_color = color.new(cRes, 30), bgcolor = color.new(cRes, 85), text = "Tide " + f_r(tLR) + " · " + why,
+                 text_size = fsC, text_color = cRes, text_halign = text.align_center, text_valign = text.align_center,
+                 text_formatting = text.format_bold)
         // --- faisle ka waqt: aaj ki daily close (sirf chhoti TF par) ---------
         if showFaisla and not timeframe.isdaily and not na(dCt) and dCt > timenow and not na(stL) and not na(stH)
             lnDay := line.new(dCt, stL, dCt, stH + syminfo.mintick, xloc = xloc.bar_time, extend = extend.both,
@@ -446,16 +475,20 @@ if barstate.isconfirmed and not na(pl)
 
 var array<line>  bosLn = array.new<line>()
 var array<label> bosLb = array.new<label>()
+var array<int>   bosD  = array.new<int>()    // 1 = upar toota (hara), -1 = neeche (laal)
 var array<label> lgbLb = array.new<label>()
 
 f_bos(int d, float lvl, int fromBar) =>
-    string kind = (d == 1 ? sDir < 0 : sDir > 0) ? "CHOCH" : "BOS"
-    array.push(bosLn, line.new(fromBar, lvl, bar_index, lvl, xloc = xloc.bar_index, color = color.new(C_SMC, 30), style = line.style_dashed, width = 1))
-    array.push(bosLb, label.new(bar_index, lvl, kind, xloc = xloc.bar_index, style = label.style_label_left, size = size.tiny,
-         color = color.new(#FFFFFF, 100), textcolor = color.new(C_SMC, 10)))
+    string kind = ((d == 1 ? sDir < 0 : sDir > 0) ? "CHOCH" : "BOS") + (d == 1 ? "↑" : "↓")
+    color  cK   = d == 1 ? C_UP : C_DN
+    array.push(bosLn, line.new(fromBar, lvl, bar_index, lvl, xloc = xloc.bar_index, color = color.new(cK, 20), style = line.style_dashed, width = 2))
+    array.push(bosLb, label.new(bar_index, lvl, kind, xloc = xloc.bar_index, style = label.style_label_left, size = fsC,
+         color = color.new(#FFFFFF, 100), textcolor = cK, text_formatting = text.format_bold))
+    array.push(bosD, d)
     while array.size(bosLn) > 2 * keepN
         line.delete(array.shift(bosLn))
         label.delete(array.shift(bosLb))
+        array.shift(bosD)
 
 if barstate.isconfirmed
     upBrk = not sHBrk and not na(sH) and close > sH
@@ -474,12 +507,12 @@ if barstate.isconfirmed
         sLUsed := true
     // LGB: swing ke paar wick, close wapas andar (ek swing par ek dafa)
     if showLGB and smcAct and not sHUsed and not na(sH) and high > sH and close < sH
-        array.push(lgbLb, label.new(bar_index, high, "LGB", style = label.style_label_down, size = size.tiny,
-             color = color.new(#FFFFFF, 100), textcolor = color.new(C_SMC, 10)))
+        array.push(lgbLb, label.new(bar_index, high, "LGB↓", style = label.style_label_down, size = fsC,
+             color = color.new(#FFFFFF, 100), textcolor = C_DN, text_formatting = text.format_bold))
         sHUsed := true
     if showLGB and smcAct and not sLUsed and not na(sL) and low < sL and close > sL
-        array.push(lgbLb, label.new(bar_index, low, "LGB", style = label.style_label_up, size = size.tiny,
-             color = color.new(#FFFFFF, 100), textcolor = color.new(C_SMC, 10)))
+        array.push(lgbLb, label.new(bar_index, low, "LGB↑", style = label.style_label_up, size = fsC,
+             color = color.new(#FFFFFF, 100), textcolor = C_UP, text_formatting = text.format_bold))
         sLUsed := true
     while array.size(lgbLb) > keepN + 2
         label.delete(array.shift(lgbLb))
@@ -487,43 +520,53 @@ if barstate.isconfirmed
 // --- DZ / SZ: swing candle ka zone (max 1 ATR mota), toot jaye to mit jaye --
 var array<box> dzB = array.new<box>()
 var array<box> szB = array.new<box>()
+var array<label> dzL = array.new<label>()   // s2.5: likhai box ke bahar (patle dabbe mein ghaib na ho)
+var array<label> szL = array.new<label>()
 
 if showZone and smcAct and barstate.isconfirmed and not na(pl)
     float zBot = pl
     float zTop = math.min(math.max(open[swLen], close[swLen]), pl + nz(atrC[swLen], 0))
     zTop := math.max(zTop, pl + 0.1 * nz(atrC[swLen], 0))
     array.push(dzB, box.new(bar_index - swLen, zTop, bar_index, zBot, xloc = xloc.bar_index,
-         border_color = color.new(C_SMC, 50), bgcolor = color.new(C_SMC, 95), text = "DZ", text_size = size.tiny,
-         text_color = color.new(C_SMC, 20), text_halign = text.align_left))
+         border_color = color.new(C_UP, 30), bgcolor = color.new(C_UP, 85)))
+    array.push(dzL, label.new(bar_index, (zTop + zBot) / 2, "DZ↑", xloc = xloc.bar_index, style = label.style_label_left,
+         size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_UP, text_formatting = text.format_bold))
     while array.size(dzB) > keepN
         box.delete(array.shift(dzB))
+        label.delete(array.shift(dzL))
 if showZone and smcAct and barstate.isconfirmed and not na(ph)
     float zTop2 = ph
     float zBot2 = math.max(math.min(open[swLen], close[swLen]), ph - nz(atrC[swLen], 0))
     zBot2 := math.min(zBot2, ph - 0.1 * nz(atrC[swLen], 0))
     array.push(szB, box.new(bar_index - swLen, zTop2, bar_index, zBot2, xloc = xloc.bar_index,
-         border_color = color.new(C_SMC, 50), bgcolor = color.new(C_SMC, 95), text = "SZ", text_size = size.tiny,
-         text_color = color.new(C_SMC, 20), text_halign = text.align_left))
+         border_color = color.new(C_DN, 30), bgcolor = color.new(C_DN, 85)))
+    array.push(szL, label.new(bar_index, (zTop2 + zBot2) / 2, "SZ↓", xloc = xloc.bar_index, style = label.style_label_left,
+         size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_DN, text_formatting = text.format_bold))
     while array.size(szB) > keepN
         box.delete(array.shift(szB))
+        label.delete(array.shift(szL))
 
 // --- FVG: 3 candle ka khula gap (kam az kam fvgMin x ATR), bhar jaye to mit jaye
 var array<box> fvB = array.new<box>()
 var array<int> fvD = array.new<int>()
+var array<label> fvL = array.new<label>()
 if showFVG and smcAct and barstate.isconfirmed and not na(atrC)
     if low > high[2] and low - high[2] >= fvgMin * atrC
         array.push(fvB, box.new(bar_index - 2, low, bar_index, high[2], xloc = xloc.bar_index,
-             border_color = color.new(C_SMC, 50), bgcolor = color.new(C_SMC, 95), text = "FVG↑",
-             text_size = size.tiny, text_color = color.new(C_SMC, 20), text_halign = text.align_right))
+             border_color = color.new(C_UP, 30), bgcolor = color.new(C_UP, 85)))
+        array.push(fvL, label.new(bar_index, (low + high[2]) / 2, "FVG↑", xloc = xloc.bar_index, style = label.style_label_left,
+             size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_UP, text_formatting = text.format_bold))
         array.push(fvD, 1)
     if high < low[2] and low[2] - high >= fvgMin * atrC
         array.push(fvB, box.new(bar_index - 2, low[2], bar_index, high, xloc = xloc.bar_index,
-             border_color = color.new(C_SMC, 50), bgcolor = color.new(C_SMC, 95), text = "FVG↓",
-             text_size = size.tiny, text_color = color.new(C_SMC, 20), text_halign = text.align_right))
+             border_color = color.new(C_DN, 30), bgcolor = color.new(C_DN, 85)))
+        array.push(fvL, label.new(bar_index, (low[2] + high) / 2, "FVG↓", xloc = xloc.bar_index, style = label.style_label_left,
+             size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_DN, text_formatting = text.format_bold))
         array.push(fvD, -1)
     while array.size(fvB) > 2 * keepN
         box.delete(array.shift(fvB))
         array.shift(fvD)
+        label.delete(array.shift(fvL))
 
 // toote zone / bhare FVG hatao (sirf band candle par)
 if barstate.isconfirmed
@@ -533,12 +576,14 @@ if barstate.isconfirmed
             if close < box.get_bottom(array.get(dzB, i))
                 box.delete(array.get(dzB, i))
                 array.remove(dzB, i)
+                label.delete(array.remove(dzL, i))
     int n2 = array.size(szB)
     if n2 > 0
         for i = n2 - 1 to 0
             if close > box.get_top(array.get(szB, i))
                 box.delete(array.get(szB, i))
                 array.remove(szB, i)
+                label.delete(array.remove(szL, i))
     int n3 = array.size(fvB)
     if n3 > 0
         for i = n3 - 1 to 0
@@ -548,15 +593,17 @@ if barstate.isconfirmed
                 box.delete(bx)
                 array.remove(fvB, i)
                 array.remove(fvD, i)
+                label.delete(array.remove(fvL, i))
 
 // aakhri candle par sirf QAREEB wale dikhao (baqi chhupao): 1 DZ neeche,
 // 1 SZ upar, 2 FVG, aakhri 2 BOS/CHOCH - chart saaf rahe
-f_boxVis(box b, bool on) =>
-    box.set_border_color(b, color.new(C_SMC, on ? 50 : 100))
-    box.set_bgcolor(b, color.new(C_SMC, on ? 95 : 100))
-    box.set_text_color(b, color.new(C_SMC, on ? 20 : 100))
+f_boxVis(box b, label l, bool on, color c) =>
+    box.set_border_color(b, color.new(c, on ? 30 : 100))
+    box.set_bgcolor(b, color.new(c, on ? 85 : 100))
+    label.set_textcolor(l, color.new(c, on ? 0 : 100))
     if on
         box.set_right(b, bar_index + 4)
+        label.set_x(l, bar_index + 4)
 
 if barstate.islast
     // DZ: qeemat ke neeche (ya andar) sab se qareeb
@@ -570,7 +617,7 @@ if barstate.islast
                 bestDZ := i
                 bestDZtop := box.get_top(b)
         for i = 0 to nz1 - 1
-            f_boxVis(array.get(dzB, i), i == bestDZ)
+            f_boxVis(array.get(dzB, i), array.get(dzL, i), i == bestDZ, C_UP)
     // SZ: qeemat ke upar (ya andar) sab se qareeb
     int nz2 = array.size(szB)
     int bestSZ = -1
@@ -582,7 +629,7 @@ if barstate.islast
                 bestSZ := i
                 bestSZbot := box.get_bottom(b)
         for i = 0 to nz2 - 1
-            f_boxVis(array.get(szB, i), i == bestSZ)
+            f_boxVis(array.get(szB, i), array.get(szL, i), i == bestSZ, C_DN)
     // FVG: qeemat se sab se qareeb 2
     int nz3 = array.size(fvB)
     int f1 = -1
@@ -602,22 +649,25 @@ if barstate.islast
                 f2 := i
                 d2 := dist
         for i = 0 to nz3 - 1
-            f_boxVis(array.get(fvB, i), i == f1 or i == f2)
+            f_boxVis(array.get(fvB, i), array.get(fvL, i), i == f1 or i == f2, array.get(fvD, i) == 1 ? C_UP : C_DN)
     // BOS / CHOCH: sirf aakhri 2
     int nb = array.size(bosLn)
     if nb > 0
         for i = 0 to nb - 1
-            bool on = i >= nb - 2
-            line.set_color(array.get(bosLn, i), color.new(C_SMC, on ? 30 : 100))
-            label.set_textcolor(array.get(bosLb, i), color.new(C_SMC, on ? 10 : 100))
+            bool  on = i >= nb - 2
+            color cK = array.get(bosD, i) == 1 ? C_UP : C_DN
+            line.set_color(array.get(bosLn, i), color.new(cK, on ? 20 : 100))
+            label.set_textcolor(array.get(bosLb, i), color.new(cK, on ? 0 : 100))
 
 // ============================================================================
 //  TABLE (Top Right, chhoti) — sirf aakhri candle par
 // ============================================================================
 var table tb = table.new(f_pos(tablePos), 2, 9, border_width = 1, border_color = color.new(#CFD8DC, 0))
-f_row(table t, int r, string a, string b, color bgB, color fgB, string fs, string tip) =>
-    table.cell(t, 0, r, a, text_color = C_TXT, bgcolor = color.new(#FFFFFF, 10), text_size = fs, text_halign = text.align_left, tooltip = tip)
-    table.cell(t, 1, r, b, text_color = fgB, bgcolor = bgB, text_size = fs, text_halign = text.align_left, tooltip = tip)
+f_row(table t, int r, string a, string b, color bgB, color fgB, string fs, string tip, bool bo) =>
+    table.cell(t, 0, r, a, text_color = C_TXT, bgcolor = color.new(#FFFFFF, 10), text_size = fs, text_halign = text.align_left, tooltip = tip,
+         text_formatting = bo ? text.format_bold : text.format_none)
+    table.cell(t, 1, r, b, text_color = fgB, bgcolor = bgB, text_size = fs, text_halign = text.align_left, tooltip = tip,
+         text_formatting = bo ? text.format_bold : text.format_none)
 
 if showTable and barstate.islast
     fs  = f_size(tableFont)
@@ -635,11 +685,11 @@ if showTable and barstate.islast
     string sdTxt    = tD == 1 or (tD == 0 and tRk == 1) ? "BUY" : "SELL"
     // Row 0: naam
     string tip0 = "Feed: " + syminfo.prefix + ":" + syminfo.ticker + ". Is feed ki daily candle " + (na(dCt) ? "-" : str.format_time(dCt, "HH:mm", "UTC")) + " UTC par band hoti hai; Exness D1 00:00 UTC - level JasTideRadarEA panel se milayein.\nSELL ka SL ask par lagta hai (spread jitna pehle).\nSMC nishan kabhi naape nahi gaye.\nDin ki hadd dekhni ho: TradingView mein Session breaks on karein."
-    f_row(tb, 0, "TIDE 1D · " + BUILD, isHi ? "Tide 1D ka system · 1D/4H/1H par dekhein" : syminfo.ticker + " · faisla sirf DAILY close", bgW, C_TXT, fs, tip0)
+    f_row(tb, 0, "TIDE 1D · " + BUILD, isHi ? "Tide 1D ka system · 1D/4H/1H par dekhein" : syminfo.ticker + " · faisla sirf DAILY close", bgW, C_TXT, fs, tip0, false)
     // Row 1: HAAL (sirf khuli trade par rangeen)
     string haal = not tOk ? "200 din ka daily data chahiye" : slHit ? "AAJ SL CHHU GAYA" : tD == 1 ? "▲ BUY chalu · " + str.tostring(tAge) + " din" : tD == -1 ? "▼ SELL chalu · " + str.tostring(tAge) + " din" : tRk == 1 ? "INTEZAR · rukh UPAR (sirf BUY)" : tRk == -1 ? "INTEZAR · rukh NEECHE (sirf SELL)" : "INTEZAR · rukh saaf nahi"
     color  hBg  = tD == 0 ? bgW : slHit ? (nz(slR) > 0 ? C_BULL : C_BEAR) : tD == 1 ? C_BULL : C_BEAR
-    f_row(tb, 1, "HAAL", haal, hBg, tD == 0 ? C_TXT : color.white, fs, "Tide ka haal aakhri BAND daily candle tak. Rukh = D1 EMA50/200.")
+    f_row(tb, 1, "HAAL", haal, hBg, tD == 0 ? C_TXT : color.white, fs, "Tide ka haal aakhri BAND daily candle tak. Rukh = D1 EMA50/200.", true)
     // Row 6: NAAP (hamesha sleti - kabhi hara nahi)
     float exT  = tN > 0 ? tSR / tN : na
     float se2  = tN > 1 ? 2.0 * math.sqrt(math.max(tSQ - tSR * tSR / tN, 0.0) / (tN - 1)) / math.sqrt(tN) : na
@@ -648,7 +698,7 @@ if showTable and barstate.islast
     float se19 = n19 > 1 ? 2.0 * math.sqrt(math.max(q19 - s19 * s19 / n19, 0.0) / (n19 - 1)) / math.sqrt(n19) : na
     bool  sabit = n19 >= 30 and not na(se19) and ex19 - se19 > 0
     string naap = tN == 0 ? "Abhi koi band trade nahi" : "Sab: " + str.tostring(tN) + " · Exp " + f_r(exT) + (na(se2) ? "" : " ±" + str.tostring(se2, "0.00")) + " · PF " + (na(pfT) ? "-" : str.tostring(pfT, "0.00")) + "\n" + str.tostring(statYear) + " se: " + str.tostring(n19) + (n19 > 0 ? " · Exp " + f_r(ex19) + (na(se19) ? "" : " ±" + str.tostring(se19, "0.00")) : "") + " · " + (sabit ? "SABIT" : "SABIT NAHI") + "\nswap/spread nahi gina"
-    f_row(tb, 6, "NAAP (1D)", naap, bgW, cG, fs, "Isi symbol ki daily history par Tide ke band trades (kharcha 0.005% har taraf). SABIT = " + str.tostring(statYear) + " se kam az kam 30 trades aur Exp - 2SE > 0. Purana naap aage ki zamanat nahi.")
+    f_row(tb, 6, "NAAP (1D)", naap, bgW, cG, fs, "Isi symbol ki daily history par Tide ke band trades (kharcha 0.005% har taraf). SABIT = " + str.tostring(statYear) + " se kam az kam 30 trades aur Exp - 2SE > 0. Purana naap aage ki zamanat nahi.", false)
     if not isHi
         // Row 2: MT5 MEIN (sirf yahi karna hai)
         string mt5 = ""
@@ -674,13 +724,13 @@ if showTable and barstate.islast
             mt5 := "Kuch nahi abhi · agle session ki PEHLI candle par table dekhein"
         else
             mt5 := "Kuch nahi · " + closeTxt + " ke baad dekhein"
-        f_row(tb, 2, "MT5 MEIN", mt5, bgW, C_TXT, fs, "Sirf yahi karna hai. Entry sirf daily close ke baad, BUY/SELL Stop ya pending order nahi. TP kabhi nahi.")
+        f_row(tb, 2, "MT5 MEIN", mt5, bgW, C_TXT, fs, "Sirf yahi karna hai. Entry sirf daily close ke baad, BUY/SELL Stop ya pending order nahi. TP kabhi nahi.", true)
         // Row 3: KAB
         string kab = dDone ? "Daily candle BAND ho chuki · Tide ka faisla agle session ki PEHLI candle par" : "Daily band " + closeTxt + " · " + f_dur(dCt - timenow)
-        f_row(tb, 3, "KAB", kab, bgW, C_TXT, fs, "Tide ka har faisla daily candle BAND hone par. Chhoti TF ki candle level ke paar ho jaye to bhi faisla nahi.")
+        f_row(tb, 3, "KAB", kab, bgW, C_TXT, fs, "Tide ka har faisla daily candle BAND hone par. Chhoti TF ki candle level ke paar ho jaye to bhi faisla nahi.", false)
         // Row 4: RISK
         string rsk = slHit ? "nateeja ~" + f_r(slR) + " (band @ " + f_px(slPx) + ")" : tD != 0 ? "abhi " + f_r(rNow) + " · SL par ~" + f_r(rSL) : na(slp) ? "-" : "Toot " + f_px(lvl) + " · SL ~" + f_px(slp) + " · 1R ~" + f_px(atrMult * tAtr)
-        f_row(tb, 4, "RISK", rsk, bgW, C_TXT, fs, "1R = entry se shuru ke SL tak (2 ATR). R mein kharcha gina, swap/spread nahi.")
+        f_row(tb, 4, "RISK", rsk, bgW, C_TXT, fs, "1R = entry se shuru ke SL tak (2 ATR). R mein kharcha gina, swap/spread nahi.", true)
         // Row 5: LOT (MT5) - TradingView broker ka contract nahi janta: V aap bharein
         string lotTxt = ""
         if tD != 0 and (tAge >= 1 or dDone) and not slHit
@@ -703,7 +753,7 @@ if showTable and barstate.islast
             else
                 float lots = math.floor(risk / one) * 0.01
                 lotTxt := lots < 0.01 ? "0.01 = " + str.tostring(100.0 * one / bal, "0.0") + "% risk (aap ne " + str.tostring(riskPct, "0.0") + "%) · trade NAHI" : "~" + str.tostring(lots, "0.00") + " lot (" + str.tostring(riskPct, "0.0") + "% = " + str.tostring(risk, "#,###") + " " + curTxt + ") · 0.01 lot ka SL tak " + str.tostring(one, "#,##0.00") + " · MT5 se milayein" + (late ? " · abhi ki qeemat se (der se entry, NAAPA NAHI)" : "")
-        f_row(tb, 5, "LOT", lotTxt, bgW, C_TXT, fs, "Lot kabhi upar gol nahi hota. Pehle demo par 0.01 lot ka test order khol kar 1R MT5 se milayein.")
+        f_row(tb, 5, "LOT", lotTxt, bgW, C_TXT, fs, "Lot kabhi upar gol nahi hota. Pehle demo par 0.01 lot ka test order khol kar 1R MT5 se milayein.", false)
         // Row 7: DHYAN (sirf zaroorat par)
         string dh = ""
         if not utc0 and not na(dCt)
@@ -711,7 +761,7 @@ if showTable and barstate.islast
         if tD != 0 and tAge == 0 and not slHit and not dDone and not na(rNow)
             dh := dh + (dh == "" ? "" : "\n") + (rNow <= -1 ? "Qeemat SL ke paar · entry NAHI" : "Entry daily close par thi · abhi farq " + f_r(rNow) + " · der se entry NAAPA NAHI")
         if dh != ""
-            f_row(tb, 7, "DHYAN", dh, bgW, C_BEAR, fs, "Ye baatein faisla nahi badaltin, sirf hoshiyari.")
+            f_row(tb, 7, "DHYAN", dh, bgW, C_BEAR, fs, "Ye baatein faisla nahi badaltin, sirf hoshiyari.", false)
     if str.startswith(tablePos, "Bottom")
         table.cell(tb, 0, 8, " ", bgcolor = color.new(#FFFFFF, 100), text_size = fs)
 
