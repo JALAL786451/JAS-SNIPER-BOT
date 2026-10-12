@@ -15,7 +15,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 - **MT5 INDEX IMTIHAN = NA-MUMKIN (12 Oct raat ~22:45, user ke Journal):** Exness demo par index ka M1 data sirf **2025.09.21** se ('history data begins from 2025.09.21', 'start time changed to 2026.01.16'). USTECm, USTEC_x100m, US500m sab 228 bars: USTECm 5 trades +0.56R, US500m 4 trades +0.84R, USTEC_x100m 0. Settings sahi thin (screenshot). Na PASS na FAIL - broker data hai hi nahi. Faisla sirf TradingView PASS (bal-bal) par; agla imtihan = DEMO (aage ki trades), qaida likhna baqi.
 
 - **Dost ka NZDCAD 1H SELL (0.79808 / SL 0.79877 / TP 0.79666) TP laga** (low 0.79641). Ek jeet = saboot nahi (2R trade ~1/3 ittefaq se jeet-ti). Dost qaide nahi batata. **User ke WhatsApp group mein dost ke ~1 saal ke signal hain** - baad mein (user ke kehne par) chat export kar ke gin sakte hain. Abhi CHHORA, wapas repo.
-- **AGLA (repo):** RSI2 index demo se pehle likhi shart = US500 + USTEC(NAS100) + US30 ki MILI HUI girawat ka naap (TradingView, 2003 se). User ke 'D' ka intezar.
+- **RSI2 Radar x3 (13 Oct, user 'D', compile baqi):** 'TEEN MILA KAR' row (sirf INDEX tokri): SPX500 + NAS100 + US30 band trades ka mila R (har ek 1%), kul, saal ausat, musbat saal, sab se gehri girawat. **PEHLE SE LIKHA QAIDA (naap se PEHLE):** girawat <= 15R = demo par teeno (US500m, USTECm, US30m Daily, JasRsi2EA) 1%; zyada = har index InpRiskPct 0.5. EA mein koi tabdeeli nahi.
 
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 

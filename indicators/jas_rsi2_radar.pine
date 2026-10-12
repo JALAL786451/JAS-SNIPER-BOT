@@ -23,6 +23,12 @@
 //  mein (tokri mein nahi): wahan Tester ke number (257 trades, +0.114R
 //  ±0.049) aane chahiye = engine sahi.
 //
+//  x3 (13 Oct): TEEN MILA KAR row (sirf INDEX tokri) - S&P (jaanch) +
+//  Nasdaq 100 (1) + Dow 30 (2) ki band trades ka mila hua R, har ek 1%:
+//  sab se gehri girawat (band trades par), saal ka ausat, musbat saal.
+//  Pehle se likha qaida (naap se PEHLE): girawat <= 15R = demo par teeno
+//  1% risk; zyada = har index 0.5%. Engine x2 jaisa, koi nayi request nahi.
+//
 //  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
 //   FOREX (x1): (a) ausat Exp > 0, (b) kam az kam 7/9 musbat,
 //     (c) ausat - 2SE(ausat) > 0, 2SE(ausat) = sqrt(sab 2SE ka murabba)/9.
@@ -38,7 +44,7 @@
 // ============================================================================
 indicator("JAS RSI2 Radar — 9 market", shorttitle = "JAS RSI2 Radar", overlay = true, max_bars_back = 300)
 
-BUILD = "x2"
+BUILD = "x3"
 
 // ============================================================================
 //  INPUTS
@@ -186,6 +192,35 @@ f_req(_s) => request.security(_s, "D", f_rsi2(), barmerge.gaps_off, barmerge.loo
 [nJ, wJ, smJ, qJ, naJ, saJ, nbJ, sbJ, dJ, fyJ] = f_req(sJ)
 
 // ============================================================================
+//  TEEN MILA KAR (x3): S&P + Nasdaq + Dow, band trades ka mila hua R
+//  (sm = fromYear se band trades ka jama R; har chart candle par)
+// ============================================================================
+cum3 = nz(smJ) + nz(sm0) + nz(sm1)
+var float pk3  = 0.0
+var float dd3  = 0.0
+var int   pkY3 = na
+var int   ddA3 = na
+var int   ddB3 = na
+var int   fY3  = na
+var float y0c3 = 0.0
+var int   yN3  = 0
+var int   yP3  = 0
+if na(fY3) and cum3 != 0
+    fY3  := year
+    pkY3 := year
+if not na(fY3) and year != year[1] and year[1] >= fY3
+    yN3  += 1
+    yP3  += cum3[1] - y0c3 > 0 ? 1 : 0
+    y0c3 := cum3[1]
+if cum3 > pk3
+    pk3  := cum3
+    pkY3 := year
+if pk3 - cum3 > dd3
+    dd3  := pk3 - cum3
+    ddA3 := pkY3
+    ddB3 := year
+
+// ============================================================================
 //  HELPERS
 // ============================================================================
 f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
@@ -298,3 +333,12 @@ if barstate.islast
         table.merge_cells(rt, 0, 15, 1, 15)
         f_c(2, 15, "Sirf naap, trade nahi. Har market band candle par (aaj ki candle shamil nahi). Swap nahi. ▲/▼ = abhi khuli. Tokri se market chunna MANA.", cNO)
         table.merge_cells(rt, 2, 15, 6, 15)
+        // TEEN MILA KAR (x3) - sirf INDEX tokri (s0 = Nasdaq, s1 = Dow)
+        if isIdx
+            _yN  = yN3 + 1                      // chalta saal bhi
+            _yP  = yP3 + (cum3 - y0c3 > 0 ? 1 : 0)
+            _ok3 = dd3 <= 15.0
+            f_c(0, 16, "TEEN MILA KAR", _ok3 ? cOK : cNO)
+            table.merge_cells(rt, 0, 16, 1, 16)
+            f_c(2, 16, f_nm(sJ) + " + " + f_nm(s0) + " + " + f_nm(s1) + " (har ek 1%) · kul " + f_r2(cum3) + "R · saal ~" + f_r2(cum3 / _yN) + "R · musbat saal " + str.tostring(_yP) + "/" + str.tostring(_yN) + " · sab se gehri girawat " + str.tostring(dd3, "0.0") + "R (" + (na(ddA3) ? "-" : str.tostring(ddA3)) + "-" + (na(ddB3) ? "-" : str.tostring(ddB3)) + ", band trades) · QAIDA <= 15R: " + (_ok3 ? "PASS = demo teeno 1%" : "zyada = demo har index 0.5%"), _ok3 ? cOK : cNO)
+            table.merge_cells(rt, 2, 16, 6, 16)
