@@ -289,7 +289,7 @@ if barstate.islast
         table.merge_cells(rt, 2, 12, 6, 12)
         // JAANCH: S&P (tokri mein nahi) - Tester se milna chahiye
         [eJ, zJ] = f_pair(13, sJ, nJ, wJ, smJ, qJ, naJ, saJ, nbJ, sbJ, dJ, fyJ)
-        table.cell(rt, 0, 13, "JAANCH " + f_nm(sJ), bgcolor = cJB, text_color = cBK, text_size = size.small, text_halign = text.align_left)
+        table.cell(rt, 0, 13, "JAANCH " + f_nm(sJ) + (dJ == 1 ? " ▲" : dJ == -1 ? " ▼" : ""), bgcolor = cJB, text_color = cBK, text_size = size.small, text_halign = text.align_left)
         f_c(0, 14, "JAANCH ka matlab", cBK)
         table.merge_cells(rt, 0, 14, 1, 14)
         f_c(2, 14, "Tokri mein NAHI. Tester (OANDA:SPX500USD) ka naap 257 trades · +0.114 (± 0.049) tha - yahan bhi taqreeban wahi aaye to engine sahi.", cBK)
