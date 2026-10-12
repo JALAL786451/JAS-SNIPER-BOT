@@ -13,7 +13,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 - SMC Coach Scalp (user ki v5 script -> v6) MT5 15m/1H/4H = FAIL, idea band.
 - Ginti scripts (trade nahi): Swing Fail (toot ~72% aage jata), Ghanta (18-19 PKT sab se zyada harkat), Kal-Toot (koi faida nahi), TF-Rang r2 (kisi TF par candle rang kuch nahi batata), Wick w1 (ITTEFAQ; magar 20 din mein 0.5-1 ATR qareeb level ~80% wapas chhua jata hai).
 - **Tide 2 (55/20, kitaab):** TradingView 9-market PASS, MT5 Exness FAIL (girawat 18.4R > 12.7R) -> **Tide 1 hi rahega**. 51/17 se nateeja aadha = settings par hassas. Settings ghumana band.
-- **AGLA QADAM:** `indicators/jas_fvg_ginti.pine` (FVG v1, compile baqi) OANDA:XAUUSD 1D par lagana, table ka screenshot -> pehle se likhe qaide se faisla (FVG din >= 200, FARK - 2SE > 0).
+- **FVG v1 NATEEJA (12 Oct, OANDA:XAUUSD 1D, 2000 se, 20 din, user screenshot) = ITTEFAQ:** compile ✅. MILA HUA: **1539 FVG din** (>= 200 ✓), **FARK -4.5% ±3.8** (FARK - 2SE < 0 ✗). Tokri: 0-0.5 ATR 89.9% vs aam 94.1%; 0.5-1 78.4/81.8; 1-1.5 65.3/67.0; 1.5-2.5 51.0/61.4; 2.5+ 23.8/42.9. FVG ka level aam level se **kam** wapas chhua jata hai (ulta, aur kamzor) - 'FVG khainchta hai' ka saboot NAHI. FVG par koi trade idea nahi; settings ghumana mana.
+- **(purana) AGLA QADAM:** `indicators/jas_fvg_ginti.pine` (FVG v1, compile baqi) OANDA:XAUUSD 1D par lagana, table ka screenshot -> pehle se likhe qaide se faisla (FVG din >= 200, FARK - 2SE > 0).
 
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (11 Oct 2026, raat ~23:10 PKT) <<<
 
