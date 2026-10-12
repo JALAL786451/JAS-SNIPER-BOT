@@ -1,0 +1,249 @@
+//@version=6
+// ============================================================================
+//  JAS RSI2 RADAR  (build x1, Pine v6)  —  ek chart par 9 forex pair ka RSI(2)
+//
+//  12 Oct 2026 raat - user: "Tester mein pairs add kar dein jis tarah Tide
+//  Radar mein hain". Ye script TRADE NAHI KARTA - sirf naap.
+//  Har pair par strategies/jas_rsi2_test.pine c1 ke WOHI qaide (badalna mana):
+//   1) Rukh: close SMA(200) ke upar = sirf BUY, neeche = sirf SELL
+//   2) Entry daily close par: RSI(2) < 10 = BUY, RSI(2) > 90 = SELL
+//   3) Band: BUY jab close SMA(5) ke upar, SELL jab neeche (usi close par;
+//      us din nayi trade nahi - Tester jaisa)
+//   4) SL entry se 3 x ATR(14) = 1R, candle ke andar (gap ho to open par);
+//      SL wale din close par nayi trade ho sakti hai (Tester jaisa)
+//   5) Kharcha 0.01% har taraf (R mein). Swap nahi.
+//  R = rukh x (nikalne ki qeemat - entry) / 3 ATR - kharcha  (Tester ki
+//  netprofit / risk wali ginti jaisa; lot ka size R par asar nahi karta).
+//
+//  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, 12 Oct raat, naap se PEHLE):
+//   tokri = 9 pair, faisla sirf POORI tokri ka, '2000 se' trades par:
+//   (a) 9 ka ausat Exp > 0, (b) kam az kam 7/9 pair Exp > 0,
+//   (c) ausat Exp - 2SE(ausat) > 0, 2SE(ausat) = sqrt(sab 2SE ka murabba)/9
+//   (pairs aapas mein jure hain - ye asal se narm hai). Warna FAIL.
+//   Tokri mein se 'achhe' pair chunna MANA.
+//
+//  Har pair ka engine us pair ki apni daily candles par, sirf BAND candle
+//  ([1]) - live par repaint nahi. Chart: koi bhi 1D (lambi history wala
+//  behtar, jaise FX_IDC:EURUSD).
+// ============================================================================
+indicator("JAS RSI2 Radar — 9 forex pair", shorttitle = "JAS RSI2 Radar", overlay = true, max_bars_back = 300)
+
+BUILD = "x1"
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+grM = "1 · Tokri (pehle se chuni - badalna mana)"
+s0 = input.symbol("FX_IDC:EURUSD", "1", group = grM)
+s1 = input.symbol("FX_IDC:GBPUSD", "2", group = grM)
+s2 = input.symbol("FX_IDC:AUDUSD", "3", group = grM)
+s3 = input.symbol("FX_IDC:NZDUSD", "4", group = grM)
+s4 = input.symbol("FX_IDC:USDJPY", "5", group = grM)
+s5 = input.symbol("FX_IDC:USDCHF", "6", group = grM)
+s6 = input.symbol("FX_IDC:USDCAD", "7", group = grM)
+s7 = input.symbol("FX_IDC:EURGBP", "8", group = grM)
+s8 = input.symbol("FX_IDC:AUDNZD", "9", group = grM)
+
+grQ = "2 · Connors RSI(2) qawaid (mat badlein)"
+rsiLen   = input.int(2, "RSI length", minval = 2, group = grQ, display = display.none)
+buyLvl   = input.float(10, "BUY: RSI is se neeche", group = grQ, display = display.none)
+sellLvl  = input.float(90, "SELL: RSI is se upar", group = grQ, display = display.none)
+trendLen = input.int(200, "Rukh: SMA", minval = 10, group = grQ, display = display.none)
+exitLen  = input.int(5, "Band: SMA", minval = 2, group = grQ, display = display.none)
+atrLen   = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+slMult   = input.float(3.0, "SL (x ATR) - hifazat", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+costPct  = input.float(0.01, "Kharcha (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
+fromYear = input.int(2000, "Faisla: is saal se", group = grQ, display = display.none)
+splitYr  = input.int(2019, "Doosra daur: is saal se", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  ENGINE (har pair ki apni daily candles par) - jas_rsi2_test.pine c1 jaisa
+// ============================================================================
+f_rsi2() =>
+    // ta.* sab upar (Pine v6: shart ke andar nahi)
+    _rsiA = ta.rsi(close, rsiLen)
+    _smTA = ta.sma(close, trendLen)
+    _smXA = ta.sma(close, exitLen)
+    _atrA = ta.atr(atrLen)
+    // pichli (BAND) candle
+    _o   = open[1]
+    _h   = high[1]
+    _l   = low[1]
+    _c   = close[1]
+    _rsi = _rsiA[1]
+    _smT = _smTA[1]
+    _smX = _smXA[1]
+    _a   = _atrA[1]
+    _yr  = year(time[1], "UTC")
+    var int   _fy = year(time, "UTC")   // is pair ka data kab se
+    var int   _d  = 0
+    var float _e  = na
+    var float _r  = na
+    var float _sl = na
+    var int   _ey = na
+    var int   _n2 = 0      // fromYear se (faisla)
+    var int   _w2 = 0
+    var float _s2 = 0.0
+    var float _q2 = 0.0
+    var int   _nA = 0      // fromYear .. splitYr-1
+    var float _sA = 0.0
+    var int   _nB = 0      // splitYr se
+    var float _sB = 0.0
+    bool  _cl  = false
+    bool  _atC = false
+    float _px  = na
+    if _d != 0 and not na(_c)
+        // candle ke andar SL (gap ho to open par)
+        if _d == 1 and _l <= _sl
+            _px := _o < _sl ? _o : _sl
+            _cl := true
+        else if _d == -1 and _h >= _sl
+            _px := _o > _sl ? _o : _sl
+            _cl := true
+        // close par: SMA5 ke paar = band (us din nayi trade nahi)
+        if not _cl and not na(_smX) and (_d == 1 ? _c > _smX : _c < _smX)
+            _px  := _c
+            _cl  := true
+            _atC := true
+    if _cl
+        _rr = _d * (_px - _e) / _r - costPct / 100.0 * (_e + _px) / _r
+        if _ey >= fromYear
+            _n2 += 1
+            _s2 += _rr
+            _q2 += _rr * _rr
+            _w2 += _rr > 0 ? 1 : 0
+            if _ey < splitYr
+                _nA += 1
+                _sA += _rr
+            else
+                _nB += 1
+                _sB += _rr
+        _d := 0
+    if _d == 0 and not _atC and not na(_c) and not na(_smT) and not na(_rsi) and not na(_a) and _a > 0
+        _buy  = _c > _smT and _rsi < buyLvl
+        _sell = _c < _smT and _rsi > sellLvl
+        if _buy or _sell
+            _d  := _buy ? 1 : -1
+            _e  := _c
+            _r  := slMult * _a
+            _sl := _c - _d * _r
+            _ey := _yr
+    // 10 cheezein (TradingView: saari request mila kar 127 tak)
+    [_n2, _w2, _s2, _q2, _nA, _sA, _nB, _sB, _d, _fy]
+
+f_req(_s) => request.security(_s, "D", f_rsi2(), barmerge.gaps_off, barmerge.lookahead_off)
+
+[n0, w0, sm0, q0, na0, sa0, nb0, sb0, d0, fy0] = f_req(s0)
+[n1, w1, sm1, q1, na1, sa1, nb1, sb1, d1, fy1] = f_req(s1)
+[n2, w2, sm2, q2, na2, sa2, nb2, sb2, d2, fy2] = f_req(s2)
+[n3, w3, sm3, q3, na3, sa3, nb3, sb3, d3, fy3] = f_req(s3)
+[n4, w4, sm4, q4, na4, sa4, nb4, sb4, d4, fy4] = f_req(s4)
+[n5, w5, sm5, q5, na5, sa5, nb5, sb5, d5, fy5] = f_req(s5)
+[n6, w6, sm6, q6, na6, sa6, nb6, sb6, d6, fy6] = f_req(s6)
+[n7, w7, sm7, q7, na7, sa7, nb7, sb7, d7, fy7] = f_req(s7)
+[n8, w8, sm8, q8, na8, sa8, nb8, sb8, d8, fy8] = f_req(s8)
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_r3(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.000")
+f_r2(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.00")
+// Exp aur us ki 2 x SE
+f_se2(_n, _s, _q) => _n > 1 ? 2.0 * math.sqrt(math.max(_q - _s * _s / _n, 0.0) / (_n - 1)) / math.sqrt(_n) : na
+f_nm(_s) =>
+    _p = str.split(_s, ":")
+    array.size(_p) > 1 ? array.get(_p, 1) : _s
+
+// ============================================================================
+//  TABLE
+// ============================================================================
+var table rt = table.new(f_pos(tblPos), 7, 16, border_width = 1, border_color = color.new(color.gray, 70))
+cOK = color.new(#1B5E20, 0)
+cNO = color.new(#B71C1C, 0)
+cBK = color.black
+cHD = color.new(color.silver, 40)
+cBG = color.new(color.white, 10)
+
+f_c(_col, _row, _t, _tc) =>
+    table.cell(rt, _col, _row, _t, bgcolor = cBG, text_color = _tc, text_size = size.small, text_halign = text.align_left)
+
+f_hd(_col, _t) =>
+    table.cell(rt, _col, 1, _t, bgcolor = cHD, text_color = cBK, text_size = size.small, text_halign = text.align_left)
+
+// ek pair ki row; wapas: [Exp, 2SE, data hai?]
+f_pair(_row, _sym, _n, _w, _s, _q, _nA, _sA, _nB, _sB, _d, _fy) =>
+    _ok  = not na(_n) and _n > 0
+    _ex  = _ok ? _s / _n : na
+    _se  = _ok ? f_se2(_n, _s, _q) : na
+    _exA = not na(_nA) and _nA > 0 ? _sA / _nA : na
+    _exB = not na(_nB) and _nB > 0 ? _sB / _nB : na
+    f_c(0, _row, f_nm(_sym) + (_d == 1 ? " ▲" : _d == -1 ? " ▼" : ""), cBK)
+    f_c(1, _row, na(_fy) ? "data nahi" : str.tostring(_fy), na(_fy) ? cNO : cBK)
+    f_c(2, _row, _ok ? str.tostring(_n) + " · " + str.tostring(100.0 * _w / _n, "0") + "%" : "-", cBK)
+    f_c(3, _row, _ok ? f_r3(_ex) + " (± " + (na(_se) ? "-" : str.tostring(_se, "0.000")) + ")" : "-", na(_ex) ? cBK : _ex > 0 ? cOK : cNO)
+    f_c(4, _row, na(_ex) or na(_se) ? "-" : f_r3(_ex - _se), na(_ex) or na(_se) ? cBK : _ex - _se > 0 ? cOK : cNO)
+    f_c(5, _row, (na(_exA) ? "-" : f_r2(_exA) + " (" + str.tostring(_nA) + ")"), na(_exA) ? cBK : _exA > 0 ? cOK : cNO)
+    f_c(6, _row, (na(_exB) ? "-" : f_r2(_exB) + " (" + str.tostring(_nB) + ")"), na(_exB) ? cBK : _exB > 0 ? cOK : cNO)
+    [_ex, _se, _ok]
+
+if barstate.islast
+    table.clear(rt, 0, 0, 6, 15)
+    table.cell(rt, 0, 0, "JAS RSI2 RADAR " + BUILD + " · Connors RSI(2) 1D · 9 pair · sirf naap", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 6, 0)
+    if not (timeframe.isdaily and timeframe.multiplier == 1)
+        f_c(0, 1, "TF ghalat: sirf 1D chart par", cNO)
+    else
+        f_hd(0, "Pair")
+        f_hd(1, "Data se")
+        f_hd(2, str.tostring(fromYear) + " se trades · jeet")
+        f_hd(3, "Exp R (± 2SE)")
+        f_hd(4, "Exp - 2SE")
+        f_hd(5, str.tostring(fromYear) + "-" + str.tostring(splitYr - 1))
+        f_hd(6, str.tostring(splitYr) + "-aaj")
+        [e0, z0, k0] = f_pair(2, s0, n0, w0, sm0, q0, na0, sa0, nb0, sb0, d0, fy0)
+        [e1, z1, k1] = f_pair(3, s1, n1, w1, sm1, q1, na1, sa1, nb1, sb1, d1, fy1)
+        [e2, z2, k2] = f_pair(4, s2, n2, w2, sm2, q2, na2, sa2, nb2, sb2, d2, fy2)
+        [e3, z3, k3] = f_pair(5, s3, n3, w3, sm3, q3, na3, sa3, nb3, sb3, d3, fy3)
+        [e4, z4, k4] = f_pair(6, s4, n4, w4, sm4, q4, na4, sa4, nb4, sb4, d4, fy4)
+        [e5, z5, k5] = f_pair(7, s5, n5, w5, sm5, q5, na5, sa5, nb5, sb5, d5, fy5)
+        [e6, z6, k6] = f_pair(8, s6, n6, w6, sm6, q6, na6, sa6, nb6, sb6, d6, fy6)
+        [e7, z7, k7] = f_pair(9, s7, n7, w7, sm7, q7, na7, sa7, nb7, sb7, d7, fy7)
+        [e8, z8, k8] = f_pair(10, s8, n8, w8, sm8, q8, na8, sa8, nb8, sb8, d8, fy8)
+        // TOKRI: sirf woh pair jin ka Exp aur 2SE hai
+        _ex = array.from(e0, e1, e2, e3, e4, e5, e6, e7, e8)
+        _se = array.from(z0, z1, z2, z3, z4, z5, z6, z7, z8)
+        int   _k   = 0
+        int   _pos = 0
+        float _sum = 0.0
+        float _sq  = 0.0
+        for _i = 0 to 8
+            _e = array.get(_ex, _i)
+            _z = array.get(_se, _i)
+            if not na(_e) and not na(_z)
+                _k   += 1
+                _sum += _e
+                _sq  += _z * _z
+                _pos += _e > 0 ? 1 : 0
+        _avg  = _k > 0 ? _sum / _k : na
+        _se2a = _k > 0 ? math.sqrt(_sq) / _k : na
+        _need = math.ceil(7.0 * _k / 9.0)
+        _ca   = not na(_avg) and _avg > 0
+        _cb   = _k > 0 and _pos >= _need
+        _cc   = not na(_avg) and not na(_se2a) and _avg - _se2a > 0
+        _pass = _ca and _cb and _cc
+        f_c(0, 11, "TOKRI (" + str.tostring(_k) + " pair)", cBK)
+        table.merge_cells(rt, 0, 11, 1, 11)
+        f_c(2, 11, "ausat Exp " + f_r3(_avg) + "R (± " + (na(_se2a) ? "-" : str.tostring(_se2a, "0.000")) + ") · Exp - 2SE " + f_r3(na(_avg) or na(_se2a) ? na : _avg - _se2a) + " · musbat " + str.tostring(_pos) + "/" + str.tostring(_k), _cc ? cOK : cNO)
+        table.merge_cells(rt, 2, 11, 6, 11)
+        f_c(0, 12, "QAIDA", _pass ? cOK : cNO)
+        table.merge_cells(rt, 0, 12, 1, 12)
+        f_c(2, 12, (_pass ? "PASS - agla imtihan MT5 (Exness)" : "FAIL - forex par RSI2 nahi, settings NAHI badalni") + " · ausat > 0 " + (_ca ? "✓" : "✗") + " · musbat >= " + str.tostring(_need) + " " + (_cb ? "✓" : "✗") + " · ausat - 2SE > 0 " + (_cc ? "✓" : "✗"), _pass ? cOK : cNO)
+        table.merge_cells(rt, 2, 12, 6, 12)
+        f_c(0, 13, "Note", cNO)
+        table.merge_cells(rt, 0, 13, 1, 13)
+        f_c(2, 13, "Sirf naap, trade nahi. Har pair band candle par (aaj ki candle shamil nahi). Swap nahi. ▲/▼ = abhi khuli. Tokri se pair chunna MANA.", cNO)
+        table.merge_cells(rt, 2, 13, 6, 13)
