@@ -4,7 +4,15 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (12-13 Oct 2026 raat - teesri chat) <<<
+
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+
+**USAGE:** hafte ki limit 56% istemal (reset 18 Oct, 02:00 PKT). Is liye: nayi chat, koi agent/workflow NAHI, jawab chhote, sab screenshot ek message mein.
+
+**ABHI KA KAAM (user kar raha hai, Claude ki zaroorat sirf nateeje par):** RSI2 index tokri ka MT5 imtihan - JasRsi2EA, Strategy Tester (Ctrl+R): Expert JasRsi2EA, Symbol har dafa badlo (USTECm, US30m, DE30m, UK100m, STOXX50m, JP225m, AUS200m, HK50m), Daily, Custom 2019.01.01-2026.10.09, 1 minute OHLC, 10000 USD, Optimization Disabled, Visual mode band, Inputs na chhoo. Har run ke baad Journal ki `JAS RSI2 c1 | <symbol> | KUL:` line. **Saare 8 ek message mein** nayi chat ko. Faisla: neeche wala pehle se likha qaida (bina-swap Exp = (kul - swap+comm)/trades; ausat > 0 aur >= 6/8 musbat = PASS).
+
+## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 

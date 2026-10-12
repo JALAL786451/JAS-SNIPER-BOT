@@ -23,6 +23,7 @@ Aakhri update: 12 October 2026 (Peer raat). Kaam ki branch ab `claude/blissful-p
 - Link hamesha **click hone wala** do (markdown link), aur raw link mein
   commit hash wala bhi do (GitHub kabhi purani copy dikhata hai).
 - Mujhe baar baar "aaraam karo" mat kaho - jab thakunga khud bata doonga.
+- **Usage (12-13 Oct raat):** hafte ki limit 56% (reset 18 Oct 02:00 PKT). Is chat mein ek 8-agent jaanch hui thi. Limit 50% se upar ho to agent/workflow bilkul nahi, chahe 'ultracode' chalu ho.
 - **Baar baar reminder NAHI (12 Oct raat):** jawab ke aakhir mein '19 Oct demo panels' jaisi yaad dihani mat do. Sirf user ki request par mashwara + us request ka agla qadam.
 - **Chart bilkul saaf chahiye (10 Oct):** indicator chart par sirf ishara dikhaye;
   lakeerein, rang, lambi tables settings mein BAND rakho (Tide Seekh bhi "bohot text" se napasand hua tha).
