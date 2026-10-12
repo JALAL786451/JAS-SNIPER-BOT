@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TF-RANG GINTI  (build r1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//  JAS TF-RANG GINTI  (build r2, 12 Oct 2026; r2: doji (close = open) nahi gini, 2000 se pehle ka data nahi)  - TRADE NAHI, SIRF GINTI
 //  Ginti script #3 + user ka sawal: "1m se 1W tak kis TF ki harkat apna
 //  rukh RAKHTI hai (saalon se)?"
 //
@@ -17,7 +17,9 @@
 //  Chart: koi bhi (1D behtar). Chhoti TF ka data kam (1m = chand hafte);
 //  "Candles" column dekh kar bharosa karein.
 // ============================================================================
-indicator("JAS TF-Rang Ginti r1", overlay=true)
+indicator("JAS TF-Rang Ginti r2", overlay=true)
+
+fromYear = input.int(2000, "Kis saal se")
 
 f_stats() =>
     var int nAG = 0
@@ -33,7 +35,8 @@ f_stats() =>
     bool p1 = close[2] > open[2]
     bool p2 = close[3] > open[3]
     bool p3 = close[4] > open[4]
-    if not na(close[4])
+    bool flat = close[1] == open[1] or close[2] == open[2] or close[3] == open[3] or close[4] == open[4]
+    if not na(close[4]) and not flat and year(time[1]) >= fromYear
         if p1
             nAG += 1
             gAG += o ? 1 : 0
@@ -81,7 +84,7 @@ f_row(table t, int row, string tf, int nAG, int gAG, int nAR, int gAR, int n3R, 
 var table t = table.new(position.top_right, 8, 11, bgcolor=color.new(color.white, 5), border_width=1)
 if barstate.islast
     table.clear(t, 0, 0, 7, 10)
-    hdr = array.from("TF-RANG r1", "Candles", "Hari %", "Hare→hara", "Laal→hara", "RUKH RAKHE (±2SE)", "3 laal→hara", "3 hare→hara")
+    hdr = array.from("TF-RANG r2", "Candles", "Hari %", "Hare→hara", "Laal→hara", "RUKH RAKHE (±2SE)", "3 laal→hara", "3 hare→hara")
     for i = 0 to 7
         table.cell(t, i, 0, array.get(hdr, i), text_size=size.small)
     f_row(t, 1, "1m",  a1, b1, c1, d1, e1, f1, g1, h1)
