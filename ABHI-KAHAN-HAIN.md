@@ -4,7 +4,20 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer shaam) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat) <<<
+
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/confident-noether-brkdsl. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+
+**BRANCH BADLI:** ab tak ka sara kaam `claude/confident-noether-brkdsl` par hai (is mein `claude/zen-maxwell-7ypyqg` ka sab kuch + 12 Oct raat ke commits). Agli chat isi branch se shuru kare.
+
+**KHULASA 12 Oct raat (is chat ka aakhir):**
+- Demo 472716649 par **Radar EA (Tide 1) + RSI2 EA** wahi chal rahe hain, koi tabdeeli nahi. Agla screenshot **19 Oct (Peer)**, ya koi trade khule to usi din.
+- **FVG v1** (gold 1D 2000 se): 1539 din, FARK -4.5% ±3.8 = ITTEFAQ. User ne bataya: un ka nishan FVG tha hi nahi (Claude ki ghalti).
+- **User ka asal mushahida 'numayan candle'** (Order Block jaisa; user ne 'D' diya): `indicators/jas_numayan_ginti.pine` n1.1 = **SABIT NAHI** - 49 ishare, sirf 32.7% dafa qeemat palat kar numayan candle paar gayi (aam din 43.6%), FARK -3.3% ±12.1. 'Hamesha' asal mein ~1/3.
+- **Tide+SMC s2.5** (user ki farmaish, `indicators/jas_tide_smc.pine`): SMC upar HARA / neeche LAAL, likhai bari, dabbe mein nazar wali baat MOTA rangeen label, table HAAL/MT5/RISK mote. Engine wahi. **Compile baqi.**
+- **AGLA QADAM:** TradingView mein JAS Tide+SMC ka code s2.5 se badal kar Save -> gold **1D** aur **1H** screenshot (ya compile error ka screenshot). Phir 19 Oct ko demo panels.
+
+## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer shaam) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/zen-maxwell-7ypyqg. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 

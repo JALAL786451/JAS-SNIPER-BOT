@@ -5,7 +5,7 @@ dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
-Aakhri update: 12 October 2026 (Peer shaam).
+Aakhri update: 12 October 2026 (Peer raat). Kaam ki branch ab `claude/confident-noether-brkdsl`.
 
 ---
 
