@@ -1,0 +1,100 @@
+//@version=6
+// ============================================================================
+//  JAS WICK GINTI  (build w1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//  User ka khayal (1D par arse se dekha): lambi wick ki nok qeemat ko
+//  khainchti hai - qeemat aksar wapas aa kar wick ki nok chhooti hai
+//  (misaal: 26 Mar 2026 wali wick chhui gayi, 28 Oct 2025 wali abhi nahi).
+//
+//  Imaandar ginti: koi bhi qareeb level aksar chhua jata hai. Is liye
+//  wick wale din ka moqabla AAM din se, BARABAR faasle par:
+//   - Lambi wick: neeche ki wick >= 2 x body aur >= 0.5 ATR (upar ki bhi,
+//     ulti taraf). Faasla = close se wick ki nok tak, ATR mein.
+//   - "Chhui" = agle N din (default 20) mein low <= nok (upar: high >= nok).
+//   - Aam din = wohi faasla (close se low/high), magar wick lambi nahi.
+//   - Har faasle ki tokri mein: wick % vs aam %, FARK.
+//  Pehle se likha qaida (12 Oct, ginti se PEHLE): wick din >= 200 aur
+//  mila hua FARK - 2SE > 0  =  "WICK KHAINCHTI HAI". Warna "ITTEFAQ".
+//  Chart: 1D. Settings ghuma kar dobara faisla nahi.
+// ============================================================================
+indicator("JAS Wick Ginti w1", overlay=true)
+
+fromYear = input.int(2000, "Kis saal se")
+lookN    = input.int(20, "Kitne din mein chhuye", minval=1, maxval=100)
+
+atr  = ta.atr(14)
+body = math.abs(close - open)
+lw   = math.min(open, close) - low
+uw   = high - math.max(open, close)
+isLW = lw >= 2 * body and lw >= 0.5 * atr
+isUW = uw >= 2 * body and uw >= 0.5 * atr
+dL   = atr > 0 ? (close - low) / atr : na
+dU   = atr > 0 ? (high - close) / atr : na
+
+f_b(float d) => na(d) ? -1 : d < 0.5 ? 0 : d < 1.0 ? 1 : d < 1.5 ? 2 : d < 2.5 ? 3 : 4
+
+var array<int> wN = array.new<int>(5, 0)
+var array<int> wF = array.new<int>(5, 0)
+var array<int> aN = array.new<int>(5, 0)
+var array<int> aF = array.new<int>(5, 0)
+
+// N din pehle ka waqia, ab us ka faisla (sirf band candles)
+if barstate.isconfirmed and bar_index > lookN + 20 and year(time[lookN]) >= fromYear
+    fillL = ta.lowest(low, lookN) <= low[lookN]
+    fillU = ta.highest(high, lookN) >= high[lookN]
+    bL = f_b(dL[lookN])
+    bU = f_b(dU[lookN])
+    if bL >= 0
+        if isLW[lookN]
+            array.set(wN, bL, array.get(wN, bL) + 1)
+            array.set(wF, bL, array.get(wF, bL) + (fillL ? 1 : 0))
+        else
+            array.set(aN, bL, array.get(aN, bL) + 1)
+            array.set(aF, bL, array.get(aF, bL) + (fillL ? 1 : 0))
+    if bU >= 0
+        if isUW[lookN]
+            array.set(wN, bU, array.get(wN, bU) + 1)
+            array.set(wF, bU, array.get(wF, bU) + (fillU ? 1 : 0))
+        else
+            array.set(aN, bU, array.get(aN, bU) + 1)
+            array.set(aF, bU, array.get(aF, bU) + (fillU ? 1 : 0))
+
+f_p(int f, int n) => n > 0 ? 100.0 * f / n : na
+f_t(float p) => na(p) ? "-" : str.tostring(p, "#.0") + "%"
+
+var table t = table.new(position.top_right, 6, 9, bgcolor=color.new(color.white, 5), border_width=1)
+if barstate.islastconfirmedhistory or barstate.islast
+    table.clear(t, 0, 0, 5, 8)
+    hdr = array.from("WICK w1 · faasla (ATR)", "Wick din", "Wick chhui", "Aam din", "Aam chhua", "FARK")
+    for i = 0 to 5
+        table.cell(t, i, 0, array.get(hdr, i), text_size=size.small)
+    names = array.from("0 - 0.5", "0.5 - 1", "1 - 1.5", "1.5 - 2.5", "2.5+")
+    float sumW = 0.0
+    float sumD = 0.0
+    float sumV = 0.0
+    for b = 0 to 4
+        n1 = array.get(wN, b)
+        n0 = array.get(aN, b)
+        p1 = f_p(array.get(wF, b), n1)
+        p0 = f_p(array.get(aF, b), n0)
+        fk = na(p1) or na(p0) ? na : p1 - p0
+        table.cell(t, 0, 1 + b, array.get(names, b), text_size=size.small)
+        table.cell(t, 1, 1 + b, str.tostring(n1), text_size=size.small)
+        table.cell(t, 2, 1 + b, f_t(p1), text_size=size.small)
+        table.cell(t, 3, 1 + b, str.tostring(n0), text_size=size.small)
+        table.cell(t, 4, 1 + b, f_t(p0), text_size=size.small)
+        table.cell(t, 5, 1 + b, na(fk) ? "-" : str.tostring(fk, "+#.0;-#.0") + "%", text_size=size.small)
+        if not na(fk) and n1 > 0 and n0 > 0
+            q1 = p1 / 100
+            q0 = p0 / 100
+            sumW += n1
+            sumD += n1 * fk
+            sumV += n1 * n1 * (q1 * (1 - q1) / n1 + q0 * (1 - q0) / n0) * 10000
+    float fAll = sumW > 0 ? sumD / sumW : na
+    float se2  = sumW > 0 ? 2 * math.sqrt(sumV) / sumW : na
+    bool asli = sumW >= 200 and not na(se2) and fAll - se2 > 0
+    table.cell(t, 0, 6, "MILA HUA (faisla)", text_size=size.small)
+    table.cell(t, 1, 6, str.tostring(sumW, "#"), text_size=size.small)
+    table.cell(t, 5, 6, na(fAll) ? "-" : str.tostring(fAll, "+#.0;-#.0") + "% ±" + str.tostring(se2, "#.0"), text_size=size.small)
+    table.cell(t, 0, 7, "QAIDA", text_size=size.small)
+    table.cell(t, 5, 7, asli ? "WICK KHAINCHTI HAI" : "ITTEFAQ", text_color=asli ? color.green : color.red, text_size=size.small)
+    table.cell(t, 0, 8, str.tostring(fromYear) + " se · " + str.tostring(lookN) + " din mein · upar + neeche dono wick", text_size=size.small)
