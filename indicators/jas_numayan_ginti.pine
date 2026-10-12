@@ -1,0 +1,229 @@
+//@version=6
+// ============================================================================
+//  JAS NUMAYAN GINTI  (build n1, 12 Oct 2026)  - TRADE NAHI, SIRF GINTI
+//  User ka apna mushahida (12 Oct, "D"): girawat se pehle upar ek NUMAYAN
+//  (bari) HARI candle; neeche ek numayan LAAL candle chhor kar qeemat palat-ti
+//  hai aur upar wali hari candle ko PAAR karti hai. Ulta bhi.
+//  (SMC zabaan mein 'Order Block' jaisa - user ki shakal, kitaab ki nahi.)
+//
+//  Qaide (pehle se likhe, settings mein NAHI - ghuma kar 'behtar' dhoondna mana):
+//   - Numayan = body >= 1 ATR(14) (kal tak ka ATR).
+//   - U = sab se taza numayan HARI candle. Zinda jab tak: 60 din se purani
+//     na ho aur qeemat us ke high tak na pahunchi ho.
+//   - ISHARA (upar wapsi) = din band U ke LOW ke neeche AUR aaj numayan LAAL.
+//     AAM din = wohi haalat (U zinda, band U ke low ke neeche) magar aaj
+//     numayan laal nahi.
+//   - DAUD (agle 40 din): U ka high pehle chhua = JEET; ya utna hi faasla
+//     NEECHE (close - (U.high - close)) pehle = HAAR. Ek hi din dono = HAAR
+//     (mohtaat). 40 din mein koi nahi = 'faisla nahi' (alag gina).
+//     Barabar faasle ki daud is liye: bari candle ke baad harkat barhti hai -
+//     sirf 'pahuncha ya nahi' ginte to woh jhoota faida dikhata. Daud mein
+//     harkat dono taraf barabar kaam karti hai; aam din sona ki tezi (drift)
+//     ka hisaab barabar karte hain.
+//   - Ulta: D = taza numayan LAAL; band D ke HIGH ke upar + aaj numayan HARI =
+//     ishara (neeche wapsi); jeet = D ka low pehle.
+//   - FARK = ishara jeet % - aam jeet % (faasla tokri ke hisaab se, mila hua).
+//  Pehle se likha qaida (12 Oct raat, ginti se PEHLE): OANDA:XAUUSD 1D, 2000
+//  se. Ishara (faisle wale) >= 60 AUR FARK - 2SE > 0 = "ISHARA ASLI".
+//  < 60 = "KAM WAQIAT" (faisla nahi). Warna "ITTEFAQ".
+//  Python jaanch: tools/numayan_check.py (random par FARK ~0, lagaya edge
+//  pakarta hai). Ye badle to woh bhi.
+// ============================================================================
+indicator("JAS Numayan Ginti n1", overlay=true, max_bars_back=200)
+
+fromYear = input.int(2000, "Kis saal se")
+showMk   = input.bool(true, "Ishara din par chhota nishan")
+
+K_BODY  = 1.0
+MAX_AGE = 60
+LOOK_N  = 40
+MIN_N   = 60
+
+atr  = ta.atr(14)
+a1   = atr[1]
+body = math.abs(close - open)
+bigG = not na(a1) and close > open and body >= K_BODY * a1
+bigR = not na(a1) and close < open and body >= K_BODY * a1
+
+var float uHi  = na
+var float uLo  = na
+var int   uBar = na
+var float dHi  = na
+var float dLo  = na
+var int   dBar = na
+
+// --- aaj ka haal (pichli haalat se parho) ---
+okU    = not na(uHi) and bar_index - uBar <= MAX_AGE and high < uHi
+belowU = okU and close < uLo and atr > 0
+kU     = belowU ? (bigR ? 1 : 0) : -1
+upU    = belowU ? uHi : na
+dnU    = belowU ? close - (uHi - close) : na
+dsU    = belowU ? (uHi - close) / atr : na
+
+okD    = not na(dLo) and bar_index - dBar <= MAX_AGE and low > dLo
+aboveD = okD and close > dHi and atr > 0
+kD     = aboveD ? (bigG ? 1 : 0) : -1
+upD    = aboveD ? close + (close - dLo) : na
+dnD    = aboveD ? dLo : na
+dsD    = aboveD ? (close - dLo) / atr : na
+
+// --- phir haalat ka update ---
+if not na(uHi) and (bar_index - uBar > MAX_AGE or high >= uHi)
+    uHi := na
+if bigG
+    uHi  := high
+    uLo  := low
+    uBar := bar_index
+if not na(dLo) and (bar_index - dBar > MAX_AGE or low <= dLo)
+    dLo := na
+if bigR
+    dHi  := high
+    dLo  := low
+    dBar := bar_index
+
+plotshape(showMk and barstate.isconfirmed and kU == 1, "Ishara: upar wapsi?", shape.triangleup, location.belowbar, color.new(color.teal, 0), size=size.tiny)
+plotshape(showMk and barstate.isconfirmed and kD == 1, "Ishara: neeche wapsi?", shape.triangledown, location.abovebar, color.new(color.orange, 0), size=size.tiny)
+
+// --- LOOK_N din pehle ke din ki daud ab poori hui (sirf band candles) ---
+upU0 = upU[LOOK_N]
+dnU0 = dnU[LOOK_N]
+upD0 = upD[LOOK_N]
+dnD0 = dnD[LOOK_N]
+int rU = -1
+if not na(upU0)
+    for k = LOOK_N - 1 to 0
+        if low[k] <= dnU0
+            rU := 0
+            break
+        if high[k] >= upU0
+            rU := 1
+            break
+int rD = -1
+if not na(dnD0)
+    for k = LOOK_N - 1 to 0
+        if high[k] >= upD0
+            rD := 0
+            break
+        if low[k] <= dnD0
+            rD := 1
+            break
+
+f_b(float d) => na(d) ? -1 : d < 2 ? 0 : d < 3 ? 1 : d < 4 ? 2 : d < 6 ? 3 : 4
+
+// index = side * 5 + tokri  (side 0 = upar wapsi, 1 = neeche wapsi)
+var array<int> eW = array.new<int>(10, 0)
+var array<int> eN = array.new<int>(10, 0)
+var array<int> aW = array.new<int>(10, 0)
+var array<int> aN = array.new<int>(10, 0)
+var int unE = 0
+var int unA = 0
+
+kU0 = kU[LOOK_N]
+kD0 = kD[LOOK_N]
+bU0 = f_b(dsU[LOOK_N])
+bD0 = f_b(dsD[LOOK_N])
+
+if barstate.isconfirmed and bar_index > LOOK_N + 30 and year(time[LOOK_N]) >= fromYear
+    if kU0 >= 0 and bU0 >= 0
+        if rU < 0
+            if kU0 == 1
+                unE += 1
+            else
+                unA += 1
+        else if kU0 == 1
+            array.set(eN, bU0, array.get(eN, bU0) + 1)
+            array.set(eW, bU0, array.get(eW, bU0) + rU)
+        else
+            array.set(aN, bU0, array.get(aN, bU0) + 1)
+            array.set(aW, bU0, array.get(aW, bU0) + rU)
+    if kD0 >= 0 and bD0 >= 0
+        iD = 5 + bD0
+        if rD < 0
+            if kD0 == 1
+                unE += 1
+            else
+                unA += 1
+        else if kD0 == 1
+            array.set(eN, iD, array.get(eN, iD) + 1)
+            array.set(eW, iD, array.get(eW, iD) + rD)
+        else
+            array.set(aN, iD, array.get(aN, iD) + 1)
+            array.set(aW, iD, array.get(aW, iD) + rD)
+
+// mila hua FARK ±2SE (tokri ka wazan = ishara ki ginti), side s0..s1
+f_fk(int s0, int s1) =>
+    float sw = 0.0
+    float sd = 0.0
+    float sv = 0.0
+    for b = 0 to 4
+        int e1 = 0
+        int n1 = 0
+        int e0 = 0
+        int n0 = 0
+        for s = s0 to s1
+            e1 += array.get(eW, s * 5 + b)
+            n1 += array.get(eN, s * 5 + b)
+            e0 += array.get(aW, s * 5 + b)
+            n0 += array.get(aN, s * 5 + b)
+        if n1 > 0 and n0 > 0
+            q1 = e1 * 1.0 / n1
+            q0 = e0 * 1.0 / n0
+            sw += n1
+            sd += n1 * 100.0 * (q1 - q0)
+            sv += n1 * n1 * (q1 * (1 - q1) / n1 + q0 * (1 - q0) / n0) * 10000
+    [sw, sw > 0 ? sd / sw : na, sw > 0 ? 2 * math.sqrt(sv) / sw : na]
+
+f_sum(array<int> a, int s0, int s1) =>
+    int x = 0
+    for i = s0 * 5 to s1 * 5 + 4
+        x += array.get(a, i)
+    x
+
+f_p(int w, int n) => n > 0 ? 100.0 * w / n : na
+f_t(float p) => na(p) ? "-" : str.tostring(p, "#.0") + "%"
+f_fs(float f, float se) => na(f) ? "-" : str.tostring(f, "+#.0;-#.0") + "% ±" + str.tostring(se, "#.0")
+
+var table t = table.new(position.top_right, 6, 12, bgcolor=color.new(color.white, 5), border_width=1)
+if barstate.islastconfirmedhistory or barstate.islast
+    table.clear(t, 0, 0, 5, 11)
+    hdr = array.from("Numayan n1 · faasla (ATR)", "Ishara", "Pehle paar", "Aam din", "Aam pehle paar", "FARK")
+    for i = 0 to 5
+        table.cell(t, i, 0, array.get(hdr, i), text_size=size.small)
+    names = array.from("< 2", "2 - 3", "3 - 4", "4 - 6", "6+")
+    for b = 0 to 4
+        n1 = array.get(eN, b) + array.get(eN, 5 + b)
+        w1 = array.get(eW, b) + array.get(eW, 5 + b)
+        n0 = array.get(aN, b) + array.get(aN, 5 + b)
+        w0 = array.get(aW, b) + array.get(aW, 5 + b)
+        p1 = f_p(w1, n1)
+        p0 = f_p(w0, n0)
+        fk = na(p1) or na(p0) ? na : p1 - p0
+        table.cell(t, 0, 1 + b, array.get(names, b), text_size=size.small)
+        table.cell(t, 1, 1 + b, str.tostring(n1), text_size=size.small)
+        table.cell(t, 2, 1 + b, f_t(p1), text_size=size.small)
+        table.cell(t, 3, 1 + b, str.tostring(n0), text_size=size.small)
+        table.cell(t, 4, 1 + b, f_t(p0), text_size=size.small)
+        table.cell(t, 5, 1 + b, na(fk) ? "-" : str.tostring(fk, "+#.0;-#.0") + "%", text_size=size.small)
+    sideName = array.from("Upar wapsi (neeche laal)", "Neeche wapsi (upar hari)")
+    for s = 0 to 1
+        [nS, fS, eS] = f_fk(s, s)
+        table.cell(t, 0, 6 + s, array.get(sideName, s), text_size=size.small)
+        table.cell(t, 1, 6 + s, str.tostring(f_sum(eN, s, s)), text_size=size.small)
+        table.cell(t, 2, 6 + s, f_t(f_p(f_sum(eW, s, s), f_sum(eN, s, s))), text_size=size.small)
+        table.cell(t, 3, 6 + s, str.tostring(f_sum(aN, s, s)), text_size=size.small)
+        table.cell(t, 4, 6 + s, f_t(f_p(f_sum(aW, s, s), f_sum(aN, s, s))), text_size=size.small)
+        table.cell(t, 5, 6 + s, f_fs(fS, eS), text_size=size.small)
+    [nAll, fAll, eAll] = f_fk(0, 1)
+    nE = f_sum(eN, 0, 1)
+    asli = nE >= MIN_N and not na(eAll) and fAll - eAll > 0
+    kam  = nE < MIN_N
+    table.cell(t, 0, 8, "MILA HUA (faisla)", text_size=size.small)
+    table.cell(t, 1, 8, str.tostring(nE), text_size=size.small)
+    table.cell(t, 2, 8, f_t(f_p(f_sum(eW, 0, 1), nE)), text_size=size.small)
+    table.cell(t, 3, 8, str.tostring(f_sum(aN, 0, 1)), text_size=size.small)
+    table.cell(t, 4, 8, f_t(f_p(f_sum(aW, 0, 1), f_sum(aN, 0, 1))), text_size=size.small)
+    table.cell(t, 5, 8, f_fs(fAll, eAll), text_size=size.small)
+    table.cell(t, 0, 9, "QAIDA", text_size=size.small)
+    table.cell(t, 5, 9, kam ? "KAM WAQIAT" : asli ? "ISHARA ASLI" : "ITTEFAQ", text_color=kam ? color.orange : asli ? color.green : color.red, text_size=size.small)
+    table.cell(t, 0, 10, "40 din mein faisla nahi: ishara " + str.tostring(unE) + " · aam " + str.tostring(unA), text_size=size.small)
+    table.cell(t, 0, 11, str.tostring(fromYear) + " se · numayan = body >= 1 ATR · 40 din ki daud", text_size=size.small)
