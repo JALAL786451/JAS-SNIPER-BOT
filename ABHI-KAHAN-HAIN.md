@@ -18,6 +18,8 @@ Har ek ka faisla: kam az kam 3 mahine + 10-15 band trades (~Jan 2027), EA qaidon
 
 **Naya test qaida (MERI-KAHANI '1-NAYA'):** TALAASH (MT5 2021-24 / TradingView shuru-2018) jitni koshish, IMTIHAN (2025+ / 2019+) ek dafa, chhupa jab tak TALAASH PASS. Koshish-ginti 6: #1-2 Holy Grail FAIL, #3 Williams VB FAIL, #4 TSMOM FAIL (data chhota), #5 TOM FAIL (10/10 musbat magar sakht 2SE), **#6 Kachhua commodity ASLI PASS -> Commodity Radar demo**. Agli koshish #7 user ke kehne par.
 
+**KOSHISH #7 - Ichimoku (Hosoda, Japan 1969) - PEHLE SE LIKHA QAIDA (13 Oct, user 'D', naap se PEHLE, badalna mana):** `indicators/jas_ichimoku_radar.pine` i1, TradingView 1D chart (koi bhi symbol), Tide Radar wale wahi 9 market. BUY = close badal ke upar + Tenkan > Kijun + close > 26 din pehle ka close; SELL ulta; bahar = close Kijun ke paar ya SL (2 ATR fixed = 1R); kharcha 0.005%. TALAASH (entry < 2019) PASS = ausat Exp > 0 AUR >= 6/9 musbat AUR mila Exp - 2SE > 0. IMTIHAN (2019+) chhupa; TALAASH PASS par: ausat > 0 AUR >= 5/9 AUR kul >= 30. 'Kachhua saath %' (TALAASH entries jab Tide usi rukh mein khula) sirf maloomat - ~70%+ = Kachhue ki copy, naya kam. **Agla:** user F7/Add to chart -> table screenshot. Compile baqi.
+
 **Sabaq is chat ke:** MT5 Tester purane Inputs yaad rakhta hai (Inputs tab dekho); Exness index data Sep 2025 se, baqi 2021 se; intraday sab FAIL (kharcha); kaam karta hai = lamba trend (gold, BTC, commodity) + stock index (RSI2).
 
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12-13 Oct 2026 raat - teesri chat) <<<
