@@ -39,6 +39,15 @@ Aakhri update: 12 October 2026 (Peer raat). Kaam ki branch ab `claude/blissful-p
 - Main ab MT5 par kaafi theek kaam kar leta hoon (compile, chart par lagana,
   Strategy Tester).
 
+## 1-NAYA. Test ka naya qaida (13 Oct, user 'D' - purane 'har koshish band' ki jagah)
+
+User: "koshish jaari rahegi jab tak PASS na aaye". Qaida:
+1. Har naya idea sirf **2021-01-01 se 2024-12-31** (TALAASH data) par - jitne idea chahein, settings bhi badal sakte hain.
+2. Jo TALAASH par PASS (trades >= 100, Exp - 2SE > 0, saal ka hissa musbat), woh **2025-01-01 se aaj** (IMTIHAN data) par **ek dafa**, bina kisi tabdeeli.
+3. IMTIHAN par Exp > 0 aur trades >= 30 = **ASLI PASS** -> demo. IMTIHAN FAIL = woh idea band (IMTIHAN data dekh kar tabdeeli MANA - warna woh bhi talaash ban jata hai).
+4. Har koshish KOSHISH-GINTI mein likhi jaye (ABHI-KAHAN-HAIN). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
+5. 2025-26 gold ki bari tezi ka daur hai - IMTIHAN par sirf BUY wala idea ittefaq se acha lag sakta hai; BUY/SELL alag dekhna.
+
 ## 1a. Maqsad aur dil ki baat (11 Oct raat)
 
 - User trading se **ghar (kitchen) ka mahana kharcha** nikalna chahta hai, isi liye baar baar intraday/15m poochta hai. Claude ne hisaab dikhaya: live ~$430 par sabit tareeqe (~5-10%/saal) = mahine ka ~1,000 Rs; is capital par kharcha trading se mumkin nahi; dabao = bari lot (1.15 ghalti, August USD account).

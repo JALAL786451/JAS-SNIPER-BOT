@@ -29,6 +29,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **JasMtfEA f1 - PEHLE SE LIKHA QAIDA (13 Oct, user 'D', group ka idea, naap se PEHLE, badalna mana):** TF bearish/bullish = aakhri BAND candle close EMA20 ke neeche/upar; W1 D1 H4 H3 H2 H1 + M15 saat ek taraf = seedh, entry sirf pehli M15 candle par; SL 1.5 ATR(M15), TP 2R, ek position, 1%. Imtihan: MT5 Tester XAUUSDm M15, 2021.01.01 - aaj, 1 minute OHLC, 10000. PASS = trades >= 100 AUR Exp(bina swap) - 2SE > 0 AUR >= 4/6 saal musbat; FAIL = idea band. Gold par 8wi intraday koshish; Claude umeed FAIL. Live/demo NAHI. **NATEEJA (13 Oct, compile ✅, Tester 2021-2026) = FAIL:** 2086 trades, jeet 33.4%, Exp **+0.002R (±0.062)** bina swap, PF 1.00, kul +5R, girawat 99R, swap -34R, balance 10,000 -> 2,188; saal 2021 -28 / 2022 -44 / 2023 -10 / 2024 +21 / 2025 +51 / 2026 +15R (musbat 3/6, sirf gold ki tezi wale saal). **Idea BAND** - gold par 8wa intraday FAIL.
 
+- **NAYA TEST QAIDA (13 Oct, user 'D'):** TALAASH 2021-2024 (jitni koshish) -> IMTIHAN 2025-aaj ek dafa bina tabdeeli -> dono PASS = demo. Tafseel MERI-KAHANI '1-NAYA'. **KOSHISH-GINTI (naye qaide se): 0.** Agla: user ka agla idea.
+
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
