@@ -25,7 +25,7 @@
 // ============================================================================
 indicator("JAS Ichimoku Radar — 9 market naap", shorttitle = "JAS Ichimoku Radar", overlay = true, max_bars_back = 300)
 
-BUILD = "i1"
+BUILD = "i1.1"
 
 grM = "1 · Tokri (Tide Radar wali - badalna mana)"
 s0 = input.symbol("OANDA:XAUUSD", "1", group = grM)
@@ -321,4 +321,4 @@ if barstate.islast
         f_c(0, 14, "Note", cNO)
         table.merge_cells(rt, 0, 14, 1, 14)
         f_c(2, 14, "Sirf naap, trade nahi. Band candle par. Swap nahi. ▲/▼ = abhi khuli Ichimoku trade. Kachhua saath = TALAASH entries jab Kachhua usi rukh mein khula. Market chunna MANA.", cNO)
-        table.merge_cells(rt, 2, 15, 6, 14)
+        table.merge_cells(rt, 2, 14, 6, 14)
