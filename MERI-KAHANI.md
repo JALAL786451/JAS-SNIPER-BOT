@@ -46,6 +46,7 @@ User: "koshish jaari rahegi jab tak PASS na aaye". Qaida:
 2. Jo TALAASH par PASS (trades >= 100, Exp - 2SE > 0, saal ka hissa musbat), woh **2025-01-01 se aaj** (IMTIHAN data) par **ek dafa**, bina kisi tabdeeli.
 3. IMTIHAN par Exp > 0 aur trades >= 30 = **ASLI PASS** -> demo. IMTIHAN FAIL = woh idea band (IMTIHAN data dekh kar tabdeeli MANA - warna woh bhi talaash ban jata hai).
 4. Har koshish KOSHISH-GINTI mein likhi jaye (ABHI-KAHAN-HAIN). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
+4b. **TradingView (lamba daily data) par (13 Oct):** TALAASH = data shuru se 2018, IMTIHAN = 2019 se aaj (ek dafa). MT5 Exness par wahi 2021-24 / 2025-aaj (Exness data 2021 se; index ka Sep 2025 se).
 5. 2025-26 gold ki bari tezi ka daur hai - IMTIHAN par sirf BUY wala idea ittefaq se acha lag sakta hai; BUY/SELL alag dekhna.
 
 ## 1a. Maqsad aur dil ki baat (11 Oct raat)

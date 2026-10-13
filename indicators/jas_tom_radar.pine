@@ -1,0 +1,266 @@
+//@version=6
+// ============================================================================
+//  JAS TOM RADAR  (build t1, Pine v6)  —  Turn-of-the-Month, 10 stock index
+//
+//  13 Oct 2026 - naye test qaide ki KOSHISH #5 (user 'D'). TRADE NAHI - naap.
+//  Saboot: Ariel 1987, Lakonishok & Smidt 1988, McConnell & Xu 2008 - index
+//  ka zyada faida mahine ke aakhri din + agle mahine ke pehle 3 din mein.
+//
+//  QAWAID (har index, us ki apni DAILY candles, sirf BAND candle [1]):
+//   1) BUY: us din ke close par jab mahine mein sirf 1 kaam ka din (Peer-
+//      Jumma) baqi ho (yani aakhri se pehla din). Sirf BUY.
+//   2) Band: naye mahine ke 3rd trading din ke close par.
+//   3) SL hifazat 2 x ATR(14) = 1R, candle ke andar (gap ho to open par).
+//   4) Kharcha 0.01% har taraf (R mein). Swap nahi.
+//  Chhutti ka din calendar mein nahi gina (kabhi ek din pehle entry) - qaida
+//  sirf calendar par, aage ka data nahi.
+//
+//  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
+//   TALAASH = data shuru se 2018 (entry saal). PASS = (a) 10 ka ausat Exp > 0,
+//   (b) >= 7/10 musbat, (c) SAKHT ausat - (2SE ka seedha ausat) > 0.
+//   IMTIHAN = 2019 se aaj, sirf TALAASH PASS ho to gina: ausat Exp > 0 AUR
+//   >= 6/10 musbat AUR kul trades >= 30 = ASLI PASS -> demo.
+//   Index chunna MANA. Settings badal kar dobara MANA.
+// ============================================================================
+indicator("JAS TOM Radar — 10 index", shorttitle = "JAS TOM Radar", overlay = true, max_bars_back = 300)
+
+BUILD = "t1"
+
+grI = "1 · 10 index (pehle se chune - badalna mana)"
+s0 = input.symbol("OANDA:SPX500USD", "1 S&P 500", group = grI)
+s1 = input.symbol("OANDA:NAS100USD", "2 Nasdaq 100", group = grI)
+s2 = input.symbol("OANDA:US30USD", "3 Dow 30", group = grI)
+s3 = input.symbol("OANDA:US2000USD", "4 Russell 2000", group = grI)
+s4 = input.symbol("OANDA:DE30EUR", "5 DAX", group = grI)
+s5 = input.symbol("OANDA:UK100GBP", "6 FTSE 100", group = grI)
+s6 = input.symbol("OANDA:EU50EUR", "7 Euro Stoxx 50", group = grI)
+s7 = input.symbol("OANDA:JP225USD", "8 Nikkei 225", group = grI)
+s8 = input.symbol("OANDA:AU200AUD", "9 Australia 200", group = grI)
+s9 = input.symbol("OANDA:HK33HKD", "10 Hang Seng", group = grI)
+
+grQ = "2 · Qawaid (mat badlein)"
+atrLen  = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+slMult  = input.float(2.0, "SL (x ATR) - hifazat", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+exitDay = input.int(3, "Band: naye mahine ka kaun sa trading din", minval = 1, maxval = 10, group = grQ, display = display.none)
+costPct = input.float(0.01, "Kharcha (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
+splitYr = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  ENGINE (har index ki apni daily candles par, sirf BAND candle)
+// ============================================================================
+f_dim(int _y, int _m) =>
+    _leap = (_y % 4 == 0 and _y % 100 != 0) or _y % 400 == 0
+    _m == 2 ? (_leap ? 29 : 28) : (_m == 4 or _m == 6 or _m == 9 or _m == 11) ? 30 : 31
+
+f_tom() =>
+    _atrA = ta.atr(atrLen)
+    _o   = open[1]
+    _h   = high[1]
+    _l   = low[1]
+    _c   = close[1]
+    _a   = _atrA[1]
+    _tc  = time_close[1]                  // band candle ka din (exchange zone)
+    _yr  = year(_tc)
+    _mo  = month(_tc)
+    _dom = dayofmonth(_tc)
+    _dow = dayofweek(_tc)                 // 1 = Itwar ... 7 = Hafta
+    var int   _fy  = na
+    var int   _pm  = na                   // pichhli band candle ka mahina
+    var int   _bim = 0                    // is mahine ki kaun si trading candle
+    var bool  _in  = false
+    var float _e   = na
+    var float _r   = na
+    var float _sl  = na
+    var int   _emo = na
+    var int   _ey  = na
+    var int   _nT = 0
+    var int   _wT = 0
+    var float _sT = 0.0
+    var float _qT = 0.0
+    var int   _nI = 0
+    var int   _wI = 0
+    var float _sI = 0.0
+    var float _qI = 0.0
+    if not na(_c) and not na(_tc)
+        if na(_fy)
+            _fy := _yr
+        _bim := na(_pm) or _mo != _pm ? 1 : _bim + 1
+        _pm  := _mo
+        bool  _cl = false
+        float _px = na
+        if _in
+            if _l <= _sl
+                _px := _o < _sl ? _o : _sl
+                _cl := true
+            else if _mo != _emo and _bim >= exitDay
+                _px := _c
+                _cl := true
+        if _cl
+            _rr = (_px - _e) / _r - costPct / 100.0 * (_e + _px) / _r
+            if _ey < splitYr
+                _nT += 1
+                _sT += _rr
+                _qT += _rr * _rr
+                _wT += _rr > 0 ? 1 : 0
+            else
+                _nI += 1
+                _sI += _rr
+                _qI += _rr * _rr
+                _wI += _rr > 0 ? 1 : 0
+            _in := false
+        if not _in and not _cl and not na(_a) and _a > 0
+            // mahine mein baqi kaam ke din (aaj ke baad)
+            int _dim  = f_dim(_yr, _mo)
+            int _left = 0
+            for _k = 1 to 31
+                if _dom + _k > _dim
+                    break
+                int _wd = (_dow - 1 + _k) % 7 + 1
+                if _wd != 1 and _wd != 7
+                    _left += 1
+            if _left == 1
+                _in  := true
+                _e   := _c
+                _r   := slMult * _a
+                _sl  := _c - _r
+                _emo := _mo
+                _ey  := _yr
+    // 10 cheezein x 10 request = 100 (hadd 127)
+    [_nT, _wT, _sT, _qT, _nI, _wI, _sI, _qI, _fy, _in ? 1 : 0]
+
+f_req(_s) => request.security(_s, "D", f_tom(), barmerge.gaps_off, barmerge.lookahead_off)
+
+[nT0, wT0, sT0, qT0, nI0, wI0, sI0, qI0, fy0, d0] = f_req(s0)
+[nT1, wT1, sT1, qT1, nI1, wI1, sI1, qI1, fy1, d1] = f_req(s1)
+[nT2, wT2, sT2, qT2, nI2, wI2, sI2, qI2, fy2, d2] = f_req(s2)
+[nT3, wT3, sT3, qT3, nI3, wI3, sI3, qI3, fy3, d3] = f_req(s3)
+[nT4, wT4, sT4, qT4, nI4, wI4, sI4, qI4, fy4, d4] = f_req(s4)
+[nT5, wT5, sT5, qT5, nI5, wI5, sI5, qI5, fy5, d5] = f_req(s5)
+[nT6, wT6, sT6, qT6, nI6, wI6, sI6, qI6, fy6, d6] = f_req(s6)
+[nT7, wT7, sT7, qT7, nI7, wI7, sI7, qI7, fy7, d7] = f_req(s7)
+[nT8, wT8, sT8, qT8, nI8, wI8, sI8, qI8, fy8, d8] = f_req(s8)
+[nT9, wT9, sT9, qT9, nI9, wI9, sI9, qI9, fy9, d9] = f_req(s9)
+
+// ============================================================================
+//  HELPERS + TABLE
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_r3(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.000")
+f_se2(_n, _s, _q) => _n > 1 ? 2.0 * math.sqrt(math.max(_q - _s * _s / _n, 0.0) / (_n - 1)) / math.sqrt(_n) : na
+f_nm(_s) =>
+    _p = str.split(_s, ":")
+    array.size(_p) > 1 ? array.get(_p, 1) : _s
+
+var table rt = table.new(f_pos(tblPos), 7, 18, border_width = 1, border_color = color.new(color.gray, 70))
+cOK = color.new(#1B5E20, 0)
+cNO = color.new(#B71C1C, 0)
+cBK = color.black
+cHD = color.new(color.silver, 40)
+cBG = color.new(color.white, 10)
+
+f_c(_col, _row, _t, _tc) =>
+    table.cell(rt, _col, _row, _t, bgcolor = cBG, text_color = _tc, text_size = size.small, text_halign = text.align_left)
+
+f_hd(_col, _t) =>
+    table.cell(rt, _col, 1, _t, bgcolor = cHD, text_color = cBK, text_size = size.small, text_halign = text.align_left)
+
+// ek index ki row; wapas: [TALAASH Exp, 2SE, IMTIHAN Exp, IMTIHAN trades]
+f_row(_row, _sym, _nT, _wT, _sT, _qT, _nI, _wI, _sI, _qI, _fy, _d) =>
+    _okT = not na(_nT) and _nT > 0
+    _exT = _okT ? _sT / _nT : na
+    _seT = _okT ? f_se2(_nT, _sT, _qT) : na
+    _okI = not na(_nI) and _nI > 0
+    _exI = _okI ? _sI / _nI : na
+    _seI = _okI ? f_se2(_nI, _sI, _qI) : na
+    f_c(0, _row, f_nm(_sym) + (_d == 1 ? " ▲" : ""), cBK)
+    f_c(1, _row, na(_fy) ? "data nahi" : str.tostring(_fy), na(_fy) ? cNO : cBK)
+    f_c(2, _row, _okT ? str.tostring(_nT) + " · " + str.tostring(100.0 * _wT / _nT, "0") + "%" : "-", cBK)
+    f_c(3, _row, _okT ? f_r3(_exT) + " (± " + (na(_seT) ? "-" : str.tostring(_seT, "0.000")) + ")" : "-", na(_exT) ? cBK : _exT > 0 ? cOK : cNO)
+    f_c(4, _row, na(_exT) or na(_seT) ? "-" : f_r3(_exT - _seT), na(_exT) or na(_seT) ? cBK : _exT - _seT > 0 ? cOK : cNO)
+    f_c(5, _row, _okI ? str.tostring(_nI) + " · " + str.tostring(100.0 * _wI / _nI, "0") + "%" : "-", cBK)
+    f_c(6, _row, _okI ? f_r3(_exI) + " (± " + (na(_seI) ? "-" : str.tostring(_seI, "0.000")) + ")" : "-", na(_exI) ? cBK : _exI > 0 ? cOK : cNO)
+    [_exT, _seT, _exI, _okI ? _nI : 0]
+
+if barstate.islast
+    table.clear(rt, 0, 0, 6, 17)
+    table.cell(rt, 0, 0, "JAS TOM RADAR " + BUILD + " · Turn-of-the-Month 1D · 10 index · sirf naap · KOSHISH #5", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 6, 0)
+    if not (timeframe.isdaily and timeframe.multiplier == 1)
+        f_c(0, 1, "TF ghalat: sirf 1D chart par", cNO)
+    else
+        f_hd(0, "Index")
+        f_hd(1, "Data se")
+        f_hd(2, "TALAASH (<" + str.tostring(splitYr) + ") trades · jeet")
+        f_hd(3, "TALAASH Exp R (± 2SE)")
+        f_hd(4, "Exp - 2SE")
+        f_hd(5, "IMTIHAN (" + str.tostring(splitYr) + "+) trades · jeet")
+        f_hd(6, "IMTIHAN Exp R (± 2SE)")
+        [e0, z0, i0, m0] = f_row(2, s0, nT0, wT0, sT0, qT0, nI0, wI0, sI0, qI0, fy0, d0)
+        [e1, z1, i1, m1] = f_row(3, s1, nT1, wT1, sT1, qT1, nI1, wI1, sI1, qI1, fy1, d1)
+        [e2, z2, i2, m2] = f_row(4, s2, nT2, wT2, sT2, qT2, nI2, wI2, sI2, qI2, fy2, d2)
+        [e3, z3, i3, m3] = f_row(5, s3, nT3, wT3, sT3, qT3, nI3, wI3, sI3, qI3, fy3, d3)
+        [e4, z4, i4, m4] = f_row(6, s4, nT4, wT4, sT4, qT4, nI4, wI4, sI4, qI4, fy4, d4)
+        [e5, z5, i5, m5] = f_row(7, s5, nT5, wT5, sT5, qT5, nI5, wI5, sI5, qI5, fy5, d5)
+        [e6, z6, i6, m6] = f_row(8, s6, nT6, wT6, sT6, qT6, nI6, wI6, sI6, qI6, fy6, d6)
+        [e7, z7, i7, m7] = f_row(9, s7, nT7, wT7, sT7, qT7, nI7, wI7, sI7, qI7, fy7, d7)
+        [e8, z8, i8, m8] = f_row(10, s8, nT8, wT8, sT8, qT8, nI8, wI8, sI8, qI8, fy8, d8)
+        [e9, z9, i9, m9] = f_row(11, s9, nT9, wT9, sT9, qT9, nI9, wI9, sI9, qI9, fy9, d9)
+        _ex = array.from(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9)
+        _se = array.from(z0, z1, z2, z3, z4, z5, z6, z7, z8, z9)
+        _ix = array.from(i0, i1, i2, i3, i4, i5, i6, i7, i8, i9)
+        _im = array.from(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9)
+        int   _k    = 0
+        int   _pos  = 0
+        float _sum  = 0.0
+        float _sz   = 0.0
+        int   _kI   = 0
+        int   _posI = 0
+        int   _nIall = 0
+        float _sumI = 0.0
+        for _i = 0 to 9
+            _e = array.get(_ex, _i)
+            _z = array.get(_se, _i)
+            if not na(_e) and not na(_z)
+                _k   += 1
+                _sum += _e
+                _sz  += _z
+                _pos += _e > 0 ? 1 : 0
+            _ei = array.get(_ix, _i)
+            if not na(_ei)
+                _kI   += 1
+                _sumI += _ei
+                _posI += _ei > 0 ? 1 : 0
+                _nIall += array.get(_im, _i)
+        _avg  = _k > 0 ? _sum / _k : na
+        _seC  = _k > 0 ? _sz / _k : na
+        _need = math.ceil(7.0 * _k / 10.0)
+        _ca   = not na(_avg) and _avg > 0
+        _cb   = _k > 0 and _pos >= _need
+        _cc   = not na(_avg) and not na(_seC) and _avg - _seC > 0
+        _pass = _ca and _cb and _cc
+        _avgI  = _kI > 0 ? _sumI / _kI : na
+        _needI = math.ceil(6.0 * _kI / 10.0)
+        _passI = _pass and not na(_avgI) and _avgI > 0 and _posI >= _needI and _nIall >= 30
+        f_c(0, 12, "TALAASH TOKRI (" + str.tostring(_k) + ")", cBK)
+        table.merge_cells(rt, 0, 12, 1, 12)
+        f_c(2, 12, "ausat Exp " + f_r3(_avg) + "R · musbat " + str.tostring(_pos) + "/" + str.tostring(_k) + " · sakht 2SE ± " + (na(_seC) ? "-" : str.tostring(_seC, "0.000")) + " · ausat - 2SE " + f_r3(na(_avg) or na(_seC) ? na : _avg - _seC), _pass ? cOK : cNO)
+        table.merge_cells(rt, 2, 12, 6, 12)
+        f_c(0, 13, "QAIDA TALAASH", _pass ? cOK : cNO)
+        table.merge_cells(rt, 0, 13, 1, 13)
+        f_c(2, 13, (_pass ? "PASS -> IMTIHAN dekho" : "FAIL - TOM band, settings NAHI badalni") + " · ausat > 0 " + (_ca ? "✓" : "✗") + " · musbat >= " + str.tostring(_need) + " " + (_cb ? "✓" : "✗") + " · ausat - 2SE > 0 " + (_cc ? "✓" : "✗"), _pass ? cOK : cNO)
+        table.merge_cells(rt, 2, 13, 6, 13)
+        f_c(0, 14, "IMTIHAN (" + str.tostring(splitYr) + "+)", cBK)
+        table.merge_cells(rt, 0, 14, 1, 14)
+        f_c(2, 14, "ausat Exp " + f_r3(_avgI) + "R · musbat " + str.tostring(_posI) + "/" + str.tostring(_kI) + " · kul trades " + str.tostring(_nIall), na(_avgI) ? cBK : _avgI > 0 ? cOK : cNO)
+        table.merge_cells(rt, 2, 14, 6, 14)
+        f_c(0, 15, "QAIDA IMTIHAN", _passI ? cOK : cNO)
+        table.merge_cells(rt, 0, 15, 1, 15)
+        f_c(2, 15, not _pass ? "gina nahi (TALAASH FAIL)" : _passI ? "ASLI PASS -> demo ka qaida likhna" : "FAIL - naye data par nahi tika", _passI ? cOK : cNO)
+        table.merge_cells(rt, 2, 15, 6, 15)
+        f_c(0, 16, "Note", cNO)
+        table.merge_cells(rt, 0, 16, 1, 16)
+        f_c(2, 16, "Sirf naap, trade nahi. Sirf BUY. Band candle par (aaj ki shamil nahi). Swap nahi. ▲ = abhi khuli. Index chunna MANA.", cNO)
+        table.merge_cells(rt, 2, 16, 6, 16)
