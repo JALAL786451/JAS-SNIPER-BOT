@@ -1,7 +1,7 @@
-# MERI KAHANI — har nayi chat yahan se shuru kare
+# TRADING — MERI KAHANI — har nayi chat yahan se shuru kare
 
 Ye file is liye hai ke chat full ya reset ho to Jalal ko apni kahani **0 se na
-dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
+dohrani pare**. Har nayi chat pehle ye file, phir `TRADING-ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
@@ -45,7 +45,7 @@ User: "koshish jaari rahegi jab tak PASS na aaye". Qaida:
 1. Har naya idea sirf **2021-01-01 se 2024-12-31** (TALAASH data) par - jitne idea chahein, settings bhi badal sakte hain.
 2. Jo TALAASH par PASS (trades >= 100, Exp - 2SE > 0, saal ka hissa musbat), woh **2025-01-01 se aaj** (IMTIHAN data) par **ek dafa**, bina kisi tabdeeli.
 3. IMTIHAN par Exp > 0 aur trades >= 30 = **ASLI PASS** -> demo. IMTIHAN FAIL = woh idea band (IMTIHAN data dekh kar tabdeeli MANA - warna woh bhi talaash ban jata hai).
-4. Har koshish KOSHISH-GINTI mein likhi jaye (ABHI-KAHAN-HAIN). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
+4. Har koshish KOSHISH-GINTI mein likhi jaye (TRADING-ABHI-KAHAN-HAIN). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
 4b. **TradingView (lamba daily data) par (13 Oct):** TALAASH = data shuru se 2018, IMTIHAN = 2019 se aaj (ek dafa). MT5 Exness par wahi 2021-24 / 2025-aaj (Exness data 2021 se; index ka Sep 2025 se).
 4c. **Ek market chunna (13 Oct, user ka sawal + #15):** TALAASH mein nateeja dekh kar market chunna jaiz, magar tab IMTIHAN SAKHT: Exp - 2SE > 0 (sirf Exp > 0 nahi). Isi tarah IBS S&P ASLI PASS hua.
 5. 2025-26 gold ki bari tezi ka daur hai - IMTIHAN par sirf BUY wala idea ittefaq se acha lag sakta hai; BUY/SELL alag dekhna.
@@ -224,7 +224,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - **User ka apna mushahida 'numayan candle' (Order Block jaisa) - SABIT NAHI** (12 Oct raat, JAS Numayan Ginti n1.1, OANDA:XAUUSD 1D 2000 se, 40 din ki daud): upar bari hari -> qeemat neeche -> neeche bari laal = 49 dafa; sirf **32.7%** dafa qeemat pehle palat kar upar wali candle paar gayi (aam din 43.6%), FARK -3.3% ±12.1. 'Hamesha' asal mein ~1/3. Yaad sirf kaam karne wali misaalein rakhti hai, aur 'aakhri neeche wali candle' baad mein pata chalti hai. (Pehle Claude ne ise FVG samjha tha - woh alag test, woh bhi ITTEFAQ: FARK -4.5% ±3.8.)
 - **NZDCAD par Kachhua SABIT NAHI** (12 Oct raat, dost ke 1H signal se sawal, pehle se likha qaida, OANDA:NZDCAD 1D 2004 se): 2019-aaj 62 trades, jeet 24%, Exp -0.22R (±0.19), kul -13.4R; 2000-18 +0.01R. Settings badalne ki zaroorat nahi - qaide ATR/% mein hain, har market par apne aap; nateeja dekh kar badalna mana. Forex par Kachhua kamzor (Radar FX MT5 -17.3R bhi).
 - **Forex par RSI2 (wapsi) bhi NAHI** (12 Oct raat, JAS RSI2 Radar x1, 9 pair ICE 1D, 2000 se, pehle se likha tokri qaida): ausat +0.008R (±0.015), musbat 6/9 = FAIL. Forex par trend (Kachhua) aur wapsi (RSI2) dono taqreeban sifar. RSI2 sirf S&P par sabit; Kachhua sirf gold + BTC par.
-- **RSI2 stock index par PASS (bal-bal)** (12 Oct raat, JAS RSI2 Radar x2, 9 OANDA index S&P ke baghair, 2003 se, pehle se likha SAKHT qaida): ausat +0.058R, 9/9 musbat, sakht Exp - 2SE +0.004. S&P jaanch row = Tester bilkul. RSI2 ka ghar stock index hai (gold/forex sifar). Faida chhota (~0.6R saal fi index), index aapas mein jure. Agla: MT5 Exness Tester (pehle se likha qaida ABHI-KAHAN-HAIN), phir demo USTEC + US30.
+- **RSI2 stock index par PASS (bal-bal)** (12 Oct raat, JAS RSI2 Radar x2, 9 OANDA index S&P ke baghair, 2003 se, pehle se likha SAKHT qaida): ausat +0.058R, 9/9 musbat, sakht Exp - 2SE +0.004. S&P jaanch row = Tester bilkul. RSI2 ka ghar stock index hai (gold/forex sifar). Faida chhota (~0.6R saal fi index), index aapas mein jure. Agla: MT5 Exness Tester (pehle se likha qaida TRADING-ABHI-KAHAN-HAIN), phir demo USTEC + US30.
 - **RSI2 commodity par bhi NAHI** (13 Oct, Radar x4, 9 OANDA commodity 2003 se, pehle se likha sakht qaida): ausat +0.005R, musbat 6/9 = FAIL. RSI2 ki talaash khatam - sirf stock index (demo: US500 + USTEC + US30). Silver: Tide +0.26R, RSI2 -0.07R = trend wale market par wapsi wala idea ulta. FAIL tokri se musbat market chunna MANA (ittefaq).
 - **'Holy Grail' (Street Smarts 1995) gold + silver par sakht NUQSAN** (13 Oct, koshish #1, JasGrailEA, TALAASH 2021-24): H1 822 trades -0.40R (±0.12), H4 260 trades -0.41R (±0.19), chaaron jodiyan manfi, H1 par 10,000 -> 447. Mashhoor kitaab = faida ki zamanat nahi; test ne asal paisa bachaya. Koshish #2 (BTC, ETH + 5 FX, H1/H4) bhi 14/14 manfi (~-0.29R) = Holy Grail poori tarah band.
 - **Larry Williams Volatility Breakout (1999) bhi FAIL** (13 Oct, koshish #3, 9 market daily, TALAASH 2021-24): 4330 trades, Exp -0.046R (±0.028), 1/9 musbat - kharche jitna manfi. Daily breakout bina trend filter = sifar minus kharcha.
@@ -277,17 +277,17 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 | `JasOrbEA.mq5` o1 | **Opening Range Breakout** (Crabel 1990): NY ki pehli 15m candle ka toot, SL doosra kinara, 15:50 NY band, din mein ek, 1% | Compile ✅. **Tester FAIL (11 Oct, gold 2019-26): 1995 trades, Exp -0.083R (±0.063), PF 0.86, -165R, 1/8 saal musbat = sabit nuqsan.** Demo/live nahi |
 | `strategies/jas_rsi2_test.pine` c1 | **Connors RSI(2)**, 1D: SMA200 rukh, RSI(2) <10 BUY / >90 SELL, SMA5 par band, SL 3 ATR, 1%. QAIDA row khud PASS/FAIL | Compile ✅. **Gold FAIL (2000 se +0.005R ±0.048 = sifar).** **S&P (OANDA:SPX500USD 2003-26) PASS: 257 trades, +0.114R (±0.049), dono daur musbat, DD 3% - magar chhota (~1.2R saal).** Agla: live par US500? phir demo |
 | `JasRsi2EA.mq5` c1 | RSI(2) ka EA, sirf US500 Daily (demo 472716649, Radar ke saath, magic alag) | **Compile ✅ (11 Oct raat, 0 errors)**. Live cent par **US500c hai** (11 Oct) - live sirf demo qaida PASS ke baad, user se poochh kar |
-| `JasIbsEA.mq5` i1 | **IBS (koshish #15 ASLI PASS) ka demo EA**, JasRsi2EA c2 jaisa: US500 D1, IBS < 0.2 + close > SMA200 = BUY, band IBS > 0.8 ya 5 din, SL 3 ATR, 1%, magic 20261022, comment `IBS <din> <SL>` | **Compile ✅ (13 Oct raat).** Tester (Exness US500 data Sep 2025 se): 8 trades -0.105R (±0.198) = engine theek, faisla nahi. Agla demo - qaida ABHI-KAHAN-HAIN (naya US500m D1 chart, RSI2 wale se alag) |
+| `JasIbsEA.mq5` i1 | **IBS (koshish #15 ASLI PASS) ka demo EA**, JasRsi2EA c2 jaisa: US500 D1, IBS < 0.2 + close > SMA200 = BUY, band IBS > 0.8 ya 5 din, SL 3 ATR, 1%, magic 20261022, comment `IBS <din> <SL>` | **Compile ✅ (13 Oct raat).** Tester (Exness US500 data Sep 2025 se): 8 trades -0.105R (±0.198) = engine theek, faisla nahi. Agla demo - qaida TRADING-ABHI-KAHAN-HAIN (naya US500m D1 chart, RSI2 wale se alag) |
 | `strategies/jas_ibs_test.pine` t1 | IBS radar ka S&P engine strategy mein - har trade ki tareekh, MT5 IBS EA se milane ke liye (jaanch, nayi koshish nahi) | Compile ✅ (13 Oct raat): 510 trades, TALAASH/IMTIHAN = radar bilkul (320 / 190). MT5 ki 23 Sep trade isi list se mili |
 | `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
 | `docs/tide_rehnuma.html` | Tide Seekh ki Roman Urdu guide ([artifact](https://claude.ai/artifact/5w4xy7FcTuCnQqxbb3A6C2)): qaide, panel rows, roz ka kaam, MT5 order/SL, naap, demo plan | ✅ 8 Oct |
 | `indicators/jas_tide_smc.pine` + `strategies/jas_tide_smc_test.pine` s1 | **Tide ka ishara (1D, naapa hua) + SMC nishan sirf dikhawa** (MA21/63, BOS/CHOCH, DZ/SZ, FVG, LGB - Tide ki taraf gehre, ulte halke; koi filter nahi), mashwara BTC 4H. Tester: faisla 1D, amal chart TF par (1D = seekh_test jaisa; 15m = wohi daily faisla, SL har 15m) - aakhri 6 trades table mein taake 1D vs 15m milayein | Tester compile ✅, **BTC 1D (2009-2026): 164 trades, jeet 47.6%, PF 3.84, DD 5.3%** (purane jungli BTC saal shamil). **1D = 1h = 30m (2026, cent tak) - qaida PASS.** Indicator s1 compile ✅ (BTC 4H, 164 trades = tester); s1.1 (table ki 7+2 durustiyan, engine wahi) compile ✅ 1D/4H/1h/15m - table har TF par ek, aakhri trade tester se ek. **s2.2 (11 Oct): har TF par Tide dabba (shart / 1R risk / abhi / nateeja) + 'MT5 MEIN' row + lot - compile ✅ BTC 1H (164 / 2019 se 81 SABIT); s2.4 (likhai abhi ki qeemat par label mein) compile ✅ BTC 1H, wahi numbers (11 Oct 19:30)** **s2.5 (SMC hara/laal, mote label) compile ✅ gold 1D (12 Oct); s2.6: SHART ka khali dabba default BAND (user), compile baqi** |
 | `indicators/jas_tide_seekh.pine` + `strategies/jas_tide_seekh_test.pine` | **Tide (kachhua 1D) ka seekhne wala panel** (8 Oct, user: B + nayi file): har qaida ✓/✗, plan, lot, sarakta SL, purane nateeje R mein, switch "2R par aadhi" (BAND = 458 wala). Strategy copy mein v1.1 ki kharabiyan durust | Bana, **compile baqi**. Pehle Tester, phir demo |
-| `indicators/jas_seerhi.pine` + `strategies/jas_seerhi_test.pine` | **Top-down seekhne ka script** (8 Oct, user ne faisle Claude par chhore): 1D rukh (structure + trend line + MA) -> 1H pullback -> 1H entry, SL/TP1(aadhi+BE)/TP2, lot, har qadam ka ✓/✗ panel. Strategy copy Tester ke liye | Compile ✅ (8 Oct, s1.2 panel). **1H Tester 2025-26: 72 trades, -5.7%, PF 0.86 = koi edge sabit nahi.** Settings ki tuning nahi; agla jaanch wala tester (ABHI-KAHAN-HAIN) |
+| `indicators/jas_seerhi.pine` + `strategies/jas_seerhi_test.pine` | **Top-down seekhne ka script** (8 Oct, user ne faisle Claude par chhore): 1D rukh (structure + trend line + MA) -> 1H pullback -> 1H entry, SL/TP1(aadhi+BE)/TP2, lot, har qadam ka ✓/✗ panel. Strategy copy Tester ke liye | Compile ✅ (8 Oct, s1.2 panel). **1H Tester 2025-26: 72 trades, -5.7%, PF 0.86 = koi edge sabit nahi.** Settings ki tuning nahi; agla jaanch wala tester (TRADING-ABHI-KAHAN-HAIN) |
 | `indicators/smc_coach_pro_v4.pine` | **v3 + Pine v6 + kharabiyan durust + PIP HISAAB** (1D/1H candle ka raasta pip mein + har pip par waqt/volume ka profile) | **v4.1 compile + chal raha (8 Oct)**, 1m/15m/1h/1D par number aapas mein milte hain. Sirf observation. v3 waisi rakhi hai |
 | `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
 | `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
-| `JasChakkarEA.mq5` k4 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30. Qaide Q0-Q9 `ABHI-KAHAN-HAIN.md` mein | Compile ✅ (9 Oct). **Tester FAIL (10 Oct, Jul-Oct 2026 real ticks): -5,561, jeet 94%, equity DD 5,618, aakhir mein darjanon lots phansi.** Live nahi; demo se hatana |
+| `JasChakkarEA.mq5` k4 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30. Qaide Q0-Q9 `TRADING-ABHI-KAHAN-HAIN.md` mein | Compile ✅ (9 Oct). **Tester FAIL (10 Oct, Jul-Oct 2026 real ticks): -5,561, jeet 94%, equity DD 5,618, aakhir mein darjanon lots phansi.** Live nahi; demo se hatana |
 | `JasBasketEA.mq5` b20 | Meri method ka EA, sirf apni (magic) lots | Haath ki lots ko nahi chhoota |
 | `JasDesk.mq5` | Button wala desk | User ne MT5 se hata diya |
 
@@ -322,13 +322,13 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - "Usage credits" switch OFF. $100 cloud credit muft mila (claim karna).
   "Full reset" muft button Oct 22 tak.
 - Lambi chat zyada usage khati hai - kaam bara ho to **nayi chat** + code:
-  `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+  `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle TRADING-MERI-KAHANI.md, phir TRADING-ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
 ## 8. Ye file kaise zinda rahe
 
 Har chat ke aakhir mein (ya koi bara faisla/nateeja aaye to foran) Claude:
-- naya **faisla / nateeja / sabaq** yahan ya `ABHI-KAHAN-HAIN.md` mein likhe,
-- `ABHI-KAHAN-HAIN.md` = **abhi kya chal raha hai** (badalta rehta hai),
-- `MERI-KAHANI.md` = **pakki baatein** (kam badalti hain),
-- **Usage qaida (13 Oct safai):** `CLAUDE.md` har message ke saath lagti hai - us mein sirf nayi file ki EK line, haal/nateeja NAHI. `ABHI-KAHAN-HAIN.md` ~150 line se lambi ho to purana hissa `docs/purana-haal.md` mein. Lambi file-tafseel `docs/files-tafseel.md` mein (grep se),
+- naya **faisla / nateeja / sabaq** yahan ya `TRADING-ABHI-KAHAN-HAIN.md` mein likhe,
+- `TRADING-ABHI-KAHAN-HAIN.md` = **abhi kya chal raha hai** (badalta rehta hai),
+- `TRADING-MERI-KAHANI.md` = **pakki baatein** (kam badalti hain),
+- **Usage qaida (13 Oct safai):** `CLAUDE.md` har message ke saath lagti hai - us mein sirf nayi file ki EK line, haal/nateeja NAHI. `TRADING-ABHI-KAHAN-HAIN.md` ~150 line se lambi ho to purana hissa `docs/purana-haal.md` mein. Lambi file-tafseel `docs/files-tafseel.md` mein (grep se),
 - commit + push kare.

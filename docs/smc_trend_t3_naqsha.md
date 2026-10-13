@@ -218,7 +218,7 @@ srROr = srAdv == -1 or (srAdv == 0 and srIDir <= 0 and not buyRuka)
      (c) S <= close <= R after every close;
      (d) every silent orange crossing (no colour change and no flip) is on a candle that confirms a new small pivot.
    - Already measured: 2733/2733, 0 of 3299, 19 of 2800 silent (all on new-pivot candles), 0 side errors.
-3. Update docs: the CLAUDE.md files-table row for smc_trend_pro (t3, compile baqi) and ABHI-KAHAN-HAIN.md (t3 plus the combine rule from screenshotsNeeded). Then commit and push.
+3. Update docs: the CLAUDE.md files-table row for smc_trend_pro (t3, compile baqi) and TRADING-ABHI-KAHAN-HAIN.md (t3 plus the combine rule from screenshotsNeeded). Then commit and push.
 4. User steps:
    - Open "JAS SMC Trend" in Pine Editor, select all, paste, Save.
    - REMOVE the old indicator from the chart and ADD it again, otherwise the saved EMA21 input can stay.

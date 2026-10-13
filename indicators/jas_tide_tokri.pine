@@ -10,7 +10,7 @@
 //  trend wale market). JAANCH row: OANDA:XAUUSD (tokri mein NAHI) - kul
 //  trades Tide Radar ki gold row (459) se milein = engine sahi.
 //
-//  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
+//  PEHLE SE LIKHA QAIDA (TRADING-ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
 //   TALAASH = entry saal < 2019. PASS = (a) 9 ka ausat Exp > 0, (b) >= 6/9
 //   musbat, (c) MILA (sab trades ek saath) Exp - 2SE > 0.
 //   IMTIHAN (2019+) table mein CHHUPA jab tak TALAASH PASS na ho; phir:

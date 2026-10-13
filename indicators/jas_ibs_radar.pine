@@ -14,7 +14,7 @@
 //   4) SL hifazat 3 x ATR(14) = 1R (RSI2 jaisa), candle ke andar (gap = open).
 //   5) Kharcha 0.01% har taraf (R mein). Swap nahi. Bahar wale din nayi nahi.
 //
-//  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
+//  PEHLE SE LIKHA QAIDA (TRADING-ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
 //   TALAASH = data shuru se 2018 (entry saal). PASS = (a) 10 ka ausat Exp > 0,
 //   (b) >= 7/10 musbat, (c) SAKHT ausat - (2SE ka seedha ausat) > 0 (index
 //   aapas mein jure - TOM wala sakht qaida).

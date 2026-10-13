@@ -34,7 +34,7 @@
 //  gandum, makai), naap se PEHLE chuni. Qaida index wala SAKHT (oil/brent,
 //  silver/platinum jure hain). FAIL = RSI2 ki talaash khatam. Engine wahi.
 //
-//  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
+//  PEHLE SE LIKHA QAIDA (TRADING-ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
 //   FOREX (x1): (a) ausat Exp > 0, (b) kam az kam 7/9 musbat,
 //     (c) ausat - 2SE(ausat) > 0, 2SE(ausat) = sqrt(sab 2SE ka murabba)/9.
 //   INDEX (x2): (a) aur (b) wahi; (c) SAKHT: ausat - (sab 2SE ka ausat) > 0

@@ -1,8 +1,8 @@
-# ABHI KAHAN HAIN — nayi chat ke liye
+# TRADING — ABHI KAHAN HAIN — nayi chat ke liye
 
-**Pehchan ka code: `JAS-DESK-V3-0110`** — ye code mile to pehle `MERI-KAHANI.md`, phir ye file.
+**Pehchan ka code: `JAS-DESK-V3-0110`** — ye code mile to pehle `TRADING-MERI-KAHANI.md`, phir ye file.
 
-**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle TRADING-MERI-KAHANI.md, phir TRADING-ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
 Aakhri update: 13 Oct 2026 raat (chhati chat). Ye file **chhoti** rehni chahiye (~150 line);
 purana haal `docs/purana-haal.md` mein (grep se dhoondo, poori mat parho).
@@ -66,7 +66,7 @@ MT5 -0.93R. Engine ki ghalti NAHI (jahan candle ek, trade bilkul mili). Wajah:
 Har ek ka faisla: kam az kam 3 mahine + 10-15 band trades (~Jan 2027), EA qaidon par chala ya
 nahi (har trade TradingView se mile). Jald chautha: JasIbsEA (i3 ke baad).
 
-## KOSHISH-GINTI (naya test qaida - MERI-KAHANI '1-NAYA')
+## KOSHISH-GINTI (naya test qaida - TRADING-MERI-KAHANI '1-NAYA')
 
 TALAASH (MT5 2021-24 / TradingView shuru-2018) jitni koshish; IMTIHAN (2025+ / 2019+) ek
 dafa, chhupa jab tak TALAASH PASS; nateeja dekh kar market chuna to IMTIHAN sakht (Exp - 2SE > 0).
@@ -89,7 +89,7 @@ dafa, chhupa jab tak TALAASH PASS; nateeja dekh kar market chuna to IMTIHAN sakh
 Alag (purane qaide se, sab FAIL): gold par 8 intraday idea (Pro Box, SMC Trend, Seerhi,
 Fishing, Chakkar, ORB, SMC Scalp, MTF). Tafseel: `docs/purana-haal.md`.
 
-## Sabaq jo yaad rakhne hain (tafseel MERI-KAHANI sec 4)
+## Sabaq jo yaad rakhne hain (tafseel TRADING-MERI-KAHANI sec 4)
 
 - Faida sirf daily par mila (Kachhua: gold, BTC, commodity; index ki chhoti wapsi: RSI2, IBS).
   Chhoti TF = spread + shor.

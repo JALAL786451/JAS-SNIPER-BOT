@@ -224,7 +224,7 @@ Tooltip: feed name, "TradingView din 17:00 NY, Exness D1 00:00 UTC: level JasTid
 - Green colour on the NAAP row.
 
 ## Optional experiment: OFF, nothing built in s2
-**Late entry (`lateH`).** Write the rule in ABHI-KAHAN-HAIN.md **before** running it, and make the change in a separate commit to the tester only.
+**Late entry (`lateH`).** Write the rule in TRADING-ABHI-KAHAN-HAIN.md **before** running it, and make the change in a separate commit to the tester only.
 - Test: BTC 4H, `lateH` 0 vs 8, same window.
 - PASS if n ≥ 30, mean(R_late − R_rule) ≥ −0.10R, and mean + 2SE ≥ 0.
 - Until it passes, every late-entry text says "NAAPA NAHI".
