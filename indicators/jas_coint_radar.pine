@@ -1,0 +1,284 @@
+//@version=6
+// ============================================================================
+//  JAS COINT RADAR  (build c1, Pine v6)  —  Engle-Granger cointegration, sirf naap
+//
+//  13 Oct 2026 - naye test qaide ki KOSHISH #10 (user 'D'). TRADE NAHI.
+//  Math: Engle & Granger (1987, Nobel 2003) - do market ka log-qeemat rishta
+//  ln(A) = a + b * ln(B) + e. Agar baqi farq 'e' wapas 0 par aata hai
+//  (ADF test) to jori 'juri hui' (cointegrated) hai.
+//
+//  QAIDE (1D, chart OANDA:XAUUSD 1D, har jori par alag):
+//   1) Har din pichhle 250 din par regression -> b (hedge ratio), a, e ka
+//      sigma; z = aaj ka e / sigma.
+//   2) Entry jab khali ho: b > 0 AUR 2 <= |z| < 4 AUR ADF t-stat (e par,
+//      bina constant, bina lag) <= -3.34 (Engle-Granger 5% hadd).
+//      z >= +2 = A SELL + B BUY (b ke hisaab se); z <= -2 = ulta.
+//      Entry par a, b, sigma FIX ho jate hain.
+//   3) Bahar (din ke close par): fix z wapas 0 ke paar = faida; |z| >= 4
+//      ulti taraf = SL; ya 60 din. 1R = 2 sigma. Bahar wale din nayi nahi.
+//   4) Kharcha 0.005% har leg har taraf. Swap nahi.
+//
+//  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
+//   Jodiyan (kitaabi, pehle se chuni): Gold/Silver, Gold/Platinum,
+//   WTI/Brent, AUD/NZD.
+//   TALAASH = entry saal 2000-2018. PASS = kul trades >= 50 AUR >= 3/4
+//   musbat AUR MILA (sab trades) Exp - 2SE > 0.
+//   IMTIHAN (2019+) CHHUPA jab tak TALAASH PASS; phir mila Exp > 0 AUR
+//   >= 3/4 musbat AUR kul >= 20 = ASLI PASS.
+// ============================================================================
+indicator("JAS Coint Radar — Engle-Granger 4 jodiyan", shorttitle = "JAS Coint Radar", overlay = true, max_bars_back = 300)
+
+BUILD = "c1"
+
+grM = "1 · Jodiyan (pehle se chuni - badalna mana)"
+sXAU = input.symbol("OANDA:XAUUSD", "Gold", group = grM)
+sXAG = input.symbol("OANDA:XAGUSD", "Silver", group = grM)
+sXPT = input.symbol("OANDA:XPTUSD", "Platinum", group = grM)
+sWTI = input.symbol("OANDA:WTICOUSD", "WTI oil", group = grM)
+sBCO = input.symbol("OANDA:BCOUSD", "Brent oil", group = grM)
+sAUD = input.symbol("OANDA:AUDUSD", "AUDUSD", group = grM)
+sNZD = input.symbol("OANDA:NZDUSD", "NZDUSD", group = grM)
+
+grQ = "2 · Qawaid (mat badlein)"
+winLen  = input.int(250, "Regression / ADF window (din)", minval = 50, maxval = 280, group = grQ, display = display.none)
+entZ    = input.float(2.0, "Entry |z|", step = 0.1, group = grQ, display = display.none)
+stopZ   = input.float(4.0, "SL |z|", step = 0.1, group = grQ, display = display.none)
+maxBars = input.int(60, "Zyada se zyada din", minval = 5, group = grQ, display = display.none)
+adfCrit = input.float(-3.34, "ADF hadd (Engle-Granger 5%)", step = 0.01, group = grQ, display = display.none)
+costPct = input.float(0.005, "Kharcha (% har leg har taraf)", minval = 0, step = 0.001, group = grQ, display = display.none)
+startYr = input.int(2000, "TALAASH is saal se", group = grQ, display = display.none)
+splitYr = input.int(2019, "IMTIHAN is saal se", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  DATA - har leg ki daily close chart ki candles par
+// ============================================================================
+f_cl(_s) => request.security(_s, "D", close, barmerge.gaps_off, barmerge.lookahead_off)
+
+cXAU = f_cl(sXAU)
+cXAG = f_cl(sXAG)
+cXPT = f_cl(sXPT)
+cWTI = f_cl(sWTI)
+cBCO = f_cl(sBCO)
+cAUD = f_cl(sAUD)
+cNZD = f_cl(sNZD)
+
+// ============================================================================
+//  ENGINE - ek jori (A = _pa, B = _pb)
+// ============================================================================
+f_pair(float _pa, float _pb) =>
+    _y   = _pa > 0 ? math.log(_pa) : na
+    _x   = _pb > 0 ? math.log(_pb) : na
+    _ok  = not na(_y) and not na(_x)
+    _nb  = ta.cum(_ok ? 1 : 0)
+    _mx  = ta.sma(_x, winLen)
+    _my  = ta.sma(_y, winLen)
+    _vx  = ta.variance(_x, winLen)
+    _vy  = ta.variance(_y, winLen)
+    _cxy = ta.sma(_x * _y, winLen) - _mx * _my
+    _rdy = _ok and _nb > winLen and not na(_vx) and not na(_vy) and not na(_cxy) and _vx > 0
+    _b   = _rdy ? _cxy / _vx : na
+    _a   = _rdy ? _my - _b * _mx : na
+    _ve  = _rdy ? _vy - _b * _cxy : na
+    _sg  = not na(_ve) and _ve > 0 ? math.sqrt(_ve) : na
+    _z   = not na(_sg) ? (_y - _a - _b * _x) / _sg : na
+    _yr  = year(time)
+    var int   _fy  = na
+    var int   _d   = 0
+    var float _ae  = na
+    var float _be  = na
+    var float _sge = na
+    var float _ee  = na
+    var int   _bh  = 0
+    var int   _ey  = na
+    var int   _nT  = 0
+    var int   _wT  = 0
+    var float _sT  = 0.0
+    var float _qT  = 0.0
+    var int   _nI  = 0
+    var int   _wI  = 0
+    var float _sI  = 0.0
+    var float _qI  = 0.0
+    var int   _kC  = 0
+    var int   _kP  = 0
+    if na(_fy) and _ok
+        _fy := _yr
+    bool _cl = false
+    // --- khuli trade: fix a/b/sigma se z ---
+    if _d != 0 and _ok
+        _bh += 1
+        _ef = _y - _ae - _be * _x
+        _zf = _ef / _sge
+        _hit0 = _d == -1 ? _zf <= 0 : _zf >= 0
+        _stop = _d == -1 ? _zf >= stopZ : _zf <= -stopZ
+        if _hit0 or _stop or _bh >= maxBars
+            _rr = _d * (_ef - _ee) / (2.0 * _sge) - 2.0 * costPct / 100.0 * (1.0 + _be) / (2.0 * _sge)
+            if _ey >= startYr and _ey < splitYr
+                _nT += 1
+                _sT += _rr
+                _qT += _rr * _rr
+                _wT += _rr > 0 ? 1 : 0
+            else if _ey >= splitYr
+                _nI += 1
+                _sI += _rr
+                _qI += _rr * _rr
+                _wI += _rr > 0 ? 1 : 0
+            _d  := 0
+            _cl := true
+    // --- entry: |z| 2-4, b > 0, ADF juri ---
+    if _d == 0 and not _cl and not na(_z) and _b > 0 and math.abs(_z) >= entZ and math.abs(_z) < stopZ
+        float _sxy = 0.0
+        float _sxx = 0.0
+        float _syy = 0.0
+        bool  _gap = false
+        for _i = 1 to winLen - 1
+            _yc = _y[_i - 1]
+            _xc = _x[_i - 1]
+            _yp = _y[_i]
+            _xp = _x[_i]
+            if na(_yc) or na(_xc) or na(_yp) or na(_xp)
+                _gap := true
+                break
+            _ec = _yc - _a - _b * _xc
+            _ep = _yp - _a - _b * _xp
+            _de = _ec - _ep
+            _sxy += _ep * _de
+            _sxx += _ep * _ep
+            _syy += _de * _de
+        if not _gap and _sxx > 0
+            _n   = winLen - 1
+            _g   = _sxy / _sxx
+            _ssr = math.max(_syy - _g * _sxy, 0.0)
+            _s2  = _ssr / (_n - 1)
+            _t   = _s2 > 0 ? _g / math.sqrt(_s2 / _sxx) : na
+            _cand = _yr >= startYr and _yr < splitYr
+            _kC += _cand ? 1 : 0
+            if not na(_t) and _t <= adfCrit
+                _kP += _cand ? 1 : 0
+                _d   := _z > 0 ? -1 : 1
+                _ae  := _a
+                _be  := _b
+                _sge := _sg
+                _ee  := _y - _a - _b * _x
+                _bh  := 0
+                _ey  := _yr
+    [_nT, _wT, _sT, _qT, _nI, _wI, _sI, _qI, _fy, _d, _b, _z, _kC, _kP]
+
+[nT0, wT0, sT0, qT0, nI0, wI0, sI0, qI0, fy0, d0, b0, z0, kC0, kP0] = f_pair(cXAU, cXAG)
+[nT1, wT1, sT1, qT1, nI1, wI1, sI1, qI1, fy1, d1, b1, z1, kC1, kP1] = f_pair(cXAU, cXPT)
+[nT2, wT2, sT2, qT2, nI2, wI2, sI2, qI2, fy2, d2, b2, z2, kC2, kP2] = f_pair(cWTI, cBCO)
+[nT3, wT3, sT3, qT3, nI3, wI3, sI3, qI3, fy3, d3, b3, z3, kC3, kP3] = f_pair(cAUD, cNZD)
+
+// ============================================================================
+//  HELPERS + TABLE
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_r3(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.000")
+f_se2(_n, _s, _q) => _n > 1 ? 2.0 * math.sqrt(math.max(_q - _s * _s / _n, 0.0) / (_n - 1)) / math.sqrt(_n) : na
+
+var table rt = table.new(f_pos(tblPos), 8, 14, border_width = 1, border_color = color.new(color.gray, 70))
+cOK = color.new(#1B5E20, 0)
+cNO = color.new(#B71C1C, 0)
+cBK = color.black
+cGY = color.new(#78909C, 0)
+cHD = color.new(color.silver, 40)
+cBG = color.new(color.white, 10)
+
+f_c(_col, _row, _t, _tc) =>
+    table.cell(rt, _col, _row, _t, bgcolor = cBG, text_color = _tc, text_size = size.small, text_halign = text.align_left)
+
+f_hd(_col, _t) =>
+    table.cell(rt, _col, 1, _t, bgcolor = cHD, text_color = cBK, text_size = size.small, text_halign = text.align_left)
+
+f_row(_row, _nm, _nT, _wT, _sT, _qT, _nI, _sI, _fy, _d, _b, _z, _kC, _kP, _show) =>
+    _okT = _nT > 0
+    _exT = _okT ? _sT / _nT : na
+    _seT = _okT ? f_se2(_nT, _sT, _qT) : na
+    _exI = _nI > 0 ? _sI / _nI : na
+    f_c(0, _row, _nm + (_d == 1 ? " ▲" : _d == -1 ? " ▼" : ""), cBK)
+    f_c(1, _row, na(_fy) ? "data nahi" : str.tostring(_fy), na(_fy) ? cNO : cBK)
+    f_c(2, _row, _okT ? str.tostring(_nT) + " · " + str.tostring(100.0 * _wT / _nT, "0") + "%" : "0", cBK)
+    f_c(3, _row, _okT ? f_r3(_exT) + " (± " + (na(_seT) ? "-" : str.tostring(_seT, "0.000")) + ")" : "-", na(_exT) ? cBK : _exT > 0 ? cOK : cNO)
+    f_c(4, _row, na(_exT) or na(_seT) ? "-" : f_r3(_exT - _seT), na(_exT) or na(_seT) ? cBK : _exT - _seT > 0 ? cOK : cNO)
+    f_c(5, _row, _kC > 0 ? str.tostring(_kP) + "/" + str.tostring(_kC) + " (" + str.tostring(100.0 * _kP / _kC, "0") + "%)" : "-", cBK)
+    f_c(6, _row, "b " + (na(_b) ? "-" : str.tostring(_b, "0.00")) + " · z " + (na(_z) ? "-" : str.tostring(_z, "0.0")), cBK)
+    if _show
+        f_c(7, _row, _nI > 0 ? str.tostring(_nI) + " · " + f_r3(_exI) : "0", na(_exI) ? cBK : _exI > 0 ? cOK : cNO)
+    else
+        f_c(7, _row, "chhupa", cGY)
+
+if barstate.islast
+    table.clear(rt, 0, 0, 7, 13)
+    table.cell(rt, 0, 0, "JAS COINT RADAR " + BUILD + " · Engle-Granger · 250 din · |z| 2/0/4 · ADF -3.34 · sirf naap · KOSHISH #10", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 7, 0)
+    if not (timeframe.isdaily and timeframe.multiplier == 1)
+        f_c(0, 1, "TF ghalat: sirf 1D chart par (OANDA:XAUUSD behtar)", cNO)
+    else
+        _nA = array.from(nT0, nT1, nT2, nT3)
+        _sA = array.from(sT0, sT1, sT2, sT3)
+        _qA = array.from(qT0, qT1, qT2, qT3)
+        _nB = array.from(nI0, nI1, nI2, nI3)
+        _sB = array.from(sI0, sI1, sI2, sI3)
+        int   _k    = 0
+        int   _pos  = 0
+        int   _N    = 0
+        float _S    = 0.0
+        float _Q    = 0.0
+        int   _kI   = 0
+        int   _posI = 0
+        int   _NI   = 0
+        float _SI   = 0.0
+        for _i = 0 to 3
+            _n = array.get(_nA, _i)
+            if _n > 0
+                _k   += 1
+                _pos += array.get(_sA, _i) > 0 ? 1 : 0
+                _N   += _n
+                _S   += array.get(_sA, _i)
+                _Q   += array.get(_qA, _i)
+            _ni = array.get(_nB, _i)
+            if _ni > 0
+                _kI   += 1
+                _posI += array.get(_sB, _i) > 0 ? 1 : 0
+                _NI   += _ni
+                _SI   += array.get(_sB, _i)
+        _exM  = _N > 0 ? _S / _N : na
+        _seM  = f_se2(_N, _S, _Q)
+        _need = math.ceil(3.0 * _k / 4.0)
+        _ca   = _N >= 50
+        _cb   = _k > 0 and _pos >= _need
+        _cc   = not na(_exM) and not na(_seM) and _exM - _seM > 0
+        _pass = _ca and _cb and _cc
+        _exMI  = _NI > 0 ? _SI / _NI : na
+        _needI = math.ceil(3.0 * _kI / 4.0)
+        _passI = _pass and not na(_exMI) and _exMI > 0 and _posI >= _needI and _NI >= 20
+        f_hd(0, "Jori (A / B)")
+        f_hd(1, "Data se")
+        f_hd(2, "TALAASH (" + str.tostring(startYr) + "-" + str.tostring(splitYr - 1) + ") trades · jeet")
+        f_hd(3, "TALAASH Exp R (± 2SE)")
+        f_hd(4, "Exp - 2SE")
+        f_hd(5, "ADF juri (moqe)")
+        f_hd(6, "Abhi")
+        f_hd(7, "IMTIHAN (" + str.tostring(splitYr) + "+) trades · Exp")
+        f_row(2, "Gold / Silver", nT0, wT0, sT0, qT0, nI0, sI0, fy0, d0, b0, z0, kC0, kP0, _pass)
+        f_row(3, "Gold / Platinum", nT1, wT1, sT1, qT1, nI1, sI1, fy1, d1, b1, z1, kC1, kP1, _pass)
+        f_row(4, "WTI / Brent", nT2, wT2, sT2, qT2, nI2, sI2, fy2, d2, b2, z2, kC2, kP2, _pass)
+        f_row(5, "AUD / NZD", nT3, wT3, sT3, qT3, nI3, sI3, fy3, d3, b3, z3, kC3, kP3, _pass)
+        f_c(0, 6, "TALAASH MILA (" + str.tostring(_k) + ")", cBK)
+        table.merge_cells(rt, 0, 6, 1, 6)
+        f_c(2, 6, "kul " + str.tostring(_N) + " trades · musbat " + str.tostring(_pos) + "/" + str.tostring(_k) + " · MILA Exp " + f_r3(_exM) + " (± " + (na(_seM) ? "-" : str.tostring(_seM, "0.000")) + ") · Exp - 2SE " + f_r3(na(_exM) or na(_seM) ? na : _exM - _seM), _pass ? cOK : cNO)
+        table.merge_cells(rt, 2, 6, 7, 6)
+        f_c(0, 7, "QAIDA TALAASH", _pass ? cOK : cNO)
+        table.merge_cells(rt, 0, 7, 1, 7)
+        f_c(2, 7, (_pass ? "PASS -> IMTIHAN khul gaya" : "FAIL - Cointegration band, settings NAHI badalni") + " · trades >= 50 " + (_ca ? "✓" : "✗") + " · musbat >= " + str.tostring(_need) + " " + (_cb ? "✓" : "✗") + " · mila Exp - 2SE > 0 " + (_cc ? "✓" : "✗"), _pass ? cOK : cNO)
+        table.merge_cells(rt, 2, 7, 7, 7)
+        f_c(0, 8, "QAIDA IMTIHAN", _passI ? cOK : _pass ? cNO : cGY)
+        table.merge_cells(rt, 0, 8, 1, 8)
+        f_c(2, 8, not _pass ? "chhupa (TALAASH PASS ho to khulega)" : "kul " + str.tostring(_NI) + " · mila Exp " + f_r3(_exMI) + "R · musbat " + str.tostring(_posI) + "/" + str.tostring(_kI) + " · " + (_passI ? "ASLI PASS -> demo ka qaida likhna" : "FAIL - naye data par nahi tika"), _passI ? cOK : _pass ? cNO : cGY)
+        table.merge_cells(rt, 2, 8, 7, 8)
+        f_c(0, 9, "Note", cNO)
+        table.merge_cells(rt, 0, 9, 1, 9)
+        f_c(2, 9, "Sirf naap, trade nahi. 1R = 2 sigma. ▼ = A SELL + B BUY khula, ▲ = ulta. ADF juri = |z| >= 2 wale TALAASH dinon mein se kitne din jori juri thi. Jori chunna MANA.", cNO)
+        table.merge_cells(rt, 2, 9, 7, 9)
