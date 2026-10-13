@@ -4,11 +4,15 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (13 Oct 2026 raat - paanchvi chat ka khulasa) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (13 Oct 2026 raat - chhati chat) <<<
 
-**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+**BRANCH BADLI:** sara kaam ab `claude/jas-desk-v3-0110-yu3w2h` par (is mein `claude/blissful-planck-f5z439` ka sab kuch + JasIbsEA i1).
 
-**PEHLA KAAM (user ne 'D' de diya hai - dobara mat poochho):** `JasIbsEA.mq5` banana - IBS (koshish #15, ASLI PASS) ka demo EA:
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+
+**JasIbsEA i1 BAN GAYA (13 Oct raat) - COMPILE BAQI.** JasRsi2EA c2 ka dhaancha, qaide `jas_ibs_radar.pine` b2 jaise (neeche). Do baatein jo Pine se milane ke liye daali: (1) **din ginti** = signal candle ke baad kitni band D1 candles (comment ke din se; na mile to position ke waqt se) - 5 par band; (2) **SL wale din nayi nahi** - jis candle mein server ka SL laga (Monday = Sunday ka hissa bhi), us candle ke signal par nayi trade nahi (Pine `not _cl`). EA ki apni band (IBS > 0.8 / 5 din) agle din ke shuru mein hoti hai - us din ki candle par nayi trade ho sakti hai (Pine jaisa). Panel: har market `IBS 0.xx`, SMA200 UPAR/NEECHE, khuli ho to `din x/5`. Journal (Tester): `JAS IBS i1 | ... KUL / SAAL / MARKET / BAND` (sirf maloomat - Exness index data Sep 2025 se). **Agla qadam:** user F7 compile -> `0 errors` screenshot -> phir demo par lagana (neeche ka demo qaida).
+
+**(pehle ka) PEHLA KAAM (user ne 'D' de diya hai - dobara mat poochho):** `JasIbsEA.mq5` banana - IBS (koshish #15, ASLI PASS) ka demo EA:
 - JasRsi2EA c2 ki tarah (ek D1 chart, `InpSymbols` default `US500`, suffix auto, panel, `InpTrade` false = sirf dikhana, OnTester R ±2SE), **magic 20261022**, comment `IBS <din> <SL>`.
 - Qaide `indicators/jas_ibs_radar.pine` b1/b2 jaise BILKUL: pichhli BAND D1 candle (Sunday candle Monday mein mili), IBS = (close-low)/(high-low) < 0.2 AUR close > SMA200 = BUY (sirf BUY); band: kisi band candle ka IBS > 0.8 ya 5 din (close = agle din ke shuru mein band); SL server par signal close se 3 x ATR(14) (RMA, Pine jaisa) = 1R; 1% risk (lot hadd 2.00); bahar wale din nayi nahi; lagne ke baad pehli candle par nayi trade nahi.
 - **Demo qaida (pehle se, badalna mana):** demo 472716649, US500m D1 chart (naya chart - RSI2 wala US500m chart alag; ek chart ek EA), InpTrade true. Kam az kam 3 mahine + 10 band trades (~Jan 2027). PASS = har EA trade TradingView `jas_ibs_radar.pine` SPX signal din (±1 din) se mile, rukh BUY, koi bina SL position nahi; kul faida/nuqsan faisla nahi. US500 par RSI2 1% + IBS 1% = kabhi 2% - theek.
