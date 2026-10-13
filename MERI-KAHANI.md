@@ -5,7 +5,7 @@ dohrani pare**. Har nayi chat pehle ye file, phir `ABHI-KAHAN-HAIN.md` parhe.
 Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
 (qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
 
-Aakhri update: 12 October 2026 (Peer raat). Kaam ki branch ab `claude/blissful-planck-f5z439`.
+Aakhri update: 13 October 2026 (Mangal raat, paanchvi chat). Kaam ki branch ab `claude/blissful-planck-f5z439`.
 
 ---
 
@@ -47,6 +47,7 @@ User: "koshish jaari rahegi jab tak PASS na aaye". Qaida:
 3. IMTIHAN par Exp > 0 aur trades >= 30 = **ASLI PASS** -> demo. IMTIHAN FAIL = woh idea band (IMTIHAN data dekh kar tabdeeli MANA - warna woh bhi talaash ban jata hai).
 4. Har koshish KOSHISH-GINTI mein likhi jaye (ABHI-KAHAN-HAIN). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
 4b. **TradingView (lamba daily data) par (13 Oct):** TALAASH = data shuru se 2018, IMTIHAN = 2019 se aaj (ek dafa). MT5 Exness par wahi 2021-24 / 2025-aaj (Exness data 2021 se; index ka Sep 2025 se).
+4c. **Ek market chunna (13 Oct, user ka sawal + #15):** TALAASH mein nateeja dekh kar market chunna jaiz, magar tab IMTIHAN SAKHT: Exp - 2SE > 0 (sirf Exp > 0 nahi). Isi tarah IBS S&P ASLI PASS hua.
 5. 2025-26 gold ki bari tezi ka daur hai - IMTIHAN par sirf BUY wala idea ittefaq se acha lag sakta hai; BUY/SELL alag dekhna.
 
 ## 1a. Maqsad aur dil ki baat (11 Oct raat)

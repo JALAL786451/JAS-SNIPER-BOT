@@ -4,7 +4,32 @@
 
 Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaam shuru kare.
 
-## >>> AGLI CHAT YAHAN SE SHURU KARE (13 Oct 2026 - chauthi chat ka khulasa) <<<
+## >>> AGLI CHAT YAHAN SE SHURU KARE (13 Oct 2026 raat - paanchvi chat ka khulasa) <<<
+
+**Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+
+**PEHLA KAAM (user ne 'D' de diya hai - dobara mat poochho):** `JasIbsEA.mq5` banana - IBS (koshish #15, ASLI PASS) ka demo EA:
+- JasRsi2EA c2 ki tarah (ek D1 chart, `InpSymbols` default `US500`, suffix auto, panel, `InpTrade` false = sirf dikhana, OnTester R ±2SE), **magic 20261022**, comment `IBS <din> <SL>`.
+- Qaide `indicators/jas_ibs_radar.pine` b1/b2 jaise BILKUL: pichhli BAND D1 candle (Sunday candle Monday mein mili), IBS = (close-low)/(high-low) < 0.2 AUR close > SMA200 = BUY (sirf BUY); band: kisi band candle ka IBS > 0.8 ya 5 din (close = agle din ke shuru mein band); SL server par signal close se 3 x ATR(14) (RMA, Pine jaisa) = 1R; 1% risk (lot hadd 2.00); bahar wale din nayi nahi; lagne ke baad pehli candle par nayi trade nahi.
+- **Demo qaida (pehle se, badalna mana):** demo 472716649, US500m D1 chart (naya chart - RSI2 wala US500m chart alag; ek chart ek EA), InpTrade true. Kam az kam 3 mahine + 10 band trades (~Jan 2027). PASS = har EA trade TradingView `jas_ibs_radar.pine` SPX signal din (±1 din) se mile, rukh BUY, koi bina SL position nahi; kul faida/nuqsan faisla nahi. US500 par RSI2 1% + IBS 1% = kabhi 2% - theek.
+- User compile F7 karega (cloud mein MQL5 compile nahi hota).
+
+**Is chat (13 Oct sham-raat) mein kya hua - KOSHISH-GINTI 15:**
+| # | Idea | Nateeja |
+|---|---|---|
+| 7-8 | Ichimoku 9 market (TradingView) | FAIL (#8 2000-18: -0.003 kinare par) |
+| 9 | Intraday Momentum (Gao 2018) MT5 M30 | FAIL -0.207R, 0/9 (spread) |
+| 10-11 | Cointegration Engle-Granger / bina ADF (Gatev) | FAIL (16 trades / 222 trades -0.015R) - jori trading band |
+| 12 | User ka 15m 0.01 TP $1 SL $2 (ghusse wala idea, Tester par) | FAIL 89,203 trades, jeet 59.8% < 66.7%, -18,446 USD |
+| 13 | Kachhua 4H (9 market MT5) | FAIL 1847 trades +0.021R, 4/9 |
+| 14 | IBS 10 index tokri | FAIL kinare par (+0.035, 9/10, sakht -0.011), RSI2 saath 15% |
+| **15** | **IBS sirf S&P, IMTIHAN sakht** | **ASLI PASS: IMTIHAN 190 trades +0.082R (±0.053), Exp - 2SE +0.029** |
+
+**Sabaq is chat ke:** (1) chhoti TF (15m/30m/4H) = spread/shor; faida sirf daily par mila. (2) Zyada trades chahiye to zyada MARKET daily par, chhoti TF nahi. (3) Nateeja dekh kar market chunna TALAASH mein jaiz, MAGAR tab IMTIHAN sakht (Exp - 2SE > 0) - 'Exp > 0' sikka uchhalna hai. (4) User: "main trading nahi jaanta, bas jaanna chahta hoon" = faisle Claude ke, har cheez seedhi zabaan + misaal se samjhao. (5) User: "koshish chhorna meri tabiyat mein nahi" - kabhi 'ab ruk jayein' jaisa mat kaho; agla idea tajweez karo. (6) Ultracode chalu bhi ho to user ka qaida: hafte ki limit 50%+ = koi agent/workflow nahi.
+
+**DEMO par chal rahe (koi tabdeeli nahi):** Radar (20261009, XAUUSDm D1), RSI2 c2 (20261012, US500m D1: US500/USTEC/US30), Commodity Radar (20261018, XPTUSDm D1). Jald IBS (20261022) chauthi.
+
+## (purana) AGLI CHAT YAHAN SE SHURU KARE (13 Oct 2026 - chauthi chat ka khulasa) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
