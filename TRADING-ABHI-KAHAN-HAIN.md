@@ -4,11 +4,11 @@
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle TRADING-MERI-KAHANI.md, phir TRADING-ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
-Aakhri update: 13 Oct 2026 raat (chhati chat). Ye file **chhoti** rehni chahiye (~150 line);
+Aakhri update: 13 Oct 2026 raat (saatvi chat: MERI-KAHANI patli ki, usage naap). Ye file **chhoti** rehni chahiye (~150 line);
 purana haal `docs/purana-haal.md` mein (grep se dhoondo, poori mat parho).
 
 **Usage (13 Oct raat):** hafta 71% (reset Itwar 18 Oct 02:00 PKT). Koi agent/workflow nahi,
-jawab chhote, bara kaam nayi chat mein. CLAUDE.md har message ke saath lagti hai - usay sirf
+jawab chhote, bara kaam nayi chat mein. Chat kholte waqt effort medium/high (xhigh nahi). CLAUDE.md har message ke saath lagti hai - usay sirf
 nayi file par ek line ke liye chhoona.
 
 ---

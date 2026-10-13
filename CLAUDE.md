@@ -13,8 +13,8 @@ dohrani pare. Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> li
 - Haal aur nateeje `TRADING-ABHI-KAHAN-HAIN.md` mein (~150 line se lambi ho to purana
   hissa `docs/purana-haal.md` mein). Pakke sabaq `TRADING-MERI-KAHANI.md` mein.
 - Purani tafseel parhni ho to poori file nahi - `grep` se:
-  `docs/purana-haal.md` (purana haal, koshish 1-15) aur `docs/files-tafseel.md`
-  (har file ki lambi kahani, build-wise).
+  `docs/purana-haal.md` (purana haal, koshish 1-15), `docs/files-tafseel.md`
+  (har file ki lambi kahani, build-wise) aur `docs/sabaq-tafseel.md` (sabaq ke poore number).
 - Agent / workflow sirf jab user khud naam le kar maange; hafte ki limit 50%+ ho
   to bilkul nahi.
 

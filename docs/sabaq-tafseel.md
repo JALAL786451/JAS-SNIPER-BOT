@@ -1,0 +1,207 @@
+# Sabaq tafseel - TRADING-MERI-KAHANI ke lambe hisse (13 Oct se yahan)
+
+Ye hisse `TRADING-MERI-KAHANI.md` se bilkul waise yahan laaye gaye (usage bachao, 13 Oct).
+Wahan har sabaq ki ek line hai; poore number yahan - `grep` se dhoondo, poori file mat parho.
+
+## 1b. Live kitab ka haal (9 Oct tak)
+
+**9 Oct (JasDeskView v4.2, XAUUSDc, qeemat ~4185.46):** 160 position, BUY 102 /
+2.21 lot (ausat 4188.779) / SELL 58 / 2.05 lot (ausat 4167.154), **NET +0.16
+(LONG - jami nahi, $1 = 16 USC)**, kul 4.26 lot, **Close All -4,532.20 USC**
+(faide wali 46 = +1,754.70, nuqsan wali 114 = -6,286.90). BUY band = -730.60,
+SELL band = -3,801.60. Nuqsan zyada tar SELL mein: 0.01 x 49 = -1,508.00, ek
+**1.15 SELL @ 4174.488 = -1,289.30**, 0.05 x 5 = -792.80. BUY mein 0.05 x 22 =
+-667.60. Barabar ka price 4465.84 ($280 upar). 2 Oct se kitab ~3 guna bari
+(1.36 -> 4.26 lot) aur nuqsan -2,920 -> -4,532.
+
+**9 Oct, thori der baad (qeemat 4184.65):** user ne beech mein 2 SELL band, 1 BUY
+khola -> 159 position, BUY 103 / 2.22 (ausat 4188.772), SELL 56 / 2.03 (ausat
+4166.936), NET +0.19, Close All -4,564.60, barabar 4422.08. **User ne kaha: "ab
+mashware se kaam karunga"** (bina mashware lot na kholna/band karna). Panel ka
+BARI LOT KI JORI: 1.15 SELL + 59 BUY (sasti pehle, ausat 4173.30) = **+106.30**,
+lots 4.25 -> 1.95, NET wahi +0.19, bachi kitab 99 position -4,670.90 (30 BUY
+upar wali shamil). PLAN A (1.15 SELL + 22 faide wali = +11.90) NET ko +0.89 kar
+deta hai - khatarnak.
+**1.15 SELL GHALTI SE lagi thi** (user 0.05 lagana chahta tha), phir qeemat tezi se
+upar gayi. User: "jaldi nahi karna", sawal: "nikal bhi jaon aur nuqsan bhi na ho" -
+jawab diya: jo nuqsan ho chuka woh kisi jori/hedge se nahi mit-ta, sirf qeemat
+(NET +0.19) ya aage ki kamai se; teen raaste taraazu ki misaal se. Mashwara: abhi
+RUKO, ghalti dobara na ho is liye MT5 mein One Click Trading band + default lot 0.01.
+**9 Oct shaam (Exness mobile app, user ne khud mazeed lots kholi/band kin):** 3:50 PM -
+172 position (BUY 107 / SELL 65), Close All -4,717.12, equity 43,494.68. 4:16 PM -
+**167 position (BUY 103 / SELL 64), app par "Fully hedged" (NET 0, jami)**, Close
+All **-4,845.48**, **equity 43,409.42** (balance ~48,254.90), aaj ki band trades
++1,742.90. Beech ki trades: naye BUY 4174-4177, SELL ~4179.99, chhote faide band
+(+2.40, +11.80, +9.10, +0.90, +5.60). **Sabaq (dikhaya): asal score EQUITY hai** -
+3:50 se 4:16 equity -85 (bori: band faida +, khula utna hi -). 28 Sep wali 0.01
+BUY @ 4367.366 (-186) abhi khuli. Mobile par One-click BAND.
+
+(purana) 2 Oct raat ~8 PM:
+
+99 position, BUY 0.68 (ausat 4204.75) / SELL 0.68 (ausat 4162.05), **NET 0 (jami)**,
+Close All **-2,920 USC** (subha -3,277 tha; user ne haath se SELL upar shift kiye).
+Saara nuqsan 28 Sep ki **0.59 BUY @ ~4213** mein. Aaj ki lots theek jagah: SELL upar, BUY neeche. Saara nuqsan BUY mein; SELL taqreeban barabar. User ka
+iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
+"ek band, ek khule" (nayi lot tabhi jab purani band ho), news ke waqt kuch nahi.
+
+## 4. Jo sabaq naape hue numbers se nikle (poori tafseel)
+
+- **Jami kitab ka nuqsan ek "bori" hai.** Kaun si lot kis ke saath band karo,
+  KUL nuqsan wahi rehta hai. Sirf balance vs khula hisaab badalta hai.
+- Kitab sirf tab behtar hoti hai jab **band karo, phir behtar jagah kholo**
+  (SELL neeche band → upar dobara; ya BUY upar band → neeche dobara).
+  Sirf naya kholne se ausat girta hai, nuqsan nahi.
+- **Jitni kam lot khuli, khatra utna kam, magar wapsi ka fasla utna lamba.**
+- 75% jeet ke bawajood nuqsan hua kyunki haar jeet se ~3x bari thi.
+  **Jeet ki ginti nahi, jeet/haar ka size** faisla karta hai.
+- Bara TF behtar: 1D 49.7% > 4H 43.8% > 1H 42% > 1m 37.5% (mera apna data).
+- "Sabr" sahi cheez ke saath: jeet wali trade mein, haar wali mein nahi.
+  Stop loss = "kahani badal gayi" ka pata chalna.
+- **News (NFP, CPI, FOMC)**: 30 min pehle se ~1 ghanta baad tak koi nayi lot
+  nahi (qanoon L10). NFP = har mahine pehla Jumma 5:30 PM PKT; gold $15-40+
+  hilta hai, pehla jhatka aksar palat-ta hai, spread barhta hai.
+- Martingale / grid / lot doubling **nahi**. August ka USD account aise gaya.
+- **72 trades se faisla nahi hota** (JAS Seerhi, 8 Oct): -0.09R ka asal matlab
+  "-0.35R se +0.17R ke darmiyan kahin". Settings badal badal kar 10 dafa
+  aazmao to ek qismat se +0.2R dikha degi - woh naye data par gayab ho jata
+  hai. Is liye: faisle ka qaida test se PEHLE likho, aur har aazmaish gino.
+- Tester ka "144 trades / 36.8% jeet" = har trade ke do tukre (TP1 aadhi +
+  baqi). Asal ginti entries ki hai (72, jeet 43%).
+- **Kachhua (Tide) mein 2R par aadhi band karna nuqsan deh** (8 Oct, 1D gold,
+  ~459 trades): aadhi band = +274%, PF 1.59; poori chalne do = +506%, PF 1.68.
+  Girawat sirf 27% -> 24.5% kam hui. Trend system ki kamai chand BARI jeet se
+  aati hai - unhein kaatna mehenga. (Seerhi ke ulat: wahan 1R par aadhi.)
+- **Kachhua har daur mein musbat, magar aaj kal kam** (8 Oct, 1D gold, 459
+  trades): 1970-99 +0.63R fi trade, 2000-18 +0.16R, 2019-aaj +0.30R. Saal
+  mein ~8 trade -> 1% risk par aaj ke daur mein ~+2% saal ka andaza. Bara
+  +506% zyada tar 1970s ki tezi aur 50 saal ke compounding se tha.
+- **Guzara trading se? (8 Oct, user ka sawal)** Chhote account par kisi bhi
+  system se nahi. ~$430 par +2%/saal = ~$9; 20%/saal (bohot achha) = ~$86.
+  ~$300 mahina ke liye ~$18,000 par 20% chahiye. Kamai capital se barhti hai,
+  risk barhane se nahi - risk barhana = August wala USD account.
+- **Kachhua bohot markets par musbat** (9 Oct, JAS Tide Radar): gold +0.50R,
+  silver +0.26R, EURUSD/GBPUSD +0.15R, AUD/JPY/CHF ~+0.1R, S&P ~0, BTC +0.76R
+  har trade (har ek par ~120-560 trades). Har akeli chhoti, magar sab ek taraf.
+  Silver gold ke saath +0.90 = wohi trade dugni; ek USD taraf ki kai trades =
+  ek bari trade.
+- **Kachhue ka 1D faisla chhoti TF par chalao = WOHI nateeja** (10 Oct, user ka
+  andaza, pehle se likhe qaide par PASS): BTC 1 Jan - 10 Oct 2026, 1D / 1h / 30m
+  teeno par 6 trades, 4/6, +6,720.93 - cent tak ek jaise. Faisla daily close
+  par hai, chhoti TF sirf SL ko bareeki se dekhti hai. 15m par "behtar entry"
+  dhoondna (pullback ka intezar) NAYA system hoga - alag naap chahiye.
+- **9 market mila kar (9 Oct, Radar r2):** 2019 se ~+10R saal (1% risk par ~10%
+  saal), magar poori history mein sab se gehri girawat 90R - correlated
+  markets (gold + silver) saath girti hain. Aaj ke daur ki girawat naape baghair
+  demo/live nahi.
+- **Jami kitab ka nateeja = (ausat SELL - ausat BUY) x lots** - qeemat se nahi
+  badalta (10 Oct, do misaal ek hi din): demo 472540009 mein SELL ausat BUY se
+  $0.63 UPAR -> 55 jori par ~+20 (spread ke baad) tay; Fishing EA Tester mein
+  SELL @ ~3,962 aur BUY @ ~4,695 (SELL $733 NEECHE) -> ~-7,330 tay. User ka
+  khayal "SELL upar, BUY neeche rakho" (Fishing logic ke liye, 10 Oct) range
+  mein yahi plus deta hai, magar trend mein qeemat wapas na aaye to BUY SELL ke
+  neeche khulna mumkin hi nahi rehta. Farq sirf is ka hai ke qeemat wapas aayi
+  ya nahi. User: "real ke waqt aap ki advice yaad rakhunga".
+- **Chakkar k4 Tester mein FAIL** (10 Oct, wahi 3 mahine): -5,561, **jeet 94%**
+  phir bhi nuqsan - ausat jeet +7 vs ausat haar -136. Balance +20,739 tak
+  barha magar equity shuru se kabhi upar nahi gayi (DD 5,618). "75% jeet phir
+  bhi nuqsan" wala sabaq aur bhi bara: jeet ki ginti nahi, haar ka size.
+- **Fishing EA f1 (user ke apne qaide) Tester mein FAIL** (10 Oct, XAUUSDm M1 real
+  ticks, Jul-Sep 2026): kul -711.68, kitab 20 lots par atak gayi (khula -7,411).
+  Sarkao ne +6,695 balance mein dikhaya magar 10 SELL @ ~3,962 aur 10 BUY @ ~4,695
+  jami ho kar ~-7,330 ki "bori" ban gayin - wahi naqsha jo live kitab ka hai.
+  Close All ka din kabhi nahi aaya. Sabaq dobara: asal score EQUITY / KUL hai,
+  band hue faide nahi; jami kitab ka nuqsan har qeemat par wahi rehta hai.
+- **Radar EA ka MT5 Tester (10 Oct, Exness data, 2019 se) - pehle se likha qaida
+  PASS:** 414 trades, +40.39R bina swap, girawat 12.7R, 6/8 saal musbat. Magar
+  **saara faida BTC se** (+44.2R); baqi 7 market mila kar -3.9R (FX -17.3R,
+  gold +12.5R). Demo ka swap -22R kha gaya (is liye paise mein breakeven). Agar
+  live cent par BTC hai (10 Oct) -> demo ke baad live ka raasta khula. Andar ke nateeje dekh
+  kar market hatana/chunna mana (overfitting).
+- **BTC par Kachhua 2019 ke baad bhi musbat - pehle se likhe qaide par SABIT**
+  (10 Oct, TradingView CRYPTO:BTCUSD 1D): 2019-aaj 81 trades, jeet 43%, Exp
+  +0.58R (+-0.47), PF 2.67, kul +47R. MT5 (Exness) par bhi 79 trades +44R - do
+  alag data, ek jaisa. Magar ye wohi purani history hai (naya saboot nahi) aur
+  +-0.47 bara hai; asal imtihan demo par aage ki trades. 2010-18 ke jungli
+  saal (+2.41R) ko aaj ki umeed mat samjho.
+- **Hunt bhai (1980, chandi) - copy karne wala tareeqa NAHI** (11 Oct, user ka sawal): Nelson Bunker + William Herbert Hunt, daulat tel ki wirasat se (trading se nahi). Chandi ka 'corner' (bazaar ki supply khareed lena) bohot udhaar (margin) par, koi SL nahi, yaqeen 'qeemat upar hi jayegi'. ~$6 -> ~$50 (Jan 1980), phir exchange ne margin ke qaide sakht kiye, 27 Mar 1980 'Silver Thursday' margin call poori na hui. Bankon ka ~$1.1 arab qarz Hunts ko bachane ke liye nahi, brokers/bankon ko girne se bachane ke liye tha. 1988 adalat: bazaar ki manipulation, phir bankruptcy. Sabaq: bara yaqeen + udhaar + SL nahi = arab-patti bhi doob jate hain - wohi naqsha jo jami kitab mein hota hai.
+- **Mashhoor 15m ORB (Crabel) gold par SABIT NUQSAN** (11 Oct, 1995 trades 2019-26): Exp -0.08R (±0.06), sirf 2022 musbat. Gold par har intraday idea ab tak manfi ya sifar (Pro Box, SMC Trend, Seerhi, Fishing, Chakkar, ORB); sirf daily trend (Kachhua) musbat. Har nayi koshish ke saath qismat wala PASS ka imkaan barhta hai - koshishein gino.
+- **Connors RSI(2): S&P par SABIT, gold par sifar** (11 Oct, pehle se likha sakht qaida): S&P 2003-26 257 trades +0.114R (±0.049), 2019 ke baad bhi musbat (kitaab 2008 ki = naya data). Gold 2000 se +0.005R (±0.048), net -19%. Har idea har market par nahi chalta - idea ke apne market par naapo. Faida chhota (~1.2R saal), DD bhi chhota (3%).
+- **ETH par Kachhua SABIT NAHI** (11 Oct, pehle se likha qaida): 2019 se ~88 trades, Exp +0.22R (±0.39) - musbat magar shor se alag nahi. MT5 (Exness) par bhi 86 trades +0.19R - do data ek jaise. BTC (+0.58R) jaisa nahi; ETH ko Radar mein nahi jorna.
+- **SMC Coach Scalp sc6.2 (user ki v5 script, EMA 50/100) - SABIT NAHI** (12 Oct, pehle se likha qaida, OANDA:XAUUSD): 15m (Jul-Oct 2026, sirf 3 mahine data) 111 trades, jeet 39.6%, Exp +0.122R (±0.279), PF 1.19, +13.2%, DD 9.8%; 1H (Jan 2025-Oct 2026) 145 trades, jeet 42.1%, Exp +0.215R (±0.249), PF 1.35, +34.4%, DD 9.75%. Dono musbat magar shor se alag nahi (Exp - 2SE < 0) = QAIDA FAIL. Ye arsa gold ki bari tezi ka tha. User ne 'kisi tarah profit' ke liye tuning maangi - mana kiya (overfitting). Phir MT5 (Exness XAUUSDm M15, data 2021-Oct 2026, DXYm mila) = **FAIL**: 1487 trades, jeet 33.4%, Exp -0.037R (±0.071), PF 0.94, -55.2R, girawat 119.6R, balance 10,000 -> 4,844; saal 2021 -37 / 2022 -24 / 2023 -49 / 2024 +3 / 2025 +10 / 2026 +41R - musbat sirf gold ki bari tezi mein. TradingView ka +0.12R sirf usi tezi ke 3 mahine the. **Idea BAND** - gold par 7wa intraday FAIL. User ne 1H par bhi chalaya (wohi EA m1): 429 trades, jeet 36.8%, Exp +0.067R (±0.138), PF 1.10, +28.7R, girawat 22.6R, saal 2021 -10 / 2022 +4 / 2023 -6 / 2024 -2 / 2025 +29 / 2026 +14R = FAIL (faida sirf 2025-26 ki tezi se). 4H bhi: 188 trades, Exp +0.013R (±0.208), PF 1.02, +2.4R, 1/6 saal musbat = FAIL. 15m/1H/4H teeno FAIL - TF badal badal kar aazmana bhi ek nayi koshish ginti hai; is idea par ab koi TF nahi.
+- **'Low toot kar wapas high' (ICT Judas / SFP / Turtle Soup) gold par ULTA nikla** (12 Oct, JAS Swing Fail GINTI g1, OANDA:XAUUSD 4H, data 2023-2026): 239 waqiat, A (wapas toota) sirf **28.0% (±6.5)**, ittefaq 50% = qaida 'ITTEFAQ' (shakal asli NAHI). Low toota -> high 35.6% (104), high toota -> low 22.2% (135); har saal 25-29%. Matlab: swing toot-ta hai to ~72% dafa usi taraf aage jata hai - toot aksar ASLI hota hai, jhoota nahi. Ye Kachhue (toot ke saath chalo) wali baat ki tasdeeq hai, nayi strategy nahi. 1W par bhi (2011-26): 150 waqiat, A 25.3% (±8.2) - wahi.
+- **Gold ka ghanta ba ghanta (12 Oct, JAS Ghanta Ginti h1, OANDA 1H, sirf ~1.5 saal data):** harkat sab se zyada 18:00-19:00 PKT (~0.61%/ghanta, NY khulna + 17:30 US news), 06:00 (0.56%), 17:00/20:00 (~0.52%); sab se kam 02:00-03:00 (0.27-0.32%, roz ka break) aur 09:00 (0.26%). Shaam 6-9 PKT raat 2 baje se ~dugna. Rukh: sirf 16:00 PKT ★ (+0.03% ±0.027) = 24 mein 1 = ittefaq jaisa, trade nahi. Faida: risk/SL/news ke liye, rukh ke liye nahi.
+- **Kal ka high/low toot kar band hone ke baad agla din - koi faida NAHI** (12 Oct, JAS Kal-Toot Ginti k1, OANDA:XAUUSD 1D, 2000 se 6919 din): HIGH ke upar band (1779) agla din -0.002% ±0.048, LOW ke neeche (1470) +0.057% ±0.059, beech (3670) +0.062% ±0.037; FARK -0.05/+0.01/+0.02% - koi ★ nahi, 5 din bhi sab ~+0.2% (aam tezi). Ek din ka toot kuch nahi batata; Kachhua 10 din ki naali + lamba rukna hai - farq wahi.
+- **Kis TF par candle ka rang chalta hai? (12 Oct, JAS TF-Rang Ginti r2, OANDA:XAUUSD, 2000 se, doji nahi):** 1m-4H RUKH RAKHE -1.8 se -4.0 (±0.6-1.1) ★ = rang halka sa PALAT-ta; **1D -5.7 ±2.4 ★ (bhi palat-ta)**; 1W +1.5 ±5.4 = shor. **DURUSTI:** r1 ka '1D +5 / 1W +17 = rukh chalta' 1970s ke purane data ki milawat thi - galat nikla. Matlab: kisi bhi TF par 'pichli candle ka rang' agli ka andaza nahi deta (farq 2-6%, spread se chhota). Kachhua candle ka rang nahi, 10 din ki naali ka toot + hafton rukna hai - us ka saboot alag (Swing Fail: toot ~72-75% aage jata hai). Hari %: 1D 52.5%, 1W 55.5% = gold ki lambi tezi.
+- **Tide 2 (Turtle System 2, 55/20) gold 1D - pehle se likha qaida PASS, magar kamzor** (12 Oct, `strategies/jas_tide2_test.pine` T2.0, OANDA:XAUUSD 1D): 155 trades, jeet 41%, Exp +1.80R (±1.44), PF 2.73, DD 13.8% (Tide 1: 459 trades, DD 27%). Daur: 2000-18 61 trades +0.19R ±0.61 (Tide 1 +0.16 ±0.19), 2019-aaj 19 trades +1.88R ±2.05 (Tide 1 +0.30 ±0.41) -> dono daur zyada = qaida PASS. Magar ±0.61/±2.05 bohot bare, 2019 se sirf 19 trades; kul R: 2000-18 Tide2 +11.8R vs Tide 1 zyada (zyada trades). Faisla: Tide 2 'umeedwar', Radar/demo nahi badla. Agla (demo ke baad): Tide 2 ko 9 market (Radar) par MT5 Tester mein - zyada trades se asal faisla. ETH par bhi (user, COINBASE:ETHUSD 1D 2016-26): sirf 32 trades, 2019-aaj 25 trades +1.26R ±1.76 = shor (Tide 1 ETH bhi +0.22 ±0.39 sabit nahi). Market ek ek kar ke aazmana = kai koshishein; faisla sirf mila hua 9-market test se.
+- **Tide 2 (55/20) 9 market par (12 Oct, Radar r3 TradingView): pehle se likhe qaide ki teeno sharten PASS** - 2005 se ~+10.5R/saal (Tide 1 6.8), girawat 14.0R (14.9), 2019 se +83.5R (51.9); musbat saal 16/21 (Tide 1 19/21). 55/20 kitaab ke number hain (tune nahi kiye). MT5 (Exness, 2019 se, 9 market) imtihan: +72.2R (Tide 1 +40.4) magar girawat 18.4R (Tide 1 12.7R) = qaida FAIL -> **Tide 1 hi rahega.** Dono mein faida BTC se (baqi 8 market ~ -3R). Sabaq: TradingView ka PASS broker data par na tika - har cheez do data par.
+  User ne 51/17 bhi aazmaya (MT5, 2019 se): 176 trades, +24.8R, girawat 19.1R, BTC +35.7R - 55/20 se kam par aadha se bhi kam. Sabaq: chhota sa number badalne par nateeja aadha = nateeja kamzor/qismat par khara; settings ghuma kar 'behtareen' dhoondna yahi jaal hai.
+- **'Lambi wick ki nok qeemat ko khainchti hai' = ITTEFAQ** (12 Oct, JAS Wick Ginti w1, OANDA:XAUUSD 1D 2000 se, 20 din): 938 wick din, mila FARK +1.1% ±3.0. Wick ki nok 0.5-1 ATR door ho to 80.3% chhui jati hai - magar AAM din ka utna hi door low bhi 79.4% chhua jata hai; 1-1.5 ATR: 68.2% vs 66.1%. Matlab: qareeb ka har level aksar dobara chhua jata hai, wick ho ya na ho - 'wick bhar gayi' wali yaad sach hai magar wick ki wajah se nahi.
+- **User ka apna mushahida 'numayan candle' (Order Block jaisa) - SABIT NAHI** (12 Oct raat, JAS Numayan Ginti n1.1, OANDA:XAUUSD 1D 2000 se, 40 din ki daud): upar bari hari -> qeemat neeche -> neeche bari laal = 49 dafa; sirf **32.7%** dafa qeemat pehle palat kar upar wali candle paar gayi (aam din 43.6%), FARK -3.3% ±12.1. 'Hamesha' asal mein ~1/3. Yaad sirf kaam karne wali misaalein rakhti hai, aur 'aakhri neeche wali candle' baad mein pata chalti hai. (Pehle Claude ne ise FVG samjha tha - woh alag test, woh bhi ITTEFAQ: FARK -4.5% ±3.8.)
+- **NZDCAD par Kachhua SABIT NAHI** (12 Oct raat, dost ke 1H signal se sawal, pehle se likha qaida, OANDA:NZDCAD 1D 2004 se): 2019-aaj 62 trades, jeet 24%, Exp -0.22R (±0.19), kul -13.4R; 2000-18 +0.01R. Settings badalne ki zaroorat nahi - qaide ATR/% mein hain, har market par apne aap; nateeja dekh kar badalna mana. Forex par Kachhua kamzor (Radar FX MT5 -17.3R bhi).
+- **Forex par RSI2 (wapsi) bhi NAHI** (12 Oct raat, JAS RSI2 Radar x1, 9 pair ICE 1D, 2000 se, pehle se likha tokri qaida): ausat +0.008R (±0.015), musbat 6/9 = FAIL. Forex par trend (Kachhua) aur wapsi (RSI2) dono taqreeban sifar. RSI2 sirf S&P par sabit; Kachhua sirf gold + BTC par.
+- **RSI2 stock index par PASS (bal-bal)** (12 Oct raat, JAS RSI2 Radar x2, 9 OANDA index S&P ke baghair, 2003 se, pehle se likha SAKHT qaida): ausat +0.058R, 9/9 musbat, sakht Exp - 2SE +0.004. S&P jaanch row = Tester bilkul. RSI2 ka ghar stock index hai (gold/forex sifar). Faida chhota (~0.6R saal fi index), index aapas mein jure. Agla: MT5 Exness Tester (pehle se likha qaida TRADING-ABHI-KAHAN-HAIN), phir demo USTEC + US30.
+- **RSI2 commodity par bhi NAHI** (13 Oct, Radar x4, 9 OANDA commodity 2003 se, pehle se likha sakht qaida): ausat +0.005R, musbat 6/9 = FAIL. RSI2 ki talaash khatam - sirf stock index (demo: US500 + USTEC + US30). Silver: Tide +0.26R, RSI2 -0.07R = trend wale market par wapsi wala idea ulta. FAIL tokri se musbat market chunna MANA (ittefaq).
+- **'Holy Grail' (Street Smarts 1995) gold + silver par sakht NUQSAN** (13 Oct, koshish #1, JasGrailEA, TALAASH 2021-24): H1 822 trades -0.40R (±0.12), H4 260 trades -0.41R (±0.19), chaaron jodiyan manfi, H1 par 10,000 -> 447. Mashhoor kitaab = faida ki zamanat nahi; test ne asal paisa bachaya. Koshish #2 (BTC, ETH + 5 FX, H1/H4) bhi 14/14 manfi (~-0.29R) = Holy Grail poori tarah band.
+- **Larry Williams Volatility Breakout (1999) bhi FAIL** (13 Oct, koshish #3, 9 market daily, TALAASH 2021-24): 4330 trades, Exp -0.046R (±0.028), 1/9 musbat - kharche jitna manfi. Daily breakout bina trend filter = sifar minus kharcha.
+- **Turn-of-the-Month index par: rukh musbat magar chhota - sakht qaide par FAIL** (13 Oct, koshish #5, TOM Radar, 10 OANDA index 2003-2018): ausat +0.056R, 10/10 musbat, ausat - sakht 2SE -0.044. Index ek hi mahine mein saath chalte hain = 10 musbat asal mein ~ek saboot. User ka khayal sahi: ek idea bohot instruments par musbat nahi aata - jo milta hai woh chhota aur apni qisam ke market tak.
+- **Kachhua commodity tokri par ASLI PASS** (13 Oct, koshish #6, JAS Tide Tokri k1, 9 OANDA commodity, naye qaide ki pehli PASS): TALAASH (<2019) ausat +0.133R, 8/9 musbat, mila 1478 trades +0.160 (±0.098); IMTIHAN (2019+) ausat +0.067R, 6/9, 567 trades. Trend wala idea trend wale market (commodity) par chala - wapsi (RSI2) wahan ulta tha. Silver ki purani history ka hissa bara (1/3) - kinare ka saboot; demo se pakka.
+- **Ichimoku (Hosoda 1969) 9 market par FAIL** (13 Oct, koshish #7): ausat +0.152R, 6/9 musbat, magar mila 3139 trades +0.153 (±0.251) = shor se alag nahi. Kachhue se sirf ~20% saath (alag idea, magar sabit nahi). Nateeja dekh kar tokri badalna MANA. Koshish #8 (i2, TALAASH sirf 2000-18, user ki imaandar durusti): mila 2224 trades +0.055 (±0.059), Exp - 2SE -0.003 = FAIL kinare par; silver ka +0.43 purani 1800s history se tha (2000 se +0.007). Ichimoku poori band.
+- **Intraday Momentum (Gao 2018, koshish #9) 9 market par sakht FAIL** (13 Oct, MT5 Exness M30, 2021-24): 3091 trades, Exp -0.207R (±0.018), 0/9 musbat, 10,000 -> 52. Chhapa hua paper (SPY, tiny spread) CFD par nahi chalta: 30 minute ki trade ka SL chhota, spread us ka ~0.1-0.2R kha jata hai. Sabaq pakka: jitni chhoti trade, utna bara kharcha R mein - is liye 15m/30m par faida dikhana bohot mushkil.
+- **Asli Cointegration (Engle-Granger + ADF, koshish #10) - jodiyan sakht test par 'juri' sabit hi nahi hotin** (13 Oct, 4 jodiyan 2000-18): |z| >= 2 wale dinon mein sirf ~1% din ADF pass, kul 16 trades = FAIL. Gold/silver ka 'rishta' zyada tar waqt kamzor - ratio trend karta hai. Koshish #11 (ADF hata kar, Gatev jaisa): 222 trades, -0.015R (±0.121), 1/4 musbat = FAIL. **Jori (pairs) trading band** - test ne pehle hi bata diya tha.
+- **User ka apna 15m idea (0.01, rukh EMA20/50, TP $1 / SL $2) - SAKHT FAIL** (13 Oct, koshish #12, real ticks 2021-2026): 89,203 trades, jeet 59.8% (chahiye 66.7%), -0.103R, **-18,446 USD 0.01 lot par**, 6/6 saal manfi. Jeet ~60% = bina rukh ke random jaisi; har trade spread deti hai. Ye user ke live 'fishing $1' andaaz ka naap bhi hai: 60% jeet achhi lagti hai magar paisa ghatta hai. User ne khud kaha ye faisla ghusse mein (math FAIL ke baad) kiya tha - magar live par nahi, Tester par aazmaya = sahi qadam.
+- **Kachhua 4H par NAHI chalta** (13 Oct, koshish #13, MT5 9 market 2021-24): 1847 trades (~1.3/din - user ki shart poori) magar Exp +0.021R (±0.057), 4/9 musbat = FAIL; daily wala Kachhua usi qisam ke market par musbat. Trend ka faida bari TF par hai - chhoti candle par jhoote toot zyada. Zyada trades chahiye to zyada MARKET (daily par), chhoti TF nahi.
+- **IBS (koshish #14) 10 index - FAIL sirf sakht shart par** (13 Oct): 2954 trades, ausat +0.035R, 9/10 musbat, sakht ausat - 2SE -0.011; RSI2 ke saath sirf 15% (alag). Index ki chhoti wapsi teen idea mein ek jaisi (RSI2 PASS, TOM/IBS kinare par). **User ka sawal: Kachhua bhi to pehle sirf gold par PASS hua tha?** Jawab: haan, magar gold par 50 saal / 459 trades / har daur musbat (akela mazboot). Nateeja dekh kar ek market chunna = TALAASH mein ijazat hai, MAGAR tab IMTIHAN sakht chahiye (Exp - 2SE > 0), sirf 'Exp > 0' sikka uchhalne jaisa (50% ittefaq se pass).
+- **>>> IBS sirf S&P = ASLI PASS (13 Oct, koshish #15) <<<** - Kachhue ki tarah ek market, magar nateeja dekh kar chuna is liye IMTIHAN SAKHT rakha (Exp - 2SE > 0): TALAASH 320 trades +0.047 (+0.004) -> IMTIHAN 2019-26 (pehli dafa dekha) 190 trades **+0.082R (±0.053), Exp - 2SE +0.029**. Naye test qaide ki pehli SAKHT IMTIHAN PASS. Kuch hissa S&P ki aam tezi ka ho sakta hai (sirf BUY). Agla: demo EA. Sabaq: user ka sawal ('Kachhua bhi to pehle akela gold par PASS hua') sahi raasta nikla - shart ye ke chunne ki qeemat sakht IMTIHAN se chukayi jaye.
+- **IMTIHAN data chhupa rehna chahiye** (13 Oct, Claude ki ghalti): TOM table ne 2019+ column saath dikha diya - aage har script IMTIHAN sirf TALAASH PASS par dikhaye.
+- **MT5 Tester pichhle run ke Inputs yaad rakhta hai** (13 Oct): naya EA compile karne ke baad bhi purani value (jaise InpSymbols) chalti rehti hai - har naye EA ke baad Inputs tab dekhna.
+- **Group ka '1W-1H sab ek taraf to 15m par trade' gold par FAIL** (13 Oct, JasMtfEA f1, Exness XAUUSDm M15 2021-26, pehle se likha qaida): 2086 trades, Exp +0.002R (±0.062) = sifar, girawat 99R, musbat saal 3/6 (sirf 2024-26 tezi). Sab TF ka ittefaq bhi 15m par faida nahi deta. Gold par 8wa intraday FAIL.
+- **Swap: Specification ka number = asal katauti NAHI** (11 Oct durusti, user: "Muslim mulkon mein
+  Exness swap nahi kaat-ta"). Saboot: demo 472716649 ki 18 gold lots (9 Oct Jumma ko khuli,
+  Jumma ka rollover guzra) - equity - balance = -89.03 = sirf Profit column, yani swap 0,
+  halanke spec mein gold BUY -513.2 likha hai. Swap-free account par spec phir bhi number
+  dikhata hai. Neeche wali BTC baat isi liye SHAK mein hai: pakka tab jab raat-bhar BTC/US500
+  position ke **Swap column** mein asal number dikhe (Trade tab -> right-click -> Columns -> Swap).
+  Tester (Radar EA) spec ka swap kaat-ta hai - is liye faisle 'bina swap' par sahi the.
+- (10 Oct, ab shak mein) **BTC ki BUY lots par swap katta hai - live cent par bhi** (BTCUSDc
+  Specification): swap long -1763.7 points, short 0. 0.01 lot BUY = -0.18 USC
+  roz, 0.78 lot = -13.8 USC roz (~-96 hafta, Jumma teen guna) = qeemat ka ~7.7%
+  saal. Method ka "intezar muft hai (swap-free)" GOLD par sahi, BTC BUY par
+  nahi - BTC ki BUY lots lambi jami rakhna har din paisa leta hai. SELL muft.
+- **JAS SMC Trend ka "advance ishara" gold par kaam ka NAHI** (10 Oct, pehle se
+  likha qaida, OANDA:XAUUSD): 15m 140 ishare FARK -1.1% (2SE 8.0%), 1H 207
+  ishare FARK -1.7% (2SE 6.6%) - aam candle jaisa, balke zara bura. BTC par bhi
+  har TF par shor. "Advance" = jaldi, faida nahi. Ishara sirf dekhne ka;
+  settings ghuma kar dobara nahi aazmana (Seerhi wala sabaq).
+- **Radar r3 (9 Oct raat) - pehle se likha qaida PASS = demo ke qabil:** 2005
+  se 1254 trades, ~+6.8R saal, sab se gehri girawat 14.9R, 21 mein se 19 saal
+  musbat (qaida: girawat <= 25R aur >= 70% saal). 2019 se ~+6.7R saal (1% risk
+  par ~6.7%). Gold + silver ko ek trade gina (dohri trade hati) to 2019 ka
+  ~+9.7R -> ~+6.7R hua. Puri history mein 1987-2001 ki 72R girawat bhi hai -
+  lamba bura daur ho sakta hai. Girawat sirf band trades ki (asal zyada).
+  Agla: broker (Exness) data par MT5 Tester, phir demo - `JasTideRadarEA.mq5`.
+
+## 5. Tools ki purani table (13 Oct tak; ab har file ki ek line CLAUDE.md mein)
+
+| File | Kya karta hai | Haal |
+|---|---|---|
+| `JasDeskView.mq5` v4.2 | **Sirf parhta hai.** Close-All ginti, lots by size, ausat, NET, BARI LOT KI JORI, PLAN A/B + "NET baad mein" | ✅ Live par chal raha. Kami: "ek taraf band" line sirf ek taraf ka fasla batati hai, poori kitab ka nahi |
+| `JasJoriClose.mq5` s1 | **Script.** Bari lot ki lot-barabar jori **Close By** se band, ek Yes/No | ✅ Demo 150/150, **live 64/64 (+550.70 USC, 1 Oct)**. Abhi sasti BUY pehle chunta hai - user upar wali BUY pehle chahta hai (option banana baqi) |
+| `indicators/jas_tide_radar.pine` r3 | **9 market ka kachhua ek 1D chart par** (trade nahi karta): har market ki trade/SL/agla toot, gold ke saath sync, USD daao, MILA HUA hisaab (sab / 2005 se / 2019 se), FAISLA row | ✅ r3 chal raha (9 Oct): **DEMO KE QABIL** |
+| `indicators/smc_trend_pro.pine` t3 | **JAS SMC Trend (10 Oct):** SMC v4 ke hisson se ek rukh (score -100..+100, 5 haal) + **advance ishara** (chhota CHOCH, bari TF ke khilaf nahi, jaan wali candle). t3: **MA50 ka rang** = ishara (hara/laal chalu, sleti khatam) + **narangi S/R lakeer** (yahan band candle par rang badal sakta hai) + sleti nuqte wali (yahan kabhi nahi); table mein har TF ka apna rukh number. Andar naap: 2 ATR pehle vs aam candle, pehle se likha qaida | t1/t2 compile + chal gaye. **BTC 1H/4H/1D: FARK +0.1/+0.0/+3.5% = SABIT NAHI.** t3 **compile + chal gaya** (10 Oct). **Gold imtihan (pehle se likha qaida): XAUUSD 15m FARK -1.1%, 1H -1.7% = SABIT NAHI** -> sirf dekhne ka, trade/Tester/demo nahi, settings nahi ghumani |
+| `JasTideRadarEA.mq5` e1 | **Radar r3 ke qaide ka EA, ek chart se 9 market**, USD hadd 3, gold+silver ek, 1% risk (broker ka hisaab), SL server par + roz aage. Default SIRF DIKHANA. Tester ke aakhir mein Journal mein R ka hisaab + pehle se likha qaida | **Compile ✅ (9 Oct). Tester ✅ QAIDA PASS (10 Oct): 2019 se 414 trades, +40.39R bina swap, girawat 12.7R - magar BTC +44.2R, baqi 7 market -3.9R.** **DEMO CHALU 11 Oct ~21:10 PKT** - demo 472716649, XAUUSDm Daily chart, InpTrade true, 9 markets, panel 'TRADE CHALU'. Faisla kam az kam 3 mahine + 15 band trades ke baad (~Jan 2027). Live cent par BTC hai (BUY swap katta hai) - live ka faisla demo ke baad |
+| `JasOrbEA.mq5` o1 | **Opening Range Breakout** (Crabel 1990): NY ki pehli 15m candle ka toot, SL doosra kinara, 15:50 NY band, din mein ek, 1% | Compile ✅. **Tester FAIL (11 Oct, gold 2019-26): 1995 trades, Exp -0.083R (±0.063), PF 0.86, -165R, 1/8 saal musbat = sabit nuqsan.** Demo/live nahi |
+| `strategies/jas_rsi2_test.pine` c1 | **Connors RSI(2)**, 1D: SMA200 rukh, RSI(2) <10 BUY / >90 SELL, SMA5 par band, SL 3 ATR, 1%. QAIDA row khud PASS/FAIL | Compile ✅. **Gold FAIL (2000 se +0.005R ±0.048 = sifar).** **S&P (OANDA:SPX500USD 2003-26) PASS: 257 trades, +0.114R (±0.049), dono daur musbat, DD 3% - magar chhota (~1.2R saal).** Agla: live par US500? phir demo |
+| `JasRsi2EA.mq5` c1 | RSI(2) ka EA, sirf US500 Daily (demo 472716649, Radar ke saath, magic alag) | **Compile ✅ (11 Oct raat, 0 errors)**. Live cent par **US500c hai** (11 Oct) - live sirf demo qaida PASS ke baad, user se poochh kar |
+| `JasIbsEA.mq5` i1 | **IBS (koshish #15 ASLI PASS) ka demo EA**, JasRsi2EA c2 jaisa: US500 D1, IBS < 0.2 + close > SMA200 = BUY, band IBS > 0.8 ya 5 din, SL 3 ATR, 1%, magic 20261022, comment `IBS <din> <SL>` | **Compile ✅ (13 Oct raat).** Tester (Exness US500 data Sep 2025 se): 8 trades -0.105R (±0.198) = engine theek, faisla nahi. Agla demo - qaida TRADING-ABHI-KAHAN-HAIN (naya US500m D1 chart, RSI2 wale se alag) |
+| `strategies/jas_ibs_test.pine` t1 | IBS radar ka S&P engine strategy mein - har trade ki tareekh, MT5 IBS EA se milane ke liye (jaanch, nayi koshish nahi) | Compile ✅ (13 Oct raat): 510 trades, TALAASH/IMTIHAN = radar bilkul (320 / 190). MT5 ki 23 Sep trade isi list se mili |
+| `JasTideEA.mq5` t4 | Turtle/Donchian 1D, ek position, SL, 1% risk | Compile ✅. MT5 test t3: 132 trades, PF 1.23, DD 46% (Pine: 458, PF 1.56, DD 21%). Shak: demo swap. t4 swap alag ginta hai - **test baqi** |
+| `docs/tide_rehnuma.html` | Tide Seekh ki Roman Urdu guide ([artifact](https://claude.ai/artifact/5w4xy7FcTuCnQqxbb3A6C2)): qaide, panel rows, roz ka kaam, MT5 order/SL, naap, demo plan | ✅ 8 Oct |
+| `indicators/jas_tide_smc.pine` + `strategies/jas_tide_smc_test.pine` s1 | **Tide ka ishara (1D, naapa hua) + SMC nishan sirf dikhawa** (MA21/63, BOS/CHOCH, DZ/SZ, FVG, LGB - Tide ki taraf gehre, ulte halke; koi filter nahi), mashwara BTC 4H. Tester: faisla 1D, amal chart TF par (1D = seekh_test jaisa; 15m = wohi daily faisla, SL har 15m) - aakhri 6 trades table mein taake 1D vs 15m milayein | Tester compile ✅, **BTC 1D (2009-2026): 164 trades, jeet 47.6%, PF 3.84, DD 5.3%** (purane jungli BTC saal shamil). **1D = 1h = 30m (2026, cent tak) - qaida PASS.** Indicator s1 compile ✅ (BTC 4H, 164 trades = tester); s1.1 (table ki 7+2 durustiyan, engine wahi) compile ✅ 1D/4H/1h/15m - table har TF par ek, aakhri trade tester se ek. **s2.2 (11 Oct): har TF par Tide dabba (shart / 1R risk / abhi / nateeja) + 'MT5 MEIN' row + lot - compile ✅ BTC 1H (164 / 2019 se 81 SABIT); s2.4 (likhai abhi ki qeemat par label mein) compile ✅ BTC 1H, wahi numbers (11 Oct 19:30)** **s2.5 (SMC hara/laal, mote label) compile ✅ gold 1D (12 Oct); s2.6: SHART ka khali dabba default BAND (user), compile baqi** |
+| `indicators/jas_tide_seekh.pine` + `strategies/jas_tide_seekh_test.pine` | **Tide (kachhua 1D) ka seekhne wala panel** (8 Oct, user: B + nayi file): har qaida ✓/✗, plan, lot, sarakta SL, purane nateeje R mein, switch "2R par aadhi" (BAND = 458 wala). Strategy copy mein v1.1 ki kharabiyan durust | Bana, **compile baqi**. Pehle Tester, phir demo |
+| `indicators/jas_seerhi.pine` + `strategies/jas_seerhi_test.pine` | **Top-down seekhne ka script** (8 Oct, user ne faisle Claude par chhore): 1D rukh (structure + trend line + MA) -> 1H pullback -> 1H entry, SL/TP1(aadhi+BE)/TP2, lot, har qadam ka ✓/✗ panel. Strategy copy Tester ke liye | Compile ✅ (8 Oct, s1.2 panel). **1H Tester 2025-26: 72 trades, -5.7%, PF 0.86 = koi edge sabit nahi.** Settings ki tuning nahi; agla jaanch wala tester (TRADING-ABHI-KAHAN-HAIN) |
+| `indicators/smc_coach_pro_v4.pine` | **v3 + Pine v6 + kharabiyan durust + PIP HISAAB** (1D/1H candle ka raasta pip mein + har pip par waqt/volume ka profile) | **v4.1 compile + chal raha (8 Oct)**, 1m/15m/1h/1D par number aapas mein milte hain. Sirf observation. v3 waisi rakhi hai |
+| `indicators/smc_coach_pro_v3.pine` | SMC dashboard (pehle v2). Tables sirf 1m/15m par, 9 TF ki chalti candle, BUY/SELL pressure, MA21/63, chhupa tracker + expectancy line, MTF 90% aur 15m signal | ✅ Compile hua (2 Oct). Naye signal sirf TEST ke liye |
+| `indicators/jas_pro_box.pine` + `strategies/jas_pro_box_test.pine` | Teen tareeqe (MA pullback / candle / SMC sweep) ki ginti | Sirf observation. 15m har jagah manfi; C·SMC 1H-4H musbat magar ginti kam. User ne kaha 1D results achhe nahi |
+| `JasChakkarEA.mq5` k4 | **EA, "trend ko dost bana kar".** Rukh ke saath 0.01 jhukao (NET 0.05 tak), ulti chaal par hedge, nuqsan par kuch band nahi, bari lot ki faide wali jori, Close All +30. Qaide Q0-Q9 `TRADING-ABHI-KAHAN-HAIN.md` mein | Compile ✅ (9 Oct). **Tester FAIL (10 Oct, Jul-Oct 2026 real ticks): -5,561, jeet 94%, equity DD 5,618, aakhir mein darjanon lots phansi.** Live nahi; demo se hatana |
+| `JasBasketEA.mq5` b20 | Meri method ka EA, sirf apni (magic) lots | Haath ki lots ko nahi chhoota |
+| `JasDesk.mq5` | Button wala desk | User ne MT5 se hata diya |
