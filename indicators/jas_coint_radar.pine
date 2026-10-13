@@ -18,6 +18,14 @@
 //      ulti taraf = SL; ya 60 din. 1R = 2 sigma. Bahar wale din nayi nahi.
 //   4) Kharcha 0.005% har leg har taraf. Swap nahi.
 //
+//  c2 = KOSHISH #11 (13 Oct, user 'D'): c1 (ADF wala) FAIL - sirf 16 trades,
+//  ADF juri ~1% moqon par. c2 mein ADF SHART HATI (switch, default BAND) -
+//  Gatev, Goetzmann, Rouwenhorst (2006) jaisa 'bina test' pairs trading.
+//  (Asal Gatev normalized qeemat ka faasla leta tha; yahan wahi 250 din ki
+//  regression residual, sirf ADF ki shart nahi.) Baqi SAB wahi. ADF juri
+//  column ab sirf maloomat. c1 ka FAIL gina rehta hai. FAIL = jori wali
+//  trading POORI band.
+//
 //  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
 //   Jodiyan (kitaabi, pehle se chuni): Gold/Silver, Gold/Platinum,
 //   WTI/Brent, AUD/NZD.
@@ -28,7 +36,7 @@
 // ============================================================================
 indicator("JAS Coint Radar — Engle-Granger 4 jodiyan", shorttitle = "JAS Coint Radar", overlay = true, max_bars_back = 300)
 
-BUILD = "c1"
+BUILD = "c2"
 
 grM = "1 · Jodiyan (pehle se chuni - badalna mana)"
 sXAU = input.symbol("OANDA:XAUUSD", "Gold", group = grM)
@@ -45,6 +53,7 @@ entZ    = input.float(2.0, "Entry |z|", step = 0.1, group = grQ, display = displ
 stopZ   = input.float(4.0, "SL |z|", step = 0.1, group = grQ, display = display.none)
 maxBars = input.int(60, "Zyada se zyada din", minval = 5, group = grQ, display = display.none)
 adfCrit = input.float(-3.34, "ADF hadd (Engle-Granger 5%)", step = 0.01, group = grQ, display = display.none)
+useAdf  = input.bool(false, "ADF shart (c1 = chalu, c2 = BAND)", group = grQ, display = display.none)
 costPct = input.float(0.005, "Kharcha (% har leg har taraf)", minval = 0, step = 0.001, group = grQ, display = display.none)
 startYr = input.int(2000, "TALAASH is saal se", group = grQ, display = display.none)
 splitYr = input.int(2019, "IMTIHAN is saal se", group = grQ, display = display.none)
@@ -155,8 +164,9 @@ f_pair(float _pa, float _pb) =>
             _t   = _s2 > 0 ? _g / math.sqrt(_s2 / _sxx) : na
             _cand = _yr >= startYr and _yr < splitYr
             _kC += _cand ? 1 : 0
-            if not na(_t) and _t <= adfCrit
-                _kP += _cand ? 1 : 0
+            _juri = not na(_t) and _t <= adfCrit
+            _kP += _cand and _juri ? 1 : 0
+            if _juri or not useAdf
                 _d   := _z > 0 ? -1 : 1
                 _ae  := _a
                 _be  := _b
@@ -211,7 +221,7 @@ f_row(_row, _nm, _nT, _wT, _sT, _qT, _nI, _sI, _fy, _d, _b, _z, _kC, _kP, _show)
 
 if barstate.islast
     table.clear(rt, 0, 0, 7, 13)
-    table.cell(rt, 0, 0, "JAS COINT RADAR " + BUILD + " · Engle-Granger · 250 din · |z| 2/0/4 · ADF -3.34 · sirf naap · KOSHISH #10", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.cell(rt, 0, 0, "JAS COINT RADAR " + BUILD + " · 250 din regression · |z| 2/0/4 · ADF shart " + (useAdf ? "CHALU (c1, #10)" : "BAND (Gatev jaisa, #11)") + " · sirf naap", bgcolor = cHD, text_color = cBK, text_size = size.small)
     table.merge_cells(rt, 0, 0, 7, 0)
     if not (timeframe.isdaily and timeframe.multiplier == 1)
         f_c(0, 1, "TF ghalat: sirf 1D chart par (OANDA:XAUUSD behtar)", cNO)
@@ -272,7 +282,7 @@ if barstate.islast
         table.merge_cells(rt, 2, 6, 7, 6)
         f_c(0, 7, "QAIDA TALAASH", _pass ? cOK : cNO)
         table.merge_cells(rt, 0, 7, 1, 7)
-        f_c(2, 7, (_pass ? "PASS -> IMTIHAN khul gaya" : "FAIL - Cointegration band, settings NAHI badalni") + " · trades >= 50 " + (_ca ? "✓" : "✗") + " · musbat >= " + str.tostring(_need) + " " + (_cb ? "✓" : "✗") + " · mila Exp - 2SE > 0 " + (_cc ? "✓" : "✗"), _pass ? cOK : cNO)
+        f_c(2, 7, (_pass ? "PASS -> IMTIHAN khul gaya" : "FAIL - jori wali trading band, settings NAHI badalni") + " · trades >= 50 " + (_ca ? "✓" : "✗") + " · musbat >= " + str.tostring(_need) + " " + (_cb ? "✓" : "✗") + " · mila Exp - 2SE > 0 " + (_cc ? "✓" : "✗"), _pass ? cOK : cNO)
         table.merge_cells(rt, 2, 7, 7, 7)
         f_c(0, 8, "QAIDA IMTIHAN", _passI ? cOK : _pass ? cNO : cGY)
         table.merge_cells(rt, 0, 8, 1, 8)
@@ -280,5 +290,5 @@ if barstate.islast
         table.merge_cells(rt, 2, 8, 7, 8)
         f_c(0, 9, "Note", cNO)
         table.merge_cells(rt, 0, 9, 1, 9)
-        f_c(2, 9, "Sirf naap, trade nahi. 1R = 2 sigma. ▼ = A SELL + B BUY khula, ▲ = ulta. ADF juri = |z| >= 2 wale TALAASH dinon mein se kitne din jori juri thi. Jori chunna MANA.", cNO)
+        f_c(2, 9, "Sirf naap, trade nahi. 1R = 2 sigma. ▼ = A SELL + B BUY khula, ▲ = ulta. ADF juri (sirf maloomat) = |z| >= 2 wale TALAASH dinon mein se kitne din ADF pass hua. Jori chunna MANA.", cNO)
         table.merge_cells(rt, 2, 9, 7, 9)
