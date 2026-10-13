@@ -322,7 +322,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - "Usage credits" switch OFF. $100 cloud credit muft mila (claim karna).
   "Full reset" muft button Oct 22 tak.
 - Lambi chat zyada usage khati hai - kaam bara ho to **nayi chat** + code:
-  `JAS-DESK-V3-0110 — ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo. Branch: claude/zen-maxwell-7ypyqg`
+  `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
 
 ## 8. Ye file kaise zinda rahe
 
@@ -330,4 +330,5 @@ Har chat ke aakhir mein (ya koi bara faisla/nateeja aaye to foran) Claude:
 - naya **faisla / nateeja / sabaq** yahan ya `ABHI-KAHAN-HAIN.md` mein likhe,
 - `ABHI-KAHAN-HAIN.md` = **abhi kya chal raha hai** (badalta rehta hai),
 - `MERI-KAHANI.md` = **pakki baatein** (kam badalti hain),
+- **Usage qaida (13 Oct safai):** `CLAUDE.md` har message ke saath lagti hai - us mein sirf nayi file ki EK line, haal/nateeja NAHI. `ABHI-KAHAN-HAIN.md` ~150 line se lambi ho to purana hissa `docs/purana-haal.md` mein. Lambi file-tafseel `docs/files-tafseel.md` mein (grep se),
 - commit + push kare.
