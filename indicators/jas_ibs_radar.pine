@@ -22,10 +22,19 @@
 //   AUR >= 6/10 musbat AUR kul >= 30 = ASLI PASS -> demo.
 //   'RSI2 saath' = TALAASH entries jin din RSI(2) < 10 bhi tha (maloomat):
 //   zyada = RSI2 ki copy. Index chunna MANA. Settings badal kar dobara MANA.
+//
+//  b2 = KOSHISH #15 (13 Oct, user 'D'): #14 tokri FAIL (sakht -0.011) magar
+//  9/10 musbat. Kachhue (pehle sirf gold) ki tarah SIRF S&P 500 (pehla
+//  symbol) - is idea ka asal ghar. Ye nateeja DEKH KAR chuna gaya, is liye
+//  IMTIHAN SAKHT: TALAASH S&P Exp - 2SE > 0 (trades >= 100) -> IMTIHAN
+//  (2019+, kabhi nahi dekha) EK DAFA khulta hai: PASS = trades >= 50 AUR
+//  Exp - 2SE > 0 (sirf Exp > 0 NAHI - woh sikka uchhalna hai).
+//  ASLI PASS -> demo (JasRsi2EA ke saath US500). FAIL = IBS POORI band.
+//  Baqi 9 index ka IMTIHAN chhupa hi rahega.
 // ============================================================================
 indicator("JAS IBS Radar — 10 index", shorttitle = "JAS IBS Radar", overlay = true, max_bars_back = 300)
 
-BUILD = "b1"
+BUILD = "b2"
 
 grI = "1 · 10 index (pehle se chune - badalna mana)"
 s0 = input.symbol("OANDA:SPX500USD", "1 S&P 500", group = grI)
@@ -48,6 +57,8 @@ atrLen  = input.int(14, "ATR length", minval = 2, group = grQ, display = display
 slMult  = input.float(3.0, "SL (x ATR) - hifazat", minval = 0.5, step = 0.5, group = grQ, display = display.none)
 costPct = input.float(0.01, "Kharcha (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
 splitYr = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
+
+mode15  = input.bool(true, "KOSHISH #15: sirf S&P (pehla symbol), IMTIHAN sakht", group = grQ, display = display.none)
 
 grV = "3 · Table"
 tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
@@ -179,7 +190,7 @@ f_row(_row, _sym, _nT, _wT, _sT, _qT, _nI, _wI, _sI, _qI, _fy, _d, _oT, _show) =
 
 if barstate.islast
     table.clear(rt, 0, 0, 6, 17)
-    table.cell(rt, 0, 0, "JAS IBS RADAR " + BUILD + " · IBS < 0.2 / > 0.8 · 1D · 10 index · sirf naap · KOSHISH #14", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.cell(rt, 0, 0, "JAS IBS RADAR " + BUILD + " · IBS < 0.2 / > 0.8 · 1D · 10 index · sirf naap · KOSHISH #14 + #15", bgcolor = cHD, text_color = cBK, text_size = size.small)
     table.merge_cells(rt, 0, 0, 6, 0)
     if not (timeframe.isdaily and timeframe.multiplier == 1)
         f_c(0, 1, "TF ghalat: sirf 1D chart par", cNO)
@@ -263,3 +274,19 @@ if barstate.islast
         table.merge_cells(rt, 0, 15, 1, 15)
         f_c(2, 15, "Sirf naap, trade nahi. Sirf BUY. Band candle par. Swap nahi. ▲ = abhi khuli. RSI2 saath = entry din RSI(2) < 10 bhi. Index chunna MANA.", cNO)
         table.merge_cells(rt, 2, 15, 6, 15)
+        // KOSHISH #15: sirf S&P (pehla symbol), IMTIHAN sakht
+        if mode15
+            _exT0 = nT0 > 0 ? sT0 / nT0 : na
+            _seT0 = f_se2(nT0, sT0, qT0)
+            _pT0  = nT0 >= 100 and not na(_exT0) and not na(_seT0) and _exT0 - _seT0 > 0
+            _exI0 = nI0 > 0 ? sI0 / nI0 : na
+            _seI0 = f_se2(nI0, sI0, qI0)
+            _pI0  = _pT0 and nI0 >= 50 and not na(_exI0) and not na(_seI0) and _exI0 - _seI0 > 0
+            f_c(0, 16, "#15 " + f_nm(s0) + " TALAASH", _pT0 ? cOK : cNO)
+            table.merge_cells(rt, 0, 16, 1, 16)
+            f_c(2, 16, str.tostring(nT0) + " trades · Exp " + f_r3(_exT0) + " (± " + (na(_seT0) ? "-" : str.tostring(_seT0, "0.000")) + ") · Exp - 2SE " + f_r3(na(_exT0) or na(_seT0) ? na : _exT0 - _seT0) + (_pT0 ? " ✓ -> IMTIHAN khula (ek dafa)" : " ✗ -> IMTIHAN band"), _pT0 ? cOK : cNO)
+            table.merge_cells(rt, 2, 16, 6, 16)
+            f_c(0, 17, "#15 IMTIHAN (sakht)", _pI0 ? cOK : _pT0 ? cNO : cGY)
+            table.merge_cells(rt, 0, 17, 1, 17)
+            f_c(2, 17, not _pT0 ? "chhupa" : str.tostring(nI0) + " trades · Exp " + f_r3(_exI0) + " (± " + (na(_seI0) ? "-" : str.tostring(_seI0, "0.000")) + ") · Exp - 2SE " + f_r3(na(_exI0) or na(_seI0) ? na : _exI0 - _seI0) + " · " + (_pI0 ? "ASLI PASS -> demo ka qaida" : "FAIL - IBS poori band"), _pI0 ? cOK : _pT0 ? cNO : cGY)
+            table.merge_cells(rt, 2, 17, 6, 17)
