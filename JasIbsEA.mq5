@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD i1   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD i2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                     JasIbsEA.mq5 |
@@ -28,6 +28,9 @@
 //|                                                                  |
 //|  InpTrade false = SIRF DIKHANA. Tester ke aakhir mein Journal    |
 //|  mein R ka hisaab (sirf maloomat - Exness ka index data chhota). |
+//|  i2 (14 Oct): Journal mein har trade ki ek line (TRADE: signal   |
+//|  din, khuli, band, R) - strategies/jas_ibs_test.pine ki list se  |
+//|  din-ba-din milane ke liye. Trading ke qaide i1 wale hi.         |
 //|                                                                  |
 //|  NO grid / NO martingale / NO averaging. Har market ek position. |
 //+------------------------------------------------------------------+
@@ -35,7 +38,7 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "i1"          // har nayi file par ye number barhta hai
+#define EA_BUILD "i2"          // har nayi file par ye number barhta hai
 #define MAXM 10
 
 CTrade trade;
@@ -106,6 +109,8 @@ struct TPos
    datetime t0;
    datetime cl;
    int      why;     // 1 = SL, 2 = IBS / 5 din / haath
+   int      sday;    // comment ka signal din (yyyymmdd)
+   double   pout;    // band deals ka (qeemat x lot) jor - ausat band qeemat ke liye
   };
 
 //+------------------------------------------------------------------+
@@ -568,10 +573,13 @@ void Stats(bool doPrint)
          ps[x].t0   = (datetime)HistoryDealGetInteger(t, DEAL_TIME);
          ps[x].cl   = 0;
          ps[x].why  = 2;
+         ps[x].sday = dday;
+         ps[x].pout = 0.0;
         }
       else if(x >= 0)
         {
          ps[x].vout += vol;
+         ps[x].pout += HistoryDealGetDouble(t, DEAL_PRICE) * vol;
          ps[x].prof += HistoryDealGetDouble(t, DEAL_PROFIT);
          ps[x].swap += HistoryDealGetDouble(t, DEAL_SWAP);
          ps[x].comm += HistoryDealGetDouble(t, DEAL_COMMISSION);
@@ -592,6 +600,8 @@ void Stats(bool doPrint)
    int    mN[MAXM];
    double mR[MAXM];
    for(int j = 0; j < MAXM; j++) { mN[j] = 0; mR[j] = 0.0; }
+   string tl[];                                   // har trade ki line (Journal, sirf Tester ke aakhir mein)
+   int    ntl = 0;
    // band hone ki tarteeb se (girawat sahi ho - kai market ki trades aage peeche band hoti hain)
    int ord[];
    int no = 0;
@@ -627,6 +637,19 @@ void Stats(bool doPrint)
       sumC += (ps[x].swap + ps[x].comm) / risk;
       if(ps[x].why == 1) nSL++;
       else               nEa++;
+      if(doPrint)
+        {
+         double pxo = 0.0;
+         if(ps[x].vout > 0.0) pxo = ps[x].pout / ps[x].vout;
+         int dg = (int)SymbolInfoInteger(g_sym[pm[x]], SYMBOL_DIGITS);
+         ntl++;
+         ArrayResize(tl, ntl);
+         tl[ntl - 1] = StringFormat("TRADE %d | %s | signal %d | khuli %s @ %s | band %s @ %s | %+.2fR | %s",
+                                    n, g_sym[pm[x]], ps[x].sday,
+                                    TimeToString(ps[x].t0, TIME_DATE | TIME_MINUTES), DoubleToString(ps[x].pin, dg),
+                                    TimeToString(ps[x].cl, TIME_DATE | TIME_MINUTES), DoubleToString(pxo, dg),
+                                    r, Pick(ps[x].why == 1, "SL", "IBS/5 din"));
+        }
       MqlDateTime st;
       TimeToStruct(ps[x].cl, st);
       cum += r;
@@ -671,6 +694,11 @@ void Stats(bool doPrint)
       yt += StringFormat("%d %+.1fR (%d)  ", yrY[j], yrR[j], yrN[j]);
       if(yrR[j] > 0.0) yPos++;
      }
+   // aakhri 20 trades ki lines pehle - taake Journal ke aakhir mein trades + KUL saath hon
+   int j0 = ntl - 20;
+   if(j0 < 0) j0 = 0;
+   for(int j = j0; j < ntl; j++)
+      PrintFormat("JAS IBS %s | %s", EA_BUILD, tl[j]);
    PrintFormat("JAS IBS %s | %s | SAAL: %s| musbat %d/%d", EA_BUILD, g_label, yt, yPos, ny);
    PrintFormat("JAS IBS %s | %s | MARKET: %s", EA_BUILD, g_label, mt);
    PrintFormat("JAS IBS %s | %s | BAND: IBS/%d din %d | SL %d | bina comment %d",
