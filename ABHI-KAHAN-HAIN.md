@@ -23,6 +23,9 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **DURUSTI (13 Oct, user): RSI2 EA demo par ABHI NAHI chal raha** (upar ki purani lines 'Radar EA + RSI2 EA chal rahe' ghalat - sirf Radar EA chal raha). Agla: demo 472716649 par US500m + USTECm + US30m, teeno D1 chart, har ek par JasRsi2EA, InpTrade true (baqi default), Allow Algo Trading ✓.
 
+- **RADAR EA KI PEHLI DEMO TRADE (13 Oct 00:00 server, user screenshot):** USDJPYm BUY 0.33 @ 158.527, SL 156.394 (risk 1.00% = 444.71). Panel 'TRADE CHALU', suffix 'm'.
+- **JasRsi2EA c2 (13 Oct, user 'D', compile baqi):** Tide Radar ki tarah EK chart se teeno index - `InpSymbols` = US500,USTEC,US30 (suffix auto). Har index par ek trade, 1% har ek, qaide c1 wale. **Agla:** F7 compile -> demo 472716649 par US500m **D1** chart (XAUUSDm wale chart par Radar EA hai - ek chart ek EA) -> JasRsi2EA, InpTrade true, Allow Algo Trading ✓ -> panel screenshot (upar 'c2', teen lines US500m / USTECm / US30m). Pehli candle par nayi trade nahi (jaan boojh kar).
+
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`

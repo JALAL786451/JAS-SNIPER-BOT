@@ -1,20 +1,25 @@
 //====================================================================
-//===  BUILD c1   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD c2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                    JasRsi2EA.mq5 |
 //|  JAS RSI2 - Connors RSI(2) (Connors & Alvarez 2008) ka MT5 EA.    |
 //|  TradingView strategies/jas_rsi2_test.pine c1 ke wohi qaide.     |
 //|  Pine par OANDA:SPX500USD 2003-2026 pehle se likhe qaide par PASS |
-//|  (257 trades, +0.114R +-0.049). Gold par FAIL - is liye sirf      |
-//|  S&P 500 (US500) ke DAILY chart par lagayein.                    |
+//|  (257 trades, +0.114R +-0.049). Gold/forex/commodity par FAIL.    |
+//|  c2 (13 Oct, user: "Tide Radar ki tarah ek saath"): EK chart se  |
+//|  kai index (InpSymbols, default US500,USTEC,US30 - Radar x3 ki   |
+//|  TEEN MILA KAR girawat 5.7R = PASS). Suffix chart se khud (m/c). |
+//|  Kisi bhi DAILY chart par lagayein (jaise US500m D1).            |
+//|  InpSymbols khali = sirf chart ka symbol (c1 jaisa).             |
 //|                                                                  |
 //|  QAWAID (har nayi daily candle par, pichhli BAND candle se):     |
 //|   1) Rukh: close SMA(200) ke upar = sirf BUY, neeche = sirf SELL  |
 //|   2) Entry: RSI(2) < 10 = BUY, RSI(2) > 90 = SELL                 |
 //|   3) Band: BUY jab close SMA(5) ke upar; SELL jab neeche          |
 //|   4) SL server par: signal close se 3 x ATR(14) (hifazat) = 1R    |
-//|   5) Lot = 1% risk. Ek position. Sunday ki chhoti candle Monday   |
+//|   5) Lot = 1% risk. HAR MARKET par ek position (kul zyada se zyada |
+//|      market jitni). Sunday ki chhoti candle Monday                |
 //|      mein mila di jati hai (Radar EA jaisa).                     |
 //|   6) EA lagne ke baad pehli candle par nayi trade nahi (der se    |
 //|      entry nahi); band ki jaanch hoti hai.                       |
@@ -22,13 +27,14 @@
 //|  InpTrade false = SIRF DIKHANA. Tester ke aakhir mein Journal    |
 //|  mein R ka hisaab (sirf maloomat - Exness ka US500 data chhota). |
 //|                                                                  |
-//|  NO grid / NO martingale / NO averaging. Ek waqt mein ek position.|
+//|  NO grid / NO martingale / NO averaging. Har market ek position. |
 //+------------------------------------------------------------------+
 #property copyright "JAS-SNIPER-BOT"
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "c1"          // har nayi file par ye number barhta hai
+#define EA_BUILD "c2"          // har nayi file par ye number barhta hai
+#define MAXM 10
 
 CTrade trade;
 
@@ -36,6 +42,10 @@ CTrade trade;
 string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
 
 //--------------------------- INPUTS -----------------------------------
+input group "=== 0 - Markets ==="
+input string InpSymbols    = "US500,USTEC,US30"; // Markets (comma se). KHALI = sirf chart ka symbol
+input string InpSuffix     = "auto";   // Suffix (Exness demo m, cent c) - auto = chart ke symbol se
+
 input group "=== 1 - Qawaid (Pine c1 jaise - mat badlein) ==="
 input int    InpRsiLen     = 2;        // RSI length
 input double InpBuyLvl     = 10.0;     // BUY: RSI is se neeche
@@ -57,21 +67,29 @@ input int    InpSlippage   = 50;       // Max slippage (points)
 input int    InpMagic      = 20261012; // Magic number
 input datetime InpStatFrom = D'2019.01.01'; // Tester: hisaab is tareekh se khuli trades ka
 
-//--------------------------- HAAL -------------------------------------
-datetime g_lastD1  = 0;        // broker ki aakhri band D1 candle (jo dekh li)
-datetime g_doneT   = 0;        // mili hui (Sunday ke baad) aakhri candle jis par faisla ho gaya
-datetime g_failT   = 0;
-bool     g_initBar = true;     // EA lagne ke baad pehli candle: sirf band ki jaanch, nayi trade nahi (der se entry nahi)
-string   g_state   = "shuru ho raha hai";
+//--------------------------- HAAL (har market ka alag) ---------------
+int      g_n = 0;
+string   g_suffix = "";
+string   g_base[MAXM];
+string   g_sym[MAXM];
+bool     g_have[MAXM];
+string   g_label = "";
+datetime g_lastD1[MAXM];       // broker ki aakhri band D1 candle (jo dekh li)
+datetime g_doneT[MAXM];        // mili hui (Sunday ke baad) aakhri candle jis par faisla ho gaya
+datetime g_failT[MAXM];
+bool     g_initBar[MAXM];      // EA lagne ke baad pehli candle: sirf band ki jaanch, nayi trade nahi (der se entry nahi)
+string   g_state[MAXM];
+// panel ke liye aakhri band candle ki values
+double   g_c[MAXM], g_rsi[MAXM], g_smaT[MAXM], g_smaX[MAXM], g_atr[MAXM];
+datetime g_barT[MAXM];
+string   S = "";               // abhi kis market ka kaam ho raha hai (sab chhote kaam isi par)
+int      g_i = 0;              // S ka number (g_sym mein)
 string   g_lastAct = "abhi kuch nahi";
 string   g_info    = "";
 double   g_totR    = 0.0;
 string   g_statsTxt = "EA ki band trades: 0";
 bool     g_statsDirty = true;
 datetime g_lastStats = 0;
-// panel ke liye aakhri band candle ki values
-double   g_c = 0.0, g_rsi = -1.0, g_smaT = 0.0, g_smaX = 0.0, g_atr = 0.0;
-datetime g_barT = 0;
 
 struct TPos
   {
@@ -105,34 +123,34 @@ double Base() { return(AccountInfoDouble(ACCOUNT_BALANCE)); }
 
 double MinStop()
   {
-   long a = SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
-   long b = SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL);
+   long a = SymbolInfoInteger(S, SYMBOL_TRADE_STOPS_LEVEL);
+   long b = SymbolInfoInteger(S, SYMBOL_TRADE_FREEZE_LEVEL);
    long lvl = MathMax(a, b);
-   return((double)lvl * SymbolInfoDouble(_Symbol, SYMBOL_POINT));
+   return((double)lvl * SymbolInfoDouble(S, SYMBOL_POINT));
   }
 
 // Qeemat broker ke tick par gol (warna "invalid stops")
 double NormPx(double v)
   {
-   double ts = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
+   double ts = SymbolInfoDouble(S, SYMBOL_TRADE_TICK_SIZE);
    if(ts > 0.0) v = MathRound(v / ts) * ts;
-   return(NormalizeDouble(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS)));
+   return(NormalizeDouble(v, (int)SymbolInfoInteger(S, SYMBOL_DIGITS)));
   }
 
-string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
+string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(S, SYMBOL_DIGITS))); }
 
 // Market abhi chal raha hai? (taza tick, qeemat maujood)
 bool MarketLive()
   {
    MqlTick tk;
-   if(!SymbolInfoTick(_Symbol, tk)) return(false);
+   if(!SymbolInfoTick(S, tk)) return(false);
    if(tk.bid <= 0.0 || tk.ask <= 0.0) return(false);
    return(TimeCurrent() - tk.time < 600);
   }
 
 bool Is247()
   {
-   return(StringFind(_Symbol, "BTC") >= 0 || StringFind(_Symbol, "ETH") >= 0);
+   return(StringFind(S, "BTC") >= 0 || StringFind(S, "ETH") >= 0);
   }
 
 // 1% risk ki lot. riskPct = asal risk. 0 = trade nahi.
@@ -142,13 +160,13 @@ double LotFor(int dir, double price, double slv, double &riskPct)
    double loss = 0.0;
    ENUM_ORDER_TYPE ot = ORDER_TYPE_BUY;
    if(dir == -1) ot = ORDER_TYPE_SELL;
-   if(!OrderCalcProfit(ot, _Symbol, 1.0, price, slv, loss)) return(0.0);
+   if(!OrderCalcProfit(ot, S, 1.0, price, slv, loss)) return(0.0);
    loss = MathAbs(loss);
    double base = Base();
    if(loss <= 0.0 || base <= 0.0) return(0.0);
-   double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-   double mn   = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
-   double mx   = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
+   double step = SymbolInfoDouble(S, SYMBOL_VOLUME_STEP);
+   double mn   = SymbolInfoDouble(S, SYMBOL_VOLUME_MIN);
+   double mx   = SymbolInfoDouble(S, SYMBOL_VOLUME_MAX);
    if(step <= 0.0) step = 0.01;
    double lots = MathFloor(base * InpRiskPct / 100.0 / loss / step + 1e-9) * step;
    if(lots < mn - 1e-12)
@@ -186,7 +204,7 @@ bool FindPos(ulong &tk, int &dir, double &op, double &sl)
      {
       ulong t = PositionGetTicket(k);
       if(t == 0) continue;
-      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(PositionGetString(POSITION_SYMBOL) != S) continue;
       if(PositionGetInteger(POSITION_MAGIC) != InpMagic) continue;
       tk  = t;
       dir = 1;
@@ -209,7 +227,7 @@ bool SigUsed(int day)
       ulong t = HistoryDealGetTicket(k);
       if(t == 0) continue;
       if(HistoryDealGetInteger(t, DEAL_MAGIC) != InpMagic) continue;
-      if(HistoryDealGetString(t, DEAL_SYMBOL) != _Symbol) continue;
+      if(HistoryDealGetString(t, DEAL_SYMBOL) != S) continue;
       if(HistoryDealGetInteger(t, DEAL_ENTRY) != DEAL_ENTRY_IN) continue;
       int    dd  = 0;
       double isl = 0.0;
@@ -221,22 +239,22 @@ bool SigUsed(int day)
 
 void Note(string s)
   {
-   g_lastAct = TimeToString(TimeCurrent(), TIME_DATE | TIME_MINUTES) + " " + s;
+   g_lastAct = TimeToString(TimeCurrent(), TIME_DATE | TIME_MINUTES) + " " + S + " " + s;
    if(MQLInfoInteger(MQL_TESTER) == 0)
       Print("JAS RSI2 " + EA_BUILD + " | " + g_lastAct);
   }
 
 bool ClosePos(ulong tk, string why)
   {
-   trade.SetTypeFillingBySymbol(_Symbol);
+   trade.SetTypeFillingBySymbol(S);
    if(trade.PositionClose(tk))
      {
       Note(StringFormat("BAND (%s) @ %s", why, Px(trade.ResultPrice())));
       g_statsDirty = true;
       return(true);
      }
-   g_failT = TimeCurrent();
-   PrintFormat("JAS RSI2 %s | band nahi hui: %d %s", EA_BUILD, trade.ResultRetcode(), trade.ResultRetcodeDescription());
+   g_failT[g_i] = TimeCurrent();
+   PrintFormat("JAS RSI2 %s | %s band nahi hui: %d %s", EA_BUILD, S, trade.ResultRetcode(), trade.ResultRetcodeDescription());
    return(false);
   }
 
@@ -247,7 +265,7 @@ bool ClosePos(ulong tk, string why)
 int LoadBars(datetime &T[], double &H[], double &L[], double &C[])
   {
    MqlRates rt[];
-   int got = CopyRates(_Symbol, PERIOD_D1, 1, InpBars, rt);   // 1 = chalti candle nahi
+   int got = CopyRates(S, PERIOD_D1, 1, InpBars, rt);   // 1 = chalti candle nahi
    if(got <= 0) return(0);
    ArrayResize(T, got);
    ArrayResize(H, got);
@@ -358,12 +376,12 @@ bool TryOpen(int d, double c, double atr, int day, bool canTrade)
    string side = Pick(d == 1, "BUY", "SELL");
    double slv  = NormPx(c - d * InpSlMult * atr);
    MqlTick t;
-   if(!SymbolInfoTick(_Symbol, t)) return(false);
+   if(!SymbolInfoTick(S, t)) return(false);
    double px  = t.ask;
    if(d == -1) px = t.bid;
    double gap = t.bid - slv;
    if(d == -1) gap = slv - t.ask;
-   if(gap <= MinStop() + SymbolInfoDouble(_Symbol, SYMBOL_POINT))
+   if(gap <= MinStop() + SymbolInfoDouble(S, SYMBOL_POINT))
      {
       Note(StringFormat("%s CHHOOTI: qeemat SL %s ke bohot qareeb / paar", side, Px(slv)));
       return(true);
@@ -381,18 +399,18 @@ bool TryOpen(int d, double c, double atr, int day, bool canTrade)
       return(true);
      }
    string cmt = StringFormat("RS2 %d %s", day, Px(slv));
-   trade.SetTypeFillingBySymbol(_Symbol);
+   trade.SetTypeFillingBySymbol(S);
    bool ok = false;
-   if(d == 1) ok = trade.Buy(lots, _Symbol, 0.0, slv, 0.0, cmt);
-   else       ok = trade.Sell(lots, _Symbol, 0.0, slv, 0.0, cmt);
+   if(d == 1) ok = trade.Buy(lots, S, 0.0, slv, 0.0, cmt);
+   else       ok = trade.Sell(lots, S, 0.0, slv, 0.0, cmt);
    if(ok && trade.ResultRetcode() == TRADE_RETCODE_DONE)
      {
       g_statsDirty = true;
       Note(StringFormat("KHULI %s %.2f @ %s | SL %s, risk %.2f%%", side, lots, Px(trade.ResultPrice()), Px(slv), rp));
       return(true);
      }
-   g_failT = TimeCurrent();
-   PrintFormat("JAS RSI2 %s | %s nahi khuli: %d %s", EA_BUILD, side, trade.ResultRetcode(), trade.ResultRetcodeDescription());
+   g_failT[g_i] = TimeCurrent();
+   PrintFormat("JAS RSI2 %s | %s %s nahi khuli: %d %s", EA_BUILD, S, side, trade.ResultRetcode(), trade.ResultRetcodeDescription());
    ulong tk = 0;
    int dir = 0;
    double op = 0.0, sl = 0.0;
@@ -400,32 +418,44 @@ bool TryOpen(int d, double c, double atr, int day, bool canTrade)
   }
 
 //+------------------------------------------------------------------+
-//|  FAISLA - nayi band daily candle par ek dafa                     |
+//|  MARKET CHUNO - S aur g_i set (sab chhote kaam S par chalte hain)  |
+//+------------------------------------------------------------------+
+void Use(int i) { g_i = i; S = g_sym[i]; }
+
+int SymIdx(string sym)
+  {
+   for(int i = 0; i < g_n; i++) if(g_sym[i] == sym) return(i);
+   return(-1);
+  }
+
+//+------------------------------------------------------------------+
+//|  FAISLA - market i ki nayi band daily candle par ek dafa           |
 //|  false = abhi nahi ho saka (data / market band / order fail)     |
 //+------------------------------------------------------------------+
-bool Decide(bool canTrade)
+bool Decide(int i, bool canTrade)
   {
+   Use(i);
    datetime T[];
    double   H[], L[], C[];
    int m = LoadBars(T, H, L, C);
    int need = MathMax(InpTrendLen, InpAtrLen + 1) + 5;
    if(m < need)
      {
-      g_state = StringFormat("daily candles kam hain (%d, chahiye %d) - History load ho rahi hai", m, need);
+      g_state[i] = StringFormat("daily candles kam hain (%d, chahiye %d) - History load ho rahi hai", m, need);
       return(false);
      }
    double R[], A[];
    CalcRsi(C, m, InpRsiLen, R);
    CalcAtr(H, L, C, m, InpAtrLen, A);
    int k = m - 1;
-   g_barT = T[k];
-   g_c    = C[k];
-   g_rsi  = R[k];
-   g_atr  = A[k];
-   g_smaT = SmaAt(C, k, InpTrendLen);
-   g_smaX = SmaAt(C, k, InpExitLen);
-   if(T[k] == g_doneT) return(true);                // ye candle pehle dekh li
-   if(g_rsi < 0.0 || g_atr <= 0.0 || g_smaT <= 0.0 || g_smaX <= 0.0) return(false);
+   g_barT[i] = T[k];
+   g_c[i]    = C[k];
+   g_rsi[i]  = R[k];
+   g_atr[i]  = A[k];
+   g_smaT[i] = SmaAt(C, k, InpTrendLen);
+   g_smaX[i] = SmaAt(C, k, InpExitLen);
+   if(T[k] == g_doneT[i]) return(true);             // ye candle pehle dekh li
+   if(g_rsi[i] < 0.0 || g_atr[i] <= 0.0 || g_smaT[i] <= 0.0 || g_smaX[i] <= 0.0) return(false);
    if(!MarketLive()) return(false);                // market khulne par
 
    ulong  tk = 0;
@@ -433,7 +463,7 @@ bool Decide(bool canTrade)
    double op = 0.0, sl = 0.0;
    bool   has = FindPos(tk, dir, op, sl);
    bool   closedNow = false;
-   if(has && ((dir == 1 && g_c > g_smaX) || (dir == -1 && g_c < g_smaX)))
+   if(has && ((dir == 1 && g_c[i] > g_smaX[i]) || (dir == -1 && g_c[i] < g_smaX[i])))
      {
       if(canTrade)
         {
@@ -443,26 +473,26 @@ bool Decide(bool canTrade)
       else Note("band hona chahiye (SMA5) - Algo Trading band hai");
       has = FindPos(tk, dir, op, sl);
      }
-   if(g_initBar)
+   if(g_initBar[i])
      {
-      g_initBar = false;
+      g_initBar[i] = false;
       if(!has) Note(StringFormat("EA laga: %s ki candle par nayi trade nahi (der se entry nahi) - agli band candle se", TimeToString(T[k], TIME_DATE)));
      }
    else if(!has && !closedNow)
      {
       int d = 0;
-      if(g_c > g_smaT && g_rsi < InpBuyLvl)       d = 1;
-      else if(g_c < g_smaT && g_rsi > InpSellLvl) d = -1;
+      if(g_c[i] > g_smaT[i] && g_rsi[i] < InpBuyLvl)       d = 1;
+      else if(g_c[i] < g_smaT[i] && g_rsi[i] > InpSellLvl) d = -1;
       int day = YMD(T[k]);
       if(d != 0 && !SigUsed(day))
-         if(!TryOpen(d, g_c, g_atr, day, canTrade)) return(false);
+         if(!TryOpen(d, g_c[i], g_atr[i], day, canTrade)) return(false);
      }
-   g_doneT = T[k];
+   g_doneT[i] = T[k];
    return(true);
   }
 
 //+------------------------------------------------------------------+
-//|  HISAAB - band trades R mein                                     |
+//|  HISAAB - EA ki band trades R mein (sab markets mila kar)        |
 //+------------------------------------------------------------------+
 void Stats(bool doPrint)
   {
@@ -470,13 +500,15 @@ void Stats(bool doPrint)
    if(!HistorySelect(0, AddSec(TimeCurrent(), 86400))) return;
    int  nd = HistoryDealsTotal();
    TPos ps[];
+   int  pm[];                                     // har position kis market ki
    int  np = 0;
    for(int k = 0; k < nd; k++)
      {
       ulong t = HistoryDealGetTicket(k);
       if(t == 0) continue;
       if(HistoryDealGetInteger(t, DEAL_MAGIC) != InpMagic) continue;
-      if(HistoryDealGetString(t, DEAL_SYMBOL) != _Symbol) continue;
+      int mi = SymIdx(HistoryDealGetString(t, DEAL_SYMBOL));
+      if(mi < 0) continue;
       long id = HistoryDealGetInteger(t, DEAL_POSITION_ID);
       int  x  = -1;
       for(int j = np - 1; j >= 0; j--) if(ps[j].id == id) { x = j; break; }
@@ -486,7 +518,9 @@ void Stats(bool doPrint)
          if(x >= 0) continue;
          np++;
          ArrayResize(ps, np);
+         ArrayResize(pm, np);
          x = np - 1;
+         pm[x] = mi;
          int    dday = 0;
          double isl  = 0.0;
          ParseCmt(HistoryDealGetString(t, DEAL_COMMENT), dday, isl);
@@ -524,19 +558,37 @@ void Stats(bool doPrint)
    double yrR[];
    int    yrN[];
    int    ny = 0;
+   int    mN[MAXM];
+   double mR[MAXM];
+   for(int j = 0; j < MAXM; j++) { mN[j] = 0; mR[j] = 0.0; }
+   // band hone ki tarteeb se (girawat sahi ho - kai market ki trades aage peeche band hoti hain)
+   int ord[];
+   int no = 0;
    for(int x = 0; x < np; x++)
      {
       if(ps[x].cl == 0) continue;                 // abhi khuli
+      int at = no;
+      while(at > 0 && ps[ord[at - 1]].cl > ps[x].cl) at--;
+      no++;
+      ArrayResize(ord, no);
+      for(int j = no - 1; j > at; j--) ord[j] = ord[j - 1];
+      ord[at] = x;
+     }
+   for(int q = 0; q < no; q++)
+     {
+      int x = ord[q];
       if(MQLInfoInteger(MQL_TESTER) != 0 && ps[x].t0 < InpStatFrom) continue;
       if(ps[x].isl <= 0.0) { noSL++; continue; }  // comment nahi mila - R nahi gin sakte
       ENUM_ORDER_TYPE ot = ORDER_TYPE_BUY;
       if(ps[x].dir == -1) ot = ORDER_TYPE_SELL;
       double risk = 0.0;
-      if(!OrderCalcProfit(ot, _Symbol, ps[x].vin, ps[x].pin, ps[x].isl, risk)) { noSL++; continue; }
+      if(!OrderCalcProfit(ot, g_sym[pm[x]], ps[x].vin, ps[x].pin, ps[x].isl, risk)) { noSL++; continue; }
       risk = MathAbs(risk);
       if(risk <= 0.0) { noSL++; continue; }
       double r = (ps[x].prof + ps[x].swap + ps[x].comm) / risk;
       n++;
+      mN[pm[x]]++;
+      mR[pm[x]] += r;
       if(r > 0.0) { win++; sumP += r; }
       else        sumN += -r;
       sumR += r;
@@ -573,8 +625,11 @@ void Stats(bool doPrint)
    if(n > 1) se2 = 2.0 * MathSqrt(MathMax(sumQ - sumR * sumR / n, 0.0) / (n - 1)) / MathSqrt((double)n);
    double pf = 0.0;
    if(sumN > 0.0) pf = sumP / sumN;
+   string mt = "";
+   for(int j = 0; j < g_n; j++) mt += StringFormat("%s %d %+.2fR  ", g_sym[j], mN[j], mR[j]);
    g_statsTxt = StringFormat("EA ki band trades: %d | jeet %d | Exp %+.3fR (+-%.3f) | kul %+.2fR | swap+comm %+.2fR",
                              n, win, ex, se2, sumR, sumC);
+   if(g_n > 1) g_statsTxt += "\n" + mt;
    if(!doPrint) return;
 
    double winPct = 0.0;
@@ -586,13 +641,14 @@ void Stats(bool doPrint)
       yt += StringFormat("%d %+.1fR (%d)  ", yrY[j], yrR[j], yrN[j]);
       if(yrR[j] > 0.0) yPos++;
      }
-   PrintFormat("JAS RSI2 %s | %s | SAAL: %s| musbat %d/%d", EA_BUILD, _Symbol, yt, yPos, ny);
+   PrintFormat("JAS RSI2 %s | %s | SAAL: %s| musbat %d/%d", EA_BUILD, g_label, yt, yPos, ny);
+   PrintFormat("JAS RSI2 %s | %s | MARKET: %s", EA_BUILD, g_label, mt);
    PrintFormat("JAS RSI2 %s | %s | BAND: SMA5 %d | SL %d | BUY %d %+.1fR | SELL %d %+.1fR | bina comment %d",
-               EA_BUILD, _Symbol, nSma, nSL, nBuy, rBuy, n - nBuy, sumR - rBuy, noSL);
+               EA_BUILD, g_label, nSma, nSL, nBuy, rBuy, n - nBuy, sumR - rBuy, noSL);
    PrintFormat("JAS RSI2 %s | %s | KUL: %d trades | jeet %.1f%% | Exp %+.3fR (+-%.3f = 2SE) | PF %.2f | kul %+.2fR | girawat %.1fR (%d-%d) | swap+commission %+.2fR",
-               EA_BUILD, _Symbol, n, winPct, ex, se2, pf, sumR, dd, ddA, ddB, sumC);
+               EA_BUILD, g_label, n, winPct, ex, se2, pf, sumR, dd, ddA, ddB, sumC);
    PrintFormat("JAS RSI2 %s | %s | hisaab %s se | Tester = sirf MALOOMAT (faisla TradingView PASS + demo ka qaida)",
-               EA_BUILD, _Symbol, TimeToString(InpStatFrom, TIME_DATE));
+               EA_BUILD, g_label, TimeToString(InpStatFrom, TIME_DATE));
   }
 
 //+------------------------------------------------------------------+
@@ -605,15 +661,22 @@ void Panel(bool canTrade)
    if(MQLInfoInteger(MQL_TESTER) != 0) mode = "TESTER";
    double base = Base();
    string s = "=== JAS RSI2  " + EA_BUILD + "  ===  " + mode + "\n";
-   s += StringFormat("%s | Risk %.2f%% = %.2f | lot hadd %.2f\n", _Symbol, InpRiskPct, base * InpRiskPct / 100.0, InpMaxLot);
-   if(g_barT > 0 && g_smaT > 0.0)
+   s += StringFormat("Risk %.2f%% = %.2f har market | lot hadd %.2f | suffix '%s' | %d market\n",
+                     InpRiskPct, base * InpRiskPct / 100.0, InpMaxLot, g_suffix, g_n);
+   for(int i = 0; i < g_n; i++)
      {
-      s += StringFormat("Aakhri band din %s | close %s | SMA200 %s = %s\n", TimeToString(g_barT, TIME_DATE), Px(g_c), Px(g_smaT),
-                        Pick(g_c > g_smaT, "rukh UPAR (sirf BUY)", "rukh NEECHE (sirf SELL)"));
-      s += StringFormat("RSI(2) %.1f (BUY < %.0f, SELL > %.0f) | SMA5 %s | ATR %s -> SL faasla %s\n",
-                        g_rsi, InpBuyLvl, InpSellLvl, Px(g_smaX), Px(g_atr), Px(InpSlMult * g_atr));
+      Use(i);
+      if(!g_have[i])
+        {
+         s += g_sym[i] + " | broker par NAHI mila - chhor diya\n";
+         continue;
+        }
+      string ln = g_sym[i] + " | ";
+      if(g_barT[i] > 0 && g_smaT[i] > 0.0)
+         ln += StringFormat("%s | %s | RSI(2) %.1f | ", TimeToString(g_barT[i], TIME_DATE),
+                            Pick(g_c[i] > g_smaT[i], "UPAR (sirf BUY)", "NEECHE (sirf SELL)"), g_rsi[i]);
+      s += ln + g_state[i] + "\n";
      }
-   s += "Haal: " + g_state + "\n";
    s += g_statsTxt + "\n";
    s += "Aakhri kaam: " + g_lastAct;
    Comment(s);
@@ -628,33 +691,43 @@ void Pass()
    bool tester = (MQLInfoInteger(MQL_TESTER) != 0);
    bool canTrade = tester || (InpTrade && TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) != 0 &&
                               MQLInfoInteger(MQL_TRADE_ALLOWED) != 0);
-   datetime t1 = iTime(_Symbol, PERIOD_D1, 1);
-   if(t1 != 0 && t1 != g_lastD1 && now - g_failT > 60)
+   for(int i = 0; i < g_n; i++)
      {
-      if(Decide(canTrade)) g_lastD1 = t1;
+      if(!g_have[i]) continue;
+      Use(i);
+      datetime t1 = iTime(S, PERIOD_D1, 1);
+      if(t1 != 0 && t1 != g_lastD1[i] && now - g_failT[i] > 60)
+        {
+         if(Decide(i, canTrade)) g_lastD1[i] = t1;
+        }
      }
    if(tester && MQLInfoInteger(MQL_VISUAL_MODE) == 0) return;
 
-   ulong  tk = 0;
-   int    dir = 0;
-   double op = 0.0, sl = 0.0;
-   if(FindPos(tk, dir, op, sl))
+   for(int i = 0; i < g_n; i++)
      {
-      double rNow = 0.0;
-      double risk = MathAbs(op - sl);
-      MqlTick t;
-      if(SymbolInfoTick(_Symbol, t) && risk > 0.0)
+      if(!g_have[i]) continue;
+      Use(i);
+      ulong  tk = 0;
+      int    dir = 0;
+      double op = 0.0, sl = 0.0;
+      if(FindPos(tk, dir, op, sl))
         {
-         if(dir == 1) rNow = (t.bid - op) / risk;
-         else         rNow = (op - t.ask) / risk;
+         double rNow = 0.0;
+         double risk = MathAbs(op - sl);
+         MqlTick t;
+         if(SymbolInfoTick(S, t) && risk > 0.0)
+           {
+            if(dir == 1) rNow = (t.bid - op) / risk;
+            else         rNow = (op - t.ask) / risk;
+           }
+         g_state[i] = StringFormat("%s khuli @ %s | SL %s | abhi %+.2fR | band: daily close SMA5 (%s) ke %s",
+                                   Pick(dir == 1, "BUY", "SELL"), Px(op), Px(sl), rNow, Px(g_smaX[i]), Pick(dir == 1, "upar", "neeche"));
         }
-      g_state = StringFormat("%s khuli @ %s | SL %s | abhi %+.2fR | band: daily close SMA5 ke %s",
-                             Pick(dir == 1, "BUY", "SELL"), Px(op), Px(sl), rNow, Pick(dir == 1, "upar", "neeche"));
-     }
-   else if(g_smaT > 0.0 && g_rsi >= 0.0)
-     {
-      if(g_c > g_smaT) g_state = StringFormat("Intezar: BUY jab daily close par RSI(2) < %.0f (abhi %.1f)", InpBuyLvl, g_rsi);
-      else             g_state = StringFormat("Intezar: SELL jab daily close par RSI(2) > %.0f (abhi %.1f)", InpSellLvl, g_rsi);
+      else if(g_smaT[i] > 0.0 && g_rsi[i] >= 0.0)
+        {
+         if(g_c[i] > g_smaT[i]) g_state[i] = StringFormat("intezar: BUY jab daily close par RSI(2) < %.0f", InpBuyLvl);
+         else                   g_state[i] = StringFormat("intezar: SELL jab daily close par RSI(2) > %.0f", InpSellLvl);
+        }
      }
    if(g_statsDirty || now - g_lastStats > 300)
      {
@@ -665,6 +738,19 @@ void Pass()
   }
 
 //+------------------------------------------------------------------+
+string DetectSuffix()
+  {
+   if(InpSuffix != "auto") return(InpSuffix);
+   string cs = _Symbol;
+   for(int i = 0; i < g_n; i++)
+     {
+      int len = StringLen(g_base[i]);
+      if(StringLen(cs) >= len && StringSubstr(cs, 0, len) == g_base[i])
+         return(StringSubstr(cs, len));
+     }
+   return("");
+  }
+
 int OnInit()
   {
    if(InpRsiLen < 2 || InpTrendLen < 10 || InpExitLen < 2 || InpAtrLen < 2 || InpSlMult <= 0.0)
@@ -677,14 +763,51 @@ int OnInit()
       Print("ERROR: InpRiskPct 0 se 3 ke darmiyan hona chahiye.");
       return(INIT_PARAMETERS_INCORRECT);
      }
-   if(StringFind(_Symbol, "XAU") >= 0)
-      Print("DHYAN: RSI2 gold par pehle se likhe qaide par FAIL hua tha - ye EA S&P 500 (US500) ke liye hai.");
+   // markets: InpSymbols (comma se) + suffix; khali = sirf chart ka symbol
+   string parts[];
+   int cnt = StringSplit(InpSymbols, StringGetCharacter(",", 0), parts);
+   g_n = 0;
+   for(int k = 0; k < cnt && g_n < MAXM; k++)
+     {
+      string b = parts[k];
+      StringTrimLeft(b);
+      StringTrimRight(b);
+      if(StringLen(b) == 0) continue;
+      g_base[g_n] = b;
+      g_n++;
+     }
+   if(g_n == 0)
+     {
+      g_n = 1;
+      g_base[0] = _Symbol;
+      g_suffix  = "";
+     }
+   else g_suffix = DetectSuffix();
+   g_label = "";
+   for(int i = 0; i < g_n; i++)
+     {
+      g_sym[i]     = g_base[i] + g_suffix;
+      if(g_n == 1 && StringLen(InpSymbols) == 0) g_sym[i] = _Symbol;
+      g_have[i]    = SymbolSelect(g_sym[i], true);
+      if(!g_have[i]) PrintFormat("JAS RSI2 %s | %s broker par nahi mila - chhor diya", EA_BUILD, g_sym[i]);
+      if(StringFind(g_sym[i], "XAU") >= 0)
+         Print("DHYAN: RSI2 gold par pehle se likhe qaide par FAIL hua tha - ye EA stock index ke liye hai.");
+      g_lastD1[i]  = 0;
+      g_doneT[i]   = 0;
+      g_failT[i]   = 0;
+      g_initBar[i] = true;
+      g_state[i]   = "shuru ho raha hai";
+      g_c[i]       = 0.0;
+      g_rsi[i]     = -1.0;
+      g_smaT[i]    = 0.0;
+      g_smaX[i]    = 0.0;
+      g_atr[i]     = 0.0;
+      g_barT[i]    = 0;
+      g_label     += Pick(i == 0, "", "+") + g_sym[i];
+     }
    trade.SetExpertMagicNumber(InpMagic);
    trade.SetDeviationInPoints(InpSlippage);
    trade.LogLevel(LOG_LEVEL_ERRORS);
-   g_lastD1  = 0;
-   g_doneT   = 0;
-   g_initBar = true;
    if(MQLInfoInteger(MQL_TESTER) == 0)
      {
       if(!EventSetTimer(30)) Print("Timer nahi laga - sirf tick par chalega.");
