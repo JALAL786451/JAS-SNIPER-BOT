@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.6, Pine v6)
+//  JAS TIDE + SMC   (build s2.7, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -56,6 +56,11 @@
 //  SL tak, sleti nuqte wala) aur us ke kinare wali SL lakeer default BAND -
 //  likhai mein level aur SL pehle se hain. Wapas chahiye to Settings → 2 ·
 //  'SHART ka khali dabba'. Engine WAHI.
+//  s2.7 (13 Oct, user ka gold screenshot - peele X / magenta dabba): chart par
+//  Tide ki likhai (SHART ka laal mota label + 'SL ~ / pending order' label,
+//  aur trade ke waqt wale dono label) default BAND - wahi baat table mein;
+//  table PATLI (har ' · ' nayi line) taake daayen khali hisse mein rahe;
+//  LOT aur NAAP rows default BAND. Sab Settings se wapas. Engine WAHI.
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -65,7 +70,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.6"
+BUILD = "s2.7"
 
 // ============================================================================
 //  INPUTS
@@ -84,6 +89,7 @@ statYear  = input.int(2019, "Naap: is saal se alag ginti", minval = 1990, maxval
 grT = "2 · Tide chart par"
 showBox    = input.bool(true, "Tide dabba (shart / trade / nateeja)", group = grT, display = display.none)
 showPlanBx = input.bool(false, "SHART ka khali dabba (level se SL tak)", tooltip = "s2.6: default BAND - level aur SL likhai mein pehle se hain.", group = grT, display = display.none)
+showLbl    = input.bool(false, "Tide ki likhai chart par (SHART / trade ke label)", tooltip = "s2.7: default BAND (user: chart saaf) - yahi baat table ke HAAL / MT5 MEIN / RISK mein hai.", group = grT, display = display.none)
 showSLplot = input.bool(true, "Sarakta SL ki lakeer", group = grT, display = display.none)
 showFaisla = input.bool(true, "Faisle ka waqt (daily close) - khari lakeer", group = grT, display = display.none)
 nMarks     = input.int(5, "Purane nateeje (±R) kitne", minval = 0, maxval = 10, group = grT, display = display.none)
@@ -110,6 +116,9 @@ vSym    = input.string("", "V kis symbol ki (jaise XAUUSD ya BTCUSD, bina c/m)",
 grV = "5 · Table"
 showTable = input.bool(true, "Table dikhao", group = grV, display = display.none)
 tablePos  = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+thinTbl   = input.bool(true, "Table patli (har ' · ' nayi line mein)", tooltip = "s2.7: table chart ke daayen khali hisse mein rahe, candles par na aaye.", group = grV, display = display.none)
+showLot   = input.bool(false, "Table: LOT row", tooltip = "s2.7: default BAND (user).", group = grV, display = display.none)
+showNaap  = input.bool(false, "Table: NAAP (1D) row", tooltip = "s2.7: default BAND (user). Naap repo / Tester mein hai.", group = grV, display = display.none)
 tableFont = input.string("Normal", "Table ka font", options = ["Tiny", "Small", "Normal", "Large"], group = grV, display = display.none)
 chartFont = input.string("Normal", "Chart ki likhai (SMC + Tide dabba)", options = ["Small", "Normal", "Large"], group = grV, display = display.none)
 tz        = input.string("Asia/Karachi", "Waqt ka zone", group = grV, display = display.none)
@@ -392,13 +401,14 @@ if barstate.islast
             // s2.5: NAZAR WALI baat (toot level + SL) mota rangeen label qeemat ke UPAR, tafseel NEECHE
             string hs = dDone ? "Daily BAND ho chuki · " + (past ? sdTxt + " ka imkaan · agle session dekhein" : "toot nahi hua") : not liveT ? "Bazaar susat · trade NAHI" : past ? "Level paar · DAILY close ka INTEZAR · entry NAHI" : "SHART · abhi trade NAHI"
             // mota label trend ki ULTI taraf (BUY: qeemat ke neeche) - upar table ke neeche na chhupe
-            lbPlanH := label.new(pL, stC, hs + "\n" + l2 + "\nSL ~" + f_px(slp), xloc = xloc.bar_index,
-                 style = tRk == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = fsC,
-                 color = color.new(tRk == 1 ? C_BULL : C_BEAR, 10), textcolor = color.white, textalign = text.align_left,
-                 text_formatting = text.format_bold)
-            lbPlan := label.new(pL, stC, l3 + "\n" + l4, xloc = xloc.bar_index,
-                 style = tRk == 1 ? label.style_label_lower_left : label.style_label_upper_left, size = fsC,
-                 color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
+            if showLbl
+                lbPlanH := label.new(pL, stC, hs + "\n" + l2 + "\nSL ~" + f_px(slp), xloc = xloc.bar_index,
+                     style = tRk == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = fsC,
+                     color = color.new(tRk == 1 ? C_BULL : C_BEAR, 10), textcolor = color.white, textalign = text.align_left,
+                     text_formatting = text.format_bold)
+                lbPlan := label.new(pL, stC, l3 + "\n" + l4, xloc = xloc.bar_index,
+                     style = tRk == 1 ? label.style_label_lower_left : label.style_label_upper_left, size = fsC,
+                     color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             if showPlanBx
                 lnPlan := line.new(pL, slp, pR, slp, xloc = xloc.bar_index, color = color.new(C_SL, 30), style = line.style_dotted, width = 1)
         // --- RISK: trade chalu (laal = entry se shuru ke SL tak = 1R) ---------
@@ -422,13 +432,14 @@ if barstate.islast
             string h1 = (tD == 1 ? "▲ BUY" : "▼ SELL") + (slHit ? " · AAJ SL CHHU GAYA" : na(stC) ? "" : " · abhi " + f_r(tD * (stC - tE) / tR))
             string h2 = slHit ? "Band @ " + f_px(slPx) + " · ~" + f_r(slR) : "SL " + f_px(tSL) + (dDone ? ((tRk == -tD or pastCs) ? "\nDaily close ho chuki · BAND ka imkaan · agle session dekhein" : not na(csT) and csT != tSL ? "\nAgle session se SL " + f_px(csT) : "") : tRk == -tD ? "\nD1 palta: aaj DAILY close par BAND" : not na(csT) and csT != tSL ? "\nDAILY close " + f_px(csT) + (tD == 1 ? " ke neeche" : " ke upar") + " = BAND" : "")
             color  cH = slHit ? (nz(slR) > 0 ? C_BULL : C_BEAR) : (tD == 1 ? C_BULL : C_BEAR)
-            lbRiskH := label.new(bar_index + 2, nz(stC, tSL), h1 + "\n" + h2, xloc = xloc.bar_index,
-                 style = tD == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = fsC,
-                 color = color.new(cH, 10), textcolor = color.white, textalign = text.align_left,
-                 text_formatting = text.format_bold)
-            lbRisk := label.new(bar_index + 2, nz(stC, tSL), t1 + "\n" + t2 + "\n" + t3, xloc = xloc.bar_index,
-                 style = tD == 1 ? label.style_label_lower_left : label.style_label_upper_left, size = fsC,
-                 color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
+            if showLbl
+                lbRiskH := label.new(bar_index + 2, nz(stC, tSL), h1 + "\n" + h2, xloc = xloc.bar_index,
+                     style = tD == 1 ? label.style_label_upper_left : label.style_label_lower_left, size = fsC,
+                     color = color.new(cH, 10), textcolor = color.white, textalign = text.align_left,
+                     text_formatting = text.format_bold)
+                lbRisk := label.new(bar_index + 2, nz(stC, tSL), t1 + "\n" + t2 + "\n" + t3, xloc = xloc.bar_index,
+                     style = tD == 1 ? label.style_label_lower_left : label.style_label_upper_left, size = fsC,
+                     color = color.new(#FFFFFF, 15), textcolor = C_TXT, textalign = text.align_left)
             // ABHI: entry se abhi ki qeemat tak (halka - ye faida/nuqsan hai, rukh nahi)
             if not slHit and not na(stC)
                 float rNowV = tD * (stC - tE) / tR
@@ -686,7 +697,9 @@ if barstate.islast
 // ============================================================================
 var table tb = table.new(f_pos(tablePos), 2, 9, border_width = 1, border_color = color.new(#CFD8DC, 0))
 // text_formatting 'const' maangta hai - is liye do shakhen, har ek mein seedha constant
-f_row(table t, int r, string a, string b, color bgB, color fgB, string fs, string tip, bool bo) =>
+f_row(table t, int r, string a, string b0, color bgB, color fgB, string fs, string tip, bool bo) =>
+    // s2.7: patli table - har ' · ' nayi line (table daayen khali hisse mein rahe)
+    string b = thinTbl ? str.replace_all(b0, " · ", "\n") : b0
     if bo
         table.cell(t, 0, r, a, text_color = C_TXT, bgcolor = color.new(#FFFFFF, 10), text_size = fs, text_halign = text.align_left, tooltip = tip, text_formatting = text.format_bold)
         table.cell(t, 1, r, b, text_color = fgB, bgcolor = bgB, text_size = fs, text_halign = text.align_left, tooltip = tip, text_formatting = text.format_bold)
@@ -723,7 +736,8 @@ if showTable and barstate.islast
     float se19 = n19 > 1 ? 2.0 * math.sqrt(math.max(q19 - s19 * s19 / n19, 0.0) / (n19 - 1)) / math.sqrt(n19) : na
     bool  sabit = n19 >= 30 and not na(se19) and ex19 - se19 > 0
     string naap = tN == 0 ? "Abhi koi band trade nahi" : "Sab: " + str.tostring(tN) + " · Exp " + f_r(exT) + (na(se2) ? "" : " ±" + str.tostring(se2, "0.00")) + " · PF " + (na(pfT) ? "-" : str.tostring(pfT, "0.00")) + "\n" + str.tostring(statYear) + " se: " + str.tostring(n19) + (n19 > 0 ? " · Exp " + f_r(ex19) + (na(se19) ? "" : " ±" + str.tostring(se19, "0.00")) : "") + " · " + (sabit ? "SABIT" : "SABIT NAHI") + "\nswap/spread nahi gina"
-    f_row(tb, 6, "NAAP (1D)", naap, bgW, cG, fs, "Isi symbol ki daily history par Tide ke band trades (kharcha 0.005% har taraf). SABIT = " + str.tostring(statYear) + " se kam az kam 30 trades aur Exp - 2SE > 0. Purana naap aage ki zamanat nahi.", false)
+    if showNaap
+        f_row(tb, 6, "NAAP (1D)", naap, bgW, cG, fs, "Isi symbol ki daily history par Tide ke band trades (kharcha 0.005% har taraf). SABIT = " + str.tostring(statYear) + " se kam az kam 30 trades aur Exp - 2SE > 0. Purana naap aage ki zamanat nahi.", false)
     if not isHi
         // Row 2: MT5 MEIN (sirf yahi karna hai)
         string mt5 = ""
@@ -778,7 +792,8 @@ if showTable and barstate.islast
             else
                 float lots = math.floor(risk / one) * 0.01
                 lotTxt := lots < 0.01 ? "0.01 = " + str.tostring(100.0 * one / bal, "0.0") + "% risk (aap ne " + str.tostring(riskPct, "0.0") + "%) · trade NAHI" : "~" + str.tostring(lots, "0.00") + " lot (" + str.tostring(riskPct, "0.0") + "% = " + str.tostring(risk, "#,###") + " " + curTxt + ") · 0.01 lot ka SL tak " + str.tostring(one, "#,##0.00") + " · MT5 se milayein" + (late ? " · abhi ki qeemat se (der se entry, NAAPA NAHI)" : "")
-        f_row(tb, 5, "LOT", lotTxt, bgW, C_TXT, fs, "Lot kabhi upar gol nahi hota. Pehle demo par 0.01 lot ka test order khol kar 1R MT5 se milayein.", false)
+        if showLot
+            f_row(tb, 5, "LOT", lotTxt, bgW, C_TXT, fs, "Lot kabhi upar gol nahi hota. Pehle demo par 0.01 lot ka test order khol kar 1R MT5 se milayein.", false)
         // Row 7: DHYAN (sirf zaroorat par)
         string dh = ""
         if not utc0 and not na(dCt)
