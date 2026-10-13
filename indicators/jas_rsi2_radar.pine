@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS RSI2 RADAR  (build x2, Pine v6)  —  ek chart par 9 market ka RSI(2)
+//  JAS RSI2 RADAR  (build x4, Pine v6)  —  ek chart par 9 market ka RSI(2)
 //
 //  12 Oct 2026 raat - user: "Tester mein pairs add kar dein jis tarah Tide
 //  Radar mein hain". Ye script TRADE NAHI KARTA - sirf naap.
@@ -29,6 +29,11 @@
 //  Pehle se likha qaida (naap se PEHLE): girawat <= 15R = demo par teeno
 //  1% risk; zyada = har index 0.5%. Engine x2 jaisa, koi nayi request nahi.
 //
+//  x4 (13 Oct, user: "in instruments ko RSI2 mein dalein"): teesri tokri
+//  COMMODITY - 9 OANDA (silver, platinum, palladium, WTI, Brent, gas, copper,
+//  gandum, makai), naap se PEHLE chuni. Qaida index wala SAKHT (oil/brent,
+//  silver/platinum jure hain). FAIL = RSI2 ki talaash khatam. Engine wahi.
+//
 //  PEHLE SE LIKHA QAIDA (ABHI-KAHAN-HAIN, naap se PEHLE, badalna mana):
 //   FOREX (x1): (a) ausat Exp > 0, (b) kam az kam 7/9 musbat,
 //     (c) ausat - 2SE(ausat) > 0, 2SE(ausat) = sqrt(sab 2SE ka murabba)/9.
@@ -44,14 +49,16 @@
 // ============================================================================
 indicator("JAS RSI2 Radar — 9 market", shorttitle = "JAS RSI2 Radar", overlay = true, max_bars_back = 300)
 
-BUILD = "x3"
+BUILD = "x4"
 
 // ============================================================================
 //  INPUTS
 // ============================================================================
 grK = "0 · Kaun si tokri"
-tokri = input.string("Index", "Tokri", options = ["Index", "Forex"], group = grK, display = display.none)
+tokri = input.string("Index", "Tokri", options = ["Index", "Commodity", "Forex"], group = grK, display = display.none)
 isIdx = tokri == "Index"
+isCom = tokri == "Commodity"
+isSakht = isIdx or isCom   // index + commodity: sakht 2SE (jure hue market)
 
 grI = "1 · INDEX tokri (pehle se chuni - badalna mana)"
 i0 = input.symbol("OANDA:NAS100USD", "1 Nasdaq 100", group = grI)
@@ -75,18 +82,29 @@ f6 = input.symbol("FX_IDC:USDCAD", "7", group = grF)
 f7 = input.symbol("FX_IDC:EURGBP", "8", group = grF)
 f8 = input.symbol("FX_IDC:AUDNZD", "9", group = grF)
 
+grC = "2b · COMMODITY tokri (x4 - pehle se chuni, badalna mana)"
+c0 = input.symbol("OANDA:XAGUSD", "1 Silver", group = grC)
+c1 = input.symbol("OANDA:XPTUSD", "2 Platinum", group = grC)
+c2 = input.symbol("OANDA:XPDUSD", "3 Palladium", group = grC)
+c3 = input.symbol("OANDA:WTICOUSD", "4 WTI oil", group = grC)
+c4 = input.symbol("OANDA:BCOUSD", "5 Brent oil", group = grC)
+c5 = input.symbol("OANDA:NATGASUSD", "6 Natural gas", group = grC)
+c6 = input.symbol("OANDA:XCUUSD", "7 Copper", group = grC)
+c7 = input.symbol("OANDA:WHEATUSD", "8 Gandum", group = grC)
+c8 = input.symbol("OANDA:CORNUSD", "9 Makai", group = grC)
+
 grJ = "3 · Jaanch (tokri mein NAHI)"
 sJ = input.symbol("OANDA:SPX500USD", "S&P - Tester se milao (257 · +0.114 ±0.049)", group = grJ)
 
-s0 = isIdx ? i0 : f0
-s1 = isIdx ? i1 : f1
-s2 = isIdx ? i2 : f2
-s3 = isIdx ? i3 : f3
-s4 = isIdx ? i4 : f4
-s5 = isIdx ? i5 : f5
-s6 = isIdx ? i6 : f6
-s7 = isIdx ? i7 : f7
-s8 = isIdx ? i8 : f8
+s0 = isIdx ? i0 : isCom ? c0 : f0
+s1 = isIdx ? i1 : isCom ? c1 : f1
+s2 = isIdx ? i2 : isCom ? c2 : f2
+s3 = isIdx ? i3 : isCom ? c3 : f3
+s4 = isIdx ? i4 : isCom ? c4 : f4
+s5 = isIdx ? i5 : isCom ? c5 : f5
+s6 = isIdx ? i6 : isCom ? c6 : f6
+s7 = isIdx ? i7 : isCom ? c7 : f7
+s8 = isIdx ? i8 : isCom ? c8 : f8
 
 grQ = "4 · Connors RSI(2) qawaid (mat badlein)"
 rsiLen   = input.int(2, "RSI length", minval = 2, group = grQ, display = display.none)
@@ -267,12 +285,12 @@ f_pair(_row, _sym, _n, _w, _s, _q, _nA, _sA, _nB, _sB, _d, _fy) =>
 
 if barstate.islast
     table.clear(rt, 0, 0, 6, 16)
-    table.cell(rt, 0, 0, "JAS RSI2 RADAR " + BUILD + " · Connors RSI(2) 1D · " + (isIdx ? "INDEX" : "FOREX") + " tokri (9) · sirf naap", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.cell(rt, 0, 0, "JAS RSI2 RADAR " + BUILD + " · Connors RSI(2) 1D · " + (isIdx ? "INDEX" : isCom ? "COMMODITY" : "FOREX") + " tokri (9) · sirf naap", bgcolor = cHD, text_color = cBK, text_size = size.small)
     table.merge_cells(rt, 0, 0, 6, 0)
     if not (timeframe.isdaily and timeframe.multiplier == 1)
         f_c(0, 1, "TF ghalat: sirf 1D chart par", cNO)
     else
-        f_hd(0, isIdx ? "Index" : "Pair")
+        f_hd(0, isIdx ? "Index" : isCom ? "Market" : "Pair")
         f_hd(1, "Data se")
         f_hd(2, str.tostring(fromYear) + " se trades · jeet")
         f_hd(3, "Exp R (± 2SE)")
@@ -308,7 +326,7 @@ if barstate.islast
         _avg  = _k > 0 ? _sum / _k : na
         _seI  = _k > 0 ? math.sqrt(_sq) / _k : na   // alag alag maan kar (forex qaida)
         _seC  = _k > 0 ? _sz / _k : na              // sab jure maan kar (index qaida - sakht)
-        _seQ  = isIdx ? _seC : _seI
+        _seQ  = isSakht ? _seC : _seI
         _need = math.ceil(7.0 * _k / 9.0)
         _ca   = not na(_avg) and _avg > 0
         _cb   = _k > 0 and _pos >= _need
@@ -318,7 +336,7 @@ if barstate.islast
         table.merge_cells(rt, 0, 11, 1, 11)
         f_c(2, 11, "ausat Exp " + f_r3(_avg) + "R · musbat " + str.tostring(_pos) + "/" + str.tostring(_k) + " · 2SE alag alag ± " + (na(_seI) ? "-" : str.tostring(_seI, "0.000")) + " · sab jure ± " + (na(_seC) ? "-" : str.tostring(_seC, "0.000")) + " · qaida wala Exp - 2SE " + f_r3(na(_avg) or na(_seQ) ? na : _avg - _seQ), _cc ? cOK : cNO)
         table.merge_cells(rt, 2, 11, 6, 11)
-        f_c(0, 12, "QAIDA (" + (isIdx ? "index: sakht 2SE" : "forex") + ")", _pass ? cOK : cNO)
+        f_c(0, 12, "QAIDA (" + (isIdx ? "index: sakht 2SE" : isCom ? "commodity: sakht 2SE" : "forex") + ")", _pass ? cOK : cNO)
         table.merge_cells(rt, 0, 12, 1, 12)
         f_c(2, 12, (_pass ? "PASS - agla imtihan MT5 (Exness)" : "FAIL - is tokri par RSI2 nahi, settings NAHI badalni") + " · ausat > 0 " + (_ca ? "✓" : "✗") + " · musbat >= " + str.tostring(_need) + " " + (_cb ? "✓" : "✗") + " · ausat - 2SE > 0 " + (_cc ? "✓" : "✗"), _pass ? cOK : cNO)
         table.merge_cells(rt, 2, 12, 6, 12)

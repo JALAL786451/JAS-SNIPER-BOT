@@ -19,6 +19,8 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **Tide+SMC s2.7 (13 Oct, user gold 1H screenshot, compile baqi):** peele X wali cheezein hatain: chart par Tide ki likhai (SHART laal mota label + 'SL ~ (kal ki ATR) / pending order mat' label; trade wale dono label bhi) default BAND (Settings → 2 · 'Tide ki likhai chart par'); table PATLI (har ' · ' nayi line, Settings → 5 · 'Table patli') taake magenta dabbe wali daayen khali jagah mein rahe; LOT + NAAP rows default BAND (Settings → 5). Engine, dabbe (RISK/NATEEJA), alerts WAHI.
 
+- **COMMODITY TOKRI - PEHLE SE LIKHA QAIDA (13 Oct, naap se PEHLE, badalna mana; user ne 'theek hy' kaha):** RSI2 c1 qaide, 1D, '2000 se' trades, yehi 9 OANDA: XAGUSD, XPTUSD, XPDUSD, WTICOUSD, BCOUSD, NATGASUSD, XCUUSD, WHEATUSD, CORNUSD. **PASS sirf poori tokri:** (a) ausat Exp > 0, (b) >= 7/9 musbat, (c) SAKHT ausat - (2SE ka seedha ausat) > 0. Market 'data nahi' = tokri chhoti, koi aur NAHI. Achhe chunna MANA. **FAIL = RSI2 ki talaash KHATAM.** FR40/IN50 (index) aur BTC/ETH test NAHI (Claude ka faisla: index pehle demo, crypto trend wala). Ye RSI2 ki 4thi tokri (gold, forex, index ke baad). Claude umeed: FAIL. **`indicators/jas_rsi2_radar.pine` x4** (compile baqi): Tokri = 'Commodity' switch, yehi 9 default, QAIDA row sakht 2SE khud.
+
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 
 **Nayi chat ka code (copy-paste):** `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/blissful-planck-f5z439. Pehle MERI-KAHANI.md, phir ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
