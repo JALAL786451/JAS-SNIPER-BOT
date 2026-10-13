@@ -1,0 +1,224 @@
+//@version=6
+// ============================================================================
+//  JAS IBS — TEST  (build t1, Pine v6)
+//  13 Oct 2026 raat - user 'D'. Koshish #15 (IBS sirf S&P, ASLI PASS) ki
+//  JAANCH: indicators/jas_ibs_radar.pine b2 ka S&P engine jyon ka tyon, magar
+//  Pine STRATEGY - taake har trade ki tareekh mile (table + List of Trades) aur
+//  MT5 JasIbsEA ki trades (Tester / demo) din-ba-din milayi ja sakein.
+//  Ye nayi koshish NAHI, naya qaida NAHI - sirf wahi trades ginti hai.
+//
+//  QAWAID (radar b2 jaise - mat badlein), sirf 1D chart (OANDA:SPX500USD):
+//   1) IBS = (close - low) / (high - low)
+//   2) BUY: IBS < 0.2 AUR close > SMA(200), usi close par. Sirf BUY.
+//   3) Band: kisi din IBS > 0.8 ya 5 din = us din ke close par
+//   4) SL hifazat 3 x ATR(14) = 1R (candle ke andar; gap par open)
+//   5) Bahar wale din nayi nahi (IBS/5 din wala din, ya SL wala din)
+//   6) Kharcha 0.01% har taraf. Swap nahi.
+//
+//  JAANCH: OANDA:SPX500USD 1D par TALAASH (<2019) aur IMTIHAN (2019+) ki
+//  ginti + Exp radar b2 se BILKUL milni chahiye (13 Oct: 320 · +0.047 aur
+//  190 · +0.082). Mile to ye list wahi trades hain jo radar ne gini.
+//
+//  MT5 se milana: EA band candle ke BAAD agle din ke shuru mein khulta/band
+//  hota hai - is liye EA ki khulne ki tareekh = yahan ka 'signal din' + 1
+//  kaam ka din. Exness aur OANDA ki daily candle alag waqt band hoti hai -
+//  kabhi signal ek din aage peeche ya na bane, ye data ka farq hai.
+//
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+// ============================================================================
+strategy("JAS IBS — Test (IBS, S&P 1D)", shorttitle = "JAS IBS Test", overlay = true,
+     initial_capital         = 100000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true,
+     commission_type         = strategy.commission.percent,
+     commission_value        = 0.01,
+     slippage                = 0,
+     margin_long             = 1,
+     margin_short            = 1)
+
+BUILD = "t1"
+
+// ============================================================================
+//  INPUTS
+// ============================================================================
+grT = "0 · Test"
+riskPct = input.float(1.0, "Risk fi trade (% equity)", minval = 0.1, maxval = 5, step = 0.1, group = grT, display = display.none)
+
+grQ = "1 · IBS qawaid (radar b2 jaise - mat badlein)"
+ibsLo    = input.float(0.2, "BUY: IBS is se kam", step = 0.05, group = grQ, display = display.none)
+ibsHi    = input.float(0.8, "Band: IBS is se zyada", step = 0.05, group = grQ, display = display.none)
+maxDays  = input.int(5, "Zyada se zyada din", minval = 1, group = grQ, display = display.none)
+trendLen = input.int(200, "Rukh SMA", minval = 10, group = grQ, display = display.none)
+atrLen   = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+slMult   = input.float(3.0, "SL (x ATR) - hifazat", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+splitYr  = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
+
+grV = "2 · Table"
+nLog   = input.int(12, "Aakhri kitni trades table mein", minval = 1, maxval = 15, group = grV, display = display.none)
+tblPos = input.string("Bottom Left", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Top Right" ? position.top_right : _s == "Bottom Left" ? position.bottom_left : position.bottom_right
+f_rr(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.00") + "R"
+f_r3(_x) => na(_x) ? "-" : (_x > 0 ? "+" : "") + str.tostring(_x, "0.000")
+f_px(_x) => na(_x) ? "-" : str.tostring(_x, format.mintick)
+// din = candle ke BAND hone ka din (OANDA ki daily candle pichli shaam khulti hai)
+f_day(_t) => na(_t) ? "-" : str.format_time(_t, "dd MMM yyyy", "UTC")
+f_se2(_n, _s, _q) => _n > 1 ? 2.0 * math.sqrt(math.max(_q - _s * _s / _n, 0.0) / (_n - 1)) / math.sqrt(_n) : na
+f_why(_w) => _w == 1 ? "IBS > " + str.tostring(ibsHi) : _w == 2 ? str.tostring(maxDays) + " din" : "SL"
+
+// ============================================================================
+//  ISHARA (sirf 1D, band candle par - process_orders_on_close = usi close par)
+// ============================================================================
+isD1 = timeframe.isdaily and timeframe.multiplier == 1
+smaT = ta.sma(close, trendLen)
+atr  = ta.atr(atrLen)
+ibs  = high > low ? (close - low) / (high - low) : na
+yrC  = year(time_close)          // radar jaisa: candle band hone ka saal
+
+longSig = isD1 and not na(ibs) and not na(smaT) and not na(atr) and atr > 0 and ibs < ibsLo and close > smaT
+
+// ============================================================================
+//  R ka hisaab har trade ka (kharche samet): (netprofit badla) / risk ki raqam
+// ============================================================================
+var bool  inTrade = false
+var float riskAmt = na
+var float npAt    = na
+var int   nT = 0
+var int   wT = 0
+var float sT = 0.0
+var float qT = 0.0
+var int   nI = 0
+var int   wI = 0
+var float sI = 0.0
+var float qI = 0.0
+var float sumW = 0.0
+var float sumL = 0.0
+var int   xIbs = 0
+var int   xDay = 0
+var int   xSL  = 0
+var int   nSkip = 0
+var int   firstT = time
+var array<string> logT = array.new<string>()
+
+var float pE    = na
+var float pSL   = na
+var float pIbs  = na
+var int   pWhy  = 0      // 0 = SL (server), 1 = IBS > 0.8, 2 = 5 din
+var int   pAge  = 0
+var int   pYear = na
+var int   pDay  = na
+
+bool slBar = false       // is candle mein SL laga = is candle par nayi nahi (radar 'not _cl')
+
+// pichli trade band ho gayi? -> hisaab
+if inTrade and strategy.position_size == 0
+    _rr = (strategy.netprofit - npAt) / riskAmt
+    if pYear < splitYr
+        nT += 1
+        sT += _rr
+        qT += _rr * _rr
+        wT += _rr > 0 ? 1 : 0
+    else
+        nI += 1
+        sI += _rr
+        qI += _rr * _rr
+        wI += _rr > 0 ? 1 : 0
+    if _rr > 0
+        sumW += _rr
+    else
+        sumL -= _rr
+    if pWhy == 1
+        xIbs += 1
+    else if pWhy == 2
+        xDay += 1
+    else
+        xSL += 1
+        slBar := true                       // SL isi candle mein laga
+    _xp = strategy.closedtrades > 0 ? strategy.closedtrades.exit_price(strategy.closedtrades - 1) : na
+    _xt = pWhy == 0 ? time_close : time_close[1]   // IBS/5 din wali pichli candle ke close par band hui
+    array.push(logT, f_day(pDay) + " (IBS " + str.tostring(pIbs, "0.00") + ") " + f_px(pE) + " → " + f_day(_xt) + " " + f_px(_xp) + "  " + f_rr(_rr) + " · " + f_why(pWhy))
+    if array.size(logT) > nLog
+        array.shift(logT)
+    inTrade := false
+    pWhy    := 0
+
+// khuli trade: din gino; IBS > 0.8 ya 5 din = usi close par band
+if inTrade and strategy.position_size != 0 and isD1
+    pAge += 1
+    _hi = not na(ibs) and ibs > ibsHi
+    if _hi or pAge >= maxDays
+        pWhy := _hi ? 1 : 2
+        strategy.close("L", comment = _hi ? "IBS > 0.8" : "5 din")
+
+// nayi trade: koi position na ho, bahar wala din na ho
+if longSig and strategy.position_size == 0 and not inTrade and not slBar
+    _r0   = slMult * atr
+    _step = syminfo.mincontract > 0 ? syminfo.mincontract : 1.0
+    _q    = math.floor((strategy.equity * riskPct / 100.0) / (_r0 * syminfo.pointvalue) / _step) * _step
+    if _q >= _step
+        pE    := close
+        pSL   := close - _r0
+        pIbs  := ibs
+        pWhy  := 0
+        pAge  := 0
+        pDay  := time_close
+        pYear := yrC
+        strategy.entry("L", strategy.long, qty = _q, comment = "IBS " + str.tostring(ibs, "0.00"))
+        strategy.exit("XL", from_entry = "L", stop = pSL)
+        inTrade := true
+        riskAmt := _q * _r0 * syminfo.pointvalue   // asal khatra (gol size ke baad)
+        npAt    := strategy.netprofit
+    else
+        nSkip += 1   // size symbol ke qadam se chhota
+
+// ============================================================================
+//  TABLE (screenshot ke liye)
+// ============================================================================
+var table rt = table.new(f_pos(tblPos), 2, 32, border_width = 1, border_color = color.new(color.gray, 70))
+f_row(_r, _a, _b, _c) =>
+    table.cell(rt, 0, _r, _a, bgcolor = color.new(color.white, 10), text_color = color.black, text_size = size.small, text_halign = text.align_left)
+    table.cell(rt, 1, _r, _b, bgcolor = color.new(color.white, 10), text_color = _c, text_size = size.small, text_halign = text.align_left)
+// Strategy chalti candle par nahi chalti - table pichli band candle par bhi banao
+if barstate.islast or barstate.islastconfirmedhistory
+    table.clear(rt, 0, 0, 1, 31)
+    cOK = color.new(#1B5E20, 0)
+    cNO = color.new(#B71C1C, 0)
+    table.cell(rt, 0, 0, "JAS IBS TEST " + BUILD + " · IBS < " + str.tostring(ibsLo) + " / > " + str.tostring(ibsHi) + " · " + syminfo.ticker + " 1D · koshish #15 ki jaanch", bgcolor = color.new(color.silver, 40), text_color = color.black, text_size = size.small)
+    table.merge_cells(rt, 0, 0, 1, 0)
+    if not isD1
+        f_row(1, "TF ghalat", "Ye test sirf 1D chart par chalta hai", cNO)
+    else
+        _n  = nT + nI
+        _s  = sT + sI
+        _ex = _n > 0 ? _s / _n : na
+        _se = f_se2(_n, _s, qT + qI)
+        _pf = sumL > 0 ? sumW / sumL : na
+        _exT = nT > 0 ? sT / nT : na
+        _seT = f_se2(nT, sT, qT)
+        _exI = nI > 0 ? sI / nI : na
+        _seI = f_se2(nI, sI, qI)
+        _spx = syminfo.ticker == "SPX500USD"
+        f_row(1, "Trades (sab)", str.tostring(_n) + " · jeet " + (_n > 0 ? str.tostring(100.0 * (wT + wI) / _n, "0") + "%" : "-") + (strategy.position_size != 0 ? "  + 1 abhi khuli" : ""), color.black)
+        f_row(2, "Exp (R, kharche samet)", f_r3(_ex) + " (± " + (na(_se) ? "-" : str.tostring(_se, "0.000")) + ") · PF " + (na(_pf) ? "-" : str.tostring(_pf, "0.00")) + " · kul " + f_rr(_s), na(_ex) ? color.black : _ex > 0 ? cOK : cNO)
+        f_row(3, "Kaise band huin", "IBS > " + str.tostring(ibsHi) + " " + str.tostring(xIbs) + " · " + str.tostring(maxDays) + " din " + str.tostring(xDay) + " · SL " + str.tostring(xSL), color.black)
+        f_row(4, "JAANCH TALAASH (<" + str.tostring(splitYr) + ")", str.tostring(nT) + " trades · Exp " + f_r3(_exT) + " (± " + (na(_seT) ? "-" : str.tostring(_seT, "0.000")) + ")" + (_spx ? "  ·  radar b2: 320 · +0.047" + (nT == 320 ? " ✓" : " ✗") : ""), _spx ? (nT == 320 ? cOK : cNO) : color.black)
+        f_row(5, "JAANCH IMTIHAN (" + str.tostring(splitYr) + "+)", str.tostring(nI) + " trades · Exp " + f_r3(_exI) + " (± " + (na(_seI) ? "-" : str.tostring(_seI, "0.000")) + ")" + (_spx ? "  ·  radar b2 (13 Oct): 190 · +0.082" : ""), color.black)
+        f_row(6, "Arsa", "chart ki pehli candle " + f_day(firstT) + (nSkip > 0 ? "  ·  CHHOOTI " + str.tostring(nSkip) : ""), color.black)
+        _row = 7
+        _nl = array.size(logT)
+        if _nl > 0
+            f_row(_row, "Aakhri " + str.tostring(_nl) + " trades", "signal din (IBS) entry → band din exit · R · kyun", color.new(color.gray, 0))
+            _row += 1
+            for _i = _nl - 1 to 0
+                f_row(_row, str.tostring(_nl - _i), array.get(logT, _i), color.black)
+                _row += 1
+        if strategy.position_size != 0
+            f_row(_row, "ABHI KHULI", f_day(pDay) + " (IBS " + str.tostring(pIbs, "0.00") + ") " + f_px(pE) + " · SL " + f_px(pSL) + " · din " + str.tostring(pAge) + "/" + str.tostring(maxDays), cOK)
+            _row += 1
+        f_row(_row, "Note", "Sirf naap. Din = candle band hone ka din. MT5 EA ek din BAAD khulta/band hota hai (signal din + 1). Swap nahi.", cNO)
