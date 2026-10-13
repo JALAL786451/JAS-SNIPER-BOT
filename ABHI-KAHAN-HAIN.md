@@ -25,6 +25,7 @@ Agar nayi chat mein ye code diya jaye, to Claude yeh file parhe aur wahin se kaa
 
 - **RADAR EA KI PEHLI DEMO TRADE (13 Oct 00:00 server, user screenshot):** USDJPYm BUY 0.33 @ 158.527, SL 156.394 (risk 1.00% = 444.71). Panel 'TRADE CHALU', suffix 'm'.
 - **JasRsi2EA c2 (13 Oct, user 'D', compile baqi):** Tide Radar ki tarah EK chart se teeno index - `InpSymbols` = US500,USTEC,US30 (suffix auto). Har index par ek trade, 1% har ek, qaide c1 wale. **Agla:** F7 compile -> demo 472716649 par US500m **D1** chart (XAUUSDm wale chart par Radar EA hai - ek chart ek EA) -> JasRsi2EA, InpTrade true, Allow Algo Trading ✓ -> panel screenshot (upar 'c2', teen lines US500m / USTECm / US30m). Pehli candle par nayi trade nahi (jaan boojh kar).
+- **>>> RSI2 DEMO SHURU (13 Oct, server 07:07 = 12:07 PKT) <<<** JasRsi2EA **c2 compile ✅**, demo 472716649, US500m D1 chart, panel 'TRADE CHALU', Risk 1.00% = 444.71 har market, suffix 'm', 3 market. 12 Oct ki band candle: US500m UPAR RSI(2) 53.7 · USTECm UPAR 18.5 · US30m UPAR 90.2 - teeno intezar BUY (RSI < 10). EA ki trades 0. **Demo qaida (pehle se, US500 wala teeno par):** kam az kam 3 mahine + 10 band trades (~Jan 2027); PASS = har EA trade TradingView OANDA (SPX500USD / NAS100USD / US30USD) RSI2 c1 ki usi signal din (±1 din) wali trade se mile (rukh wahi), koi bina SL position nahi; kul faida/nuqsan faisla nahi. Is account par ab do EA: Radar (magic 20261009, XAUUSDm chart) + RSI2 (20261012, US500m chart).
 
 ## (purana) AGLI CHAT YAHAN SE SHURU KARE (12 Oct 2026, Peer raat - doosri chat) <<<
 
