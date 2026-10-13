@@ -2,16 +2,15 @@
 
 MetaTrader 5 EAs aur TradingView Pine scripts (gold, index, commodity) - user Jalal ke liye.
 
-**Har nayi chat:** pehle `TRADING-MERI-KAHANI.md` (pakki kahani, accounts, qaide), phir
-`TRADING-ABHI-KAHAN-HAIN.md` (abhi kya chal raha hai) parho. User ko kahani 0 se na
+**Har nayi chat:** sirf `TRADING.md` parho (user, qaide, pichli chat, agla kaam) - baqi `grep` se. User ko kahani 0 se na
 dohrani pare. Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
 
 ## Usage bachao (13 Oct qaida)
 
 - Ye file har message ke saath load hoti hai - **chhoti rakho**. Is mein sirf
   nayi file ki EK line jorni hai; haal / nateeje / tareekh yahan NAHI.
-- Haal aur nateeje `TRADING-ABHI-KAHAN-HAIN.md` mein (~150 line se lambi ho to purana
-  hissa `docs/purana-haal.md` mein). Pakke sabaq `TRADING-MERI-KAHANI.md` mein.
+- Haal, pichli chat aur agla kaam `TRADING.md` mein (~8 KB se lambi ho to purana hissa
+  `docs/purana-haal.md` mein). Pakki baatein `docs/trading-pakki.md` mein.
 - Purani tafseel parhni ho to poori file nahi - `grep` se:
   `docs/purana-haal.md` (purana haal, koshish 1-15), `docs/files-tafseel.md`
   (har file ki lambi kahani, build-wise) aur `docs/sabaq-tafseel.md` (sabaq ke poore number).
@@ -25,7 +24,7 @@ dohrani pare. Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> li
 |---|---|
 | `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
 | `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
-| `JasIbsEA.mq5` | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (TRADING-ABHI-KAHAN-HAIN) |
+| `JasIbsEA.mq5` | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (`TRADING.md`) |
 
 **Live / kitab ke aalay:**
 | File | Kya |
@@ -52,7 +51,7 @@ basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `J
 `jas_seerhi_test`, `jas_pro_box_test`, `smc_coach_scalp_test`, `fishing_lots_test`,
 `jas_tide_v1`, `tony_ema_scalper_test`. `sniper_backtest.pine` (purana SMA cross, alag).
 
-**Docs / qaide:** `TRADING-MERI-KAHANI.md`, `TRADING-ABHI-KAHAN-HAIN.md`, `METHOD.md` (user ki Fishing Lots
+**Docs / qaide:** `TRADING.md`, `docs/trading-pakki.md`, `METHOD.md` (user ki Fishing Lots
 method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 `EA-CHECKLIST.md` (nayi file lagane ke 23 qadam), `docs/*_naqsha.md`, `docs/*rehnuma.html`
 (artifact guides - file badle to wohi file publish = wohi URL).

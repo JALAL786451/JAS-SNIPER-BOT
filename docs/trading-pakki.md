@@ -1,11 +1,10 @@
-# TRADING — MERI KAHANI — har nayi chat yahan se shuru kare
+# TRADING - pakki baatein (13 Oct tak `TRADING-MERI-KAHANI.md` thi)
 
-Ye file is liye hai ke chat full ya reset ho to Jalal ko apni kahani **0 se na
-dohrani pare**. Har nayi chat pehle ye file, phir `TRADING-ABHI-KAHAN-HAIN.md` parhe.
-Tafseel ke liye: `METHOD.md` (method + naape hue number), `EA-LAWS.md`
-(qanoon), `EA-QAWAID.md`, `EA-CHECKLIST.md`.
+Nayi chat pehle `TRADING.md` parhti hai; ye file sirf zaroorat par (`grep` se). Tafseel:
+`METHOD.md` (method + naape hue number), `EA-LAWS.md`, `EA-QAWAID.md`, `EA-CHECKLIST.md`,
+sabaq ke poore number `docs/sabaq-tafseel.md`.
 
-Aakhri update: 13 October 2026 (Mangal raat, saatvi chat: file 43 KB -> 14 KB, lambe sabaq `docs/sabaq-tafseel.md` mein). Kaam ki branch ab `claude/jas-desk-v3-0110-yu3w2h` (blissful-planck ka sab kuch is mein).
+Aakhri update: 13 Oct 2026 raat (saatvi chat). Kaam ki branch `claude/jas-desk-v3-0110-yu3w2h`.
 
 ---
 
@@ -45,7 +44,7 @@ User: "koshish jaari rahegi jab tak PASS na aaye". Qaida:
 1. Har naya idea sirf **2021-01-01 se 2024-12-31** (TALAASH data) par - jitne idea chahein, settings bhi badal sakte hain.
 2. Jo TALAASH par PASS (trades >= 100, Exp - 2SE > 0, saal ka hissa musbat), woh **2025-01-01 se aaj** (IMTIHAN data) par **ek dafa**, bina kisi tabdeeli.
 3. IMTIHAN par Exp > 0 aur trades >= 30 = **ASLI PASS** -> demo. IMTIHAN FAIL = woh idea band (IMTIHAN data dekh kar tabdeeli MANA - warna woh bhi talaash ban jata hai).
-4. Har koshish KOSHISH-GINTI mein likhi jaye (TRADING-ABHI-KAHAN-HAIN). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
+4. Har koshish ginti mein likhi jaye (`TRADING.md` sec 8). 13 Oct tak gold intraday: 8 FAIL (purane qaide se).
 4b. **TradingView (lamba daily data) par (13 Oct):** TALAASH = data shuru se 2018, IMTIHAN = 2019 se aaj (ek dafa). MT5 Exness par wahi 2021-24 / 2025-aaj (Exness data 2021 se; index ka Sep 2025 se).
 4c. **Ek market chunna (13 Oct, user ka sawal + #15):** TALAASH mein nateeja dekh kar market chunna jaiz, magar tab IMTIHAN SAKHT: Exp - 2SE > 0 (sirf Exp > 0 nahi). Isi tarah IBS S&P ASLI PASS hua.
 5. 2025-26 gold ki bari tezi ka daur hai - IMTIHAN par sirf BUY wala idea ittefaq se acha lag sakta hai; BUY/SELL alag dekhna.
@@ -169,13 +168,9 @@ pehle chahta hai (option banana baqi).
   effort medium/high, chhote kaam Sonnet. Nayi chat `main` par khulti hai (files wahan nahi) -
   kaam ki branch dhoondne mein 3-4 faltu qadam.
 - Lambi chat zyada usage khati hai - kaam bara ho to **nayi chat** + code:
-  `JAS-DESK-V3-0110 — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Pehle TRADING-MERI-KAHANI.md, phir TRADING-ABHI-KAHAN-HAIN.md parho aur wahin se shuru karo.`
+  `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
 ## 8. Ye file kaise zinda rahe
 
-Har chat ke aakhir mein (ya koi bara faisla/nateeja aaye to foran) Claude:
-- naya **faisla / nateeja / sabaq** yahan ya `TRADING-ABHI-KAHAN-HAIN.md` mein likhe,
-- `TRADING-ABHI-KAHAN-HAIN.md` = **abhi kya chal raha hai** (badalta rehta hai),
-- `TRADING-MERI-KAHANI.md` = **pakki baatein** (kam badalti hain),
-- **Usage qaida (13 Oct safai):** `CLAUDE.md` har message ke saath lagti hai - us mein sirf nayi file ki EK line, haal/nateeja NAHI. `TRADING-ABHI-KAHAN-HAIN.md` ~150 line se lambi ho to purana hissa `docs/purana-haal.md` mein. Lambi file-tafseel `docs/files-tafseel.md` mein, sabaq ke poore number `docs/sabaq-tafseel.md` mein (grep se); yahan har sabaq ki EK line,
-- commit + push kare.
+Chat ke aakhir ka qaida `TRADING.md` sec 9 mein. Yahan sirf PAKKI baatein (kam badalti hain);
+naya sabaq sec 4 mein EK line, poore number `docs/sabaq-tafseel.md` mein.
