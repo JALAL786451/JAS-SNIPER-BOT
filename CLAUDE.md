@@ -2,63 +2,17 @@
 
 MetaTrader 5 EAs aur TradingView Pine scripts (gold, index, commodity) - user Jalal ke liye.
 
-**Har nayi chat:** sirf `TRADING.md` parho (user, qaide, pichli chat, agla kaam) - baqi `grep` se. User ko kahani 0 se na
-dohrani pare. Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
+**Har nayi chat:** sirf `TRADING.md` parho (user, qaide, pichli chat, agla kaam) - baqi `grep` se.
+Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
 
-## Usage bachao (13 Oct qaida)
+## Usage bachao
 
-- Ye file har message ke saath load hoti hai - **chhoti rakho**. Is mein sirf
-  nayi file ki EK line jorni hai; haal / nateeje / tareekh yahan NAHI.
-- Haal, pichli chat aur agla kaam `TRADING.md` mein (~8 KB se lambi ho to purana hissa
-  `docs/purana-haal.md` mein). Pakki baatein `docs/trading-pakki.md` mein.
-- Purani tafseel parhni ho to poori file nahi - `grep` se:
-  `docs/purana-haal.md` (purana haal, koshish 1-15), `docs/files-tafseel.md`
-  (har file ki lambi kahani, build-wise) aur `docs/sabaq-tafseel.md` (sabaq ke poore number).
-- Agent / workflow sirf jab user khud naam le kar maange; hafte ki limit 50%+ ho
-  to bilkul nahi.
-
-## Files (ek line har ek - tafseel `docs/files-tafseel.md`)
-
-**Demo par chal rahe EA** (demo 472716649):
-| File | Kya |
-|---|---|
-| `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
-| `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
-| `JasIbsEA.mq5` | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (`TRADING.md`) |
-
-**Live / kitab ke aalay:**
-| File | Kya |
-|---|---|
-| `JasDeskView.mq5` | Sirf parhne wala panel: Close-All ginti, lots, ausat, NET, bari lot ki jori (live chal raha) |
-| `JasJoriClose.mq5` | SCRIPT: bari lot ki jori Close By se band (live 64/64) |
-| `JasDesk.mq5` | Button wala desk (user ne hata diya) |
-
-**FAIL / band EA** (sirf record): `JasGrailEA` (#1-2), `JasVbEA` (#3), `JasTsmomEA` (#4),
-`JasImomEA` (#9), `JasTrendScalpEA` (#12), `JasTide4hEA` (#13), `JasMtfEA`, `JasSmcScalpEA`,
-`JasOrbEA`, `JasChakkarEA` (k4), `JasFishingEA` (f1), `JasBasketEA` + `_BTC` (user ki
-basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `JasTideEA` (t4).
-
-**Pine - naap / radar (`indicators/`):** `jas_tide_radar` (Kachhua 9 market), `jas_tide_tokri`
-(commodity, #6 PASS), `jas_rsi2_radar`, `jas_ibs_radar` (#14-15), `jas_tom_radar` (#5),
-`jas_ichimoku_radar` (#7-8), `jas_coint_radar` (#10-11), ginti scripts (`jas_*_ginti`),
-`jas_tide_smc`, `jas_tide_seekh`, `jas_tide_signal`, `jas_seerhi`, `jas_pro_box`,
-`smc_coach_pro_v3/v4`, `smc_coach_scalp_v6`, `smc_trend_pro`, aur doosron ke scripts
-(`supertrend_v6`, `ob_radar`, `gainzalgo_ml_smc`, `analogue_matcher_v2`, `candle_xray`,
-`fishing_live`, `trend_ribbon_levels`).
-
-**Pine - strategy Tester (`strategies/`):** `jas_ibs_test` (IBS S&P, radar jaisa, trade list),
-`jas_rsi2_test`, `jas_tide_seekh_test` (Kachhua 1D), `jas_tide2_test`, `jas_tide_smc_test`,
-`jas_seerhi_test`, `jas_pro_box_test`, `smc_coach_scalp_test`, `fishing_lots_test`,
-`jas_tide_v1`, `tony_ema_scalper_test`. `sniper_backtest.pine` (purana SMA cross, alag).
-
-**Docs / qaide:** `TRADING.md`, `docs/trading-pakki.md`, `METHOD.md` (user ki Fishing Lots
-method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
-`EA-CHECKLIST.md` (nayi file lagane ke 23 qadam), `docs/*_naqsha.md`, `docs/*rehnuma.html`
-(artifact guides - file badle to wohi file publish = wohi URL).
-
-**tools/:** `pinecheck.py` (Pine ki jaanch, compile nahi), `tide_ea_check.py`, `trend_check.py`,
-`numayan_check.py`, `fishing_sim.py`, `simulate.py`, `test_logic.py`, `make_btc.py`,
-`compile.bat/.ps1`, `backtest.bat/.ps1` (Windows + MT5).
+- Ye file har message ke saath load hoti hai - **chhoti rakho** (~2 KB). Haal / nateeje / file list yahan NAHI.
+- Haal + agla kaam `TRADING.md`; pakki baatein `docs/trading-pakki.md`.
+- **Files ki list** (har file ki ek line) + lambi kahani: `docs/files-tafseel.md` - sirf `grep` se.
+  Purana haal `docs/purana-haal.md`, sabaq ke number `docs/sabaq-tafseel.md`.
+- Nayi file bane to uski ek line `docs/files-tafseel.md` ki "chhoti list" mein (yahan nahi).
+- Agent / workflow sirf jab user naam le kar maange; hafte ki limit 50%+ ho to bilkul nahi.
 
 ## Hard rules for these EAs
 
@@ -76,17 +30,8 @@ cap) on your own initiative. Those defaults are deliberate.
 ## MQL5 / Pine kaam ke qaide
 
 - Har file ki pehli line par build number, panel par bhi wahi.
-- `StringFormat("sirf likhai")` error deta hai - kam az kam ek value. String ke
-  liye `cond ? "" : "..."` nahi, `Pick()` helper.
-- Points vs digits: points-wali doori se pehle `SYMBOL_DIGITS` aur
-  `SYMBOL_TRADE_STOPS_LEVEL` dekho (3-digit gold par 300 points = $0.30).
+- `StringFormat("sirf likhai")` error deta hai - kam az kam ek value. String ke liye `cond ? "" : "..."` nahi, `Pick()` helper.
+- Points vs digits: doori se pehle `SYMBOL_DIGITS` aur `SYMBOL_TRADE_STOPS_LEVEL` (3-digit gold par 300 points = $0.30).
 - Pine: `request.security` tuple 127 se kam; v6 mein `ta.*` if ke bahar.
-- Windows par: `tools\compile.bat <file>` (log `.log.txt`, 0 errors tak theek
-  karo), `tools\backtest.bat <EA>`; ek waqt mein ek input badlo.
-
-## Cloud session mein kya nahi hota
-
-claude.ai/code Linux container hai: MetaTrader nahi, `mql5.com` /
-`tradingview.com` band. MQL5 compile aur Pine run yahan NAHI hote - saaf batao,
-code haath se jaancho (`python3 tools/pinecheck.py <file>`), user F7 /
-TradingView par compile kar ke screenshot bhejta hai.
+- Cloud (Linux) mein MT5 / TradingView nahi - compile yahan NAHI; `python3 tools/pinecheck.py <file>`
+  se jaancho, user F7 / TradingView par compile kar ke screenshot bhejta hai. Windows: `tools\compile.bat <file>` (0 errors tak), `tools\backtest.bat <EA>` - ek waqt ek input badlo.

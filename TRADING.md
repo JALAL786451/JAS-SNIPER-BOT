@@ -9,7 +9,7 @@ sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
 - `docs/purana-haal.md` - purana haal, koshish 1-15 ke pehle se likhe qaide
-- `docs/files-tafseel.md` - har file ki lambi kahani; `CLAUDE.md` - files ki list + EA/MQL5 qaide
+- `docs/files-tafseel.md` - har file ki lambi kahani; files ki list bhi yahin; `CLAUDE.md` - sirf EA/MQL5 qaide
 
 Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
 `TRADING-ABHI-KAHAN-HAIN` = ab ye file (purana hissa `docs/purana-haal.md`).
@@ -107,5 +107,5 @@ Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 - Sec 5 "PICHLI CHAT" naya likho (2-4 line: kya hua, agla kaam, "D" baqi ya nahi); kaam badla to sec 6-7.
 - Naya pakka sabaq -> `docs/trading-pakki.md` sec 4 mein EK line, poore number `docs/sabaq-tafseel.md`.
-- Ye file 8 KB se lambi ho to purana hissa `docs/purana-haal.md` mein. `CLAUDE.md` mein sirf nayi
+- Ye file 8 KB se lambi ho to purana hissa `docs/purana-haal.md` mein. `docs/files-tafseel.md` ki chhoti list mein nayi
   file ki ek line. Commit + push.
