@@ -14,8 +14,15 @@
 //   SL = 2 ATR(14) entry se, fixed = 1R. Kharcha 0.005% har taraf. Swap nahi.
 //   Kijun wale exit ke din nayi entry nahi (Kachhua jaisa).
 //
+//  i2 = KOSHISH #8 (13 Oct, user: 'masla imaandari se theek karein, Tide par
+//  bhi aisa kiya gaya'): i1 FAIL ka shor gold/silver ki 1800s wali purani
+//  history se tha (±0.94). Tide/RSI2 ki tarah TALAASH ab sirf 2000-2018.
+//  Engine, qaide, tokri, PASS shartein WAHI. i1 ka FAIL gina rehta hai.
+//  Ye tabdeeli nateeja dekh kar hui - is liye asal faisla IMTIHAN (2019+,
+//  abhi tak kabhi nahi dekha) karega. i2 bhi FAIL = Ichimoku POORI band.
+//
 //  PEHLE SE LIKHA QAIDA (naap se PEHLE, badalna mana):
-//   TALAASH = entry saal < 2019. PASS = (a) 9 ka ausat Exp > 0, (b) >= 6/9
+//   TALAASH = entry saal 2000-2018 (i1 mein: < 2019, sab history). PASS = (a) 9 ka ausat Exp > 0, (b) >= 6/9
 //   musbat, (c) MILA (sab trades) Exp - 2SE > 0.
 //   IMTIHAN (2019+) CHHUPA jab tak TALAASH PASS; phir ausat > 0 AUR >= 5/9
 //   musbat AUR kul >= 30 = ASLI PASS.
@@ -25,7 +32,7 @@
 // ============================================================================
 indicator("JAS Ichimoku Radar — 9 market naap", shorttitle = "JAS Ichimoku Radar", overlay = true, max_bars_back = 300)
 
-BUILD = "i1.1"
+BUILD = "i2"
 
 grM = "1 · Tokri (Tide Radar wali - badalna mana)"
 s0 = input.symbol("OANDA:XAUUSD", "1", group = grM)
@@ -54,6 +61,7 @@ emaSLen   = input.int(200, "Rukh EMA slow", minval = 3, group = grQ, display = d
 minAtrPct = input.float(0.25, "Kam az kam ATR %", minval = 0, step = 0.05, group = grQ, display = display.none)
 costPct   = input.float(0.005, "Kharcha (% har taraf)", minval = 0, step = 0.001, group = grQ, display = display.none)
 splitYr   = input.int(2019, "IMTIHAN is saal se", group = grQ, display = display.none)
+startYr   = input.int(2000, "TALAASH is saal se (i2)", group = grQ, display = display.none)
 
 grV = "4 · Table"
 tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
@@ -157,12 +165,12 @@ f_ichi() =>
             _atC := true
     if _cl
         _rr = _d * (_px - _e) / _r - 2.0 * costPct / 100.0 * _e / _r
-        if _ey < splitYr
+        if _ey >= startYr and _ey < splitYr
             _nT += 1
             _sT += _rr
             _qT += _rr * _rr
             _wT += _rr > 0 ? 1 : 0
-        else
+        else if _ey >= splitYr
             _nI += 1
             _sI += _rr
             _qI += _rr * _rr
@@ -177,7 +185,7 @@ f_ichi() =>
             _r  := slMult * _a
             _sl := _c - _d * _r
             _ey := _yr
-            if _yr < splitYr and _td == _d
+            if _yr >= startYr and _yr < splitYr and _td == _d
                 _oT += 1
     // 11 cheezein x 9 request = 99 (hadd 127)
     [_nT, _wT, _sT, _qT, _nI, _wI, _sI, _qI, _fy, _d, _oT]
@@ -238,7 +246,7 @@ f_row(_row, _sym, _nT, _wT, _sT, _qT, _nI, _wI, _sI, _qI, _fy, _d, _oT, _show) =
 
 if barstate.islast
     table.clear(rt, 0, 0, 6, 17)
-    table.cell(rt, 0, 0, "JAS ICHIMOKU RADAR " + BUILD + " · Hosoda 9/26/52 · 1D · 9 market · sirf naap · KOSHISH #7", bgcolor = cHD, text_color = cBK, text_size = size.small)
+    table.cell(rt, 0, 0, "JAS ICHIMOKU RADAR " + BUILD + " · Hosoda 9/26/52 · 1D · 9 market · sirf naap · KOSHISH #8", bgcolor = cHD, text_color = cBK, text_size = size.small)
     table.merge_cells(rt, 0, 0, 6, 0)
     if not (timeframe.isdaily and timeframe.multiplier == 1)
         f_c(0, 1, "TF ghalat: sirf 1D chart par", cNO)
@@ -292,7 +300,7 @@ if barstate.islast
         _passI = _pass and not na(_avgI) and _avgI > 0 and _posI >= _needI and _NI >= 30
         f_hd(0, "Market")
         f_hd(1, "Data se")
-        f_hd(2, "TALAASH (<" + str.tostring(splitYr) + ") trades · jeet")
+        f_hd(2, "TALAASH (" + str.tostring(startYr) + "-" + str.tostring(splitYr - 1) + ") trades · jeet")
         f_hd(3, "TALAASH Exp R (± 2SE)")
         f_hd(4, "Exp - 2SE")
         f_hd(5, "Kachhua saath")
