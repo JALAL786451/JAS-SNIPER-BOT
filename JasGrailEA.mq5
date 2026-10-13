@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD g1   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD g2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasGrailEA.mq5 |
@@ -7,6 +7,10 @@
 //|  Naye test qaide ki KOSHISH #1 (13 Oct). SIRF TESTER - demo NAHI.|
 //|  Ek chart (gold, chart ki TF) se do market: XAUUSD + XAGUSD.      |
 //|  User: H1 aur H4 par alag alag chalaye = 4 jodiyan.              |
+//|  g1 = koshish #1 (gold+silver) FAIL -0.40R.                       |
+//|  g2 (koshish #2): 10 market tak, suffix Radar EA jaisa (kisi bhi  |
+//|  list wale symbol ke chart par). Default tokri: BTC, ETH + 5 FX.  |
+//|  Qaide WAHI.                                                     |
 //|                                                                  |
 //|  QAWAID (har market, chart ki TF, sirf BAND candle):             |
 //|   1) ADX(14) > 30 (mazboot trend); +DI > -DI = upar, warna neeche |
@@ -26,12 +30,13 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "g1"
-#define NM 2
+#define EA_BUILD "g2"
+#define NM 10
 
 CTrade trade;
 
-input string   InpSymbols  = "XAUUSD,XAGUSD"; // Markets (suffix chart se)
+input string   InpSymbols  = "BTCUSD,ETHUSD,EURUSD,GBPUSD,AUDUSD,USDJPY,USDCHF"; // Markets (suffix chart se; g1 = XAUUSD,XAGUSD)
+input string   InpSuffix   = "auto";  // Suffix - auto = chart ke symbol se (XAUUSDm chart bhi chalega)
 input int      InpAdxLen   = 14;      // ADX length
 input double   InpAdxMin   = 30.0;    // ADX is se upar
 input int      InpEmaLen   = 20;      // EMA length
@@ -145,13 +150,25 @@ int OnInit()
   {
    string parts[];
    int cnt = StringSplit(InpSymbols, StringGetCharacter(",", 0), parts);
+   // suffix: list ka koi symbol chart ke naam ka shuru ho to baqi hissa; warna mashhoor
+   // naam (XAUUSD/XAGUSD/BTCUSD/US500) se; InpSuffix diya ho to wohi
    string suf = "";
-   if(cnt > 0)
+   if(InpSuffix != "auto") suf = InpSuffix;
+   else
      {
-      string b0 = parts[0];
-      StringTrimLeft(b0);
-      StringTrimRight(b0);
-      if(StringSubstr(_Symbol, 0, StringLen(b0)) == b0) suf = StringSubstr(_Symbol, StringLen(b0));
+      string known[] = {"XAUUSD", "XAGUSD", "BTCUSD", "ETHUSD", "EURUSD", "US500", "USTEC", "US30"};
+      bool got = false;
+      for(int k = 0; k < cnt && !got; k++)
+        {
+         string b0 = parts[k];
+         StringTrimLeft(b0);
+         StringTrimRight(b0);
+         if(StringLen(b0) > 0 && StringLen(_Symbol) >= StringLen(b0) && StringSubstr(_Symbol, 0, StringLen(b0)) == b0)
+           { suf = StringSubstr(_Symbol, StringLen(b0)); got = true; }
+        }
+      for(int k = 0; k < ArraySize(known) && !got; k++)
+         if(StringLen(_Symbol) >= StringLen(known[k]) && StringSubstr(_Symbol, 0, StringLen(known[k])) == known[k])
+           { suf = StringSubstr(_Symbol, StringLen(known[k])); got = true; }
      }
    g_n = 0;
    for(int k = 0; k < cnt && g_n < NM; k++)
@@ -166,6 +183,7 @@ int OnInit()
       g_ema[g_n]  = iMA(g_sym[g_n], _Period, InpEmaLen, 0, MODE_EMA, PRICE_CLOSE);
       if(g_adx[g_n] == INVALID_HANDLE || g_ema[g_n] == INVALID_HANDLE) g_ok[g_n] = false;
       if(!g_ok[g_n]) PrintFormat("JAS GRAIL %s | %s nahi mila - chhor diya", EA_BUILD, g_sym[g_n]);
+      else           PrintFormat("JAS GRAIL %s | market %d: %s", EA_BUILD, g_n + 1, g_sym[g_n]);
       g_last[g_n] = 0;
       g_dir[g_n]  = 0;
       g_n++;
