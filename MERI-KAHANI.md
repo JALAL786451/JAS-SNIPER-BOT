@@ -23,7 +23,7 @@ Aakhri update: 13 October 2026 (Mangal raat, chhati chat). Kaam ki branch ab `cl
 - Link hamesha **click hone wala** do (markdown link), aur raw link mein
   commit hash wala bhi do (GitHub kabhi purani copy dikhata hai).
 - Mujhe baar baar "aaraam karo" mat kaho - jab thakunga khud bata doonga.
-- **Usage (12-13 Oct raat):** hafte ki limit 56% (reset 18 Oct 02:00 PKT). Is chat mein ek 8-agent jaanch hui thi. Limit 50% se upar ho to agent/workflow bilkul nahi, chahe 'ultracode' chalu ho.
+- **Usage (13 Oct raat, chhati chat ke baad):** hafte ki limit 71% (reset Itwar 18 Oct 02:00 PKT), session 32% (reset Budh 02:00). 'Usage by product: Claude Code 100%' = istemal ka HISSA (sara Claude Code se), limit nahi. Pehle: 12-13 Oct 56%. Is chat mein ek 8-agent jaanch hui thi. Limit 50% se upar ho to agent/workflow bilkul nahi, chahe 'ultracode' chalu ho.
 - **Baar baar reminder NAHI (12 Oct raat):** jawab ke aakhir mein '19 Oct demo panels' jaisi yaad dihani mat do. Sirf user ki request par mashwara + us request ka agla qadam.
 - **Chart bilkul saaf chahiye (10 Oct):** indicator chart par sirf ishara dikhaye;
   lakeerein, rang, lambi tables settings mein BAND rakho (Tide Seekh bhi "bohot text" se napasand hua tha).
