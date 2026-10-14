@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS ORDER FLOW DRAFT  (build d3, Pine v6)  -  koshish #16 ka DEKHNE wala
+//  JAS ORDER FLOW DRAFT  (build d4, Pine v6)  -  koshish #16 ka DEKHNE wala
 //  indicator. Qaide: docs/es_orderflow_draft.md (Carmine Rosato, ES -> XAUUSD).
 //
 //  14 Oct 2026 - user ne manga: chart par dekhna ke draft ke qaide video jaise
@@ -17,6 +17,12 @@
 //  mein (box narangi; dobara toot sakta hai). Ginti table oopar daayein.
 //  5m / 4H / 1D sab par. 1H+ par Q1-Q3 signal, levels, VWAP band (sirf box
 //  ginti); OF ka andar TF khud: 4H+ = 60m, 1H+ = 5m.
+//  d4 (14 Oct, user 'D'): d3 ka paimana TEDHA tha (WAPAS = sirf kinare ke
+//  andar close, CHALA = 2 ATR). Ab BARABAR: toot wali candle ke close se jo
+//  pehle chhooye - +1 ATR = CHALA, -1 ATR = WAPAS (input). Ek hi candle mein
+//  dono = gina nahi (alag likha). 50% = sikka; Exp (1:1 trade) = 2p - 1 R,
+//  spread se pehle. Table: % chala, ±2SE, aur faisla. Box andar wapas aaye
+//  aur pichla toot hal ho chuka ho to dobara toot gin sakta hai.
 //
 //  LABELS:
 //   Q1/Q2/Q3 BUY/SELL (rangeen) = teeno darwaze paar = asal signal. Baad mein
@@ -52,7 +58,7 @@
 //   B/P shape: volume ka markaz neeche 35% (B = BUY) / oopar 35% (P = SELL),
 //         draft ke mutabiq.
 // ============================================================================
-indicator("JAS Order Flow Draft d3", "JAS OF d3", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
+indicator("JAS Order Flow Draft d4", "JAS OF d4", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
 
 // ---- Settings (draft sec 5.1 + numbers table) ----
 string G1 = "Session"
@@ -97,7 +103,8 @@ int    smtLen = input.int(20, "Naya low/high: pichli candles", minval = 5, group
 string G5 = "Dikhana"
 bool showLv   = input.bool(true, "Levels (PDH/PDL/PDC, raat H/L, NY open, VWAP)", group = G5)
 bool showBal  = input.bool(true, "Balance box (toot ke baad rang)", group = G5)
-bool showBrk  = input.bool(true, "Box toot ▲/▼ + ginti table", group = G5)
+bool showBrk  = input.bool(true, "Box toot ▲/▼ + ginti table", inline = "bk", group = G5)
+float brkK   = input.float(1.0, "CHALA/WAPAS = close se ± x ATR", step = 0.5, inline = "bk", group = G5)
 bool showMiss = input.bool(true, "MISS (ruke hue setup) bhi dikhao", group = G5)
 bool showTL   = input.bool(true, "Trade ki SL/TP lakeer", group = G5)
 bool showChop = input.bool(false, "Chop zone rang (level se door)", group = G5)
@@ -171,6 +178,7 @@ var bool  balLive = false
 var box   balBox = na
 var int   balId = 0
 bool brkNew = false
+var bool balPend = false
 var float dmdHi = na
 var float dmdLo = na
 var float supHi = na
@@ -181,6 +189,7 @@ if isBal and (na(balHi) or midN > balHi or midN < balLo)
     balLo := loN
     balKind := 0
     balLive := true
+    balPend := false
     balId += 1
     if showBal
         balBox := box.new(bar_index - balBars + 1, balHi, bar_index, balLo, border_color = color.new(color.gray, 50), bgcolor = color.new(color.gray, 90))
@@ -191,6 +200,8 @@ else if balLive
     else
         balLive := false
         brkNew := true
+else if not balPend and not na(balHi) and close <= balHi and close >= balLo
+    balLive := true
 if not na(balHi) and balKind == 0
     if close >= balHi + moveAtr * atr
         balKind := 1
@@ -201,17 +212,17 @@ if not na(balHi) and balKind == 0
         supHi := balHi
         supLo := balLo
 
-// ---- d3: Box toot - toot ke waqt nishaan, phir CHALA (2 ATR) ya WAPAS (box mein close) ----
+// ---- d4: Box toot - toot ke close se BARABAR doori: +k ATR = CHALA, -k ATR = WAPAS ----
 type Brk
     int   dir
-    float edge
     float tgt
+    float stp
     int   bar
     box   bx
     int   id
 var array<Brk> brks = array.new<Brk>()
-var array<int> bcU = array.new_int(2, 0)
-var array<int> bcD = array.new_int(2, 0)
+var array<int> bcU = array.new_int(3, 0)   // 0 CHALA, 1 WAPAS, 2 dono ek candle
+var array<int> bcD = array.new_int(3, 0)
 if barstate.isconfirmed
     int nb = array.size(brks)
     if nb > 0
@@ -219,21 +230,23 @@ if barstate.isconfirmed
             Brk b = array.get(brks, i)
             if bar_index > b.bar
                 bool run = b.dir == 1 ? high >= b.tgt : low <= b.tgt
-                bool back = b.dir == 1 ? close < b.edge : close > b.edge
+                bool back = b.dir == 1 ? low <= b.stp : high >= b.stp
                 if run or back
                     array<int> bc = b.dir == 1 ? bcU : bcD
-                    array.set(bc, run ? 0 : 1, array.get(bc, run ? 0 : 1) + 1)
-                    if not na(b.bx)
+                    int slot = run and back ? 2 : run ? 0 : 1
+                    array.set(bc, slot, array.get(bc, slot) + 1)
+                    if not na(b.bx) and slot < 2
                         color bcol = run ? (b.dir == 1 ? color.green : color.red) : color.orange
                         box.set_bgcolor(b.bx, color.new(bcol, 82))
                         box.set_border_color(b.bx, color.new(bcol, 30))
-                    if back and b.id == balId
-                        balLive := true
+                    if b.id == balId
+                        balPend := false
                     array.remove(brks, i)
     if brkNew and not na(balHi)
         int bd = close > balHi ? 1 : -1
-        float edge = bd == 1 ? balHi : balLo
-        array.push(brks, Brk.new(bd, edge, edge + bd * moveAtr * atr, bar_index, balBox, balId))
+        float kd = brkK * atr
+        array.push(brks, Brk.new(bd, close + bd * kd, close - bd * kd, bar_index, balBox, balId))
+        balPend := true
         if showBrk
             label.new(bar_index, close, bd == 1 ? "▲" : "▼", yloc = bd == 1 ? yloc.belowbar : yloc.abovebar, style = label.style_none, textcolor = bd == 1 ? cYes : cNo, size = size.normal)
 
@@ -577,7 +590,7 @@ alertcondition(aSell, "JAS OF SELL", "JAS OF d1: SELL signal")
 
 var table tb = table.new(position.bottom_right, 6, 7, bgcolor = cTbl, border_width = 1)
 if showTbl and barstate.islast
-    table.cell(tb, 0, 0, "d3", text_color = cTxt, text_size = tSz)
+    table.cell(tb, 0, 0, "d4", text_color = cTxt, text_size = tSz)
     table.cell(tb, 1, 0, "Signal", text_color = cTxt, text_size = tSz)
     table.cell(tb, 2, 0, "T-YES", text_color = cYes, text_size = tSz)
     table.cell(tb, 3, 0, "T-NO", text_color = cNo, text_size = tSz)
@@ -617,18 +630,32 @@ if showTbl and barstate.islast
     table.cell(tb, 0, 6, note, text_color = tfOk ? cNote : cNo, text_size = tSz)
     table.merge_cells(tb, 0, 6, 5, 6)
 
-// d3: box toot ki ginti
-var table tb2 = table.new(position.top_right, 4, 4, bgcolor = cTbl, border_width = 1)
+// d4: box toot ki ginti (barabar paimana)
+var table tb2 = table.new(position.top_right, 5, 5, bgcolor = cTbl, border_width = 1)
 if showBrk and barstate.islast
-    table.cell(tb2, 0, 0, "Box toot", text_color = cTxt, text_size = tSz)
+    table.cell(tb2, 0, 0, "Box toot ±" + str.tostring(brkK) + " ATR", text_color = cTxt, text_size = tSz)
     table.cell(tb2, 1, 0, "CHALA", text_color = cYes, text_size = tSz)
     table.cell(tb2, 2, 0, "WAPAS", text_color = cNote, text_size = tSz)
     table.cell(tb2, 3, 0, "% chala", text_color = cTxt, text_size = tSz)
+    table.cell(tb2, 4, 0, "±2SE", text_color = cTxt, text_size = tSz)
+    string verdict = "-"
     for r = 0 to 2
         int ch = r == 0 ? array.get(bcU, 0) : r == 1 ? array.get(bcD, 0) : array.get(bcU, 0) + array.get(bcD, 0)
         int wp = r == 0 ? array.get(bcU, 1) : r == 1 ? array.get(bcD, 1) : array.get(bcU, 1) + array.get(bcD, 1)
+        int n = ch + wp
+        float p = n > 0 ? 1.0 * ch / n : na
+        float se2 = n > 0 ? 2 * math.sqrt(p * (1 - p) / n) : na
         string nmR = r == 0 ? "▲ Oopar" : r == 1 ? "▼ Neeche" : "Kul"
-        table.cell(tb2, 0, r + 1, nmR, text_color = r == 2 ? cKul : cTxt, text_size = tSz)
+        color rc = r == 2 ? cKul : cTxt
+        table.cell(tb2, 0, r + 1, nmR, text_color = rc, text_size = tSz)
         table.cell(tb2, 1, r + 1, str.tostring(ch), text_color = cYes, text_size = tSz)
         table.cell(tb2, 2, r + 1, str.tostring(wp), text_color = cNote, text_size = tSz)
-        table.cell(tb2, 3, r + 1, ch + wp > 0 ? str.tostring(100.0 * ch / (ch + wp), "#") + "%" : "-", text_color = r == 2 ? cKul : cTxt, text_size = tSz)
+        table.cell(tb2, 3, r + 1, n > 0 ? str.tostring(100 * p, "#") + "%" : "-", text_color = rc, text_size = tSz)
+        table.cell(tb2, 4, r + 1, n > 0 ? str.tostring(100 * se2, "#") + "%" : "-", text_color = rc, text_size = tSz)
+        if r == 2 and n > 0
+            float ex = math.abs(2 * p - 1)
+            string exT = " (1:1 Exp +" + str.tostring(ex, "#.##") + "R, spread se pehle)"
+            verdict := p - se2 > 0.5 ? "BREAKOUT behtar" + exT : p + se2 < 0.5 ? "ULTA (Q1) behtar" + exT : "SIKKA - koi pakki edge nahi"
+    int amb = array.get(bcU, 2) + array.get(bcD, 2)
+    table.cell(tb2, 0, 4, verdict + " | dono ek candle: " + str.tostring(amb) + " (gine nahi)", text_color = cKul, text_size = tSz)
+    table.merge_cells(tb2, 0, 4, 4, 4)
