@@ -66,7 +66,9 @@ delta OHLC se hi = alag tasdeeq nahi, spread 5m stop ka 10-20%; kitabi concepts:
 Williams Oops, Raschke Turtle Soup, Wyckoff spring, Osler round numbers. 1H wala idea user ne NAHI liya.
 **i3 (sec 6) user ne ROKA - yaad mein rakha.** **Agla kaam: koshish #16 = draft wala idea (5m)** -
 user ne pehle Pine manga: `indicators/jas_of_draft.pine` d2 (d1 user ne 1m par lagaya - 5m chahiye; d2 white chart rang)
-(Q1-Q3, T-YES/T-NO/MISS labels, table). **Compile + chart screenshot BAQI**; phir MT5 naqsha + qaida.
+(Q1-Q3, T-YES/T-NO/MISS labels, table). Compile ✅. 5m screenshot (13-14 Oct, ~1.5 din): asal signal 2 = dono T-NO (-2R);
+MISS 77 = 45 YES / 29 NO magar kul **-2.8R** (jeet chhoti). Video ka footprint/heatmap gold CFD par mumkin nahi.
+**Agla (Claude ki raye, "D" BAQI):** MT5 EA se Q1 (sirf price) 5m TALAASH 2021-2024 + spread, pehle se likha qaida.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 
