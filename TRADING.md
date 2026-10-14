@@ -37,7 +37,8 @@ Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
   user naam le kar maange; 50%+ par bilkul nahi.
 - Nayi chat ~1 lakh token se shuru hoti hai (app ki apni hidayat ~40-60k). Effort **medium/high**
   (xhigh nahi), chhota kaam Sonnet. Har tool qadam par poori chat dobara parhi jati hai -
-  kam qadam, chhote jawab, bari file `grep` se. Bara kaam khatam = nayi chat.
+  kam qadam, chhote jawab, bari file `grep` se. **~15-20 message ya kaam khatam = user "chat khatam"
+  likhe -> sec 5 likh kar push -> nayi chat "TRADING"** (chat bharne / summary ka intezar NAHI).
 
 ## 3. Accounts (tafseel `docs/trading-pakki.md` sec 2)
 
@@ -77,6 +78,7 @@ v5.3 compile ✅, CSV mili (14 Oct 17:32, bid 4088.9). **Kitab = 3 hissay:** (a)
 nuqsan -5,540. Swap-free, NET 0.03 -> 3900 par -6.1k, 4300 par -4.9k. (a)+(b) band = 0.73 BUY khuli (har $1 = 73 USC) - NAHI.
 **Koshish #17 idea (user, 14 Oct):** SELL (BUY se oopar) gold oopar jaye to +0.30 USC/0.01 par band; wapsi = band qeemat
 par ya chotti se $5 neeche (jo oopar ho) wohi lot SELL dobara. User ne "HAN" kaha (14 Oct, test ki ijazat). Kitab NET +0.03 BUY; EA band SELL milaa kar NET 0.50 se zyada NAHI.
+Lot Guard EA idea (0.10+ nayi position foran band) - user ne "abhi nahi" kaha.
 **Agla:** live par kuch nahi; 18 Oct ke baad #17 Python test (X = 3/5/10) + MT5 Q1.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
