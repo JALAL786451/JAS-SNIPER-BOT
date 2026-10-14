@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS JORI CLOSE   -   build s1                                   |
+//|  JAS JORI CLOSE   -   build s2                                   |
 //|                                                                  |
 //|  YE SCRIPT HAI, EA NAHI. MetaEditor mein "Scripts" folder mein   |
 //|  banayein. Ek dafa chalta hai, kaam kar ke khud band ho jata hai.|
@@ -23,10 +23,11 @@
 #property version   "1.00"
 #property script_show_inputs
 
-#define S_BUILD "s1"
+#define S_BUILD "s2"
 
 input double InpMinResult = 0.0;   // Jori ka andazan nateeja is se kam ho to mat karo
 input int    InpDelayMs   = 200;   // Do Close By ke darmiyan kitne milli-second
+input bool   InpMehngiPehle = false; // s2: bari SELL ki jori MEHNGI (upar wali) BUY se pehle (user ka formula, JasDeskView 'B')
 
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
 string M(double v)  { return(DoubleToString(v, 2)); }
@@ -80,7 +81,9 @@ int PickBigPair(const int &ty[], const double &vol[], const double &px[], const 
    for(int a = 0; a < nc - 1; a++)
       for(int d = a + 1; d < nc; d++)
         {
+         // s1: behtar price pehle. s2 InpMehngiPehle: ulta (bari SELL -> mehngi BUY, bari BUY -> sasti SELL)
          bool swap = bigBuy ? (px[cand[d]] > px[cand[a]]) : (px[cand[d]] < px[cand[a]]);
+         if(InpMehngiPehle) swap = bigBuy ? (px[cand[d]] < px[cand[a]]) : (px[cand[d]] > px[cand[a]]);
          if(swap) { int t = cand[a]; cand[a] = cand[d]; cand[d] = t; }
         }
 

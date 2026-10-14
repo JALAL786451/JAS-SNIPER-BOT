@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v4.2                                  |
+//|  JAS DESK VIEW   -   build v5                                    |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v4.2"
+#define EA_BUILD "v5"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -43,6 +43,10 @@ input color InpColWorst    = clrMagenta;      // Sab se buri lot ka rang
 input group "=== Nikalne ka plan ==="
 input bool   InpShowPlan    = true;   // Jori bana kar nikalne ka plan dikhao
 input double InpNetWarn     = 0.20;   // Band karne ke baad NET is se zyada ho to chetawani
+
+input group "=== Jori muqabla (v5) ==="
+input bool   InpShowMuqabla = true;   // SELL khatam: sasti BUY pehle (A) vs mehngi BUY pehle (B)
+input double InpChunkLot    = 0.20;   // Ek dafa mein kitni SELL lot (user ka qaida: 0.20 tak)
 
 input group "=== Bari lot ki jori ==="
 input bool   InpShowBigPair = true;          // Sab se bari lot ki LOT-BARABAR jori dikhao
@@ -354,6 +358,103 @@ int PickBigPair(const int &ty[], const double &vol[], const double &px[], const 
    target  = vol[big];
    matched = got * step;
    return(n);
+  }
+
+
+//+------------------------------------------------------------------+
+//|  v5: JORI MUQABLA - user ka qaida "SELL khatam, BUY rakho".        |
+//|  Sab se buri SELL (InpChunkLot tak) ko BUY ke saath Close By:      |
+//|    A = sasti BUY pehle,  B = mehngi (upar wali) BUY pehle.         |
+//|  Lot barabar = NET aur EQUITY dono nahi badalte; sirf ye badalta   |
+//|  hai ke kaun sa nuqsan pakka (balance) ho aur kaun si lots bachein.|
+//+------------------------------------------------------------------+
+//--- ek taraf ki lots chuno (order[] ki tarteeb mein) jab tak 'want' step poore
+int TakeLots(const int &order[], int no, const double &vol[], long want, double step, int &out[], long &got)
+  {
+   got = 0; int n = 0;
+   ArrayResize(out, no);
+   for(int k = 0; k < no && got < want; k++)
+     {
+      long u = (long)MathRound(vol[order[k]] / step);
+      if(got + u > want) continue;
+      out[n] = order[k]; n++; got += u;
+     }
+   ArrayResize(out, n);
+   return(n);
+  }
+
+string MuqablaText(Book &b, double net, double bid)
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+   if(c <= 0 || b.nSell == 0 || b.nBuy == 0) return("");
+   double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+   if(step <= 0.0) step = 0.01;
+
+   // SELL: sab se buri pehle (P/L sab se kam)
+   int so[]; ArrayResize(so, c); int ns = 0;
+   int bo[]; ArrayResize(bo, c); int nb = 0;
+   for(int i = 0; i < c; i++)
+     {
+      if(ty[i] == POSITION_TYPE_SELL) { so[ns] = i; ns++; }
+      else                            { bo[nb] = i; nb++; }
+     }
+   for(int a = 0; a < ns - 1; a++)
+      for(int d = a + 1; d < ns; d++)
+         if(pl[so[d]] < pl[so[a]]) { int t = so[a]; so[a] = so[d]; so[d] = t; }
+   // BUY: sasti pehle (A ki tarteeb); B ke liye ulta
+   for(int a = 0; a < nb - 1; a++)
+      for(int d = a + 1; d < nb; d++)
+         if(px[bo[d]] < px[bo[a]]) { int t = bo[a]; bo[a] = bo[d]; bo[d] = t; }
+   int boB[]; ArrayResize(boB, nb);
+   for(int k = 0; k < nb; k++) boB[k] = bo[nb - 1 - k];
+
+   int  sSel[]; long sGot;
+   int  nS = TakeLots(so, ns, vol, (long)MathRound(InpChunkLot / step), step, sSel, sGot);
+   if(nS <= 0) return("--- JORI MUQABLA: koi SELL " + DoubleToString(InpChunkLot, 2) + " lot ke andar nahi ---\n\n");
+   double sPl = 0.0, sLot = sGot * step;
+   for(int k = 0; k < nS; k++) sPl += pl[sSel[k]];
+
+   string s = StringFormat("--- JORI MUQABLA (SELL khatam, BUY rakho) - buri SELL %.2f lot (%d position) ---\n", sLot, nS);
+   s += "                         A: sasti BUY pehle   B: mehngi BUY pehle\n";
+
+   string r1 = "", r2 = "", r3 = "", r4 = "", r5 = "";
+   for(int m = 0; m < 2; m++)
+     {
+      int  bSel[]; long bGot;
+      int  nB;
+      if(m == 0) nB = TakeLots(bo,  nb, vol, sGot, step, bSel, bGot);
+      else       nB = TakeLots(boB, nb, vol, sGot, step, bSel, bGot);
+      double bPl = 0.0, bW = 0.0;
+      for(int k = 0; k < nB; k++) { bPl += pl[bSel[k]]; bW += px[bSel[k]] * vol[bSel[k]]; }
+      double bLot    = bGot * step;
+      double realz   = sPl + bPl;                       // pakka hoga (balance)
+      double lotBuyL = b.lotBuy - bLot;
+      double avgL    = (lotBuyL > 0) ? (b.avgBuy * b.lotBuy - bW) / lotBuyL : 0.0;
+      double sdl     = b.sumDirLot - bW;                // BUY nikli
+      for(int k = 0; k < nS; k++) sdl += px[sSel[k]] * vol[sSel[k]];   // SELL nikli
+      double netL    = net - bLot + sLot;
+      string be = "NET 0", up = "-";
+      if(MathAbs(netL) > 1e-8)
+        {
+         double bp = sdl / netL;
+         be = Px(bp);
+         up = Pick(bp > bid, "+", "-") + Px(MathAbs(bp - bid));
+        }
+      string lotTxt = StringFormat("%.2f BUY (%d)", bLot, nB) + Pick(MathAbs(bLot - sLot) < 1e-8, "", " !!kam");
+      if(m == 0) { r1 = lotTxt; r2 = M(realz); r3 = Px(avgL); r4 = be; r5 = up; }
+      else
+        {
+         s += StringFormat("BUY jo band hongi    %20s   %20s\n", r1, lotTxt);
+         s += StringFormat("Pakka P/L (balance)  %20s   %20s\n", r2, M(realz));
+         s += StringFormat("Bachi BUY ka ausat   %20s   %20s\n", r3, Px(avgL));
+         s += StringFormat("Bachi kitab barabari %20s   %20s\n", r4, be);
+         s += StringFormat("Qeemat kitni chale   %20s   %20s\n", r5, up);
+        }
+     }
+   s += "Equity dono mein WAHI (Close By sirf nuqsan pakka karta hai, banata nahi).\n";
+   s += "A = abhi kam nuqsan pakka, mehngi BUY bachti hain. B = zyada pakka, sasti BUY bachti hain.\n\n";
+   return(s);
   }
 
 string BigPairText(double net, double tot, double basket)
@@ -736,6 +837,7 @@ void Draw()
      }
 
    //--- D2) NIKALNE KA PLAN -------------------------------------------
+   if(InpShowMuqabla) s += MuqablaText(b, net, bid);
    if(InpShowBigPair) s += BigPairText(net, tot, basket);
    if(InpShowPlan)    s += PlanText(b, net, tot, basket);
 
