@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.7, Pine v6)
+//  JAS TIDE + SMC   (build s2.8, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -61,6 +61,10 @@
 //  aur trade ke waqt wale dono label) default BAND - wahi baat table mein;
 //  table PATLI (har ' · ' nayi line) taake daayen khali hisse mein rahe;
 //  LOT aur NAAP rows default BAND. Sab Settings se wapas. Engine WAHI.
+//  s2.8 (14 Oct, user 'D'): S/R lakeerein SIRF DEKHNE ke liye (default BAND,
+//  Settings → 6): pichle HAFTE / MAHINE ka high-low (band candle, repaint nahi)
+//  aur Tide ki apni 10 din naali (wahi level jis ke toot par trade). Engine,
+//  signal, SL, table WAHI - S/R faisle mein shamil NAHI (naapa nahi gaya).
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
 //
@@ -70,7 +74,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.7"
+BUILD = "s2.8"
 
 // ============================================================================
 //  INPUTS
@@ -112,6 +116,11 @@ riskPct = input.float(1.0, "Risk fi trade (%)", minval = 0.1, maxval = 2.0, step
 vMove   = input.float(0, "V: 0.01 lot par qeemat 1.00 hile = kitne (account currency)", minval = 0, step = 0.01,
      tooltip = "Exness: XAUUSDc = 1 · BTCUSDc = 0.01 · XAUUSDm (USD) = 1. Demo par 0.01 lot ka test order khol kar MT5 se milayein.", group = grL, display = display.none)
 vSym    = input.string("", "V kis symbol ki (jaise XAUUSD ya BTCUSD, bina c/m)", group = grL, display = display.none)
+
+grR = "6 · S/R lakeerein (sirf dekhna - Tide ka faisla NAHI)"
+showWk  = input.bool(false, "Pichle HAFTE ka high / low", group = grR, display = display.none)
+showMo  = input.bool(false, "Pichle MAHINE ka high / low", group = grR, display = display.none)
+showNal = input.bool(false, "Tide naali (10 din high / low - toot ka level)", group = grR, display = display.none)
 
 grV = "5 · Table"
 showTable = input.bool(true, "Table dikhao", group = grV, display = display.none)
@@ -285,6 +294,10 @@ stC = timeframe.isticks ? close : rqC
 // aakhri candle (barstate.islast) par parhi jati hai
 [dO, dH, dL, dCt] = request.security(tkStd, "D", [open, high, low, time_close], barmerge.gaps_off, barmerge.lookahead_on)
 
+// s2.8: S/R - pichli BAND hafta / mahina candle ([1] + lookahead_on = repaint nahi)
+[wkH, wkL] = request.security(tkStd, "W", [high[1], low[1]], barmerge.gaps_off, barmerge.lookahead_on)
+[moH, moL] = request.security(tkStd, "M", [high[1], low[1]], barmerge.gaps_off, barmerge.lookahead_on)
+
 tfSec = timeframe.in_seconds()
 isHi  = not na(tfSec) and tfSec > 86400     // 1D se bari TF: Tide ka dabba nahi
 bd    = na(tfSec) ? 0 : tfSec * 1000        // ek candle ka waqt (ms)
@@ -312,6 +325,14 @@ csT     = tD == 1 ? math.max(tSL, nz(tLx1, tSL)) : tD == -1 ? math.min(tSL, nz(t
 // ============================================================================
 //  TIDE CHART PAR: sarakta SL + purane nateeje
 // ============================================================================
+bool wkNew = ta.change(wkH) != 0 or ta.change(wkL) != 0
+bool moNew = ta.change(moH) != 0 or ta.change(moL) != 0
+plot(showWk and not isHi and not wkNew ? wkH : na, "Hafta high", color = color.new(#EF5350, 35), style = plot.style_linebr, linewidth = 1, display = display.pane)
+plot(showWk and not isHi and not wkNew ? wkL : na, "Hafta low", color = color.new(#26A69A, 35), style = plot.style_linebr, linewidth = 1, display = display.pane)
+plot(showMo and not isHi and not moNew ? moH : na, "Mahina high", color = color.new(#EF5350, 0), style = plot.style_linebr, linewidth = 2, display = display.pane)
+plot(showMo and not isHi and not moNew ? moL : na, "Mahina low", color = color.new(#26A69A, 0), style = plot.style_linebr, linewidth = 2, display = display.pane)
+plot(showNal and not isHi ? tUp : na, "Tide naali high", color = color.new(#FFA726, 20), style = plot.style_stepline, linewidth = 1, display = display.pane)
+plot(showNal and not isHi ? tDn : na, "Tide naali low", color = color.new(#FFA726, 20), style = plot.style_stepline, linewidth = 1, display = display.pane)
 plot(showSLplot and not isHi and tD != 0 and not slHit ? tSL : na, "Tide SL (sarakta)", color = C_SL, style = plot.style_linebr, linewidth = 2, display = display.pane)
 
 var array<label> tideMarks = array.new<label>()

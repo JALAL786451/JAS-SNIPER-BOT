@@ -65,6 +65,7 @@ T-YES/T-NO/MISS (5m ~1.5 din: 2 signal -2R, MISS -2.8R) aur box toot ginti. **d4
 1D 179/378 = 47% (±5) · 4H 66/131 = 50% (±9) · 5m 121/254 = 48% (±6) = teeno SIKKA**, box toot ke saath ya
 ulta 1:1 par koi edge nahi (Kachhua ki edge 1:1 se nahi naapi jati - lambi jeet). Footprint/heatmap gold CFD par
 mumkin nahi. i3 (sec 6) user ne roka. Agents/judges user ne band kiye (18 Oct 02:00 reset tak).
+`jas_tide_smc` s2.8: S/R (hafta, mahina, naali) sirf dekhne ke liye, default band, engine wahi.
 **Agla:** 18 Oct ke baad MT5 Q1 test (5m 2021-2024 + spread, pehle se likha qaida) = #16 ka aakhri faisla; umeed kam.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
