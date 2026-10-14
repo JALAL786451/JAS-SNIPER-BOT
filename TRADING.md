@@ -65,12 +65,12 @@ andar 1m, NY open ke 2 ghante**) parha. Claude ki raye: Free TV par ~5000 bars =
 delta OHLC se hi = alag tasdeeq nahi, spread 5m stop ka 10-20%; kitabi concepts: Dalton TPO/80% rule,
 Williams Oops, Raschke Turtle Soup, Wyckoff spring, Osler round numbers. 1H wala idea user ne NAHI liya.
 **i3 (sec 6) user ne ROKA - yaad mein rakha.** **Agla kaam: koshish #16 = draft wala idea (5m)** -
-user ne pehle Pine manga: `indicators/jas_of_draft.pine` d2 (d1 user ne 1m par lagaya - 5m chahiye; d2 white chart rang)
+user ne pehle Pine manga: `indicators/jas_of_draft.pine` d3 (d2 white rang; d3 box toot ginti CHALA/WAPAS, 5m/4H/1D)
 (Q1-Q3, T-YES/T-NO/MISS labels, table). Compile ✅. 5m screenshot (13-14 Oct, ~1.5 din): asal signal 2 = dono T-NO (-2R);
 MISS 77 = 45 YES / 29 NO magar kul **-2.8R** (jeet chhoti). Video ka footprint/heatmap gold CFD par mumkin nahi.
 MT5 Q1 test (5m 2021-2024 + spread) user ne **18 Oct reset ke baad** rakha; agents/judges user ne band kiye.
 User: "box laal = price neeche, hara = oopar, bari moves miss" -> box ka rang move ke BAAD lagta hai (hindsight).
-**Agla ("D" BAQI):** d3 = box toot ki ginti (toot ke waqt: 2 ATR chala vs wapas andar), 5m/4H/1D par.
+**Agla:** d3 bana (user "D") - compile + 5m/4H/1D ginti screenshot BAQI; MT5 Q1 test 18 Oct ke baad.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 

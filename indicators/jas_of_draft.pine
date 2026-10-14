@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS ORDER FLOW DRAFT  (build d2, Pine v6)  -  koshish #16 ka DEKHNE wala
+//  JAS ORDER FLOW DRAFT  (build d3, Pine v6)  -  koshish #16 ka DEKHNE wala
 //  indicator. Qaide: docs/es_orderflow_draft.md (Carmine Rosato, ES -> XAUUSD).
 //
 //  14 Oct 2026 - user ne manga: chart par dekhna ke draft ke qaide video jaise
@@ -10,6 +10,13 @@
 //  CHART: OANDA:XAUUSD 5 minute (draft sec 7 faisla 1). Andar 1m candles.
 //  d2 (14 Oct): white / dark dono background par saaf rang (chart.bg_color se),
 //  table bara, MISS ka kul R, 1m chart par laal warning.
+//  d3 (14 Oct, user 'D'): BOX TOOT KI GINTI - imaandari. Pehle box ka rang
+//  2 ATR chaal ke BAAD lagta tha (hindsight). Ab: box ke bahar pehla close =
+//  TOOT (▲/▼ usi candle par - trade ke waqt yahi pata hota hai). Phir jo pehle:
+//  CHALA = edge se 2 ATR aage gaya (box hara/laal) | WAPAS = close wapas box
+//  mein (box narangi; dobara toot sakta hai). Ginti table oopar daayein.
+//  5m / 4H / 1D sab par. 1H+ par Q1-Q3 signal, levels, VWAP band (sirf box
+//  ginti); OF ka andar TF khud: 4H+ = 60m, 1H+ = 5m.
 //
 //  LABELS:
 //   Q1/Q2/Q3 BUY/SELL (rangeen) = teeno darwaze paar = asal signal. Baad mein
@@ -45,7 +52,7 @@
 //   B/P shape: volume ka markaz neeche 35% (B = BUY) / oopar 35% (P = SELL),
 //         draft ke mutabiq.
 // ============================================================================
-indicator("JAS Order Flow Draft d2", "JAS OF d2", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
+indicator("JAS Order Flow Draft d3", "JAS OF d3", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
 
 // ---- Settings (draft sec 5.1 + numbers table) ----
 string G1 = "Session"
@@ -89,7 +96,8 @@ int    smtLen = input.int(20, "Naya low/high: pichli candles", minval = 5, group
 
 string G5 = "Dikhana"
 bool showLv   = input.bool(true, "Levels (PDH/PDL/PDC, raat H/L, NY open, VWAP)", group = G5)
-bool showBal  = input.bool(true, "Balance / demand / supply box", group = G5)
+bool showBal  = input.bool(true, "Balance box (toot ke baad rang)", group = G5)
+bool showBrk  = input.bool(true, "Box toot ▲/▼ + ginti table", group = G5)
 bool showMiss = input.bool(true, "MISS (ruke hue setup) bhi dikhao", group = G5)
 bool showTL   = input.bool(true, "Trade ki SL/TP lakeer", group = G5)
 bool showChop = input.bool(false, "Chop zone rang (level se door)", group = G5)
@@ -122,7 +130,8 @@ float slb   = slAtr * atr
 bool newDay = nz(ta.change(time("D"))) != 0
 [pdh, pdl, pdc] = request.security(syminfo.tickerid, "D", [high[1], low[1], close[1]], lookahead = barmerge.lookahead_on)
 bool inRth = not na(time(timeframe.period, "0930-1700", TZ))
-bool inSig = not na(time(timeframe.period, sessIn, TZ))
+bool intraTf = timeframe.in_seconds() <= 900
+bool inSig = intraTf and not na(time(timeframe.period, sessIn, TZ))
 
 var float onh = na
 var float onl = na
@@ -160,6 +169,8 @@ var float balLo = na
 var int   balKind = 0
 var bool  balLive = false
 var box   balBox = na
+var int   balId = 0
+bool brkNew = false
 var float dmdHi = na
 var float dmdLo = na
 var float supHi = na
@@ -170,6 +181,7 @@ if isBal and (na(balHi) or midN > balHi or midN < balLo)
     balLo := loN
     balKind := 0
     balLive := true
+    balId += 1
     if showBal
         balBox := box.new(bar_index - balBars + 1, balHi, bar_index, balLo, border_color = color.new(color.gray, 50), bgcolor = color.new(color.gray, 90))
 else if balLive
@@ -178,24 +190,56 @@ else if balLive
             box.set_right(balBox, bar_index)
     else
         balLive := false
+        brkNew := true
 if not na(balHi) and balKind == 0
     if close >= balHi + moveAtr * atr
         balKind := 1
         dmdHi := balHi
         dmdLo := balLo
-        if not na(balBox)
-            box.set_bgcolor(balBox, color.new(color.green, 85))
-            box.set_border_color(balBox, color.new(color.green, 40))
     else if close <= balLo - moveAtr * atr
         balKind := -1
         supHi := balHi
         supLo := balLo
-        if not na(balBox)
-            box.set_bgcolor(balBox, color.new(color.red, 85))
-            box.set_border_color(balBox, color.new(color.red, 40))
+
+// ---- d3: Box toot - toot ke waqt nishaan, phir CHALA (2 ATR) ya WAPAS (box mein close) ----
+type Brk
+    int   dir
+    float edge
+    float tgt
+    int   bar
+    box   bx
+    int   id
+var array<Brk> brks = array.new<Brk>()
+var array<int> bcU = array.new_int(2, 0)
+var array<int> bcD = array.new_int(2, 0)
+if barstate.isconfirmed
+    int nb = array.size(brks)
+    if nb > 0
+        for i = nb - 1 to 0
+            Brk b = array.get(brks, i)
+            if bar_index > b.bar
+                bool run = b.dir == 1 ? high >= b.tgt : low <= b.tgt
+                bool back = b.dir == 1 ? close < b.edge : close > b.edge
+                if run or back
+                    array<int> bc = b.dir == 1 ? bcU : bcD
+                    array.set(bc, run ? 0 : 1, array.get(bc, run ? 0 : 1) + 1)
+                    if not na(b.bx)
+                        color bcol = run ? (b.dir == 1 ? color.green : color.red) : color.orange
+                        box.set_bgcolor(b.bx, color.new(bcol, 82))
+                        box.set_border_color(b.bx, color.new(bcol, 30))
+                    if back and b.id == balId
+                        balLive := true
+                    array.remove(brks, i)
+    if brkNew and not na(balHi)
+        int bd = close > balHi ? 1 : -1
+        float edge = bd == 1 ? balHi : balLo
+        array.push(brks, Brk.new(bd, edge, edge + bd * moveAtr * atr, bar_index, balBox, balId))
+        if showBrk
+            label.new(bar_index, close, bd == 1 ? "▲" : "▼", yloc = bd == 1 ? yloc.belowbar : yloc.abovebar, style = label.style_none, textcolor = bd == 1 ? cYes : cNo, size = size.normal)
 
 // ---- Order flow andaze (draft sec 5.3) - 1m candles se ----
-[iO, iH, iL, iC, iV] = request.security_lower_tf(syminfo.tickerid, ofTf, [open, high, low, close, volume])
+string ofTfUse = timeframe.in_seconds() >= 14400 ? "60" : timeframe.in_seconds() >= 3600 ? "5" : ofTf
+[iO, iH, iL, iC, iV] = request.security_lower_tf(syminfo.tickerid, ofTfUse, [open, high, low, close, volume])
 float dlt = 0.0
 float vt = 0.0
 float vLo = 0.0
@@ -519,13 +563,13 @@ if barstate.isconfirmed
                     array.push(trs, Trd.new(dir, en, sl, tp, bar_index, false, qn, rr, lm, na, na))
 
 // ---- Dikhana (draft sec 5.8) ----
-plot(showLv and not newDay ? pdh : na, "PDH", color.new(color.red, 40), 1, plot.style_linebr)
-plot(showLv and not newDay ? pdl : na, "PDL", color.new(color.green, 40), 1, plot.style_linebr)
-plot(showLv and not newDay ? pdc : na, "PDC", color.new(color.gray, 40), 1, plot.style_linebr)
-plot(showLv and rthOn ? onh : na, "Raat high", color.new(color.maroon, 40), 1, plot.style_linebr)
-plot(showLv and rthOn ? onl : na, "Raat low", color.new(color.teal, 40), 1, plot.style_linebr)
-plot(showLv and rthOn ? nyo : na, "NY open", cNyo, 1, plot.style_linebr)
-plot(showLv ? vw : na, "VWAP", color.new(color.purple, 40), 1, plot.style_linebr)
+plot(showLv and intraTf and not newDay ? pdh : na, "PDH", color.new(color.red, 40), 1, plot.style_linebr)
+plot(showLv and intraTf and not newDay ? pdl : na, "PDL", color.new(color.green, 40), 1, plot.style_linebr)
+plot(showLv and intraTf and not newDay ? pdc : na, "PDC", color.new(color.gray, 40), 1, plot.style_linebr)
+plot(showLv and intraTf and rthOn ? onh : na, "Raat high", color.new(color.maroon, 40), 1, plot.style_linebr)
+plot(showLv and intraTf and rthOn ? onl : na, "Raat low", color.new(color.teal, 40), 1, plot.style_linebr)
+plot(showLv and intraTf and rthOn ? nyo : na, "NY open", cNyo, 1, plot.style_linebr)
+plot(showLv and intraTf ? vw : na, "VWAP", color.new(color.purple, 40), 1, plot.style_linebr)
 bgcolor(showChop and inSig and not f_nearAny(close) ? color.new(color.gray, 90) : na, title = "Chop zone")
 
 alertcondition(aBuy, "JAS OF BUY", "JAS OF d1: BUY signal")
@@ -533,7 +577,7 @@ alertcondition(aSell, "JAS OF SELL", "JAS OF d1: SELL signal")
 
 var table tb = table.new(position.bottom_right, 6, 7, bgcolor = cTbl, border_width = 1)
 if showTbl and barstate.islast
-    table.cell(tb, 0, 0, "d2", text_color = cTxt, text_size = tSz)
+    table.cell(tb, 0, 0, "d3", text_color = cTxt, text_size = tSz)
     table.cell(tb, 1, 0, "Signal", text_color = cTxt, text_size = tSz)
     table.cell(tb, 2, 0, "T-YES", text_color = cYes, text_size = tSz)
     table.cell(tb, 3, 0, "T-NO", text_color = cNo, text_size = tSz)
@@ -568,7 +612,23 @@ if showTbl and barstate.islast
     table.cell(tb, 3, 5, str.tostring(mNo), text_color = cNo, text_size = tSz)
     table.cell(tb, 4, 5, str.tostring(mB), text_color = cGray, text_size = tSz)
     table.cell(tb, 5, 5, str.tostring(mR, "#.#"), text_color = cGray, text_size = tSz)
-    bool tfOk = timeframe.period == "5"
-    string note = Pick(tfOk, Pick(noVol, "VOLUME NAHI - OF band", "OF = andaza (tick volume) | 5m theek"), "CHART 5 MINUTE KAREIN - abhi " + timeframe.period + " (1m par OF bekaar)")
+    bool tfOk = timeframe.period == "5" or not intraTf
+    string note = Pick(tfOk, Pick(not intraTf, "1H+ par Q signal band - sirf box ginti", Pick(noVol, "VOLUME NAHI - OF band", "OF = andaza (tick volume) | 5m theek")), "CHART 5 MINUTE KAREIN - abhi " + timeframe.period + " (1m par OF bekaar)")
     table.cell(tb, 0, 6, note, text_color = tfOk ? cNote : cNo, text_size = tSz)
     table.merge_cells(tb, 0, 6, 5, 6)
+
+// d3: box toot ki ginti
+var table tb2 = table.new(position.top_right, 4, 4, bgcolor = cTbl, border_width = 1)
+if showBrk and barstate.islast
+    table.cell(tb2, 0, 0, "Box toot", text_color = cTxt, text_size = tSz)
+    table.cell(tb2, 1, 0, "CHALA", text_color = cYes, text_size = tSz)
+    table.cell(tb2, 2, 0, "WAPAS", text_color = cNote, text_size = tSz)
+    table.cell(tb2, 3, 0, "% chala", text_color = cTxt, text_size = tSz)
+    for r = 0 to 2
+        int ch = r == 0 ? array.get(bcU, 0) : r == 1 ? array.get(bcD, 0) : array.get(bcU, 0) + array.get(bcD, 0)
+        int wp = r == 0 ? array.get(bcU, 1) : r == 1 ? array.get(bcD, 1) : array.get(bcU, 1) + array.get(bcD, 1)
+        string nmR = r == 0 ? "▲ Oopar" : r == 1 ? "▼ Neeche" : "Kul"
+        table.cell(tb2, 0, r + 1, nmR, text_color = r == 2 ? cKul : cTxt, text_size = tSz)
+        table.cell(tb2, 1, r + 1, str.tostring(ch), text_color = cYes, text_size = tSz)
+        table.cell(tb2, 2, r + 1, str.tostring(wp), text_color = cNote, text_size = tSz)
+        table.cell(tb2, 3, r + 1, ch + wp > 0 ? str.tostring(100.0 * ch / (ch + wp), "#") + "%" : "-", text_color = r == 2 ? cKul : cTxt, text_size = tSz)
