@@ -1,0 +1,557 @@
+//@version=6
+// ============================================================================
+//  JAS ORDER FLOW DRAFT  (build d1, Pine v6)  -  koshish #16 ka DEKHNE wala
+//  indicator. Qaide: docs/es_orderflow_draft.md (Carmine Rosato, ES -> XAUUSD).
+//
+//  14 Oct 2026 - user ne manga: chart par dekhna ke draft ke qaide video jaise
+//  dikhte hain ya nahi. TRADE NAHI, TEST NAHI (Free plan ~5000 bars = ~17 din).
+//  Asal test baad mein MT5 par, pehle se likhe qaide ke saath.
+//
+//  CHART: OANDA:XAUUSD 5 minute (draft sec 7 faisla 1). Andar 1m candles.
+//
+//  LABELS:
+//   Q1/Q2/Q3 BUY/SELL (rangeen) = teeno darwaze paar = asal signal. Baad mein
+//   neeche likha aata hai:  T-YES  = target pehle (+RR)
+//                           T-NO   = stop pehle (-1R)
+//                           T-BAND = din khatam (17:00 NY), jo R bana
+//   MISS (grey, chhota) = qaide ki price wali shart session mein bani magar koi
+//   darwaza fail (wajah likhi: OF nahi / XAGUSD saath / RR 1.6 / din hadd /
+//   trade khula). Is ka bhi "-> T-YES / T-NO" aata hai - taake dikhe filter ne
+//   achha kiya ya bura. Ek candle par stop aur target dono = T-NO (sakht).
+//
+//  QAIDE (draft sec 4 + sec 8):
+//   Q1 failed breakdown/breakout: PDL / raat ka low / balance low / demand
+//      ke 0.1 ATR neeche gaya, 3 candles mein close wapas oopar. Stop = toota
+//      low - 0.2 ATR. Doosra pair (XAG) bhi naya low banaye = toot asli = MISS.
+//   Q2 rejection: pichli 5 candles ka high PDH / raat high / balance high /
+//      supply ke 0.5 ATR andar, phir close pichli 3 candles ke low se neeche
+//      (structure toota). Stop = rejection high + 0.2 ATR. BUY bilkul ulta.
+//   Q3 pullback tika: level (NY open / VWAP / balance high / PDH) se 1.5 ATR
+//      oopar rally, wapas level ke 0.5 ATR andar, level na toota, candle oopar
+//      band (close > pichla high), VWAP oopar ja raha. Stop = pullback low - 0.2 ATR.
+//   Darwaze: session 09:30-11:30 NY; kam az kam 1 OF andaza usi taraf;
+//      target = agla level, RR >= 3; din mein 3; ek waqt ek trade.
+//   Balance = 12 candles ki range <= 2 ATR. Balance se 2 ATR oopar nikle =
+//      demand (hara box), neeche = supply (laal box).
+//
+//  OF ANDAZE (1m candles se, tick volume - ASLI order flow NAHI):
+//   Δ+/Δ- delta outlier: har 1m candle ka volume us ke rang se +/-; jor avg
+//         |delta| ka 2 guna.
+//   T  volume tail: neeche (ya oopar) ke 20% hisse mein volume < 15% + wahan wick.
+//   A  absorption: volume 1.5x avg, range < 0.5 ATR, delta ek taraf >= 30%
+//         (sell delta magar price na giri = BUY ishara).
+//   B/P shape: volume ka markaz neeche 35% (B = BUY) / oopar 35% (P = SELL),
+//         draft ke mutabiq.
+// ============================================================================
+indicator("JAS Order Flow Draft d1", "JAS OF d1", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
+
+// ---- Settings (draft sec 5.1 + numbers table) ----
+string G1 = "Session"
+string sessIn = input.session("0930-1130", "Signal session (New York waqt, DST khud)", group = G1)
+string TZ = "America/New_York"
+
+string G2 = "Faasle (ATR mein)"
+int   atrLen   = input.int(14, "ATR", minval = 1, group = G2)
+float nearAtr  = input.float(0.5, "Level ke paas (x ATR)", step = 0.1, group = G2)
+float brkAtr   = input.float(0.1, "Failed break: level ke paar (x ATR)", step = 0.05, group = G2)
+int   reclBars = input.int(3, "Reclaim kitni candles mein", minval = 1, group = G2)
+float slAtr    = input.float(0.2, "Stop: extreme se door (x ATR)", step = 0.05, group = G2)
+float minRR    = input.float(3.0, "Minimum RR", step = 0.5, group = G2)
+int   maxDay   = input.int(3, "Din mein signal hadd", minval = 1, group = G2)
+int   balBars  = input.int(12, "Balance: candles", minval = 3, group = G2)
+float balAtr   = input.float(2.0, "Balance: range <= x ATR", step = 0.1, group = G2)
+float moveAtr  = input.float(2.0, "Demand/supply: base se harkat (x ATR)", step = 0.5, group = G2)
+float q3Rally  = input.float(1.5, "Q3: level se rally (x ATR)", step = 0.5, group = G2)
+
+string G3 = "Order flow andaze (1m se - ASLI NAHI)"
+string ofTf    = input.timeframe("1", "Andar ka TF", group = G3)
+bool  needOF   = input.bool(true, "OF zaroori - kam az kam", inline = "of", group = G3)
+int   minOF    = input.int(1, "", minval = 1, maxval = 4, inline = "of", group = G3)
+int   ofWin    = input.int(3, "OF dekhne ki candles", minval = 1, group = G3)
+int   volLen   = input.int(20, "Average (candles)", minval = 5, group = G3)
+float outX     = input.float(2.0, "Delta outlier (x avg)", step = 0.1, group = G3)
+float tailPct  = input.float(15, "Volume tail: bahari 20% mein volume < %", group = G3)
+float absVolX  = input.float(1.5, "Absorption: volume (x avg)", step = 0.1, group = G3)
+float absRngX  = input.float(0.5, "Absorption: range < x ATR", step = 0.1, group = G3)
+float absDel   = input.float(30, "Absorption: delta >= volume ka %", group = G3)
+float shapePct = input.float(35, "P/B shape: volume markaz bahari %", group = G3)
+
+string G4 = "Doosre pairs (sirf Qaida 1)"
+bool   x1On   = input.bool(true, "", inline = "x1", group = G4)
+string x1Sym  = input.symbol("OANDA:XAGUSD", "", inline = "x1", group = G4)
+string x1Mode = input.string("Saath", "", options = ["Saath", "Ulta"], inline = "x1", group = G4)
+bool   x2On   = input.bool(false, "", inline = "x2", group = G4)
+string x2Sym  = input.symbol("OANDA:USDJPY", "", inline = "x2", group = G4)
+string x2Mode = input.string("Ulta", "", options = ["Saath", "Ulta"], inline = "x2", group = G4)
+int    smtLen = input.int(20, "Naya low/high: pichli candles", minval = 5, group = G4)
+
+string G5 = "Dikhana"
+bool showLv   = input.bool(true, "Levels (PDH/PDL/PDC, raat H/L, NY open, VWAP)", group = G5)
+bool showBal  = input.bool(true, "Balance / demand / supply box", group = G5)
+bool showMiss = input.bool(true, "MISS (ruke hue setup) bhi dikhao", group = G5)
+bool showTL   = input.bool(true, "Trade ki SL/TP lakeer", group = G5)
+bool showChop = input.bool(false, "Chop zone rang (level se door)", group = G5)
+bool showTbl  = input.bool(true, "Table", group = G5)
+
+Pick(bool c, string a, string b) =>
+    string r = b
+    if c
+        r := a
+    r
+
+float atr   = ta.atr(atrLen)
+float brk   = brkAtr * atr
+float nearD = nearAtr * atr
+float slb   = slAtr * atr
+
+// ---- Levels (draft sec 5.2) ----
+bool newDay = nz(ta.change(time("D"))) != 0
+[pdh, pdl, pdc] = request.security(syminfo.tickerid, "D", [high[1], low[1], close[1]], lookahead = barmerge.lookahead_on)
+bool inRth = not na(time(timeframe.period, "0930-1700", TZ))
+bool inSig = not na(time(timeframe.period, sessIn, TZ))
+
+var float onh = na
+var float onl = na
+var float nyo = na
+var float hod = na
+var float lod = na
+var bool  rthOn = false
+if newDay
+    onh := na
+    onl := na
+    nyo := na
+    hod := na
+    lod := na
+    rthOn := false
+hod := na(hod) ? high : math.max(hod, high)
+lod := na(lod) ? low : math.min(lod, low)
+if inRth and not rthOn
+    rthOn := true
+    nyo := open
+if not rthOn
+    onh := na(onh) ? high : math.max(onh, high)
+    onl := na(onl) ? low : math.min(onl, low)
+float onhF = rthOn ? onh : na
+float onlF = rthOn ? onl : na
+float hodX = newDay ? na : hod[1]
+float lodX = newDay ? na : lod[1]
+float vw = ta.vwap(hlc3)
+
+// Balance range + market structure demand/supply
+float hiN = ta.highest(high, balBars)
+float loN = ta.lowest(low, balBars)
+bool isBal = hiN - loN <= balAtr * atr
+var float balHi = na
+var float balLo = na
+var int   balKind = 0
+var bool  balLive = false
+var box   balBox = na
+var float dmdHi = na
+var float dmdLo = na
+var float supHi = na
+var float supLo = na
+float midN = (hiN + loN) / 2
+if isBal and (na(balHi) or midN > balHi or midN < balLo)
+    balHi := hiN
+    balLo := loN
+    balKind := 0
+    balLive := true
+    if showBal
+        balBox := box.new(bar_index - balBars + 1, balHi, bar_index, balLo, border_color = color.new(color.gray, 50), bgcolor = color.new(color.gray, 90))
+else if balLive
+    if close <= balHi and close >= balLo
+        if not na(balBox)
+            box.set_right(balBox, bar_index)
+    else
+        balLive := false
+if not na(balHi) and balKind == 0
+    if close >= balHi + moveAtr * atr
+        balKind := 1
+        dmdHi := balHi
+        dmdLo := balLo
+        if not na(balBox)
+            box.set_bgcolor(balBox, color.new(color.green, 85))
+            box.set_border_color(balBox, color.new(color.green, 40))
+    else if close <= balLo - moveAtr * atr
+        balKind := -1
+        supHi := balHi
+        supLo := balLo
+        if not na(balBox)
+            box.set_bgcolor(balBox, color.new(color.red, 85))
+            box.set_border_color(balBox, color.new(color.red, 40))
+
+// ---- Order flow andaze (draft sec 5.3) - 1m candles se ----
+[iO, iH, iL, iC, iV] = request.security_lower_tf(syminfo.tickerid, ofTf, [open, high, low, close, volume])
+float dlt = 0.0
+float vt = 0.0
+float vLo = 0.0
+float vHi = 0.0
+float vPos = 0.0
+float rng = high - low
+int nIn = array.size(iC)
+if nIn > 0
+    for i = 0 to nIn - 1
+        float v = nz(array.get(iV, i))
+        float o = array.get(iO, i)
+        float c = array.get(iC, i)
+        dlt += c > o ? v : c < o ? -v : 0.0
+        vt += v
+        if rng > 0
+            float p = ((array.get(iH, i) + array.get(iL, i)) / 2 - low) / rng
+            vPos += v * p
+            if p <= 0.2
+                vLo += v
+            if p >= 0.8
+                vHi += v
+bool  hasOF = nIn > 0 and vt > 0
+float pos = hasOF ? vPos / vt : na
+bool  noVol = ta.cum(vt) == 0
+float vAvg = ta.sma(vt, volLen)
+float dAvg = ta.sma(math.abs(dlt), volLen)
+
+bool dUp     = hasOF and dlt > 0 and math.abs(dlt) >= outX * dAvg
+bool dDn     = hasOF and dlt < 0 and math.abs(dlt) >= outX * dAvg
+bool tailLo  = hasOF and rng > 0 and vLo < vt * tailPct / 100 and math.min(open, close) - low >= 0.2 * rng
+bool tailHi  = hasOF and rng > 0 and vHi < vt * tailPct / 100 and high - math.max(open, close) >= 0.2 * rng
+bool absBuy  = hasOF and vt >= absVolX * vAvg and rng < absRngX * atr and dlt <= -absDel / 100 * vt
+bool absSell = hasOF and vt >= absVolX * vAvg and rng < absRngX * atr and dlt >= absDel / 100 * vt
+bool shpB    = hasOF and pos <= shapePct / 100
+bool shpP    = hasOF and pos >= 1 - shapePct / 100
+
+bool wDU = ta.highest(dUp ? 1 : 0, ofWin) > 0
+bool wTL = ta.highest(tailLo ? 1 : 0, ofWin) > 0
+bool wAB = ta.highest(absBuy ? 1 : 0, ofWin) > 0
+bool wSB = ta.highest(shpB ? 1 : 0, ofWin) > 0
+bool wDD = ta.highest(dDn ? 1 : 0, ofWin) > 0
+bool wTH = ta.highest(tailHi ? 1 : 0, ofWin) > 0
+bool wAS = ta.highest(absSell ? 1 : 0, ofWin) > 0
+bool wSP = ta.highest(shpP ? 1 : 0, ofWin) > 0
+int bullN = (wDU ? 1 : 0) + (wTL ? 1 : 0) + (wAB ? 1 : 0) + (wSB ? 1 : 0)
+int bearN = (wDD ? 1 : 0) + (wTH ? 1 : 0) + (wAS ? 1 : 0) + (wSP ? 1 : 0)
+string bullTxt = Pick(wDU, "Δ+ ", "") + Pick(wTL, "T ", "") + Pick(wAB, "A ", "") + Pick(wSB, "B", "")
+string bearTxt = Pick(wDD, "Δ- ", "") + Pick(wTH, "T ", "") + Pick(wAS, "A ", "") + Pick(wSP, "P", "")
+
+// ---- Doosre pairs (draft sec 5.7): naya low/high bana ya nahi ----
+[x1L, x1H] = request.security(x1Sym, timeframe.period, [low, high], ignore_invalid_symbol = true)
+[x2L, x2H] = request.security(x2Sym, timeframe.period, [low, high], ignore_invalid_symbol = true)
+bool x1NewLo = ta.lowest(x1L, reclBars) < ta.lowest(x1L, smtLen)[reclBars]
+bool x1NewHi = ta.highest(x1H, reclBars) > ta.highest(x1H, smtLen)[reclBars]
+bool x2NewLo = ta.lowest(x2L, reclBars) < ta.lowest(x2L, smtLen)[reclBars]
+bool x2NewHi = ta.highest(x2H, reclBars) > ta.highest(x2H, smtLen)[reclBars]
+array<string> x1Parts = str.split(x1Sym, ":")
+array<string> x2Parts = str.split(x2Sym, ":")
+string x1Nm = array.get(x1Parts, array.size(x1Parts) - 1)
+string x2Nm = array.get(x2Parts, array.size(x2Parts) - 1)
+
+f_xc(bool on, string mode, bool nLo, bool nHi, int dir) =>
+    on and (dir == 1 ? (mode == "Saath" ? nLo : nHi) : (mode == "Saath" ? nHi : nLo))
+
+// ---- Price ki shartein (draft sec 4, sec 5.4) ----
+float lo3 = ta.lowest(low, reclBars)
+float hi3 = ta.highest(high, reclBars)
+float hh5 = ta.highest(high, 5)
+float ll5 = ta.lowest(low, 5)
+float llPrev = ta.lowest(low, 3)[1]
+float hhPrev = ta.highest(high, 3)[1]
+bool brkDn = close < llPrev and close[1] >= llPrev[1]
+bool brkUp = close > hhPrev and close[1] <= hhPrev[1]
+float rallyHi = ta.highest(high, balBars)
+float rallyLo = ta.lowest(low, balBars)
+bool vwUp = na(vw) or na(vw[balBars]) or vw >= vw[balBars]
+bool vwDn = na(vw) or na(vw[balBars]) or vw <= vw[balBars]
+
+array<float>  lvQ1L = array.from(pdl, onlF, balLo, dmdLo)
+array<string> nmQ1L = array.from("PDL", "Raat-L", "Bal-L", "Demand")
+array<float>  lvQ1S = array.from(pdh, onhF, balHi, supHi)
+array<string> nmQ1S = array.from("PDH", "Raat-H", "Bal-H", "Supply")
+array<float>  lvQ2L = array.from(pdl, onlF, balLo, dmdLo, dmdHi)
+array<string> nmQ2L = array.from("PDL", "Raat-L", "Bal-L", "Demand", "Demand")
+array<float>  lvQ2S = array.from(pdh, onhF, balHi, supHi, supLo)
+array<string> nmQ2S = array.from("PDH", "Raat-H", "Bal-H", "Supply", "Supply")
+array<float>  lvQ3L = array.from(nyo, vw, balHi, pdh)
+array<string> nmQ3L = array.from("NY open", "VWAP", "Bal-H", "PDH")
+array<float>  lvQ3S = array.from(nyo, vw, balLo, pdl)
+array<string> nmQ3S = array.from("NY open", "VWAP", "Bal-L", "PDL")
+array<float>  allLv = array.from(pdh, pdl, pdc, onhF, onlF, nyo, vw, balHi, balLo, dmdHi, dmdLo, supHi, supLo, hodX, lodX)
+
+// Q1: level ke paar gaya, reclaimBars mein wapas andar close
+f_q1(int dir, array<float> lv, array<string> nm) =>
+    string hit = ""
+    for [i, L] in lv
+        if hit == "" and not na(L)
+            bool ok = dir == 1 ? (lo3 < L - brk and close > L and (close[1] <= L or low < L - brk)) : (hi3 > L + brk and close < L and (close[1] >= L or high > L + brk))
+            if ok
+                hit := array.get(nm, i)
+    hit
+
+// Q2: extreme level ke paas (structure ka tootna bahar check hota hai)
+f_near(array<float> lv, array<string> nm, float px) =>
+    string hit = ""
+    for [i, L] in lv
+        if hit == "" and not na(L) and math.abs(px - L) <= nearD
+            hit := array.get(nm, i)
+    hit
+
+// Q3: rally ke baad pullback level par tika, phir oopar band
+f_q3(int dir, array<float> lv, array<string> nm) =>
+    string hit = ""
+    for [i, L] in lv
+        if hit == "" and not na(L)
+            bool ok = dir == 1 ? (rallyHi >= L + q3Rally * atr and low <= L + nearD and lo3 >= L - brk and close > high[1] and close > open and vwUp) : (rallyLo <= L - q3Rally * atr and high >= L - nearD and hi3 <= L + brk and close < low[1] and close < open and vwDn)
+            if ok
+                hit := array.get(nm, i)
+    hit
+
+// Target = signal ki taraf agla level (draft sec 8.5)
+f_tgt(int dir, float px) =>
+    float best = na
+    for L in allLv
+        if not na(L)
+            if dir == 1 and L > px and (na(best) or L < best)
+                best := L
+            if dir == -1 and L < px and (na(best) or L > best)
+                best := L
+    best
+
+f_nearAny(float px) =>
+    bool r = false
+    for L in allLv
+        if not na(L) and math.abs(px - L) <= nearD
+            r := true
+    r
+
+string q1L = f_q1(1, lvQ1L, nmQ1L)
+string q1S = f_q1(-1, lvQ1S, nmQ1S)
+string q2L = brkUp ? f_near(lvQ2L, nmQ2L, ll5) : ""
+string q2S = brkDn ? f_near(lvQ2S, nmQ2S, hh5) : ""
+string q3L = f_q3(1, lvQ3L, nmQ3L)
+string q3S = f_q3(-1, lvQ3S, nmQ3S)
+
+// ---- Trades ka hisaab (draft sec 5.6) ----
+type Trd
+    int   dir
+    float en
+    float sl
+    float tp
+    int   bar
+    bool  real
+    int   q
+    float rr
+    label lb
+    line  lSl
+    line  lTp
+
+var array<Trd> trs = array.new<Trd>()
+var array<int>   sN  = array.new_int(3, 0)
+var array<int>   sY  = array.new_int(3, 0)
+var array<int>   sNo = array.new_int(3, 0)
+var array<int>   sB  = array.new_int(3, 0)
+var array<float> sR  = array.new_float(3, 0.0)
+var int mN = 0
+var int mY = 0
+var int mNo = 0
+var int mB = 0
+var int dayCnt = 0
+var int lastL = na
+var int lastS = na
+if newDay
+    dayCnt := 0
+
+bool aBuy = false
+bool aSell = false
+if barstate.isconfirmed
+    // 1) khuli trades: stop pehle, target baad mein, din khatam = band
+    int nOpen = array.size(trs)
+    if nOpen > 0
+        for i = nOpen - 1 to 0
+            Trd t = array.get(trs, i)
+            if bar_index > t.bar
+                string res = ""
+                float r = na
+                int xEnd = bar_index
+                if newDay
+                    res := "T-BAND"
+                    r := t.dir * (close[1] - t.en) / math.abs(t.en - t.sl)
+                    xEnd := bar_index - 1
+                else if (t.dir == 1 and low <= t.sl) or (t.dir == -1 and high >= t.sl)
+                    res := "T-NO"
+                    r := -1.0
+                else if (t.dir == 1 and high >= t.tp) or (t.dir == -1 and low <= t.tp)
+                    res := "T-YES"
+                    r := t.rr
+                if res != ""
+                    color rc = res == "T-YES" ? color.green : res == "T-NO" ? color.red : color.gray
+                    string rt = Pick(r >= 0, "+", "") + str.tostring(r, "#.#") + "R"
+                    if t.real
+                        label.set_text(t.lb, label.get_text(t.lb) + "\n" + res + " " + rt)
+                        label.set_color(t.lb, rc)
+                        if not na(t.lSl)
+                            line.set_x2(t.lSl, xEnd)
+                            line.set_x2(t.lTp, xEnd)
+                        int k = t.q - 1
+                        if res == "T-YES"
+                            array.set(sY, k, array.get(sY, k) + 1)
+                        else if res == "T-NO"
+                            array.set(sNo, k, array.get(sNo, k) + 1)
+                        else
+                            array.set(sB, k, array.get(sB, k) + 1)
+                        array.set(sR, k, array.get(sR, k) + r)
+                    else
+                        if not na(t.lb)
+                            label.set_text(t.lb, label.get_text(t.lb) + "\n-> " + res)
+                            label.set_textcolor(t.lb, rc)
+                        if res == "T-YES"
+                            mY += 1
+                        else if res == "T-NO"
+                            mNo += 1
+                        else
+                            mB += 1
+                    array.remove(trs, i)
+                else if t.real and not na(t.lSl)
+                    line.set_x2(t.lSl, bar_index)
+                    line.set_x2(t.lTp, bar_index)
+
+    bool realOpen = false
+    for ot in trs
+        if ot.real
+            realOpen := true
+
+    // 2) naye setup: darwaza 1 (level) + price shart, phir darwaza 2 (OF, pair) aur 3 (RR)
+    for d = 0 to 1
+        int dir = d == 0 ? 1 : -1
+        int qn = 0
+        string nm = ""
+        float sl = na
+        if dir == 1
+            if q1L != ""
+                qn := 1
+                nm := q1L
+                sl := lo3 - slb
+            else if q2L != ""
+                qn := 2
+                nm := q2L
+                sl := ll5 - slb
+            else if q3L != ""
+                qn := 3
+                nm := q3L
+                sl := lo3 - slb
+        else
+            if q1S != ""
+                qn := 1
+                nm := q1S
+                sl := hi3 + slb
+            else if q2S != ""
+                qn := 2
+                nm := q2S
+                sl := hh5 + slb
+            else if q3S != ""
+                qn := 3
+                nm := q3S
+                sl := hi3 + slb
+        bool cool = dir == 1 ? (na(lastL) or bar_index - lastL > reclBars) : (na(lastS) or bar_index - lastS > reclBars)
+        if qn > 0 and inSig and cool
+            if dir == 1
+                lastL := bar_index
+            else
+                lastS := bar_index
+            float en = close
+            float tp = f_tgt(dir, en)
+            float risk = dir * (en - sl)
+            float rr = na(tp) or risk <= 0 ? na : dir * (tp - en) / risk
+            int ofN = dir == 1 ? bullN : bearN
+            string why = ""
+            if needOF and (noVol or ofN < minOF)
+                why := why + "OF nahi "
+            if qn == 1 and f_xc(x1On, x1Mode, x1NewLo, x1NewHi, dir)
+                why := why + x1Nm + " " + x1Mode + " "
+            if qn == 1 and f_xc(x2On, x2Mode, x2NewLo, x2NewHi, dir)
+                why := why + x2Nm + " " + x2Mode + " "
+            if na(rr)
+                why := why + "target nahi "
+            else if rr < minRR
+                why := why + "RR " + str.tostring(rr, "#.#") + " "
+            if dayCnt >= maxDay
+                why := why + "din hadd "
+            if realOpen
+                why := why + "trade khula "
+            string head = "Q" + str.tostring(qn) + " " + Pick(dir == 1, "BUY", "SELL") + " @" + nm
+            string ofTxt = dir == 1 ? bullTxt : bearTxt
+            string yl = dir == 1 ? yloc.belowbar : yloc.abovebar
+            if why == ""
+                dayCnt += 1
+                realOpen := true
+                string txt = head + "\nRR " + str.tostring(rr, "#.#") + " | OF " + ofTxt
+                label lb = label.new(bar_index, close, txt, yloc = yl, style = dir == 1 ? label.style_label_up : label.style_label_down, color = dir == 1 ? color.blue : color.orange, textcolor = color.white, size = size.small)
+                line l1 = na
+                line l2 = na
+                if showTL
+                    l1 := line.new(bar_index, sl, bar_index, sl, color = color.red, style = line.style_dotted)
+                    l2 := line.new(bar_index, tp, bar_index, tp, color = color.green, style = line.style_dotted)
+                array.push(trs, Trd.new(dir, en, sl, tp, bar_index, true, qn, rr, lb, l1, l2))
+                array.set(sN, qn - 1, array.get(sN, qn - 1) + 1)
+                alert("JAS OF d1: " + head + " RR " + str.tostring(rr, "#.#") + " SL " + str.tostring(sl, format.mintick) + " TP " + str.tostring(tp, format.mintick), alert.freq_once_per_bar_close)
+                if dir == 1
+                    aBuy := true
+                else
+                    aSell := true
+            else
+                mN += 1
+                label lm = na
+                if showMiss
+                    lm := label.new(bar_index, close, "MISS " + head + "\n" + why, yloc = yl, style = label.style_none, textcolor = color.gray, size = size.tiny)
+                if not na(tp) and risk > 0
+                    array.push(trs, Trd.new(dir, en, sl, tp, bar_index, false, qn, rr, lm, na, na))
+
+// ---- Dikhana (draft sec 5.8) ----
+plot(showLv and not newDay ? pdh : na, "PDH", color.new(color.red, 40), 1, plot.style_linebr)
+plot(showLv and not newDay ? pdl : na, "PDL", color.new(color.green, 40), 1, plot.style_linebr)
+plot(showLv and not newDay ? pdc : na, "PDC", color.new(color.gray, 40), 1, plot.style_linebr)
+plot(showLv and rthOn ? onh : na, "Raat high", color.new(color.maroon, 40), 1, plot.style_linebr)
+plot(showLv and rthOn ? onl : na, "Raat low", color.new(color.teal, 40), 1, plot.style_linebr)
+plot(showLv and rthOn ? nyo : na, "NY open", color.new(color.yellow, 30), 1, plot.style_linebr)
+plot(showLv ? vw : na, "VWAP", color.new(color.purple, 40), 1, plot.style_linebr)
+bgcolor(showChop and inSig and not f_nearAny(close) ? color.new(color.gray, 90) : na, title = "Chop zone")
+
+alertcondition(aBuy, "JAS OF BUY", "JAS OF d1: BUY signal")
+alertcondition(aSell, "JAS OF SELL", "JAS OF d1: SELL signal")
+
+var table tb = table.new(position.bottom_right, 6, 7, bgcolor = color.new(color.black, 25), border_width = 1)
+if showTbl and barstate.islast
+    table.cell(tb, 0, 0, "d1", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 0, "Signal", text_color = color.white, text_size = size.small)
+    table.cell(tb, 2, 0, "T-YES", text_color = color.green, text_size = size.small)
+    table.cell(tb, 3, 0, "T-NO", text_color = color.red, text_size = size.small)
+    table.cell(tb, 4, 0, "BAND", text_color = color.gray, text_size = size.small)
+    table.cell(tb, 5, 0, "Kul R", text_color = color.white, text_size = size.small)
+    int tN = 0
+    int tY = 0
+    int tNo = 0
+    int tB = 0
+    float tR = 0.0
+    for k = 0 to 2
+        table.cell(tb, 0, k + 1, "Q" + str.tostring(k + 1), text_color = color.white, text_size = size.small)
+        table.cell(tb, 1, k + 1, str.tostring(array.get(sN, k)), text_color = color.white, text_size = size.small)
+        table.cell(tb, 2, k + 1, str.tostring(array.get(sY, k)), text_color = color.green, text_size = size.small)
+        table.cell(tb, 3, k + 1, str.tostring(array.get(sNo, k)), text_color = color.red, text_size = size.small)
+        table.cell(tb, 4, k + 1, str.tostring(array.get(sB, k)), text_color = color.gray, text_size = size.small)
+        table.cell(tb, 5, k + 1, str.tostring(array.get(sR, k), "#.#"), text_color = color.white, text_size = size.small)
+        tN += array.get(sN, k)
+        tY += array.get(sY, k)
+        tNo += array.get(sNo, k)
+        tB += array.get(sB, k)
+        tR += array.get(sR, k)
+    table.cell(tb, 0, 4, "Kul", text_color = color.yellow, text_size = size.small)
+    table.cell(tb, 1, 4, str.tostring(tN), text_color = color.yellow, text_size = size.small)
+    table.cell(tb, 2, 4, str.tostring(tY), text_color = color.green, text_size = size.small)
+    table.cell(tb, 3, 4, str.tostring(tNo), text_color = color.red, text_size = size.small)
+    table.cell(tb, 4, 4, str.tostring(tB), text_color = color.gray, text_size = size.small)
+    table.cell(tb, 5, 4, str.tostring(tR, "#.#"), text_color = color.yellow, text_size = size.small)
+    table.cell(tb, 0, 5, "MISS", text_color = color.gray, text_size = size.small)
+    table.cell(tb, 1, 5, str.tostring(mN), text_color = color.gray, text_size = size.small)
+    table.cell(tb, 2, 5, str.tostring(mY), text_color = color.green, text_size = size.small)
+    table.cell(tb, 3, 5, str.tostring(mNo), text_color = color.red, text_size = size.small)
+    table.cell(tb, 4, 5, str.tostring(mB), text_color = color.gray, text_size = size.small)
+    table.cell(tb, 5, 5, "-", text_color = color.gray, text_size = size.small)
+    string note = Pick(noVol, "VOLUME NAHI - OF band", "OF = andaza (tick volume)") + " | TF " + timeframe.period + Pick(timeframe.period == "5", "", " (5 chahiye)")
+    table.cell(tb, 0, 6, note, text_color = color.orange, text_size = size.tiny)
+    table.merge_cells(tb, 0, 6, 5, 6)

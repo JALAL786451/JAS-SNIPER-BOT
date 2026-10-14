@@ -65,7 +65,8 @@ andar 1m, NY open ke 2 ghante**) parha. Claude ki raye: Free TV par ~5000 bars =
 delta OHLC se hi = alag tasdeeq nahi, spread 5m stop ka 10-20%; kitabi concepts: Dalton TPO/80% rule,
 Williams Oops, Raschke Turtle Soup, Wyckoff spring, Osler round numbers. 1H wala idea user ne NAHI liya.
 **i3 (sec 6) user ne ROKA - yaad mein rakha.** **Agla kaam: koshish #16 = draft wala idea (5m)** -
-naqsha + pehle se likha qaida; user ka "D" BAQI.
+user ne pehle Pine manga: `indicators/jas_of_draft.pine` d1 bana
+(Q1-Q3, T-YES/T-NO/MISS labels, table). **Compile + chart screenshot BAQI**; phir MT5 naqsha + qaida.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 

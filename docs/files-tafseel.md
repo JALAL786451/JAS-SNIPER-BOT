@@ -24,7 +24,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `JasTideEA` (t4).
 
 **Pine - naap / radar (`indicators/`):** `jas_tide_radar` (Kachhua 9 market), `jas_tide_tokri`
-(commodity, #6 PASS), `jas_rsi2_radar`, `jas_ibs_radar` (#14-15), `jas_tom_radar` (#5),
+(commodity, #6 PASS), `jas_rsi2_radar`, `jas_ibs_radar` (#14-15), `jas_of_draft` (#16 draft dekhne wala, T-YES/T-NO/MISS), `jas_tom_radar` (#5),
 `jas_ichimoku_radar` (#7-8), `jas_coint_radar` (#10-11), ginti scripts (`jas_*_ginti`),
 `jas_tide_smc`, `jas_tide_seekh`, `jas_tide_signal`, `jas_seerhi`, `jas_pro_box`,
 `smc_coach_pro_v3/v4`, `smc_coach_scalp_v6`, `smc_trend_pro`, aur doosron ke scripts
