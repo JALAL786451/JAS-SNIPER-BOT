@@ -68,7 +68,9 @@ Williams Oops, Raschke Turtle Soup, Wyckoff spring, Osler round numbers. 1H wala
 user ne pehle Pine manga: `indicators/jas_of_draft.pine` d2 (d1 user ne 1m par lagaya - 5m chahiye; d2 white chart rang)
 (Q1-Q3, T-YES/T-NO/MISS labels, table). Compile ✅. 5m screenshot (13-14 Oct, ~1.5 din): asal signal 2 = dono T-NO (-2R);
 MISS 77 = 45 YES / 29 NO magar kul **-2.8R** (jeet chhoti). Video ka footprint/heatmap gold CFD par mumkin nahi.
-**Agla (Claude ki raye, "D" BAQI):** MT5 EA se Q1 (sirf price) 5m TALAASH 2021-2024 + spread, pehle se likha qaida.
+MT5 Q1 test (5m 2021-2024 + spread) user ne **18 Oct reset ke baad** rakha; agents/judges user ne band kiye.
+User: "box laal = price neeche, hara = oopar, bari moves miss" -> box ka rang move ke BAAD lagta hai (hindsight).
+**Agla ("D" BAQI):** d3 = box toot ki ginti (toot ke waqt: 2 ATR chala vs wapas andar), 5m/4H/1D par.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 
