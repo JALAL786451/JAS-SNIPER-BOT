@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v5.1                                  |
+//|  JAS DESK VIEW   -   build v5.2                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v5.1"
+#define EA_BUILD "v5.2"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -525,6 +525,24 @@ string BinaNuqsanText(double perPt)
                      units * step, units * step, lines, M(res));
    s += StringFormat("Positions: %d -> %d   kul lots %.2f -> %.2f   NET / equity WAHI\n",
                      c, c - closed, totU * step, (totU - 2 * units) * step);
+   // bachi kitab: BUY / SELL kitni, ausat, kahan se kahan tak, abhi ki qeemat se neeche / oopar
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   for(int side = 0; side < 2; side++)
+     {
+      int want = (side == 0) ? (int)POSITION_TYPE_BUY : (int)POSITION_TYPE_SELL;
+      long u = 0, uDn = 0, uUp = 0; double w = 0.0, lo = 0.0, hi = 0.0; int np = 0;
+      for(int i = 0; i < c; i++)
+        {
+         if(ty[i] != want || left[i] <= 0) continue;
+         u += left[i]; w += px[i] * left[i]; np++;
+         if(px[i] < bid) uDn += left[i]; else uUp += left[i];
+         if(np == 1 || px[i] < lo) lo = px[i];
+         if(np == 1 || px[i] > hi) hi = px[i];
+        }
+      s += StringFormat("Bachegi %s: %d position, %.2f lot, ausat %s, %s se %s tak  | abhi se NEECHE %.2f, OOPAR %.2f\n",
+                        Pick(side == 0, "BUY ", "SELL"), np, u * step, Px(u > 0 ? w / u : 0.0),
+                        Px(lo), Px(hi), uDn * step, uUp * step);
+     }
    s += lst;
    if(lines > InpBnListMax) s += StringFormat("   ... aur %d jori\n", lines - InpBnListMax);
    s += "Bachengi: sab se neeche wali BUY aur sab se oopar wali SELL. SIRF DIKHAWA - kuch band nahi hua.\n\n";
