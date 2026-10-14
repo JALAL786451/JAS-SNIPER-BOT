@@ -67,7 +67,7 @@ ulta 1:1 par koi edge nahi (Kachhua ki edge 1:1 se nahi naapi jati - lambi jeet)
 mumkin nahi. i3 (sec 6) user ne roka. Agents/judges user ne band kiye (18 Oct 02:00 reset tak).
 `jas_tide_smc` s2.8: S/R (hafta, mahina, naali) sirf dekhne ke liye, default band, engine wahi.
 `docs/peshgoi-kitab.md` bani (user ki numayan peshgoi #1, 13 Nov tak dekhna).
-JasDeskView v5.1 (BINA NUQSAN JORI + JORI MUQABLA A sasti vs B mehngi BUY, 0.20 lot) + JasJoriClose s2 (InpMehngiPehle) - compile BAQI.
+JasDeskView v5.3 (QEEMAT KI SEERHI + CSV; BINA NUQSAN JORI user ke maqsad ke ULAT - neeche wali BUY kha jati, mat chalao; + JORI MUQABLA A sasti vs B mehngi BUY, 0.20 lot) + JasJoriClose s2 (InpMehngiPehle) - compile BAQI.
 **Agla:** 18 Oct ke baad MT5 Q1 test (5m 2021-2024 + spread, pehle se likha qaida) = #16 ka aakhri faisla; umeed kam.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3

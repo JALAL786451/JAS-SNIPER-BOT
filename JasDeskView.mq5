@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v5.2                                  |
+//|  JAS DESK VIEW   -   build v5.3                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v5.2"
+#define EA_BUILD "v5.3"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -44,10 +44,15 @@ input group "=== Nikalne ka plan ==="
 input bool   InpShowPlan    = true;   // Jori bana kar nikalne ka plan dikhao
 input double InpNetWarn     = 0.20;   // Band karne ke baad NET is se zyada ho to chetawani
 
+input group "=== Poori kitab Claude ke liye (v5.3) ==="
+input bool   InpShowLadder  = true;   // QEEMAT KI SEERHI: har $X ke khane mein BUY / SELL lots
+input double InpLadderStep  = 10.0;   // Seerhi ka ek khana kitne dollar ka
+input bool   InpSaveCsv     = true;   // Har lot ki poori list CSV file mein (MQL5\Files) - Claude ko bhejne ke liye
+
 input group "=== Jori muqabla (v5) ==="
-input bool   InpShowMuqabla = true;   // SELL khatam: sasti BUY pehle (A) vs mehngi BUY pehle (B)
+input bool   InpShowMuqabla = false;   // SELL khatam: sasti BUY pehle (A) vs mehngi BUY pehle (B)
 input double InpChunkLot    = 0.20;   // Ek dafa mein kitni SELL lot (user ka qaida: 0.20 tak)
-input bool   InpShowBinaNuqsan = true; // v5.1: BINA NUQSAN JORI - SELL + us se neeche khuli BUY (nateeja >= 0)
+input bool   InpShowBinaNuqsan = false; // v5.1: BINA NUQSAN JORI - SELL + us se neeche khuli BUY (nateeja >= 0)
 input int    InpBnListMax  = 12;    // Bina nuqsan jori ki list mein kitni line
 
 input group "=== Bari lot ki jori ==="
@@ -549,6 +554,68 @@ string BinaNuqsanText(double perPt)
    return(s);
   }
 
+//+------------------------------------------------------------------+
+//|  v5.3: QEEMAT KI SEERHI - har khane (InpLadderStep dollar) mein    |
+//|  kitni BUY aur SELL lots khuli, aur un ka P/L. Oopar se neeche.    |
+//+------------------------------------------------------------------+
+string LadderText(double bid)
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+   if(c <= 0) return("");
+   double st = (InpLadderStep > 0.0) ? InpLadderStep : 10.0;
+   double lo = px[0], hi = px[0];
+   for(int i = 1; i < c; i++) { if(px[i] < lo) lo = px[i]; if(px[i] > hi) hi = px[i]; }
+   int k0 = (int)MathFloor(lo / st), k1 = (int)MathFloor(hi / st);
+   int kb = (int)MathFloor(bid / st);
+   string s = StringFormat("--- QEEMAT KI SEERHI ($%.0f khane, oopar se neeche; abhi %s) ---\n", st, Px(bid));
+   s += "Khana              BUY lot (ginti)     SELL lot (ginti)     P/L\n";
+   bool marked = false;
+   for(int k = k1; k >= k0; k--)
+     {
+      if(!marked && kb >= k) { s += StringFormat(">>>>>>>>>>>>>>>> ABHI %s <<<<<<<<<<<<<<<<\n", Px(bid)); marked = true; }
+      double bl = 0, sl = 0, p = 0; int bn = 0, sn = 0;
+      for(int i = 0; i < c; i++)
+        {
+         if((int)MathFloor(px[i] / st) != k) continue;
+         if(ty[i] == POSITION_TYPE_BUY) { bl += vol[i]; bn++; } else { sl += vol[i]; sn++; }
+         p += pl[i];
+        }
+      if(bn == 0 && sn == 0) continue;
+      s += StringFormat("%7.0f - %-7.0f   %5.2f (%3d)        %5.2f (%3d)       %10s\n",
+                        k * st, (k + 1) * st, bl, bn, sl, sn, M(p));
+     }
+   if(!marked) s += StringFormat(">>>>>>>>>>>>>>>> ABHI %s <<<<<<<<<<<<<<<<\n", Px(bid));
+   return(s + "\n");
+  }
+
+//--- v5.3: har lot ki poori list CSV mein (sirf FileWrite - trade nahi)
+datetime g_csvT = 0;
+void SaveCsv()
+  {
+   if(TimeCurrent() - g_csvT < 60) return;
+   g_csvT = TimeCurrent();
+   string fn = "JasDeskView_" + _Symbol + ".csv";
+   int h = FileOpen(fn, FILE_WRITE | FILE_CSV | FILE_ANSI, ',');
+   if(h == INVALID_HANDLE) return;
+   FileWrite(h, "ticket", "type", "lots", "open_price", "open_time", "sl", "tp", "profit", "swap", "bid_now", "saved_at");
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   for(int i = 0; i < PositionsTotal(); i++)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      FileWrite(h, (string)t,
+                Pick(PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY, "BUY", "SELL"),
+                DoubleToString(PositionGetDouble(POSITION_VOLUME), 2),
+                Px(PositionGetDouble(POSITION_PRICE_OPEN)),
+                TimeToString((datetime)PositionGetInteger(POSITION_TIME), TIME_DATE | TIME_MINUTES),
+                Px(PositionGetDouble(POSITION_SL)), Px(PositionGetDouble(POSITION_TP)),
+                M(PositionGetDouble(POSITION_PROFIT)), M(PositionGetDouble(POSITION_SWAP)),
+                Px(bid), TimeToString(TimeCurrent(), TIME_DATE | TIME_SECONDS));
+     }
+   FileClose(h);
+  }
+
 string BigPairText(double net, double tot, double basket)
   {
    ulong tk[]; int ty[]; double vol[], px[], pl[];
@@ -929,6 +996,8 @@ void Draw()
      }
 
    //--- D2) NIKALNE KA PLAN -------------------------------------------
+   if(InpShowLadder) s += LadderText(bid);
+   if(InpSaveCsv) SaveCsv();
    if(InpShowBinaNuqsan) s += BinaNuqsanText(perPt);
    if(InpShowMuqabla) s += MuqablaText(b, net, bid);
    if(InpShowBigPair) s += BigPairText(net, tot, basket);
