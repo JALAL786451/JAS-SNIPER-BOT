@@ -59,11 +59,15 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**13 Oct raat (saatvi chat):** usage naapa (chat Opus + xhigh, shuru mein ~1 lakh token).
-MERI-KAHANI 43 KB -> 15 KB, phir user ki farmaish par sab ek file `TRADING.md` (naam sirf TRADING).
-**Agla kaam:** JasIbsEA i3 (sec 6) - user ka **"D" BAQI** (pehle naqsha dikha kar poochho).
+**14 Oct (aathvi chat):** CLAUDE.md 5 KB -> 2 KB (files ki list `docs/files-tafseel.md` mein).
+User ka draft `docs/es_orderflow_draft.md` (Carmine Rosato ES order flow -> XAUUSD Pine, **5m chart,
+andar 1m, NY open ke 2 ghante**) parha. Claude ki raye: Free TV par ~5000 bars = ~17 din (test MT5 par),
+delta OHLC se hi = alag tasdeeq nahi, spread 5m stop ka 10-20%; kitabi concepts: Dalton TPO/80% rule,
+Williams Oops, Raschke Turtle Soup, Wyckoff spring, Osler round numbers. 1H wala idea user ne NAHI liya.
+**i3 (sec 6) user ne ROKA - yaad mein rakha.** **Agla kaam: koshish #16 = draft wala idea (5m)** -
+naqsha + pehle se likha qaida; user ka "D" BAQI.
 
-## 6. AGLA KAAM: JasIbsEA i3
+## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 
 **Kyun:** i2 Tester ki 8 trades TradingView (`strategies/jas_ibs_test.pine`) se milayin: 6/8 signal
 din same; 6 mili trades TV -0.07R vs MT5 -0.93R. Engine ki ghalti NAHI. Wajah:
