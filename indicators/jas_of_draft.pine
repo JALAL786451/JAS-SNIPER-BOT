@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS ORDER FLOW DRAFT  (build d1, Pine v6)  -  koshish #16 ka DEKHNE wala
+//  JAS ORDER FLOW DRAFT  (build d2, Pine v6)  -  koshish #16 ka DEKHNE wala
 //  indicator. Qaide: docs/es_orderflow_draft.md (Carmine Rosato, ES -> XAUUSD).
 //
 //  14 Oct 2026 - user ne manga: chart par dekhna ke draft ke qaide video jaise
@@ -8,6 +8,8 @@
 //  Asal test baad mein MT5 par, pehle se likhe qaide ke saath.
 //
 //  CHART: OANDA:XAUUSD 5 minute (draft sec 7 faisla 1). Andar 1m candles.
+//  d2 (14 Oct): white / dark dono background par saaf rang (chart.bg_color se),
+//  table bara, MISS ka kul R, 1m chart par laal warning.
 //
 //  LABELS:
 //   Q1/Q2/Q3 BUY/SELL (rangeen) = teeno darwaze paar = asal signal. Baad mein
@@ -43,7 +45,7 @@
 //   B/P shape: volume ka markaz neeche 35% (B = BUY) / oopar 35% (P = SELL),
 //         draft ke mutabiq.
 // ============================================================================
-indicator("JAS Order Flow Draft d1", "JAS OF d1", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
+indicator("JAS Order Flow Draft d2", "JAS OF d2", overlay = true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 300)
 
 // ---- Settings (draft sec 5.1 + numbers table) ----
 string G1 = "Session"
@@ -91,13 +93,25 @@ bool showBal  = input.bool(true, "Balance / demand / supply box", group = G5)
 bool showMiss = input.bool(true, "MISS (ruke hue setup) bhi dikhao", group = G5)
 bool showTL   = input.bool(true, "Trade ki SL/TP lakeer", group = G5)
 bool showChop = input.bool(false, "Chop zone rang (level se door)", group = G5)
-bool showTbl  = input.bool(true, "Table", group = G5)
+bool showTbl  = input.bool(true, "Table", inline = "tb", group = G5)
+string tSz   = input.string("normal", "", options = ["small", "normal", "large"], inline = "tb", group = G5)
 
 Pick(bool c, string a, string b) =>
     string r = b
     if c
         r := a
     r
+
+// Rang: chart ka background dekh kar - white aur dark dono par saaf
+bool  isLight = color.r(chart.bg_color) + color.g(chart.bg_color) + color.b(chart.bg_color) > 382
+color cTxt  = isLight ? #000000 : #FFFFFF
+color cYes  = isLight ? #087F23 : #4CAF50
+color cNo   = isLight ? #C62828 : #FF5252
+color cGray = isLight ? #555555 : #B0B0B0
+color cKul  = isLight ? #0D47A1 : #FFEB3B
+color cNote = isLight ? #E65100 : #FFA726
+color cTbl  = isLight ? #EEEEEE : color.new(#000000, 25)
+color cNyo  = isLight ? #F57F17 : #FFEB3B
 
 float atr   = ta.atr(atrLen)
 float brk   = brkAtr * atr
@@ -351,6 +365,7 @@ var int mN = 0
 var int mY = 0
 var int mNo = 0
 var int mB = 0
+var float mR = 0.0
 var int dayCnt = 0
 var int lastL = na
 var int lastS = na
@@ -380,7 +395,7 @@ if barstate.isconfirmed
                     res := "T-YES"
                     r := t.rr
                 if res != ""
-                    color rc = res == "T-YES" ? color.green : res == "T-NO" ? color.red : color.gray
+                    color rc = res == "T-YES" ? cYes : res == "T-NO" ? cNo : cGray
                     string rt = Pick(r >= 0, "+", "") + str.tostring(r, "#.#") + "R"
                     if t.real
                         label.set_text(t.lb, label.get_text(t.lb) + "\n" + res + " " + rt)
@@ -406,6 +421,7 @@ if barstate.isconfirmed
                             mNo += 1
                         else
                             mB += 1
+                        mR += r
                     array.remove(trs, i)
                 else if t.real and not na(t.lSl)
                     line.set_x2(t.lSl, bar_index)
@@ -498,7 +514,7 @@ if barstate.isconfirmed
                 mN += 1
                 label lm = na
                 if showMiss
-                    lm := label.new(bar_index, close, "MISS " + head + "\n" + why, yloc = yl, style = label.style_none, textcolor = color.gray, size = size.tiny)
+                    lm := label.new(bar_index, close, "MISS " + head + "\n" + why, yloc = yl, style = label.style_none, textcolor = cGray, size = size.small)
                 if not na(tp) and risk > 0
                     array.push(trs, Trd.new(dir, en, sl, tp, bar_index, false, qn, rr, lm, na, na))
 
@@ -508,50 +524,51 @@ plot(showLv and not newDay ? pdl : na, "PDL", color.new(color.green, 40), 1, plo
 plot(showLv and not newDay ? pdc : na, "PDC", color.new(color.gray, 40), 1, plot.style_linebr)
 plot(showLv and rthOn ? onh : na, "Raat high", color.new(color.maroon, 40), 1, plot.style_linebr)
 plot(showLv and rthOn ? onl : na, "Raat low", color.new(color.teal, 40), 1, plot.style_linebr)
-plot(showLv and rthOn ? nyo : na, "NY open", color.new(color.yellow, 30), 1, plot.style_linebr)
+plot(showLv and rthOn ? nyo : na, "NY open", cNyo, 1, plot.style_linebr)
 plot(showLv ? vw : na, "VWAP", color.new(color.purple, 40), 1, plot.style_linebr)
 bgcolor(showChop and inSig and not f_nearAny(close) ? color.new(color.gray, 90) : na, title = "Chop zone")
 
 alertcondition(aBuy, "JAS OF BUY", "JAS OF d1: BUY signal")
 alertcondition(aSell, "JAS OF SELL", "JAS OF d1: SELL signal")
 
-var table tb = table.new(position.bottom_right, 6, 7, bgcolor = color.new(color.black, 25), border_width = 1)
+var table tb = table.new(position.bottom_right, 6, 7, bgcolor = cTbl, border_width = 1)
 if showTbl and barstate.islast
-    table.cell(tb, 0, 0, "d1", text_color = color.white, text_size = size.small)
-    table.cell(tb, 1, 0, "Signal", text_color = color.white, text_size = size.small)
-    table.cell(tb, 2, 0, "T-YES", text_color = color.green, text_size = size.small)
-    table.cell(tb, 3, 0, "T-NO", text_color = color.red, text_size = size.small)
-    table.cell(tb, 4, 0, "BAND", text_color = color.gray, text_size = size.small)
-    table.cell(tb, 5, 0, "Kul R", text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 0, "d2", text_color = cTxt, text_size = tSz)
+    table.cell(tb, 1, 0, "Signal", text_color = cTxt, text_size = tSz)
+    table.cell(tb, 2, 0, "T-YES", text_color = cYes, text_size = tSz)
+    table.cell(tb, 3, 0, "T-NO", text_color = cNo, text_size = tSz)
+    table.cell(tb, 4, 0, "BAND", text_color = cGray, text_size = tSz)
+    table.cell(tb, 5, 0, "Kul R", text_color = cTxt, text_size = tSz)
     int tN = 0
     int tY = 0
     int tNo = 0
     int tB = 0
     float tR = 0.0
     for k = 0 to 2
-        table.cell(tb, 0, k + 1, "Q" + str.tostring(k + 1), text_color = color.white, text_size = size.small)
-        table.cell(tb, 1, k + 1, str.tostring(array.get(sN, k)), text_color = color.white, text_size = size.small)
-        table.cell(tb, 2, k + 1, str.tostring(array.get(sY, k)), text_color = color.green, text_size = size.small)
-        table.cell(tb, 3, k + 1, str.tostring(array.get(sNo, k)), text_color = color.red, text_size = size.small)
-        table.cell(tb, 4, k + 1, str.tostring(array.get(sB, k)), text_color = color.gray, text_size = size.small)
-        table.cell(tb, 5, k + 1, str.tostring(array.get(sR, k), "#.#"), text_color = color.white, text_size = size.small)
+        table.cell(tb, 0, k + 1, "Q" + str.tostring(k + 1), text_color = cTxt, text_size = tSz)
+        table.cell(tb, 1, k + 1, str.tostring(array.get(sN, k)), text_color = cTxt, text_size = tSz)
+        table.cell(tb, 2, k + 1, str.tostring(array.get(sY, k)), text_color = cYes, text_size = tSz)
+        table.cell(tb, 3, k + 1, str.tostring(array.get(sNo, k)), text_color = cNo, text_size = tSz)
+        table.cell(tb, 4, k + 1, str.tostring(array.get(sB, k)), text_color = cGray, text_size = tSz)
+        table.cell(tb, 5, k + 1, str.tostring(array.get(sR, k), "#.#"), text_color = cTxt, text_size = tSz)
         tN += array.get(sN, k)
         tY += array.get(sY, k)
         tNo += array.get(sNo, k)
         tB += array.get(sB, k)
         tR += array.get(sR, k)
-    table.cell(tb, 0, 4, "Kul", text_color = color.yellow, text_size = size.small)
-    table.cell(tb, 1, 4, str.tostring(tN), text_color = color.yellow, text_size = size.small)
-    table.cell(tb, 2, 4, str.tostring(tY), text_color = color.green, text_size = size.small)
-    table.cell(tb, 3, 4, str.tostring(tNo), text_color = color.red, text_size = size.small)
-    table.cell(tb, 4, 4, str.tostring(tB), text_color = color.gray, text_size = size.small)
-    table.cell(tb, 5, 4, str.tostring(tR, "#.#"), text_color = color.yellow, text_size = size.small)
-    table.cell(tb, 0, 5, "MISS", text_color = color.gray, text_size = size.small)
-    table.cell(tb, 1, 5, str.tostring(mN), text_color = color.gray, text_size = size.small)
-    table.cell(tb, 2, 5, str.tostring(mY), text_color = color.green, text_size = size.small)
-    table.cell(tb, 3, 5, str.tostring(mNo), text_color = color.red, text_size = size.small)
-    table.cell(tb, 4, 5, str.tostring(mB), text_color = color.gray, text_size = size.small)
-    table.cell(tb, 5, 5, "-", text_color = color.gray, text_size = size.small)
-    string note = Pick(noVol, "VOLUME NAHI - OF band", "OF = andaza (tick volume)") + " | TF " + timeframe.period + Pick(timeframe.period == "5", "", " (5 chahiye)")
-    table.cell(tb, 0, 6, note, text_color = color.orange, text_size = size.tiny)
+    table.cell(tb, 0, 4, "Kul", text_color = cKul, text_size = tSz)
+    table.cell(tb, 1, 4, str.tostring(tN), text_color = cKul, text_size = tSz)
+    table.cell(tb, 2, 4, str.tostring(tY), text_color = cYes, text_size = tSz)
+    table.cell(tb, 3, 4, str.tostring(tNo), text_color = cNo, text_size = tSz)
+    table.cell(tb, 4, 4, str.tostring(tB), text_color = cGray, text_size = tSz)
+    table.cell(tb, 5, 4, str.tostring(tR, "#.#"), text_color = cKul, text_size = tSz)
+    table.cell(tb, 0, 5, "MISS", text_color = cGray, text_size = tSz)
+    table.cell(tb, 1, 5, str.tostring(mN), text_color = cGray, text_size = tSz)
+    table.cell(tb, 2, 5, str.tostring(mY), text_color = cYes, text_size = tSz)
+    table.cell(tb, 3, 5, str.tostring(mNo), text_color = cNo, text_size = tSz)
+    table.cell(tb, 4, 5, str.tostring(mB), text_color = cGray, text_size = tSz)
+    table.cell(tb, 5, 5, str.tostring(mR, "#.#"), text_color = cGray, text_size = tSz)
+    bool tfOk = timeframe.period == "5"
+    string note = Pick(tfOk, Pick(noVol, "VOLUME NAHI - OF band", "OF = andaza (tick volume) | 5m theek"), "CHART 5 MINUTE KAREIN - abhi " + timeframe.period + " (1m par OF bekaar)")
+    table.cell(tb, 0, 6, note, text_color = tfOk ? cNote : cNo, text_size = tSz)
     table.merge_cells(tb, 0, 6, 5, 6)
