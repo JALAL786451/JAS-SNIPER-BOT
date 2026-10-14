@@ -33,7 +33,7 @@ Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
 
 ## 2. Usage bachao
 
-- Hafte ki limit **71%** (13 Oct raat; reset Itwar 18 Oct 02:00 PKT). Agent / workflow sirf jab
+- Hafte ki limit **80%** (14 Oct; reset Itwar 18 Oct 02:00 PKT). Agent / workflow sirf jab
   user naam le kar maange; 50%+ par bilkul nahi.
 - Nayi chat ~1 lakh token se shuru hoti hai (app ki apni hidayat ~40-60k). Effort **medium/high**
   (xhigh nahi), chhota kaam Sonnet. Har tool qadam par poori chat dobara parhi jati hai -
