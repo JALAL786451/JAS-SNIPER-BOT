@@ -72,7 +72,10 @@ SAB SELL band = har $1 par 217 USC, ~$200 girawat = account khatam -> NET 0.50 s
 Mashwara: abhi jori/band kuch NAHI. **Claude ki ghalti:** "bina nuqsan jori" ka mashwara diya jo neeche wali
 BUY kha jati - user ne pakra. Sabaq: jori se pehle BACHI kitab dekho. JasDeskView v5.3 (QEEMAT KI SEERHI $10 +
 har lot CSV `MQL5\Files\JasDeskView_XAUUSDc.csv`) compile BAQI. JasJoriClose s2 (InpMehngiPehle, default false).
-**Agla:** (1) user v5.3 compile + seerhi screenshot / CSV bheje -> kitab ka asaan hisaab. (2) 18 Oct ke baad MT5 Q1 test.
+v5.3 compile ✅, CSV mili (14 Oct 17:32, bid 4088.9). **Kitab = 3 hissay:** (a) SELL 2.14 (4153-4189) +16,321 ≈
+(b) mehngi BUY 1.44 (4190-4367) -16,368 = aapas mein barabar; (c) baqi BUY 0.73 (4101-4190, ausat ~4165) = poora
+nuqsan -5,540. Swap-free, NET 0.03 -> 3900 par -6.1k, 4300 par -4.9k. (a)+(b) band = 0.73 BUY khuli (har $1 = 73 USC) - NAHI.
+**Agla:** live par kuch nahi; 18 Oct ke baad MT5 Q1 test.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 
