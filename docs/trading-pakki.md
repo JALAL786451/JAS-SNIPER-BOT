@@ -127,6 +127,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - Gold intraday 8 idea FAIL: Pro Box, SMC Trend, Seerhi, Fishing f1, Chakkar k4, ORB, SMC Scalp (15m/1H/4H), MTF. Jitni chhoti trade, utna bara spread R mein.
 - Holy Grail (#1-2), Volatility Breakout (#3), Ichimoku (#7-8), Intraday Momentum (#9), Cointegration / jori (#10-11), user ka 15m $1/$2 (#12: 89,203 trades, jeet 59.8% < 66.7%, -18,446 USD).
 - Ginti scripts sab ITTEFAQ: swing fail (toot ~72% aage jata hai = asli), kal-toot, candle ka rang, wick, numayan candle, FVG. Ghanta ginti: shaam 6-9 PKT sab se zyada harkat - risk ke liye, rukh ke liye nahi.
+- Jori (Close By) se kul P/L / equity NAHI badalti - sirf kaun sa nuqsan pakka ho aur kaun si lot bache. Jori se pehle BACHI kitab dekho (14 Oct: bina nuqsan jori neeche wali BUY kha jati).
 - Hunt bhai (1980 chandi): bara yaqeen + udhaar + SL nahi = arab-patti bhi doob jate hain.
 
 ## 5. Mere tools

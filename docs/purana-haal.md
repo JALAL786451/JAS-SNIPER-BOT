@@ -481,3 +481,9 @@ d3 compile ✅. Box toot % CHALA: 1D 90/173 = 52% · 4H 27/59 = 46% (oopar 59%, 
 **Claude ki ghalti:** d3 ka paimana tedha (WAPAS = sirf kinare ke andar close, CHALA = 2 ATR) - 50% muqabla ghalat.
 **Agla:** d4 bana (user "D", barabar paimana ±1 ATR + ±2SE + faisla) - 5m/4H/1D screenshot BAQI. MT5 Q1 test 18 Oct ke baad.
 
+
+`jas_tide_smc` s2.8: S/R (hafta, mahina, naali) sirf dekhne ke liye, default band, engine wahi.
+`docs/peshgoi-kitab.md` bani (user ki numayan peshgoi #1, 13 Nov tak dekhna).
+JasDeskView v5.3 (QEEMAT KI SEERHI + CSV; BINA NUQSAN JORI user ke maqsad ke ULAT - neeche wali BUY kha jati, mat chalao; + JORI MUQABLA A sasti vs B mehngi BUY, 0.20 lot) + JasJoriClose s2 (InpMehngiPehle) - compile BAQI.
+**Agla:** 18 Oct ke baad MT5 Q1 test (5m 2021-2024 + spread, pehle se likha qaida) = #16 ka aakhri faisla; umeed kam.
+

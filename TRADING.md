@@ -65,10 +65,14 @@ T-YES/T-NO/MISS (5m ~1.5 din: 2 signal -2R, MISS -2.8R) aur box toot ginti. **d4
 1D 179/378 = 47% (±5) · 4H 66/131 = 50% (±9) · 5m 121/254 = 48% (±6) = teeno SIKKA**, box toot ke saath ya
 ulta 1:1 par koi edge nahi (Kachhua ki edge 1:1 se nahi naapi jati - lambi jeet). Footprint/heatmap gold CFD par
 mumkin nahi. i3 (sec 6) user ne roka. Agents/judges user ne band kiye (18 Oct 02:00 reset tak).
-`jas_tide_smc` s2.8: S/R (hafta, mahina, naali) sirf dekhne ke liye, default band, engine wahi.
-`docs/peshgoi-kitab.md` bani (user ki numayan peshgoi #1, 13 Nov tak dekhna).
-JasDeskView v5.3 (QEEMAT KI SEERHI + CSV; BINA NUQSAN JORI user ke maqsad ke ULAT - neeche wali BUY kha jati, mat chalao; + JORI MUQABLA A sasti vs B mehngi BUY, 0.20 lot) + JasJoriClose s2 (InpMehngiPehle) - compile BAQI.
-**Agla:** 18 Oct ke baad MT5 Q1 test (5m 2021-2024 + spread, pehle se likha qaida) = #16 ka aakhri faisla; umeed kam.
+`jas_tide_smc` s2.8 (S/R sirf dekhna, default band). `docs/peshgoi-kitab.md` #1: 3,886.47 toote, 13 Nov tak.
+**LIVE kitab (14 Oct, JasDeskView v5.2):** 186 pos (BUY 2.17 ausat 4189.9 / SELL 2.14 ausat 4165.4), NET +0.03 jami,
+Close All ~-5,590, Balance 49,026, Equity 43,483. Teh: neeche sasti BUY · beech SELL · oopar mehngi BUY.
+SAB SELL band = har $1 par 217 USC, ~$200 girawat = account khatam -> NET 0.50 se zyada NAHI, 0.20 tukde.
+Mashwara: abhi jori/band kuch NAHI. **Claude ki ghalti:** "bina nuqsan jori" ka mashwara diya jo neeche wali
+BUY kha jati - user ne pakra. Sabaq: jori se pehle BACHI kitab dekho. JasDeskView v5.3 (QEEMAT KI SEERHI $10 +
+har lot CSV `MQL5\Files\JasDeskView_XAUUSDc.csv`) compile BAQI. JasJoriClose s2 (InpMehngiPehle, default false).
+**Agla:** (1) user v5.3 compile + seerhi screenshot / CSV bheje -> kitab ka asaan hisaab. (2) 18 Oct ke baad MT5 Q1 test.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 
