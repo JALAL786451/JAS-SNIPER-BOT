@@ -70,7 +70,9 @@ user ne pehle Pine manga: `indicators/jas_of_draft.pine` d3 (d2 white rang; d3 b
 MISS 77 = 45 YES / 29 NO magar kul **-2.8R** (jeet chhoti). Video ka footprint/heatmap gold CFD par mumkin nahi.
 MT5 Q1 test (5m 2021-2024 + spread) user ne **18 Oct reset ke baad** rakha; agents/judges user ne band kiye.
 User: "box laal = price neeche, hara = oopar, bari moves miss" -> box ka rang move ke BAAD lagta hai (hindsight).
-**Agla:** d3 bana (user "D") - compile + 5m/4H/1D ginti screenshot BAQI; MT5 Q1 test 18 Oct ke baad.
+d3 compile ✅. Box toot % CHALA: 1D 90/173 = 52% · 4H 27/59 = 46% (oopar 59%, neeche 33%) · 5m 52/152 = 34%.
+**Claude ki ghalti:** d3 ka paimana tedha (WAPAS = sirf kinare ke andar close, CHALA = 2 ATR) - 50% muqabla ghalat.
+**Agla ("D" BAQI):** d4 = barabar paimana (toot close se +1 ATR vs -1 ATR pehle) + ±2SE. MT5 Q1 test 18 Oct ke baad.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
 
