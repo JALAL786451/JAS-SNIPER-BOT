@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v5                                    |
+//|  JAS DESK VIEW   -   build v5.1                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v5"
+#define EA_BUILD "v5.1"
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -47,6 +47,8 @@ input double InpNetWarn     = 0.20;   // Band karne ke baad NET is se zyada ho t
 input group "=== Jori muqabla (v5) ==="
 input bool   InpShowMuqabla = true;   // SELL khatam: sasti BUY pehle (A) vs mehngi BUY pehle (B)
 input double InpChunkLot    = 0.20;   // Ek dafa mein kitni SELL lot (user ka qaida: 0.20 tak)
+input bool   InpShowBinaNuqsan = true; // v5.1: BINA NUQSAN JORI - SELL + us se neeche khuli BUY (nateeja >= 0)
+input int    InpBnListMax  = 12;    // Bina nuqsan jori ki list mein kitni line
 
 input group "=== Bari lot ki jori ==="
 input bool   InpShowBigPair = true;          // Sab se bari lot ki LOT-BARABAR jori dikhao
@@ -457,6 +459,78 @@ string MuqablaText(Book &b, double net, double bid)
    return(s);
   }
 
+//+------------------------------------------------------------------+
+//|  v5.1: BINA NUQSAN JORI. Har SELL ko us BUY se jorho jo SELL se    |
+//|  NEECHE (ya barabar) khuli ho - sab se qareeb wali pehle. Jori ka  |
+//|  nateeja = (SELL price - BUY price) x lot >= 0, qeemat se nahi     |
+//|  badalta. Lots barabar = NET, equity, kul P/L wahi. Beech ki lots  |
+//|  nikalti hain; sab se neeche ki BUY aur oopar ki SELL bachti hain. |
+//|  SIRF DIKHATA HAI - kuch band nahi karta.                          |
+//+------------------------------------------------------------------+
+string BinaNuqsanText(double perPt)
+  {
+   ulong tk[]; int ty[]; double vol[], px[], pl[];
+   int c = Collect(tk, ty, vol, px, pl);
+   if(c <= 0 || perPt <= 0.0) return("");
+   double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+   if(step <= 0.0) step = 0.01;
+
+   int so[]; ArrayResize(so, c); int ns = 0;
+   int bo[]; ArrayResize(bo, c); int nb = 0;
+   long left[]; ArrayResize(left, c);
+   for(int i = 0; i < c; i++)
+     {
+      left[i] = (long)MathRound(vol[i] / step);
+      if(ty[i] == POSITION_TYPE_SELL) { so[ns] = i; ns++; }
+      else                            { bo[nb] = i; nb++; }
+     }
+   if(ns == 0 || nb == 0) return("");
+   // SELL sasti pehle (un ke paas kam BUY hain), BUY mehngi pehle
+   for(int a = 0; a < ns - 1; a++)
+      for(int d = a + 1; d < ns; d++)
+         if(px[so[d]] < px[so[a]]) { int t = so[a]; so[a] = so[d]; so[d] = t; }
+   for(int a = 0; a < nb - 1; a++)
+      for(int d = a + 1; d < nb; d++)
+         if(px[bo[d]] > px[bo[a]]) { int t = bo[a]; bo[a] = bo[d]; bo[d] = t; }
+
+   long   units = 0;
+   double res   = 0.0;
+   int    lines = 0;
+   string lst   = "";
+   for(int a = 0; a < ns; a++)
+     {
+      int s = so[a];
+      for(int k = 0; k < nb && left[s] > 0; k++)
+        {
+         int b = bo[k];
+         if(left[b] <= 0 || px[b] > px[s]) continue;   // sirf SELL se neeche wali BUY
+         long u = MathMin(left[s], left[b]);
+         left[s] -= u; left[b] -= u; units += u;
+         double r = (px[s] - px[b]) * u * step * perPt;
+         res += r;
+         if(lines < InpBnListMax)
+            lst += StringFormat("   SELL #%I64u @ %s  +  BUY #%I64u @ %s   %.2f lot   %s\n",
+                                tk[s], Px(px[s]), tk[b], Px(px[b]), u * step, M(r));
+         lines++;
+        }
+     }
+   int  closed = 0;
+   long totU   = 0;
+   for(int i = 0; i < c; i++) { if(left[i] == 0) closed++; totU += (long)MathRound(vol[i] / step); }
+
+   string s = "--- BINA NUQSAN JORI (SELL + us se NEECHE wali BUY, nateeja >= 0) ---\n";
+   if(units == 0)
+      return(s + "Koi SELL kisi BUY se upar nahi - bina nuqsan jori nahi banti.\n\n");
+   s += StringFormat("Ban sakti: %.2f SELL + %.2f BUY  (%d jori)   nateeja %s (pakka, >= 0)\n",
+                     units * step, units * step, lines, M(res));
+   s += StringFormat("Positions: %d -> %d   kul lots %.2f -> %.2f   NET / equity WAHI\n",
+                     c, c - closed, totU * step, (totU - 2 * units) * step);
+   s += lst;
+   if(lines > InpBnListMax) s += StringFormat("   ... aur %d jori\n", lines - InpBnListMax);
+   s += "Bachengi: sab se neeche wali BUY aur sab se oopar wali SELL. SIRF DIKHAWA - kuch band nahi hua.\n\n";
+   return(s);
+  }
+
 string BigPairText(double net, double tot, double basket)
   {
    ulong tk[]; int ty[]; double vol[], px[], pl[];
@@ -837,6 +911,7 @@ void Draw()
      }
 
    //--- D2) NIKALNE KA PLAN -------------------------------------------
+   if(InpShowBinaNuqsan) s += BinaNuqsanText(perPt);
    if(InpShowMuqabla) s += MuqablaText(b, net, bid);
    if(InpShowBigPair) s += BigPairText(net, tot, basket);
    if(InpShowPlan)    s += PlanText(b, net, tot, basket);
