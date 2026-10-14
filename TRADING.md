@@ -76,7 +76,7 @@ v5.3 compile ✅, CSV mili (14 Oct 17:32, bid 4088.9). **Kitab = 3 hissay:** (a)
 (b) mehngi BUY 1.44 (4190-4367) -16,368 = aapas mein barabar; (c) baqi BUY 0.73 (4101-4190, ausat ~4165) = poora
 nuqsan -5,540. Swap-free, NET 0.03 -> 3900 par -6.1k, 4300 par -4.9k. (a)+(b) band = 0.73 BUY khuli (har $1 = 73 USC) - NAHI.
 **Koshish #17 idea (user, 14 Oct):** SELL (BUY se oopar) gold oopar jaye to +0.30 USC/0.01 par band; wapsi = band qeemat
-par ya chotti se $5 neeche (jo oopar ho) wohi lot SELL dobara. Hedging EA - user ijazat + Python TALAASH pehle.
+par ya chotti se $5 neeche (jo oopar ho) wohi lot SELL dobara. User ne "HAN" kaha (14 Oct, test ki ijazat). Kitab NET +0.03 BUY; EA band SELL milaa kar NET 0.50 se zyada NAHI.
 **Agla:** live par kuch nahi; 18 Oct ke baad #17 Python test (X = 3/5/10) + MT5 Q1.
 
 ## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
