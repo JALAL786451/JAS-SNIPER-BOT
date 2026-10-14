@@ -2,7 +2,8 @@
 
 MetaTrader 5 EAs aur TradingView Pine scripts (gold, index, commodity) - user Jalal ke liye.
 
-**Har nayi chat:** sirf `TRADING.md` parho (user, qaide, pichli chat, agla kaam) - baqi `grep` se.
+**Har nayi chat (user likhe "TRADING"):** ye branch ab GitHub ki default hai - fetch/checkout NAHI,
+seedha sirf `TRADING.md` parho (ek qadam), sec 5 = agla kaam. Kaam isi branch par commit + push (user, qaide, pichli chat, agla kaam) - baqi `grep` se.
 Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
 
 ## Usage bachao

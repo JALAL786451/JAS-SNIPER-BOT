@@ -1,7 +1,7 @@
 # TRADING — har nayi chat SIRF ye ek file parhe
 
 **Nayi chat ka message (copy-paste):**
-sirf `TRADING` (main ki `CLAUDE.md` nayi chat ko is branch aur file tak le aati hai).
+sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
 Aakhri update: 13 Oct 2026 raat (saatvi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
