@@ -1,12 +1,13 @@
 //@version=6
 // ============================================================================
-//  JAS MA 63/91 — TEST  (build m2, Pine v6)  - koshish #18
+//  JAS MA 63/91 — TEST  (build m3, Pine v6)  - koshish #18
 //  15 Oct 2026 - user: "simple script: SL $20, TP $40, MA 63/91, lot 0.01, 5M".
 //
 //  QAWAID (pehle se tay - test ke dauran mat badlein), XAUUSD 5m:
 //   1) EMA(63) neeche se EMA(91) ke oopar kate = BUY; oopar se neeche = SELL
 //   2) SL = entry se $20, TP = entry se $40 (qeemat ke dollar, points nahi)
 //   3) Ek waqt sirf EK trade; khuli trade par ulta cross = kuch nahi (SL/TP hi band)
+//   2b) m3: "ATR SL" on = SL 1.5 x ATR(14), TP = 2 x SL (RR 1:2). Ek hi dafa test.
 //   4) Lot 0.01 = 1 oz. Kharcha $0.26 har trade (user ki fee) - R mein shamil
 //
 //  QAIDA (table khud likhta hai): TALAASH dates mein trades >= 100 aur
@@ -21,13 +22,14 @@ strategy("JAS MA 63/91 — Test (5m)", shorttitle = "JAS MA6391 Test", overlay =
      calc_on_every_tick      = false,
      process_orders_on_close = true)
 
-BUILD = "m2"
+BUILD = "m3"
 
 grQ    = "Qaida (mat badlein)"
 fastL  = input.int(63, "Tez EMA", group = grQ, display = display.none)
 slowL  = input.int(91, "Sust EMA", group = grQ, display = display.none)
 slUsd  = input.float(20.0, "SL ($ qeemat)", group = grQ, display = display.none)
 tpUsd  = input.float(40.0, "TP ($ qeemat)", group = grQ, display = display.none)
+useAtr = input.bool(true, "ATR SL (m3): SL = 1.5 x ATR14, TP = 2 x SL", group = grQ, display = display.none)
 feeUsd = input.float(0.26, "Kharcha har trade ($ / oz)", group = grQ, display = display.none)
 
 grD    = "Dates"
@@ -43,18 +45,27 @@ upX  = ta.crossover(fast, slow)
 dnX  = ta.crossunder(fast, slow)
 inD  = time >= tStart and time <= tEnd
 flat = strategy.position_size == 0
+atr  = ta.atr(14)
+slD  = useAtr ? 1.5 * atr : slUsd
+tpD  = useAtr ? 2.0 * slD : tpUsd
+var float riskD = slUsd
 
 if inD and flat and upX
     strategy.entry("BUY", strategy.long)
-    strategy.exit("BUY x", "BUY", stop = close - slUsd, limit = close + tpUsd)
+    strategy.exit("BUY x", "BUY", stop = close - slD, limit = close + tpD)
+    riskD := slD
 if inD and flat and dnX
     strategy.entry("SELL", strategy.short)
-    strategy.exit("SELL x", "SELL", stop = close + slUsd, limit = close - tpUsd)
+    strategy.exit("SELL x", "SELL", stop = close + slD, limit = close - tpD)
+    riskD := slD
 
 plot(showMA ? fast : na, "EMA 63", color.new(color.teal, 0))
 plot(showMA ? slow : na, "EMA 91", color.new(color.orange, 0))
 
-// --- ginti: har band trade ka R (1R = $20), kharcha ghata kar
+// --- ginti: har band trade ka R (1R = us trade ka SL), kharcha ghata kar
+var array<float> risks = array.new<float>()
+while array.size(risks) < strategy.closedtrades + strategy.opentrades
+    array.push(risks, riskD)
 var int   nT   = 0
 var int   nW   = 0
 var float sR   = 0.0
@@ -63,7 +74,8 @@ var int   seen = 0
 while seen < strategy.closedtrades
     _q  = strategy.closedtrades.size(seen)
     _pl = strategy.closedtrades.profit(seen) / math.abs(_q) - feeUsd
-    _r  = _pl / slUsd
+    _rk = seen < array.size(risks) ? array.get(risks, seen) : slUsd
+    _r  = _pl / _rk
     nT  += 1
     nW  += _r > 0 ? 1 : 0
     sR  += _r
