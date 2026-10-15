@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS MA 63/91 — TEST  (build m1, Pine v6)  - koshish #18
+//  JAS MA 63/91 — TEST  (build m2, Pine v6)  - koshish #18
 //  15 Oct 2026 - user: "simple script: SL $20, TP $40, MA 63/91, lot 0.01, 5M".
 //
 //  QAWAID (pehle se tay - test ke dauran mat badlein), XAUUSD 5m:
@@ -21,7 +21,7 @@ strategy("JAS MA 63/91 — Test (5m)", shorttitle = "JAS MA6391 Test", overlay =
      calc_on_every_tick      = false,
      process_orders_on_close = true)
 
-BUILD = "m1"
+BUILD = "m2"
 
 grQ    = "Qaida (mat badlein)"
 fastL  = input.int(63, "Tez EMA", group = grQ, display = display.none)
@@ -32,7 +32,7 @@ feeUsd = input.float(0.26, "Kharcha har trade ($ / oz)", group = grQ, display = 
 
 grD    = "Dates"
 tStart = input.time(timestamp("2000-01-01T00:00:00"), "Shuru", group = grD, display = display.none)
-tEnd   = input.time(timestamp("2018-12-31T23:59:00"), "Khatam (TALAASH)", group = grD, display = display.none)
+tEnd   = input.time(timestamp("2099-12-31T23:59:00"), "Khatam (2099 = sab data)", group = grD, display = display.none)
 
 grV    = "Dikhawa"
 showMA = input.bool(false, "EMA lakeerein dikhao", group = grV, display = display.none)
