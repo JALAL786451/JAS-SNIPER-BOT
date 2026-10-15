@@ -1,0 +1,90 @@
+//@version=6
+// ============================================================================
+//  JAS MA 63/91 — TEST  (build m1, Pine v6)  - koshish #18
+//  15 Oct 2026 - user: "simple script: SL $20, TP $40, MA 63/91, lot 0.01, 5M".
+//
+//  QAWAID (pehle se tay - test ke dauran mat badlein), XAUUSD 5m:
+//   1) EMA(63) neeche se EMA(91) ke oopar kate = BUY; oopar se neeche = SELL
+//   2) SL = entry se $20, TP = entry se $40 (qeemat ke dollar, points nahi)
+//   3) Ek waqt sirf EK trade; khuli trade par ulta cross = kuch nahi (SL/TP hi band)
+//   4) Lot 0.01 = 1 oz. Kharcha $0.26 har trade (user ki fee) - R mein shamil
+//
+//  QAIDA (table khud likhta hai): TALAASH dates mein trades >= 100 aur
+//  Exp - 2SE > 0 = PASS -> tab IMTIHAN (2019-aaj) EK dafa. Warna FAIL.
+//  Koi grid, martingale, hedging ya averaging nahi. Ye sirf naap hai.
+// ============================================================================
+strategy("JAS MA 63/91 — Test (5m)", shorttitle = "JAS MA6391 Test", overlay = true,
+     initial_capital         = 10000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true)
+
+BUILD = "m1"
+
+grQ    = "Qaida (mat badlein)"
+fastL  = input.int(63, "Tez EMA", group = grQ, display = display.none)
+slowL  = input.int(91, "Sust EMA", group = grQ, display = display.none)
+slUsd  = input.float(20.0, "SL ($ qeemat)", group = grQ, display = display.none)
+tpUsd  = input.float(40.0, "TP ($ qeemat)", group = grQ, display = display.none)
+feeUsd = input.float(0.26, "Kharcha har trade ($ / oz)", group = grQ, display = display.none)
+
+grD    = "Dates"
+tStart = input.time(timestamp("2000-01-01T00:00:00"), "Shuru", group = grD, display = display.none)
+tEnd   = input.time(timestamp("2018-12-31T23:59:00"), "Khatam (TALAASH)", group = grD, display = display.none)
+
+grV    = "Dikhawa"
+showMA = input.bool(false, "EMA lakeerein dikhao", group = grV, display = display.none)
+
+fast = ta.ema(close, fastL)
+slow = ta.ema(close, slowL)
+upX  = ta.crossover(fast, slow)
+dnX  = ta.crossunder(fast, slow)
+inD  = time >= tStart and time <= tEnd
+flat = strategy.position_size == 0
+
+if inD and flat and upX
+    strategy.entry("BUY", strategy.long)
+    strategy.exit("BUY x", "BUY", stop = close - slUsd, limit = close + tpUsd)
+if inD and flat and dnX
+    strategy.entry("SELL", strategy.short)
+    strategy.exit("SELL x", "SELL", stop = close + slUsd, limit = close - tpUsd)
+
+plot(showMA ? fast : na, "EMA 63", color.new(color.teal, 0))
+plot(showMA ? slow : na, "EMA 91", color.new(color.orange, 0))
+
+// --- ginti: har band trade ka R (1R = $20), kharcha ghata kar
+var int   nT   = 0
+var int   nW   = 0
+var float sR   = 0.0
+var float sR2  = 0.0
+var int   seen = 0
+while seen < strategy.closedtrades
+    _q  = strategy.closedtrades.size(seen)
+    _pl = strategy.closedtrades.profit(seen) / math.abs(_q) - feeUsd
+    _r  = _pl / slUsd
+    nT  += 1
+    nW  += _r > 0 ? 1 : 0
+    sR  += _r
+    sR2 += _r * _r
+    seen += 1
+
+var table rt = table.new(position.top_right, 2, 6, border_width = 1)
+if barstate.islast
+    _ex = nT > 0 ? sR / nT : na
+    _sd = nT > 1 ? math.sqrt(math.max(sR2 / nT - _ex * _ex, 0) * nT / (nT - 1)) : na
+    _se = nT > 1 ? _sd / math.sqrt(nT) : na
+    _ok = nT >= 100 and not na(_se) and _ex - 2 * _se > 0
+    table.cell(rt, 0, 0, "JAS MA6391 " + BUILD + " · " + syminfo.ticker + " " + timeframe.period, text_size = size.small, bgcolor = color.silver)
+    table.merge_cells(rt, 0, 0, 1, 0)
+    table.cell(rt, 0, 1, "Trades", text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 1, 1, str.tostring(nT), text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 0, 2, "Jeet %", text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 1, 2, nT > 0 ? str.tostring(100.0 * nW / nT, "0.0") + "%" : "-", text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 0, 3, "Exp (R)", text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 1, 3, na(_ex) ? "-" : str.tostring(_ex, "0.000") + " (± " + (na(_se) ? "-" : str.tostring(_se, "0.000")) + ")", text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 0, 4, "Exp - 2SE", text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 1, 4, na(_se) ? "-" : str.tostring(_ex - 2 * _se, "0.000"), text_size = size.small, bgcolor = color.white)
+    table.cell(rt, 0, 5, "QAIDA", text_size = size.small, bgcolor = _ok ? color.lime : color.red)
+    table.cell(rt, 1, 5, _ok ? "PASS -> IMTIHAN" : "FAIL / kam trades", text_size = size.small, bgcolor = _ok ? color.lime : color.red)

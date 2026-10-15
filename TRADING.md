@@ -119,7 +119,7 @@ din same; 6 mili trades TV -0.07R vs MT5 -0.93R. Engine ki ghalti NAHI. Wajah:
 1-2 Holy Grail FAIL · 3 Volatility Breakout FAIL · 4 TSMOM FAIL · 5 Turn-of-Month FAIL ·
 **6 Kachhua commodity ASLI PASS (demo)** · 7-8 Ichimoku FAIL · 9 Intraday Momentum FAIL ·
 10-11 Cointegration FAIL · 12 user ka 15m $1/$2 FAIL · 13 Kachhua 4H FAIL · 14 IBS 10 index FAIL ·
-**15 IBS S&P ASLI PASS (JasIbsEA)**. Gold intraday 8 idea bhi FAIL (purane qaide se).
+**15 IBS S&P ASLI PASS (JasIbsEA)** · 18 MA 63/91 5m (`jas_ma6391_test.pine` m1, test baqi). Gold intraday 8 idea bhi FAIL (purane qaide se).
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
