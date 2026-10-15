@@ -1,0 +1,267 @@
+//@version=6
+// ============================================================================
+//  JAS SMC — TEST  (build k1, Pine v6)  - koshish #19 (draft, repo mein NAHI)
+//  15 Oct 2026 - user: "JAS Tide+SMC ki strategy 15m, 1H, 4H, 1D" -> SMC ke
+//  nishan par trade (Tide nahi). Nishan BILKUL jas_tide_smc.pine s2.8 wale.
+//
+//  QAWAID (pehle se tay - test ke dauran mat badlein), chart ki TF par:
+//   Signal (Settings mein ek waqt EK chunein, har ek alag test):
+//    LGB  : swing LOW ke neeche wick, close wapas upar = BUY (LGB↑)
+//           swing HIGH ke upar wick, close wapas neeche = SELL (LGB↓)
+//    DZ/SZ: qeemat DZ ko chhu kar zone ke UPAR close = BUY; SZ ko chhu kar
+//           zone ke NEECHE close = SELL (har zone ek dafa)
+//    FVG  : qeemat FVG↑ mein aaye aur gap ke neeche band na ho = BUY;
+//           FVG↓ mein aaye aur gap ke upar band na ho = SELL (har gap ek dafa)
+//   Rukh (default CHALU): D1 EMA50/200 upar = sirf BUY, neeche = sirf SELL
+//   Entry: signal wali candle ka close. Ek waqt EK trade.
+//   SL: wick / zone / gap ke paar + 0.1 ATR (kam az kam 0.5 ATR) = 1R
+//   TP: 2R. Kharcha 0.005% har taraf (R mein gina).
+//
+//  QAIDA (table khud likhta hai): trades >= 100 aur Exp - 2SE > 0 = PASS.
+//  Koi grid, martingale, hedging ya averaging nahi. Ye sirf naap hai.
+// ============================================================================
+strategy("JAS SMC — Test (LGB / DZ / FVG)", shorttitle = "JAS SMC Test", overlay = true,
+     initial_capital         = 10000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true)
+
+BUILD = "k1"
+
+grQ     = "1 · Qaida (mat badlein)"
+mode    = input.string("LGB", "Signal", options = ["LGB", "DZ/SZ", "FVG"], group = grQ, display = display.none)
+useRukh = input.bool(true, "D1 rukh (EMA50/200): upar = sirf BUY, neeche = sirf SELL", group = grQ, display = display.none)
+swLen   = input.int(5, "Swing: pivot left/right", minval = 2, maxval = 20, group = grQ, display = display.none)
+fvgMin  = input.float(0.1, "FVG kam az kam (x ATR)", minval = 0, step = 0.05, group = grQ, display = display.none)
+slPad   = input.float(0.1, "SL wick/zone ke paar (x ATR)", minval = 0, step = 0.05, group = grQ, display = display.none)
+minSl   = input.float(0.5, "SL kam az kam (x ATR)", minval = 0.1, step = 0.1, group = grQ, display = display.none)
+rrTP    = input.float(2.0, "TP (x R)", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+costPct = input.float(0.005, "Kharcha (% har taraf)", minval = 0, step = 0.001, group = grQ, display = display.none)
+
+grD    = "2 · Dates"
+tStart = input.time(timestamp("2000-01-01T00:00:00"), "Shuru", group = grD, display = display.none)
+tEnd   = input.time(timestamp("2099-12-31T23:59:00"), "Khatam", group = grD, display = display.none)
+
+// --- D1 rukh: kal tak ki BAND daily candle ([1] + lookahead_on = repaint nahi)
+[dEf, dEs] = request.security(ticker.standard(syminfo.tickerid), "D", [ta.ema(close, 50)[1], ta.ema(close, 200)[1]], barmerge.gaps_off, barmerge.lookahead_on)
+rukh   = na(dEf) or na(dEs) ? 0 : dEf > dEs ? 1 : dEf < dEs ? -1 : 0
+okBuy  = not useRukh or rukh == 1
+okSell = not useRukh or rukh == -1
+
+// --- sab ta.* bahar (Pine v6)
+atr = ta.atr(14)
+ph  = ta.pivothigh(high, swLen, swLen)
+pl  = ta.pivotlow(low, swLen, swLen)
+
+int   sig   = 0      // 1 BUY, -1 SELL
+float slRaw = na
+
+// ============================================================================
+//  LGB (indicator s2.8 jaisa: swing ke paar wick, close wapas andar, ek swing par ek dafa)
+// ============================================================================
+var float sH     = na
+var bool  sHUsed = true
+var float sL     = na
+var bool  sLUsed = true
+if not na(ph)
+    sH     := ph
+    sHUsed := false
+if not na(pl)
+    sL     := pl
+    sLUsed := false
+bool lgbUp = false
+bool lgbDn = false
+if not sHUsed and not na(sH)
+    if close > sH
+        sHUsed := true
+    else if high > sH and close < sH
+        lgbDn  := true
+        sHUsed := true
+if not sLUsed and not na(sL)
+    if close < sL
+        sLUsed := true
+    else if low < sL and close > sL
+        lgbUp  := true
+        sLUsed := true
+if mode == "LGB" and lgbUp != lgbDn
+    sig   := lgbUp ? 1 : -1
+    slRaw := lgbUp ? low - slPad * atr : high + slPad * atr
+
+// ============================================================================
+//  DZ / SZ (indicator jaisa zone). Pehle purane zone check, phir naya zone.
+// ============================================================================
+var array<float> dzT = array.new<float>()
+var array<float> dzB = array.new<float>()
+var array<float> szT = array.new<float>()
+var array<float> szB = array.new<float>()
+int   zSig = 0
+float zSl  = na
+int nDz = array.size(dzT)
+if nDz > 0
+    for i = nDz - 1 to 0
+        float t = array.get(dzT, i)
+        float b = array.get(dzB, i)
+        if close < b
+            array.remove(dzT, i)
+            array.remove(dzB, i)
+        else if low <= t and close > t
+            if zSig == 0
+                zSig := 1
+                zSl  := b - slPad * atr
+            array.remove(dzT, i)
+            array.remove(dzB, i)
+int nSz = array.size(szT)
+if nSz > 0
+    for i = nSz - 1 to 0
+        float t = array.get(szT, i)
+        float b = array.get(szB, i)
+        if close > t
+            array.remove(szT, i)
+            array.remove(szB, i)
+        else if high >= b and close < b
+            zSig := zSig == 1 ? 2 : zSig == 0 ? -1 : zSig
+            if zSig == -1
+                zSl := t + slPad * atr
+            array.remove(szT, i)
+            array.remove(szB, i)
+if not na(pl)
+    float zBot = pl
+    float zTop = math.min(math.max(open[swLen], close[swLen]), pl + nz(atr[swLen], 0))
+    zTop := math.max(zTop, pl + 0.1 * nz(atr[swLen], 0))
+    array.push(dzT, zTop)
+    array.push(dzB, zBot)
+    if array.size(dzT) > 3
+        array.shift(dzT)
+        array.shift(dzB)
+if not na(ph)
+    float zTop2 = ph
+    float zBot2 = math.max(math.min(open[swLen], close[swLen]), ph - nz(atr[swLen], 0))
+    zBot2 := math.min(zBot2, ph - 0.1 * nz(atr[swLen], 0))
+    array.push(szT, zTop2)
+    array.push(szB, zBot2)
+    if array.size(szT) > 3
+        array.shift(szT)
+        array.shift(szB)
+if mode == "DZ/SZ" and (zSig == 1 or zSig == -1)
+    sig   := zSig
+    slRaw := zSl
+
+// ============================================================================
+//  FVG (indicator jaisa gap). Pehle purane gap check, phir naya gap.
+// ============================================================================
+var array<float> fvT = array.new<float>()
+var array<float> fvB = array.new<float>()
+var array<int>   fvD = array.new<int>()
+int   fSig = 0
+float fSl  = na
+int nFv = array.size(fvT)
+if nFv > 0
+    for i = nFv - 1 to 0
+        float t = array.get(fvT, i)
+        float b = array.get(fvB, i)
+        int   d = array.get(fvD, i)
+        bool  gone = d == 1 ? close < b : close > t
+        bool  hit  = d == 1 ? low <= t : high >= b
+        if gone
+            array.remove(fvT, i)
+            array.remove(fvB, i)
+            array.remove(fvD, i)
+        else if hit
+            if fSig == 0
+                fSig := d
+                fSl  := d == 1 ? b - slPad * atr : t + slPad * atr
+            else if fSig != d
+                fSig := 2
+            array.remove(fvT, i)
+            array.remove(fvB, i)
+            array.remove(fvD, i)
+if not na(atr)
+    if low > high[2] and low - high[2] >= fvgMin * atr
+        array.push(fvT, low)
+        array.push(fvB, high[2])
+        array.push(fvD, 1)
+    if high < low[2] and low[2] - high >= fvgMin * atr
+        array.push(fvT, low[2])
+        array.push(fvB, high)
+        array.push(fvD, -1)
+    while array.size(fvT) > 6
+        array.shift(fvT)
+        array.shift(fvB)
+        array.shift(fvD)
+if mode == "FVG" and (fSig == 1 or fSig == -1)
+    sig   := fSig
+    slRaw := fSl
+
+// ============================================================================
+//  ENTRY / EXIT (ek waqt ek trade)
+// ============================================================================
+inD  = time >= tStart and time <= tEnd
+flat = strategy.position_size == 0
+var array<float> risks = array.new<float>()
+if inD and flat and not na(atr) and not na(slRaw) and ((sig == 1 and okBuy) or (sig == -1 and okSell))
+    float dist = math.max(sig == 1 ? close - slRaw : slRaw - close, minSl * atr)
+    float sl   = close - sig * dist
+    float tp   = close + sig * rrTP * dist
+    if sig == 1
+        strategy.entry("BUY", strategy.long)
+        strategy.exit("BUY x", "BUY", stop = sl, limit = tp)
+    else
+        strategy.entry("SELL", strategy.short)
+        strategy.exit("SELL x", "SELL", stop = sl, limit = tp)
+    array.push(risks, dist)
+
+// ============================================================================
+//  GINTI: har band trade ka R (1R = us trade ka SL), kharcha ghata kar
+// ============================================================================
+var int   nT   = 0
+var int   nW   = 0
+var int   nB   = 0
+var float sR   = 0.0
+var float sR2  = 0.0
+var float sRB  = 0.0
+var float sWin = 0.0
+var float sLos = 0.0
+var int   seen = 0
+while seen < strategy.closedtrades
+    float rk = seen < array.size(risks) ? array.get(risks, seen) : na
+    if not na(rk) and rk > 0
+        float q  = strategy.closedtrades.size(seen)
+        float ep = strategy.closedtrades.entry_price(seen)
+        float r  = strategy.closedtrades.profit(seen) / math.abs(q) / rk - 2.0 * costPct / 100.0 * ep / rk
+        nT  += 1
+        sR  += r
+        sR2 += r * r
+        if r > 0
+            nW   += 1
+            sWin += r
+        else
+            sLos -= r
+        if q > 0
+            nB  += 1
+            sRB += r
+    seen += 1
+
+f_r(float x) => na(x) ? "-" : (x > 0 ? "+" : "") + str.tostring(x, "0.000") + "R"
+
+var table rt = table.new(position.top_right, 2, 8, border_width = 1)
+f_row(int r, string a, string b, color bg) =>
+    table.cell(rt, 0, r, a, text_size = size.small, bgcolor = bg, text_halign = text.align_left)
+    table.cell(rt, 1, r, b, text_size = size.small, bgcolor = bg, text_halign = text.align_left)
+
+if barstate.islast
+    float ex  = nT > 0 ? sR / nT : na
+    float sd  = nT > 1 ? math.sqrt(math.max(sR2 / nT - ex * ex, 0) * nT / (nT - 1)) : na
+    float se  = nT > 1 ? sd / math.sqrt(nT) : na
+    bool  ok  = nT >= 100 and not na(se) and ex - 2 * se > 0
+    int   nS  = nT - nB
+    color bgW = color.white
+    f_row(0, "JAS SMC " + BUILD, mode + " · " + syminfo.ticker + " " + timeframe.period + " · rukh " + (useRukh ? "CHALU" : "BAND"), color.silver)
+    f_row(1, "Trades", str.tostring(nT) + "  (BUY " + str.tostring(nB) + " · SELL " + str.tostring(nS) + ")", bgW)
+    f_row(2, "Jeet %", nT > 0 ? str.tostring(100.0 * nW / nT, "0.0") + "%" : "-", bgW)
+    f_row(3, "Exp", f_r(ex) + (na(se) ? "" : " (± " + str.tostring(se, "0.000") + ")"), bgW)
+    f_row(4, "BUY / SELL Exp", f_r(nB > 0 ? sRB / nB : na) + " / " + f_r(nS > 0 ? (sR - sRB) / nS : na), bgW)
+    f_row(5, "Exp - 2SE", na(se) ? "-" : str.tostring(ex - 2 * se, "0.000"), bgW)
+    f_row(6, "PF (R)", sLos > 0 ? str.tostring(sWin / sLos, "0.00") : "-", bgW)
+    f_row(7, "QAIDA", ok ? "PASS -> IMTIHAN" : "FAIL / kam trades", ok ? color.lime : color.red)

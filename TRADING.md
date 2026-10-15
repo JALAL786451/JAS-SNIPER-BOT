@@ -120,7 +120,9 @@ din same; 6 mili trades TV -0.07R vs MT5 -0.93R. Engine ki ghalti NAHI. Wajah:
 **6 Kachhua commodity ASLI PASS (demo)** · 7-8 Ichimoku FAIL · 9 Intraday Momentum FAIL ·
 10-11 Cointegration FAIL · 12 user ka 15m $1/$2 FAIL · 13 Kachhua 4H FAIL · 14 IBS 10 index FAIL ·
 **15 IBS S&P ASLI PASS (JasIbsEA)** · 18 MA 63/91 (`jas_ma6391_test.pine` m3 ATR SL 1.5x, TP 2x): TV 1H 2025-26 72 tr 40% PF 1.86 +$863;
-4H 2023-26 40 tr PF 1.48; 1m 90 tr Exp +0.10 (±0.16) = abhi SABIT NAHI (TV data kam) -> MT5 1H 2021-24 TALAASH (18 Oct ke baad). Gold intraday 8 idea bhi FAIL (purane qaide se).
+4H 2023-26 40 tr PF 1.48; 1m 90 tr Exp +0.10 (±0.16) = abhi SABIT NAHI (TV data kam) -> MT5 1H 2021-24 TALAASH (18 Oct ke baad).
+19 SMC (`jas_smc_test.pine` k1, D1 rukh, SL wick+0.1ATR, TP 2R): LGB 15m/1H/4H/1D sab FAIL (1H 150 tr PF 0.64);
+FVG 1D kul 420 tr PF 1.32 magar TALAASH (2018 tak) PF ~0.7 = FAIL (faida sirf 2019+ tezi); DZ/SZ 4H 2023-26 162 tr PF 1.19 -> MT5 TALAASH baqi. Gold intraday 8 idea bhi FAIL (purane qaide se).
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
