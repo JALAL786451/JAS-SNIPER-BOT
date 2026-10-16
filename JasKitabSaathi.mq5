@@ -1,6 +1,8 @@
-// JasKitabSaathi x3 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
+// JasKitabSaathi x4 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
 //+------------------------------------------------------------------+
 //| Chart ke symbol (XAUUSDc) ki SAARI lots (haath ki bhi) dekhta hai.|
+//| x4: panel - haath mein kitna (Close All / Close By), kitab ginti,|
+//|   breakeven/matlab, $10 seerhi; trade lakeerein chhupi.           |
 //|  - Panel: NET, equity, har $1 par USC, stop out andaza, faide    |
 //|    wali lots, khule NET ka faida.                                |
 //|  - Button "NET BUY / NET SELL kholo": ulti taraf ki sirf FAIDE    |
@@ -14,7 +16,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define BUILD "x3"
+#define BUILD "x4"
 
 input double InpNetLot      = 0.01;  // NET kholne ka tukda (lot) - x2: 0.01 (user 16 Oct)
 input double InpMaxNet      = 0.10;  // NET ki had - x2: abhi 0.10 (code mein 0.50 se zyada kabhi nahi)
@@ -22,6 +24,8 @@ input double InpBigLot      = 0.05;  // Is se bari lot faide mein aaye to batao 
 input double InpFaidaAlert  = 50.0;  // Khula NET itne USC faide mein = alert
 input bool   InpPush        = true;  // Mobile par notification (MetaQuotes ID chahiye)
 input int    InpSlippage    = 30;    // Band karte waqt qeemat ki gunjaish (points)
+input int    InpFont        = 10;    // x4: panel ki likhai ka size
+input bool   InpHideLevels  = true;  // x4: is chart par 183 lots ki lakeerein chhupao (saaf chart)
 input int    InpMaxOrders   = 200;   // x3: broker ki had (Exness Real, 17 Oct se) - panel par yaad-dihani
 
 string PFX = "JKS_";
@@ -374,6 +378,58 @@ void Notify(string s)
    if(InpPush) SendNotification(s);
   }
 
+//--- x4: panel - saaf dabba, bari likhai (har line 63 harf tak, lambi khud do line)
+string P_t[];
+color  P_c[];
+int    P_n = 0, g_lastN = 0;
+
+void AddL(string txt, color c = clrWhite)
+  {
+   while(StringLen(txt) > 62)
+     {
+      int cut = 62;
+      for(int q = 62; q > 30; q--) if(StringGetCharacter(txt, q) == ' ') { cut = q; break; }
+      AddL(StringSubstr(txt, 0, cut), c);
+      txt = "   " + StringSubstr(txt, cut + 1);
+     }
+   ArrayResize(P_t, P_n + 1); ArrayResize(P_c, P_n + 1);
+   P_t[P_n] = txt; P_c[P_n] = c; P_n++;
+  }
+
+void DrawPanel()
+  {
+   int lh = InpFont + 7, x = 10, y = 22, maxLen = 10;
+   for(int i = 0; i < P_n; i++) if(StringLen(P_t[i]) > maxLen) maxLen = StringLen(P_t[i]);
+   string bg = PFX + "BG";
+   if(ObjectFind(0, bg) < 0) ObjectCreate(0, bg, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+   ObjectSetInteger(0, bg, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, bg, OBJPROP_XDISTANCE, 2);
+   ObjectSetInteger(0, bg, OBJPROP_YDISTANCE, 16);
+   ObjectSetInteger(0, bg, OBJPROP_XSIZE, maxLen * (InpFont * 3 / 4 + 1) + 20);
+   ObjectSetInteger(0, bg, OBJPROP_YSIZE, P_n * lh + 12);
+   ObjectSetInteger(0, bg, OBJPROP_BGCOLOR, C'14,16,28');
+   ObjectSetInteger(0, bg, OBJPROP_BORDER_TYPE, BORDER_FLAT);
+   ObjectSetInteger(0, bg, OBJPROP_COLOR, clrDimGray);
+   ObjectSetInteger(0, bg, OBJPROP_SELECTABLE, false);
+   for(int i = 0; i < P_n; i++)
+     {
+      string n = PFX + "L" + IntegerToString(i);
+      if(ObjectFind(0, n) < 0) ObjectCreate(0, n, OBJ_LABEL, 0, 0, 0);
+      ObjectSetInteger(0, n, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+      ObjectSetInteger(0, n, OBJPROP_XDISTANCE, x);
+      ObjectSetInteger(0, n, OBJPROP_YDISTANCE, y + i * lh);
+      ObjectSetString(0, n, OBJPROP_FONT, "Consolas");
+      ObjectSetInteger(0, n, OBJPROP_FONTSIZE, InpFont);
+      ObjectSetInteger(0, n, OBJPROP_COLOR, P_c[i]);
+      ObjectSetInteger(0, n, OBJPROP_SELECTABLE, false);
+      ObjectSetString(0, n, OBJPROP_TEXT, Pick(P_t[i] == "", " ", P_t[i]));
+     }
+   for(int i = P_n; i < g_lastN; i++) ObjectDelete(0, PFX + "L" + IntegerToString(i));
+   g_lastN = P_n;
+  }
+
+color PLc(double v) { if(v > 0.005) return(clrLime); if(v < -0.005) return(clrTomato); return(clrWhite); }
+
 //--- har second: panel + alert
 void Refresh()
   {
@@ -382,7 +438,10 @@ void Refresh()
    double sell = SideLots(POSITION_TYPE_SELL, false);
    double net  = buy - sell;
    double eq   = AccountInfoDouble(ACCOUNT_EQUITY);
+   double bal  = AccountInfoDouble(ACCOUNT_BALANCE);
    double k    = PerDollarLot();
+   double bid  = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ask  = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double plAll = 0.0;
    for(int i = 0; i < L_n; i++) plAll += L_pl[i];
 
@@ -399,29 +458,82 @@ void Refresh()
      }
    double faida = (g_eq0 > 0.0) ? eq - g_eq0 : 0.0;
 
-   string s = StringFormat("JAS KITAB SAATHI %s  -  %s   (khud trade NAHI, nayi lot NAHI)\n", BUILD, _Symbol);
-   s += StringFormat("Positions %d  |  BUY %.2f  SELL %.2f  |  NET %+.2f (had %.2f)\n", L_n, buy, sell, net, MaxNet());
+   // ginti: BUY/SELL - positions, 0.01 wali, bari, qeemat se oopar/neeche, ausat
+   int    nB = 0, nS = 0, smB = 0, smS = 0, upS = 0, dnS = 0, upB = 0, dnB = 0;
+   double bigB = 0, bigS = 0, lUpS = 0, lDnS = 0, lUpB = 0, lDnB = 0, sumBpx = 0, sumSpx = 0;
+   for(int i = 0; i < L_n; i++)
+     {
+      bool small = L_vol[i] < 0.015;
+      if(L_ty[i] == POSITION_TYPE_BUY)
+        {
+         nB++; sumBpx += L_px[i] * L_vol[i];
+         if(small) smB++; else bigB += L_vol[i];
+         if(L_px[i] > bid) { upB++; lUpB += L_vol[i]; } else { dnB++; lDnB += L_vol[i]; }
+        }
+      else
+        {
+         nS++; sumSpx += L_px[i] * L_vol[i];
+         if(small) smS++; else bigS += L_vol[i];
+         if(L_px[i] > bid) { upS++; lUpS += L_vol[i]; } else { dnS++; lDnS += L_vol[i]; }
+        }
+     }
+   double avB = buy > 0 ? sumBpx / buy : 0, avS = sell > 0 ? sumSpx / sell : 0;
+   double matched = MathMin(buy, sell);
+   double save    = matched * (ask - bid) * k;          // Close By: har jori par ek spread bachta hai
+
+   P_n = 0;
+   AddL(StringFormat("JAS KITAB SAATHI %s  %s  gold %s", BUILD, _Symbol, Px(bid)), clrGold);
+   AddL("(khud trade NAHI, nayi lot kabhi NAHI)", clrSilver);
+   AddL("");
+   AddL("== ABHI SAB BAND KARO TO HAATH MEIN ==", clrGold);
+   AddL(StringFormat("  %s USC  =  $%s", M(eq), M(eq / 100.0)), clrWhite);
+   AddL(StringFormat("  Close All se:        %s (spread samait)", M(plAll)), PLc(plAll));
+   AddL(StringFormat("  Multiple Close By se: %s (bachat %s)", M(plAll + save), M(save)), PLc(plAll + save));
+   AddL(StringFormat("  Balance %s = sirf band trades", M(bal)), clrSilver);
+   AddL(StringFormat("  Equity  %s = ASAL PAISA", M(eq)), clrWhite);
+   AddL("");
+   AddL("== KITAB (HEDGE) ==", clrGold);
+   AddL(StringFormat("  BUY : %3d pos  %.2f lot  ausat %s", nB, buy, Px(avB)), clrDeepSkyBlue);
+   AddL(StringFormat("        0.01 wali %d | bari %d = %.2f lot", smB, nB - smB, bigB), clrDeepSkyBlue);
+   AddL(StringFormat("        oopar %d (%.2f) nuqsan | neeche %d (%.2f) faida", upB, lUpB, dnB, lDnB), clrDeepSkyBlue);
+   AddL(StringFormat("  SELL: %3d pos  %.2f lot  ausat %s", nS, sell, Px(avS)), clrOrange);
+   AddL(StringFormat("        0.01 wali %d | bari %d = %.2f lot", smS, nS - smS, bigS), clrOrange);
+   AddL(StringFormat("        oopar %d (%.2f) faida | neeche %d (%.2f) nuqsan", upS, lUpS, dnS, lDnS), clrOrange);
+   AddL(StringFormat("  KUL %d pos | NET %+.2f (had %.2f)", L_n, net, MaxNet()), clrWhite);
    int allPos = PositionsTotal() + OrdersTotal();
-   s += StringFormat("Broker had: %d / %d khule orders%s\n", allPos, InpMaxOrders,
-                     Pick(allPos >= InpMaxOrders, "  -- HAD PAR! nayi lot / hedge NAHI khulega, JasJoriClose chalayein",
-                          Pick(allPos >= InpMaxOrders - 20, "  -- had qareeb, hedge ke liye jagah kam", "")));
-   s += StringFormat("Equity %s  |  Balance %s  |  Khula P/L %s\n", M(eq), M(AccountInfoDouble(ACCOUNT_BALANCE)), M(plAll));
+   AddL(StringFormat("  Broker had: %d / %d orders%s", allPos, InpMaxOrders,
+                     Pick(allPos >= InpMaxOrders, "  HAD PAR!", Pick(allPos >= InpMaxOrders - 20, "  had qareeb", ""))),
+        (allPos >= InpMaxOrders - 20) ? clrTomato : clrWhite);
+   AddL("");
+   AddL("== BREAKEVEN / MATLAB ==", clrGold);
    if(MathAbs(net) < 1e-8)
-      s += "Kitab JAMI (NET 0) - qeemat kahin bhi jaye, kul wahi.\n";
+     {
+      AddL("  NET 0: breakeven koi qeemat NAHI - gold kahin bhi", clrWhite);
+      AddL(StringFormat("  jaye, kul %s hi rahega.", M(plAll)), clrWhite);
+      if(buy > 0 && sell > 0)
+        {
+         AddL(StringFormat("  BUY ausat %s: gold is se oopar = sab BUY hari", Px(avB)), clrDeepSkyBlue);
+         AddL(StringFormat("  SELL ausat %s: gold is se neeche = sab SELL hari", Px(avS)), clrOrange);
+         AddL(StringFormat("  Farq $%.2f x %.2f lot = kitab ka jama nuqsan", avB - avS, matched), clrSilver);
+        }
+     }
    else
      {
-      s += StringFormat("Gold $1 = %s USC  |  stop out andazan ~$%.0f ulti chaal par\n", M(MathAbs(net) * k), StopOutDist(net));
-      s += StringFormat("NET khulne ke baad faida: %s USC  (alert %s par)\n", M(faida), M(InpFaidaAlert));
+      double be = bid - plAll / (net * k);
+      AddL(StringFormat("  BREAKEVEN (sab band = 0): gold %s", Px(be)), clrYellow);
+      AddL(StringFormat("  NET %s %.2f: gold $1 %s = +%s USC", Pick(net > 0, "BUY", "SELL"), MathAbs(net),
+                        Pick(net > 0, "oopar", "neeche"), M(MathAbs(net) * k)), clrWhite);
+      AddL(StringFormat("  stop out andaza: ~$%.0f ulti chaal", StopOutDist(net)), clrTomato);
+      AddL(StringFormat("  NET khulne ke baad faida: %s (alert %s)", M(faida), M(InpFaidaAlert)), PLc(faida));
      }
-   s += StringFormat("Faide wali lots:  SELL %.2f  |  BUY %.2f\n", SideLots(POSITION_TYPE_SELL, true), SideLots(POSITION_TYPE_BUY, true));
+   AddL(StringFormat("  Faide wali: SELL %.2f | BUY %.2f lot", SideLots(POSITION_TYPE_SELL, true), SideLots(POSITION_TYPE_BUY, true)), clrWhite);
    if(MathAbs(net) < 1e-8)
      {
-      if(SideLots(POSITION_TYPE_SELL, true) >= InpNetLot - 1e-8) s += StringFormat("MAUQA: %.2f SELL faide mein - 'NET BUY kholo' mumkin (rukh ka faisla aap ka)\n", InpNetLot);
-      if(SideLots(POSITION_TYPE_BUY, true)  >= InpNetLot - 1e-8) s += StringFormat("MAUQA: %.2f BUY faide mein - 'NET SELL kholo' mumkin (rukh ka faisla aap ka)\n", InpNetLot);
+      if(SideLots(POSITION_TYPE_SELL, true) >= InpNetLot - 1e-8) AddL(StringFormat("  MAUQA: %.2f SELL faide mein -> 'NET BUY kholo'", InpNetLot), clrLime);
+      if(SideLots(POSITION_TYPE_BUY, true)  >= InpNetLot - 1e-8) AddL(StringFormat("  MAUQA: %.2f BUY faide mein -> 'NET SELL kholo'", InpNetLot), clrLime);
      }
 
    // x2: bari lots jo faide mein hain (sab se bari 3) + har nayi ka ek dafa alert
-   int shown = 0;
    for(int pass = 0; pass < 3; pass++)
      {
       int best = -1;
@@ -435,9 +547,8 @@ void Refresh()
         }
       if(best < 0) break;
       g_tmpShown[pass] = L_tk[best];
-      s += StringFormat("BARI LOT FAIDE MEIN: #%I64u %s %.2f @ %s  +%s  -> 'Bari lot band'\n", L_tk[best],
-                        Pick(L_ty[best] == POSITION_TYPE_BUY, "BUY", "SELL"), L_vol[best], Px(L_px[best]), M(L_pl[best]));
-      shown++;
+      AddL(StringFormat("  BARI LOT FAIDE MEIN: %s %.2f @ %s +%s", Pick(L_ty[best] == POSITION_TYPE_BUY, "BUY", "SELL"),
+                        L_vol[best], Px(L_px[best]), M(L_pl[best])), clrLime);
       if(!BigSeen(L_tk[best]))
         {
          int z = ArraySize(g_bigSeen);
@@ -448,12 +559,49 @@ void Refresh()
         }
      }
 
+   // QEEMAT KI SEERHI ($10 khane) - saari lots ek nazar mein
+   double bk[]; double bB[], bS[], bP[]; int cB[], cS[]; int nb = 0;
+   ArrayResize(bk, L_n); ArrayResize(bB, L_n); ArrayResize(bS, L_n); ArrayResize(bP, L_n);
+   ArrayResize(cB, L_n); ArrayResize(cS, L_n);
+   for(int i = 0; i < L_n; i++)
+     {
+      double key = MathFloor(L_px[i] / 10.0) * 10.0;
+      int j = -1;
+      for(int q = 0; q < nb; q++) if(MathAbs(bk[q] - key) < 0.5) { j = q; break; }
+      if(j < 0) { j = nb; nb++; bk[j] = key; bB[j] = 0; bS[j] = 0; bP[j] = 0; cB[j] = 0; cS[j] = 0; }
+      if(L_ty[i] == POSITION_TYPE_BUY) { bB[j] += L_vol[i]; cB[j]++; } else { bS[j] += L_vol[i]; cS[j]++; }
+      bP[j] += L_pl[i];
+     }
+   for(int a = 0; a < nb - 1; a++)
+      for(int d = a + 1; d < nb; d++)
+         if(bk[d] > bk[a])
+           {
+            double t1 = bk[a]; bk[a] = bk[d]; bk[d] = t1;
+            t1 = bB[a]; bB[a] = bB[d]; bB[d] = t1;
+            t1 = bS[a]; bS[a] = bS[d]; bS[d] = t1;
+            t1 = bP[a]; bP[a] = bP[d]; bP[d] = t1;
+            int t2 = cB[a]; cB[a] = cB[d]; cB[d] = t2;
+            t2 = cS[a]; cS[a] = cS[d]; cS[d] = t2;
+           }
+   if(nb > 0)
+     {
+      AddL("");
+      AddL("== SEERHI ($10)   BUY lot(ginti)  SELL lot(ginti)   P/L ==", clrGold);
+      bool marked = false;
+      for(int j = 0; j < nb && j < 24; j++)
+        {
+         if(!marked && bk[j] + 10.0 <= bid) { AddL(StringFormat("  >>>>>>>> ABHI %s <<<<<<<<", Px(bid)), clrYellow); marked = true; }
+         AddL(StringFormat("  %.0f-%.0f   %.2f(%3d)   %.2f(%3d)  %9s", bk[j], bk[j] + 10.0, bB[j], cB[j], bS[j], cS[j], M(bP[j])), PLc(bP[j]));
+        }
+      if(!marked) AddL(StringFormat("  >>>>>>>> ABHI %s <<<<<<<<", Px(bid)), clrYellow);
+     }
+
    // Jumma raat: NET khula ho to yaad dilao (ek dafa)
    MqlDateTime dt;
    TimeToStruct(TimeCurrent(), dt);
    if(dt.day_of_week == 5 && dt.hour >= 20 && MathAbs(net) > 1e-8)
      {
-      s += "JUMMA RAAT: bazaar band hone wala - weekend gap se pehle NET 0 karein!\n";
+      AddL("JUMMA RAAT: weekend gap se pehle NET 0 karein!", clrTomato);
       if(g_friDay != dt.day) { g_friDay = dt.day; Notify(StringFormat("JasKitabSaathi: Jumma raat, NET %+.2f khula hai - NET 0 karein", net)); }
      }
 
@@ -471,7 +619,8 @@ void Refresh()
         }
       if(g_alerted && faida < InpFaidaAlert / 2.0) g_alerted = false;
      }
-   Comment(s);
+   DrawPanel();
+   ChartRedraw();
   }
 
 int OnInit()
@@ -480,6 +629,8 @@ int OnInit()
    MakeButton("SELL", "NET SELL kholo", 62, clrFireBrick);
    MakeButton("ZERO", "NET 0 karo",     94, clrSteelBlue);
    MakeButton("BIG",  "Bari lot band",  126, clrDarkOrange);
+   if(InpHideLevels) ChartSetInteger(0, CHART_SHOW_TRADE_LEVELS, false);
+   Comment("");
    EventSetTimer(1);
    Refresh();
    return(INIT_SUCCEEDED);
