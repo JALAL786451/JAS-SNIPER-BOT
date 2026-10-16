@@ -1,0 +1,175 @@
+//@version=6
+// ============================================================================
+//  JAS KITAB TUKDA — TEST  (build t1, Pine v6)  - koshish #20
+//  16 Oct 2026 - user ke saath SBS (Qadam 4, user 'D'). Live kitab NET 0 par
+//  jami hai (-5,863 USC); nuqsan sirf NET tukde se wapas aa sakta hai. Kitab mein
+//  faide wali ulti lot band karna = rukh ki taraf nayi lot kholna, is liye ye
+//  seedhi rukh wali strategy ki tarah naapa ja sakta hai.
+//
+//  QAWAID (pehle se tay - test ke dauran mat badlein), OANDA:XAUUSD 4H:
+//   1) Rukh: 1D EMA63 > EMA93 AUR 4H EMA63 > EMA93 = UP; dono neeche = DN;
+//      mila jula = NET 0, kuch nahi. (1D pichhle band din se - repaint nahi)
+//   2) Kholna: 4H candle band par, rukh UP/DN aur koi trade khuli nahi =
+//      rukh ki taraf trade (live par 0.20 lot).
+//   3) Nuqsan ki had: entry se ulta 1.5 x ATR(14) 4H = band (NET 0).
+//   4) Faida: TP nahi. Rukh trade ki taraf na rahe (mila jula / ulta) = band.
+//   5) Dobara: agli band 4H candle par agar rukh wahi. Din (PKT) mein max 2.
+//   6) Jumma: hafte ki aakhri 4H candle band par sab band (weekend gap nahi);
+//      Jumma 12:00 UTC ke baad nayi trade nahi.
+//   7) Kharcha $0.26 / oz har trade (R mein shamil).
+//
+//  QAIDA (table khud likhta hai): TALAASH = shuru se 2018 (default dates).
+//  Trades >= 100, Exp - 2SE > 0, aur aadhe se zyada saal musbat = PASS ->
+//  tab IMTIHAN (2019-aaj) EK dafa, bina tabdeeli. Warna FAIL = raasta band.
+//  Ek waqt ek trade. Koi grid, martingale, hedging ya averaging nahi.
+// ============================================================================
+strategy("JAS Kitab Tukda — Test (4H)", shorttitle = "JAS Tukda Test", overlay = true,
+     initial_capital         = 10000,
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = true)
+
+BUILD = "t1"
+
+grQ    = "Qaida (mat badlein)"
+fastL  = input.int(63, "Tez EMA", group = grQ, display = display.none)
+slowL  = input.int(93, "Sust EMA", group = grQ, display = display.none)
+atrK   = input.float(1.5, "SL = kitne ATR(14)", group = grQ, display = display.none)
+maxDay = input.int(2, "Din (PKT) mein max trades", group = grQ, display = display.none)
+feeUsd = input.float(0.26, "Kharcha har trade ($ / oz)", group = grQ, display = display.none)
+lotUsc = input.float(20.0, "USC har $1 (0.20 lot cent = 20)", group = grQ, display = display.none)
+
+grD    = "Dates"
+tStart = input.time(timestamp("2000-01-01T00:00:00"), "Shuru", group = grD, display = display.none)
+tEnd   = input.time(timestamp("2018-12-31T23:59:00"), "Khatam (TALAASH = 2018 tak)", group = grD, display = display.none)
+
+grV    = "Dikhawa"
+showMA = input.bool(false, "4H EMA lakeerein dikhao", group = grV, display = display.none)
+
+// --- rukh (ta.* sab if ke bahar)
+fast4 = ta.ema(close, fastL)
+slow4 = ta.ema(close, slowL)
+[fastD, slowD] = request.security(syminfo.tickerid, "D", [ta.ema(close, fastL)[1], ta.ema(close, slowL)[1]], lookahead = barmerge.lookahead_on)
+atr   = ta.atr(14)
+
+upD  = fastD > slowD
+dnD  = fastD < slowD
+up4  = fast4 > slow4
+dn4  = fast4 < slow4
+rukh = upD and up4 ? 1 : dnD and dn4 ? -1 : 0
+
+inD   = time >= tStart and time <= tEnd
+isFri = dayofweek(time_close, "UTC") == dayofweek.friday
+wkEnd = isFri and hour(time_close, "UTC") >= 19
+friNo = isFri and hour(time_close, "UTC") > 12
+
+// --- din (PKT) ki ginti
+dayKey = year(time, "Asia/Karachi") * 10000 + month(time, "Asia/Karachi") * 100 + dayofmonth(time, "Asia/Karachi")
+var int lastDay = 0
+var int nDay    = 0
+if dayKey != lastDay
+    lastDay := dayKey
+    nDay    := 0
+
+pos  = strategy.position_size
+flat = pos == 0
+var float riskD = 1.0
+
+// har trade ka SL (R) - nayi entry riskD badle us se PEHLE yaad karo (warna SL
+// lagne wali candle par hi nayi entry ho to pichhli trade ko naya R mil jata)
+var array<float> risks = array.new<float>()
+while array.size(risks) < strategy.closedtrades + strategy.opentrades
+    array.push(risks, riskD)
+
+// band karna: rukh hata, hafte ka aakhir, ya dates khatam
+if pos > 0 and (rukh != 1 or wkEnd or not inD)
+    strategy.close("BUY", comment = rukh != 1 ? "rukh" : "hafta")
+if pos < 0 and (rukh != -1 or wkEnd or not inD)
+    strategy.close("SELL", comment = rukh != -1 ? "rukh" : "hafta")
+
+// kholna
+canOpen = inD and flat and not wkEnd and not friNo and nDay < maxDay and atr > 0
+if canOpen and rukh == 1
+    strategy.entry("BUY", strategy.long)
+    strategy.exit("BUY sl", "BUY", stop = close - atrK * atr)
+    riskD := atrK * atr
+    nDay  += 1
+if canOpen and rukh == -1
+    strategy.entry("SELL", strategy.short)
+    strategy.exit("SELL sl", "SELL", stop = close + atrK * atr)
+    riskD := atrK * atr
+    nDay  += 1
+
+plot(showMA ? fast4 : na, "EMA 63 (4H)", color.new(color.teal, 0))
+plot(showMA ? slow4 : na, "EMA 93 (4H)", color.new(color.orange, 0))
+bgcolor(rukh == 1 ? color.new(color.green, 94) : rukh == -1 ? color.new(color.red, 94) : na, title = "Rukh")
+
+// --- ginti: har band trade ka R (1R = us trade ka SL), kharcha ghata kar
+var array<float> yrR = array.new<float>(40, 0.0)
+var array<int>   yrN = array.new<int>(40, 0)
+var int   nT   = 0
+var int   nW   = 0
+var float sR   = 0.0
+var float sR2  = 0.0
+var float usc  = 0.0
+var float peak = 0.0
+var float mdd  = 0.0
+var int   seen = 0
+while seen < strategy.closedtrades
+    _q  = strategy.closedtrades.size(seen)
+    _pl = strategy.closedtrades.profit(seen) / math.abs(_q) - feeUsd
+    _rk = seen < array.size(risks) ? array.get(risks, seen) : 1.0
+    _r  = _pl / _rk
+    nT  += 1
+    nW  += _r > 0 ? 1 : 0
+    sR  += _r
+    sR2 += _r * _r
+    usc += _pl * lotUsc
+    peak := math.max(peak, usc)
+    mdd  := math.max(mdd, peak - usc)
+    _y  = year(strategy.closedtrades.exit_time(seen), "UTC") - 2000
+    if _y >= 0 and _y < 40
+        array.set(yrR, _y, array.get(yrR, _y) + _r)
+        array.set(yrN, _y, array.get(yrN, _y) + 1)
+    seen += 1
+
+var table rt = table.new(position.top_right, 3, 40, border_width = 1)
+f_row(_r, _a, _b, _bg) =>
+    table.cell(rt, 0, _r, _a, text_size = size.small, bgcolor = _bg)
+    table.cell(rt, 1, _r, _b, text_size = size.small, bgcolor = _bg)
+    table.merge_cells(rt, 1, _r, 2, _r)
+
+if barstate.islast
+    _ex = nT > 0 ? sR / nT : na
+    _sd = nT > 1 ? math.sqrt(math.max(sR2 / nT - _ex * _ex, 0) * nT / (nT - 1)) : na
+    _se = nT > 1 ? _sd / math.sqrt(nT) : na
+    _yrs = 0
+    _yPos = 0
+    for i = 0 to 39
+        if array.get(yrN, i) > 0
+            _yrs  += 1
+            _yPos += array.get(yrR, i) > 0 ? 1 : 0
+    _ok = nT >= 100 and not na(_se) and _ex - 2 * _se > 0 and _yPos * 2 > _yrs
+    _w  = color.white
+    table.cell(rt, 0, 0, "JAS Tukda " + BUILD + " · " + syminfo.ticker + " " + timeframe.period, text_size = size.small, bgcolor = color.silver)
+    table.merge_cells(rt, 0, 0, 2, 0)
+    f_row(1, "Trades", str.tostring(nT), _w)
+    f_row(2, "Jeet %", nT > 0 ? str.tostring(100.0 * nW / nT, "0.0") + "%" : "-", _w)
+    f_row(3, "Exp (R)", na(_ex) ? "-" : str.tostring(_ex, "0.000") + " (± " + (na(_se) ? "-" : str.tostring(_se, "0.000")) + ")", _w)
+    f_row(4, "Exp - 2SE", na(_se) ? "-" : str.tostring(_ex - 2 * _se, "0.000"), _w)
+    f_row(5, "Musbat saal", str.tostring(_yPos) + " / " + str.tostring(_yrs), _w)
+    f_row(6, "0.20 lot kul", str.tostring(usc, "#,##0") + " USC", _w)
+    f_row(7, "0.20 lot max DD", str.tostring(mdd, "#,##0") + " USC", _w)
+    f_row(8, "QAIDA", _ok ? "PASS -> IMTIHAN" : "FAIL / kam trades", _ok ? color.lime : color.red)
+    if timeframe.period != "240"
+        f_row(9, "KHABARDAR", "4H chart par chalayein", color.orange)
+    _r = 10
+    for i = 0 to 39
+        if array.get(yrN, i) > 0 and _r < 40
+            _yr = array.get(yrR, i)
+            table.cell(rt, 0, _r, str.tostring(2000 + i), text_size = size.small, bgcolor = _w)
+            table.cell(rt, 1, _r, str.tostring(array.get(yrN, i)) + " tr", text_size = size.small, bgcolor = _w)
+            table.cell(rt, 2, _r, str.tostring(_yr, "0.0") + "R", text_size = size.small, bgcolor = _yr > 0 ? color.new(color.lime, 60) : color.new(color.red, 60))
+            _r += 1

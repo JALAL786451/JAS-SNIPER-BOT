@@ -487,3 +487,33 @@ d3 compile ✅. Box toot % CHALA: 1D 90/173 = 52% · 4H 27/59 = 46% (oopar 59%, 
 JasDeskView v5.3 (QEEMAT KI SEERHI + CSV; BINA NUQSAN JORI user ke maqsad ke ULAT - neeche wali BUY kha jati, mat chalao; + JORI MUQABLA A sasti vs B mehngi BUY, 0.20 lot) + JasJoriClose s2 (InpMehngiPehle) - compile BAQI.
 **Agla:** 18 Oct ke baad MT5 Q1 test (5m 2021-2024 + spread, pehle se likha qaida) = #16 ka aakhri faisla; umeed kam.
 
+
+
+## TRADING.md sec 5 se (14 Oct aathvi chat, 16 Oct ko yahan)
+
+**14 Oct (aathvi chat):** CLAUDE.md 5 -> 2 KB. Koshish #16 = user ka draft `docs/es_orderflow_draft.md`
+(Carmine Rosato ES order flow -> XAUUSD 5m). Pine `indicators/jas_of_draft.pine` d4 (compile ✅): Q1-Q3 signal +
+T-YES/T-NO/MISS (5m ~1.5 din: 2 signal -2R, MISS -2.8R) aur box toot ginti. **d4 barabar paimana (±1 ATR):
+1D 179/378 = 47% (±5) · 4H 66/131 = 50% (±9) · 5m 121/254 = 48% (±6) = teeno SIKKA**, box toot ke saath ya
+ulta 1:1 par koi edge nahi (Kachhua ki edge 1:1 se nahi naapi jati - lambi jeet). Footprint/heatmap gold CFD par
+mumkin nahi. i3 (sec 6) user ne roka. Agents/judges user ne band kiye (18 Oct 02:00 reset tak).
+`jas_tide_smc` s2.8 (S/R sirf dekhna, default band). `docs/peshgoi-kitab.md` #1: 3,886.47 toote, 13 Nov tak.
+**LIVE kitab (14 Oct, JasDeskView v5.2):** 186 pos (BUY 2.17 ausat 4189.9 / SELL 2.14 ausat 4165.4), NET +0.03 jami,
+Close All ~-5,590, Balance 49,026, Equity 43,483. Teh: neeche sasti BUY · beech SELL · oopar mehngi BUY.
+SAB SELL band = har $1 par 217 USC, ~$200 girawat = account khatam -> NET 0.50 se zyada NAHI, 0.20 tukde.
+Mashwara: abhi jori/band kuch NAHI. **Claude ki ghalti:** "bina nuqsan jori" ka mashwara diya jo neeche wali
+BUY kha jati - user ne pakra. Sabaq: jori se pehle BACHI kitab dekho. JasDeskView v5.3 (QEEMAT KI SEERHI $10 +
+har lot CSV `MQL5\Files\JasDeskView_XAUUSDc.csv`) compile BAQI. JasJoriClose s2 (InpMehngiPehle, default false).
+v5.3 compile ✅, CSV mili (14 Oct 17:32, bid 4088.9). **Kitab = 3 hissay:** (a) SELL 2.14 (4153-4189) +16,321 ≈
+(b) mehngi BUY 1.44 (4190-4367) -16,368 = aapas mein barabar; (c) baqi BUY 0.73 (4101-4190, ausat ~4165) = poora
+nuqsan -5,540. Swap-free, NET 0.03 -> 3900 par -6.1k, 4300 par -4.9k. (a)+(b) band = 0.73 BUY khuli (har $1 = 73 USC) - NAHI.
+**Koshish #17 idea (user, 14 Oct):** SELL (BUY se oopar) gold oopar jaye to +0.30 USC/0.01 par band; wapsi = band qeemat
+par ya chotti se $5 neeche (jo oopar ho) wohi lot SELL dobara. User ne "HAN" kaha (14 Oct, test ki ijazat). Kitab NET +0.03 BUY; EA band SELL milaa kar NET 0.50 se zyada NAHI.
+Peshgoi #2 LGB (4066-4155, PASS = 4185 pehle) - `docs/peshgoi-kitab.md`, har nayi chat check.
+Lot Guard EA idea (0.10+ nayi position foran band) - user ne "abhi nahi" kaha.
+**Agla:** live par kuch nahi; 18 Oct ke baad #17 Python test (X = 3/5/10) + MT5 Q1.
+
+**16 Oct (navi chat):** `ob_radar.pine` r2 - user ka MA = EMA 63/93 (20/50 nahi). Legend ke neeche SIGNAL qatar:
+1D+4H MA ek taraf + 1H/2H zone ke ANDAR + 15m naya OB (2 candles) = TAYYAR. TEST NAHI HUA (koshish #19 SMC zone 4H PF 1.19 dekho). Compile ✅ (16 Oct, 4 chart: "Intezar SELL taraf", 15m OB 6 purana). r3 legend transparent ✅. r4 = MA default 63/93 (paste par 20/50 ho gaya tha). r5 = RUKH KI SEERHI (jo bhi MA): KHINCH (X ATR door) / MOD (fast MA jhukao palta) / PAKKA (cross) + alerts, compile ✅ magar MOD ka jungle. r6 ✅. r7 = user: chart par SIRF OB khaane + aakhri ▲▼ + legend; MA lakeer aur seerhi default BAND (alert chalu), compile BAQI.
+Gold ~4177 (16 Oct 07:30). User: real account lots mein BARABAR hedge, weekly usage 86% -> chhote jawab. Peshgoi #2 (4185 pehle?) agli chat check.
+**LIVE kitab CSV (16 Oct 04:35, bid 4176.9):** 293 pos, BUY 2.57 ausat 4183.3 / SELL 2.57 ausat 4160.7, NET 0.00 = nuqsan JAMA -5,863 USC (har qeemat par wahi, 14 Oct -5,590 se 273 zyada). Mehngi BUY 4190-4219 = 1.43, SELL ka dher 4160-4169 = 1.27. Jori list (Close By, |farq| <= $1): 47 jori x 0.01 = 0.47 lot har taraf, kul -9 USC (aam close -19); jori se kul nuqsan KAM NAHI hota, sirf lots kam. User plan (16 Oct): 47 jori band, phir SELL band kar ke oopar dobara (= koshish #17). Claude: "dono taraf faida" NAHI - gap mein NET BUY khula, neeche = spread/gap nuqsan baar baar; #17 test (18 Oct ke baad) se pehle sirf 0.01, NET 0.50 had. User ka ulat sawal: BUY neeche laana = NET SELL ki shart; 5,800 USC ke liye NET 0.50 par ~$116 seedhi girawat. #17 test mein ULTA version (BUY band, neeche dobara) bhi chalana. **Claude sabaq (16 Oct):** 14 Oct 4088 par "kuch NAHI" kaha - price 4177 gayi, 0.50 NET tukdon se ~+4,400 USC chhoot gaya. Aage sirf "ruko" nahi, had wala chhota raasta bhi do (0.01 tukde, NET <= 0.50, wapsi par dobara). **User shikayat (16 Oct):** "mashwara baar baar likhta hoon, nazar andaz" + "Chakkar EA theek chal raha tha (faida + hedge)". Agla: user ka idea = pehle DEMO par chhota (Chakkar k4 / #17), sirf "test baad mein" nahi.
