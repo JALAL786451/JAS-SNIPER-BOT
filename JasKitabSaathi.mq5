@@ -1,4 +1,4 @@
-// JasKitabSaathi x2 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
+// JasKitabSaathi x3 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
 //+------------------------------------------------------------------+
 //| Chart ke symbol (XAUUSDc) ki SAARI lots (haath ki bhi) dekhta hai.|
 //|  - Panel: NET, equity, har $1 par USC, stop out andaza, faide    |
@@ -14,7 +14,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define BUILD "x2"
+#define BUILD "x3"
 
 input double InpNetLot      = 0.01;  // NET kholne ka tukda (lot) - x2: 0.01 (user 16 Oct)
 input double InpMaxNet      = 0.10;  // NET ki had - x2: abhi 0.10 (code mein 0.50 se zyada kabhi nahi)
@@ -22,6 +22,7 @@ input double InpBigLot      = 0.05;  // Is se bari lot faide mein aaye to batao 
 input double InpFaidaAlert  = 50.0;  // Khula NET itne USC faide mein = alert
 input bool   InpPush        = true;  // Mobile par notification (MetaQuotes ID chahiye)
 input int    InpSlippage    = 30;    // Band karte waqt qeemat ki gunjaish (points)
+input int    InpMaxOrders   = 200;   // x3: broker ki had (Exness Real, 17 Oct se) - panel par yaad-dihani
 
 string PFX = "JKS_";
 double g_eq0      = 0.0;   // NET khulne waqt ki equity
@@ -400,6 +401,10 @@ void Refresh()
 
    string s = StringFormat("JAS KITAB SAATHI %s  -  %s   (khud trade NAHI, nayi lot NAHI)\n", BUILD, _Symbol);
    s += StringFormat("Positions %d  |  BUY %.2f  SELL %.2f  |  NET %+.2f (had %.2f)\n", L_n, buy, sell, net, MaxNet());
+   int allPos = PositionsTotal() + OrdersTotal();
+   s += StringFormat("Broker had: %d / %d khule orders%s\n", allPos, InpMaxOrders,
+                     Pick(allPos >= InpMaxOrders, "  -- HAD PAR! nayi lot / hedge NAHI khulega, JasJoriClose chalayein",
+                          Pick(allPos >= InpMaxOrders - 20, "  -- had qareeb, hedge ke liye jagah kam", "")));
    s += StringFormat("Equity %s  |  Balance %s  |  Khula P/L %s\n", M(eq), M(AccountInfoDouble(ACCOUNT_BALANCE)), M(plAll));
    if(MathAbs(net) < 1e-8)
       s += "Kitab JAMI (NET 0) - qeemat kahin bhi jaye, kul wahi.\n";
