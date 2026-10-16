@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  OB RADAR  (build r5, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
+//  OB RADAR  (build r6, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
 //
 //  r2 (16 Oct 2026): legend ke neeche SIGNAL qatar - 3 sawal khud check karti hai:
 //    1) 1D aur 4H ka MA ek hi taraf?  2) 1H ya 2H par price zone ke ANDAR (SZ/DZ)?
@@ -18,6 +18,10 @@
 //      MOD (teer)       = fast MA ka jhukao palta (EMA par = close EMA ke paar)
 //      PAKKA (label)    = fast MA ne slow MA ko cross kiya (sab se der, sab se pakka)
 //    Sab sirf BAND candle par, usi candle par - peechhe nahi kheenche jate.
+//  r6 (16 Oct 2026): r5 ne chart par "jungle" bana diya (har chhote mod par MOD).
+//    Ab har RUKH (fast MA slow ke upar / neeche = ek rukh) mein zyada se zyada:
+//    1 KHINCH -> 1 MOD (sirf KHINCH ke BAAD) -> PAKKA (rukh khatam). Upar wale
+//    rukh mein sirf chotti ke ishare (KHINCH upar, MOD neeche), neeche wale mein ulat.
 //
 //  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
 //  bilkul wohi rakha gaya hai:
@@ -116,10 +120,11 @@ g7        = "7. Rukh ki seerhi (MA se, TEST NAHI HUI)"
 showKhn   = input.bool(true, "KHINCH - MA se bahut door (khatra)", group = g7)
 khnAtr    = input.float(3.0, "KHINCH: fast MA se kitne ATR door", minval = 0.5, maxval = 10, step = 0.5, group = g7)
 showMod   = input.bool(true, "MOD - fast MA mud gayi", group = g7)
+modNeedK  = input.bool(true, "MOD sirf KHINCH ke baad (kam shor)", group = g7)
 showPak   = input.bool(true, "PAKKA - fast MA ne slow ko cross kiya", group = g7)
 cKhn      = input.color(#FF9800, "KHINCH ka rang", group = g7)
 
-BUILD = "r5"
+BUILD = "r6"
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
@@ -279,18 +284,33 @@ plot(maPlot ? maS : na, "MA slow", color = cMaS, linewidth = 2, display = displa
 atrNow  = ta.atr(14)
 maUp    = maF > maF[1]
 maDn    = maF < maF[1]
-// KHINCH: sirf khinchao ke PEHLE bar par (har bar par nahi)
-khnTopC = maUp and high - maF > khnAtr * atrNow
-khnBotC = maDn and maF - low > khnAtr * atrNow
-khnTop  = showKhn and khnTopC and not khnTopC[1] and barstate.isconfirmed
-khnBot  = showKhn and khnBotC and not khnBotC[1] and barstate.isconfirmed
-// MOD: fast MA ka jhukao palta. EMA ke liye ye wohi lamha hai jab close EMA ke paar band ho.
-modDn   = showMod and maDn and maF[1] >= maF[2] and barstate.isconfirmed
-modUp   = showMod and maUp and maF[1] <= maF[2] and barstate.isconfirmed
-// PAKKA: fast ne slow ko cross kiya
 // ta.* ko "and" ke bahar - v6 mein "and" aage nahi parhta to ta.* har bar na chalta
 crsDn   = ta.crossunder(maF, maS)
 crsUp   = ta.crossover(maF, maS)
+
+// Rukh: 1 = fast MA slow ke upar, -1 = neeche. Naya rukh = sab ginti dobara.
+legNow = maF > maS ? 1 : maF < maS ? -1 : 0
+var int  leg     = 0
+var bool khnUsed = false
+var bool modUsed = false
+if legNow != 0 and legNow != leg
+    leg     := legNow
+    khnUsed := false
+    modUsed := false
+
+// KHINCH: is rukh mein PEHLI dafa price fast MA se khnAtr ATR door gayi
+khnTop  = showKhn and not khnUsed and leg == 1  and high - maF > khnAtr * atrNow and barstate.isconfirmed
+khnBot  = showKhn and not khnUsed and leg == -1 and maF - low > khnAtr * atrNow and barstate.isconfirmed
+if khnTop or khnBot
+    khnUsed := true
+// MOD: fast MA ka jhukao palta (EMA par = close EMA ke paar band). Is rukh mein
+// sirf PEHLI dafa, aur (default) sirf KHINCH ke baad.
+modOk   = showMod and not modUsed and (khnUsed or not modNeedK) and barstate.isconfirmed
+modDn   = modOk and leg == 1  and maDn and maF[1] >= maF[2]
+modUp   = modOk and leg == -1 and maUp and maF[1] <= maF[2]
+if modDn or modUp
+    modUsed := true
+// PAKKA: fast ne slow ko cross kiya = rukh khatam
 pakDn   = showPak and crsDn and barstate.isconfirmed
 pakUp   = showPak and crsUp and barstate.isconfirmed
 
