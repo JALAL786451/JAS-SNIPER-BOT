@@ -68,8 +68,10 @@ Kitab 287 pos -> 150 se neeche laana ZAROORI (warna hedge ki nayi lot nahi khule
 (panel + Yes/No buttons, NET tukda 0.01 had 0.10, sirf band karta hai) compile + demo BAQI. Mobile: One Click Trading band.
 Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla (SBS):** (1) DO MT5: yahi wala = LIVE (253687618, koi EA nahi, Algo band, trade levels chhupe ✅); nayi install
 `C:\MT5-DEMO` = demo 472716649 + 3 PASS EA (TideRadar 20261009 XAUUSDm D1, TideRadar 20261018 XPTUSDm D1 commodity,
-Rsi2 20261012 US500m D1; InpTrade true) - aaj EA demo charts se hat gaye the (login 472540009 par tha). (2) KitabSaathi **x5**
-(x4 ke 100 errors = tooti strings, theek) F7 -> cent demo (Trial15) test -> live. MT5 se fail EA delete (list chat mein).
+Rsi2 20261012 US500m D1; InpTrade true) - aaj EA demo charts se hat gaye the (login 472540009 par tha). (2) KitabSaathi **x5 compile ✅** (user
+screenshot, F7 dobara NAHI) -> USD demo 472540009 XAUUSDm, haath ki 5 BUY + 5 SELL 0.01 se test (cent demo hota hi NAHI) -> live. MT5 se fail EA delete (list chat mein).
+
+**16 Oct raat (11vi chat):** CSV 12:30: 183 pos, jori NAHI bachi (sasti BUY 4194.30 > mehngi SELL 4188.87). 200 had: "10 SELL 0.01 -> 1 SELL 0.10" (NET 0, equity wahi) - pehla chakkar 9 Oct 10:45 wali 9 + #1922659642, user ka "D" baqi.
 
 **16 Oct (dasvi chat, tests):** #20 Kitab Tukda, #17, #18 (63/91, 63/93, 20/50 x 15m-1D) MT5 par sab FAIL (sec 8). 47 jori NAHI. Peshgoi #2 PASS.
 
