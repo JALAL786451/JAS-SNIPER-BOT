@@ -69,7 +69,7 @@ Kitab 287 pos -> 150 se neeche laana ZAROORI (warna hedge ki nayi lot nahi khule
 Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla (SBS):** (1) DO MT5: yahi wala = LIVE (253687618, koi EA nahi, Algo band, trade levels chhupe ✅); nayi install
 `C:\MT5-DEMO` = demo 472716649 + 3 PASS EA (TideRadar 20261009 XAUUSDm D1, TideRadar 20261018 XPTUSDm D1 commodity,
 Rsi2 20261012 US500m D1; InpTrade true) - aaj EA demo charts se hat gaye the (login 472540009 par tha). (2) KitabSaathi **x5 compile ✅** (user
-screenshot, F7 dobara NAHI) -> USD demo 472540009 XAUUSDm, haath ki 5 BUY + 5 SELL 0.01 se test (cent demo hota hi NAHI) -> live. MT5 se fail EA delete (list chat mein).
+screenshot, F7 dobara NAHI; user ki MT5 file ka naam `JasKitabSathi-x4-EA.mq5` magar andar x5 - theek hai) -> USD demo 472540009 XAUUSDm, haath ki 5 BUY + 5 SELL 0.01 se test (cent demo hota hi NAHI) -> live. MT5 se fail EA delete (list chat mein).
 
 **16 Oct raat (11vi chat):** CSV 12:30: 183 pos, jori NAHI bachi (sasti BUY 4194.30 > mehngi SELL 4188.87). **Claude ghalti:** qeemat ke paas
 10 SELL -> 1 SELL 0.10 kaha = zakheera (pakki sec 4 "0/faida") toot-ta - WAPAS liya. 200 had ka sahi: mehngi BUY 0.01 (4202-4217) 10 -> 1 BUY 0.10
