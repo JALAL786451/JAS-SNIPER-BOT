@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  OB RADAR  (build r6, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
+//  OB RADAR  (build r7, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
 //
 //  r2 (16 Oct 2026): legend ke neeche SIGNAL qatar - 3 sawal khud check karti hai:
 //    1) 1D aur 4H ka MA ek hi taraf?  2) 1H ya 2H par price zone ke ANDAR (SZ/DZ)?
@@ -22,6 +22,10 @@
 //    Ab har RUKH (fast MA slow ke upar / neeche = ek rukh) mein zyada se zyada:
 //    1 KHINCH -> 1 MOD (sirf KHINCH ke BAAD) -> PAKKA (rukh khatam). Upar wale
 //    rukh mein sirf chotti ke ishare (KHINCH upar, MOD neeche), neeche wale mein ulat.
+//  r7 (16 Oct 2026): user: chart par SIRF 3 cheezein - (1) taza hara/laal OB
+//    khaana, (2) sirf AAKHRI ▲ aur AAKHRI ▼ (OB wale), (3) legend. MA lakeerein
+//    aur seerhi (KHINCH/MOD/PAKKA) ab default BAND - settings se chalu ho sakti
+//    hain. Seerhi ke alert band hone par bhi kaam karte hain.
 //
 //  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
 //  bilkul wohi rakha gaya hai:
@@ -73,7 +77,7 @@ maFastLen = input.int(63,  "MA fast", minval = 1, group = g2)
 maSlowLen = input.int(93,  "MA slow", minval = 1, group = g2)
 maType    = input.string("EMA", "MA kis tarah ka", options = ["EMA", "SMA"], group = g2)
 pivotLR   = input.int(5,   "Swing pehchanne ka daira (S/R aur LGB)", minval = 1, maxval = 50, group = g2)
-maPlot    = input.bool(true, "MA chart par bhi banayein", group = g2)
+maPlot    = input.bool(false, "MA chart par bhi banayein", group = g2)
 
 // ------------------------------------------------------------- 3. LEGEND
 g3        = "3. Legend"
@@ -96,6 +100,7 @@ useTFW    = input.bool(true, "1W",  group = g3, inline = "c")
 // ---------------------------------------------------------- 4. CHART PAR
 g4        = "4. Chart par (sirf is chart ki TF ka)"
 drawOB    = input.bool(true, "OB ke khaney banayein", group = g4)
+drawTri   = input.bool(true, "Sirf aakhri ▲ aur aakhri ▼ dikhayein", group = g4)
 obKeep    = input.int(1, "Kitne OB rakhein (1 = sirf taza)", minval = 1, maxval = 10, group = g4)
 obExtend  = input.bool(true, "Khaney ko daayein tak barhayein", group = g4)
 
@@ -117,14 +122,14 @@ sigFresh  = input.int(2, "15m OB kitni 15m candles tak 'naya'", minval = 0, maxv
 
 // ------------------------------------------------- 7. RUKH KI SEERHI (MA se)
 g7        = "7. Rukh ki seerhi (MA se, TEST NAHI HUI)"
-showKhn   = input.bool(true, "KHINCH - MA se bahut door (khatra)", group = g7)
+showKhn   = input.bool(false, "KHINCH - MA se bahut door (khatra)", group = g7)
 khnAtr    = input.float(3.0, "KHINCH: fast MA se kitne ATR door", minval = 0.5, maxval = 10, step = 0.5, group = g7)
-showMod   = input.bool(true, "MOD - fast MA mud gayi", group = g7)
+showMod   = input.bool(false, "MOD - fast MA mud gayi", group = g7)
 modNeedK  = input.bool(true, "MOD sirf KHINCH ke baad (kam shor)", group = g7)
-showPak   = input.bool(true, "PAKKA - fast MA ne slow ko cross kiya", group = g7)
+showPak   = input.bool(false, "PAKKA - fast MA ne slow ko cross kiya", group = g7)
 cKhn      = input.color(#FF9800, "KHINCH ka rang", group = g7)
 
-BUILD = "r6"
+BUILD = "r7"
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
@@ -299,30 +304,39 @@ if legNow != 0 and legNow != leg
     modUsed := false
 
 // KHINCH: is rukh mein PEHLI dafa price fast MA se khnAtr ATR door gayi
-khnTop  = showKhn and not khnUsed and leg == 1  and high - maF > khnAtr * atrNow and barstate.isconfirmed
-khnBot  = showKhn and not khnUsed and leg == -1 and maF - low > khnAtr * atrNow and barstate.isconfirmed
+khnTop  = not khnUsed and leg == 1  and high - maF > khnAtr * atrNow and barstate.isconfirmed
+khnBot  = not khnUsed and leg == -1 and maF - low > khnAtr * atrNow and barstate.isconfirmed
 if khnTop or khnBot
     khnUsed := true
 // MOD: fast MA ka jhukao palta (EMA par = close EMA ke paar band). Is rukh mein
 // sirf PEHLI dafa, aur (default) sirf KHINCH ke baad.
-modOk   = showMod and not modUsed and (khnUsed or not modNeedK) and barstate.isconfirmed
+modOk   = not modUsed and (khnUsed or not modNeedK) and barstate.isconfirmed
 modDn   = modOk and leg == 1  and maDn and maF[1] >= maF[2]
 modUp   = modOk and leg == -1 and maUp and maF[1] <= maF[2]
 if modDn or modUp
     modUsed := true
 // PAKKA: fast ne slow ko cross kiya = rukh khatam
-pakDn   = showPak and crsDn and barstate.isconfirmed
-pakUp   = showPak and crsUp and barstate.isconfirmed
+pakDn   = crsDn and barstate.isconfirmed
+pakUp   = crsUp and barstate.isconfirmed
 
-plotshape(khnTop, "KHINCH upar", style = shape.diamond, color = cKhn, size = size.tiny, location = location.abovebar, text = "KHINCH", textcolor = cKhn, display = display.pane)
-plotshape(khnBot, "KHINCH neeche", style = shape.diamond, color = cKhn, size = size.tiny, location = location.belowbar, text = "KHINCH", textcolor = cKhn, display = display.pane)
-plotshape(modDn, "MOD neeche", style = shape.arrowdown, color = color.new(cBear, 20), size = size.small, location = location.abovebar, text = "MOD", textcolor = cBear, display = display.pane)
-plotshape(modUp, "MOD upar", style = shape.arrowup, color = color.new(cBull, 20), size = size.small, location = location.belowbar, text = "MOD", textcolor = cBull, display = display.pane)
-plotshape(pakDn, "PAKKA neeche", style = shape.labeldown, color = cBear, size = size.small, location = location.abovebar, text = "PAKKA", textcolor = color.white, display = display.pane)
-plotshape(pakUp, "PAKKA upar", style = shape.labelup, color = cBull, size = size.small, location = location.belowbar, text = "PAKKA", textcolor = color.white, display = display.pane)
+plotshape(showKhn and khnTop, "KHINCH upar", style = shape.diamond, color = cKhn, size = size.tiny, location = location.abovebar, text = "KHINCH", textcolor = cKhn, display = display.pane)
+plotshape(showKhn and khnBot, "KHINCH neeche", style = shape.diamond, color = cKhn, size = size.tiny, location = location.belowbar, text = "KHINCH", textcolor = cKhn, display = display.pane)
+plotshape(showMod and modDn, "MOD neeche", style = shape.arrowdown, color = color.new(cBear, 20), size = size.small, location = location.abovebar, text = "MOD", textcolor = cBear, display = display.pane)
+plotshape(showMod and modUp, "MOD upar", style = shape.arrowup, color = color.new(cBull, 20), size = size.small, location = location.belowbar, text = "MOD", textcolor = cBull, display = display.pane)
+plotshape(showPak and pakDn, "PAKKA neeche", style = shape.labeldown, color = cBear, size = size.small, location = location.abovebar, text = "PAKKA", textcolor = color.white, display = display.pane)
+plotshape(showPak and pakUp, "PAKKA upar", style = shape.labelup, color = cBull, size = size.small, location = location.belowbar, text = "PAKKA", textcolor = color.white, display = display.pane)
 
-plotshape(OB_bull, "Bullish OB", style = shape.triangleup, color = cBull, size = size.tiny, location = location.belowbar, offset = -obp, display = display.pane)
-plotshape(OB_bear, "Bearish OB", style = shape.triangledown, color = cBear, size = size.tiny, location = location.abovebar, offset = -obp, display = display.pane)
+// OB ke tikon: sirf AAKHRI ▲ aur AAKHRI ▼ - naya bane to purana mit jata hai.
+// Tikon OB wali candle par lagta hai (obp candles peechhe), magar nazar tab aata
+// hai jab OB pakka hua - yani obp-1 candles BAAD.
+var label triB = na
+var label triS = na
+if drawTri and OB_bull
+    label.delete(triB)
+    triB := label.new(bar_index - obp, low[obp], "", xloc = xloc.bar_index, yloc = yloc.belowbar, style = label.style_triangleup, color = cBull, size = size.tiny)
+if drawTri and OB_bear
+    label.delete(triS)
+    triS := label.new(bar_index - obp, high[obp], "", xloc = xloc.bar_index, yloc = yloc.abovebar, style = label.style_triangledown, color = cBear, size = size.tiny)
 
 // ============================================================================
 //  LEGEND

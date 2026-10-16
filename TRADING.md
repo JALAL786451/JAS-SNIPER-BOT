@@ -61,7 +61,7 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **16 Oct (navi chat):** `ob_radar.pine` r2 - user ka MA = EMA 63/93 (20/50 nahi). Legend ke neeche SIGNAL qatar:
-1D+4H MA ek taraf + 1H/2H zone ke ANDAR + 15m naya OB (2 candles) = TAYYAR. TEST NAHI HUA (koshish #19 SMC zone 4H PF 1.19 dekho). Compile ✅ (16 Oct, 4 chart: "Intezar SELL taraf", 15m OB 6 purana). r3 legend transparent ✅. r4 = MA default 63/93 (paste par 20/50 ho gaya tha). r5 = RUKH KI SEERHI (jo bhi MA): KHINCH (X ATR door) / MOD (fast MA jhukao palta) / PAKKA (cross) + alerts, compile ✅ magar MOD ka jungle. r6 = har rukh mein max 1 KHINCH -> 1 MOD (KHINCH ke baad) -> PAKKA, compile BAQI.
+1D+4H MA ek taraf + 1H/2H zone ke ANDAR + 15m naya OB (2 candles) = TAYYAR. TEST NAHI HUA (koshish #19 SMC zone 4H PF 1.19 dekho). Compile ✅ (16 Oct, 4 chart: "Intezar SELL taraf", 15m OB 6 purana). r3 legend transparent ✅. r4 = MA default 63/93 (paste par 20/50 ho gaya tha). r5 = RUKH KI SEERHI (jo bhi MA): KHINCH (X ATR door) / MOD (fast MA jhukao palta) / PAKKA (cross) + alerts, compile ✅ magar MOD ka jungle. r6 ✅. r7 = user: chart par SIRF OB khaane + aakhri ▲▼ + legend; MA lakeer aur seerhi default BAND (alert chalu), compile BAQI.
 
 **14 Oct (aathvi chat):** CLAUDE.md 5 -> 2 KB. Koshish #16 = user ka draft `docs/es_orderflow_draft.md`
 (Carmine Rosato ES order flow -> XAUUSD 5m). Pine `indicators/jas_of_draft.pine` d4 (compile ✅): Q1-Q3 signal +
