@@ -1,6 +1,11 @@
 //@version=6
 // ============================================================================
-//  OB RADAR — har timeframe ka Order Block, ek hi nazar mein
+//  OB RADAR  (build r2, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
+//
+//  r2 (16 Oct 2026): legend ke neeche SIGNAL qatar - 3 sawal khud check karti hai:
+//    1) 1D aur 4H ka MA ek hi taraf?  2) 1H ya 2H par price zone ke ANDAR (SZ/DZ)?
+//    3) 15m par naya OB usi taraf?    Teeno haan = "TAYYAR", warna "Intezar".
+//  Ye qaida TEST NAHI HUA - sirf dekhne ke liye, asli paisa nahi.
 //
 //  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
 //  bilkul wohi rakha gaya hai:
@@ -86,6 +91,13 @@ cBg       = input.color(#FFFFFFEE, "Panel", group = g5, inline = "s")
 obTransp  = input.int(92, "Khaney ka halkapan", minval = 50, maxval = 98, group = g5)
 cMaF      = input.color(#FF9800, "MA fast", group = g5, inline = "m")
 cMaS      = input.color(#7E57C2, "MA slow", group = g5, inline = "m")
+
+// -------------------------------------------------------------- 6. SIGNAL
+g6        = "6. Signal qatar (TEST NAHI HUA)"
+showSig   = input.bool(true, "Signal qatar dikhayein", group = g6)
+sigFresh  = input.int(2, "15m OB kitni 15m candles tak 'naya'", minval = 0, maxval = 20, group = g6)
+
+BUILD = "r2"
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
@@ -182,6 +194,23 @@ f_tf(_tf) => request.security(syminfo.tickerid, _tf, f_scan(), barmerge.gaps_off
 [oW, aW, bW, rW, mW, pW, fW, lW, zW, tW] = f_tf("W")
 
 // ============================================================================
+//  SIGNAL — 3 sawal (sab BAND candles se, upar wali f_tf values)
+//   1) Rukh : 1D MA aur 4H MA dono UP (BUY) ya dono DN (SELL)
+//   2) Jagah: 1H ya 2H par price zone ke ANDAR - BUY ke liye DZ, SELL ke liye SZ
+//   3) Waqt : 15m ka taza OB usi taraf, aur sigFresh 15m candles se purana nahi
+//  15m ki value sirf ABHI ke liye sahi hai (upar repaint wali baat) - is liye
+//  ye qatar abhi ka haal batati hai; peeche chart par ja kar mat parhein.
+// ============================================================================
+rukhUp  = nz(mD) > 0 and nz(m4) > 0
+rukhDn  = nz(mD) < 0 and nz(m4) < 0
+jagahB  = nz(zH) == 2 or nz(z2) == 2
+jagahS  = nz(zH) == -2 or nz(z2) == -2
+waqtB   = nz(oF) > 0 and nz(aF, 999999) <= sigFresh
+waqtS   = nz(oF) < 0 and nz(aF, 999999) <= sigFresh
+sigBuy  = rukhUp and jagahB and waqtB
+sigSell = rukhDn and jagahS and waqtS
+
+// ============================================================================
 //  IS CHART KI APNI TF — khaney banane ke liye
 // ============================================================================
 obp = periods + 1
@@ -229,12 +258,14 @@ plotshape(OB_bear, "Bearish OB", style = shape.triangledown, color = cBear, size
 f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Bottom Right" ? position.bottom_right : _s == "Bottom Left" ? position.bottom_left : _s == "Middle Right" ? position.middle_right : position.top_right
 f_sz(_s) => _s == "Tiny" ? size.tiny : _s == "Normal" ? size.normal : size.small
 
-var table TB = table.new(f_pos(tblPos), 9, 11, border_width = 1)
+var table TB = table.new(f_pos(tblPos), 9, 12, border_width = 1)
 
 f_sgnTxt(_v, _up, _dn) => _v > 0 ? _up : _v < 0 ? _dn : "-"
 f_sgnCol(_v) => _v > 0 ? cBull : _v < 0 ? cBear : cFlat
 
 f_cell(_c, _r, _t, _tc, _bg) => table.cell(TB, _c, _r, _t, text_color = _tc, text_size = f_sz(tblSize), bgcolor = _bg)
+
+f_ck(_b) => _b ? "✓" : "✗"
 
 // TradingView har TF ka data har chart par nahi de pata (misal: 1W chart par
 // 1m ka). Us soorat mein value na aati hai. Yahan nz() se sab kuch 0 ban jata
@@ -276,7 +307,7 @@ f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lg
     _net
 
 if showTable and barstate.islast
-    table.clear(TB, 0, 0, 8, 10)
+    table.clear(TB, 0, 0, 8, 11)
     f_cell(0, 0, "TF",    color.white, cFlat)
     f_cell(1, 0, "OB",    color.white, cFlat)
     f_cell(2, 0, "B/B %", color.white, cFlat)
@@ -324,8 +355,33 @@ if showTable and barstate.islast
         table.cell(TB, 1, rr, (sumNet > 0 ? "BULL  +" : sumNet < 0 ? "BEAR  " : "BARABAR  ") + str.tostring(sumNet), text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c)
         table.merge_cells(TB, 1, rr, 8, rr)
 
+    if showSig and rr < 11
+        rr := rr + 1
+        _txt = ""
+        _c   = cFlat
+        if sigBuy
+            _txt := "BUY TAYYAR  ·  1D+4H UP ✓  DZ ✓  15m ▲ ✓"
+            _c   := cBull
+        else if sigSell
+            _txt := "SELL TAYYAR  ·  1D+4H DN ✓  SZ ✓  15m ▼ ✓"
+            _c   := cBear
+        else if rukhUp
+            _txt := "Intezar (BUY taraf)  ·  1D+4H UP ✓  DZ " + f_ck(jagahB) + "  15m ▲ " + f_ck(waqtB)
+        else if rukhDn
+            _txt := "Intezar (SELL taraf)  ·  1D+4H DN ✓  SZ " + f_ck(jagahS) + "  15m ▼ " + f_ck(waqtS)
+        else
+            _txt := "Koi trade nahi  ·  1D " + f_sgnTxt(nz(mD), "UP", "DN") + " / 4H " + f_sgnTxt(nz(m4), "UP", "DN") + " - rukh mila jula"
+        table.cell(TB, 0, rr, "SIGNAL", text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c)
+        table.cell(TB, 1, rr, _txt + "   [" + BUILD + "]", text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c, tooltip = "Ye qaida TEST NAHI HUA - sirf dekhne ke liye. 1) 1D aur 4H MA ek taraf  2) 1H ya 2H par price zone ke ANDAR  3) 15m par naya OB (" + str.tostring(sigFresh) + " candles tak) usi taraf.")
+        table.merge_cells(TB, 1, rr, 8, rr)
+
 // ============================================================================
 //  ALERTS — sirf is chart ki TF ke OB par, aur band candle par
 // ============================================================================
 alertcondition(OB_bull, "Naya Bullish OB", "Naya Bullish OB mila - ye BUY ka signal NAHI hai")
 alertcondition(OB_bear, "Naya Bearish OB", "Naya Bearish OB mila - ye SELL ka signal NAHI hai")
+
+// SIGNAL qatar ke alert - sirf jab haal "TAYYAR" BANE (har candle par dobara nahi).
+// 15m ya us se chhoti chart par lagayein, warna 15m ka trigger der se pakra jayega.
+alertcondition(sigBuy and not sigBuy[1], "SIGNAL: BUY tayyar", "OB Radar: BUY tayyar (1D+4H UP, DZ, 15m bull OB) - qaida TEST NAHI HUA")
+alertcondition(sigSell and not sigSell[1], "SIGNAL: SELL tayyar", "OB Radar: SELL tayyar (1D+4H DN, SZ, 15m bear OB) - qaida TEST NAHI HUA")
