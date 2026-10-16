@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  OB RADAR  (build r3, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
+//  OB RADAR  (build r4, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
 //
 //  r2 (16 Oct 2026): legend ke neeche SIGNAL qatar - 3 sawal khud check karti hai:
 //    1) 1D aur 4H ka MA ek hi taraf?  2) 1H ya 2H par price zone ke ANDAR (SZ/DZ)?
@@ -9,6 +9,8 @@
 //  r3 (16 Oct 2026): legend ka dabba transparent (default) - peechhe candles
 //    nazar aati hain. Likhai chart ke rang (chart.fg_color) mein, taake kaali aur
 //    safed dono chart par parhi jaye.
+//  r4 (16 Oct 2026): MA ka default 20/50 se 63/93 (user ki apni setting - nayi
+//    file paste karne par input default par laut gaye the).
 //
 //  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
 //  bilkul wohi rakha gaya hai:
@@ -56,11 +58,11 @@ obLook    = input.int(100,  "Bull%/Bear% ginne ke liye kitni candles peeche", mi
 
 // ---------------------------------------------------------------- 2. BAQI
 g2        = "2. Baqi auzaar (har TF par)"
-maFastLen = input.int(20,  "MA fast", minval = 1, group = g2)
-maSlowLen = input.int(50,  "MA slow", minval = 1, group = g2)
+maFastLen = input.int(63,  "MA fast", minval = 1, group = g2)
+maSlowLen = input.int(93,  "MA slow", minval = 1, group = g2)
 maType    = input.string("EMA", "MA kis tarah ka", options = ["EMA", "SMA"], group = g2)
 pivotLR   = input.int(5,   "Swing pehchanne ka daira (S/R aur LGB)", minval = 1, maxval = 50, group = g2)
-maPlot    = input.bool(true, "MA20/50 chart par bhi banayein", group = g2)
+maPlot    = input.bool(true, "MA chart par bhi banayein", group = g2)
 
 // ------------------------------------------------------------- 3. LEGEND
 g3        = "3. Legend"
@@ -102,7 +104,7 @@ g6        = "6. Signal qatar (TEST NAHI HUA)"
 showSig   = input.bool(true, "Signal qatar dikhayein", group = g6)
 sigFresh  = input.int(2, "15m OB kitni 15m candles tak 'naya'", minval = 0, maxval = 20, group = g6)
 
-BUILD = "r3"
+BUILD = "r4"
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
