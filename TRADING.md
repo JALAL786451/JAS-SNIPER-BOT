@@ -60,6 +60,12 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**16 Oct shaam (dasvi chat, LIVE):** Exness email: 17 Oct se MT5 Real server par **max 200 khule orders** (user server Real 34).
+Kitab 287 pos -> 150 se neeche laana ZAROORI (warna hedge ki nayi lot nahi khulegi). Tool: `JasJoriClose.mq5` **s4 QAREEB**
+(bari lot ke qareeb oopar+neeche lots, nateeja >= 0) - pehli jori live ✅ (5/5, +3.80, 293 -> 287). `JasKitabSaathi.mq5` x2 EA
+(panel + Yes/No buttons, NET tukda 0.01 had 0.10, sirf band karta hai) compile + demo BAQI. Mobile: One Click Trading band.
+Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla:** JasJoriClose QAREEB chalate raho -> <150 pos, phir KitabSaathi demo -> live.
+
 **16 Oct subah (navi chat):** `ob_radar.pine` r2-r7 (MA 63/93, SIGNAL qatar, seerhi default band; r7 compile BAQI).
 **Claude sabaq:** sirf "ruko" nahi - had wala chhota raasta bhi do. **User shikayat:** mashwara nazar andaz; Chakkar EA
 (faida + hedge) theek chal raha tha -> user ka idea pehle DEMO par chhota. Tafseel `docs/purana-haal.md`.
