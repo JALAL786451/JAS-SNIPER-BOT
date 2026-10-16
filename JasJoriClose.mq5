@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS JORI CLOSE   -   build s3                                   |
+//|  JAS JORI CLOSE   -   build s4                                   |
 //|                                                                  |
 //|  YE SCRIPT HAI, EA NAHI. MetaEditor mein "Scripts" folder mein   |
 //|  banayein. Ek dafa chalta hai, kaam kar ke khud band ho jata hai.|
@@ -23,13 +23,13 @@
 #property version   "1.00"
 #property script_show_inputs
 
-#define S_BUILD "s3"
+#define S_BUILD "s4"
 
 input double InpMinResult = 0.0;   // Jori ka andazan nateeja is se kam ho to mat karo
 input int    InpDelayMs   = 200;   // Do Close By ke darmiyan kitne milli-second
 enum ETarteeb
   {
-   T_NAZDEEK = 0, // Bari lot ki qeemat ke QAREEB (oopar + neeche) - s3, user 16 Oct
+   T_NAZDEEK = 0, // Bari lot ki qeemat ke QAREEB (oopar + neeche), nateeja >= InpMinResult - s4
    T_BEHTAR  = 1, // Behtar price pehle (s1: bari SELL -> sasti BUY)
    T_MEHNGI  = 2  // Mehngi pehle (s2: bari SELL -> mehngi BUY)
   };
@@ -100,6 +100,41 @@ int PickBigPair(const int &ty[], const double &vol[], const double &px[], const 
    long got  = 0;
    int  n    = 0;
    ArrayResize(sel, nc);
+
+   // s4: QAREEB - sab se qareeb lots, magar nuqsan wali (ulti taraf) lots ki had (cap) ghata kar
+   // jab tak nateeja InpMinResult tak na aa jaye. Pehla cap jo chale = sab se qareeb jaiz jori.
+   if(InpTarteeb == T_NAZDEEK)
+     {
+      double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
+      double ts = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
+      double pp = (ts > 0.0) ? tv / ts : 0.0;
+      for(long cap = want; cap >= 0; cap--)
+        {
+         long   g = 0, bad = 0;
+         int    m = 0;
+         double res = 0.0;
+         for(int k = 0; k < nc && g < want; k++)
+           {
+            int  i = cand[k];
+            long u = (long)MathRound(vol[i] / step);
+            if(g + u > want) continue;
+            double diff = bigBuy ? (px[i] - px[big]) : (px[big] - px[i]);
+            if(diff < 0.0 && bad + u > cap) continue;
+            sel[m] = i; m++;
+            g += u;
+            if(diff < 0.0) bad += u;
+            res += diff * vol[i] * pp;
+           }
+         if(g == want && res >= InpMinResult - 1e-9)
+           {
+            ArrayResize(sel, m);
+            target  = vol[big];
+            matched = g * step;
+            return(m);
+           }
+        }
+      // koi jaiz QAREEB jori nahi - neeche wala aam chunao (OnStart nateeja dekh kar rok dega)
+     }
    for(int k = 0; k < nc && got < want; k++)
      {
       long u = (long)MathRound(vol[cand[k]] / step);
