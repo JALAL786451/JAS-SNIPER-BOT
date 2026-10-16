@@ -17,6 +17,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `JasDeskView.mq5` | Sirf parhne wala panel: Close-All ginti, lots, ausat, NET, bari lot ki jori (live chal raha) |
 | `JasJoriClose.mq5` | SCRIPT: bari lot ki jori Close By se band (live 64/64) |
 | `JasBarExport.mq5` | x1 (16 Oct): Tester mein chalao - har band M1 candle saal-wise CSV `Common\Files\<symbol>_M1_<saal>.csv` (Export Bars wala format). Koi trade nahi. #17 ke M1 data ke liye |
+| `JasKitabSaathi.mq5` | x1 (16 Oct) EA: khuli kitab ka saathi - panel (NET, equity, $1 = USC, stop out, faide wali lots, MAUQA), buttons NET BUY/SELL kholo (sirf faide wali ulti lots band, NET <= 0.50) aur NET 0 karo (NET wali taraf band), har button Yes/No; khula NET +50 USC par Alert + push. Khud trade NAHI, nayi lot NAHI |
 | `JasDesk.mq5` | Button wala desk (user ne hata diya) |
 
 **FAIL / band EA** (sirf record): `JasGrailEA` (#1-2), `JasVbEA` (#3), `JasTsmomEA` (#4),
