@@ -71,7 +71,10 @@ Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla (SBS):** (1) DO MT5
 Rsi2 20261012 US500m D1; InpTrade true) - aaj EA demo charts se hat gaye the (login 472540009 par tha). (2) KitabSaathi **x5 compile ✅** (user
 screenshot, F7 dobara NAHI) -> USD demo 472540009 XAUUSDm, haath ki 5 BUY + 5 SELL 0.01 se test (cent demo hota hi NAHI) -> live. MT5 se fail EA delete (list chat mein).
 
-**16 Oct raat (11vi chat):** CSV 12:30: 183 pos, jori NAHI bachi (sasti BUY 4194.30 > mehngi SELL 4188.87). 200 had: "10 SELL 0.01 -> 1 SELL 0.10" (NET 0, equity wahi) - pehla chakkar 9 Oct 10:45 wali 9 + #1922659642, user ka "D" baqi.
+**16 Oct raat (11vi chat):** CSV 12:30: 183 pos, jori NAHI bachi (sasti BUY 4194.30 > mehngi SELL 4188.87). **Claude ghalti:** qeemat ke paas
+10 SELL -> 1 SELL 0.10 kaha = zakheera (pakki sec 4 "0/faida") toot-ta - WAPAS liya. 200 had ka sahi: mehngi BUY 0.01 (4202-4217) 10 -> 1 BUY 0.10
+(NET 0, equity wahi, balance ~-380) - user ka "D" baqi. Raasta C (NET tukda 0.01, had 0.10, KitabSaathi buttons) = had wala wapsi raasta.
+Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
 
 **16 Oct (dasvi chat, tests):** #20 Kitab Tukda, #17, #18 (63/91, 63/93, 20/50 x 15m-1D) MT5 par sab FAIL (sec 8). 47 jori NAHI. Peshgoi #2 PASS.
 
