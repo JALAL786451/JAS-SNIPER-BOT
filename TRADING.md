@@ -86,7 +86,7 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 |---|---|---|---|---|
 | JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC | USDJPYm BUY 0.33 @ 158.527, SL 156.394 |
 | JasRsi2EA c2 | US500m D1 | 20261012 | US500, USTEC, US30 | intezar |
-| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | intezar |
+| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | 16 Oct: USOIL BUY 0.05 @ 93.810, SL 86.126 (TP nahi - qaida) |
 
 - Har EA ka faisla: kam az kam 3 mahine + 10-15 band trades (~Jan 2027), har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - **IBS #15:** TALAASH S&P 320 trades +0.047 -> IMTIHAN 190 trades +0.082R (±0.053), sakht +0.029.
