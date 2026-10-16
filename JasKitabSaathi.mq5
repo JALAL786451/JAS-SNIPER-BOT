@@ -1,4 +1,4 @@
-// JasKitabSaathi x1 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
+// JasKitabSaathi x2 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
 //+------------------------------------------------------------------+
 //| Chart ke symbol (XAUUSDc) ki SAARI lots (haath ki bhi) dekhta hai.|
 //|  - Panel: NET, equity, har $1 par USC, stop out andaza, faide    |
@@ -14,10 +14,11 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define BUILD "x1"
+#define BUILD "x2"
 
-input double InpNetLot      = 0.10;  // NET kholne ka tukda (lot)
-input double InpMaxNet      = 0.50;  // NET ki had (0.50 se zyada nahi chalegi)
+input double InpNetLot      = 0.01;  // NET kholne ka tukda (lot) - x2: 0.01 (user 16 Oct)
+input double InpMaxNet      = 0.10;  // NET ki had - x2: abhi 0.10 (code mein 0.50 se zyada kabhi nahi)
+input double InpBigLot      = 0.05;  // Is se bari lot faide mein aaye to batao (Bari lot band button)
 input double InpFaidaAlert  = 50.0;  // Khula NET itne USC faide mein = alert
 input bool   InpPush        = true;  // Mobile par notification (MetaQuotes ID chahiye)
 input int    InpSlippage    = 30;    // Band karte waqt qeemat ki gunjaish (points)
@@ -25,6 +26,8 @@ input int    InpSlippage    = 30;    // Band karte waqt qeemat ki gunjaish (poin
 string PFX = "JKS_";
 double g_eq0      = 0.0;   // NET khulne waqt ki equity
 bool   g_alerted  = false;
+ulong  g_bigSeen[];         // jin bari lots ka faide ka alert de chuke
+ulong  g_tmpShown[3];
 int    g_friDay   = -1;
 
 string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
@@ -83,7 +86,7 @@ ulong  C_tk[];
 double C_vol[], C_pl[], C_px[];
 int    C_n = 0;
 
-double Choose(int type, double need, bool onlyProfit)
+double Choose(int type, double need, bool onlyProfit, bool preferSmall = false)
   {
    int idx[]; ArrayResize(idx, L_n);
    int m = 0;
@@ -91,8 +94,13 @@ double Choose(int type, double need, bool onlyProfit)
       if(L_ty[i] == type && (!onlyProfit || L_pl[i] >= 0.0)) { idx[m] = i; m++; }
    for(int a = 0; a < m - 1; a++)
       for(int d = a + 1; d < m; d++)
-         if(L_pl[idx[d]] / L_vol[idx[d]] > L_pl[idx[a]] / L_vol[idx[a]])
-           { int t = idx[a]; idx[a] = idx[d]; idx[d] = t; }
+        {
+         bool sw = L_pl[idx[d]] / L_vol[idx[d]] > L_pl[idx[a]] / L_vol[idx[a]];
+         // x2: NET kholne mein chhoti (0.01) lots pehle - bari lots tukde mein na katen
+         if(preferSmall && MathAbs(L_vol[idx[d]] - L_vol[idx[a]]) > 1e-8)
+            sw = L_vol[idx[d]] < L_vol[idx[a]];
+         if(sw) { int t = idx[a]; idx[a] = idx[d]; idx[d] = t; }
+        }
 
    double st   = Step();
    long   want = (long)MathRound(need / st);
@@ -210,7 +218,7 @@ void DoOpenNet(int dir)
       return;
      }
    int    closeType = (dir > 0) ? POSITION_TYPE_SELL : POSITION_TYPE_BUY;
-   double got = Choose(closeType, InpNetLot, true);
+   double got = Choose(closeType, InpNetLot, true, true);
    if(got <= 0.0)
      {
       MessageBox(StringFormat("%s ki koi lot faide mein nahi (0 ya zyada).\nAap ke qaide (sirf 0/faida) se NET nahi khul sakta. Kuch nahi kiya.",
@@ -264,6 +272,82 @@ void DoNetZero()
    msg += "Koi nayi lot NAHI khulegi.\n\nKarna hai?";
    if(MessageBox(msg, "JasKitabSaathi " + BUILD, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) != IDYES) return;
    Execute("NET 0");
+  }
+
+//--- x2: sab se bari FAIDE wali lot (>= InpBigLot) - NET had ke andar jitni band ho sake
+int BestBig()
+  {
+   int best = -1;
+   for(int i = 0; i < L_n; i++)
+     {
+      if(L_vol[i] < InpBigLot - 1e-8 || L_pl[i] < 0.0) continue;
+      if(best < 0 || L_vol[i] > L_vol[best] + 1e-8 || (MathAbs(L_vol[i] - L_vol[best]) < 1e-8 && L_pl[i] > L_pl[best]))
+         best = i;
+     }
+   return(best);
+  }
+
+void DoBigClose()
+  {
+   Collect();
+   int b = BestBig();
+   if(b < 0)
+     {
+      MessageBox(StringFormat("%.2f ya bari koi lot faide mein nahi. Kuch nahi kiya.", InpBigLot),
+                 "JasKitabSaathi " + BUILD, MB_OK | MB_ICONINFORMATION);
+      return;
+     }
+   double cur  = NetNow();
+   bool   isBuy = (L_ty[b] == POSITION_TYPE_BUY);
+   double room = isBuy ? cur + MaxNet() : MaxNet() - cur;   // kitni band karein ke |NET| had mein rahe
+   double st   = Step();
+   double v    = MathMin(L_vol[b], MathFloor((room + 1e-8) / st) * st);
+   if(v < st - 1e-8)
+     {
+      MessageBox(StringFormat("Bari lot #%I64u band karne se NET had (%.2f) se bahar jata.
+Pehle 'NET 0 karo' ya ulti lot band karein. Kuch nahi kiya.", L_tk[b], MaxNet()),
+                 "JasKitabSaathi " + BUILD, MB_OK | MB_ICONSTOP);
+      return;
+     }
+   ArrayResize(C_tk, 1); ArrayResize(C_vol, 1); ArrayResize(C_pl, 1); ArrayResize(C_px, 1);
+   C_n = 1;
+   C_tk[0] = L_tk[b]; C_vol[0] = v; C_pl[0] = L_pl[b] * v / L_vol[b]; C_px[0] = L_px[b];
+   double newNet = isBuy ? cur - v : cur + v;
+   string msg = StringFormat("BARI LOT FAIDE PAR BAND
+
+#%I64u %s %.2f @ %s  (P/L %s)
+", L_tk[b], Pick(isBuy, "BUY", "SELL"),
+                             L_vol[b], Px(L_px[b]), M(L_pl[b]));
+   if(v < L_vol[b] - 1e-8)
+      msg += StringFormat("NET had ki wajah se sirf %.2f band hogi (baqi %.2f khuli)
+", v, L_vol[b] - v);
+   msg += StringFormat("
+Andazan nateeja: +%s USC (balance mein)
+", M(C_pl[0]));
+   msg += StringFormat("NET  %+.2f  ->  %+.2f   |  gold $1 = %s USC
+", cur, newNet, M(MathAbs(newNet) * PerDollarLot()));
+   if(MathAbs(newNet) > 1e-8)
+      msg += StringFormat("Stop out andazan ~$%.0f ulti chaal par
+", StopOutDist(newNet));
+   msg += "
+Koi nayi lot NAHI khulegi.
+
+Karna hai?";
+   if(MessageBox(msg, "JasKitabSaathi " + BUILD, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) != IDYES) return;
+   bool wasZero = MathAbs(cur) < 1e-8;
+   Execute("Bari lot band");
+   if(wasZero && MathAbs(newNet) > 1e-8)
+     {
+      g_eq0 = AccountInfoDouble(ACCOUNT_EQUITY);
+      GlobalVariableSet(GvName(), g_eq0);
+      g_alerted = false;
+     }
+  }
+
+bool BigSeen(ulong tk)
+  {
+   for(int i = 0; i < ArraySize(g_bigSeen); i++) if(g_bigSeen[i] == tk) return(true);
+   return(false);
   }
 
 //--- buttons
@@ -331,6 +415,34 @@ void Refresh()
       if(SideLots(POSITION_TYPE_BUY, true)  >= InpNetLot - 1e-8) s += StringFormat("MAUQA: %.2f BUY faide mein - 'NET SELL kholo' mumkin (rukh ka faisla aap ka)\n", InpNetLot);
      }
 
+   // x2: bari lots jo faide mein hain (sab se bari 3) + har nayi ka ek dafa alert
+   int shown = 0;
+   for(int pass = 0; pass < 3; pass++)
+     {
+      int best = -1;
+      for(int i = 0; i < L_n; i++)
+        {
+         if(L_vol[i] < InpBigLot - 1e-8 || L_pl[i] < 0.0) continue;
+         bool used = false;
+         for(int q = 0; q < pass; q++) if(g_tmpShown[q] == L_tk[i]) used = true;
+         if(used) continue;
+         if(best < 0 || L_vol[i] > L_vol[best] + 1e-8) best = i;
+        }
+      if(best < 0) break;
+      g_tmpShown[pass] = L_tk[best];
+      s += StringFormat("BARI LOT FAIDE MEIN: #%I64u %s %.2f @ %s  +%s  -> 'Bari lot band'\n", L_tk[best],
+                        Pick(L_ty[best] == POSITION_TYPE_BUY, "BUY", "SELL"), L_vol[best], Px(L_px[best]), M(L_pl[best]));
+      shown++;
+      if(!BigSeen(L_tk[best]))
+        {
+         int z = ArraySize(g_bigSeen);
+         ArrayResize(g_bigSeen, z + 1);
+         g_bigSeen[z] = L_tk[best];
+         Notify(StringFormat("JasKitabSaathi: bari lot faide mein #%I64u %s %.2f +%.0f USC", L_tk[best],
+                             Pick(L_ty[best] == POSITION_TYPE_BUY, "BUY", "SELL"), L_vol[best], L_pl[best]));
+        }
+     }
+
    // Jumma raat: NET khula ho to yaad dilao (ek dafa)
    MqlDateTime dt;
    TimeToStruct(TimeCurrent(), dt);
@@ -362,6 +474,7 @@ int OnInit()
    MakeButton("BUY",  "NET BUY kholo",  30, clrSeaGreen);
    MakeButton("SELL", "NET SELL kholo", 62, clrFireBrick);
    MakeButton("ZERO", "NET 0 karo",     94, clrSteelBlue);
+   MakeButton("BIG",  "Bari lot band",  126, clrDarkOrange);
    EventSetTimer(1);
    Refresh();
    return(INIT_SUCCEEDED);
@@ -385,5 +498,6 @@ void OnChartEvent(const int id, const long &lparam, const double &dparam, const 
    if(sparam == PFX + "BUY")  DoOpenNet(+1);
    if(sparam == PFX + "SELL") DoOpenNet(-1);
    if(sparam == PFX + "ZERO") DoNetZero();
+   if(sparam == PFX + "BIG")  DoBigClose();
    Refresh();
   }
