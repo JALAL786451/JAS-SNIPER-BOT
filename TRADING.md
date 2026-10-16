@@ -62,9 +62,11 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 **16 Oct shaam (dasvi chat, LIVE):** Exness email: 17 Oct se MT5 Real server par **max 200 khule orders** (user server Real 34).
 Kitab 287 pos -> 150 se neeche laana ZAROORI (warna hedge ki nayi lot nahi khulegi). Tool: `JasJoriClose.mq5` **s4 QAREEB**
-(bari lot ke qareeb oopar+neeche lots, nateeja >= 0) - pehli jori live ✅ (5/5, +3.80, 293 -> 287). `JasKitabSaathi.mq5` x2 EA
+(bari lot ke qareeb oopar+neeche lots, nateeja >= 0) + **s5** (ek chakkar 25 jori) - live ✅: 293 -> **183 pos**, balance
+49,580 -> **50,089** (+508), equity 43,743 (wahi). Kitab ab: BUY 50 pos 1.33 lot ausat 4203.3 (sab 4190+), SELL 133 x 0.01 =
+1.33 ausat 4155.8 (sab 4190 se neeche), NET 0, khula -6,345. Ab koi >=0 jori nahi bachi (har BUY har SELL se oopar). `JasKitabSaathi.mq5` x3 EA (panel par 200 had)
 (panel + Yes/No buttons, NET tukda 0.01 had 0.10, sirf band karta hai) compile + demo BAQI. Mobile: One Click Trading band.
-Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla:** JasJoriClose QAREEB chalate raho -> <150 pos, phir KitabSaathi demo -> live.
+Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla:** KitabSaathi x3 F7 + demo -> Monday live; 150 tak: gold neeche = SELL 0.01 faide par band, 4203+ = bari BUY. OB Radar r7 compile ✅.
 
 **16 Oct subah (navi chat):** `ob_radar.pine` r2-r7 (MA 63/93, SIGNAL qatar, seerhi default band; r7 compile BAQI).
 **Claude sabaq:** sirf "ruko" nahi - had wala chhota raasta bhi do. **User shikayat:** mashwara nazar andaz; Chakkar EA
