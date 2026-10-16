@@ -517,3 +517,45 @@ Lot Guard EA idea (0.10+ nayi position foran band) - user ne "abhi nahi" kaha.
 1D+4H MA ek taraf + 1H/2H zone ke ANDAR + 15m naya OB (2 candles) = TAYYAR. TEST NAHI HUA (koshish #19 SMC zone 4H PF 1.19 dekho). Compile ✅ (16 Oct, 4 chart: "Intezar SELL taraf", 15m OB 6 purana). r3 legend transparent ✅. r4 = MA default 63/93 (paste par 20/50 ho gaya tha). r5 = RUKH KI SEERHI (jo bhi MA): KHINCH (X ATR door) / MOD (fast MA jhukao palta) / PAKKA (cross) + alerts, compile ✅ magar MOD ka jungle. r6 ✅. r7 = user: chart par SIRF OB khaane + aakhri ▲▼ + legend; MA lakeer aur seerhi default BAND (alert chalu), compile BAQI.
 Gold ~4177 (16 Oct 07:30). User: real account lots mein BARABAR hedge, weekly usage 86% -> chhote jawab. Peshgoi #2 (4185 pehle?) agli chat check.
 **LIVE kitab CSV (16 Oct 04:35, bid 4176.9):** 293 pos, BUY 2.57 ausat 4183.3 / SELL 2.57 ausat 4160.7, NET 0.00 = nuqsan JAMA -5,863 USC (har qeemat par wahi, 14 Oct -5,590 se 273 zyada). Mehngi BUY 4190-4219 = 1.43, SELL ka dher 4160-4169 = 1.27. Jori list (Close By, |farq| <= $1): 47 jori x 0.01 = 0.47 lot har taraf, kul -9 USC (aam close -19); jori se kul nuqsan KAM NAHI hota, sirf lots kam. User plan (16 Oct): 47 jori band, phir SELL band kar ke oopar dobara (= koshish #17). Claude: "dono taraf faida" NAHI - gap mein NET BUY khula, neeche = spread/gap nuqsan baar baar; #17 test (18 Oct ke baad) se pehle sirf 0.01, NET 0.50 had. User ka ulat sawal: BUY neeche laana = NET SELL ki shart; 5,800 USC ke liye NET 0.50 par ~$116 seedhi girawat. #17 test mein ULTA version (BUY band, neeche dobara) bhi chalana. **Claude sabaq (16 Oct):** 14 Oct 4088 par "kuch NAHI" kaha - price 4177 gayi, 0.50 NET tukdon se ~+4,400 USC chhoot gaya. Aage sirf "ruko" nahi, had wala chhota raasta bhi do (0.01 tukde, NET <= 0.50, wapsi par dobara). **User shikayat (16 Oct):** "mashwara baar baar likhta hoon, nazar andaz" + "Chakkar EA theek chal raha tha (faida + hedge)". Agla: user ka idea = pehle DEMO par chhota (Chakkar k4 / #17), sirf "test baad mein" nahi.
+
+
+## TRADING.md se (16 Oct raat, chhota karne ke liye)
+
+**16 Oct (dasvi chat, SBS):** Panel 16 Oct (bid 4169.9): 293 pos, BUY 2.57 / SELL 2.57, NET 0, Balance 49,580 (+554 = 15 Oct band
+faida), Equity 43,717 (14 Oct se +234). Kitab = mehngi BUY 1.44 (4190-4370) -4,707 + sasti BUY 1.13 (4100-4190) +1,260 + SELL
+2.57 (ausat 4160.7) -2,416 = -5,863 jami. Faisle: (1) 47 jori NAHI (sasti BUY khaati, -9 pakka, wapsi $23 -> $28);
+(2) Raasta C = NET tukda 0.20, max 0.50, sirf faide wali ulti lot band; (3) Jumma raat NET 0 (weekend gap), 18 Oct Itwar
+bazaar band - asal faisla Monday. **Koshish #20 "Kitab Tukda" qaida (user 'D', badalna mana):** rukh = 1D aur 4H dono
+EMA63/93 ek taraf; 4H band par 0.20 rukh ki taraf; SL 1.5 ATR(14) 4H; TP nahi, rukh hate to band; din max 2; hafte ki
+aakhri 4H par band. `strategies/jas_kitab_tukda_test.pine` t1 (TV chala, magar TV 4H data sirf 2023+ = 0 trades). TALAASH MT5 XAUUSDc H4
+2021-24 (`data/XAUUSDc_H4_2020_2024.csv`, `tools/kitab_tukda_test.py`): 329 tr, jeet 33.7%, Exp +0.012R (±0.093),
+Exp-2SE -0.174, 0.20 lot -687 USC, max DD 10,625; BUY +0.106 (±0.120) / SELL -0.147; saal 2021 -25.7R, 2022 -3.5,
+2023 +12.1, 2024 +21.0 = **#20 FAIL, raasta band** (BUY-akela bhi Exp-2SE < 0). Kitab NET 0 jami rahe (swap-free, muft).
+**#17 test** (`tools/koshish17_test.py`, MT5 XAUUSDc M1 2021-23, `JasBarExport.mq5` x1; data repo mein NAHI - bari):
+asal X=3/5/10: ~8,100 chakkar, har chakkar -$0.14/-0.14/-0.17, 0.01 lot -1,161/-1,158/-1,385 USC; ulta -1,269/-1,369/-1,292.
+Chheh version x 3 saal = SAB saal manfi (3/4 TALAASH saal manfi, 2024 se nahi badlega) = **#17 FAIL** - band ke agle
+minute wapsi, har chakkar ek spread.
+
+
+**16 Oct subah (navi chat):** `ob_radar.pine` r2-r7 (MA 63/93, SIGNAL qatar, seerhi default band; r7 compile BAQI).
+**Claude sabaq:** sirf "ruko" nahi - had wala chhota raasta bhi do. **User shikayat:** mashwara nazar andaz; Chakkar EA
+(faida + hedge) theek chal raha tha -> user ka idea pehle DEMO par chhota. Tafseel `docs/purana-haal.md`.
+
+
+## 6. RUKA HUA (user ne yaad mein rakha, 14 Oct): JasIbsEA i3
+
+**Kyun:** i2 Tester ki 8 trades TradingView (`strategies/jas_ibs_test.pine`) se milayin: 6/8 signal
+din same; 6 mili trades TV -0.07R vs MT5 -0.93R. Engine ki ghalti NAHI. Wajah:
+1. **Candle ka waqt:** OANDA (TV) daily candle 17:00 New York par band, Exness 00:00 GMT (20:00 NY).
+2. **Jumma:** Pine Jumma close par trade karta hai, EA Itwar raat (weekend gap: 24 Jul +46, 11 Sep -42).
+
+**Naqsha:**
+- EA apni daily candle H1 (ya M1) se banaye, **17:00 NY par band** (US DST khud - `UsDst` /
+  `InpServerGMT` code `JasImomEA.mq5` se copy).
+- Faisla 17:00 NY se **~5 minute pehle**, Jumma ko bhi. Tick na aaye (chhutti) to bazaar khulne par
+  mukammal candle se (i2 jaisa).
+- Baqi WAHI: IBS < 0.2 + close > SMA200 = BUY; band IBS > 0.8 ya 5 din; SL 3 ATR(14) RMA; 1%;
+  SL wale din nayi nahi; magic 20261022; Journal TRADE lines (i2).
+- **Jaanch:** Tester US500m Daily, 2015.01.01 - aaj, 1 minute OHLC, 10000 USD. Signal din TV se
+  BILKUL milein: 13 Jul, 20 Jul, 24 Jul, 05 Aug, 14 Aug, 28 Aug, 04 Sep, 23 Sep, 30 Sep.
+
