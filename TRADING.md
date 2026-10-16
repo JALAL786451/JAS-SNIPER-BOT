@@ -66,7 +66,10 @@ Kitab 287 pos -> 150 se neeche laana ZAROORI (warna hedge ki nayi lot nahi khule
 49,580 -> **50,089** (+508), equity 43,743 (wahi). Kitab ab: BUY 50 pos 1.33 lot ausat 4203.3 (sab 4190+), SELL 133 x 0.01 =
 1.33 ausat 4155.8 (sab 4190 se neeche), NET 0, khula -6,345. Ab koi >=0 jori nahi bachi (har BUY har SELL se oopar). `JasKitabSaathi.mq5` x3 EA (panel par 200 had)
 (panel + Yes/No buttons, NET tukda 0.01 had 0.10, sirf band karta hai) compile + demo BAQI. Mobile: One Click Trading band.
-Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla:** KitabSaathi x3 F7 + demo -> Monday live; 150 tak: gold neeche = SELL 0.01 faide par band, 4203+ = bari BUY. OB Radar r7 compile ✅.
+Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla (SBS):** (1) DO MT5: yahi wala = LIVE (253687618, koi EA nahi, Algo band, trade levels chhupe ✅); nayi install
+`C:\MT5-DEMO` = demo 472716649 + 3 PASS EA (TideRadar 20261009 XAUUSDm D1, TideRadar 20261018 XPTUSDm D1 commodity,
+Rsi2 20261012 US500m D1; InpTrade true) - aaj EA demo charts se hat gaye the (login 472540009 par tha). (2) KitabSaathi **x5**
+(x4 ke 100 errors = tooti strings, theek) F7 -> cent demo (Trial15) test -> live. MT5 se fail EA delete (list chat mein).
 
 **16 Oct subah (navi chat):** `ob_radar.pine` r2-r7 (MA 63/93, SIGNAL qatar, seerhi default band; r7 compile BAQI).
 **Claude sabaq:** sirf "ruko" nahi - had wala chhota raasta bhi do. **User shikayat:** mashwara nazar andaz; Chakkar EA
