@@ -88,7 +88,7 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 | JasRsi2EA c2 | US500m D1 | 20261012 | US500, USTEC, US30 | intezar |
 | JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | intezar |
 
-- Har EA ka faisla: kam az kam 3 mahine + 10-15 band trades (~Jan 2027), har trade TV se mile.
+- Har EA ka faisla: kam az kam 3 mahine + 10-15 band trades (~Jan 2027), har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - **IBS #15:** TALAASH S&P 320 trades +0.047 -> IMTIHAN 190 trades +0.082R (±0.053), sakht +0.029.
   `jas_ibs_test.pine` t1 = radar (510 trades, PF 1.52, DD 3.4%). JasIbsEA i2 compile ✅, Tester 8
   trades (Exness US500 data Sep 2025 se) = shor. Faide ka saboot TV IMTIHAN hai, demo nahi.
