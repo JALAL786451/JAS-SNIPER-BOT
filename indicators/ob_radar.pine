@@ -1,11 +1,14 @@
 //@version=6
 // ============================================================================
-//  OB RADAR  (build r2, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
+//  OB RADAR  (build r3, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
 //
 //  r2 (16 Oct 2026): legend ke neeche SIGNAL qatar - 3 sawal khud check karti hai:
 //    1) 1D aur 4H ka MA ek hi taraf?  2) 1H ya 2H par price zone ke ANDAR (SZ/DZ)?
 //    3) 15m par naya OB usi taraf?    Teeno haan = "TAYYAR", warna "Intezar".
 //  Ye qaida TEST NAHI HUA - sirf dekhne ke liye, asli paisa nahi.
+//  r3 (16 Oct 2026): legend ka dabba transparent (default) - peechhe candles
+//    nazar aati hain. Likhai chart ke rang (chart.fg_color) mein, taake kaali aur
+//    safed dono chart par parhi jaye.
 //
 //  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
 //  bilkul wohi rakha gaya hai:
@@ -65,6 +68,8 @@ showTable = input.bool(true, "Legend dikhayein", group = g3)
 tzOff     = input.int(5, "Apna waqt: UTC se kitne ghante aagey", minval = -12, maxval = 14, group = g3)
 tblPos    = input.string("Top Right", "Legend kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = g3)
 tblSize   = input.string("Small", "Likhai ka size", options = ["Tiny", "Small", "Normal"], group = g3)
+tblClear  = input.bool(true, "Dabba transparent (peechhe candles nazar aayein)", group = g3)
+tblAlpha  = input.int(85, "Kitna transparent (0 = thos, 100 = bilkul gayab)", minval = 0, maxval = 100, group = g3)
 useTF1    = input.bool(true, "1m",  group = g3, inline = "a")
 useTF5    = input.bool(true, "5m",  group = g3, inline = "a")
 useTF15   = input.bool(true, "15m", group = g3, inline = "a")
@@ -97,7 +102,7 @@ g6        = "6. Signal qatar (TEST NAHI HUA)"
 showSig   = input.bool(true, "Signal qatar dikhayein", group = g6)
 sigFresh  = input.int(2, "15m OB kitni 15m candles tak 'naya'", minval = 0, maxval = 20, group = g6)
 
-BUILD = "r2"
+BUILD = "r3"
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
@@ -263,7 +268,13 @@ var table TB = table.new(f_pos(tblPos), 9, 12, border_width = 1)
 f_sgnTxt(_v, _up, _dn) => _v > 0 ? _up : _v < 0 ? _dn : "-"
 f_sgnCol(_v) => _v > 0 ? cBull : _v < 0 ? cBear : cFlat
 
-f_cell(_c, _r, _t, _tc, _bg) => table.cell(TB, _c, _r, _t, text_color = _tc, text_size = f_sz(tblSize), bgcolor = _bg)
+// Transparent dabba: har khaane ka rang kam az kam tblAlpha tak halka. Safed aur
+// "Likhai" wala rang chart.fg_color ban jata hai - warna transparent dabbe mein
+// safed likhai safed chart par (ya kaali, kaale chart par) gayab ho jati.
+f_bg(_c) => tblClear ? color.new(_c, math.max(color.t(_c), tblAlpha)) : _c
+f_tc(_c) => tblClear and (_c == color.white or _c == cTxt) ? chart.fg_color : _c
+
+f_cell(_c, _r, _t, _tc, _bg) => table.cell(TB, _c, _r, _t, text_color = f_tc(_tc), text_size = f_sz(tblSize), bgcolor = f_bg(_bg))
 
 f_ck(_b) => _b ? "✓" : "✗"
 
@@ -295,9 +306,9 @@ f_line(_r, _name, _obRaw, _ageRaw, _nbRaw, _nsRaw, _maRaw, _posRaw, _fvgRaw, _lg
     _zTxt = not _ok ? "-" : _zone == 2 ? "DZ" : _zone == -2 ? "SZ" : _zone == 1 ? "dz" : _zone == -1 ? "sz" : "-"
     _zCol = _zone == 2 ? cBull : _zone == -2 ? cBear : _zone == 1 ? color.new(cBull, 40) : _zone == -1 ? color.new(cBear, 40) : cFlat
     _tzs = tzOff >= 0 ? "UTC+" + str.tostring(tzOff) : "UTC" + str.tostring(tzOff)
-    table.cell(TB, 0, _r, _name, text_color = cTxt, text_size = f_sz(tblSize), bgcolor = cBg, tooltip = na(_tRaw) ? "Is TF ka data nahi mila" : "Ye qatar " + _name + " ki us candle se hai jo " + str.format_time(_tRaw, "dd MMM HH:mm", _tzs) + " par khuli aur BAND ho chuki hai. Agli band candle tak ye nahi badlegi.")
+    table.cell(TB, 0, _r, _name, text_color = f_tc(cTxt), text_size = f_sz(tblSize), bgcolor = f_bg(cBg), tooltip = na(_tRaw) ? "Is TF ka data nahi mila" : "Ye qatar " + _name + " ki us candle se hai jo " + str.format_time(_tRaw, "dd MMM HH:mm", _tzs) + " par khuli aur BAND ho chuki hai. Agli band candle tak ye nahi badlegi.")
     f_cell(1, _r, not _ok or _ob == 0 ? "-" : (_ob > 0 ? "BULL" : "BEAR") + " " + str.tostring(_age), f_sgnCol(_ob), color.new(f_sgnCol(_ob), _ob == 0 ? 100 : 86))
-    table.cell(TB, 2, _r, not _ok or _tot == 0 ? "-" : str.tostring(_bR, "#") + "/" + str.tostring(100 - _bR, "#"), text_color = _tot == 0 ? cFlat : _bR > 50 ? cBull : _bR < 50 ? cBear : cFlat, text_size = f_sz(tblSize), bgcolor = cBg, tooltip = "Pichhli " + str.tostring(obLook) + " candles mein: " + str.tostring(_nb, "#") + " bullish OB, " + str.tostring(_ns, "#") + " bearish OB")
+    table.cell(TB, 2, _r, not _ok or _tot == 0 ? "-" : str.tostring(_bR, "#") + "/" + str.tostring(100 - _bR, "#"), text_color = _tot == 0 ? cFlat : _bR > 50 ? cBull : _bR < 50 ? cBear : cFlat, text_size = f_sz(tblSize), bgcolor = f_bg(cBg), tooltip = "Pichhli " + str.tostring(obLook) + " candles mein: " + str.tostring(_nb, "#") + " bullish OB, " + str.tostring(_ns, "#") + " bearish OB")
     f_cell(3, _r, _ok ? f_sgnTxt(_ma, "UP", "DN") : "-", f_sgnCol(_ma), cBg)
     f_cell(4, _r, _srTxt, _srCol, cBg)
     f_cell(5, _r, _ok ? f_sgnTxt(_fvg, "UP", "DN") : "-", f_sgnCol(_fvg), cBg)
@@ -352,7 +363,7 @@ if showTable and barstate.islast
         rr := rr + 1
         _c = sumNet > 0 ? cBull : sumNet < 0 ? cBear : cFlat
         f_cell(0, rr, "SAB", color.white, _c)
-        table.cell(TB, 1, rr, (sumNet > 0 ? "BULL  +" : sumNet < 0 ? "BEAR  " : "BARABAR  ") + str.tostring(sumNet), text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c)
+        table.cell(TB, 1, rr, (sumNet > 0 ? "BULL  +" : sumNet < 0 ? "BEAR  " : "BARABAR  ") + str.tostring(sumNet), text_color = f_tc(color.white), text_size = f_sz(tblSize), bgcolor = f_bg(_c))
         table.merge_cells(TB, 1, rr, 8, rr)
 
     if showSig and rr < 11
@@ -371,8 +382,8 @@ if showTable and barstate.islast
             _txt := "Intezar (SELL taraf)  ·  1D+4H DN ✓  SZ " + f_ck(jagahS) + "  15m ▼ " + f_ck(waqtS)
         else
             _txt := "Koi trade nahi  ·  1D " + f_sgnTxt(nz(mD), "UP", "DN") + " / 4H " + f_sgnTxt(nz(m4), "UP", "DN") + " - rukh mila jula"
-        table.cell(TB, 0, rr, "SIGNAL", text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c)
-        table.cell(TB, 1, rr, _txt + "   [" + BUILD + "]", text_color = color.white, text_size = f_sz(tblSize), bgcolor = _c, tooltip = "Ye qaida TEST NAHI HUA - sirf dekhne ke liye. 1) 1D aur 4H MA ek taraf  2) 1H ya 2H par price zone ke ANDAR  3) 15m par naya OB (" + str.tostring(sigFresh) + " candles tak) usi taraf.")
+        table.cell(TB, 0, rr, "SIGNAL", text_color = f_tc(color.white), text_size = f_sz(tblSize), bgcolor = f_bg(_c))
+        table.cell(TB, 1, rr, _txt + "   [" + BUILD + "]", text_color = f_tc(color.white), text_size = f_sz(tblSize), bgcolor = f_bg(_c), tooltip = "Ye qaida TEST NAHI HUA - sirf dekhne ke liye. 1) 1D aur 4H MA ek taraf  2) 1H ya 2H par price zone ke ANDAR  3) 15m par naya OB (" + str.tostring(sigFresh) + " candles tak) usi taraf.")
         table.merge_cells(TB, 1, rr, 8, rr)
 
 // ============================================================================
