@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  OB RADAR  (build r4, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
+//  OB RADAR  (build r5, Pine v6)  — har timeframe ka Order Block, ek hi nazar mein
 //
 //  r2 (16 Oct 2026): legend ke neeche SIGNAL qatar - 3 sawal khud check karti hai:
 //    1) 1D aur 4H ka MA ek hi taraf?  2) 1H ya 2H par price zone ke ANDAR (SZ/DZ)?
@@ -11,6 +11,13 @@
 //    safed dono chart par parhi jaye.
 //  r4 (16 Oct 2026): MA ka default 20/50 se 63/93 (user ki apni setting - nayi
 //    file paste karne par input default par laut gaye the).
+//  r5 (16 Oct 2026): RUKH KI SEERHI - chart par MA se teen ishare (jo bhi MA
+//    setting mein ho, fast/slow, EMA/SMA):
+//      KHINCH (diamond) = price fast MA se X ATR door + MA usi taraf -> "chotti/
+//                         tah qareeb ho sakti hai" (sab se jaldi, sab se kachcha)
+//      MOD (teer)       = fast MA ka jhukao palta (EMA par = close EMA ke paar)
+//      PAKKA (label)    = fast MA ne slow MA ko cross kiya (sab se der, sab se pakka)
+//    Sab sirf BAND candle par, usi candle par - peechhe nahi kheenche jate.
 //
 //  Bunyaad: wugamlo ka "Order Block Finder" (MPL 2.0). OB pehchanne ka qaida
 //  bilkul wohi rakha gaya hai:
@@ -104,7 +111,15 @@ g6        = "6. Signal qatar (TEST NAHI HUA)"
 showSig   = input.bool(true, "Signal qatar dikhayein", group = g6)
 sigFresh  = input.int(2, "15m OB kitni 15m candles tak 'naya'", minval = 0, maxval = 20, group = g6)
 
-BUILD = "r4"
+// ------------------------------------------------- 7. RUKH KI SEERHI (MA se)
+g7        = "7. Rukh ki seerhi (MA se, TEST NAHI HUI)"
+showKhn   = input.bool(true, "KHINCH - MA se bahut door (khatra)", group = g7)
+khnAtr    = input.float(3.0, "KHINCH: fast MA se kitne ATR door", minval = 0.5, maxval = 10, step = 0.5, group = g7)
+showMod   = input.bool(true, "MOD - fast MA mud gayi", group = g7)
+showPak   = input.bool(true, "PAKKA - fast MA ne slow ko cross kiya", group = g7)
+cKhn      = input.color(#FF9800, "KHINCH ka rang", group = g7)
+
+BUILD = "r5"
 
 // ============================================================================
 //  EK TF KA POORA HAAL — ye function har timeframe par alag chalta hai
@@ -252,9 +267,39 @@ if drawOB and OB_bear
     array.push(BXS, box.new(bar_index - obp, _t, obExtend ? bar_index + 10 : bar_index, _b, xloc = xloc.bar_index, bgcolor = color.new(cBear, obTransp), border_color = color.new(cBear, 70), extend = obExtend ? extend.right : extend.none))
     f_trim(BXS, obKeep)
 
-// MA20/50 chart par. Legend ka "MA" khaana inhi do lakeeron ka faisla hai.
-plot(maPlot ? f_ma(close, maFastLen) : na, "MA fast", color = cMaF, linewidth = 2, display = display.pane)
-plot(maPlot ? f_ma(close, maSlowLen) : na, "MA slow", color = cMaS, linewidth = 2, display = display.pane)
+// MA chart par. Legend ka "MA" khaana inhi do lakeeron ka faisla hai.
+maF = f_ma(close, maFastLen)
+maS = f_ma(close, maSlowLen)
+plot(maPlot ? maF : na, "MA fast", color = cMaF, linewidth = 2, display = display.pane)
+plot(maPlot ? maS : na, "MA slow", color = cMaS, linewidth = 2, display = display.pane)
+
+// ============================================================================
+//  RUKH KI SEERHI — MA se teen ishare, sirf BAND candle par (barstate.isconfirmed)
+// ============================================================================
+atrNow  = ta.atr(14)
+maUp    = maF > maF[1]
+maDn    = maF < maF[1]
+// KHINCH: sirf khinchao ke PEHLE bar par (har bar par nahi)
+khnTopC = maUp and high - maF > khnAtr * atrNow
+khnBotC = maDn and maF - low > khnAtr * atrNow
+khnTop  = showKhn and khnTopC and not khnTopC[1] and barstate.isconfirmed
+khnBot  = showKhn and khnBotC and not khnBotC[1] and barstate.isconfirmed
+// MOD: fast MA ka jhukao palta. EMA ke liye ye wohi lamha hai jab close EMA ke paar band ho.
+modDn   = showMod and maDn and maF[1] >= maF[2] and barstate.isconfirmed
+modUp   = showMod and maUp and maF[1] <= maF[2] and barstate.isconfirmed
+// PAKKA: fast ne slow ko cross kiya
+// ta.* ko "and" ke bahar - v6 mein "and" aage nahi parhta to ta.* har bar na chalta
+crsDn   = ta.crossunder(maF, maS)
+crsUp   = ta.crossover(maF, maS)
+pakDn   = showPak and crsDn and barstate.isconfirmed
+pakUp   = showPak and crsUp and barstate.isconfirmed
+
+plotshape(khnTop, "KHINCH upar", style = shape.diamond, color = cKhn, size = size.tiny, location = location.abovebar, text = "KHINCH", textcolor = cKhn, display = display.pane)
+plotshape(khnBot, "KHINCH neeche", style = shape.diamond, color = cKhn, size = size.tiny, location = location.belowbar, text = "KHINCH", textcolor = cKhn, display = display.pane)
+plotshape(modDn, "MOD neeche", style = shape.arrowdown, color = color.new(cBear, 20), size = size.small, location = location.abovebar, text = "MOD", textcolor = cBear, display = display.pane)
+plotshape(modUp, "MOD upar", style = shape.arrowup, color = color.new(cBull, 20), size = size.small, location = location.belowbar, text = "MOD", textcolor = cBull, display = display.pane)
+plotshape(pakDn, "PAKKA neeche", style = shape.labeldown, color = cBear, size = size.small, location = location.abovebar, text = "PAKKA", textcolor = color.white, display = display.pane)
+plotshape(pakUp, "PAKKA upar", style = shape.labelup, color = cBull, size = size.small, location = location.belowbar, text = "PAKKA", textcolor = color.white, display = display.pane)
 
 plotshape(OB_bull, "Bullish OB", style = shape.triangleup, color = cBull, size = size.tiny, location = location.belowbar, offset = -obp, display = display.pane)
 plotshape(OB_bear, "Bearish OB", style = shape.triangledown, color = cBear, size = size.tiny, location = location.abovebar, offset = -obp, display = display.pane)
@@ -398,3 +443,11 @@ alertcondition(OB_bear, "Naya Bearish OB", "Naya Bearish OB mila - ye SELL ka si
 // 15m ya us se chhoti chart par lagayein, warna 15m ka trigger der se pakra jayega.
 alertcondition(sigBuy and not sigBuy[1], "SIGNAL: BUY tayyar", "OB Radar: BUY tayyar (1D+4H UP, DZ, 15m bull OB) - qaida TEST NAHI HUA")
 alertcondition(sigSell and not sigSell[1], "SIGNAL: SELL tayyar", "OB Radar: SELL tayyar (1D+4H DN, SZ, 15m bear OB) - qaida TEST NAHI HUA")
+
+// RUKH KI SEERHI ke alert - chart ki apni TF par, band candle par
+alertcondition(khnTop, "SEERHI: KHINCH upar", "OB Radar: price MA se bahut upar - chotti qareeb ho sakti hai (khatra, trade nahi)")
+alertcondition(khnBot, "SEERHI: KHINCH neeche", "OB Radar: price MA se bahut neeche - tah qareeb ho sakti hai (khatra, trade nahi)")
+alertcondition(modDn, "SEERHI: MOD neeche", "OB Radar: fast MA neeche mud gayi - TEST NAHI HUA")
+alertcondition(modUp, "SEERHI: MOD upar", "OB Radar: fast MA upar mud gayi - TEST NAHI HUA")
+alertcondition(pakDn, "SEERHI: PAKKA neeche", "OB Radar: fast MA ne slow ko neeche cross kiya - TEST NAHI HUA")
+alertcondition(pakUp, "SEERHI: PAKKA upar", "OB Radar: fast MA ne slow ko upar cross kiya - TEST NAHI HUA")
