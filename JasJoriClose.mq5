@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS JORI CLOSE   -   build s4                                   |
+//|  JAS JORI CLOSE   -   build s5                                   |
 //|                                                                  |
 //|  YE SCRIPT HAI, EA NAHI. MetaEditor mein "Scripts" folder mein   |
 //|  banayein. Ek dafa chalta hai, kaam kar ke khud band ho jata hai.|
@@ -23,7 +23,7 @@
 #property version   "1.00"
 #property script_show_inputs
 
-#define S_BUILD "s4"
+#define S_BUILD "s5"
 
 input double InpMinResult = 0.0;   // Jori ka andazan nateeja is se kam ho to mat karo
 input int    InpDelayMs   = 200;   // Do Close By ke darmiyan kitne milli-second
@@ -34,6 +34,7 @@ enum ETarteeb
    T_MEHNGI  = 2  // Mehngi pehle (s2: bari SELL -> mehngi BUY)
   };
 input ETarteeb InpTarteeb = T_NAZDEEK; // Ulti lots kis tarteeb se chunein
+input int      InpJoriMax = 25;        // s5: ek chakkar mein zyada se zyada kitni joriyan (har jori >= InpMinResult)
 
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
 string M(double v)  { return(DoubleToString(v, 2)); }
@@ -66,12 +67,14 @@ int Collect(ulong &tk[], int &ty[], double &vol[], double &px[], double &pl[])
 //--- JasDeskView v4.2 ka PickBigPair - jyon ka tyon, taake panel aur
 //--- script hamesha EK hi jori chunein
 int PickBigPair(const int &ty[], const double &vol[], const double &px[], const double &pl[],
-                int c, int &big, int &sel[], double &target, double &matched)
+                int c, const bool &used[], const bool &tried[],
+                int &big, int &sel[], double &target, double &matched)
   {
    big = -1; target = 0.0; matched = 0.0;
    ArrayResize(sel, 0);
    for(int i = 0; i < c; i++)
-      if(big < 0 || vol[i] > vol[big] + 1e-8
+      if(used[i] || tried[i]) continue;
+      else if(big < 0 || vol[i] > vol[big] + 1e-8
          || (MathAbs(vol[i] - vol[big]) < 1e-8 && pl[i] < pl[big]))
          big = i;
    if(big < 0) return(0);
@@ -81,7 +84,7 @@ int PickBigPair(const int &ty[], const double &vol[], const double &px[], const 
    int  nc = 0;
    for(int i = 0; i < c; i++)
      {
-      if(i == big || ty[i] == ty[big]) continue;
+      if(i == big || ty[i] == ty[big] || used[i]) continue;
       cand[nc] = i; nc++;
      }
    for(int a = 0; a < nc - 1; a++)
@@ -182,52 +185,44 @@ void OnStart()
       return;
      }
 
-   int    big;
-   int    sel[];
-   double target, matched;
-   int n = PickBigPair(ty, vol, px, pl, c, big, sel, target, matched);
-   if(big < 0 || n <= 0)
+   double tv    = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
+   double ts    = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
+   double perPt = (ts > 0.0) ? tv / ts : 0.0;
+
+   //--- s5: joriyon ka mansooba - har jori alag se >= InpMinResult, koi lot do joriyon mein nahi
+   bool used[];  ArrayResize(used, c);  ArrayInitialize(used, false);
+   bool tried[]; ArrayResize(tried, c); ArrayInitialize(tried, false);
+   int    jBig[], jStart[], jCnt[], jAll[];
+   double jRes[];
+   int    nj = 0, nAll = 0, maxJ = MathMax(1, InpJoriMax);
+   ArrayResize(jBig, maxJ); ArrayResize(jStart, maxJ); ArrayResize(jCnt, maxJ); ArrayResize(jRes, maxJ);
+   ArrayResize(jAll, c);
+   for(int guard = 0; guard < c && nj < maxJ; guard++)
      {
-      MessageBox("Bari lot ke khilaf ulti taraf koi lot nahi.\nKuch nahi kiya.",
+      int    big;
+      int    sel[];
+      double target, matched;
+      int n = PickBigPair(ty, vol, px, pl, c, used, tried, big, sel, target, matched);
+      if(big < 0) break;
+      if(n <= 0 || MathAbs(matched - target) > 1e-8) { tried[big] = true; continue; }
+      bool   bigBuy = (ty[big] == POSITION_TYPE_BUY);
+      double est = 0.0;
+      for(int k = 0; k < n; k++)
+        {
+         int i = sel[k];
+         double diff = bigBuy ? (px[i] - px[big]) : (px[big] - px[i]);
+         est += diff * vol[i] * perPt;
+        }
+      if(est < InpMinResult) { tried[big] = true; continue; }
+      jBig[nj] = big; jStart[nj] = nAll; jCnt[nj] = n; jRes[nj] = est;
+      used[big] = true;
+      for(int k = 0; k < n; k++) { jAll[nAll] = sel[k]; nAll++; used[sel[k]] = true; }
+      nj++;
+     }
+   if(nj == 0)
+     {
+      MessageBox(StringFormat("Koi jori %s ya behtar nateeje wali nahi bani.\nKuch nahi kiya.", M(InpMinResult)),
                  "JAS JORI CLOSE " + S_BUILD, MB_OK | MB_ICONINFORMATION);
-      return;
-     }
-   if(MathAbs(matched - target) > 1e-8)
-     {
-      MessageBox(StringFormat("Poori jori nahi banti: %.2f chahiye, sirf %.2f mili.\n"
-                              + "Adhoori jori se kitab jami nahi rahegi - kuch nahi kiya.",
-                              target, matched),
-                 "JAS JORI CLOSE " + S_BUILD, MB_OK | MB_ICONSTOP);
-      return;
-     }
-
-   //--- andazan nateeja: abhi ke P/L ka jorh, aur Close By ka (khulne ke price ka farq, spread nahi)
-   bool   bigBuy = (ty[big] == POSITION_TYPE_BUY);
-   double tv     = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-   double ts     = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
-   double perPt  = (ts > 0.0) ? tv / ts : 0.0;
-   double plNow  = pl[big];
-   double byEst  = 0.0;
-   for(int k = 0; k < n; k++)
-     {
-      int i = sel[k];
-      plNow += pl[i];
-      double diff = bigBuy ? (px[i] - px[big]) : (px[big] - px[i]);
-      byEst += diff * vol[i] * perPt;
-     }
-   double lotBuy = 0.0, lotSell = 0.0;
-   for(int i = 0; i < c; i++)
-     {
-      if(ty[i] == POSITION_TYPE_BUY) lotBuy += vol[i];
-      else                           lotSell += vol[i];
-     }
-   double net = lotBuy - lotSell;
-
-   if(byEst < InpMinResult)
-     {
-      MessageBox(StringFormat("Jori ka andazan nateeja %s hai - InpMinResult (%s) se kam.\nKuch nahi kiya.",
-                              M(byEst), M(InpMinResult)),
-                 "JAS JORI CLOSE " + S_BUILD, MB_OK | MB_ICONSTOP);
       return;
      }
 
@@ -240,39 +235,44 @@ void OnStart()
       return;
      }
 
-   //--- poori list Experts tab mein, pehli 12 khirki mein
-   string list = "";
-   for(int k = 0; k < n; k++)
+   double lotBuy = 0.0, lotSell = 0.0, total = 0.0;
+   for(int i = 0; i < c; i++)
      {
-      int i = sel[k];
-      string row = StringFormat("#%I64u %s %.2f @ %s  %s", tk[i],
-                                Pick(ty[i] == POSITION_TYPE_BUY, "BUY", "SELL"),
-                                vol[i], Px(px[i]), M(pl[i]));
-      Print("  jori: ", row);
-      if(k < 12) list += "   " + row + "\n";
+      if(ty[i] == POSITION_TYPE_BUY) lotBuy += vol[i];
+      else                           lotSell += vol[i];
      }
-   if(n > 12) list += StringFormat("   ... aur %d (poori list: Toolbox -> Experts)\n", n - 12);
+   double net = lotBuy - lotSell;
+   int    posBand = 0;
+   string list = "";
+   for(int j = 0; j < nj; j++)
+     {
+      int b = jBig[j];
+      total   += jRes[j];
+      posBand += jCnt[j] + 1;
+      int up = 0;
+      for(int k = 0; k < jCnt[j]; k++) if(px[jAll[jStart[j] + k]] > px[b]) up++;
+      string row = StringFormat("%2d) #%I64u %s %.2f @ %s  + %d lot (oopar %d, neeche %d)  = %s", j + 1, tk[b],
+                                Pick(ty[b] == POSITION_TYPE_BUY, "BUY", "SELL"), vol[b], Px(px[b]),
+                                jCnt[j], up, jCnt[j] - up, M(jRes[j]));
+      Print("  jori: ", row);
+      for(int k = 0; k < jCnt[j]; k++)
+        {
+         int i = jAll[jStart[j] + k];
+         PrintFormat("       #%I64u %s %.2f @ %s", tk[i], Pick(ty[i] == POSITION_TYPE_BUY, "BUY", "SELL"), vol[i], Px(px[i]));
+        }
+      if(j < 12) list += "   " + row + "\n";
+     }
+   if(nj > 12) list += StringFormat("   ... aur %d jori (poori list: Toolbox -> Experts)\n", nj - 12);
 
    string msg = "";
-   msg += StringFormat("BARI LOT:  #%I64u %s %.2f @ %s   (%s)\n\n",
-                       tk[big], Pick(bigBuy, "BUY", "SELL"), vol[big], Px(px[big]), M(pl[big]));
-   msg += StringFormat("Is ke khilaf CLOSE BY: %d %s, kul %.2f lot\n",
-                       n, Pick(bigBuy, "SELL", "BUY"), matched);
-   int upar = 0, neeche = 0;
-   for(int k = 0; k < n; k++)
-     {
-      if(px[sel[k]] > px[big]) upar++;
-      else                     neeche++;
-     }
-   msg += list;
-   msg += StringFormat("Tarteeb: %s  |  bari lot se oopar %d, neeche %d\n\n",
-                       Pick(InpTarteeb == T_NAZDEEK, "QAREEB",
-                            Pick(InpTarteeb == T_MEHNGI, "MEHNGI PEHLE", "BEHTAR PEHLE")), upar, neeche);
-   msg += StringFormat("Andazan nateeja (Close By, spread nahi):  %s %s\n",
-                       M(byEst), AccountInfoString(ACCOUNT_CURRENCY));
-   msg += StringFormat("Abhi bazaar par band karte to:            %s\n\n", M(plNow));
+   msg += StringFormat("Tarteeb: %s  |  har jori >= %s\n\n",
+                       Pick(InpTarteeb == T_NAZDEEK, "QAREEB", Pick(InpTarteeb == T_MEHNGI, "MEHNGI PEHLE", "BEHTAR PEHLE")),
+                       M(InpMinResult));
+   msg += StringFormat("JORIYAN: %d\n", nj);
+   msg += list + "\n";
+   msg += StringFormat("Kul andazan nateeja (Close By, spread nahi):  %s %s\n", M(total), AccountInfoString(ACCOUNT_CURRENCY));
    msg += StringFormat("NET  %+.2f  ->  %+.2f   (kitab jami rahegi)\n", net, net);
-   msg += StringFormat("Band hongi: %d position.  Bachengi: %d.\n\n", n + 1, c - n - 1);
+   msg += StringFormat("Band hongi: %d position.  Bachengi: %d.\n\n", posBand, c - posBand);
    msg += "Koi nayi lot NAHI khulegi. Ek bhi Close By fail hui to wahin ruk jayega.\n\n";
    msg += "Karna hai?";
 
@@ -286,52 +286,54 @@ void OnStart()
 
    //--- amal
    double balStart = AccountInfoDouble(ACCOUNT_BALANCE);
-   ulong  bigTk    = tk[big];
-   long   bigId    = 0;
-   if(PositionSelectByTicket(bigTk)) bigId = PositionGetInteger(POSITION_IDENTIFIER);
-   int    done     = 0;
+   int    done     = 0, need = nAll;
    string stopWhy  = "";
-
-   for(int k = 0; k < n; k++)
+   for(int j = 0; j < nj && stopWhy == ""; j++)
      {
-      int i = sel[k];
-      if(!SelectBig(bigTk, bigId)) { stopWhy = "bari lot ab khuli nahi mili"; break; }
-      ulong bigNow = PositionGetInteger(POSITION_TICKET);
-      if(!PositionSelectByTicket(tk[i]))
-        { stopWhy = StringFormat("#%I64u ab khuli nahi mili", tk[i]); break; }
-
-      MqlTradeRequest rq;
-      MqlTradeResult  rs;
-      ZeroMemory(rq);
-      ZeroMemory(rs);
-      rq.action      = TRADE_ACTION_CLOSE_BY;
-      rq.position    = bigNow;
-      rq.position_by = tk[i];
-      rq.symbol      = _Symbol;
-
-      bool ok = OrderSend(rq, rs);
-      if(!ok || (rs.retcode != TRADE_RETCODE_DONE && rs.retcode != TRADE_RETCODE_PLACED))
+      ulong bigTk = tk[jBig[j]];
+      long  bigId = 0;
+      if(PositionSelectByTicket(bigTk)) bigId = PositionGetInteger(POSITION_IDENTIFIER);
+      for(int k = 0; k < jCnt[j]; k++)
         {
-         stopWhy = StringFormat("#%I64u par Close By nahi hua: retcode %u (%s)",
-                                tk[i], rs.retcode, rs.comment);
-         break;
+         int i = jAll[jStart[j] + k];
+         if(!SelectBig(bigTk, bigId)) { stopWhy = "bari lot ab khuli nahi mili"; break; }
+         ulong bigNow = PositionGetInteger(POSITION_TICKET);
+         if(!PositionSelectByTicket(tk[i]))
+           { stopWhy = StringFormat("#%I64u ab khuli nahi mili", tk[i]); break; }
+
+         MqlTradeRequest rq;
+         MqlTradeResult  rs;
+         ZeroMemory(rq);
+         ZeroMemory(rs);
+         rq.action      = TRADE_ACTION_CLOSE_BY;
+         rq.position    = bigNow;
+         rq.position_by = tk[i];
+         rq.symbol      = _Symbol;
+
+         bool ok = OrderSend(rq, rs);
+         if(!ok || (rs.retcode != TRADE_RETCODE_DONE && rs.retcode != TRADE_RETCODE_PLACED))
+           {
+            stopWhy = StringFormat("#%I64u par Close By nahi hua: retcode %u (%s)",
+                                   tk[i], rs.retcode, rs.comment);
+            break;
+           }
+         done++;
+         PrintFormat("  Close By %d/%d: #%I64u + #%I64u  theek", done, need, bigNow, tk[i]);
+         if(InpDelayMs > 0) Sleep(InpDelayMs);
         }
-      done++;
-      PrintFormat("  Close By %d/%d: #%I64u + #%I64u  theek", done, n, bigNow, tk[i]);
-      if(InpDelayMs > 0) Sleep(InpDelayMs);
      }
 
    Sleep(500);
    double balEnd = AccountInfoDouble(ACCOUNT_BALANCE);
 
-   string rep = StringFormat("Close By ho gaye: %d / %d\n", done, n);
+   string rep = StringFormat("Close By ho gaye: %d / %d  (%d jori)\n", done, need, nj);
    rep += StringFormat("Balance: %s -> %s   (farq %s)\n", M(balStart), M(balEnd), M(balEnd - balStart));
    if(stopWhy != "")
       rep += "\nRUK GAYA: " + stopWhy + "\n"
              + "Jo ho chuka woh barabar lot par hua - kitab ab bhi jami hai.\n"
              + "JasDeskView mein NET check kar lein.";
    else
-      rep += "\nPoori jori band. JasDeskView mein NET 0 aur nayi tasveer dekh lein.";
+      rep += "\nSab joriyan band. JasDeskView mein NET 0 aur nayi tasveer dekh lein.";
    Print("JAS JORI CLOSE: ", rep);
    int flags = MB_OK | MB_ICONINFORMATION;
    if(stopWhy != "") flags = MB_OK | MB_ICONWARNING;
