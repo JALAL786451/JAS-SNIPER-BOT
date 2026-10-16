@@ -1,4 +1,4 @@
-// JasKitabSaathi x4 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
+// JasKitabSaathi x5 - khuli kitab ka saathi: status + Yes/No buttons. KHUD KOI TRADE NAHI, NAYI LOT KABHI NAHI (16 Oct 2026)
 //+------------------------------------------------------------------+
 //| Chart ke symbol (XAUUSDc) ki SAARI lots (haath ki bhi) dekhta hai.|
 //| x4: panel - haath mein kitna (Close All / Close By), kitab ginti,|
@@ -16,7 +16,7 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define BUILD "x4"
+#define BUILD "x5"
 
 input double InpNetLot      = 0.01;  // NET kholne ka tukda (lot) - x2: 0.01 (user 16 Oct)
 input double InpMaxNet      = 0.10;  // NET ki had - x2: abhi 0.10 (code mein 0.50 se zyada kabhi nahi)
@@ -309,8 +309,7 @@ void DoBigClose()
    double v    = MathMin(L_vol[b], MathFloor((room + 1e-8) / st) * st);
    if(v < st - 1e-8)
      {
-      MessageBox(StringFormat("Bari lot #%I64u band karne se NET had (%.2f) se bahar jata.
-Pehle 'NET 0 karo' ya ulti lot band karein. Kuch nahi kiya.", L_tk[b], MaxNet()),
+      MessageBox(StringFormat("Bari lot #%I64u band karne se NET had (%.2f) se bahar jata.\nPehle 'NET 0 karo' ya ulti lot band karein. Kuch nahi kiya.", L_tk[b], MaxNet()),
                  "JasKitabSaathi " + BUILD, MB_OK | MB_ICONSTOP);
       return;
      }
@@ -318,26 +317,15 @@ Pehle 'NET 0 karo' ya ulti lot band karein. Kuch nahi kiya.", L_tk[b], MaxNet())
    C_n = 1;
    C_tk[0] = L_tk[b]; C_vol[0] = v; C_pl[0] = L_pl[b] * v / L_vol[b]; C_px[0] = L_px[b];
    double newNet = isBuy ? cur - v : cur + v;
-   string msg = StringFormat("BARI LOT FAIDE PAR BAND
-
-#%I64u %s %.2f @ %s  (P/L %s)
-", L_tk[b], Pick(isBuy, "BUY", "SELL"),
+   string msg = StringFormat("BARI LOT FAIDE PAR BAND\n\n#%I64u %s %.2f @ %s  (P/L %s)\n", L_tk[b], Pick(isBuy, "BUY", "SELL"),
                              L_vol[b], Px(L_px[b]), M(L_pl[b]));
    if(v < L_vol[b] - 1e-8)
-      msg += StringFormat("NET had ki wajah se sirf %.2f band hogi (baqi %.2f khuli)
-", v, L_vol[b] - v);
-   msg += StringFormat("
-Andazan nateeja: +%s USC (balance mein)
-", M(C_pl[0]));
-   msg += StringFormat("NET  %+.2f  ->  %+.2f   |  gold $1 = %s USC
-", cur, newNet, M(MathAbs(newNet) * PerDollarLot()));
+      msg += StringFormat("NET had ki wajah se sirf %.2f band hogi (baqi %.2f khuli)\n", v, L_vol[b] - v);
+   msg += StringFormat("\nAndazan nateeja: +%s USC (balance mein)\n", M(C_pl[0]));
+   msg += StringFormat("NET  %+.2f  ->  %+.2f   |  gold $1 = %s USC\n", cur, newNet, M(MathAbs(newNet) * PerDollarLot()));
    if(MathAbs(newNet) > 1e-8)
-      msg += StringFormat("Stop out andazan ~$%.0f ulti chaal par
-", StopOutDist(newNet));
-   msg += "
-Koi nayi lot NAHI khulegi.
-
-Karna hai?";
+      msg += StringFormat("Stop out andazan ~$%.0f ulti chaal par\n", StopOutDist(newNet));
+   msg += "\nKoi nayi lot NAHI khulegi.\n\nKarna hai?";
    if(MessageBox(msg, "JasKitabSaathi " + BUILD, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) != IDYES) return;
    bool wasZero = MathAbs(cur) < 1e-8;
    Execute("Bari lot band");
