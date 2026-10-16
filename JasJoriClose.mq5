@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS JORI CLOSE   -   build s2                                   |
+//|  JAS JORI CLOSE   -   build s3                                   |
 //|                                                                  |
 //|  YE SCRIPT HAI, EA NAHI. MetaEditor mein "Scripts" folder mein   |
 //|  banayein. Ek dafa chalta hai, kaam kar ke khud band ho jata hai.|
@@ -23,11 +23,17 @@
 #property version   "1.00"
 #property script_show_inputs
 
-#define S_BUILD "s2"
+#define S_BUILD "s3"
 
 input double InpMinResult = 0.0;   // Jori ka andazan nateeja is se kam ho to mat karo
 input int    InpDelayMs   = 200;   // Do Close By ke darmiyan kitne milli-second
-input bool   InpMehngiPehle = false; // s2: bari SELL ki jori MEHNGI (upar wali) BUY se pehle (user ka formula, JasDeskView 'B')
+enum ETarteeb
+  {
+   T_NAZDEEK = 0, // Bari lot ki qeemat ke QAREEB (oopar + neeche) - s3, user 16 Oct
+   T_BEHTAR  = 1, // Behtar price pehle (s1: bari SELL -> sasti BUY)
+   T_MEHNGI  = 2  // Mehngi pehle (s2: bari SELL -> mehngi BUY)
+  };
+input ETarteeb InpTarteeb = T_NAZDEEK; // Ulti lots kis tarteeb se chunein
 
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
 string M(double v)  { return(DoubleToString(v, 2)); }
@@ -81,9 +87,10 @@ int PickBigPair(const int &ty[], const double &vol[], const double &px[], const 
    for(int a = 0; a < nc - 1; a++)
       for(int d = a + 1; d < nc; d++)
         {
-         // s1: behtar price pehle. s2 InpMehngiPehle: ulta (bari SELL -> mehngi BUY, bari BUY -> sasti SELL)
+         // s1: behtar price pehle. s2: ulta (bari SELL -> mehngi BUY). s3: bari lot ki qeemat ke sab se qareeb pehle
          bool swap = bigBuy ? (px[cand[d]] > px[cand[a]]) : (px[cand[d]] < px[cand[a]]);
-         if(InpMehngiPehle) swap = bigBuy ? (px[cand[d]] < px[cand[a]]) : (px[cand[d]] > px[cand[a]]);
+         if(InpTarteeb == T_MEHNGI) swap = bigBuy ? (px[cand[d]] < px[cand[a]]) : (px[cand[d]] > px[cand[a]]);
+         if(InpTarteeb == T_NAZDEEK) swap = MathAbs(px[cand[d]] - px[big]) < MathAbs(px[cand[a]] - px[big]);
          if(swap) { int t = cand[a]; cand[a] = cand[d]; cand[d] = t; }
         }
 
@@ -216,7 +223,16 @@ void OnStart()
                        tk[big], Pick(bigBuy, "BUY", "SELL"), vol[big], Px(px[big]), M(pl[big]));
    msg += StringFormat("Is ke khilaf CLOSE BY: %d %s, kul %.2f lot\n",
                        n, Pick(bigBuy, "SELL", "BUY"), matched);
-   msg += list + "\n";
+   int upar = 0, neeche = 0;
+   for(int k = 0; k < n; k++)
+     {
+      if(px[sel[k]] > px[big]) upar++;
+      else                     neeche++;
+     }
+   msg += list;
+   msg += StringFormat("Tarteeb: %s  |  bari lot se oopar %d, neeche %d\n\n",
+                       Pick(InpTarteeb == T_NAZDEEK, "QAREEB",
+                            Pick(InpTarteeb == T_MEHNGI, "MEHNGI PEHLE", "BEHTAR PEHLE")), upar, neeche);
    msg += StringFormat("Andazan nateeja (Close By, spread nahi):  %s %s\n",
                        M(byEst), AccountInfoString(ACCOUNT_CURRENCY));
    msg += StringFormat("Abhi bazaar par band karte to:            %s\n\n", M(plNow));
