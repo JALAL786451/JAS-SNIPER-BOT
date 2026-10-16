@@ -2,12 +2,14 @@
 """Koshish #18 MA 63/91 (m3 qaida) - MT5 M1 data par TALAASH (2021-24 ka jo hissa mile).
 m3: EMA63 x EMA91 cross band candle par = entry (close); SL 1.5 x ATR14 (RMA), TP 2 x SL; ek waqt ek trade,
 khuli trade par ulta cross = kuch nahi; kharcha $0.26/oz. SL aur TP ek hi candle mein = SL (sakht).
-Usage: python3 tools/ma6391_mt5_test.py <M1 csv> <minutes: 60 / 1>
+Usage: python3 tools/ma6391_mt5_test.py <M1/H4 csv> <minutes: 1/15/60/240/1440> [fast slow]
 """
 import sys, math
 from datetime import datetime
 
-FAST, SLOW, FEE = 63, 91, 0.26
+FEE = 0.26
+FAST = int(sys.argv[3]) if len(sys.argv) > 3 else 63
+SLOW = int(sys.argv[4]) if len(sys.argv) > 4 else 91
 mins = int(sys.argv[2])
 bars = []
 for ln in open(sys.argv[1], encoding='utf-8', errors='ignore'):
@@ -60,7 +62,7 @@ m = len(R); ex = sum(R) / m
 se = math.sqrt(sum((x - ex) ** 2 for x in R) / (m - 1)) / math.sqrt(m)
 w = [x for x in R if x > 0]; ls = [x for x in R if x <= 0]
 pf = sum(w) / -sum(ls) if ls else float('inf')
-print(f'{mins}m: {bars[0][0].date()} - {bars[-1][0].date()}, {m} trades, jeet {100*len(w)/m:.1f}%, PF {pf:.2f}, '
+print(f'EMA{FAST}/{SLOW} {mins}m: {bars[0][0].date()} - {bars[-1][0].date()}, {m} trades, jeet {100*len(w)/m:.1f}%, PF {pf:.2f}, '
       f'Exp {ex:+.3f}R (±{se:.3f}), Exp-2SE {ex-2*se:+.3f}, kul {sum(R):+.1f}R')
 print('  saal:', ' '.join(f'{y}:{sum(v):+.1f}R({len(v)})' for y, v in sorted(yr.items())))
 ok = m >= 100 and ex - 2 * se > 0 and sum(1 for v in yr.values() if sum(v) > 0) * 2 > len(yr)

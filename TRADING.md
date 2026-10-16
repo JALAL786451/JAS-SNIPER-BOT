@@ -118,7 +118,9 @@ din same; 6 mili trades TV -0.07R vs MT5 -0.93R. Engine ki ghalti NAHI. Wajah:
 10-11 Cointegration FAIL · 12 user ka 15m $1/$2 FAIL · 13 Kachhua 4H FAIL · 14 IBS 10 index FAIL ·
 **15 IBS S&P ASLI PASS (JasIbsEA)** · 17 SELL band/dobara (M1 2021-23, spread kha jata) FAIL · 20 Kitab Tukda (1D+4H EMA63/93, 4H) TALAASH FAIL · 18 MA 63/91 (`jas_ma6391_test.pine` m3 ATR SL 1.5x, TP 2x): TV 1H 2025-26 72 tr 40% PF 1.86 +$863;
 4H 2023-26 40 tr PF 1.48; 1m 90 tr Exp +0.10 (±0.16). **MT5 TALAASH (16 Oct, `tools/ma6391_mt5_test.py`, M1 2021-23):** 1H 140 tr PF 0.86, Exp -0.099R
-(±0.118), saal -16.2/+7.1/-4.7R; 1m 8,875 tr PF 0.51, Exp -0.48R (kharcha kha jata) = **#18 FAIL**.
+(±0.118), saal -16.2/+7.1/-4.7R; 1m 8,875 tr PF 0.51, Exp -0.48R (kharcha kha jata) = **#18 FAIL**. User ke kehne par 8 aur
+(EMA 63/93 aur 20/50 x 15m/1H/4H/1D, MT5 2021-23/24): PF 0.92/0.84/0.80/0.99 aur 0.80/1.04/0.85/0.56 - sab FAIL (20/50 1H
+321 tr Exp +0.025 ±0.080 sab se acha, phir bhi sikka).
 19 SMC (`jas_smc_test.pine` k1, D1 rukh, SL wick+0.1ATR, TP 2R): LGB 15m/1H/4H/1D sab FAIL (1H 150 tr PF 0.64);
 FVG 1D kul 420 tr PF 1.32 magar TALAASH (2018 tak) PF ~0.7 = FAIL (faida sirf 2019+ tezi); DZ/SZ 4H 2023-26 162 tr PF 1.19 -> MT5 TALAASH baqi. Gold intraday 8 idea bhi FAIL (purane qaide se).
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
