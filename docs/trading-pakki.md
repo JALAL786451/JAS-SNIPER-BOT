@@ -128,6 +128,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - Holy Grail (#1-2), Volatility Breakout (#3), Ichimoku (#7-8), Intraday Momentum (#9), Cointegration / jori (#10-11), user ka 15m $1/$2 (#12: 89,203 trades, jeet 59.8% < 66.7%, -18,446 USD).
 - Ginti scripts sab ITTEFAQ: swing fail (toot ~72% aage jata hai = asli), kal-toot, candle ka rang, wick, numayan candle, FVG. Ghanta ginti: shaam 6-9 PKT sab se zyada harkat - risk ke liye, rukh ke liye nahi.
 - Jori (Close By) se kul P/L / equity NAHI badalti - sirf kaun sa nuqsan pakka ho aur kaun si lot bache. Jori se pehle BACHI kitab dekho (14 Oct: bina nuqsan jori neeche wali BUY kha jati).
+- **Balance vs Equity (16 Oct):** asal paisa = EQUITY. Balance sirf band trades ka hisaab; Close All par balance utar kar equity ke barabar ho jata hai (50,089 -> 43,743 USC). Hedge (NET 0) mein equity har qeemat par wahi.
+- **Sab band karna ho to Multiple Close By, Close All nahi (16 Oct):** Close By mein spread nahi - 1.33/1.33 lot par ~27 USC bachat (cent). USD account par yahi $27 hota.
 - Claude (16 Oct): har faisle par saare raaste khud saamne rakho (jori: QAREEB / sasti / mehngi) - user ke kehne ka intezar nahi. User ne QAREEB khud sujhaya, Claude ko pehle batana chahiye tha.
 - Hunt bhai (1980 chandi): bara yaqeen + udhaar + SL nahi = arab-patti bhi doob jate hain.
 
