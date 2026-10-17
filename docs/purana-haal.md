@@ -559,3 +559,20 @@ din same; 6 mili trades TV -0.07R vs MT5 -0.93R. Engine ki ghalti NAHI. Wajah:
 - **Jaanch:** Tester US500m Daily, 2015.01.01 - aaj, 1 minute OHLC, 10000 USD. Signal din TV se
   BILKUL milein: 13 Jul, 20 Jul, 24 Jul, 05 Aug, 14 Aug, 28 Aug, 04 Sep, 23 Sep, 30 Sep.
 
+
+
+## TRADING.md sec 5 se (17 Oct, chhota karne ke liye)
+
+**16 Oct shaam (dasvi chat, LIVE):** Exness email: 17 Oct se MT5 Real server par **max 200 khule orders** (user server Real 34).
+Kitab 287 pos -> 150 se neeche laana ZAROORI (warna hedge ki nayi lot nahi khulegi). Tool: `JasJoriClose.mq5` **s4 QAREEB**
+(bari lot ke qareeb oopar+neeche lots, nateeja >= 0) + **s5** (ek chakkar 25 jori) - live ✅: 293 -> **183 pos**, balance
+49,580 -> **50,089** (+508), equity 43,743 (wahi). Kitab ab: BUY 50 pos 1.33 lot ausat 4203.3 (sab 4190+), SELL 133 x 0.01 =
+1.33 ausat 4155.8 (sab 4190 se neeche), NET 0, khula -6,345. Ab koi >=0 jori nahi bachi (har BUY har SELL se oopar). `JasKitabSaathi.mq5` x3 EA (panel par 200 had)
+(panel + Yes/No buttons, NET tukda 0.01 had 0.10, sirf band karta hai) compile + demo BAQI. Mobile: One Click Trading band.
+Hifazat (Lot Guard 0.10+) user ne baad ke liye rakha. **Agla (SBS):** (1) DO MT5: yahi wala = LIVE (253687618, koi EA nahi, Algo band, trade levels chhupe ✅); nayi install
+`C:\MT5-DEMO` = demo 472716649 + 3 PASS EA (TideRadar 20261009 XAUUSDm D1, TideRadar 20261018 XPTUSDm D1 commodity,
+Rsi2 20261012 US500m D1; InpTrade true) - aaj EA demo charts se hat gaye the (login 472540009 par tha). (2) KitabSaathi **x5 compile ✅** (user
+screenshot, F7 dobara NAHI; user ki MT5 file ka naam `JasKitabSathi-x4-EA.mq5` magar andar x5 - theek hai) -> USD demo 472540009 XAUUSDm, haath ki 5 BUY + 5 SELL 0.01 se test (cent demo hota hi NAHI) -> live. MT5 se fail EA delete (list chat mein).
+
+**16 Oct (dasvi chat, tests):** #20 Kitab Tukda, #17, #18 (63/91, 63/93, 20/50 x 15m-1D) MT5 par sab FAIL (sec 8). 47 jori NAHI. Peshgoi #2 PASS.
+
