@@ -93,18 +93,11 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 - Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").
 
-## 8. Koshish ginti (tafseel `docs/purana-haal.md`)
+## 8. Koshish ginti (tafseel `docs/purana-haal.md`, grep "Koshish ginti 17 Oct")
 
-1-2 Holy Grail FAIL · 3 Volatility Breakout FAIL · 4 TSMOM FAIL · 5 Turn-of-Month FAIL ·
-**6 Kachhua commodity ASLI PASS (demo)** · 7-8 Ichimoku FAIL · 9 Intraday Momentum FAIL ·
-10-11 Cointegration FAIL · 12 user ka 15m $1/$2 FAIL · 13 Kachhua 4H FAIL · 14 IBS 10 index FAIL ·
-**15 IBS S&P ASLI PASS (JasIbsEA)** · 17 SELL band/dobara (M1 2021-23, spread kha jata) FAIL · 20 Kitab Tukda (1D+4H EMA63/93, 4H) TALAASH FAIL · 18 MA 63/91 (`jas_ma6391_test.pine` m3 ATR SL 1.5x, TP 2x): TV 1H 2025-26 72 tr 40% PF 1.86 +$863;
-4H 2023-26 40 tr PF 1.48; 1m 90 tr Exp +0.10 (±0.16). **MT5 TALAASH (16 Oct, `tools/ma6391_mt5_test.py`, M1 2021-23):** 1H 140 tr PF 0.86, Exp -0.099R
-(±0.118), saal -16.2/+7.1/-4.7R; 1m 8,875 tr PF 0.51, Exp -0.48R (kharcha kha jata) = **#18 FAIL**. User ke kehne par 8 aur
-(EMA 63/93 aur 20/50 x 15m/1H/4H/1D, MT5 2021-23/24): PF 0.92/0.84/0.80/0.99 aur 0.80/1.04/0.85/0.56 - sab FAIL (20/50 1H
-321 tr Exp +0.025 ±0.080 sab se acha, phir bhi sikka).
-19 SMC (`jas_smc_test.pine` k1, D1 rukh, SL wick+0.1ATR, TP 2R): LGB 15m/1H/4H/1D sab FAIL (1H 150 tr PF 0.64);
-FVG 1D kul 420 tr PF 1.32 magar TALAASH (2018 tak) PF ~0.7 = FAIL (faida sirf 2019+ tezi); DZ/SZ 4H 2023-26 162 tr PF 1.19 -> MT5 TALAASH baqi. Gold intraday 8 idea bhi FAIL (purane qaide se).
+1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
+16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m (Zarattini & Aziz) - data ka intezar**.
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
