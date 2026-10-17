@@ -18,6 +18,7 @@ jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; 
 - ~15 message ho jayein to Claude KHUD kahe: "chat lambi ho gayi - 'chat khatam' likhein, nayi chat sasti".
 - **Chat khatam** (user kahe, ya ~15-20 message): `TRADING.md` sec 9 ki list - sec 5 naya (<=8 KB), naye jawab
   `docs/sawal-jawab.md`, `python3 tools/roznamcha.py`, commit + push (default branch bhi). Har chat yahi kare.
+  Push ke FAURAN baad (user 17 Oct) nayi chat ABHI kholo (`create_session`, repo source, prompt "TRADING") - schedule/time NAHI.
 - Agent / workflow sirf jab user naam le kar maange; hafte ki limit 50%+ ho to bilkul nahi.
 
 ## Hard rules for these EAs
