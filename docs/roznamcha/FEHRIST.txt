@@ -144,7 +144,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - Peshgoi #2 PASS: gold 4,188 (4066 toote baghair)
    - TRADING.md: commodity demo USOIL BUY 0.05
 
-2026-10-17  (10 kaam)
+2026-10-17  (12 kaam)
    - TRADING.md: TideRadar EA sirf-dikhana par mila (InpTrade false)
-   - Koshish #21: JasOrb5EA o1 - Zarattini & Aziz 5m ORB, USTEC, sirf Tester
-   - docs/roznamcha: din ba din kaam ki fehrist (git se), TRADING.md mein raasta
+   - TRADING.md: Exness USTECm data sirf Sep 2025 se - #21 data ka raasta
+   - Sawal-jawab file + CLAUDE.md: reply se pehle grep, token bachao
