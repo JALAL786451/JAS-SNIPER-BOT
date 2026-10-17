@@ -32,6 +32,8 @@ Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
   **6 mahine ka demo nateeja** na ho. Claude is se pehle live / "thoda live try" / qaida todne ka mashwara NA de - user jaanta hai.
   User Pine / EA maange = expert ke qaide samajhna aur test karna; ehtiyat Claude ke mashwaray se 2 guna khud rakhta hai -
   har dafa ehtiyat ka lecture NAHI, seedha kaam.
+- **Pata na ho to (user 17 Oct):** andaza NAHI - saaf kaho "ye mujhe pata nahi" aur poochho: "`docs/roznamcha/` mein
+  X tareekh dekhun?" Ijazat par sirf EK DIN peechhe, phir dobara poochho. Fehrist: `docs/roznamcha/FEHRIST.txt`.
 - **EA ka kaam ho to pehle `CLAUDE.md`** (hard rules: grid / martingale / hedging / averaging
   nahi, risk limit khud na barhao). Cloud mein MT5 compile nahi - user F7 kar ke screenshot bhejta hai.
 
