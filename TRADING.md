@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 13 Oct 2026 raat (saatvi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 18 Oct 2026 raat (12vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -74,13 +74,13 @@ Lot Guard baad mein. Tafseel `docs/purana-haal.md` ("16 Oct shaam").
 10 SELL -> 1 SELL 0.10 kaha = zakheera (pakki sec 4 "0/faida") toot-ta - WAPAS liya. 200 had ka sahi: mehngi BUY 0.01 (4202-4217) 10 -> 1 BUY 0.10
 (NET 0, equity wahi, balance ~-380) - user ka "D" baqi. Raasta C (NET tukda 0.01, had 0.10, KitabSaathi buttons) = had wala wapsi raasta.
 **17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
-**17 Oct raat (chat khatam):** QuantDataManager (free) install `C:\QuantDataManager125`, license VERIFY ✅. **AGLA EK QADAM:**
-QDM mein Dukascopy -> USA 100 (USATECH) -> 2021-01-01 se 2024-12-31 download -> export M5 CSV (Bid + Ask) -> zip upload -> Claude
-Python test #21 (`JasOrb5EA` ke qaide). Phir Commodity + Rsi2 EA panel check, phir KitabSaathi demo.
+**18 Oct raat (12vi chat):** QDM se Dukascopy USATECHIDXUSD M1 download (2012.01-2026.10, UTC). Export (Generic bar format, M1, Timezone
+Original) 2021-01-03 -> 2022-12-30 poora mila, repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid, Ask nahi = spread fixed, zyada rakho).
+**AGLA EK QADAM:** QDM Export From 2023.01.01 To 2024.12.31 (prefix `2023-24`, baqi wahi) -> zip upload -> dono jor kar Python test #21
+(`JasOrb5EA` qaide, waqt UTC->NY). 2025+ data mat kholo (IMTIHAN). Phir Commodity + Rsi2 EA panel check, phir KitabSaathi demo.
 **Koshish #21 qaida (user 'D', 17 Oct, badalna mana):** paper jaisa SIRF USTEC 5m (30m/US500/US30/BTC paper mein nahi = NAHI). `JasOrb5EA.mq5` o1
 bana. **Exness USTECm data sirf 2025.09.21 se** (Tester: no history 2021-24) = Exness par TALAASH NAHI ho sakti. Data: Dukascopy
-website Export = SIRF EK DIN fi file (17 Oct dekha) - 1000 din haath se NAHI. Agla: Dukascopy JForex demo (Historical
-Data Manager) ya free downloader (Tickstory / QuantDataManager) se 2021-24 M5 Bid+Ask -> Claude Python test; ya doosre broker ka demo MT5 sirf Tester ke liye. Phir KitabSaathi demo test.
+website = ek din fi file; is liye QDM.
 Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")

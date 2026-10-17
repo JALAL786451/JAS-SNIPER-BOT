@@ -18,7 +18,7 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Token / MB | 1 token ~4 harf. Nayi chat ~50-60k shuru (app ki hidayat). Lambi chat har message mehngi. | 17 Oct |
 | Usage reset | Hafte ki limit Itwar 02:00 PKT reset. | 17 Oct |
 | Website par Pine | Pine sirf TradingView par chalta; apni site par Python/JS mein dobara likhna padta. | 17 Oct |
-| USTEC data | Exness USTECm sirf Sep 2025 se. Dukascopy web = ek din fi file. QuantDataManager (free) se 2021-24. | 17 Oct |
+| USTEC data | Exness USTECm sirf Sep 2025 se. QDM: Dukascopy USATECHIDXUSD M1 -> Export Generic bar format; 2021-22 repo `data/ustec/` mein (18 Oct), 2023-24 baqi. | 18 Oct |
 | USTEC_x100m | Contract 100 (USTECm = 1). Qeemat wahi; USTECm lo. | 17 Oct |
 | EMA vs SMA / 5000 | TV had 5000 candle; length <= 4990. EMA nayi candle ko zyada wazan. | 17 Oct |
 | QuantDataManager / QDM | Free, `C:\QuantDataManager125\QuantDataManager.exe` (desktop shortcut nahi bana - koi masla nahi). License verify ✅ 17 Oct. | 17 Oct |
