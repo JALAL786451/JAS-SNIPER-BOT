@@ -576,3 +576,13 @@ screenshot, F7 dobara NAHI; user ki MT5 file ka naam `JasKitabSathi-x4-EA.mq5` m
 
 **16 Oct (dasvi chat, tests):** #20 Kitab Tukda, #17, #18 (63/91, 63/93, 20/50 x 15m-1D) MT5 par sab FAIL (sec 8). 47 jori NAHI. Peshgoi #2 PASS.
 
+
+
+## TRADING.md sec 7 se (17 Oct): IBS
+
+- **IBS #15:** TALAASH S&P 320 trades +0.047 -> IMTIHAN 190 trades +0.082R (±0.053), sakht +0.029.
+  `jas_ibs_test.pine` t1 = radar (510 trades, PF 1.52, DD 3.4%). JasIbsEA i2 compile ✅, Tester 8
+  trades (Exness US500 data Sep 2025 se) = shor. Faide ka saboot TV IMTIHAN hai, demo nahi.
+- **IBS demo qaida (pehle se likha):** naya US500m D1 chart (RSI2 wala alag), InpTrade true, 3 mahine +
+  10 band trades. PASS = har trade TV IBS signal din (±1) se mile, sirf BUY, koi bina SL nahi.
+

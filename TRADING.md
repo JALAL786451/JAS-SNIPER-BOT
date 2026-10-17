@@ -91,11 +91,7 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 | JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | 16 Oct: USOIL BUY 0.05 @ 93.810, SL 86.126 (TP nahi - qaida) |
 
 - Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
-- **IBS #15:** TALAASH S&P 320 trades +0.047 -> IMTIHAN 190 trades +0.082R (±0.053), sakht +0.029.
-  `jas_ibs_test.pine` t1 = radar (510 trades, PF 1.52, DD 3.4%). JasIbsEA i2 compile ✅, Tester 8
-  trades (Exness US500 data Sep 2025 se) = shor. Faide ka saboot TV IMTIHAN hai, demo nahi.
-- **IBS demo qaida (pehle se likha):** naya US500m D1 chart (RSI2 wala alag), InpTrade true, 3 mahine +
-  10 band trades. PASS = har trade TV IBS signal din (±1) se mile, sirf BUY, koi bina SL nahi.
+- IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").
 
 ## 8. Koshish ginti (tafseel `docs/purana-haal.md`)
 
