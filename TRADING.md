@@ -79,7 +79,8 @@ screenshot, F7 dobara NAHI; user ki MT5 file ka naam `JasKitabSathi-x4-EA.mq5` m
 (NET 0, equity wahi, balance ~-380) - user ka "D" baqi. Raasta C (NET tukda 0.01, had 0.10, KitabSaathi buttons) = had wala wapsi raasta.
 **17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
 **Koshish #21 qaida (user 'D', 17 Oct, badalna mana):** paper jaisa SIRF USTEC 5m (30m/US500/US30/BTC paper mein nahi = NAHI). `JasOrb5EA.mq5` o1
-bana - compile + Tester (USTECm M5, 2021.01.01-2024.12.31, every tick real) BAQI. Phir KitabSaathi demo test.
+bana. **Exness USTECm data sirf 2025.09.21 se** (Tester: no history 2021-24) = Exness par TALAASH NAHI ho sakti. Data: Dukascopy
+website se user khud CSV (USA 100, 5m, 2021-24) -> Claude Python test; ya doosre broker ka demo MT5 sirf Tester ke liye. Phir KitabSaathi demo test.
 Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
 
 **16 Oct (dasvi chat, tests):** #20 Kitab Tukda, #17, #18 (63/91, 63/93, 20/50 x 15m-1D) MT5 par sab FAIL (sec 8). 47 jori NAHI. Peshgoi #2 PASS.
