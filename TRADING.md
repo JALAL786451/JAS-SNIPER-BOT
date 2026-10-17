@@ -9,6 +9,7 @@ sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
 - `docs/purana-haal.md` - purana haal, koshish 1-15 ke pehle se likhe qaide
+- `docs/roznamcha/README.md` - **din ba din** (har tareekh ki file, git commits): user "X tareekh tak peechhe jao" kahe to yahin se
 - `docs/files-tafseel.md` - har file ki lambi kahani; files ki list bhi yahin; `CLAUDE.md` - sirf EA/MQL5 qaide
 
 Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
