@@ -149,6 +149,8 @@ pehle chahta hai (option banana baqi).
 - Hedge zaroorat par, magar zyada der nahi. Seconds ka hisaab.
 - Equity ka khayal sab se upar.
 
+- **User ka faisla (17 Oct):** koi EA / Pine qaidon ke khilaf live par kabhi nahi; live sirf 6 mahine demo nateeje ke baad. Claude pehle live ka mashwara na de.
+
 ## 6. Kaam ke qaide jo seekhe gaye (dobara ghalti na ho)
 (MQL5 ke qaide - StringFormat, Pick(), build number, cloud compile - `CLAUDE.md` mein.)
 
