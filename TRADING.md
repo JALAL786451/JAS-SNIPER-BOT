@@ -84,7 +84,7 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 
 | EA | Chart | Magic | Markets | Haal 13 Oct |
 |---|---|---|---|---|
-| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC | USDJPYm BUY 0.33 @ 158.527, SL 156.394 |
+| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC | 17 Oct: panel "SIRF DIKHANA" (InpTrade false, USDJPYm H1 chart) = trade nahi / SL nahi sarakta -> InpTrade true + D1. USDJPYm BUY 0.33 @ 158.527, SL 157.510. Gold NEECHE: SELL < 4066.30 |
 | JasRsi2EA c2 | US500m D1 | 20261012 | US500, USTEC, US30 | intezar |
 | JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | 16 Oct: USOIL BUY 0.05 @ 93.810, SL 86.126 (TP nahi - qaida) |
 
