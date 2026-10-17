@@ -29,6 +29,8 @@ Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
 - Chart bilkul saaf: indicator sirf ishara; lakeerein / rang / tables settings mein BAND.
 - **USER KA PAKKA FAISLA (17 Oct):** koi bhi EA / Pine qaidon ke khilaf live par KABHI nahi. Koi EA live par nahi jab tak
   **6 mahine ka demo nateeja** na ho. Claude is se pehle live / "thoda live try" / qaida todne ka mashwara NA de - user jaanta hai.
+  User Pine / EA maange = expert ke qaide samajhna aur test karna; ehtiyat Claude ke mashwaray se 2 guna khud rakhta hai -
+  har dafa ehtiyat ka lecture NAHI, seedha kaam.
 - **EA ka kaam ho to pehle `CLAUDE.md`** (hard rules: grid / martingale / hedging / averaging
   nahi, risk limit khud na barhao). Cloud mein MT5 compile nahi - user F7 kar ke screenshot bhejta hai.
 
