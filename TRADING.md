@@ -77,6 +77,8 @@ screenshot, F7 dobara NAHI; user ki MT5 file ka naam `JasKitabSathi-x4-EA.mq5` m
 **16 Oct raat (11vi chat):** CSV 12:30: 183 pos, jori NAHI bachi (sasti BUY 4194.30 > mehngi SELL 4188.87). **Claude ghalti:** qeemat ke paas
 10 SELL -> 1 SELL 0.10 kaha = zakheera (pakki sec 4 "0/faida") toot-ta - WAPAS liya. 200 had ka sahi: mehngi BUY 0.01 (4202-4217) 10 -> 1 BUY 0.10
 (NET 0, equity wahi, balance ~-380) - user ka "D" baqi. Raasta C (NET tukda 0.01, had 0.10, KitabSaathi buttons) = had wala wapsi raasta.
+**17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
+**AGLA (reset ke baad):** koshish #21 = ORB (Zarattini & Aziz 2023) USTEC/US500 + BTC 30m, MT5 Tester EA, qaida PEHLE likho; phir KitabSaathi demo test.
 Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
 
 **16 Oct (dasvi chat, tests):** #20 Kitab Tukda, #17, #18 (63/91, 63/93, 20/50 x 15m-1D) MT5 par sab FAIL (sec 8). 47 jori NAHI. Peshgoi #2 PASS.
