@@ -21,3 +21,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | USTEC data | Exness USTECm sirf Sep 2025 se. Dukascopy web = ek din fi file. QuantDataManager (free) se 2021-24. | 17 Oct |
 | USTEC_x100m | Contract 100 (USTECm = 1). Qeemat wahi; USTECm lo. | 17 Oct |
 | EMA vs SMA / 5000 | TV had 5000 candle; length <= 4990. EMA nayi candle ko zyada wazan. | 17 Oct |
+| QuantDataManager / QDM | Free, `C:\QuantDataManager125\QuantDataManager.exe` (desktop shortcut nahi bana - koi masla nahi). License verify ✅ 17 Oct. | 17 Oct |
+| Desktop access | Cloud chat aap ka PC nahi chala sakti; computer use mehnga + live MT5 ka khatra - user click kare, Claude bataye. | 17 Oct |

@@ -20,4 +20,4 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | 2026-10-14 | 24 | `2026-10-14.md` | TRADING.md: i3 roka, agla kaam koshish #16 (ES order flow dr / Peshgoi #2: LGB box (4066-4155) ka nateeja dekhna |
 | 2026-10-15 | 5 | `2026-10-15.md` | Koshish #18: JAS MA 63/91 5m test (Pine m1) - SL $20 TP $40 / Koshish #19: JAS SMC test (k1) + nateeje: LGB FAIL, FVG 1D T |
 | 2026-10-16 | 42 | `2026-10-16.md` | OB Radar r2: legend ke neeche SIGNAL qatar (1D+4H MA rukh, 1 / TRADING.md: commodity demo USOIL BUY 0.05 |
-| 2026-10-17 | 12 | `2026-10-17.md` | TRADING.md: TideRadar EA sirf-dikhana par mila (InpTrade fal / Sawal-jawab file + CLAUDE.md: reply se pehle grep, token bac |
+| 2026-10-17 | 16 | `2026-10-17.md` | TRADING.md: TideRadar EA sirf-dikhana par mila (InpTrade fal / CLAUDE.md: ~15 message par Claude khud nayi chat ka kahe |

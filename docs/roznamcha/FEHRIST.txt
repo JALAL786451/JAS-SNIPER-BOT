@@ -144,7 +144,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - Peshgoi #2 PASS: gold 4,188 (4066 toote baghair)
    - TRADING.md: commodity demo USOIL BUY 0.05
 
-2026-10-17  (12 kaam)
+2026-10-17  (16 kaam)
    - TRADING.md: TideRadar EA sirf-dikhana par mila (InpTrade false)
-   - TRADING.md: Exness USTECm data sirf Sep 2025 se - #21 data ka raasta
-   - Sawal-jawab file + CLAUDE.md: reply se pehle grep, token bachao
+   - TRADING.md chhota: 16 Oct ki tafseel purana-haal mein
+   - CLAUDE.md: ~15 message par Claude khud nayi chat ka kahe

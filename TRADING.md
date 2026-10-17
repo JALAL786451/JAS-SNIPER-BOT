@@ -74,6 +74,9 @@ Lot Guard baad mein. Tafseel `docs/purana-haal.md` ("16 Oct shaam").
 10 SELL -> 1 SELL 0.10 kaha = zakheera (pakki sec 4 "0/faida") toot-ta - WAPAS liya. 200 had ka sahi: mehngi BUY 0.01 (4202-4217) 10 -> 1 BUY 0.10
 (NET 0, equity wahi, balance ~-380) - user ka "D" baqi. Raasta C (NET tukda 0.01, had 0.10, KitabSaathi buttons) = had wala wapsi raasta.
 **17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
+**17 Oct raat (chat khatam):** QuantDataManager (free) install `C:\QuantDataManager125`, license VERIFY ✅. **AGLA EK QADAM:**
+QDM mein Dukascopy -> USA 100 (USATECH) -> 2021-01-01 se 2024-12-31 download -> export M5 CSV (Bid + Ask) -> zip upload -> Claude
+Python test #21 (`JasOrb5EA` ke qaide). Phir Commodity + Rsi2 EA panel check, phir KitabSaathi demo.
 **Koshish #21 qaida (user 'D', 17 Oct, badalna mana):** paper jaisa SIRF USTEC 5m (30m/US500/US30/BTC paper mein nahi = NAHI). `JasOrb5EA.mq5` o1
 bana. **Exness USTECm data sirf 2025.09.21 se** (Tester: no history 2021-24) = Exness par TALAASH NAHI ho sakti. Data: Dukascopy
 website Export = SIRF EK DIN fi file (17 Oct dekha) - 1000 din haath se NAHI. Agla: Dukascopy JForex demo (Historical
