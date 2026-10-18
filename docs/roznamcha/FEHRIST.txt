@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-10-16  (32 kaam)
-   - TRADING.md: user ka SELL oopar sarkane ka plan (#17)
-   - JasJoriClose s4: QAREEB jori nateeja >= InpMinResult tak (nuqsan wali lots ki had ghata ka
+2026-10-16  (24 kaam)
+   - Koshish #17: M1 2021-23 par bhi FAIL (har saal manfi)
+   - TRADING.md: JasJoriClose s5 live - 183 pos, balance 50,089, kitab ki nayi shakal
    - TRADING.md: commodity demo USOIL BUY 0.05
 
 2026-10-17  (19 kaam)
@@ -12,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - docs/roznamcha: din ba din kaam ki fehrist (git se), TRADING.md mein raasta
    - USTEC M1 2021-22 data (QDM Dukascopy), TRADING sec 5: agla 2023-24 export
 
-2026-10-18  (6 kaam)
+2026-10-18  (14 kaam)
    - Jas Fib Swing f2: user ka Fib indicator theek (repaint band, swing logic, zone label)
-   - Jas Fib Swing f5: intraday (din khatam band), 1% equity risk $ hisaab, aaj + sab din table
-   - Koshish #22 qaida (Fib OTE gold 15m) likha, TRADING sec 5/8
+   - Jas EMA SMA Band m1: 4 lakeer (SMA Open/Close 1W/1M, EMA Open/Close 1D-1M)
+   - Chat khatam (13vi): HIDAYAT.md (user ki hidayat, grep se), CLAUDE.md chhota, sec 5, sawal-
