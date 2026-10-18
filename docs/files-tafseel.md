@@ -29,7 +29,7 @@ basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `J
 
 **Pine - naap / radar (`indicators/`):** `jas_tide_radar` (Kachhua 9 market), `jas_tide_tokri`
 (commodity, #6 PASS), `jas_rsi2_radar`, `jas_ibs_radar` (#14-15), `jas_of_draft` (#16 draft dekhne wala, T-YES/T-NO/MISS), `jas_tom_radar` (#5),
-`jas_ichimoku_radar` (#7-8), `jas_ema_sma_band` (18 Oct m2: SMA/EMA Open-Close band, S/R/OB/OS ishara), `jas_coint_radar` (#10-11), ginti scripts (`jas_*_ginti`),
+`jas_ichimoku_radar` (#7-8), `jas_ema_sma_band` (18 Oct m4: Elder value zone EMA13/26 + AutoEnvelope OB/OS, Weinstein SMA 30W, Faber SMA 10M, S/R band candle), `jas_coint_radar` (#10-11), ginti scripts (`jas_*_ginti`),
 `jas_tide_smc`, `jas_tide_seekh`, `jas_tide_signal`, `jas_seerhi`, `jas_pro_box`,
 `smc_coach_pro_v3/v4`, `smc_coach_scalp_v6`, `smc_trend_pro`, aur doosron ke scripts
 (`supertrend_v6`, `ob_radar`, `gainzalgo_ml_smc`, `analogue_matcher_v2`, `candle_xray`,

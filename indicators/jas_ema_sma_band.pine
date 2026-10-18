@@ -20,6 +20,9 @@
 //  OB rukh upar mein = "mehnga, naya BUY nahi", SELL ka hukm nahi.
 //  m2-m3 ke masle: EMA ab chart TF par (1D ki seerhi nahi), OB/OS ab
 //  chart ki apni candles ke channel se (1H par OS ki bharmar khatam).
+//  Jaanch ke baad: gap ke baad channel phoolta nahi, ek pullback = ek S/R,
+//  ek candle par OB+OS dono nahi, 1m-1H par door ki SMA chhupti hai
+//  (qeemat upar wali line mein), Heikin Ashi par bhi asli qeemat.
 //  Har lakeer / ishara settings mein ON/OFF. Rang / table BAND.
 //=====================================================================
 indicator("Jas EMA SMA Band m4", shorttitle = "JAS EMA/SMA m4", overlay = true)
@@ -53,20 +56,31 @@ zTop = math.max(emaF, emaS)
 zBot = math.min(emaF, emaS)
 
 // ---- bari TF: sirf pichhli BAND candle ([1] + lookahead_on) = repaint nahi
-smaW  = request.security(syminfo.tickerid, "1W", ta.sma(close, wLen)[1], lookahead = barmerge.lookahead_on)
-smaW2 = request.security(syminfo.tickerid, "1W", ta.sma(close, wLen)[2], lookahead = barmerge.lookahead_on)
-wCl   = request.security(syminfo.tickerid, "1W", close[1], lookahead = barmerge.lookahead_on)
-smaM  = request.security(syminfo.tickerid, "1M", ta.sma(close, mLen)[1], lookahead = barmerge.lookahead_on)
+tkr   = ticker.standard(syminfo.tickerid)
+smaW  = request.security(tkr, "1W", ta.sma(close, wLen)[1], lookahead = barmerge.lookahead_on)
+smaW2 = request.security(tkr, "1W", ta.sma(close, wLen)[2], lookahead = barmerge.lookahead_on)
+wCl   = request.security(tkr, "1W", close[1], lookahead = barmerge.lookahead_on)
+smaM  = request.security(tkr, "1M", ta.sma(close, mLen)[1], lookahead = barmerge.lookahead_on)
 
 // Weinstein: hafta SMA ke upar + SMA upar ja rahi = rukh upar
 tideUp = wCl > smaW and smaW >= smaW2
 tideDn = wCl < smaW and smaW <= smaW2
 
 // ---- AutoEnvelope: pichhli candles (aaj ki nahi) ka chLook / chPct kinara
-dev  = math.max(high - emaS, emaS - low)
+// gap (weekend / roz ka break) ke baad EMA ki dair channel ki chaurai mein na gine
+aS  = 2.0 / (slowLen + 1)
+brk = not na(time[1]) and time - time[1] > 2 * timeframe.in_seconds() * 1000
+var float gapLag = 0.0
+gapLag := (gapLag + (brk ? nz(open - close[1]) : 0.0)) * (1 - aS)
+dev  = math.max(high - emaS - gapLag, emaS - low + gapLag)
 chW  = ta.percentile_nearest_rank(dev, chLook, chPct)[1]
 chUp = emaS + chW
 chDn = emaS - chW
+
+// bari SMA price se bohot door ho (1m-1H) to lakeer chhupao - warna chart dab jata hai
+farLim = 15 * nz(chW, ta.atr(100))
+nearW  = math.abs(close - smaW) <= farLim
+nearM  = math.abs(close - smaM) <= farLim
 
 upT = emaF > emaS and (not useTide or tideUp)
 dnT = emaF < emaS and (not useTide or tideDn)
@@ -90,7 +104,7 @@ if barstate.isconfirmed
         armUp  := false
         pullUp := false
     else
-        if low > zTop
+        if low > zTop + 0.25 * nz(chW)
             armUp := true
         if armUp and low <= zTop
             pullUp := true
@@ -106,7 +120,7 @@ if barstate.isconfirmed
         armDn  := false
         pullDn := false
     else
-        if high < zBot
+        if high < zBot - 0.25 * nz(chW)
             armDn := true
         if armDn and high >= zBot
             pullDn := true
@@ -128,14 +142,22 @@ if barstate.isconfirmed
         osArm := false
     else if not osArm and high >= zBot and low > chDn
         osArm := true
+    // bari spike candle dono kinare chhoo le = sirf close wali taraf
+    if sigOB and sigOS
+        sigOB := close >= emaS
+        sigOS := not sigOB
+        obArm := not sigOB
+        osArm := not sigOS
 
 noSt = display.all - display.status_line
 
 pF = plot(showEma ? emaF : na, "EMA tez",    color = color.new(color.teal, 0), linewidth = 1)
 pS = plot(showEma ? emaS : na, "EMA dheemi", color = color.new(color.blue, 0), linewidth = 2)
 fill(pF, pS, color = showZn ? color.new(color.blue, 88) : na, title = "Value zone")
-plot(showW ? smaW : na, "SMA hafte",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
-plot(showM ? smaM : na, "SMA mahine", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
+plot(showW and nearW ? smaW : na, "SMA hafte",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
+plot(showM and nearM ? smaM : na, "SMA mahine", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
+plot(smaW, "SMA hafte qeemat",  display = display.status_line + display.data_window)
+plot(smaM, "SMA mahine qeemat", display = display.status_line + display.data_window)
 plot(showCh ? chUp : na, "Channel upar",  color = color.new(color.gray, 30), linewidth = 1)
 plot(showCh ? chDn : na, "Channel neeche", color = color.new(color.gray, 30), linewidth = 1)
 
