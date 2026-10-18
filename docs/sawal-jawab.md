@@ -30,3 +30,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Exp - 2SE | Exp = fi trade ausat R; SE = SD / jazar(trades) = qismat ki gunjaish; Exp - 2SE > 0 = ~95% yaqeen munafa qismat nahi. | 18 Oct |
 | tokens nayi chat | Nayi chat pehla message ~1 lakh (40-60k app ki apni), phir sasti; lambi chat har message par sab dobara parhti hai. | 18 Oct |
 | hidayat / marzi | User ki saari hidayat `docs/roznamcha/HIDAYAT.md` - sirf grep, jab yahan / TRADING.md mein na mile. | 18 Oct |
+| 9 SELL ek qeemat / ek jagah kai ticket | Live 4179.94-4179.99: 9 SELL x 0.01, 9 Oct 10:45:37-38 server (PKT 3:45 PM), har ~0.25 sec, comment khaali = hamara EA / JasJoriClose NAHI, broker khud nahi kholta. User sirf Exness mobile app se kholta hai (MT5 se nahi) -> app ke kai tap / net atka (orders qatar mein). Pakka: Exness support se ticket 1915312656 ka source. CSV `data/kitab/`. | 18 Oct |
+| TradeZella | Journal + manual replay backtest (paid). EA test ke liye zaroori nahi; free replay = TV Bar Replay. | 18 Oct |
