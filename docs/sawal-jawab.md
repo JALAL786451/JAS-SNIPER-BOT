@@ -23,3 +23,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | EMA vs SMA / 5000 | TV had 5000 candle; length <= 4990. EMA nayi candle ko zyada wazan. | 17 Oct |
 | QuantDataManager / QDM | Free, `C:\QuantDataManager125\QuantDataManager.exe` (desktop shortcut nahi bana - koi masla nahi). License verify ✅ 17 Oct. | 17 Oct |
 | Desktop access | Cloud chat aap ka PC nahi chala sakti; computer use mehnga + live MT5 ka khatra - user click kare, Claude bataye. | 17 Oct |
+| Fib indicator / jas_fib_swing | `indicators/jas_fib_swing.pine` f5: 15m chart rakho (1m par history kam = trade kam). Table: AAJ = sirf aaj, "Sab din" = chart ki poori history. SL = 1% equity. | 18 Oct |
+| Token zyada kyun / 800 token | Har tool qadam par poori chat (screenshots, code) dobara parhi jati hai. Lambi chat = har qadam mehnga. Kaam 1 qadam mein; ~15 msg par chat khatam. | 18 Oct |

@@ -72,7 +72,7 @@ Lot Guard baad mein. Tafseel `docs/purana-haal.md` ("16 Oct shaam").
 
 16 Oct raat (11vi chat) ka haal (200 had, Raasta C): `docs/purana-haal.md` grep "16 Oct raat (11vi".
 **17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
-**18 Oct raat (12vi chat):** QDM se Dukascopy USATECHIDXUSD M1 download (2012.01-2026.10, UTC). Export (Generic bar format, M1, Timezone
+**18 Oct (12vi chat):** user ka Fib indicator theek kiya -> `indicators/jas_fib_swing.pine` f5 (trade box, 1% risk, aaj/sab din table).  QDM se Dukascopy USATECHIDXUSD M1 download (2012.01-2026.10, UTC). Export (Generic bar format, M1, Timezone
 Original) 2021-01-03 -> 2022-12-30 poora mila, repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid, Ask nahi = spread fixed, zyada rakho).
 **AGLA EK QADAM:** QDM Export 2023.01.01-2024.12.31 (prefix `2023-24`) -> upload -> Python test #21 (`JasOrb5EA`, UTC->NY). 2025+ mat kholo.
 Phir #22 ke liye QDM Dukascopy XAUUSD M1 2021-24 (2-2 saal export, free had ~6.8 lakh line). Phir Commodity + Rsi2 panel, KitabSaathi demo.

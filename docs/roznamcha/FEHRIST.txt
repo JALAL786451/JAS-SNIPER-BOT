@@ -12,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - docs/roznamcha: din ba din kaam ki fehrist (git se), TRADING.md mein raasta
    - USTEC M1 2021-22 data (QDM Dukascopy), TRADING sec 5: agla 2023-24 export
 
-2026-10-18  (5 kaam)
+2026-10-18  (6 kaam)
    - Jas Fib Swing f2: user ka Fib indicator theek (repaint band, swing logic, zone label)
-   - Jas Fib Swing f4: SL/TP points, aakhri 3 trade box, ginti table (TP/SL dafa + points, net,
-   - Jas Fib Swing f5: $0 par +/- nahi
+   - Jas Fib Swing f5: intraday (din khatam band), 1% equity risk $ hisaab, aaj + sab din table
+   - Koshish #22 qaida (Fib OTE gold 15m) likha, TRADING sec 5/8
