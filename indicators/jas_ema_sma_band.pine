@@ -1,6 +1,6 @@
 //@version=6
 //=====================================================================
-//  Jas EMA SMA Band  |  JAS      BUILD m4   (18 Oct 2026)
+//  Jas EMA SMA Band  |  JAS      BUILD m5   (18 Oct 2026)
 //  Har TF (1m se 1D) par saaf naap - kitabon ke mashhoor qaide, trade nahi:
 //    EMA 13 / EMA 26 = "Value Zone" (Alexander Elder, Come Into My
 //      Trading Room) - chart ki apni TF par, dono lakeeron ke beech
@@ -23,9 +23,10 @@
 //  Jaanch ke baad: gap ke baad channel phoolta nahi, ek pullback = ek S/R,
 //  ek candle par OB+OS dono nahi, 1m-1H par door ki SMA chhupti hai
 //  (qeemat upar wali line mein), Heikin Ashi par bhi asli qeemat.
+//  m5: upar wali line (status line) mein har qeemat sirf EK dafa, khaali channel (∅) nahi.
 //  Har lakeer / ishara settings mein ON/OFF. Rang / table BAND.
 //=====================================================================
-indicator("Jas EMA SMA Band m4", shorttitle = "JAS EMA/SMA m4", overlay = true)
+indicator("Jas EMA SMA Band m5", shorttitle = "JAS EMA/SMA m5", overlay = true)
 
 grpE = "EMA - Value Zone (Elder, har TF)"
 fastLen = input.int(13, "Tez EMA", minval = 1, group = grpE)
@@ -154,12 +155,12 @@ noSt = display.all - display.status_line
 pF = plot(showEma ? emaF : na, "EMA tez",    color = color.new(color.teal, 0), linewidth = 1)
 pS = plot(showEma ? emaS : na, "EMA dheemi", color = color.new(color.blue, 0), linewidth = 2)
 fill(pF, pS, color = showZn ? color.new(color.blue, 88) : na, title = "Value zone")
-plot(showW and nearW ? smaW : na, "SMA hafte",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
-plot(showM and nearM ? smaM : na, "SMA mahine", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
+plot(showW and nearW ? smaW : na, "SMA hafte",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline, display = noSt)
+plot(showM and nearM ? smaM : na, "SMA mahine", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline, display = noSt)
 plot(smaW, "SMA hafte qeemat",  display = display.status_line + display.data_window)
 plot(smaM, "SMA mahine qeemat", display = display.status_line + display.data_window)
-plot(showCh ? chUp : na, "Channel upar",  color = color.new(color.gray, 30), linewidth = 1)
-plot(showCh ? chDn : na, "Channel neeche", color = color.new(color.gray, 30), linewidth = 1)
+plot(showCh ? chUp : na, "Channel upar",  color = color.new(color.gray, 30), linewidth = 1, display = noSt)
+plot(showCh ? chDn : na, "Channel neeche", color = color.new(color.gray, 30), linewidth = 1, display = noSt)
 
 plotshape(showSR and sigS, "Support", shape.triangleup, location.belowbar, color.new(color.green, 0), text = "S", textcolor = color.green, size = size.tiny, display = noSt)
 plotshape(showSR and sigR, "Resistance", shape.triangledown, location.abovebar, color.new(color.red, 0), text = "R", textcolor = color.red, size = size.tiny, display = noSt)
