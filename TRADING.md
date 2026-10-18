@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 18 Oct 2026 raat (12vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 18 Oct 2026 raat (13vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -17,25 +17,13 @@ Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
 
 ---
 
-## 1. User aur baat ka tareeqa
+## 1. User aur baat ka tareeqa (saari hidayat: `grep -i <lafz> docs/roznamcha/HIDAYAT.md`, poori nahi)
 
-- Jalal, Pakistan (PKT, UTC+5), gold (XAUUSD) trader ~1.5 saal. **Roman Urdu**, chhota aur
-  saaf, hamesha **"aap"**. Misaal aur table, lambi tehreer nahi.
-- **SBS:** ek waqt ek qadam; user har qadam ke baad **"D"** likhta hai. Pehle poochho, phir file banao.
-- **Faisle Claude kare:** A/B/C mat poochho - mashwara khud lo, bata do kya aur kyun, sirf
-  **AGLA EK QADAM**. Sawal sirf paisa / account / na-palatne wali cheez par.
-- Chhota jawab (A/B/D) aaye aur do sawal khule hon to ek line mein poochho kis ka jawab hai.
-- Link click hone wala + commit hash wala raw link. "Aaraam karo" / jawab ke aakhir mein
-  yaad-dihani NAHI. "Ruk jayein" mat kaho - agla idea do.
-- Chart bilkul saaf: indicator sirf ishara; lakeerein / rang / tables settings mein BAND.
-- **USER KA PAKKA FAISLA (17 Oct):** koi bhi EA / Pine qaidon ke khilaf live par KABHI nahi. Koi EA live par nahi jab tak
-  **6 mahine ka demo nateeja** na ho. Claude is se pehle live / "thoda live try" / qaida todne ka mashwara NA de - user jaanta hai.
-  User Pine / EA maange = expert ke qaide samajhna aur test karna; ehtiyat Claude ke mashwaray se 2 guna khud rakhta hai -
-  har dafa ehtiyat ka lecture NAHI, seedha kaam.
-- **Pata na ho to (user 17 Oct):** andaza NAHI - saaf kaho "ye mujhe pata nahi" aur poochho: "`docs/roznamcha/` mein
-  X tareekh dekhun?" Ijazat par sirf EK DIN peechhe, phir dobara poochho. Fehrist: `docs/roznamcha/FEHRIST.txt`.
-- **EA ka kaam ho to pehle `CLAUDE.md`** (hard rules: grid / martingale / hedging / averaging
-  nahi, risk limit khud na barhao). Cloud mein MT5 compile nahi - user F7 kar ke screenshot bhejta hai.
+- Jalal, Pakistan (PKT, UTC+5), gold trader. **Roman Urdu**, chhota, **"aap"**, misaal + table.
+- **SBS:** ek qadam, user "D" likhta hai; pehle poochho phir file. **Faisle Claude kare** - A/B/C nahi, sirf AGLA EK QADAM.
+- Link click wala + commit hash raw link. Yaad-dihani / "aaraam karo" / ehtiyat ka lecture NAHI. Chart saaf (extra BAND).
+- **Live KABHI nahi** jab tak 6 mahine demo nateeja na ho (user 17 Oct) - Claude live ka mashwara na de.
+- **Pata na ho:** andaza nahi - poochho "roznamcha mein X tareekh dekhun?" (ek din). EA kaam: pehle `CLAUDE.md`.
 
 ## 2. Usage bachao
 
@@ -66,24 +54,19 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**Kitab (16 Oct, LIVE):** 183 pos (200 had 17 Oct se), BUY 50 pos 1.33 ausat 4203 (sab 4194+) / SELL 133 x 0.01 = 1.33
-ausat 4155.8 (sab 4189 se neeche), NET 0, khula ~-6,342, balance 50,089, equity ~43,743. JasJoriClose s5 se 293->183; ab >=0 jori NAHI.
-Lot Guard baad mein. Tafseel `docs/purana-haal.md` ("16 Oct shaam").
-
-16 Oct raat (11vi chat) ka haal (200 had, Raasta C): `docs/purana-haal.md` grep "16 Oct raat (11vi".
-**17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
-**18 Oct (12vi chat):** user ka Fib indicator theek kiya -> `indicators/jas_fib_swing.pine` f5 (trade box, 1% risk, aaj/sab din table).  QDM se Dukascopy USATECHIDXUSD M1 download (2012.01-2026.10, UTC). Export (Generic bar format, M1, Timezone
-Original) 2021-01-03 -> 2022-12-30 poora mila, repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid, Ask nahi = spread fixed, zyada rakho).
-**AGLA EK QADAM:** QDM Export 2023.01.01-2024.12.31 (prefix `2023-24`) -> upload -> Python test #21 (`JasOrb5EA`, UTC->NY). 2025+ mat kholo.
-Phir #22 ke liye QDM Dukascopy XAUUSD M1 2021-24 (2-2 saal export, free had ~6.8 lakh line). Phir Commodity + Rsi2 panel, KitabSaathi demo.
-**Koshish #22 qaida (user 'D', 18 Oct, badalna mana) - Fib OTE (`indicators/jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5
-(band candle), entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday (din khatam band), 1 trade ek waqt / 1 fi leg, risk 1%,
-ek candle mein SL+TP = SL, spread asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV par pehle dekha (2026 ke
-haal ke mahine, spread nahi): BTC 15m 89 trade -6.5R, gold 15m 58 trade +2.7R - market nateeja dekh kar chuna = IMTIHAN SAKHT (Exp - 2SE > 0).
-**Koshish #21 qaida (user 'D', 17 Oct, badalna mana):** paper jaisa SIRF USTEC 5m (30m/US500/US30/BTC paper mein nahi = NAHI). `JasOrb5EA.mq5` o1
-bana. **Exness USTECm data sirf 2025.09.21 se** (Tester: no history 2021-24) = Exness par TALAASH NAHI ho sakti. Data: Dukascopy
-website = ek din fi file; is liye QDM.
-Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
+**Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - tafseel `docs/purana-haal.md` ("16 Oct shaam").
+**18 Oct (13vi chat):** (1) MT5 + phone dono login nahi (ek WiFi) -> khud theek ho gaya (Exness weekend / ISP). (2) Naya Pine
+`indicators/jas_ema_sma_band.pine` **m5** (TV par compile ✅ 1D/4H): Elder value zone EMA 13/26 + AutoEnvelope OB/OS, Weinstein
+SMA 30 hafte, Faber SMA 10 mahine; S/R/OB/OS sirf band candle. Sirf naap - test NAHI (user chahe to koshish #23, qaida pehle).
+(3) User ki saari hidayat ab `docs/roznamcha/HIDAYAT.md` (grep se); MQL5/Pine qaide CLAUDE.md se wahan gaye.
+**AGLA EK QADAM (user ka):** QDM se 3 export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023.01.01-2024.12.31 (`USTEC 2023-24`),
+XAUUSD 2021-22 (`XAU 2021-22`), XAUUSD 2023-24 (`XAU 2023-24`) -> upload -> Python test #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
+Phir Commodity + Rsi2 panel, KitabSaathi demo.
+**Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
+entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
+asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
+**Koshish #21 qaida (17 Oct, badalna mana):** sirf USTEC 5m (`JasOrb5EA.mq5` o1). Exness USTECm data sirf 2025.09.21 se = Dukascopy (QDM).
+Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid = spread fixed, zyada rakho).
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
 

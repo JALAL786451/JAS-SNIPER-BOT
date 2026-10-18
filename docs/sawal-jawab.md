@@ -25,3 +25,8 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Desktop access | Cloud chat aap ka PC nahi chala sakti; computer use mehnga + live MT5 ka khatra - user click kare, Claude bataye. | 17 Oct |
 | Fib indicator / jas_fib_swing | `indicators/jas_fib_swing.pine` f5: 15m chart rakho (1m par history kam = trade kam). Table: AAJ = sirf aaj, "Sab din" = chart ki poori history. SL = 1% equity. | 18 Oct |
 | Token zyada kyun / 800 token | Har tool qadam par poori chat (screenshots, code) dobara parhi jati hai. Lambi chat = har qadam mehnga. Kaam 1 qadam mein; ~15 msg par chat khatam. | 18 Oct |
+| MT5 login / connect nahi | Net chale magar MT5 na jure = Exness server (weekend maintenance) ya ISP naka. Laptop + phone ek WiFi = ek raasta. Test: mobile data ya VPN (1.1.1.1). 18 Oct khud theek. | 18 Oct |
+| 6 trillion / market band nuqsan | 6-7 trillion LEN-DEN hai, munafa nahi. Band = paisa wahin, sirf haath badalna ruka. Asal khatra Monday ka gap. | 18 Oct |
+| Exp - 2SE | Exp = fi trade ausat R; SE = SD / jazar(trades) = qismat ki gunjaish; Exp - 2SE > 0 = ~95% yaqeen munafa qismat nahi. | 18 Oct |
+| tokens nayi chat | Nayi chat pehla message ~1 lakh (40-60k app ki apni), phir sasti; lambi chat har message par sab dobara parhti hai. | 18 Oct |
+| hidayat / marzi | User ki saari hidayat `docs/roznamcha/HIDAYAT.md` - sirf grep, jab yahan / TRADING.md mein na mile. | 18 Oct |

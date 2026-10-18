@@ -20,6 +20,7 @@ jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; 
   `docs/sawal-jawab.md`, `python3 tools/roznamcha.py`, commit + push (default branch bhi). Har chat yahi kare.
   Push ke FAURAN baad (user 17 Oct) nayi chat ABHI kholo (`create_session`, repo source, prompt "TRADING") - schedule/time NAHI.
 - Agent / workflow sirf jab user naam le kar maange; hafte ki limit 50%+ ho to bilkul nahi.
+- User ki marzi / hidayat ka pata na ho (yahan + `TRADING.md` mein nahi) -> `grep -i <lafz> docs/roznamcha/HIDAYAT.md`. Poori file nahi.
 
 ## Hard rules for these EAs
 
@@ -36,9 +37,5 @@ cap) on your own initiative. Those defaults are deliberate.
 
 ## MQL5 / Pine kaam ke qaide
 
-- Har file ki pehli line par build number, panel par bhi wahi.
-- `StringFormat("sirf likhai")` error deta hai - kam az kam ek value. String ke liye `cond ? "" : "..."` nahi, `Pick()` helper.
-- Points vs digits: doori se pehle `SYMBOL_DIGITS` aur `SYMBOL_TRADE_STOPS_LEVEL` (3-digit gold par 300 points = $0.30).
-- Pine: `request.security` tuple 127 se kam; v6 mein `ta.*` if ke bahar.
-- Cloud (Linux) mein MT5 / TradingView nahi - compile yahan NAHI; `python3 tools/pinecheck.py <file>`
-  se jaancho, user F7 / TradingView par compile kar ke screenshot bhejta hai. Windows: `tools\compile.bat <file>` (0 errors tak), `tools\backtest.bat <EA>` - ek waqt ek input badlo.
+EA / Pine likhne se PEHLE: `grep -A12 "^## D" docs/roznamcha/HIDAYAT.md` (build number, StringFormat/Pick,
+points vs digits, repaint, cloud compile nahi -> `tools/pinecheck.py`, user F7/TV screenshot).

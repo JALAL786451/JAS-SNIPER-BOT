@@ -611,3 +611,24 @@ Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 **16 Oct raat (11vi chat):** CSV 12:30: 183 pos, jori NAHI bachi (sasti BUY 4194.30 > mehngi SELL 4188.87). **Claude ghalti:** qeemat ke paas
 10 SELL -> 1 SELL 0.10 kaha = zakheera (pakki sec 4 "0/faida") toot-ta - WAPAS liya. 200 had ka sahi: mehngi BUY 0.01 (4202-4217) 10 -> 1 BUY 0.10
 (NET 0, equity wahi, balance ~-380) - user ka "D" baqi. Raasta C (NET tukda 0.01, had 0.10, KitabSaathi buttons) = had wala wapsi raasta.
+## 18 Oct raat (12vi chat) ka sec 5 (13vi chat ne yahan rakha)
+
+**Kitab (16 Oct, LIVE):** 183 pos (200 had 17 Oct se), BUY 50 pos 1.33 ausat 4203 (sab 4194+) / SELL 133 x 0.01 = 1.33
+ausat 4155.8 (sab 4189 se neeche), NET 0, khula ~-6,342, balance 50,089, equity ~43,743. JasJoriClose s5 se 293->183; ab >=0 jori NAHI.
+Lot Guard baad mein. Tafseel `docs/purana-haal.md` ("16 Oct shaam").
+
+16 Oct raat (11vi chat) ka haal (200 had, Raasta C): `docs/purana-haal.md` grep "16 Oct raat (11vi".
+**17 Oct:** TideRadar EA "sirf dikhana" -> TRADE CHALU; Commodity + Rsi2 EA ka panel check BAQI. TV 1D vs 15m Tide = match (15m data sirf 2 Aug se, 0 trade dono). TV 30m/15m = data 3-5 mahine = test NAHI.
+**18 Oct (12vi chat):** user ka Fib indicator theek kiya -> `indicators/jas_fib_swing.pine` f5 (trade box, 1% risk, aaj/sab din table).  QDM se Dukascopy USATECHIDXUSD M1 download (2012.01-2026.10, UTC). Export (Generic bar format, M1, Timezone
+Original) 2021-01-03 -> 2022-12-30 poora mila, repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid, Ask nahi = spread fixed, zyada rakho).
+**AGLA EK QADAM:** QDM Export 2023.01.01-2024.12.31 (prefix `2023-24`) -> upload -> Python test #21 (`JasOrb5EA`, UTC->NY). 2025+ mat kholo.
+Phir #22 ke liye QDM Dukascopy XAUUSD M1 2021-24 (2-2 saal export, free had ~6.8 lakh line). Phir Commodity + Rsi2 panel, KitabSaathi demo.
+**Koshish #22 qaida (user 'D', 18 Oct, badalna mana) - Fib OTE (`indicators/jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5
+(band candle), entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday (din khatam band), 1 trade ek waqt / 1 fi leg, risk 1%,
+ek candle mein SL+TP = SL, spread asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV par pehle dekha (2026 ke
+haal ke mahine, spread nahi): BTC 15m 89 trade -6.5R, gold 15m 58 trade +2.7R - market nateeja dekh kar chuna = IMTIHAN SAKHT (Exp - 2SE > 0).
+**Koshish #21 qaida (user 'D', 17 Oct, badalna mana):** paper jaisa SIRF USTEC 5m (30m/US500/US30/BTC paper mein nahi = NAHI). `JasOrb5EA.mq5` o1
+bana. **Exness USTECm data sirf 2025.09.21 se** (Tester: no history 2021-24) = Exness par TALAASH NAHI ho sakti. Data: Dukascopy
+website = ek din fi file; is liye QDM.
+Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
+

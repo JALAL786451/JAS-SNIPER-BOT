@@ -25,7 +25,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 `JasOrbEA`, `JasChakkarEA` (k4), `JasFishingEA` (f1), `JasBasketEA` + `_BTC` (user ki
 basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `JasTideEA` (t4).
 
-`docs/roznamcha/` - din ba din commits (README = fehrist, har din ek file, Sep tak `pehle-2026-09.md`). Naya din: chat ke aakhir mein us din ki file.
+`docs/roznamcha/HIDAYAT.md` - user ki saari hidayat (grep se, sirf zaroorat par). `docs/roznamcha/` - din ba din commits (README = fehrist, har din ek file, Sep tak `pehle-2026-09.md`). Naya din: chat ke aakhir mein us din ki file.
 
 **Pine - naap / radar (`indicators/`):** `jas_tide_radar` (Kachhua 9 market), `jas_tide_tokri`
 (commodity, #6 PASS), `jas_rsi2_radar`, `jas_ibs_radar` (#14-15), `jas_of_draft` (#16 draft dekhne wala, T-YES/T-NO/MISS), `jas_tom_radar` (#5),
