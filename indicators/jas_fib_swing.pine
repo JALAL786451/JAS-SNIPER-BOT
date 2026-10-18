@@ -1,0 +1,178 @@
+//@version=6
+//=====================================================================
+//  Jas Fib Swing  |  JAS      BUILD f2   (18 Oct 2026)
+//  Aakhri 1H swing (high -> low ya low -> high) par Fib levels.
+//  f2: (1) repaint band - sirf band (confirmed) 1H candle ka pivot,
+//      (2) choti swing badi swing ko nahi kaatti (sirf naya extreme),
+//      (3) Swing High / Swing Low lakeer, (4) OTE box par BUY/SELL zone
+//      likha, swing toot jaye to box grey "TOOT GAYA".
+//=====================================================================
+indicator("Jas Fib Swing f2", overlay = true, max_lines_count = 100, max_labels_count = 100, max_boxes_count = 20)
+
+// ================= INPUTS =================
+srcTF       = input.timeframe("60", "Swing timeframe (1H)")
+pivotLen    = input.int(5, "Pivot length (dono taraf ki bars)", minval = 2)
+extendRight = input.bool(false, "Lines ko right tak extend karein")
+showOTE     = input.bool(true, "OTE zone dikhayein (0.618 - 0.786)")
+showSwing   = input.bool(true, "Swing High / Swing Low lakeer dikhayein")
+
+grpR    = "Retracement levels (pullback)"
+show382 = input.bool(true,  "0.382", group = grpR, inline = "r1")
+col382  = input.color(color.gray,   "", group = grpR, inline = "r1")
+show500 = input.bool(true,  "0.5",   group = grpR, inline = "r2")
+col500  = input.color(color.yellow, "", group = grpR, inline = "r2")
+show618 = input.bool(true,  "0.618", group = grpR, inline = "r3")
+col618  = input.color(color.orange, "", group = grpR, inline = "r3")
+show786 = input.bool(true,  "0.786", group = grpR, inline = "r4")
+col786  = input.color(color.orange, "", group = grpR, inline = "r4")
+
+grpE     = "Extension levels (target)"
+show1272 = input.bool(true,  "1.272", group = grpE, inline = "e1")
+col1272  = input.color(color.green, "", group = grpE, inline = "e1")
+show1618 = input.bool(true,  "1.618", group = grpE, inline = "e2")
+col1618  = input.color(color.lime,  "", group = grpE, inline = "e2")
+show2618 = input.bool(false, "2.618", group = grpE, inline = "e3")
+col2618  = input.color(color.teal,  "", group = grpE, inline = "e3")
+
+// ================= 1H PIVOTS (repaint nahi) =================
+// [1] + lookahead_on = pichhli BAND 1H candle ki value; chalti candle ka pivot nahi.
+pivotPack() =>
+    ph = ta.pivothigh(high, pivotLen, pivotLen)
+    pl = ta.pivotlow(low, pivotLen, pivotLen)
+    [ph[1], na(ph[1]) ? na : time[pivotLen + 1], pl[1], na(pl[1]) ? na : time[pivotLen + 1]]
+
+[hPiv, hPivT, lPiv, lPivT] = request.security(syminfo.tickerid, srcTF, pivotPack(), lookahead = barmerge.lookahead_on)
+
+// ================= LEG TRACKING =================
+var int   lastHighT  = na
+var int   lastLowT   = na
+var float legStartP  = na
+var int   legStartT  = na
+var float legEndP    = na
+var int   legEndT    = na
+var int   legEndType = 0   // 1 = aakhri pivot high (BUY leg, upar gaya), -1 = aakhri pivot low (SELL leg, neeche gaya)
+
+newHigh = not na(hPivT) and (na(lastHighT) or hPivT != lastHighT)
+newLow  = not na(lPivT) and (na(lastLowT) or lPivT != lastLowT)
+if newHigh
+    lastHighT := hPivT
+if newLow
+    lastLowT := lPivT
+
+bool legChanged = false
+if newHigh or newLow
+    // dono ek saath aayein to pehle purana pivot, phir naya
+    bool highFirst = newHigh and (not newLow or hPivT <= lPivT)
+    for k = 0 to 1
+        bool doHigh = k == 0 ? highFirst : not highFirst
+        bool active = doHigh ? newHigh : newLow
+        if active
+            int   nType = doHigh ? 1 : -1
+            float nP    = doHigh ? hPiv : lPiv
+            int   nT    = doHigh ? hPivT : lPivT
+            if nType == legEndType
+                // wahi taraf ka doosra pivot: sirf naya extreme leg ko barhata hai
+                if (nType == 1 and nP > legEndP) or (nType == -1 and nP < legEndP)
+                    legEndP    := nP
+                    legEndT    := nT
+                    legChanged := true
+            else
+                if not na(legEndP)
+                    legStartP := legEndP
+                    legStartT := legEndT
+                legEndP    := nP
+                legEndT    := nT
+                legEndType := nType
+                legChanged := true
+
+// ================= DRAWING =================
+var line[]  fibLines  = array.new<line>()
+var label[] fibLabels = array.new<label>()
+var box     oteBox    = na
+var float   oteTop    = na
+var float   oteBot    = na
+var float   swingHi   = na
+var float   swingLo   = na
+var int     curDir    = 0
+
+clearAll() =>
+    if array.size(fibLines) > 0
+        for i = 0 to array.size(fibLines) - 1
+            line.delete(array.get(fibLines, i))
+        array.clear(fibLines)
+    if array.size(fibLabels) > 0
+        for i = 0 to array.size(fibLabels) - 1
+            label.delete(array.get(fibLabels, i))
+        array.clear(fibLabels)
+
+drawLevel(float p, color c, string txt, int leftT, string st) =>
+    array.push(fibLines, line.new(x1 = leftT, y1 = p, x2 = time, y2 = p, xloc = xloc.bar_time, extend = extendRight ? extend.right : extend.none, color = c, width = 1, style = st))
+    array.push(fibLabels, label.new(x = time, y = p, text = txt + "  " + str.tostring(p, format.mintick), xloc = xloc.bar_time, style = label.style_label_left, textcolor = c, color = color.new(color.black, 100), size = size.small))
+
+if legChanged and not na(legStartP) and not na(legEndP)
+    clearAll()
+    box.delete(oteBox)
+    oteBox := na
+    float hiP    = math.max(legStartP, legEndP)
+    float loP    = math.min(legStartP, legEndP)
+    float R      = hiP - loP
+    int   legDir = legEndType
+    int   leftT  = math.min(legStartT, legEndT)
+    float rA     = legDir == 1 ? hiP : loP   // retracement isi point se naapa jata hai
+    float eA     = legDir == 1 ? loP : hiP   // extension (target) isi point se naapa jata hai
+    swingHi := hiP
+    swingLo := loP
+    curDir  := legDir
+
+    if showSwing
+        drawLevel(hiP, color.red,   "Swing High", leftT, line.style_solid)
+        drawLevel(loP, color.green, "Swing Low",  leftT, line.style_solid)
+    if show382
+        drawLevel(rA - legDir * 0.382 * R, col382, "0.382", leftT, line.style_dashed)
+    if show500
+        drawLevel(rA - legDir * 0.5 * R, col500, "0.5", leftT, line.style_dashed)
+    if show618
+        drawLevel(rA - legDir * 0.618 * R, col618, "0.618", leftT, line.style_dashed)
+    if show786
+        drawLevel(rA - legDir * 0.786 * R, col786, "0.786", leftT, line.style_dashed)
+    if show1272
+        drawLevel(eA + legDir * 1.272 * R, col1272, "1.272 target", leftT, line.style_dashed)
+    if show1618
+        drawLevel(eA + legDir * 1.618 * R, col1618, "1.618 target", leftT, line.style_dashed)
+    if show2618
+        drawLevel(eA + legDir * 2.618 * R, col2618, "2.618 target", leftT, line.style_dashed)
+
+    float p618 = rA - legDir * 0.618 * R
+    float p786 = rA - legDir * 0.786 * R
+    oteTop := math.max(p618, p786)
+    oteBot := math.min(p618, p786)
+    if showOTE
+        string zt = legDir == 1 ? "BUY zone (OTE)" : "SELL zone (OTE)"
+        oteBox := box.new(left = leftT, top = oteTop, right = time, bottom = oteBot, xloc = xloc.bar_time, border_color = color.new(color.orange, 50), bgcolor = color.new(color.orange, 88), text = zt, text_size = size.small, text_color = color.orange, text_halign = text.align_right)
+
+// Swing toot gayi? BUY leg mein close Swing Low se neeche, SELL leg mein Swing High se upar
+broken = (curDir == 1 and close < swingLo) or (curDir == -1 and close > swingHi)
+var bool wasBroken = false
+if legChanged
+    wasBroken := false
+if broken and not wasBroken
+    wasBroken := true
+    if not na(oteBox)
+        box.set_bgcolor(oteBox, color.new(color.gray, 85))
+        box.set_border_color(oteBox, color.new(color.gray, 50))
+        box.set_text_color(oteBox, color.gray)
+        box.set_text(oteBox, "TOOT GAYA - naya swing ka intezar")
+
+// Lines, labels aur OTE box ko har bar par current candle tak le jayein
+if array.size(fibLines) > 0
+    for i = 0 to array.size(fibLines) - 1
+        line.set_x2(array.get(fibLines, i), time)
+if array.size(fibLabels) > 0
+    for i = 0 to array.size(fibLabels) - 1
+        label.set_x(array.get(fibLabels, i), time)
+if not na(oteBox)
+    box.set_right(oteBox, time)
+
+// ================= ALERT =================
+inOTE = not na(oteTop) and not wasBroken and close <= oteTop and close >= oteBot
+alertcondition(inOTE and not inOTE[1], title = "Price OTE zone mein", message = "Price OTE zone (0.618 - 0.786) mein aa gayi")
