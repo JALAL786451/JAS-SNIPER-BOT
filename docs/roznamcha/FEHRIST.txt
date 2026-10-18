@@ -7,7 +7,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - JasJoriClose s4: QAREEB jori nateeja >= InpMinResult tak (nuqsan wali lots ki had ghata ka
    - TRADING.md: commodity demo USOIL BUY 0.05
 
-2026-10-17  (18 kaam)
+2026-10-17  (19 kaam)
    - TRADING.md: TideRadar EA sirf-dikhana par mila (InpTrade false)
    - docs/roznamcha: din ba din kaam ki fehrist (git se), TRADING.md mein raasta
-   - CLAUDE.md: chat khatam par push ke baad nayi chat foran (schedule nahi)
+   - USTEC M1 2021-22 data (QDM Dukascopy), TRADING sec 5: agla 2023-24 export
+
+2026-10-18  (5 kaam)
+   - Jas Fib Swing f2: user ka Fib indicator theek (repaint band, swing logic, zone label)
+   - Jas Fib Swing f4: SL/TP points, aakhri 3 trade box, ginti table (TP/SL dafa + points, net,
+   - Jas Fib Swing f5: $0 par +/- nahi
