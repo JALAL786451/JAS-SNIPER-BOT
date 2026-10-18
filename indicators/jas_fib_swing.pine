@@ -1,6 +1,6 @@
 //@version=6
 //=====================================================================
-//  Jas Fib Swing  |  JAS      BUILD f3   (18 Oct 2026)
+//  Jas Fib Swing  |  JAS      BUILD f4   (18 Oct 2026)
 //  Aakhri 1H swing (high -> low ya low -> high) par Fib levels.
 //  f2: (1) repaint band - sirf band (confirmed) 1H candle ka pivot,
 //      (2) choti swing badi swing ko nahi kaatti (sirf naya extreme),
@@ -9,8 +9,10 @@
 //  f3: TradingView Long/Short jaisa trade box - price entry level chhoye to
 //      BUY/SELL, SL swing ke bahar, TP extension par; TP HIT / SL HIT likhta hai.
 //      Har leg par sirf 1 trade, ek waqt 1 trade. Ginti table (setting, BAND).
+//  f4: SL / TP ki doori (points) dabbe par, sirf aakhri 3 trade box, ginti
+//      table chalu: TP / SL kitni dafa aur kitne points, Net, Kul R, khuli trade.
 //=====================================================================
-indicator("Jas Fib Swing f3", overlay = true, max_lines_count = 100, max_labels_count = 300, max_boxes_count = 300)
+indicator("Jas Fib Swing f4", overlay = true, max_lines_count = 100, max_labels_count = 300, max_boxes_count = 300)
 
 // ================= INPUTS =================
 srcTF       = input.timeframe("60", "Swing timeframe (1H)")
@@ -42,7 +44,8 @@ showTrade = input.bool(true, "Trade box dikhayein (Long/Short tool jaisa)", grou
 entryLvl  = input.string("0.618", "Entry level", options = ["0.5", "0.618", "0.705", "0.786"], group = grpT)
 tpMode    = input.string("1.272", "TP (target)", options = ["Swing (0)", "1.272", "1.618"], group = grpT)
 slBufPct  = input.float(5.0, "SL swing se kitna bahar (% swing)", minval = 0.0, step = 1.0, group = grpT)
-showStats = input.bool(false, "Ginti table (trades / TP / SL)", group = grpT)
+maxTrades = input.int(3, "Kitne aakhri trade box dikhayein", minval = 1, maxval = 50, group = grpT)
+showStats = input.bool(true, "Ginti table (TP / SL kitne, kitne points)", group = grpT)
 
 // ================= 1H PIVOTS (repaint nahi) =================
 // [1] + lookahead_on = pichhli BAND 1H candle ki value; chalti candle ka pivot nahi.
@@ -196,6 +199,10 @@ var box   slBox      = na
 var int   nTP        = 0
 var int   nSL        = 0
 var float sumR       = 0.0
+var float ptsTP      = 0.0     // TP se kul kitne points kamaye
+var float ptsSL      = 0.0     // SL se kul kitne points gaye
+var box[]   tBoxes   = array.new<box>()
+var label[] tLabels  = array.new<label>()
 
 if legChanged
     armed := true
@@ -211,6 +218,8 @@ bool entryNow = false
 bool tpNow    = false
 bool slNow    = false
 
+fmt(float v) => str.tostring(v, format.mintick)
+
 // Entry: price entry level ko chhoye (limit order jaisa), leg toota na ho, koi trade khuli na ho
 if showTrade and armed and tState == 0 and curDir != 0 and not wasBroken and legR > 0
     bool touch = curDir == 1 ? low <= entryP : high >= entryP
@@ -225,10 +234,18 @@ if showTrade and armed and tState == 0 and curDir != 0 and not wasBroken and leg
             tTP       := tpP
             tEntryBar := bar_index
             entryNow  := true
-            float rr = math.abs(tTP - tEntry) / math.abs(tEntry - tSL)
-            tpBox := box.new(left = time, top = math.max(tEntry, tTP), right = time, bottom = math.min(tEntry, tTP), xloc = xloc.bar_time, border_color = color.new(color.green, 40), bgcolor = color.new(color.green, 80), text = "TP " + str.tostring(tTP, format.mintick), text_size = size.small, text_color = color.green)
-            slBox := box.new(left = time, top = math.max(tEntry, tSL), right = time, bottom = math.min(tEntry, tSL), xloc = xloc.bar_time, border_color = color.new(color.red, 40), bgcolor = color.new(color.red, 80), text = "SL " + str.tostring(tSL, format.mintick), text_size = size.small, text_color = color.red)
-            label.new(x = time, y = tEntry, text = (tDir == 1 ? "BUY " : "SELL ") + str.tostring(tEntry, format.mintick) + "  R:R " + str.tostring(rr, "#.0"), xloc = xloc.bar_time, style = label.style_label_right, textcolor = color.white, color = tDir == 1 ? color.new(color.green, 20) : color.new(color.red, 20), size = size.small)
+            float tpD = math.abs(tTP - tEntry)
+            float slD = math.abs(tEntry - tSL)
+            tpBox := box.new(left = time, top = math.max(tEntry, tTP), right = time, bottom = math.min(tEntry, tTP), xloc = xloc.bar_time, border_color = color.new(color.green, 40), bgcolor = color.new(color.green, 80), text = "TP " + fmt(tTP) + "  (+" + fmt(tpD) + ")", text_size = size.small, text_color = color.green)
+            slBox := box.new(left = time, top = math.max(tEntry, tSL), right = time, bottom = math.min(tEntry, tSL), xloc = xloc.bar_time, border_color = color.new(color.red, 40), bgcolor = color.new(color.red, 80), text = "SL " + fmt(tSL) + "  (-" + fmt(slD) + ")", text_size = size.small, text_color = color.red)
+            array.push(tBoxes, tpBox)
+            array.push(tBoxes, slBox)
+            array.push(tLabels, label.new(x = time, y = tEntry, text = (tDir == 1 ? "BUY " : "SELL ") + fmt(tEntry) + "  R:R " + str.tostring(tpD / slD, "#.0"), xloc = xloc.bar_time, style = label.style_label_right, textcolor = color.white, color = tDir == 1 ? color.new(color.green, 20) : color.new(color.red, 20), size = size.small))
+            // sirf aakhri maxTrades trade chart par; purane mita do (ginti mein rehte hain)
+            while array.size(tLabels) > maxTrades
+                label.delete(array.shift(tLabels))
+                box.delete(array.shift(tBoxes))
+                box.delete(array.shift(tBoxes))
 
 // Khuli trade: SL pehle check (ek hi candle mein dono = SL, ehtiyat). Entry wali candle par TP nahi ginte.
 if tState == 1
@@ -236,35 +253,46 @@ if tState == 1
     bool hitTP = bar_index > tEntryBar and (tDir == 1 ? high >= tTP : low <= tTP)
     box.set_right(tpBox, time)
     box.set_right(slBox, time)
+    float slD = math.abs(tEntry - tSL)
+    float tpD = math.abs(tTP - tEntry)
     if hitSL
         slNow  := true
         tState := 0
         nSL    += 1
         sumR   -= 1.0
-        box.set_text(slBox, "SL HIT  -1R")
+        ptsSL  += slD
+        box.set_text(slBox, "SL HIT  -" + fmt(slD) + "  (-1R)")
         box.set_bgcolor(slBox, color.new(color.red, 60))
     else if hitTP
-        float gotR = math.abs(tTP - tEntry) / math.abs(tEntry - tSL)
         tpNow  := true
         tState := 0
         nTP    += 1
-        sumR   += gotR
-        box.set_text(tpBox, "TP HIT  +" + str.tostring(gotR, "#.0") + "R")
+        sumR   += tpD / slD
+        ptsTP  += tpD
+        box.set_text(tpBox, "TP HIT  +" + fmt(tpD) + "  (+" + str.tostring(tpD / slD, "#.0") + "R)")
         box.set_bgcolor(tpBox, color.new(color.green, 60))
 
 var table stats = na
 if showStats and barstate.islast
     if na(stats)
-        stats := table.new(position.top_right, 2, 4, bgcolor = color.new(color.black, 20), border_width = 1)
-    int nAll = nTP + nSL
-    table.cell(stats, 0, 0, "Trades", text_color = color.white, text_size = size.small)
-    table.cell(stats, 1, 0, str.tostring(nAll), text_color = color.white, text_size = size.small)
-    table.cell(stats, 0, 1, "TP / SL", text_color = color.white, text_size = size.small)
-    table.cell(stats, 1, 1, str.tostring(nTP) + " / " + str.tostring(nSL), text_color = color.white, text_size = size.small)
-    table.cell(stats, 0, 2, "Jeet %", text_color = color.white, text_size = size.small)
-    table.cell(stats, 1, 2, nAll > 0 ? str.tostring(100.0 * nTP / nAll, "#") + "%" : "-", text_color = color.white, text_size = size.small)
-    table.cell(stats, 0, 3, "Kul R", text_color = color.white, text_size = size.small)
-    table.cell(stats, 1, 3, str.tostring(sumR, "#.0"), text_color = sumR >= 0 ? color.lime : color.red, text_size = size.small)
+        stats := table.new(position.top_right, 2, 7, bgcolor = color.new(color.black, 20), border_width = 1)
+    int   nAll = nTP + nSL
+    float net  = ptsTP - ptsSL
+    color w    = color.white
+    table.cell(stats, 0, 0, "Band trades", text_color = w, text_size = size.small)
+    table.cell(stats, 1, 0, str.tostring(nAll), text_color = w, text_size = size.small)
+    table.cell(stats, 0, 1, "TP hit", text_color = color.lime, text_size = size.small)
+    table.cell(stats, 1, 1, str.tostring(nTP) + " dafa  +" + fmt(ptsTP), text_color = color.lime, text_size = size.small)
+    table.cell(stats, 0, 2, "SL hit", text_color = color.red, text_size = size.small)
+    table.cell(stats, 1, 2, str.tostring(nSL) + " dafa  -" + fmt(ptsSL), text_color = color.red, text_size = size.small)
+    table.cell(stats, 0, 3, "Jeet %", text_color = w, text_size = size.small)
+    table.cell(stats, 1, 3, nAll > 0 ? str.tostring(100.0 * nTP / nAll, "#") + "%" : "-", text_color = w, text_size = size.small)
+    table.cell(stats, 0, 4, "Net points", text_color = w, text_size = size.small)
+    table.cell(stats, 1, 4, (net >= 0 ? "+" : "") + fmt(net), text_color = net >= 0 ? color.lime : color.red, text_size = size.small)
+    table.cell(stats, 0, 5, "Kul R", text_color = w, text_size = size.small)
+    table.cell(stats, 1, 5, str.tostring(sumR, "#.0"), text_color = sumR >= 0 ? color.lime : color.red, text_size = size.small)
+    table.cell(stats, 0, 6, "Khuli trade", text_color = w, text_size = size.small)
+    table.cell(stats, 1, 6, tState == 1 ? (tDir == 1 ? "BUY " : "SELL ") + fmt(tEntry) + "  SL " + fmt(tSL) + "  TP " + fmt(tTP) : "koi nahi", text_color = w, text_size = size.small)
 
 // ================= ALERT =================
 inOTE = not na(oteTop) and not wasBroken and close <= oteTop and close >= oteBot
