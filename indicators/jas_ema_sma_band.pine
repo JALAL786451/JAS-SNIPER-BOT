@@ -1,26 +1,39 @@
 //@version=6
 //=====================================================================
-//  Jas EMA SMA Band  |  JAS      BUILD m1   (18 Oct 2026)
-//  XAUUSD 1D chart ke liye 4 lakeerein (sirf naap, trade nahi):
+//  Jas EMA SMA Band  |  JAS      BUILD m2   (18 Oct 2026)
+//  XAUUSD 1D chart ke liye 4 lakeerein (sirf ishara, trade nahi):
 //    SMA Open / SMA Close - bara TF (1W ya 1M), pichhli BAND candles se
 //    EMA Open / EMA Close - TF 1D, 1W ya 1M, pichhli BAND candles se
 //  Repaint nahi: har lakeer sirf mukammal (band) candle se banti hai
 //  ([1] + lookahead_on) - history aur live ek jaisi.
-//  Har lakeer settings mein alag ON/OFF. Koi table / dabba nahi.
+//  m2: 4 lakeeron ka BAND (sab se upar / sab se neeche lakeer):
+//      S  = price band ke upar thi, low band ko chhua, close upar = support
+//      R  = price band ke neeche thi, high band ko chhua, close neeche = resistance
+//      OB = close band ke upar se ATR x guna door (overbought)
+//      OS = close band ke neeche se ATR x guna door (oversold)
+//      Ishare sirf BAND 1D candle par (live candle par nahi badalte).
+//  Har lakeer / ishara settings mein alag ON/OFF. Rang ka bharao BAND.
 //=====================================================================
-indicator("Jas EMA SMA Band m1", shorttitle = "JAS EMA/SMA m1", overlay = true)
+indicator("Jas EMA SMA Band m2", shorttitle = "JAS EMA/SMA m2", overlay = true)
 
-grpS = "SMA (bara TF)"
+grpS = "SMA (1W / 1M ka pichhla high-low)"
 showSO = input.bool(true, "SMA Open", group = grpS)
 showSC = input.bool(true, "SMA Close", group = grpS)
 smaTf  = input.string("1W", "SMA TF", options = ["1W", "1M"], group = grpS)
 smaLen = input.int(3, "SMA length (candles)", minval = 1, group = grpS)
 
-grpE = "EMA (1D se 1M)"
+grpE = "EMA (1D se 1M tak)"
 showEO = input.bool(true, "EMA Open", group = grpE)
 showEC = input.bool(true, "EMA Close", group = grpE)
 emaTf  = input.string("1D", "EMA TF", options = ["1D", "1W", "1M"], group = grpE)
 emaLen = input.int(3, "EMA length (candles)", minval = 1, group = grpE)
+
+grpI = "Ishare (support / resistance / OB / OS)"
+showSR   = input.bool(true, "S / R ishara", group = grpI)
+showOBOS = input.bool(true, "OB / OS ishara", group = grpI)
+atrLen   = input.int(14, "ATR length", minval = 1, group = grpI)
+obosMult = input.float(1.5, "OB / OS doori (ATR x)", minval = 0.1, step = 0.1, group = grpI)
+showFill = input.bool(false, "Band ka rang (bharao)", group = grpI)
 
 // band candle ki value: [1] + lookahead_on = pichhli mukammal candle, repaint nahi
 smaO = request.security(syminfo.tickerid, smaTf, ta.sma(open, smaLen)[1],  lookahead = barmerge.lookahead_on)
@@ -28,7 +41,40 @@ smaC = request.security(syminfo.tickerid, smaTf, ta.sma(close, smaLen)[1], looka
 emaO = request.security(syminfo.tickerid, emaTf, ta.ema(open, emaLen)[1],  lookahead = barmerge.lookahead_on)
 emaC = request.security(syminfo.tickerid, emaTf, ta.ema(close, emaLen)[1], lookahead = barmerge.lookahead_on)
 
-plot(showSO ? smaO : na, "SMA Open",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
-plot(showSC ? smaC : na, "SMA Close", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
-plot(showEO ? emaO : na, "EMA Open",  color = color.new(color.teal, 0),   linewidth = 1)
-plot(showEC ? emaC : na, "EMA Close", color = color.new(color.blue, 0),   linewidth = 1)
+// band = chalu lakeeron mein sab se upar aur sab se neeche (band lakeer = na, chhor do)
+mx(a, b) => na(a) ? b : na(b) ? a : math.max(a, b)
+mn(a, b) => na(a) ? b : na(b) ? a : math.min(a, b)
+vSO = showSO ? smaO : na
+vSC = showSC ? smaC : na
+vEO = showEO ? emaO : na
+vEC = showEC ? emaC : na
+upB = mx(mx(vSO, vSC), mx(vEO, vEC))
+dnB = mn(mn(vSO, vSC), mn(vEO, vEC))
+atr = ta.atr(atrLen)
+
+wasAbove = close[1] > upB[1]
+wasBelow = close[1] < dnB[1]
+supHit = barstate.isconfirmed and wasAbove and low <= upB and close > upB
+resHit = barstate.isconfirmed and wasBelow and high >= dnB and close < dnB
+isOB   = close > upB + obosMult * atr
+isOS   = close < dnB - obosMult * atr
+obNew  = barstate.isconfirmed and isOB and not isOB[1]
+osNew  = barstate.isconfirmed and isOS and not isOS[1]
+
+pSO = plot(vSO, "SMA Open",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
+pSC = plot(vSC, "SMA Close", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
+plot(vEO, "EMA Open",  color = color.new(color.teal, 0), linewidth = 1)
+plot(vEC, "EMA Close", color = color.new(color.blue, 0), linewidth = 1)
+pUp = plot(upB, "Band upar",  color = na, display = display.none)
+pDn = plot(dnB, "Band neeche", color = na, display = display.none)
+fill(pUp, pDn, color = showFill ? color.new(color.gray, 88) : na, title = "Band rang")
+
+plotshape(showSR and supHit, "Support", shape.triangleup, location.belowbar, color.new(color.green, 0), text = "S", textcolor = color.green, size = size.tiny)
+plotshape(showSR and resHit, "Resistance", shape.triangledown, location.abovebar, color.new(color.red, 0), text = "R", textcolor = color.red, size = size.tiny)
+plotshape(showOBOS and obNew, "Overbought", shape.circle, location.abovebar, color.new(color.maroon, 0), text = "OB", textcolor = color.maroon, size = size.tiny)
+plotshape(showOBOS and osNew, "Oversold", shape.circle, location.belowbar, color.new(color.navy, 0), text = "OS", textcolor = color.navy, size = size.tiny)
+
+alertcondition(supHit, "Support", "JAS band: support (S)")
+alertcondition(resHit, "Resistance", "JAS band: resistance (R)")
+alertcondition(obNew, "Overbought", "JAS band: overbought (OB)")
+alertcondition(osNew, "Oversold", "JAS band: oversold (OS)")
