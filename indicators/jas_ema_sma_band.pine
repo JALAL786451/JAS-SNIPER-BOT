@@ -1,6 +1,6 @@
 //@version=6
 //=====================================================================
-//  Jas EMA SMA Band  |  JAS      BUILD m2   (18 Oct 2026)
+//  Jas EMA SMA Band  |  JAS      BUILD m3   (18 Oct 2026)
 //  XAUUSD 1D chart ke liye 4 lakeerein (sirf ishara, trade nahi):
 //    SMA Open / SMA Close - bara TF (1W ya 1M), pichhli BAND candles se
 //    EMA Open / EMA Close - TF 1D, 1W ya 1M, pichhli BAND candles se
@@ -12,9 +12,10 @@
 //      OB = close band ke upar se ATR x guna door (overbought)
 //      OS = close band ke neeche se ATR x guna door (oversold)
 //      Ishare sirf BAND 1D candle par (live candle par nahi badalte).
+//  m3: ishare ke 0.000 number upar wali line (status line) se hataye.
 //  Har lakeer / ishara settings mein alag ON/OFF. Rang ka bharao BAND.
 //=====================================================================
-indicator("Jas EMA SMA Band m2", shorttitle = "JAS EMA/SMA m2", overlay = true)
+indicator("Jas EMA SMA Band m3", shorttitle = "JAS EMA/SMA m3", overlay = true)
 
 grpS = "SMA (1W / 1M ka pichhla high-low)"
 showSO = input.bool(true, "SMA Open", group = grpS)
@@ -69,10 +70,10 @@ pUp = plot(upB, "Band upar",  color = na, display = display.none)
 pDn = plot(dnB, "Band neeche", color = na, display = display.none)
 fill(pUp, pDn, color = showFill ? color.new(color.gray, 88) : na, title = "Band rang")
 
-plotshape(showSR and supHit, "Support", shape.triangleup, location.belowbar, color.new(color.green, 0), text = "S", textcolor = color.green, size = size.tiny)
-plotshape(showSR and resHit, "Resistance", shape.triangledown, location.abovebar, color.new(color.red, 0), text = "R", textcolor = color.red, size = size.tiny)
-plotshape(showOBOS and obNew, "Overbought", shape.circle, location.abovebar, color.new(color.maroon, 0), text = "OB", textcolor = color.maroon, size = size.tiny)
-plotshape(showOBOS and osNew, "Oversold", shape.circle, location.belowbar, color.new(color.navy, 0), text = "OS", textcolor = color.navy, size = size.tiny)
+plotshape(showSR and supHit, "Support", shape.triangleup, location.belowbar, color.new(color.green, 0), text = "S", textcolor = color.green, size = size.tiny, display = display.all - display.status_line)
+plotshape(showSR and resHit, "Resistance", shape.triangledown, location.abovebar, color.new(color.red, 0), text = "R", textcolor = color.red, size = size.tiny, display = display.all - display.status_line)
+plotshape(showOBOS and obNew, "Overbought", shape.circle, location.abovebar, color.new(color.maroon, 0), text = "OB", textcolor = color.maroon, size = size.tiny, display = display.all - display.status_line)
+plotshape(showOBOS and osNew, "Oversold", shape.circle, location.belowbar, color.new(color.navy, 0), text = "OS", textcolor = color.navy, size = size.tiny, display = display.all - display.status_line)
 
 alertcondition(supHit, "Support", "JAS band: support (S)")
 alertcondition(resHit, "Resistance", "JAS band: resistance (R)")
