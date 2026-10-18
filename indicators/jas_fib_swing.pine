@@ -231,7 +231,7 @@ bool newDay   = timeframe.change("D")
 
 fmt(float v) => str.tostring(v, format.mintick)
 sgn(float v) => (v >= 0 ? "+" : "-") + str.tostring(math.abs(v), "0.0")
-usd(float r) => (r >= 0 ? "+$" : "-$") + str.tostring(math.abs(r * riskAmt), "#,###")
+usd(float r) => (r == 0 ? "$" : r > 0 ? "+$" : "-$") + str.tostring(math.abs(r * riskAmt), "#,###")
 
 // Naya din: khuli trade pichhle din ke aakhri close par band (intraday), aaj ki ginti aur dabbe saaf
 if newDay
