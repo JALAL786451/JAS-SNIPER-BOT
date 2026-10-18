@@ -1,13 +1,16 @@
 //@version=6
 //=====================================================================
-//  Jas Fib Swing  |  JAS      BUILD f2   (18 Oct 2026)
+//  Jas Fib Swing  |  JAS      BUILD f3   (18 Oct 2026)
 //  Aakhri 1H swing (high -> low ya low -> high) par Fib levels.
 //  f2: (1) repaint band - sirf band (confirmed) 1H candle ka pivot,
 //      (2) choti swing badi swing ko nahi kaatti (sirf naya extreme),
 //      (3) Swing High / Swing Low lakeer, (4) OTE box par BUY/SELL zone
 //      likha, swing toot jaye to box grey "TOOT GAYA".
+//  f3: TradingView Long/Short jaisa trade box - price entry level chhoye to
+//      BUY/SELL, SL swing ke bahar, TP extension par; TP HIT / SL HIT likhta hai.
+//      Har leg par sirf 1 trade, ek waqt 1 trade. Ginti table (setting, BAND).
 //=====================================================================
-indicator("Jas Fib Swing f2", overlay = true, max_lines_count = 100, max_labels_count = 100, max_boxes_count = 20)
+indicator("Jas Fib Swing f3", overlay = true, max_lines_count = 100, max_labels_count = 300, max_boxes_count = 300)
 
 // ================= INPUTS =================
 srcTF       = input.timeframe("60", "Swing timeframe (1H)")
@@ -33,6 +36,13 @@ show1618 = input.bool(true,  "1.618", group = grpE, inline = "e2")
 col1618  = input.color(color.lime,  "", group = grpE, inline = "e2")
 show2618 = input.bool(false, "2.618", group = grpE, inline = "e3")
 col2618  = input.color(color.teal,  "", group = grpE, inline = "e3")
+
+grpT      = "Trade box (SL / TP)"
+showTrade = input.bool(true, "Trade box dikhayein (Long/Short tool jaisa)", group = grpT)
+entryLvl  = input.string("0.618", "Entry level", options = ["0.5", "0.618", "0.705", "0.786"], group = grpT)
+tpMode    = input.string("1.272", "TP (target)", options = ["Swing (0)", "1.272", "1.618"], group = grpT)
+slBufPct  = input.float(5.0, "SL swing se kitna bahar (% swing)", minval = 0.0, step = 1.0, group = grpT)
+showStats = input.bool(false, "Ginti table (trades / TP / SL)", group = grpT)
 
 // ================= 1H PIVOTS (repaint nahi) =================
 // [1] + lookahead_on = pichhli BAND 1H candle ki value; chalti candle ka pivot nahi.
@@ -173,6 +183,92 @@ if array.size(fibLabels) > 0
 if not na(oteBox)
     box.set_right(oteBox, time)
 
+// ================= TRADE BOX (Long/Short tool jaisa) =================
+var bool  armed      = false   // is leg par abhi trade nahi hui
+var int   tState     = 0       // 0 = koi trade nahi, 1 = trade khuli
+var int   tDir       = 0
+var float tEntry     = na
+var float tSL        = na
+var float tTP        = na
+var int   tEntryBar  = na
+var box   tpBox      = na
+var box   slBox      = na
+var int   nTP        = 0
+var int   nSL        = 0
+var float sumR       = 0.0
+
+if legChanged
+    armed := true
+
+float legR   = swingHi - swingLo
+float eK     = str.tonumber(entryLvl)
+float tpK    = tpMode == "1.618" ? 1.618 : tpMode == "1.272" ? 1.272 : 1.0
+float entryP = curDir == 1 ? swingHi - eK * legR : swingLo + eK * legR
+float slP    = curDir == 1 ? swingLo - slBufPct / 100 * legR : swingHi + slBufPct / 100 * legR
+float tpP    = curDir == 1 ? swingLo + tpK * legR : swingHi - tpK * legR
+
+bool entryNow = false
+bool tpNow    = false
+bool slNow    = false
+
+// Entry: price entry level ko chhoye (limit order jaisa), leg toota na ho, koi trade khuli na ho
+if showTrade and armed and tState == 0 and curDir != 0 and not wasBroken and legR > 0
+    bool touch = curDir == 1 ? low <= entryP : high >= entryP
+    if touch
+        float fill = curDir == 1 ? math.min(open, entryP) : math.max(open, entryP)
+        armed := false
+        if (curDir == 1 and fill > slP) or (curDir == -1 and fill < slP)
+            tState    := 1
+            tDir      := curDir
+            tEntry    := fill
+            tSL       := slP
+            tTP       := tpP
+            tEntryBar := bar_index
+            entryNow  := true
+            float rr = math.abs(tTP - tEntry) / math.abs(tEntry - tSL)
+            tpBox := box.new(left = time, top = math.max(tEntry, tTP), right = time, bottom = math.min(tEntry, tTP), xloc = xloc.bar_time, border_color = color.new(color.green, 40), bgcolor = color.new(color.green, 80), text = "TP " + str.tostring(tTP, format.mintick), text_size = size.small, text_color = color.green)
+            slBox := box.new(left = time, top = math.max(tEntry, tSL), right = time, bottom = math.min(tEntry, tSL), xloc = xloc.bar_time, border_color = color.new(color.red, 40), bgcolor = color.new(color.red, 80), text = "SL " + str.tostring(tSL, format.mintick), text_size = size.small, text_color = color.red)
+            label.new(x = time, y = tEntry, text = (tDir == 1 ? "BUY " : "SELL ") + str.tostring(tEntry, format.mintick) + "  R:R " + str.tostring(rr, "#.0"), xloc = xloc.bar_time, style = label.style_label_right, textcolor = color.white, color = tDir == 1 ? color.new(color.green, 20) : color.new(color.red, 20), size = size.small)
+
+// Khuli trade: SL pehle check (ek hi candle mein dono = SL, ehtiyat). Entry wali candle par TP nahi ginte.
+if tState == 1
+    bool hitSL = tDir == 1 ? low <= tSL : high >= tSL
+    bool hitTP = bar_index > tEntryBar and (tDir == 1 ? high >= tTP : low <= tTP)
+    box.set_right(tpBox, time)
+    box.set_right(slBox, time)
+    if hitSL
+        slNow  := true
+        tState := 0
+        nSL    += 1
+        sumR   -= 1.0
+        box.set_text(slBox, "SL HIT  -1R")
+        box.set_bgcolor(slBox, color.new(color.red, 60))
+    else if hitTP
+        float gotR = math.abs(tTP - tEntry) / math.abs(tEntry - tSL)
+        tpNow  := true
+        tState := 0
+        nTP    += 1
+        sumR   += gotR
+        box.set_text(tpBox, "TP HIT  +" + str.tostring(gotR, "#.0") + "R")
+        box.set_bgcolor(tpBox, color.new(color.green, 60))
+
+var table stats = na
+if showStats and barstate.islast
+    if na(stats)
+        stats := table.new(position.top_right, 2, 4, bgcolor = color.new(color.black, 20), border_width = 1)
+    int nAll = nTP + nSL
+    table.cell(stats, 0, 0, "Trades", text_color = color.white, text_size = size.small)
+    table.cell(stats, 1, 0, str.tostring(nAll), text_color = color.white, text_size = size.small)
+    table.cell(stats, 0, 1, "TP / SL", text_color = color.white, text_size = size.small)
+    table.cell(stats, 1, 1, str.tostring(nTP) + " / " + str.tostring(nSL), text_color = color.white, text_size = size.small)
+    table.cell(stats, 0, 2, "Jeet %", text_color = color.white, text_size = size.small)
+    table.cell(stats, 1, 2, nAll > 0 ? str.tostring(100.0 * nTP / nAll, "#") + "%" : "-", text_color = color.white, text_size = size.small)
+    table.cell(stats, 0, 3, "Kul R", text_color = color.white, text_size = size.small)
+    table.cell(stats, 1, 3, str.tostring(sumR, "#.0"), text_color = sumR >= 0 ? color.lime : color.red, text_size = size.small)
+
 // ================= ALERT =================
 inOTE = not na(oteTop) and not wasBroken and close <= oteTop and close >= oteBot
 alertcondition(inOTE and not inOTE[1], title = "Price OTE zone mein", message = "Price OTE zone (0.618 - 0.786) mein aa gayi")
+alertcondition(entryNow, title = "Trade entry", message = "Fib trade entry - SL/TP box dekhein")
+alertcondition(tpNow, title = "TP hit", message = "Fib trade TP hit")
+alertcondition(slNow, title = "SL hit", message = "Fib trade SL hit")
