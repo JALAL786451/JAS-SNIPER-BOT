@@ -1,81 +1,150 @@
 //@version=6
 //=====================================================================
-//  Jas EMA SMA Band  |  JAS      BUILD m3   (18 Oct 2026)
-//  XAUUSD 1D chart ke liye 4 lakeerein (sirf ishara, trade nahi):
-//    SMA Open / SMA Close - bara TF (1W ya 1M), pichhli BAND candles se
-//    EMA Open / EMA Close - TF 1D, 1W ya 1M, pichhli BAND candles se
-//  Repaint nahi: har lakeer sirf mukammal (band) candle se banti hai
-//  ([1] + lookahead_on) - history aur live ek jaisi.
-//  m2: 4 lakeeron ka BAND (sab se upar / sab se neeche lakeer):
-//      S  = price band ke upar thi, low band ko chhua, close upar = support
-//      R  = price band ke neeche thi, high band ko chhua, close neeche = resistance
-//      OB = close band ke upar se ATR x guna door (overbought)
-//      OS = close band ke neeche se ATR x guna door (oversold)
-//      Ishare sirf BAND 1D candle par (live candle par nahi badalte).
-//  m3: ishare ke 0.000 number upar wali line (status line) se hataye.
-//  Har lakeer / ishara settings mein alag ON/OFF. Rang ka bharao BAND.
+//  Jas EMA SMA Band  |  JAS      BUILD m4   (18 Oct 2026)
+//  Har TF (1m se 1D) par saaf naap - kitabon ke mashhoor qaide, trade nahi:
+//    EMA 13 / EMA 26 = "Value Zone" (Alexander Elder, Come Into My
+//      Trading Room) - chart ki apni TF par, dono lakeeron ke beech
+//      ki jagah = support (rukh upar) / resistance (rukh neeche).
+//    SMA 30 hafte = bara rukh (Stan Weinstein, Secrets for Profiting in
+//      Bull and Bear Markets) - pichhle BAND hafte se.
+//    SMA 10 mahine = sab se bara rukh (Meb Faber, Tactical Asset
+//      Allocation) - pichhle BAND mahine se.
+//    OB / OS = Elder ka AutoEnvelope: EMA 26 ke gird channel jis mein
+//      pichhli 100 candles ka 95% raha - kinara chhua = OB / OS.
+//      Channel har TF ki apni candles se, is liye 1m aur 1D dono par theek.
+//  Ishare (sirf BAND candle par - history = live, repaint nahi):
+//    S  = rukh upar, price value zone tak wapas aayi, close zone ke upar
+//    R  = rukh neeche, price value zone tak upar aayi, close zone ke neeche
+//    OB = channel ka upar kinara (ek leg mein ek dafa; zone chhoo kar dobara)
+//    OS = channel ka neeche kinara (ek leg mein ek dafa)
+//  OB rukh upar mein = "mehnga, naya BUY nahi", SELL ka hukm nahi.
+//  m2-m3 ke masle: EMA ab chart TF par (1D ki seerhi nahi), OB/OS ab
+//  chart ki apni candles ke channel se (1H par OS ki bharmar khatam).
+//  Har lakeer / ishara settings mein ON/OFF. Rang / table BAND.
 //=====================================================================
-indicator("Jas EMA SMA Band m3", shorttitle = "JAS EMA/SMA m3", overlay = true)
+indicator("Jas EMA SMA Band m4", shorttitle = "JAS EMA/SMA m4", overlay = true)
 
-grpS = "SMA (1W / 1M ka pichhla high-low)"
-showSO = input.bool(true, "SMA Open", group = grpS)
-showSC = input.bool(true, "SMA Close", group = grpS)
-smaTf  = input.string("1W", "SMA TF", options = ["1W", "1M"], group = grpS)
-smaLen = input.int(3, "SMA length (candles)", minval = 1, group = grpS)
+grpE = "EMA - Value Zone (Elder, har TF)"
+fastLen = input.int(13, "Tez EMA", minval = 1, group = grpE)
+slowLen = input.int(26, "Dheemi EMA", minval = 2, group = grpE)
+showEma = input.bool(true, "EMA lakeerein", group = grpE)
+showZn  = input.bool(false, "Value zone ka halka rang", group = grpE)
 
-grpE = "EMA (1D se 1M tak)"
-showEO = input.bool(true, "EMA Open", group = grpE)
-showEC = input.bool(true, "EMA Close", group = grpE)
-emaTf  = input.string("1D", "EMA TF", options = ["1D", "1W", "1M"], group = grpE)
-emaLen = input.int(3, "EMA length (candles)", minval = 1, group = grpE)
+grpS = "SMA - bara rukh (band hafta / mahina)"
+showW = input.bool(true, "SMA hafte (Weinstein)", group = grpS)
+wLen  = input.int(30, "Kitne hafte", minval = 1, group = grpS)
+showM = input.bool(true, "SMA mahine (Faber)", group = grpS)
+mLen  = input.int(10, "Kitne mahine", minval = 1, group = grpS)
 
-grpI = "Ishare (support / resistance / OB / OS)"
-showSR   = input.bool(true, "S / R ishara", group = grpI)
-showOBOS = input.bool(true, "OB / OS ishara", group = grpI)
-atrLen   = input.int(14, "ATR length", minval = 1, group = grpI)
-obosMult = input.float(1.5, "OB / OS doori (ATR x)", minval = 0.1, step = 0.1, group = grpI)
-showFill = input.bool(false, "Band ka rang (bharao)", group = grpI)
+grpC = "OB / OS - AutoEnvelope (Elder)"
+chLook = input.int(100, "Pichhli candles", minval = 20, group = grpC)
+chPct  = input.float(95.0, "Kitni % candles channel ke andar", minval = 50.0, maxval = 99.9, step = 0.5, group = grpC)
+showCh = input.bool(false, "Channel lakeerein", group = grpC)
 
-// band candle ki value: [1] + lookahead_on = pichhli mukammal candle, repaint nahi
-smaO = request.security(syminfo.tickerid, smaTf, ta.sma(open, smaLen)[1],  lookahead = barmerge.lookahead_on)
-smaC = request.security(syminfo.tickerid, smaTf, ta.sma(close, smaLen)[1], lookahead = barmerge.lookahead_on)
-emaO = request.security(syminfo.tickerid, emaTf, ta.ema(open, emaLen)[1],  lookahead = barmerge.lookahead_on)
-emaC = request.security(syminfo.tickerid, emaTf, ta.ema(close, emaLen)[1], lookahead = barmerge.lookahead_on)
+grpI = "Ishare"
+showSR   = input.bool(true, "S / R (value zone se wapsi)", group = grpI)
+showOBOS = input.bool(true, "OB / OS (channel ka kinara)", group = grpI)
+useTide  = input.bool(true, "S / R sirf hafte wali SMA ke rukh mein", group = grpI)
 
-// band = chalu lakeeron mein sab se upar aur sab se neeche (band lakeer = na, chhor do)
-mx(a, b) => na(a) ? b : na(b) ? a : math.max(a, b)
-mn(a, b) => na(a) ? b : na(b) ? a : math.min(a, b)
-vSO = showSO ? smaO : na
-vSC = showSC ? smaC : na
-vEO = showEO ? emaO : na
-vEC = showEC ? emaC : na
-upB = mx(mx(vSO, vSC), mx(vEO, vEC))
-dnB = mn(mn(vSO, vSC), mn(vEO, vEC))
-atr = ta.atr(atrLen)
+// ---- EMA value zone (chart TF)
+emaF = ta.ema(close, fastLen)
+emaS = ta.ema(close, slowLen)
+zTop = math.max(emaF, emaS)
+zBot = math.min(emaF, emaS)
 
-wasAbove = close[1] > upB[1]
-wasBelow = close[1] < dnB[1]
-supHit = barstate.isconfirmed and wasAbove and low <= upB and close > upB
-resHit = barstate.isconfirmed and wasBelow and high >= dnB and close < dnB
-isOB   = close > upB + obosMult * atr
-isOS   = close < dnB - obosMult * atr
-obNew  = barstate.isconfirmed and isOB and not isOB[1]
-osNew  = barstate.isconfirmed and isOS and not isOS[1]
+// ---- bari TF: sirf pichhli BAND candle ([1] + lookahead_on) = repaint nahi
+smaW  = request.security(syminfo.tickerid, "1W", ta.sma(close, wLen)[1], lookahead = barmerge.lookahead_on)
+smaW2 = request.security(syminfo.tickerid, "1W", ta.sma(close, wLen)[2], lookahead = barmerge.lookahead_on)
+wCl   = request.security(syminfo.tickerid, "1W", close[1], lookahead = barmerge.lookahead_on)
+smaM  = request.security(syminfo.tickerid, "1M", ta.sma(close, mLen)[1], lookahead = barmerge.lookahead_on)
 
-pSO = plot(vSO, "SMA Open",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
-pSC = plot(vSC, "SMA Close", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
-plot(vEO, "EMA Open",  color = color.new(color.teal, 0), linewidth = 1)
-plot(vEC, "EMA Close", color = color.new(color.blue, 0), linewidth = 1)
-pUp = plot(upB, "Band upar",  color = na, display = display.none)
-pDn = plot(dnB, "Band neeche", color = na, display = display.none)
-fill(pUp, pDn, color = showFill ? color.new(color.gray, 88) : na, title = "Band rang")
+// Weinstein: hafta SMA ke upar + SMA upar ja rahi = rukh upar
+tideUp = wCl > smaW and smaW >= smaW2
+tideDn = wCl < smaW and smaW <= smaW2
 
-plotshape(showSR and supHit, "Support", shape.triangleup, location.belowbar, color.new(color.green, 0), text = "S", textcolor = color.green, size = size.tiny, display = display.all - display.status_line)
-plotshape(showSR and resHit, "Resistance", shape.triangledown, location.abovebar, color.new(color.red, 0), text = "R", textcolor = color.red, size = size.tiny, display = display.all - display.status_line)
-plotshape(showOBOS and obNew, "Overbought", shape.circle, location.abovebar, color.new(color.maroon, 0), text = "OB", textcolor = color.maroon, size = size.tiny, display = display.all - display.status_line)
-plotshape(showOBOS and osNew, "Oversold", shape.circle, location.belowbar, color.new(color.navy, 0), text = "OS", textcolor = color.navy, size = size.tiny, display = display.all - display.status_line)
+// ---- AutoEnvelope: pichhli candles (aaj ki nahi) ka chLook / chPct kinara
+dev  = math.max(high - emaS, emaS - low)
+chW  = ta.percentile_nearest_rank(dev, chLook, chPct)[1]
+chUp = emaS + chW
+chDn = emaS - chW
 
-alertcondition(supHit, "Support", "JAS band: support (S)")
-alertcondition(resHit, "Resistance", "JAS band: resistance (R)")
-alertcondition(obNew, "Overbought", "JAS band: overbought (OB)")
-alertcondition(osNew, "Oversold", "JAS band: oversold (OS)")
+upT = emaF > emaS and (not useTide or tideUp)
+dnT = emaF < emaS and (not useTide or tideDn)
+
+var bool armUp  = false
+var bool pullUp = false
+var bool armDn  = false
+var bool pullDn = false
+var bool obArm  = true
+var bool osArm  = true
+
+sigS  = false
+sigR  = false
+sigOB = false
+sigOS = false
+
+// sab faisle sirf band candle par - live candle par kuch nahi badalta
+if barstate.isconfirmed
+    // S: rukh upar, pehle zone ke saaf upar, phir zone tak wapsi, close zone ke upar
+    if not upT
+        armUp  := false
+        pullUp := false
+    else
+        if low > zTop
+            armUp := true
+        if armUp and low <= zTop
+            pullUp := true
+        if pullUp and close < zBot
+            armUp  := false
+            pullUp := false
+        else if pullUp and close > zTop
+            sigS   := true
+            armUp  := false
+            pullUp := false
+    // R: rukh neeche, pehle zone ke saaf neeche, phir zone tak upar, close zone ke neeche
+    if not dnT
+        armDn  := false
+        pullDn := false
+    else
+        if high < zBot
+            armDn := true
+        if armDn and high >= zBot
+            pullDn := true
+        if pullDn and close > zTop
+            armDn  := false
+            pullDn := false
+        else if pullDn and close < zBot
+            sigR   := true
+            armDn  := false
+            pullDn := false
+    // OB / OS: ek leg mein ek dafa; price value zone chhoo le to dobara tayyar
+    if obArm and high >= chUp
+        sigOB := true
+        obArm := false
+    else if not obArm and low <= zTop and high < chUp
+        obArm := true
+    if osArm and low <= chDn
+        sigOS := true
+        osArm := false
+    else if not osArm and high >= zBot and low > chDn
+        osArm := true
+
+noSt = display.all - display.status_line
+
+pF = plot(showEma ? emaF : na, "EMA tez",    color = color.new(color.teal, 0), linewidth = 1)
+pS = plot(showEma ? emaS : na, "EMA dheemi", color = color.new(color.blue, 0), linewidth = 2)
+fill(pF, pS, color = showZn ? color.new(color.blue, 88) : na, title = "Value zone")
+plot(showW ? smaW : na, "SMA hafte",  color = color.new(color.orange, 0), linewidth = 2, style = plot.style_stepline)
+plot(showM ? smaM : na, "SMA mahine", color = color.new(color.purple, 0), linewidth = 2, style = plot.style_stepline)
+plot(showCh ? chUp : na, "Channel upar",  color = color.new(color.gray, 30), linewidth = 1)
+plot(showCh ? chDn : na, "Channel neeche", color = color.new(color.gray, 30), linewidth = 1)
+
+plotshape(showSR and sigS, "Support", shape.triangleup, location.belowbar, color.new(color.green, 0), text = "S", textcolor = color.green, size = size.tiny, display = noSt)
+plotshape(showSR and sigR, "Resistance", shape.triangledown, location.abovebar, color.new(color.red, 0), text = "R", textcolor = color.red, size = size.tiny, display = noSt)
+plotshape(showOBOS and sigOB, "Overbought", shape.circle, location.abovebar, color.new(color.maroon, 0), text = "OB", textcolor = color.maroon, size = size.tiny, display = noSt)
+plotshape(showOBOS and sigOS, "Oversold", shape.circle, location.belowbar, color.new(color.navy, 0), text = "OS", textcolor = color.navy, size = size.tiny, display = noSt)
+
+alertcondition(sigS, "Support", "JAS: S - value zone se support")
+alertcondition(sigR, "Resistance", "JAS: R - value zone se resistance")
+alertcondition(sigOB, "Overbought", "JAS: OB - channel ka upar kinara")
+alertcondition(sigOS, "Oversold", "JAS: OS - channel ka neeche kinara")
