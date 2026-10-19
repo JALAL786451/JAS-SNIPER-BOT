@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a8, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a9, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -67,6 +67,8 @@
 //  rehta hai; aakhri 3 purane + 1 chalta. N candles poori hon to label:
 //  "✔ saaye jaisa" (asal chal ka rukh = saaye ke ausat ka rukh) ya "✖ nahi".
 //  Saaya bhi peshgoi NAHI - sirf aankh se jaanch.
+//  a9 (20 Oct, a8 TV ✅ 1D screenshot): saaye ke label aapas mein / ABHI par
+//  charhte the - ab sirf "✔" / "✖" / "4/12"; baqi likhai tooltip mein.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -76,9 +78,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a8", "JAS AAINA a8", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
+indicator("JAS Aaina a9", "JAS AAINA a9", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
 
-BUILD = "a8"
+BUILD = "a9"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -660,13 +662,13 @@ if barstate.islast
                 if iE <= aSz - 1
                     float act = (array.get(aC, iE) - p0) / p0 * 100
                     bool  ok  = sAv != 0 and act != 0 and (act > 0) == (sAv > 0)
-                    sLb := ok ? "✔ saaye jaisa" : "✖ nahi"
+                    sLb := ok ? "✔" : "✖"
                     sLc := ok ? cOk : cNo
-                    sTp += "\nAsal " + str.tostring(nD) + " candles baad: " + f_pct(act) + (ok ? " - saaye ke rukh mein" : " - saaye ke ulat / barabar")
+                    sTp := (ok ? "✔ SAAYE JAISA\n" : "✖ SAAYE JAISA NAHI\n") + sTp + "\nAsal " + str.tostring(nD) + " candles baad: " + f_pct(act) + (ok ? " - saaye ke rukh mein" : " - saaye ke ulat / barabar")
                 else
-                    sLb := "saaya " + str.tostring(aSz - 1 - i0) + "/" + str.tostring(nD)
+                    sLb := str.tostring(aSz - 1 - i0) + "/" + str.tostring(nD)
                     sTp += "\nAbhi chal raha - " + str.tostring(nD) + " candles poori hon to ✔ / ✖."
-                label.new(tE, p0 * (1 + sAv / 100), sLb, xloc = xloc.bar_time, style = label.style_label_left, color = color.new(sLc, 20), textcolor = color.white, size = size.small, tooltip = sTp + "\nPeshgoi NAHI - sirf aankh se jaanch.")
+                label.new(tE, p0 * (1 + sAv / 100), sLb, xloc = xloc.bar_time, style = label.style_label_left, color = color.new(sLc, 20), textcolor = color.white, size = size.tiny, tooltip = sTp + "\nPeshgoi NAHI - sirf aankh se jaanch.")
 
 // ek N ka kalam (column): is nishani ka nateeja vs har candle (bunyaad)
 f_col(int _c, simple int _n, St _s, St _b) =>
