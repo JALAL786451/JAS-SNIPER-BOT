@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a9, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a10, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -69,6 +69,10 @@
 //  Saaya bhi peshgoi NAHI - sirf aankh se jaanch.
 //  a9 (20 Oct, a8 TV ✅ 1D screenshot): saaye ke label aapas mein / ABHI par
 //  charhte the - ab sirf "✔" / "✖" / "4/12"; baqi likhai tooltip mein.
+//  a10 (20 Oct, a9 TV ✅ 15m screenshot): 22:30 ke baad saaya gayab - us
+//  band candle ki nishani ka koi purana mauqa nahi tha, phir bhi N candles
+//  chhod di jati thin. Ab mauqa na mile to AGLI band candle par phir koshish;
+//  jab tak koi saaya na chale, aakhri band candle ke aage saleti "0 mauqe".
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -78,9 +82,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a9", "JAS AAINA a9", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
+indicator("JAS Aaina a10", "JAS AAINA a10", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
 
-BUILD = "a9"
+BUILD = "a10"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -521,11 +525,14 @@ var int           yNext = na
 int yW = 3 * (nD + 1)
 
 if barstate.isconfirmed and showSy and valid and (na(yNext) or bar_index >= yNext)
-    yNext := bar_index + nD
-    // sirf aakhri saayon ka hisaab - puri history par bhaari loop nahi
-    if barstate.isrealtime or bar_index >= last_bar_index - (yKeep + 2) * nD - 2
+    // sirf aakhri saayon ka hisaab - puri history par bhaari loop nahi (wahan sirf baari chalti hai)
+    if not barstate.isrealtime and bar_index < last_bar_index - (yKeep + 2) * nD - 2
+        yNext := bar_index + nD
+    else
         array<int> yPk = f_near(array.size(aBI) - 1, key, kpA, kpB, kpC, kpD, 3)
+        // a10: koi mauqa nahi = yNext wahi rahe, agli band candle par phir koshish
         if array.size(yPk) > 0
+            yNext := bar_index + nD
             array.push(yJ, bar_index)
             array.push(yP0, sC)
             array.push(yN, array.size(yPk))
@@ -631,6 +638,12 @@ if barstate.islast
             f_srDraw(fBI, xEnd, fC)
         if showJT
             f_jtDraw(fBI)
+    // a10: koi saaya nahi chal raha (abhi tak ki band candles ki nishani ka koi purana mauqa nahi) - chhota saleti nishan
+    if showSy and fOk and aSz > 0
+        int  nY   = array.size(yJ)
+        bool yRun = nY > 0 and array.get(yJ, nY - 1) + nD > fBI
+        if not yRun
+            label.new(fT + 2 * timeframe.in_seconds() * 1000, fC, "0 mauqe", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cGr, 100), textcolor = cGr, size = size.tiny, tooltip = "SAAYA nahi: aakhri band candle ki nishani ka koi purana mauqa (jis ke baad " + str.tostring(nD) + " candles poori) history mein nahi. Har agli band candle par phir koshish.")
     // a8 SAAYA: har yaad saaye ke 3 raaste (asal candles ke waqt par; aage ka waqt chart TF se), N poori to ✔ / ✖
     if showSy and array.size(yJ) > 0 and aSz > 0
         int b0   = array.get(aBI, 0)
