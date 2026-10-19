@@ -8,6 +8,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | File | Kya |
 |---|---|
 | `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv` | LIVE kitab har lot (183 pos, 16 Oct 12:30) - JasDeskView CSV; nayi CSV isi folder mein tareekh ke naam se |
+| `indicators/jas_tf_live.pine` | JAS TF LIVE l1: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
 | `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
 | `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
 | `JasIbsEA.mq5` | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (`TRADING.md`) |

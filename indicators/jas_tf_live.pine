@@ -1,0 +1,172 @@
+//@version=6
+// ============================================================================
+//  JAS TF LIVE  (build l1, Pine v6)  — har TF ki CHALTI candle, ek table mein
+//
+//  l1 (19 Oct 2026, user): SIRF ABHI ka haal. Past ka kuch nahi - na S/R, na
+//  LGB, na FVG, na pichli candle, na MA. Har TF (1m se 1M) ki jo candle abhi
+//  bann rahi hai, sirf us ki apni baatein:
+//    RANG   hari (close > open) / laal / barabar
+//    CHAL   open se ab tak kitni chali (points aur %)
+//    RANGE  is candle ka ab tak ka high - low
+//    KAHAN  close is range mein kahan: 0% = low par, 100% = high par
+//    BODY   body range ka kitna hissa (bari body = ek taraf zor, chhoti = wick)
+//    BAQI   candle band hone mein kitna waqt
+//  Neeche ek qatar: kitne TF hare, kitne laal.
+//
+//  Ye sirf DEKHNE ke liye hai. Chalti candle har tick par badalti hai - is
+//  table se trade ka faisla NAHI (koi qaida naapa nahi gaya).
+//  Chart par kuch nahi banta - sirf table, sirf aakhri candle par.
+//
+//  Andar ki baat: bari TF (chart se bari) lookahead_on se aati hai - aakhri
+//  candle par is ka matlab "us TF ki chalti candle" hai (aage koi data hai hi
+//  nahi). Chhoti TF lookahead_off se (chart candle ki aakhri chhoti candle).
+//  Isi liye table SIRF aakhri candle par banti hai - peeche ke chart par ye
+//  values sach nahi bolti, wahan kuch nahi dikhaya jata.
+// ============================================================================
+indicator("JAS TF Live", "JAS TF LIVE", overlay = true)
+
+BUILD = "l1"
+
+// ------------------------------------------------------------ 1. TIMEFRAMES
+g1   = "1. Timeframes (10)"
+tf1  = input.timeframe("1",   "TF 1",  group = g1, inline = "a")
+tf2  = input.timeframe("5",   "TF 2",  group = g1, inline = "a")
+tf3  = input.timeframe("15",  "TF 3",  group = g1, inline = "b")
+tf4  = input.timeframe("30",  "TF 4",  group = g1, inline = "b")
+tf5  = input.timeframe("60",  "TF 5",  group = g1, inline = "c")
+tf6  = input.timeframe("120", "TF 6",  group = g1, inline = "c")
+tf7  = input.timeframe("240", "TF 7",  group = g1, inline = "d")
+tf8  = input.timeframe("D",   "TF 8",  group = g1, inline = "d")
+tf9  = input.timeframe("W",   "TF 9",  group = g1, inline = "e")
+tf10 = input.timeframe("M",   "TF 10", group = g1, inline = "e")
+
+// ---------------------------------------------------------------- 2. TABLE
+g2       = "2. Table"
+tblPos   = input.string("Top Right", "Table kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = g2)
+tblSize  = input.string("Small", "Likhai ka size", options = ["Tiny", "Small", "Normal"], group = g2)
+tblClear = input.bool(true, "Dabba transparent (peechhe candles nazar aayein)", group = g2)
+tblAlpha = input.int(85, "Kitna transparent (0 = thos, 100 = bilkul gayab)", minval = 0, maxval = 100, group = g2)
+showPct  = input.bool(true, "CHAL mein % bhi dikhayein", group = g2)
+
+// ---------------------------------------------------------------- RANG
+cUp  = color.new(#26A69A, 0)
+cDn  = color.new(#EF5350, 0)
+cTxt = color.new(#37474F, 0)
+cGr  = color.new(#78909C, 0)
+cHd  = color.new(#ECEFF1, 0)
+
+// ============================================================================
+//  DATA — har TF ki chalti candle (sirf aakhri candle par kaam ki)
+// ============================================================================
+// Bari TF: lookahead_on = aakhri candle par us TF ki CHALTI candle.
+// Chhoti / barabar TF: lookahead_off = chart candle ke andar ki aakhri chhoti candle.
+f_get(simple string _tf) =>
+    request.security(syminfo.tickerid, _tf, [open, high, low, close, time_close], barmerge.gaps_off,
+         timeframe.in_seconds(_tf) > timeframe.in_seconds() ? barmerge.lookahead_on : barmerge.lookahead_off)
+
+[o1, h1, l1, c1, e1]   = f_get(tf1)
+[o2, h2, l2, c2, e2]   = f_get(tf2)
+[o3, h3, l3, c3, e3]   = f_get(tf3)
+[o4, h4, l4, c4, e4]   = f_get(tf4)
+[o5, h5, l5, c5, e5]   = f_get(tf5)
+[o6, h6, l6, c6, e6]   = f_get(tf6)
+[o7, h7, l7, c7, e7]   = f_get(tf7)
+[o8, h8, l8, c8, e8]   = f_get(tf8)
+[o9, h9, l9, c9, e9]   = f_get(tf9)
+[o10, h10, l10, c10, e10] = f_get(tf10)
+
+// ============================================================================
+//  MADADGAR
+// ============================================================================
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Bottom Right" ? position.bottom_right : _s == "Bottom Left" ? position.bottom_left : _s == "Middle Right" ? position.middle_right : position.top_right
+f_size(_s) => _s == "Tiny" ? size.tiny : _s == "Normal" ? size.normal : size.small
+
+// TF ka chhota naam: 1m, 15m, 1H, 4H, 1D, 1W, 1M
+f_tfName(simple string _tf) =>
+    int _s = timeframe.in_seconds(_tf)
+    _s < 60 ? str.tostring(_s) + "s" : _s < 3600 ? str.tostring(int(_s / 60)) + "m" : _s < 86400 ? str.tostring(int(_s / 3600)) + "H" : _s < 604800 ? str.tostring(int(_s / 86400)) + "D" : _s < 2419200 ? str.tostring(int(_s / 604800)) + "W" : str.tostring(math.round(_s / 2628000)) + "M"
+
+// transparent: dabba halka, likhai chart ke rang mein (kaale aur safed chart dono par)
+f_bg(color _c) => tblClear ? color.new(_c, tblAlpha) : _c
+f_tc(color _c) => tblClear and (_c == cTxt or _c == color.white) ? chart.fg_color : _c
+
+// bacha waqt: 2d 5h / 3h 12m / 14m / band
+f_left(float _tc) =>
+    string _r = "-"
+    if not na(_tc)
+        int _ms = int(_tc - timenow)
+        if _ms <= 0
+            _r := "band"
+        else
+            int _m = int(_ms / 60000)
+            int _d = int(_m / 1440)
+            int _h = int((_m % 1440) / 60)
+            int _mm = _m % 60
+            _r := _d > 0 ? str.tostring(_d) + "d " + str.tostring(_h) + "h" : _h > 0 ? str.tostring(_h) + "h " + str.tostring(_mm) + "m" : _mm > 0 ? str.tostring(_mm) + "m" : "<1m"
+    _r
+
+// ============================================================================
+//  TABLE — sirf aakhri candle par
+// ============================================================================
+var table TB = table.new(f_pos(tblPos), 7, 13, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
+
+f_cell(int _col, int _row, string _t, color _fg, color _bg, string _tip) =>
+    table.cell(TB, _col, _row, _t, text_color = f_tc(_fg), bgcolor = f_bg(_bg), text_size = f_size(tblSize), text_halign = text.align_left, tooltip = _tip)
+
+// ek TF ki qatar; wapsi: +1 hari, -1 laal, 0 barabar / data nahi
+f_row(int _r, simple string _tf, float _o, float _h, float _l, float _c, float _e) =>
+    int _dir = 0
+    string _nm = f_tfName(_tf)
+    if na(_c) or na(_o)
+        f_cell(0, _r, _nm, cTxt, color.white, "")
+        f_cell(1, _r, "data nahi", cGr, color.white, "Is TF ka data is symbol par nahi mila.")
+        for _k = 2 to 6
+            f_cell(_k, _r, "", cGr, color.white, "")
+    else
+        float _rg  = _h - _l
+        float _ch  = _c - _o
+        _dir      := _ch > 0 ? 1 : _ch < 0 ? -1 : 0
+        color _cc  = _dir == 1 ? cUp : _dir == -1 ? cDn : cGr
+        string _rn = _dir == 1 ? "▲ HARI" : _dir == -1 ? "▼ LAAL" : "= BARABAR"
+        string _cv = (_ch > 0 ? "+" : "") + str.tostring(_ch, format.mintick) + (showPct and _o != 0 ? " (" + (_ch > 0 ? "+" : "") + str.tostring(_ch / _o * 100, "0.00") + "%)" : "")
+        float _kp  = _rg > 0 ? (_c - _l) / _rg * 100 : na
+        string _kw = na(_kp) ? "-" : _kp >= 67 ? "Upar " : _kp <= 33 ? "Neeche " : "Beech "
+        string _kv = na(_kp) ? "-" : _kw + str.tostring(_kp, "0") + "%"
+        color _kc  = na(_kp) ? cGr : _kp >= 67 ? cUp : _kp <= 33 ? cDn : cTxt
+        float _bp  = _rg > 0 ? math.abs(_ch) / _rg * 100 : na
+        string _bv = na(_bp) ? "-" : str.tostring(_bp, "0") + "%" + (_bp >= 60 ? " zor" : _bp <= 25 ? " wick" : "")
+        f_cell(0, _r, _nm, cTxt, color.white, "")
+        f_cell(1, _r, _rn, color.white, _cc, "Chalti candle ka rang: close open se upar = hari.")
+        f_cell(2, _r, _cv, _cc, color.white, "Open se ab tak (points" + (showPct ? " aur %" : "") + ").")
+        f_cell(3, _r, str.tostring(_rg, format.mintick), cTxt, color.white, "Is candle ka ab tak ka High - Low.")
+        f_cell(4, _r, _kv, _kc, color.white, "Close range mein kahan: 0% = low par, 100% = high par.")
+        f_cell(5, _r, _bv, cTxt, color.white, "Body (|close - open|) range ka kitna hissa. 60%+ = zor, 25% se kam = zyada wick.")
+        f_cell(6, _r, f_left(_e), cGr, color.white, "Candle band hone mein waqt (aapke computer ki ghari se).")
+    _dir
+
+if barstate.islast
+    table.clear(TB, 0, 0, 6, 12)
+    f_cell(0, 0, "JAS TF LIVE · " + BUILD, cTxt, cHd, "Har TF ki CHALTI candle. Past ka kuch nahi. Sirf dekhna - faisla nahi.")
+    table.merge_cells(TB, 0, 0, 6, 0)
+    string[] hd = array.from("TF", "RANG", "CHAL", "RANGE", "KAHAN", "BODY", "BAQI")
+    for i = 0 to 6
+        f_cell(i, 1, array.get(hd, i), cTxt, cHd, "")
+    int d1  = f_row(2,  tf1,  o1,  h1,  l1,  c1,  e1)
+    int d2  = f_row(3,  tf2,  o2,  h2,  l2,  c2,  e2)
+    int d3  = f_row(4,  tf3,  o3,  h3,  l3,  c3,  e3)
+    int d4  = f_row(5,  tf4,  o4,  h4,  l4,  c4,  e4)
+    int d5  = f_row(6,  tf5,  o5,  h5,  l5,  c5,  e5)
+    int d6  = f_row(7,  tf6,  o6,  h6,  l6,  c6,  e6)
+    int d7  = f_row(8,  tf7,  o7,  h7,  l7,  c7,  e7)
+    int d8  = f_row(9,  tf8,  o8,  h8,  l8,  c8,  e8)
+    int d9  = f_row(10, tf9,  o9,  h9,  l9,  c9,  e9)
+    int d10 = f_row(11, tf10, o10, h10, l10, c10, e10)
+    int[] ds = array.from(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10)
+    int nUp = 0
+    int nDn = 0
+    for d in ds
+        nUp += d == 1 ? 1 : 0
+        nDn += d == -1 ? 1 : 0
+    color cSum = nUp > nDn ? cUp : nDn > nUp ? cDn : cGr
+    f_cell(0, 12, "ABHI: " + str.tostring(nUp) + " hare · " + str.tostring(nDn) + " laal (10 mein se)", color.white, cSum, "Sirf ginti - chalti candles. Faisla nahi.")
+    table.merge_cells(TB, 0, 12, 6, 12)
