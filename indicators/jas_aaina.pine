@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a5, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a6, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -52,6 +52,10 @@
 //  a5 (19 Oct): TV error "historical offset beyond buffer" (purana mauqa
 //  4000+ candles peeche) - ab har nishan WAQT (xloc.bar_time) se banta hai,
 //  candle number se nahi; is ki koi hadd nahi.
+//  a6 (19 Oct, user: "har TF par jaldi jaldi change"): (1) ABHI dabba ab
+//  SAB mauqon ka ausat (table wala, 900+ dafa) - 10 ka nahi; shor ho to
+//  SALETI; (2) qareebi 10 ab KAHAN ke 5% khanon se (har tick par nahi
+//  badalte), barabar hon to naye pehle.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -61,9 +65,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a5", "JAS AAINA a5", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300)
+indicator("JAS Aaina a6", "JAS AAINA a6", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300)
 
-BUILD = "a5"
+BUILD = "a6"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -379,17 +383,20 @@ var int    qN   = 0
 var int    qUp  = 0
 var string qTxt = "Qareebi mauqe: -"
 
-// Lorentzian faasla: har shamil TF ke KAHAN % ka log(1 + |farq|) - jitna kam utna qareeb
+// KAHAN % ke 5% khane (har tick par chhoti harkat se qareebi mauqe na badlein)
+f_q(float _x) => math.round(_x / 5) * 5
+
+// Lorentzian faasla: har shamil TF ke KAHAN % (khane) ka log(1 + |farq|) - jitna kam utna qareeb
 f_dist(int _i) =>
     float _d = 0.0
     if inA
-        _d += math.log(1 + math.abs(array.get(aKA, _i) - kpA))
+        _d += math.log(1 + math.abs(f_q(array.get(aKA, _i)) - f_q(kpA)))
     if inB
-        _d += math.log(1 + math.abs(array.get(aKB, _i) - kpB))
+        _d += math.log(1 + math.abs(f_q(array.get(aKB, _i)) - f_q(kpB)))
     if inC
-        _d += math.log(1 + math.abs(array.get(aKC, _i) - kpC))
+        _d += math.log(1 + math.abs(f_q(array.get(aKC, _i)) - f_q(kpC)))
     if inD
-        _d += math.log(1 + math.abs(array.get(aKD, _i) - kpD))
+        _d += math.log(1 + math.abs(f_q(array.get(aKD, _i)) - f_q(kpD)))
     _d
 
 // candle _j tak PAKKI choti / tah (aakhri 10) mein se daam _px ke sab se qareeb: ooper = R, neeche = S
@@ -462,7 +469,8 @@ if barstate.islast
         for i = aSz - 1 - nD to iLo
             if array.get(aOk, i) and array.get(aKey, i) == key
                 array.push(cI, i)
-                array.push(cD, f_dist(i))
+                // barabar faasla ho to naya mauqa pehle (chhota sa izafa purane par)
+                array.push(cD, f_dist(i) + (aSz - i) * 0.0000001)
         // sab se qareeb pehle; do chune hue mauqe aapas mein nD candles door
         array<int> pk = array.new<int>()
         if array.size(cD) > 0
@@ -513,15 +521,24 @@ if barstate.islast
         int xNow = time
         int xEnd = time + nD * timeframe.in_seconds() * 1000
         if qN > 0
-            float aMv = sMv / qN
-            float aFe = sFe / qN
-            float aAe = sAe / qN
-            qTxt := "Qareebi " + str.tostring(qN) + " mauqe (" + str.tostring(nD) + " candles): " + str.tostring(qUp) + " ooper · " + str.tostring(qN - qUp) + " neeche · ausat " + f_pct(aMv)
-            if showNow
-                color cn = aMv > 0 ? cUp : aMv < 0 ? cDn : cGr
-                box.new(xNow, sC * (1 + aFe / 100), xEnd, sC * (1 - aAe / 100), xloc = xloc.bar_time, border_color = color.new(cn, 30), bgcolor = color.new(cn, 90), border_style = line.style_dashed)
-                line.new(xNow, sC, xEnd, sC * (1 + aMv / 100), xloc = xloc.bar_time, color = cn, width = 2, style = line.style_arrow_right)
-                label.new(xEnd, sC * (1 + aMv / 100), "ABHI · " + str.tostring(qN) + " qareebi ka ausat " + f_pct(aMv) + " ≈" + f_px(aMv), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cn, 15), textcolor = color.white, size = size.small, tooltip = "Peshgoi NAHI. Pehle jab yahi nishani thi, " + str.tostring(nD) + " candles mein ausat: max ooper +" + str.tostring(aFe, "0.00") + "%, max neeche -" + str.tostring(aAe, "0.00") + "%.")
+            qTxt := "Chart par qareebi " + str.tostring(qN) + " (" + str.tostring(nD) + " candles): " + str.tostring(qUp) + " ooper · " + str.tostring(qN - qUp) + " neeche · ausat " + f_pct(sMv / qN)
+        // ABHI dabba: is nishani ke SAB mauqon ka ausat (table wala) - 10 ka nahi, mustaqil
+        St sAb = nPick == "N 1" ? map.get(M1, key) : nPick == "N 3" ? map.get(M3, key) : map.get(M2, key)
+        St bAb = nPick == "N 1" ? B1 : nPick == "N 3" ? B3 : B2
+        if showNow and not na(sAb) and sAb.n > 0
+            int   kA  = sAb.n
+            float aMv = sAb.sm / kA
+            float aFe = sAb.mfe / kA
+            float aAe = sAb.mae / kA
+            float vrA = kA > 1 ? (sAb.sq - kA * aMv * aMv) / (kA - 1) : na
+            float seA = na(vrA) ? na : math.sqrt(math.max(vrA, 0) / kA)
+            float dfA = bAb.n > 0 ? aMv - bAb.sm / bAb.n : na
+            string nvA = kA < 30 or na(seA) or na(dfA) ? "kam data" : math.abs(dfA) > 2 * seA ? (dfA > 0 ? "✔ ooper" : "✔ neeche") : "shor"
+            // rang sirf jab naap shor se bahar ho; warna saleti
+            color cn = nvA == "✔ ooper" ? cUp : nvA == "✔ neeche" ? cDn : cGr
+            box.new(xNow, sC * (1 + aFe / 100), xEnd, sC * (1 - aAe / 100), xloc = xloc.bar_time, border_color = color.new(cn, 30), bgcolor = color.new(cn, 90), border_style = line.style_dashed)
+            line.new(xNow, sC, xEnd, sC * (1 + aMv / 100), xloc = xloc.bar_time, color = cn, width = 2, style = line.style_arrow_right)
+            label.new(xEnd, sC * (1 + aMv / 100), "ABHI · " + str.tostring(kA) + " mauqon ka ausat " + f_pct(aMv) + " ≈" + f_px(aMv) + " · " + nvA, xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cn, 15), textcolor = color.white, size = size.small, tooltip = "Peshgoi NAHI. Pehle jab yahi nishani thi (" + str.tostring(kA) + " dafa), " + str.tostring(nD) + " candles mein ausat chal " + f_pct(aMv) + ", max ooper +" + str.tostring(aFe, "0.00") + "%, max neeche -" + str.tostring(aAe, "0.00") + "%. Naap '" + nvA + "' (table jaisa).")
         if showSR
             f_srDraw(bar_index, xEnd, sC)
         if showJT
