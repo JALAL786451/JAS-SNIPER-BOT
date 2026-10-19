@@ -34,5 +34,7 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | TradeZella | Journal + manual replay backtest (paid). EA test ke liye zaroori nahi; free replay = TV Bar Replay. | 18 Oct |
 | har TF chalti candle / current status | `indicators/jas_tf_live.pine` l2 (19 Oct, compile ✅): 1m-1M chalti candle - rang, chal, range, kahan, body, baqi; past nahi, sirf dekhna. | 19 Oct |
 | Tide+SMC table transparent | `jas_tide_smc.pine` s2.9 (19 Oct): Settings 5 "Table transparent" + kitna (85). OB Radar r3 se legend transparent. | 19 Oct |
-| abhi ki halat past mein kahan / Aaina | "JAS AAINA" (agla kaam): abhi ki TF nishani history mein dhoond kar agle N candles ka nateeja; naap, peshgoi nahi. | 19 Oct |
+| abhi ki halat past mein kahan / Aaina | `indicators/jas_aaina.pine` a7: abhi ki TF nishani history mein -> agli N candles ka nateeja vs har candle (naap, peshgoi nahi). Chart: #1 label par mouse = purane mauqe ki tareekh; dabba = agli N candles; ABHI saleti = shor. | 19 Oct |
 | StockBee / free strategy | stockbee.blogspot.com (Pradeep Bonde): Momentum Burst, Episodic Pivot, Market Monitor - US stocks ke liye, gold par seedha nahi. | 19 Oct |
+| mashhoor kitab ka writer (pichli chat) | 13vi chat 18 Oct (EMA/SMA band): Elder (Trading for a Living - value zone), Weinstein (Secrets for Profiting... - 30 hafte SMA), Faber (10 mahine SMA). 14vi chat 19 Oct (Aaina): Lorentzian Classification = TV script (jdehorty), kitab nahi. | 19 Oct |
+| Aaina dabba ban kar chala jata | Har tick par naqsha naya; abhi ki nishani (maslan 15m KAHAN) badle to mauqe badal jate. a8: band candle + "saaya". | 19 Oct |

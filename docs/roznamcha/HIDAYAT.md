@@ -28,7 +28,8 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | EA hard rules | Grid / martingale / hedging / averaging nahi (jab tak user naam le kar na maange); ek market ek position; risk limit khud na barhao. `CLAUDE.md`. | pehle |
 | Fishing Lots | User ki apni method (hedged basket) - sahi bayan karo, EA mein mat daalo. `METHOD.md`. | pehle |
 | settings | Pine / EA ki settings mein jo cheez user ne kahi ho wo PEHLE SE set karo (default). | 18 Oct |
-| kitab | Mashhoor kitab ka qaida (Elder, Weinstein, Faber...) istemal ho sakta hai - shart: chart misguide na kare, repaint / kachcha na lage. | 18 Oct |
+| kitab | Mashhoor kitab ka qaida (Elder, Weinstein, Faber...) istemal ho sakta hai - shart: chart misguide na kare, repaint / kachcha na lage. 19 Oct: naye kaam mein purani JAS scripts se kuch NAHI - mashhoor kitab / mashhoor tareeqa (maslan Lorentzian kNN). | 18-19 Oct |
+| table | Naye Pine ki table default BAND - chart ke nishan na chhupein; hisaab peechhe chale, setting se khule. | 19 Oct |
 
 ## C. Token / usage bachao (sab se pehli tarjeeh)
 

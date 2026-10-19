@@ -22,4 +22,4 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | 2026-10-16 | 42 | `2026-10-16.md` | OB Radar r2: legend ke neeche SIGNAL qatar (1D+4H MA rukh, 1 / TRADING.md: commodity demo USOIL BUY 0.05 |
 | 2026-10-17 | 19 | `2026-10-17.md` | TRADING.md: TideRadar EA sirf-dikhana par mila (InpTrade fal / USTEC M1 2021-22 data (QDM Dukascopy), TRADING sec 5: agla 2 |
 | 2026-10-18 | 18 | `2026-10-18.md` | Jas Fib Swing f2: user ka Fib indicator theek (repaint band, / Sawal-jawab: 9 SELL ek qeemat (mobile app), TradeZella |
-| 2026-10-19 | 3 | `2026-10-19.md` | Tide+SMC s2.9: table transparent (default, OB Radar jaisa),  / JAS TF LIVE l2: asal candles (HA/Renko par bhi), band candle |
+| 2026-10-19 | 11 | `2026-10-19.md` | Tide+SMC s2.9: table transparent (default, OB Radar jaisa),  / JAS AAINA a7: table default band (Settings 3 se khule), hisa |

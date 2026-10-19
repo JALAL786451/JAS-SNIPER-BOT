@@ -133,6 +133,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - **Sab band karna ho to Multiple Close By, Close All nahi (16 Oct):** Close By mein spread nahi - 1.33/1.33 lot par ~27 USC bachat (cent). USD account par yahi $27 hota.
 - Claude (16 Oct): har faisle par saare raaste khud saamne rakho (jori: QAREEB / sasti / mehngi) - user ke kehne ka intezar nahi. User ne QAREEB khud sujhaya, Claude ko pehle batana chahiye tha.
 - Hunt bhai (1980 chandi): bara yaqeen + udhaar + SL nahi = arab-patti bhi doob jate hain.
+- AAINA (19 Oct): TV ~5000 candles (5m = 1 mahina); 10 qareebi ka ausat = qismat (1 minute mein -1.09% -> +0.56%) - hamesha SAB mauqon ka ausat + 2SE; gold 5m/15m/1D nishani = shor.
 
 ## 5. Mere tools
 

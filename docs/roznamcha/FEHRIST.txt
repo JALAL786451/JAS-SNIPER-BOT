@@ -154,7 +154,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - Jas EMA SMA Band m3: status line se ishare ke 0.000 hataye
    - Sawal-jawab: 9 SELL ek qeemat (mobile app), TradeZella
 
-2026-10-19  (3 kaam)
+2026-10-19  (11 kaam)
    - Tide+SMC s2.9: table transparent (default, OB Radar jaisa), likhai chart ke rang mein; eng
-   - JAS TF LIVE l1: har TF ki chalti candle ka table (sirf abhi, past nahi) - draft, jaanch ja
-   - JAS TF LIVE l2: asal candles (HA/Renko par bhi), band candle ginti se bahar, transparent d
+   - JAS AAINA a2: mauqe aapas mein na charhein, bunyaad = har candle, abhi wali chal ginti se 
+   - JAS AAINA a7: table default band (Settings 3 se khule), hisaab peechhe chalta rahe, chart 
