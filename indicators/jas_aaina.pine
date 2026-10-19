@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a4, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a5, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -49,6 +49,9 @@
 //              bhaav par %): ausat max ooper / neeche + ausat chal ki lakeer.
 //              Ye peshgoi NAHI - sirf "pehle aisa hua tha".
 //  FVG / OB kisi mashhoor kitab mein nahi (ICT ke lafz) - is liye nahi.
+//  a5 (19 Oct): TV error "historical offset beyond buffer" (purana mauqa
+//  4000+ candles peeche) - ab har nishan WAQT (xloc.bar_time) se banta hai,
+//  candle number se nahi; is ki koi hadd nahi.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -58,9 +61,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a4", "JAS AAINA a4", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300)
+indicator("JAS Aaina a5", "JAS AAINA a5", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300)
 
-BUILD = "a4"
+BUILD = "a5"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -246,16 +249,19 @@ var array<int>   aT   = array.new<int>()
 // S / R: choti (peak) aur tah (trough); kis candle par PAKKI hui wo bhi yaad (us se pehle istemal nahi)
 float pkH = ta.pivothigh(sH, pvLen, pvLen)
 float pkL = ta.pivotlow(sL, pvLen, pvLen)
+// rT / uT = choti / tah ki candle ka WAQT (nishan waqt se banta hai), rK / uK = pakki hone ki candle
+int pvT = time[pvLen]
 var array<float> rP = array.new<float>()
-var array<int>   rB = array.new<int>()
+var array<int>   rT = array.new<int>()
 var array<int>   rK = array.new<int>()
 var array<float> uP = array.new<float>()
-var array<int>   uB = array.new<int>()
+var array<int>   uT = array.new<int>()
 var array<int>   uK = array.new<int>()
 // LGB (jhoota toot): candle, daam, taraf (-1 = R ke ooper wick, +1 = S ke neeche wick)
 var array<int>   eB = array.new<int>()
 var array<float> eP = array.new<float>()
 var array<int>   eD = array.new<int>()
+var array<int>   eT = array.new<int>()
 var float jtR  = na
 var bool  jtRu = true
 var float jtS  = na
@@ -288,13 +294,13 @@ if barstate.isconfirmed
         array.shift(aT)
     if not na(pkH)
         array.push(rP, pkH)
-        array.push(rB, bar_index - pvLen)
+        array.push(rT, pvT)
         array.push(rK, bar_index)
         jtR  := pkH
         jtRu := false
     if not na(pkL)
         array.push(uP, pkL)
-        array.push(uB, bar_index - pvLen)
+        array.push(uT, pvT)
         array.push(uK, bar_index)
         jtS  := pkL
         jtSu := false
@@ -304,12 +310,14 @@ if barstate.isconfirmed
             array.push(eB, bar_index)
             array.push(eP, sH)
             array.push(eD, -1)
+            array.push(eT, time)
         jtRu := true
     if not jtSu and not na(jtS) and sL < jtS
         if sC > jtS
             array.push(eB, bar_index)
             array.push(eP, sL)
             array.push(eD, 1)
+            array.push(eT, time)
         jtSu := true
 
 // ============================================================================
@@ -385,6 +393,7 @@ f_dist(int _i) =>
     _d
 
 // candle _j tak PAKKI choti / tah (aakhri 10) mein se daam _px ke sab se qareeb: ooper = R, neeche = S
+// wapsi: [daam, choti / tah ka waqt]
 f_lvl(array<float> _p, array<int> _b, array<int> _k, int _j, float _px, bool _up) =>
     float _v    = na
     int   _vb   = na
@@ -402,16 +411,16 @@ f_lvl(array<float> _p, array<int> _b, array<int> _k, int _j, float _px, bool _up
                     break
     [_v, _vb]
 
-// S / R lakeer: choti / tah ki candle se _j1 tak
-f_srDraw(int _j0, int _j1, float _px) =>
-    [_r, _rb] = f_lvl(rP, rB, rK, _j0, _px, true)
-    [_s, _sb] = f_lvl(uP, uB, uK, _j0, _px, false)
+// S / R lakeer: choti / tah ke waqt se _x1 (waqt) tak; _j0 = mauqe ki candle (sirf pakki hone ki jaanch)
+f_srDraw(int _j0, int _x1, float _px) =>
+    [_r, _rt] = f_lvl(rP, rT, rK, _j0, _px, true)
+    [_s, _st] = f_lvl(uP, uT, uK, _j0, _px, false)
     if not na(_r)
-        line.new(_rb, _r, _j1, _r, color = color.new(cDn, 35), style = line.style_dashed, width = 1)
-        label.new(_j1, _r, "R", style = label.style_label_left, color = color.new(cDn, 100), textcolor = cDn, size = size.tiny, tooltip = "Resistance = pichli choti " + str.tostring(_r, format.mintick) + " (Elder / Weinstein), us waqt tak pakki.")
+        line.new(_rt, _r, _x1, _r, xloc = xloc.bar_time, color = color.new(cDn, 35), style = line.style_dashed, width = 1)
+        label.new(_x1, _r, "R", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cDn, 100), textcolor = cDn, size = size.tiny, tooltip = "Resistance = pichli choti " + str.tostring(_r, format.mintick) + " (Elder / Weinstein), us waqt tak pakki.")
     if not na(_s)
-        line.new(_sb, _s, _j1, _s, color = color.new(cUp, 35), style = line.style_dashed, width = 1)
-        label.new(_j1, _s, "S", style = label.style_label_left, color = color.new(cUp, 100), textcolor = cUp, size = size.tiny, tooltip = "Support = pichli tah " + str.tostring(_s, format.mintick) + " (Elder / Weinstein), us waqt tak pakki.")
+        line.new(_st, _s, _x1, _s, xloc = xloc.bar_time, color = color.new(cUp, 35), style = line.style_dashed, width = 1)
+        label.new(_x1, _s, "S", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cUp, 100), textcolor = cUp, size = size.tiny, tooltip = "Support = pichli tah " + str.tostring(_s, format.mintick) + " (Elder / Weinstein), us waqt tak pakki.")
 
 // candle _j se pehle jtLook candles mein jhoote toot (zyada se zyada 2, sab se naye)
 f_jtDraw(int _j) =>
@@ -424,7 +433,7 @@ f_jtDraw(int _j) =>
                 break
             if _b <= _j
                 int _d = array.get(eD, _i)
-                label.new(_b, array.get(eP, _i), _d > 0 ? "LGB↑" : "LGB↓", style = _d > 0 ? label.style_label_up : label.style_label_down, color = color.new(_d > 0 ? cUp : cDn, 100), textcolor = _d > 0 ? cUp : cDn, size = size.tiny, tooltip = _d > 0 ? "Jhoota toot (Elder false breakout): wick support ke neeche, close wapas ooper." : "Jhoota toot (Elder false breakout): wick resistance ke ooper, close wapas neeche.")
+                label.new(array.get(eT, _i), array.get(eP, _i), _d > 0 ? "LGB↑" : "LGB↓", xloc = xloc.bar_time, style = _d > 0 ? label.style_label_up : label.style_label_down, color = color.new(_d > 0 ? cUp : cDn, 100), textcolor = _d > 0 ? cUp : cDn, size = size.tiny, tooltip = _d > 0 ? "Jhoota toot (Elder false breakout): wick support ke neeche, close wapas ooper." : "Jhoota toot (Elder false breakout): wick resistance ke ooper, close wapas neeche.")
                 _c += 1
 
 if barstate.islast
@@ -491,13 +500,18 @@ if barstate.islast
             sAe += (c0 - lo) / c0 * 100
             color cc = mv > 0 ? cUp : mv < 0 ? cDn : cGr
             string tip = str.format_time(array.get(aT, ci), "dd MMM yy HH:mm", syminfo.timezone) + " · faasla " + str.tostring(f_dist(ci), "0.00") + "\n" + str.tostring(nD) + " candles baad close: " + (mv > 0 ? "+" : "") + str.tostring(mv, format.mintick) + "\nBeech mein max ooper +" + str.tostring(hi - c0, format.mintick) + " · max neeche -" + str.tostring(c0 - lo, format.mintick)
-            box.new(j0, hi, j0 + nD, lo, border_color = color.new(cc, 40), bgcolor = color.new(cc, 88))
-            line.new(j0, c0, j0 + nD, c0, color = color.new(cc, 20), style = line.style_dotted)
-            label.new(j0, hi, "#" + str.tostring(rnk) + (mv > 0 ? " ▲+" : mv < 0 ? " ▼" : " =") + str.tostring(mv, format.mintick), style = label.style_label_down, color = color.new(cc, 15), textcolor = color.white, size = size.small, tooltip = tip)
+            int x0 = array.get(aT, ci)
+            int x1 = array.get(aT, ci + nD)
+            box.new(x0, hi, x1, lo, xloc = xloc.bar_time, border_color = color.new(cc, 40), bgcolor = color.new(cc, 88))
+            line.new(x0, c0, x1, c0, xloc = xloc.bar_time, color = color.new(cc, 20), style = line.style_dotted)
+            label.new(x0, hi, "#" + str.tostring(rnk) + (mv > 0 ? " ▲+" : mv < 0 ? " ▼" : " =") + str.tostring(mv, format.mintick), xloc = xloc.bar_time, style = label.style_label_down, color = color.new(cc, 15), textcolor = color.white, size = size.small, tooltip = tip)
             if showSR
-                f_srDraw(j0, j0 + nD, c0)
+                f_srDraw(j0, x1, c0)
             if showJT
                 f_jtDraw(j0)
+        // ABHI ka aage ka waqt (chart TF x nD; weekend ka khana nahi ginta)
+        int xNow = time
+        int xEnd = time + nD * timeframe.in_seconds() * 1000
         if qN > 0
             float aMv = sMv / qN
             float aFe = sFe / qN
@@ -505,11 +519,11 @@ if barstate.islast
             qTxt := "Qareebi " + str.tostring(qN) + " mauqe (" + str.tostring(nD) + " candles): " + str.tostring(qUp) + " ooper · " + str.tostring(qN - qUp) + " neeche · ausat " + f_pct(aMv)
             if showNow
                 color cn = aMv > 0 ? cUp : aMv < 0 ? cDn : cGr
-                box.new(bar_index, sC * (1 + aFe / 100), bar_index + nD, sC * (1 - aAe / 100), border_color = color.new(cn, 30), bgcolor = color.new(cn, 90), border_style = line.style_dashed)
-                line.new(bar_index, sC, bar_index + nD, sC * (1 + aMv / 100), color = cn, width = 2, style = line.style_arrow_right)
-                label.new(bar_index + nD, sC * (1 + aMv / 100), "ABHI · " + str.tostring(qN) + " qareebi ka ausat " + f_pct(aMv) + " ≈" + f_px(aMv), style = label.style_label_left, color = color.new(cn, 15), textcolor = color.white, size = size.small, tooltip = "Peshgoi NAHI. Pehle jab yahi nishani thi, " + str.tostring(nD) + " candles mein ausat: max ooper +" + str.tostring(aFe, "0.00") + "%, max neeche -" + str.tostring(aAe, "0.00") + "%.")
+                box.new(xNow, sC * (1 + aFe / 100), xEnd, sC * (1 - aAe / 100), xloc = xloc.bar_time, border_color = color.new(cn, 30), bgcolor = color.new(cn, 90), border_style = line.style_dashed)
+                line.new(xNow, sC, xEnd, sC * (1 + aMv / 100), xloc = xloc.bar_time, color = cn, width = 2, style = line.style_arrow_right)
+                label.new(xEnd, sC * (1 + aMv / 100), "ABHI · " + str.tostring(qN) + " qareebi ka ausat " + f_pct(aMv) + " ≈" + f_px(aMv), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cn, 15), textcolor = color.white, size = size.small, tooltip = "Peshgoi NAHI. Pehle jab yahi nishani thi, " + str.tostring(nD) + " candles mein ausat: max ooper +" + str.tostring(aFe, "0.00") + "%, max neeche -" + str.tostring(aAe, "0.00") + "%.")
         if showSR
-            f_srDraw(bar_index, bar_index + nD, sC)
+            f_srDraw(bar_index, xEnd, sC)
         if showJT
             f_jtDraw(bar_index)
 
