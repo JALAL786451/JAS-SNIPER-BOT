@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 19 Oct 2026 raat (15vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 20 Oct 2026 subah (16vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -55,15 +55,12 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**19 Oct (15vi chat):** Naya Pine `indicators/jas_aaina.pine` **a7** (a3 TV compile ✅ 5m/15m; a5-a6 1D/15m par chala): TF LIVE ki
-abhi wali nishani (15m/1H/4H/1D rang + kahan) history mein -> agli N (4/12/48) candles ka nateeja vs HAR candle, SHOR ±2SE, NAAP;
-mauqe aapas mein N door. Chart par qareebi 10 mauqe (Lorentzian faasla, KAHAN 5% khane) + nateeja dabba + S/R (Elder/Weinstein
-choti/tah) + LGB (Elder jhoota toot) + ABHI dabba (SAB mauqon ka ausat, shor = saleti). Table default BAND (Settings 3).
-TV ~5000 candles = kam mauqe; 5m/15m/1D sab "shor". a7 TV check BAQI. Is chat mein 2 workflow bina pooche chale = ghalti (HIDAYAT C).
-**AGLA EK QADAM (Claude) - AAINA a8 "saaya"** (user: "dabba banta hai phir chala jata hai; abhi past jaisa hua ya nahi kaise pata
-chale"): (1) nishani BAND chart candle par - mauqe poori candle tak na badlein; (2) SAAYA: qareebi #1-#3 mauqon ke baad ka raasta
-(% mein) abhi ki candle se aage halki lakeer; (3) saaya chart par REHE (aakhri 3, nishani badle tab bhi), N candles baad label
-"✔ saaye jaisa / ✖ nahi" - user khud dekhe. Purani JAS script se kuch nahi (HIDAYAT "kitab"). Phir Commodity + Rsi2 demo par.
+**20 Oct (16vi chat):** `indicators/jas_aaina.pine` **a10 TV ✅** (15m + 1D screenshot; a7 TV ✅ pichli chat mein tha). a8: nishani BAND
+candle ki (mauqe / ABHI / table poori candle tak nahi badalte); SAAYA = qareebi #1-#3 mauqon ka asal raasta band candle se aage
+(nuqta lakeer, #1 gehri), har saaya N candles phir agla, aakhri 3 + 1 chalta, N baad label ✔ (rukh saaye jaisa) / ✖. a9: label
+chhote (✔ / ✖ / 4/12). a10: mauqa na mile to agli band candle par phir koshish, warna saleti "0 mauqe". AAINA saaya kaam POORA.
+**AGLA EK QADAM (Claude):** Commodity (XPTUSDm, magic 20261018) + Rsi2 (US500m, 20261012) demo haal - user se screenshot maango,
+TV milaap. **User:** kuch din 15m gold par saaye dekhe, ✔ / ✖ khud gine (sirf aankh, faisla nahi).
 **User ka (jab chahe):** QDM 3 export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 ->
 upload -> Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),

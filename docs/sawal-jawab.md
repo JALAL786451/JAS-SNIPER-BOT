@@ -38,3 +38,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | StockBee / free strategy | stockbee.blogspot.com (Pradeep Bonde): Momentum Burst, Episodic Pivot, Market Monitor - US stocks ke liye, gold par seedha nahi. | 19 Oct |
 | mashhoor kitab ka writer (pichli chat) | 13vi chat 18 Oct (EMA/SMA band): Elder (Trading for a Living - value zone), Weinstein (Secrets for Profiting... - 30 hafte SMA), Faber (10 mahine SMA). 14vi chat 19 Oct (Aaina): Lorentzian Classification = TV script (jdehorty), kitab nahi. | 19 Oct |
 | Aaina dabba ban kar chala jata | Har tick par naqsha naya; abhi ki nishani (maslan 15m KAHAN) badle to mauqe badal jate. a8: band candle + "saaya". | 19 Oct |
+| Saaya gayab / "0 mauqe" | Us band candle ki nishani ka koi purana mauqa (N candles poori) TV history mein nahi; a10 agli band candle par phir koshish karta hai. | 20 Oct |
+| Saaya ✔ / ✖ | ✔ = N candles baad asal chal ka rukh saaye (qareebi #1-#3 ka ausat) jaisa; ✖ = ulat / barabar. Peshgoi nahi. | 20 Oct |

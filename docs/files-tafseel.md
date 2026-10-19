@@ -9,7 +9,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 |---|---|
 | `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv` | LIVE kitab har lot (183 pos, 16 Oct 12:30) - JasDeskView CSV; nayi CSV isi folder mein tareekh ke naam se |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
-| `indicators/jas_aaina.pine` | JAS AAINA a7 (table default band): TF LIVE ki abhi wali nishani (15m/1H/4H/1D rang + kahan) history mein - agli N candles ka nateeja vs har candle; chart par sab se qareebi mauqe (Lorentzian faasla) + nateeja dabba + Elder/Weinstein S/R + LGB (jhoota toot) + ABHI ausat dabba (sirf naap) |
+| `indicators/jas_aaina.pine` | JAS AAINA a10 (band candle nishani + SAAYA #1-#3 raasta, N baad ✔ / ✖; table default band): TF LIVE ki abhi wali nishani (15m/1H/4H/1D rang + kahan) history mein - agli N candles ka nateeja vs har candle; chart par sab se qareebi mauqe (Lorentzian faasla) + nateeja dabba + Elder/Weinstein S/R + LGB (jhoota toot) + ABHI ausat dabba (sirf naap) |
 | `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
 | `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
 | `JasIbsEA.mq5` | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (`TRADING.md`) |
