@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.8, Pine v6)
+//  JAS TIDE + SMC   (build s2.9, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -67,6 +67,10 @@
 //  signal, SL, table WAHI - S/R faisle mein shamil NAHI (naapa nahi gaya).
 //  s1.1 ki durustiyan sab qaim (SL chhoona, +/- faasla, bazaar band, standard
 //  candles, DZ/SZ band candle par).
+//  s2.9 (19 Oct, user): TABLE TRANSPARENT (default, OB Radar r3 jaisa) - peechhe
+//  candles nazar aati hain; likhai chart ke rang (chart.fg_color) mein taake
+//  kaali aur safed dono chart par parhi jaye. Settings → 5 se band / kitna.
+//  Engine, signal, SL, table ki baatein WAHI.
 //
 //  Naap: strategies/jas_tide_smc_test.pine. Peshangoi nahi. Tide ~55-60% trades
 //  haarta hai; kamai chand bari jeet se.
@@ -74,7 +78,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.8"
+BUILD = "s2.9"
 
 // ============================================================================
 //  INPUTS
@@ -129,6 +133,8 @@ thinTbl   = input.bool(true, "Table patli (har ' · ' nayi line mein)", tooltip 
 showLot   = input.bool(false, "Table: LOT row", tooltip = "s2.7: default BAND (user).", group = grV, display = display.none)
 showNaap  = input.bool(false, "Table: NAAP (1D) row", tooltip = "s2.7: default BAND (user). Naap repo / Tester mein hai.", group = grV, display = display.none)
 tableFont = input.string("Normal", "Table ka font", options = ["Tiny", "Small", "Normal", "Large"], group = grV, display = display.none)
+tblClear  = input.bool(true, "Table transparent (peechhe candles nazar aayein)", tooltip = "s2.9: likhai chart ke rang mein.", group = grV, display = display.none)
+tblAlpha  = input.int(85, "Kitna transparent (0 = thos, 100 = bilkul gayab)", minval = 0, maxval = 100, group = grV, display = display.none)
 chartFont = input.string("Normal", "Chart ki likhai (SMC + Tide dabba)", options = ["Small", "Normal", "Large"], group = grV, display = display.none)
 tz        = input.string("Asia/Karachi", "Waqt ka zone", group = grV, display = display.none)
 tzName    = input.string("PKT", "Zone ka naam", group = grV, display = display.none)
@@ -716,17 +722,20 @@ if barstate.islast
 // ============================================================================
 //  TABLE (Top Right, chhoti) — sirf aakhri candle par
 // ============================================================================
-var table tb = table.new(f_pos(tablePos), 2, 9, border_width = 1, border_color = color.new(#CFD8DC, 0))
+var table tb = table.new(f_pos(tablePos), 2, 9, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
+// s2.9: transparent table - safed dabba gayab, rangeen dabba halka, likhai chart ke rang mein
+f_tbg(color c) => tblClear ? color.new(c, c == color.new(#FFFFFF, 10) ? 100 : tblAlpha) : c
+f_ttc(color c) => tblClear and (c == C_TXT or c == color.white) ? chart.fg_color : c
 // text_formatting 'const' maangta hai - is liye do shakhen, har ek mein seedha constant
 f_row(table t, int r, string a, string b0, color bgB, color fgB, string fs, string tip, bool bo) =>
     // s2.7: patli table - har ' · ' nayi line (table daayen khali hisse mein rahe)
     string b = thinTbl ? str.replace_all(b0, " · ", "\n") : b0
     if bo
-        table.cell(t, 0, r, a, text_color = C_TXT, bgcolor = color.new(#FFFFFF, 10), text_size = fs, text_halign = text.align_left, tooltip = tip, text_formatting = text.format_bold)
-        table.cell(t, 1, r, b, text_color = fgB, bgcolor = bgB, text_size = fs, text_halign = text.align_left, tooltip = tip, text_formatting = text.format_bold)
+        table.cell(t, 0, r, a, text_color = f_ttc(C_TXT), bgcolor = f_tbg(color.new(#FFFFFF, 10)), text_size = fs, text_halign = text.align_left, tooltip = tip, text_formatting = text.format_bold)
+        table.cell(t, 1, r, b, text_color = f_ttc(fgB), bgcolor = f_tbg(bgB), text_size = fs, text_halign = text.align_left, tooltip = tip, text_formatting = text.format_bold)
     else
-        table.cell(t, 0, r, a, text_color = C_TXT, bgcolor = color.new(#FFFFFF, 10), text_size = fs, text_halign = text.align_left, tooltip = tip)
-        table.cell(t, 1, r, b, text_color = fgB, bgcolor = bgB, text_size = fs, text_halign = text.align_left, tooltip = tip)
+        table.cell(t, 0, r, a, text_color = f_ttc(C_TXT), bgcolor = f_tbg(color.new(#FFFFFF, 10)), text_size = fs, text_halign = text.align_left, tooltip = tip)
+        table.cell(t, 1, r, b, text_color = f_ttc(fgB), bgcolor = f_tbg(bgB), text_size = fs, text_halign = text.align_left, tooltip = tip)
 
 if showTable and barstate.islast
     fs  = f_size(tableFont)
