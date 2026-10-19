@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a6, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a7, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -56,6 +56,8 @@
 //  SAB mauqon ka ausat (table wala, 900+ dafa) - 10 ka nahi; shor ho to
 //  SALETI; (2) qareebi 10 ab KAHAN ke 5% khanon se (har tick par nahi
 //  badalte), barabar hon to naye pehle.
+//  a7 (19 Oct, user): TABLE default BAND - chart ke nishan na chhupein;
+//  hisaab peechhe chalta rahe, Settings 3 "Table dikhayein" se khule.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -65,9 +67,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a6", "JAS AAINA a6", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300)
+indicator("JAS Aaina a7", "JAS AAINA a7", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300)
 
-BUILD = "a6"
+BUILD = "a7"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -89,6 +91,7 @@ n3      = input.int(48, "N 3", minval = 1, maxval = 500, group = g2, inline = "n
 
 // ---------------------------------------------------------------- 3. TABLE
 g3       = "3. Table"
+showTbl  = input.bool(false, "Table dikhayein", group = g3, tooltip = "Band ho to bhi saara hisaab peechhe chalta hai - sirf table chhupti hai, chart ke nishan wahi.")
 tblPos   = input.string("Top Right", "Table kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = g3)
 tblSize  = input.string("Small", "Likhai ka size", options = ["Tiny", "Small", "Normal"], group = g3)
 tblClear = input.bool(true, "Dabba transparent (peechhe candles nazar aayein)", group = g3)
@@ -574,7 +577,9 @@ f_col(int _c, simple int _n, St _s, St _b) =>
         f_cell(_c, 15, "+" + str.tostring(_s.mfe / _k, "0.00") + "% ≈" + f_px(_s.mfe / _k), cUp, color.white, "N candles ke andar ausat sab se zyada ooper (high), entry close se.")
         f_cell(_c, 16, "-" + str.tostring(_s.mae / _k, "0.00") + "% ≈" + f_px(_s.mae / _k), cDn, color.white, "N candles ke andar ausat sab se zyada neeche (low), entry close se.")
 
-if barstate.islast
+if barstate.islast and not showTbl
+    table.clear(TB, 0, 0, 3, 18)
+if barstate.islast and showTbl
     table.clear(TB, 0, 0, 3, 18)
     f_cell(0, 0, "JAS AAINA · " + BUILD, cTxt, cHd, "Abhi wali nishani history mein - aage kya hua. Sirf naap - faisla nahi.")
     table.merge_cells(TB, 0, 0, 3, 0)
