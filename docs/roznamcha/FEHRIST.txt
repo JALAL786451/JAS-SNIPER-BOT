@@ -149,7 +149,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - docs/roznamcha: din ba din kaam ki fehrist (git se), TRADING.md mein raasta
    - USTEC M1 2021-22 data (QDM Dukascopy), TRADING sec 5: agla 2023-24 export
 
-2026-10-18  (15 kaam)
+2026-10-18  (18 kaam)
    - Jas Fib Swing f2: user ka Fib indicator theek (repaint band, swing logic, zone label)
-   - Jas EMA SMA Band m1: 4 lakeer (SMA Open/Close 1W/1M, EMA Open/Close 1D-1M)
-   - Roznamcha 18 Oct
+   - Jas EMA SMA Band m3: status line se ishare ke 0.000 hataye
+   - Sawal-jawab: 9 SELL ek qeemat (mobile app), TradeZella
+
+2026-10-19  (3 kaam)
+   - Tide+SMC s2.9: table transparent (default, OB Radar jaisa), likhai chart ke rang mein; eng
+   - JAS TF LIVE l1: har TF ki chalti candle ka table (sirf abhi, past nahi) - draft, jaanch ja
+   - JAS TF LIVE l2: asal candles (HA/Renko par bhi), band candle ginti se bahar, transparent d

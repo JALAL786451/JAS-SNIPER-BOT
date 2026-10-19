@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 18 Oct 2026 raat (13vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 19 Oct 2026 (14vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -54,14 +54,18 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - tafseel `docs/purana-haal.md` ("16 Oct shaam").
-**18 Oct (13vi chat):** (1) MT5 + phone dono login nahi (ek WiFi) -> khud theek ho gaya (Exness weekend / ISP). (2) Naya Pine
-`indicators/jas_ema_sma_band.pine` **m5** (TV par compile ✅ 1D/4H): Elder value zone EMA 13/26 + AutoEnvelope OB/OS, Weinstein
-SMA 30 hafte, Faber SMA 10 mahine; S/R/OB/OS sirf band candle. Sirf naap - test NAHI (user chahe to koshish #23, qaida pehle).
-(3) User ki saari hidayat ab `docs/roznamcha/HIDAYAT.md` (grep se); MQL5/Pine qaide CLAUDE.md se wahan gaye.
-**AGLA EK QADAM (user ka):** QDM se 3 export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023.01.01-2024.12.31 (`USTEC 2023-24`),
-XAUUSD 2021-22 (`XAU 2021-22`), XAUUSD 2023-24 (`XAU 2023-24`) -> upload -> Python test #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
-Phir Commodity + Rsi2 panel, KitabSaathi demo.
+**Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
+**19 Oct (14vi chat):** (1) Live 4179.94-.99 par **9 SELL x 0.01** (9 Oct 10:45:37-38 server, comment khaali) = Exness mobile app
+ke kai tap / net atka (user sirf app se kholta hai) - `docs/sawal-jawab.md`. (2) Tide+SMC **s2.9** = table transparent (TV compile BAQI).
+(3) Naya Pine `indicators/jas_tf_live.pine` **l2**: har TF (1m-1M) ki CHALTI candle - rang, chal, range, kahan, body, baqi waqt;
+past kuch nahi (user). TV compile ✅ (19 Oct, D + W chart, BAQI ghari se mila). (4) Demo 472716649: main Radar laga; **Commodity
+Radar (XPTUSDm D1, magic 20261018, InpSymbols 6) + Rsi2 (US500m D1, 20261012) lagana BAQI**. (5) `jas_ema_sma_band.pine` m5 (18 Oct) sirf naap.
+**AGLA EK QADAM (Claude):** Pine **"JAS AAINA"** (user ki marzi 19 Oct): TF LIVE ki abhi wali nishani (maslan 15m/1H/4H/1D rang +
+kahan Upar/Beech/Neeche) chart ki history mein dhoondo -> har baar agle N candles mein kya hua (ginti, % ooper, ausat chal) table mein.
+Base chart 5m/15m; bari TF ki "chalti" candle script khud jode (timeframe.change, lookahead NAHI). Sirf naap/dekhna - trade ke liye
+koshish #23 qaida pehle (TALAASH/IMTIHAN). Misaal: Lorentzian Classification (kNN). Phir Commodity + Rsi2 demo par lagana.
+**User ka (jab chahe):** QDM 3 export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 ->
+upload -> Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
 entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
 asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
