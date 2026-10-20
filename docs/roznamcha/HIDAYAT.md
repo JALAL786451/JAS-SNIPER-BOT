@@ -32,6 +32,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | table | Naye Pine ki table default BAND - chart ke nishan na chhupein; hisaab peechhe chale, setting se khule. | 19 Oct |
 | tweak | AAINA (aur chalti script) ka agla build = USI file mein tweak, sab purana qaim; alag chhoti nayi script NAHI ("800+ ko 200+ bana diya"). | 20 Oct |
 | VPS | Demo ke liye VPS ka kharcha abhi nahi - dobara mashwara mat do. | 20 Oct |
+| pine test | TALAASH / IMTIHAN qaida EA ke liye hai. Pine par kaam ho to sirf YAAD dilao: "sahi nateeja MT5 ya (data milne par) Python se". Pine pass hone tak usi ko tweak karo; Python / MT5 / data ka kaam khud mat chhero - user khud kahega. | 21 Oct |
 
 ## C. Token / usage bachao (sab se pehli tarjeeh)
 
