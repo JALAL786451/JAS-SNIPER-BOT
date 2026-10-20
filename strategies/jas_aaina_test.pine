@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA — TEST  (build t1, Pine v6)
+//  JAS AAINA — TEST  (build t2, Pine v6)
 //  21 Oct 2026 - user: "1D par strategy Pine par result test karna hai".
 //  indicators/jas_aaina.pine a18 ka AGLI candle andaza (Settings 1 + 6)
 //  jyon ka tyon, STRATEGY ki shakal mein (TV Strategy Tester):
@@ -17,8 +17,11 @@
 //  Sirf Candles chart (Heikin Ashi par Tester ke bhaav ghalat).
 //  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
 //  Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par) Python se.
+//  t2 (21 Oct, user: Tester mein tareekh ka option nahi): Settings 7 "Trade
+//  kab se" (default 1 Jan 2019). Andaza poori history se seekhta hai, trade
+//  sirf is tareekh ke baad - Tester ke number sirf isi muddat ke.
 // ============================================================================
-strategy("JAS Aaina Test t1", shorttitle = "JAS AAINA TEST t1", overlay = true,
+strategy("JAS Aaina Test t2", shorttitle = "JAS AAINA TEST t2", overlay = true,
      initial_capital    = 10000,
      default_qty_type   = strategy.fixed,
      default_qty_value  = 1,
@@ -45,6 +48,10 @@ mode = input.string("Rang + Kahan", "Milaap", options = ["Rang + Kahan", "Sirf R
 g6      = "6. AGLI candle"
 agMode  = input.string("Sirf Rang", "AGLI ka milaap", options = ["Sirf Rang", "Settings 1 jaisa"], group = g6, tooltip = "Sirf Rang = har TF ka sirf rang (zyada mauqe). Settings 1 jaisa = upar wala Milaap (Rang + Kahan par mauqe bohot kam).")
 agMin   = input.int(30, "Kam az kam mauqe (warna andaza / trade nahi)", minval = 10, maxval = 500, group = g6)
+
+// ------------------------------------------------------------ 7. TAREEKH (t2)
+g7      = "7. Tareekh"
+tStart  = input.time(timestamp("2019-01-01T00:00:00"), "Trade kab se", group = g7, tooltip = "Andaza is se pehle ki saari history se seekhta hai; trade sirf is tareekh ke baad. Purani poori history ke liye 1833 kar dein.")
 
 // ============================================================================
 //  DATA — aaina jaisa (asal candles, chart ki apni TF)
@@ -138,6 +145,8 @@ if barstate.isconfirmed
 // ============================================================================
 if barstate.isconfirmed
     strategy.close_all(comment = "band", immediately = true)
+    if time < tStart
+        gPr := 0
     if gPr == 1
         strategy.entry("BUY", strategy.long, comment = "HARI")
     else if gPr == 2
