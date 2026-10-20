@@ -357,21 +357,21 @@ int agRang = sC > sO ? 1 : sC < sO ? 2 : 0
 if barstate.isconfirmed and showAg
     // 1. pichli band candle par bana andaza - ye candle ab band: ✔ / ✖ (barabar candle gini nahi)
     if gPr != 0 and agRang != 0
-        bool okA = agRang == gPr
-        bool okB = agRang == gBs
-        agOk  += okA ? 1 : 0
-        agNo  += okA ? 0 : 1
-        agBOk += okB ? 1 : 0
-        agBNo += okB ? 0 : 1
+        bool hitA = agRang == gPr
+        bool hitB = agRang == gBs
+        agOk  += hitA ? 1 : 0
+        agNo  += hitA ? 0 : 1
+        agBOk += hitB ? 1 : 0
+        agBNo += hitB ? 0 : 1
         if gNl
-            nlOk  += okA ? 1 : 0
-            nlNo  += okA ? 0 : 1
-            nlBOk += okB ? 1 : 0
-            nlBNo += okB ? 0 : 1
+            nlOk  += hitA ? 1 : 0
+            nlNo  += hitA ? 0 : 1
+            nlBOk += hitB ? 1 : 0
+            nlBNo += hitB ? 0 : 1
         array.push(gmT, time)
         array.push(gmL, sL)
-        array.push(gmOk, okA)
-        array.push(gmTp, (okA ? "✔ andaza sahi" : "✖ andaza ghalat") + "\nAndaza: " + (gPr == 1 ? "HARI " : "LAAL ") + str.tostring(gPr == 1 ? gP : 100 - gP, "0") + "% (" + str.tostring(gK) + " mauqe" + (gNl ? ", rang wala" : ", shor") + ")\nBani: " + (agRang == 1 ? "HARI " : "LAAL ") + f_hl((sC - sO) / sO * 100) + "\nBunyaad (" + (gBs == 1 ? "HARI" : "LAAL") + "): " + (okB ? "✔" : "✖"))
+        array.push(gmOk, hitA)
+        array.push(gmTp, (hitA ? "✔ andaza sahi" : "✖ andaza ghalat") + "\nAndaza: " + (gPr == 1 ? "HARI " : "LAAL ") + str.tostring(gPr == 1 ? gP : 100 - gP, "0") + "% (" + str.tostring(gK) + " mauqe" + (gNl ? ", rang wala" : ", shor") + ")\nBani: " + (agRang == 1 ? "HARI " : "LAAL ") + f_hl((sC - sO) / sO * 100) + "\nBunyaad (" + (gBs == 1 ? "HARI" : "LAAL") + "): " + (hitB ? "✔" : "✖"))
         if array.size(gmT) > 100
             array.shift(gmT)
             array.shift(gmL)
@@ -397,7 +397,7 @@ if barstate.isconfirmed and showAg
     if valid and not na(gBu)
         St s1 = map.get(M0, agKey)
         int n1g = na(s1) ? 0 : s1.up + s1.dn
-        gK := na(s1) ? 0 : s1.n
+        gK := n1g
         if n1g >= agMin
             gP  := 100.0 * s1.up / n1g
             gMv := s1.sm / s1.n
@@ -405,8 +405,8 @@ if barstate.isconfirmed and showAg
             gAe := s1.mae / s1.n
             gBs := gBu >= 50 ? 1 : 2
             gPr := gP > 50 ? 1 : gP < 50 ? 2 : gBs
-            // rang sirf jab nishani ka hari % bunyaad se 2SE door
-            gNl := math.abs(gP - gBu) > 2 * math.sqrt(gBu * (100 - gBu) / n1g)
+            // rang sirf jab nishani andaze ki taraf bunyaad se 2SE zyada
+            gNl := (gPr == 1 ? gP - gBu : gBu - gP) > 2 * math.sqrt(gBu * (100 - gBu) / n1g)
             if na(agFirstT)
                 agFirstT := time
 
@@ -922,19 +922,19 @@ if barstate.islast and showAg and chartOk
     string agTp = "AGLI candle (a13) - peshgoi NAHI, sirf 'pehle aisa hua tha'. Milaap: " + agMode + "."
     if gPr == 0
         string why = not fOk ? "nishani tayyar nahi" : na(gBu) ? "ginti abhi shuru" : "is nishani ke sirf " + str.tostring(gK) + " mauqe (chahiye " + str.tostring(agMin) + ")"
-        label.new(tG, oG, "AGLI: andaza nahi", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cGr, 100), textcolor = cGr, size = size.small, tooltip = agTp + "\n" + why)
+        label.new(tG, math.max(sH, oG), "AGLI: andaza nahi", xloc = xloc.bar_time, style = label.style_label_lower_left, color = color.new(cGr, 100), textcolor = cGr, size = size.small, tooltip = agTp + "\n" + why)
     else
         color  cG  = gNl ? (gPr == 1 ? cUp : cDn) : cGr
         float  hG  = oG * (1 + gFe / 100)
         float  lG  = oG * (1 - gAe / 100)
         float  cGc = oG * (1 + gMv / 100)
         // saaya candle: wick = ausat high / low, body = ausat open -> close
-        line.new(tG, lG, tG, hG, xloc = xloc.bar_time, color = color.new(cG, 30), width = 1)
-        line.new(tG, oG, tG, cGc == oG ? oG * 1.00001 : cGc, xloc = xloc.bar_time, color = color.new(cG, 20), width = 6)
+        line.new(tG, lG, tG, hG, xloc = xloc.bar_time, color = color.new(cG, chalti ? 50 : 30), width = 1)
+        line.new(tG, oG, tG, cGc == oG ? oG * 1.00001 : cGc, xloc = xloc.bar_time, color = color.new(cG, chalti ? 60 : 20), width = chalti ? 2 : 6)
         string pTx = (gPr == 1 ? "HARI " : "LAAL ") + str.tostring(gPr == 1 ? gP : 100 - gP, "0") + "%"
         string bTxG = (gBu >= 50 ? "HARI " : "LAAL ") + str.tostring(gBu >= 50 ? gBu : 100 - gBu, "0") + "%"
         agTp += "\nIs nishani ke " + str.tostring(gK) + " mauqon mein agli candle: hari " + str.tostring(gP, "0") + "%, laal " + str.tostring(100 - gP, "0") + "% (barabar nahi gini)." + "\nBunyaad (har candle ke baad agli): " + bTxG + "\nAusat: open se high " + f_hl(gFe) + ", low -" + str.tostring(gAe, "0.00") + "%, close " + f_hl(gMv) + "\n" + (gNl ? "Rang: farq bunyaad se 2SE se bara." : "Saleti: farq shor ke andar (sikka).")
-        label.new(tG + tfMsG, hG, "AGLI " + f_tfName(timeframe.period) + ": " + pTx + " · " + str.tostring(gK) + " mauqe · bunyaad " + bTxG + (gNl ? "" : " · shor"), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cG, 15), textcolor = color.white, size = size.small, tooltip = agTp)
+        label.new(tG + tfMsG, hG, (chalti ? "ABHI chalti " : "AGLI ") + f_tfName(timeframe.period) + ": " + pTx + " · " + str.tostring(gK) + " mauqe · bunyaad " + bTxG + (gNl ? "" : " · shor"), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cG, 15), textcolor = color.white, size = size.small, tooltip = agTp)
 
 // ek N ka kalam (column): is nishani ka nateeja vs har candle (bunyaad)
 f_col(int _c, simple int _n, St _s, St _b) =>
@@ -1026,7 +1026,7 @@ if barstate.islast
         f_agRow(9, "AGLI candle: sab", "a13: har band candle par agli candle ka andaza (hari / laal)" + agFr + ". Barabar candle gini nahi.", agOk, agNo, agBOk, agBNo)
         f_agRow(10, "AGLI: sirf rang wale", "a13: sirf wo andaze jin mein nishani ka hari % bunyaad se 2SE door tha (chart par rangeen saaya candle).", nlOk, nlNo, nlBOk, nlBNo)
     if showRec and (showSy or showAg)
-        f_rc(0, 1, "Saaya", cTxt, cHd, "")
+        f_rc(0, 1, showSy ? "Saaya" : "Andaza", cTxt, cHd, "")
         f_rc(1, 1, "✔", cOk, cHd, "Saaye / andaze ke rukh mein")
         f_rc(2, 1, "✖", cNo, cHd, "Saaye / andaze ke ulat / barabar")
         f_rc(3, 1, "%", cTxt, cHd, "✔ ka hissa.")
