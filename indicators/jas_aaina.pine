@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a12, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a13, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -83,6 +83,18 @@
 //  = isi muddat mein har candle ke baad N candles: hare saaye ke liye kitne
 //  % ooper, laal ke liye kitne % neeche (aankh band kar ke wahi rukh). Rang
 //  ab 50% se nahi, bunyaad se: farq > 2SE (bunyaad par) aur 30+ saaye.
+//  a13 (20 Oct, user: "purane data se andaza - AGLI 15m candle kaunsi
+//  tayyar hogi", a12 ki tweak): (1) AGLI CANDLE (Settings 6): har band
+//  candle par isi nishani ke pichhle mauqon mein AGLI chart candle kitni
+//  dafa hari / laal bani + ausat high / low (us candle ke open se) - chart
+//  par aage ek SAAYA CANDLE (rang sirf jab bunyaad se 2SE farq, warna
+//  saleti) aur label; pichli candles par ✔ / ✖ (andaza sahi / ghalat);
+//  record dabba mein 2 nayi qataren (sab andaze / sirf rang wale) vs
+//  bunyaad (aankh band kar ke hamesha wohi rang jo ab tak zyada bana).
+//  Andaza sirf us waqt tak ki band candles se - aage ka kuch nahi.
+//  Milaap alag: "Sirf Rang" (default, zyada mauqe) ya Settings 1 jaisa.
+//  (2) TF 5 = 1W (default band - chalu karne se mauqe kam). 1m / 5m chart
+//  (15m) se chhoti - un ki candle 15m ke andar hi band hoti hai.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -92,9 +104,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a12", "JAS AAINA a12", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
+indicator("JAS Aaina a13", "JAS AAINA a13", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
 
-BUILD = "a12"
+BUILD = "a13"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -106,6 +118,8 @@ onC  = input.bool(true, "", group = g1, inline = "c")
 tfC  = input.timeframe("240", "TF 3", group = g1, inline = "c")
 onD  = input.bool(true, "", group = g1, inline = "d")
 tfD  = input.timeframe("D",   "TF 4", group = g1, inline = "d")
+onE  = input.bool(false, "", group = g1, inline = "e")
+tfE  = input.timeframe("W",   "TF 5", group = g1, inline = "e", tooltip = "a13: 1W (default band). Chalu karein to nishani sakht - mauqe kam.")
 mode = input.string("Rang + Kahan", "Milaap", options = ["Rang + Kahan", "Sirf Rang"], group = g1, tooltip = "Rang + Kahan = har TF ka rang AUR range mein jagah (Upar / Beech / Neeche) dono milein. Sirf Rang = sirf hari / laal milein (zyada mauqe, kam sakht).")
 
 // ------------------------------------------------------ 2. AAGE KYA HUA
@@ -140,6 +154,13 @@ g5      = "5. Saaya record (✔ / ✖ ka jod)"
 showRec = input.bool(true, "Record dabba dikhayein", group = g5, tooltip = "Aakhri saayon ka ✔ / ✖ jod. Saaya (Settings 4) chalu hona chahiye.")
 recN    = input.int(100, "Aakhri kitne saaye gine", minval = 10, maxval = 300, group = g5, tooltip = "Zyada = behtar ginti, lekin TV dheema. 'Calculation timeout' aaye to kam karein.")
 recPos  = input.string("Bottom Right", "Record kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = g5)
+
+// ------------------------------------------------- 6. a13 AGLI CANDLE
+g6      = "6. AGLI candle (a13)"
+showAg  = input.bool(true, "AGLI candle ka andaza chart par", group = g6, tooltip = "Isi nishani ke pichhle mauqon mein AGLI chart candle kitni dafa hari / laal bani. Chart par aage saaya candle + label. Peshgoi NAHI - sirf 'pehle aisa hua tha'.")
+agMode  = input.string("Sirf Rang", "AGLI ka milaap", options = ["Sirf Rang", "Settings 1 jaisa"], group = g6, tooltip = "Sirf Rang = har TF ka sirf rang (zyada mauqe, andaza aksar milta hai). Settings 1 jaisa = upar wala Milaap (Rang + Kahan par mauqe bohot kam).")
+agMin   = input.int(30, "Kam az kam mauqe (warna andaza nahi)", minval = 10, maxval = 500, group = g6)
+agMk    = input.int(20, "✔ / ✖ kitni pichli candles par", minval = 0, maxval = 100, group = g6, tooltip = "0 = chart par ✔ / ✖ nahi (record dabba phir bhi ginta hai).")
 
 // ---------------------------------------------------------------- RANG
 cUp  = color.new(#26A69A, 0)
@@ -189,13 +210,17 @@ f_htf(simple string _tf, simple bool _on) =>
 [inB, okB, rgB, znB, kpB] = f_htf(tfB, onB)
 [inC, okC, rgC, znC, kpC] = f_htf(tfC, onC)
 [inD, okD, rgD, znD, kpD] = f_htf(tfD, onD)
+[inE, okE, rgE, znE, kpE] = f_htf(tfE, onE)
 
-// har TF ki halat ek number (0-8); nishani = 4 halaton ka ek number
+// har TF ki halat ek number (0-8); nishani = 5 halaton ka ek number
 f_st(bool _in, int _rang, int _zone) => _in ? (mode == "Sirf Rang" ? _rang : _rang * 3 + _zone) : 0
-int  key   = f_st(inA, rgA, znA) + f_st(inB, rgB, znB) * 9 + f_st(inC, rgC, znC) * 81 + f_st(inD, rgD, znD) * 729
+int  key   = f_st(inA, rgA, znA) + f_st(inB, rgB, znB) * 9 + f_st(inC, rgC, znC) * 81 + f_st(inD, rgD, znD) * 729 + f_st(inE, rgE, znE) * 6561
+// a13: AGLI candle ki nishani - "Sirf Rang" par sirf rang (0-2) har TF ka
+int  keyR  = (inA ? rgA : 0) + (inB ? rgB : 0) * 3 + (inC ? rgC : 0) * 9 + (inD ? rgD : 0) * 27 + (inE ? rgE : 0) * 81
+int  agKey = agMode == "Sirf Rang" ? keyR : key
 // Renko / Range / Kagi waghera par candle = waqt nahi - ginti sirf Candles / Heikin Ashi par
 bool chartOk = chart.is_standard or chart.is_heikinashi
-bool valid = chartOk and (inA or inB or inC or inD) and (not inA or okA) and (not inB or okB) and (not inC or okC) and (not inD or okD)
+bool valid = chartOk and (inA or inB or inC or inD or inE) and (not inA or okA) and (not inB or okB) and (not inC or okC) and (not inD or okD) and (not inE or okE)
 bool isNew = valid and (not valid[1] or key != key[1])
 // abhi wali chal kab shuru hui
 var int runT = na
@@ -212,10 +237,12 @@ float fKpA  = chalti ? kpA[1] : kpA
 float fKpB  = chalti ? kpB[1] : kpB
 float fKpC  = chalti ? kpC[1] : kpC
 float fKpD  = chalti ? kpD[1] : kpD
+float fKpE  = chalti ? kpE[1] : kpE
 int   fRgA  = chalti ? rgA[1] : rgA
 int   fRgB  = chalti ? rgB[1] : rgB
 int   fRgC  = chalti ? rgC[1] : rgC
 int   fRgD  = chalti ? rgD[1] : rgD
+int   fRgE  = chalti ? rgE[1] : rgE
 float fC    = chalti ? sC[1] : sC
 int   fT    = chalti ? time[1] : time
 int   fBI   = chalti ? bar_index - 1 : bar_index
@@ -228,6 +255,7 @@ int   fRunB = chalti ? runB[1] : runB
 type St
     int   n     = 0
     int   up    = 0
+    int   dn    = 0
     float sm    = 0.0
     float sq    = 0.0
     float mfe   = 0.0
@@ -237,6 +265,7 @@ type St
 f_put(St _s, float _mv, float _fe, float _ae) =>
     _s.n   := _s.n + 1
     _s.up  := _s.up + (_mv > 0 ? 1 : 0)
+    _s.dn  := _s.dn + (_mv < 0 ? 1 : 0)
     _s.sm  := _s.sm + _mv
     _s.sq  := _s.sq + _mv * _mv
     _s.mfe := _s.mfe + _fe
@@ -292,6 +321,96 @@ if barstate.isconfirmed
         map.put(LAST, key, time)
 
 // ============================================================================
+//  a13 AGLI CANDLE — is nishani ke baad AGLI chart candle kaisi bani (rang + high / low us ke open se)
+// ============================================================================
+var map<int, St> M0 = map.new<int, St>()
+var St B0 = St.new()
+// abhi wala andaza (pichli band candle par bana, agli candle ke liye): 1 hari / 2 laal / 0 nahi
+var int   gPr = 0
+var int   gBs = 0
+var bool  gNl = false
+var int   gK  = 0
+var float gP  = na
+var float gBu = na
+var float gMv = na
+var float gFe = na
+var float gAe = na
+// record: sab andaze / sirf rang wale (bunyaad se 2SE farq) - aaina aur bunyaad dono ✔ / ✖
+var int agOk  = 0
+var int agNo  = 0
+var int agBOk = 0
+var int agBNo = 0
+var int nlOk  = 0
+var int nlNo  = 0
+var int nlBOk = 0
+var int nlBNo = 0
+var int agFirstT = na
+// chart ke ✔ / ✖ (aakhri 100): candle ka waqt, low, sahi?, tooltip
+var array<int>    gmT  = array.new<int>()
+var array<float>  gmL  = array.new<float>()
+var array<bool>   gmOk = array.new<bool>()
+var array<string> gmTp = array.new<string>()
+
+f_hl(float _x) => (_x > 0 ? "+" : "") + str.tostring(_x, "0.00") + "%"
+
+int agRang = sC > sO ? 1 : sC < sO ? 2 : 0
+if barstate.isconfirmed and showAg
+    // 1. pichli band candle par bana andaza - ye candle ab band: ✔ / ✖ (barabar candle gini nahi)
+    if gPr != 0 and agRang != 0
+        bool okA = agRang == gPr
+        bool okB = agRang == gBs
+        agOk  += okA ? 1 : 0
+        agNo  += okA ? 0 : 1
+        agBOk += okB ? 1 : 0
+        agBNo += okB ? 0 : 1
+        if gNl
+            nlOk  += okA ? 1 : 0
+            nlNo  += okA ? 0 : 1
+            nlBOk += okB ? 1 : 0
+            nlBNo += okB ? 0 : 1
+        array.push(gmT, time)
+        array.push(gmL, sL)
+        array.push(gmOk, okA)
+        array.push(gmTp, (okA ? "✔ andaza sahi" : "✖ andaza ghalat") + "\nAndaza: " + (gPr == 1 ? "HARI " : "LAAL ") + str.tostring(gPr == 1 ? gP : 100 - gP, "0") + "% (" + str.tostring(gK) + " mauqe" + (gNl ? ", rang wala" : ", shor") + ")\nBani: " + (agRang == 1 ? "HARI " : "LAAL ") + f_hl((sC - sO) / sO * 100) + "\nBunyaad (" + (gBs == 1 ? "HARI" : "LAAL") + "): " + (okB ? "✔" : "✖"))
+        if array.size(gmT) > 100
+            array.shift(gmT)
+            array.shift(gmL)
+            array.shift(gmOk)
+            array.shift(gmTp)
+    // 2. seekho: pichli band candle ki nishani -> ye candle (sirf ab tak ka data)
+    if bar_index > 0 and valid[1] and sO > 0
+        float mv0 = (sC - sO) / sO * 100
+        float fe0 = (sH - sO) / sO * 100
+        float ae0 = (sO - sL) / sO * 100
+        f_put(B0, mv0, fe0, ae0)
+        int k0 = agKey[1]
+        St s0 = map.get(M0, k0)
+        if na(s0)
+            s0 := St.new()
+            map.put(M0, k0, s0)
+        f_put(s0, mv0, fe0, ae0)
+    // 3. agli candle ka andaza - is band candle ki nishani, ab tak ki ginti se
+    gPr := 0
+    gNl := false
+    gK  := 0
+    gBu := B0.up + B0.dn > 0 ? 100.0 * B0.up / (B0.up + B0.dn) : na
+    if valid and not na(gBu)
+        St s1 = map.get(M0, agKey)
+        int n1g = na(s1) ? 0 : s1.up + s1.dn
+        gK := na(s1) ? 0 : s1.n
+        if n1g >= agMin
+            gP  := 100.0 * s1.up / n1g
+            gMv := s1.sm / s1.n
+            gFe := s1.mfe / s1.n
+            gAe := s1.mae / s1.n
+            gBs := gBu >= 50 ? 1 : 2
+            gPr := gP > 50 ? 1 : gP < 50 ? 2 : gBs
+            // rang sirf jab nishani ka hari % bunyaad se 2SE door
+            gNl := math.abs(gP - gBu) > 2 * math.sqrt(gBu * (100 - gBu) / n1g)
+            if na(agFirstT)
+                agFirstT := time
+
+// ============================================================================
 //  a4 YAADDASHT — har band candle ki nishani, KAHAN %, daam (chart par dikhane ke liye)
 // ============================================================================
 var array<int>   aBI  = array.new<int>()
@@ -301,6 +420,7 @@ var array<float> aKA  = array.new<float>()
 var array<float> aKB  = array.new<float>()
 var array<float> aKC  = array.new<float>()
 var array<float> aKD  = array.new<float>()
+var array<float> aKE  = array.new<float>()
 var array<float> aC   = array.new<float>()
 var array<float> aH   = array.new<float>()
 var array<float> aL   = array.new<float>()
@@ -335,6 +455,7 @@ if barstate.isconfirmed
     array.push(aKB, inB ? kpB : na)
     array.push(aKC, inC ? kpC : na)
     array.push(aKD, inD ? kpD : na)
+    array.push(aKE, inE ? kpE : na)
     array.push(aC, sC)
     array.push(aH, sH)
     array.push(aL, sL)
@@ -348,6 +469,7 @@ if barstate.isconfirmed
         array.shift(aKB)
         array.shift(aKC)
         array.shift(aKD)
+        array.shift(aKE)
         array.shift(aC)
         array.shift(aH)
         array.shift(aL)
@@ -408,7 +530,7 @@ f_tc(color _c) => tblClear and (_c == cTxt or _c == color.white) ? chart.fg_colo
 // ============================================================================
 //  TABLE — sirf aakhri candle par
 // ============================================================================
-var table TB = table.new(f_pos(tblPos), 4, 19, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
+var table TB = table.new(f_pos(tblPos), 4, 20, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
 
 f_cell(int _col, int _row, string _t, color _fg, color _bg, string _tip) =>
     table.cell(TB, _col, _row, _t, text_color = f_tc(_fg), bgcolor = f_bg(_bg), text_size = f_size(tblSize), text_halign = text.align_left, tooltip = _tip)
@@ -443,7 +565,7 @@ var string qTxt = "Qareebi mauqe: -"
 f_q(float _x) => math.round(_x / 5) * 5
 
 // Lorentzian faasla: har shamil TF ke KAHAN % (khane) ka log(1 + |farq|) - jitna kam utna qareeb
-f_dist(int _i, float _a, float _b, float _c, float _e) =>
+f_dist(int _i, float _a, float _b, float _c, float _e, float _w) =>
     float _d = 0.0
     if inA
         _d += math.log(1 + math.abs(f_q(array.get(aKA, _i)) - f_q(_a)))
@@ -453,11 +575,13 @@ f_dist(int _i, float _a, float _b, float _c, float _e) =>
         _d += math.log(1 + math.abs(f_q(array.get(aKC, _i)) - f_q(_c)))
     if inD
         _d += math.log(1 + math.abs(f_q(array.get(aKD, _i)) - f_q(_e)))
+    if inE
+        _d += math.log(1 + math.abs(f_q(array.get(aKE, _i)) - f_q(_w)))
     _d
 
 // candle (array jagah) _j ki nishani ke sab se qareebi purane mauqe - sirf wo jin ki nD candles _j tak poori
 // wapsi: mauqon ki array jagah (sab se qareeb pehle), aapas mein nD candles door (aakhri 30,000 candles tak)
-f_near(int _j, int _key, float _a, float _b, float _c, float _e, int _kMax) =>
+f_near(int _j, int _key, float _a, float _b, float _c, float _e, float _w, int _kMax) =>
     array<int>   _cI  = array.new<int>()
     array<float> _cD  = array.new<float>()
     int          _iLo = math.max(0, _j - 30000)
@@ -466,7 +590,7 @@ f_near(int _j, int _key, float _a, float _b, float _c, float _e, int _kMax) =>
             if array.get(aOk, _i) and array.get(aKey, _i) == _key
                 array.push(_cI, _i)
                 // barabar faasla ho to naya mauqa pehle (chhota sa izafa purane par)
-                array.push(_cD, f_dist(_i, _a, _b, _c, _e) + (_j - _i) * 0.0000001)
+                array.push(_cD, f_dist(_i, _a, _b, _c, _e, _w) + (_j - _i) * 0.0000001)
     array<int> _pk = array.new<int>()
     if array.size(_cD) > 0
         array<int> _ord = array.sort_indices(_cD, order.ascending)
@@ -611,7 +735,7 @@ if barstate.isconfirmed and showSy and valid and (na(yNext) or bar_index >= yNex
     if not barstate.isrealtime and bar_index < last_bar_index - math.max(yKeep + 2, showRec ? recN + 1 : 0) * nD - 2
         yNext := bar_index + nD
     else
-        array<int> yPk = f_near(array.size(aBI) - 1, key, kpA, kpB, kpC, kpD, 3)
+        array<int> yPk = f_near(array.size(aBI) - 1, key, kpA, kpB, kpC, kpD, kpE, 3)
         // a10: koi mauqa nahi = yNext wahi rahe, agli band candle par phir koshish
         if array.size(yPk) > 0
             yNext := bar_index + nD
@@ -682,7 +806,7 @@ if barstate.islast
     int aSz = array.size(aBI)
     if showMap and fOk and aSz > nD
         // a8: aakhri BAND candle (arrays ki aakhri jagah) ki nishani - wahi nishani, jis ke baad nD candles poori
-        array<int> pk = f_near(aSz - 1, fKey, fKpA, fKpB, fKpC, fKpD, kTop)
+        array<int> pk = f_near(aSz - 1, fKey, fKpA, fKpB, fKpC, fKpD, fKpE, kTop)
         float sMv = 0.0
         float sFe = 0.0
         float sAe = 0.0
@@ -703,7 +827,7 @@ if barstate.islast
             sFe += (hi - c0) / c0 * 100
             sAe += (c0 - lo) / c0 * 100
             color cc = mv > 0 ? cUp : mv < 0 ? cDn : cGr
-            string tip = str.format_time(array.get(aT, ci), "dd MMM yy HH:mm", syminfo.timezone) + " · faasla " + str.tostring(f_dist(ci, fKpA, fKpB, fKpC, fKpD), "0.00") + "\n" + str.tostring(nD) + " candles baad close: " + (mv > 0 ? "+" : "") + str.tostring(mv, format.mintick) + "\nBeech mein max ooper +" + str.tostring(hi - c0, format.mintick) + " · max neeche -" + str.tostring(c0 - lo, format.mintick)
+            string tip = str.format_time(array.get(aT, ci), "dd MMM yy HH:mm", syminfo.timezone) + " · faasla " + str.tostring(f_dist(ci, fKpA, fKpB, fKpC, fKpD, fKpE), "0.00") + "\n" + str.tostring(nD) + " candles baad close: " + (mv > 0 ? "+" : "") + str.tostring(mv, format.mintick) + "\nBeech mein max ooper +" + str.tostring(hi - c0, format.mintick) + " · max neeche -" + str.tostring(c0 - lo, format.mintick)
             int x0 = array.get(aT, ci)
             int x1 = array.get(aT, ci + nD)
             box.new(x0, hi, x1, lo, xloc = xloc.bar_time, border_color = color.new(cc, 40), bgcolor = color.new(cc, 88))
@@ -784,17 +908,45 @@ if barstate.islast
                     sTp += "\nAbhi chal raha - " + str.tostring(nD) + " candles poori hon to ✔ / ✖."
                 label.new(tE, p0 * (1 + sAv / 100), sLb, xloc = xloc.bar_time, style = label.style_label_left, color = color.new(sLc, 20), textcolor = color.white, size = size.tiny, tooltip = sTp + "\nPeshgoi NAHI - sirf aankh se jaanch.")
 
+// a13 AGLI: aage saaya candle + label, pichli candles par ✔ / ✖ (upar sab nishan mit chuke - naye yahan)
+if barstate.islast and showAg and chartOk
+    int   tfMsG = timeframe.in_seconds() * 1000
+    // chalti candle = andaza isi ke liye (open maloom); band = agli ke liye (open ≈ abhi ka close)
+    int   tG = chalti ? time : time + tfMsG
+    float oG = chalti ? sO : sC
+    int   nM = array.size(gmT)
+    if agMk > 0 and nM > 0
+        for i = math.max(0, nM - agMk) to nM - 1
+            bool okM = array.get(gmOk, i)
+            label.new(array.get(gmT, i), array.get(gmL, i), okM ? "✔" : "✖", xloc = xloc.bar_time, style = label.style_label_up, color = color.new(okM ? cOk : cNo, 30), textcolor = color.white, size = size.tiny, tooltip = array.get(gmTp, i))
+    string agTp = "AGLI candle (a13) - peshgoi NAHI, sirf 'pehle aisa hua tha'. Milaap: " + agMode + "."
+    if gPr == 0
+        string why = not fOk ? "nishani tayyar nahi" : na(gBu) ? "ginti abhi shuru" : "is nishani ke sirf " + str.tostring(gK) + " mauqe (chahiye " + str.tostring(agMin) + ")"
+        label.new(tG, oG, "AGLI: andaza nahi", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cGr, 100), textcolor = cGr, size = size.small, tooltip = agTp + "\n" + why)
+    else
+        color  cG  = gNl ? (gPr == 1 ? cUp : cDn) : cGr
+        float  hG  = oG * (1 + gFe / 100)
+        float  lG  = oG * (1 - gAe / 100)
+        float  cGc = oG * (1 + gMv / 100)
+        // saaya candle: wick = ausat high / low, body = ausat open -> close
+        line.new(tG, lG, tG, hG, xloc = xloc.bar_time, color = color.new(cG, 30), width = 1)
+        line.new(tG, oG, tG, cGc == oG ? oG * 1.00001 : cGc, xloc = xloc.bar_time, color = color.new(cG, 20), width = 6)
+        string pTx = (gPr == 1 ? "HARI " : "LAAL ") + str.tostring(gPr == 1 ? gP : 100 - gP, "0") + "%"
+        string bTxG = (gBu >= 50 ? "HARI " : "LAAL ") + str.tostring(gBu >= 50 ? gBu : 100 - gBu, "0") + "%"
+        agTp += "\nIs nishani ke " + str.tostring(gK) + " mauqon mein agli candle: hari " + str.tostring(gP, "0") + "%, laal " + str.tostring(100 - gP, "0") + "% (barabar nahi gini)." + "\nBunyaad (har candle ke baad agli): " + bTxG + "\nAusat: open se high " + f_hl(gFe) + ", low -" + str.tostring(gAe, "0.00") + "%, close " + f_hl(gMv) + "\n" + (gNl ? "Rang: farq bunyaad se 2SE se bara." : "Saleti: farq shor ke andar (sikka).")
+        label.new(tG + tfMsG, hG, "AGLI " + f_tfName(timeframe.period) + ": " + pTx + " · " + str.tostring(gK) + " mauqe · bunyaad " + bTxG + (gNl ? "" : " · shor"), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(cG, 15), textcolor = color.white, size = size.small, tooltip = agTp)
+
 // ek N ka kalam (column): is nishani ka nateeja vs har candle (bunyaad)
 f_col(int _c, simple int _n, St _s, St _b) =>
-    f_cell(_c, 7, str.tostring(_n) + " (" + f_dur(_n * timeframe.in_seconds()) + ")", cTxt, cHd, "Agli " + str.tostring(_n) + " chart candles.")
+    f_cell(_c, 8, str.tostring(_n) + " (" + f_dur(_n * timeframe.in_seconds()) + ")", cTxt, cHd, "Agli " + str.tostring(_n) + " chart candles.")
     int _k = na(_s) ? 0 : _s.n
     float _bu = _b.n > 0 ? 100.0 * _b.up / _b.n : na
     float _bm = _b.n > 0 ? _b.sm / _b.n : na
-    f_cell(_c, 8, str.tostring(_k), _k >= 30 ? cTxt : cDn, color.white, _k >= 30 ? "Itne mauqe jin ka nateeja aa chuka (do mauqon mein kam az kam N candles ka faasla). Lambi chal mein kai mauqe ho sakte hain - abhi wali chal ke band hisse bhi shamil." : "30 se kam - ginti par bharosa nahi.")
-    f_cell(_c, 10, na(_bu) ? "-" : str.tostring(_bu, "0") + "%", cGr, color.white, "Bunyaad: HAR candle (" + str.tostring(_b.n) + ") ke baad kitne % ooper.")
-    f_cell(_c, 12, na(_bm) ? "-" : f_pct(_bm) + " ≈" + f_px(_bm), cGr, color.white, "Bunyaad: HAR candle ke baad ausat chal (bazaar ki apni tezi / mandi).")
+    f_cell(_c, 9, str.tostring(_k), _k >= 30 ? cTxt : cDn, color.white, _k >= 30 ? "Itne mauqe jin ka nateeja aa chuka (do mauqon mein kam az kam N candles ka faasla). Lambi chal mein kai mauqe ho sakte hain - abhi wali chal ke band hisse bhi shamil." : "30 se kam - ginti par bharosa nahi.")
+    f_cell(_c, 11, na(_bu) ? "-" : str.tostring(_bu, "0") + "%", cGr, color.white, "Bunyaad: HAR candle (" + str.tostring(_b.n) + ") ke baad kitne % ooper.")
+    f_cell(_c, 13, na(_bm) ? "-" : f_pct(_bm) + " ≈" + f_px(_bm), cGr, color.white, "Bunyaad: HAR candle ke baad ausat chal (bazaar ki apni tezi / mandi).")
     if _k == 0
-        for _r in array.from(9, 11, 13, 14, 15, 16)
+        for _r in array.from(10, 12, 14, 15, 16, 17)
             f_cell(_c, _r, "-", cGr, color.white, "")
     else
         float _up = 100.0 * _s.up / _k
@@ -804,67 +956,92 @@ f_col(int _c, simple int _n, St _s, St _b) =>
         // rang sirf jab farq shor (2SE) se bara ho aur 30+ dafa
         float _pe = na(_bu) ? na : 2 * math.sqrt(_bu * (100 - _bu) / _k)
         color _uc = _k < 30 or na(_pe) ? cTxt : _up > _bu + _pe ? cUp : _up < _bu - _pe ? cDn : cTxt
-        f_cell(_c, 9, str.tostring(_up, "0") + "%", _uc, color.white, "Is nishani ke baad " + str.tostring(_s.up) + " / " + str.tostring(_k) + " dafa close ooper. Rang sirf jab bunyaad se farq shor se bara (30+ dafa).")
-        f_cell(_c, 11, f_pct(_mn) + " ≈" + f_px(_mn), _mn > 0 ? cUp : _mn < 0 ? cDn : cTxt, color.white, "Ausat chal: % mein, aur ≈ daam abhi ke bhaav par.")
-        f_cell(_c, 13, na(_se) ? "-" : "±" + str.tostring(2 * _se, "0.00") + "%", cGr, color.white, "2 standard error: ausat itna shor se hil sakta hai.")
+        f_cell(_c, 10, str.tostring(_up, "0") + "%", _uc, color.white, "Is nishani ke baad " + str.tostring(_s.up) + " / " + str.tostring(_k) + " dafa close ooper. Rang sirf jab bunyaad se farq shor se bara (30+ dafa).")
+        f_cell(_c, 12, f_pct(_mn) + " ≈" + f_px(_mn), _mn > 0 ? cUp : _mn < 0 ? cDn : cTxt, color.white, "Ausat chal: % mein, aur ≈ daam abhi ke bhaav par.")
+        f_cell(_c, 14, na(_se) ? "-" : "±" + str.tostring(2 * _se, "0.00") + "%", cGr, color.white, "2 standard error: ausat itna shor se hil sakta hai.")
         float _df = na(_bm) ? na : _mn - _bm
         string _nv = _k < 30 or na(_se) or na(_df) ? "kam data" : math.abs(_df) > 2 * _se ? (_df > 0 ? "✔ ooper" : "✔ neeche") : "shor"
         color  _nc = _nv == "✔ ooper" ? cUp : _nv == "✔ neeche" ? cDn : cGr
-        f_cell(_c, 14, _nv, _nc, color.white, "Nishani ka ausat - bunyaad ka ausat > 2SE aur 30+ dafa = shor se bahar. Phir bhi FAISLA NAHI - pehle TALAASH / IMTIHAN.")
-        f_cell(_c, 15, "+" + str.tostring(_s.mfe / _k, "0.00") + "% ≈" + f_px(_s.mfe / _k), cUp, color.white, "N candles ke andar ausat sab se zyada ooper (high), entry close se.")
-        f_cell(_c, 16, "-" + str.tostring(_s.mae / _k, "0.00") + "% ≈" + f_px(_s.mae / _k), cDn, color.white, "N candles ke andar ausat sab se zyada neeche (low), entry close se.")
+        f_cell(_c, 15, _nv, _nc, color.white, "Nishani ka ausat - bunyaad ka ausat > 2SE aur 30+ dafa = shor se bahar. Phir bhi FAISLA NAHI - pehle TALAASH / IMTIHAN.")
+        f_cell(_c, 16, "+" + str.tostring(_s.mfe / _k, "0.00") + "% ≈" + f_px(_s.mfe / _k), cUp, color.white, "N candles ke andar ausat sab se zyada ooper (high), entry close se.")
+        f_cell(_c, 17, "-" + str.tostring(_s.mae / _k, "0.00") + "% ≈" + f_px(_s.mae / _k), cDn, color.white, "N candles ke andar ausat sab se zyada neeche (low), entry close se.")
 
 if barstate.islast and not showTbl
-    table.clear(TB, 0, 0, 3, 18)
+    table.clear(TB, 0, 0, 3, 19)
 if barstate.islast and showTbl
-    table.clear(TB, 0, 0, 3, 18)
+    table.clear(TB, 0, 0, 3, 19)
     f_cell(0, 0, "JAS AAINA · " + BUILD, cTxt, cHd, "Abhi wali nishani history mein - aage kya hua. Sirf naap - faisla nahi.")
     table.merge_cells(TB, 0, 0, 3, 0)
     f_now(1, tfA, inA, okA, fRgA, fKpA)
     f_now(2, tfB, inB, okB, fRgB, fKpB)
     f_now(3, tfC, inC, okC, fRgC, fKpC)
     f_now(4, tfD, inD, okD, fRgD, fKpD)
+    f_now(5, tfE, inE, okE, fRgE, fKpE)
     // abhi wali chal pehle hi gini ja chuki (band bazaar / candle band) to us ko nikalo
     bool inRun = fOk and map.get(LAST, fKey) == fRunT
     int nSeen  = nz(map.get(SEEN, fKey)) - (inRun ? 1 : 0)
     int tLast  = inRun ? map.get(PREV, fKey) : map.get(LAST, fKey)
     string sInfo = not chartOk ? "Sirf Candles / Heikin Ashi chart par" : not fOk ? "Nishani abhi tayyar nahi" : "Pehle " + str.tostring(nSeen) + " chal" + (na(tLast) ? "" : " · aakhri " + str.format_time(tLast, "dd MMM yy HH:mm", syminfo.timezone)) + " · abhi " + str.tostring(fBI - fRunB + 1) + " candles se (band candle)"
-    f_cell(0, 5, sInfo, not chartOk ? cDn : cTxt, color.white, "Milaap: " + mode + ". Ek chal = nishani shuru se badalne tak. Abhi wali chal is ginti mein nahi.")
-    table.merge_cells(TB, 0, 5, 3, 5)
-    f_cell(0, 6, "AAGE KYA HUA (" + mode + ")", cTxt, cHd, "")
+    f_cell(0, 6, sInfo, not chartOk ? cDn : cTxt, color.white, "Milaap: " + mode + ". Ek chal = nishani shuru se badalne tak. Abhi wali chal is ginti mein nahi.")
     table.merge_cells(TB, 0, 6, 3, 6)
-    f_cell(0, 7, "Agli candles", cTxt, cHd, "")
+    f_cell(0, 7, "AAGE KYA HUA (" + mode + ")", cTxt, cHd, "")
+    table.merge_cells(TB, 0, 7, 3, 7)
+    f_cell(0, 8, "Agli candles", cTxt, cHd, "")
     string[] lb = array.from("Kitni dafa", "% ooper", "Har candle", "Ausat chal", "Har candle", "Shor ±2SE", "Naap", "Max ooper", "Max neeche")
     for i = 0 to 8
-        f_cell(0, 8 + i, array.get(lb, i), i == 2 or i == 4 ? cGr : cTxt, color.white, i == 2 or i == 4 ? "Bunyaad - upar wali qatar ka muqabla." : "")
+        f_cell(0, 9 + i, array.get(lb, i), i == 2 or i == 4 ? cGr : cTxt, color.white, i == 2 or i == 4 ? "Bunyaad - upar wali qatar ka muqabla." : "")
     f_col(1, n1, fOk ? map.get(M1, fKey) : na, B1)
     f_col(2, n2, fOk ? map.get(M2, fKey) : na, B2)
     f_col(3, n3, fOk ? map.get(M3, fKey) : na, B3)
-    f_cell(0, 17, qTxt, qN == 0 ? cGr : qUp * 2 > qN ? cUp : qUp * 2 < qN ? cDn : cTxt, color.white, "Chart par dikhaye gaye sab se qareebi mauqe (Lorentzian faasla). Kam ginti - sirf aankh ke liye; naap upar wali qataron mein.")
-    table.merge_cells(TB, 0, 17, 3, 17)
-    f_cell(0, 18, "Data: " + (na(firstT) ? "-" : str.format_time(firstT, "dd MMM yy", syminfo.timezone)) + " se · " + str.tostring(nBars) + " candles · sirf naap, faisla nahi", cGr, color.white, "Chart par jitni history load hai, utni hi ginti. Trade se pehle koshish #23 qaida (TALAASH / IMTIHAN).")
+    f_cell(0, 18, qTxt, qN == 0 ? cGr : qUp * 2 > qN ? cUp : qUp * 2 < qN ? cDn : cTxt, color.white, "Chart par dikhaye gaye sab se qareebi mauqe (Lorentzian faasla). Kam ginti - sirf aankh ke liye; naap upar wali qataron mein.")
     table.merge_cells(TB, 0, 18, 3, 18)
+    f_cell(0, 19, "Data: " + (na(firstT) ? "-" : str.format_time(firstT, "dd MMM yy", syminfo.timezone)) + " se · " + str.tostring(nBars) + " candles · sirf naap, faisla nahi", cGr, color.white, "Chart par jitni history load hai, utni hi ginti. Trade se pehle koshish #23 qaida (TALAASH / IMTIHAN).")
+    table.merge_cells(TB, 0, 19, 3, 19)
 
 // ============================================================================
 //  a11 SAAYA RECORD — aakhri saayon ka ✔ / ✖ jod (sirf naap, faisla nahi)
 // ============================================================================
-var table RT = table.new(f_pos(recPos), 5, 10, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
+var table RT = table.new(f_pos(recPos), 5, 12, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
 
 f_rc(int _col, int _row, string _t, color _fg, color _bg, string _tip) =>
     table.cell(RT, _col, _row, _t, text_color = f_tc(_fg), bgcolor = f_bg(_bg), text_size = f_size(tblSize), text_halign = text.align_left, tooltip = _tip)
 
+// a13 AGLI qatar: aaina ✔ / ✖ vs bunyaad (wahi candles)
+f_agRow(int _r, string _nm, string _tp, int _ok, int _no, int _bok, int _bno) =>
+    int   _n  = _ok + _no
+    float _p  = _n > 0 ? 100.0 * _ok / _n : na
+    float _bs = _bok + _bno > 0 ? 100.0 * _bok / (_bok + _bno) : na
+    float _hd = na(_bs) or _n == 0 ? na : 200 * math.sqrt(math.max(_bs / 100 * (1 - _bs / 100), 0) / _n)
+    color _pc = na(_p) or na(_bs) or _n < 30 ? cGr : _p > _bs + _hd ? cOk : _p < _bs - _hd ? cNo : cTxt
+    f_rc(0, _r, _nm, cTxt, color.white, _tp)
+    f_rc(1, _r, str.tostring(_ok), cTxt, color.white, "")
+    f_rc(2, _r, str.tostring(_no), cTxt, color.white, "")
+    f_rc(3, _r, na(_p) ? "-" : str.tostring(_p, "0") + "%", _pc, color.white, _n < 30 ? "30 se kam - bharosa nahi." : "Neela = bunyaad se behtar, narangi = bunyaad se bura, siyah = shor. Shor hadd ±" + str.tostring(_hd, "0") + "%.")
+    f_rc(4, _r, na(_bs) ? "-" : str.tostring(_bs, "0") + "%", cGr, color.white, "Bunyaad: inhi candles par aankh band kar ke hamesha wohi rang jo ab tak zyada bana.")
+
 if barstate.islast
-    table.clear(RT, 0, 0, 4, 9)
+    table.clear(RT, 0, 0, 4, 11)
+    if showRec and showAg
+        string agFr = na(agFirstT) ? "" : " (" + str.format_time(agFirstT, "dd MMM yy", syminfo.timezone) + " se)"
+        f_agRow(9, "AGLI candle: sab", "a13: har band candle par agli candle ka andaza (hari / laal)" + agFr + ". Barabar candle gini nahi.", agOk, agNo, agBOk, agBNo)
+        f_agRow(10, "AGLI: sirf rang wale", "a13: sirf wo andaze jin mein nishani ka hari % bunyaad se 2SE door tha (chart par rangeen saaya candle).", nlOk, nlNo, nlBOk, nlBNo)
+    if showRec and (showSy or showAg)
+        f_rc(0, 1, "Saaya", cTxt, cHd, "")
+        f_rc(1, 1, "✔", cOk, cHd, "Saaye / andaze ke rukh mein")
+        f_rc(2, 1, "✖", cNo, cHd, "Saaye / andaze ke ulat / barabar")
+        f_rc(3, 1, "%", cTxt, cHd, "✔ ka hissa.")
+        f_rc(0, 11, "Neela sirf jab bunyaad se behtar · sirf naap, faisla nahi (koshish #23 qaida)", cGr, color.white, "Rang sirf 30+ saaye aur farq 2SE se bara. Trade se pehle TALAASH / IMTIHAN (TRADING.md sec 4).")
+        table.merge_cells(RT, 0, 11, 4, 11)
+        if not showSy
+            f_rc(0, 0, "RECORD · AGLI candle (a13)", cTxt, cHd, "Saaya (Settings 4) band - sirf AGLI candle ki qataren.")
+            table.merge_cells(RT, 0, 0, 4, 0)
+            f_rc(4, 1, "Bunyaad", cGr, cHd, "Aankh band kar ke hamesha wohi rang jo ab tak zyada bana.")
     if showRec and showSy
         float qU = bN > 0 ? 100.0 * bUp / bN : na
         float qD = bN > 0 ? 100.0 * bDn / bN : na
         string bTx = bN > 0 ? "Isi muddat mein har candle (" + str.tostring(bN) + ") ke " + str.tostring(nD) + " candles baad: ooper " + str.tostring(qU, "0") + "%, neeche " + str.tostring(qD, "0") + "%." : "Bunyaad abhi tayyar nahi."
         f_rc(0, 0, "SAAYA RECORD · aakhri " + str.tostring(rSeen) + " saaye · N " + str.tostring(nD) + (na(rFirstT) ? "" : " · " + str.format_time(rFirstT, "dd MMM yy", syminfo.timezone) + " se"), cTxt, cHd, "Har saaya: N candles baad asal close saaye ke rukh mein = ✔, warna ✖. Har saaya sirf apne waqt tak ki band candles se bana.")
         table.merge_cells(RT, 0, 0, 4, 0)
-        f_rc(0, 1, "Saaya", cTxt, cHd, "")
-        f_rc(1, 1, "✔", cOk, cHd, "Saaye ke rukh mein")
-        f_rc(2, 1, "✖", cNo, cHd, "Saaye ke ulat / barabar")
-        f_rc(3, 1, "%", cTxt, cHd, "✔ ka hissa.")
         f_rc(4, 1, "Bunyaad", cGr, cHd, "Aankh band kar ke har candle par wahi rukh kehte (hare saaye = ooper, laal = neeche) to isi muddat mein kitna % sahi hota. " + bTx)
         string[] rl = array.from("Sab saaye", "Lakeerein ek taraf", "Lakeerein alag", "Kal 1D saaye jaisa", "Kal 1D ulat", "Hara saaya (ooper)", "Laal saaya (neeche)")
         string[] rt = array.from("Har saaya.", "Teeno (ya do) lakeerein ek hi taraf khatam hui thin - purane mauqe mutafiq.", "Gehri aur halki lakeerein alag taraf - purane mauqon mein ikhtilaf.", "Kal ki BAND 1D candle ka rang saaye ke rukh jaisa (hari + hara saaya / laal + laal).", "Kal ki BAND 1D candle saaye ke ulat rang ki.", "Sirf hare saaye (ausat ooper). Bunyaad = isi muddat mein kitni candles ke baad ooper.", "Sirf laal saaye (ausat neeche). Bunyaad = isi muddat mein kitni candles ke baad neeche.")
@@ -883,5 +1060,3 @@ if barstate.islast
             f_rc(2, 2 + i, str.tostring(no), cTxt, color.white, "")
             f_rc(3, 2 + i, na(p) ? "-" : str.tostring(p, "0") + "%", pc, color.white, n < 30 ? "30 se kam - bharosa nahi." : "Neela = bunyaad se behtar, narangi = bunyaad se bura, siyah = shor. Shor hadd ±" + str.tostring(hd, "0") + "%.")
             f_rc(4, 2 + i, na(bs) ? "-" : str.tostring(bs, "0") + "%", cGr, color.white, bTx)
-        f_rc(0, 9, "Neela sirf jab bunyaad se behtar · sirf naap, faisla nahi (koshish #23 qaida)", cGr, color.white, "Rang sirf 30+ saaye aur farq 2SE se bara. Trade se pehle TALAASH / IMTIHAN (TRADING.md sec 4).")
-        table.merge_cells(RT, 0, 9, 4, 9)
