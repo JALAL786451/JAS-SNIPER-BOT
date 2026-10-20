@@ -136,6 +136,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - AAINA (19 Oct): TV ~5000 candles (5m = 1 mahina); 10 qareebi ka ausat = qismat (1 minute mein -1.09% -> +0.56%) - hamesha SAB mauqon ka ausat + 2SE; gold 5m/15m/1D nishani = shor.
 - AAINA SAAYA record (20 Oct, a12): 15m 99 saaye = bunyaad (sikka), kal 1D rang 15m ko kuch nahi batata; 1D 100 saaye +8 -> 300 saaye +5 (hadd ±6) = shor. Chhoti ginti ka farq ginti barhne par ghatta; muqabla hamesha ISI muddat ke bunyaad se.
 - Claude (20 Oct): AAINA ka agla build hamesha USI file mein tweak (a12 -> a13, sab purana qaim) - user ne alag 200 line script rad ki.
+- AAINA AGLI (20 Oct, a14): 15m agli candle rang ~sikka (51.6% vs 49.6%, hadd ±1.9); 1D 54% vs 51% sirf kal ke 1D rang se - 1W/1M kuch nahi jodte. Bari TF ka faida chhoti candle mein sqrt(ginti) patla (1D->15m ~10x). Record jori (paired) hadd se.
 - EA suffix "auto" (20 Oct): EA ko apni market list wale chart par lagao (Rsi2 XPTUSDm par = 3 market "nahi mila"); EA dobara lagao to Inputs (markets, magic, TRADE) check - Commodity gold list par chal raha tha.
 
 ## 5. Mere tools

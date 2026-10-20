@@ -48,3 +48,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | 1D candle mein 1m ka data | 10 D = ~13,800 1m candles, magar 1D sirf O/H/L/C - raasta (tarteeb) gum. Chhote TF ka backtest sirf asal M1 (Dukascopy) se. | 20 Oct |
 | Aaj ki 1D se 15m follow | Dhoka (din band hone par pata) - sirf KAL ki band 1D. a12: 15m par 50% = kuch nahi batata. | 20 Oct |
 | Saaya record / bunyaad | a11/a12 dabba (Settings 5). Bunyaad = isi muddat aankh band kar ke wahi rukh. Rang sirf 30+ saaye aur bunyaad se 2SE farq. 1D 300 saaye = shor. | 20 Oct |
+| LGB / S-R / FVG se AAINA kharab? | Nahi - FVG/OB hain hi nahi; LGB/S-R sirf nishan, AGLI ka agKey sirf TF rang. | 20 Oct |
+| 1W / 1M ko 1D ki buniyaad | 1D chart par 1D+1W 54.1%, 1D+1M 54.0% = sirf 1D 54.0% - kuch nahi joda. Buniyaad sirf kal ka 1D rang. | 20 Oct |

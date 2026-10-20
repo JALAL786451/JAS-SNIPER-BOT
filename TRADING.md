@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 20 Oct 2026 shaam (18vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 20 Oct 2026 raat (19vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -54,19 +54,12 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**20 Oct shaam (18vi chat):** demo 3 EA theek (sec 7). VPS user abhi NAHI lega - baat band. a12: saaya = shor (pakki sec 4).
-**AAINA a13 = a12 ki TWEAK, wahi file `indicators/jas_aaina.pine` (1062 lines, `1eae50b`)** - alag script NAHI (user).
-**Settings 6 AGLI candle:** isi nishani (default "Sirf Rang"; 15m/1H/4H/1D, TF 5 1W band) ke pichhle mauqon mein agli candle
-hari/laal % + ausat high/low/close -> aage saaya candle + label "AGLI 15m: HARI x% · n mauqe · bunyaad y%" (rang sirf
-bunyaad se 2SE, warna saleti); chalti par halka "ABHI chalti"; pichli 20 candles ✔/✖; Record qatar "AGLI candle: sab" +
-"AGLI: sirf rang wale" vs bunyaad. pinecheck ✅ + 5 reviewer jaanch. **TV compile BAAQI.**
-**AGLI CHAT - user a13 SS bhejega. Jaanch:** (1) error/warning? (2) saaya candle + label + ✔/✖ dikhe; "andaza nahi" =
-mauqe < 30 (agMin); (3) record 2 qataren: % vs bunyaad, neela sirf 30+ aur 2SE - 15m par umeed ~bunyaad (a12 sabaq);
-(4) nishan a12 ke labels par charhe? Timeout -> agMk / recN kam. **Tweak (ek waqt ek, user "D"):** AGLI 1D chart par (dam
-daily mein), TF 5 1W chalu, agMode "Settings 1 jaisa", "sirf rang wale" ka ausat chal spread ke muqable (15m spread kha jata).
-**User ka maqsad:** a12/a13 se 15m par Kachhua jaisa P/L, trades zyada, DD kam - "a100 tak". Asal faisla 10 saal data
-(koshish #23 qaida - draft is chat mein: 1D EMA50/200 band candle rukh + 15m 20-candle toot, SL 2ATR, 10 ulta toot band,
-TALAASH Dukascopy 2015-24 trades >= 300, Exp-2SE > 0, 7/10 saal, DD < 1D Kachhua; IMTIHAN 2025+ sakht) - user "D" baqi.
+**20 Oct raat (19vi chat):** a13 TV ✅ (15m+1D). Jaanch (20 agent): ginti SAHI, look-ahead nahi; LGB/S-R sirf nishan, hisaab mein nahi.
+Ghalati sirf record rang -> **a14** (`33251cd`, TV ✅): shor hadd jori (paired). 15m "sab" 51.6% vs ~49.6%, hadd ±1.9 = kinare par;
+"sirf rang wale" 51% vs 53% (ulta). 15m rang ~sikka. 1D: 54% vs 51% (±1.3) = sirf "kal ka 1D rang" (hara->~56% hara);
+1D+1W 54.1%, 1D+1M 54.0% = kuch nahi joda; 1W chart 0 ikhtilaf. Daily faida 15m mein ~50.4% reh jata (92 candles).
+**AGLI CHAT pehla kaam: a15** - AGLI record mein qatar "P/L $ spread ke baad" (andaze ke rukh open->close, spread input
+default $0.30), 1D + 15m SS. Phir koshish #23 (1D rukh + 15m entry, 10 saal Python). TV par sab history dekhi = IMTIHAN sakht.
 **User ka (jab chahe):** QDM export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 (+ #23 ke liye XAUUSD 2015-2020) ->
 upload -> Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
