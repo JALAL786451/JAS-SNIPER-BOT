@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 20 Oct 2026 shaam (17vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 20 Oct 2026 shaam (18vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -55,15 +55,22 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**20 Oct (17vi chat):** AAINA **a11 + a12 TV ✅** (15m + 1D): SAAYA RECORD dabba (Settings 5) - aakhri saayon ka ✔/✖ +
-BUNYAAD (isi muddat, aankh band kar ke wahi rukh); qataren sab / lakeerein ek taraf / alag / kal 1D jaisa / ulat / hara / laal.
-**Nateeja:** 15m (99 saaye) har qatar = bunyaad (sikka; kal ka 1D rang 15m ko kuch nahi batata). 1D: 100 saaye +8 (shor),
-300 saaye (2012 se) 55% vs 50% = +5, hadd ±6 = SHOR. Saaya = sirf aankh ka aala, signal NAHI (ginti barhi, farq ghata).
-**User ka maqsad (20 Oct):** Tide Radar jaisa nateeja chhote TF (1m/5m/15m) se - 10 saal musbat, DD kam, trades zyada;
-"a100 tak banayenge". 10 saal = Dukascopy M1 + Python (TV 15m history sirf mahine; 1D candle raasta nahi rakhti).
-**AGLA EK QADAM (Claude):** (1) Commodity (XPTUSDm, 20261018) + Rsi2 (US500m, 20261012) demo screenshot - TV milaap (baqi);
-(2) phir koshish **#23 ka sirf qaida** likho: Tide/Radar ka 1D rukh (band candle) + 15m entry, gold, TALAASH Dukascopy
-M1 2015-2024, IMTIHAN 2025+ sakht. Sabaq yaad: "1D faisla chhoti TF par = wohi nateeja", trades zyada = zyada market.
+**20 Oct shaam (18vi chat):** demo 3 EA theek (SS ✅, sec 7). VPS (~$10-15) user abhi NAHI lega - us ki baat band.
+a12 natija (17vi): 15m saaya = bunyaad (sikka), 1D 300 saaye +5 (hadd ±6) = shor (`docs/trading-pakki.md` sec 4).
+**AAINA a13 = a12 ki TWEAK, wahi file `indicators/jas_aaina.pine` (1062 lines, raw `1eae50b`).** User: alag chhoti script
+NAHI ("800+ ko 200+ bana diya" - maine alag `jas_aaina_agli.pine` banayi thi, delete). Har agla build isi file mein.
+a13 = **Settings 6 AGLI candle:** har band candle par isi nishani (default "Sirf Rang"; TF 15m/1H/4H/1D + TF 5 1W band) ke
+pichhle mauqon mein AGLI candle hari/laal % + ausat high/low/close (open se) -> aage saaya candle + label "AGLI 15m: HARI x%
+· n mauqe · bunyaad y%" (rang sirf andaze ki taraf bunyaad se 2SE, warna saleti "shor"); chalti candle par halka "ABHI
+chalti"; pichli 20 candles par ✔/✖ (tooltip); Record dabba qatar "AGLI candle: sab" + "AGLI: sirf rang wale" vs bunyaad
+(hamesha zyada wala rang). Sirf pichhla data. pinecheck ✅ + 5 reviewer jaanch (5 chhoti theek). **TV compile BAAQI.**
+**AGLI CHAT - user a13 SS bhejega. Jaanch:** (1) error/warning? (2) saaya candle + label + ✔/✖ dikhe; "andaza nahi" =
+mauqe < 30 (agMin); (3) record 2 qataren: % vs bunyaad, neela sirf 30+ aur 2SE - 15m par umeed ~bunyaad (a12 sabaq);
+(4) nishan a12 ke labels par charhe? Timeout -> agMk / recN kam. **Tweak (ek waqt ek, user "D"):** AGLI 1D chart par (dam
+daily mein), TF 5 1W chalu, agMode "Settings 1 jaisa", "sirf rang wale" ka ausat chal spread ke muqable (15m spread kha jata).
+**User ka maqsad:** a12/a13 se 15m par Kachhua jaisa P/L, trades zyada, DD kam - "a100 tak". Asal faisla 10 saal data
+(koshish #23 qaida - draft is chat mein: 1D EMA50/200 band candle rukh + 15m 20-candle toot, SL 2ATR, 10 ulta toot band,
+TALAASH Dukascopy 2015-24 trades >= 300, Exp-2SE > 0, 7/10 saal, DD < 1D Kachhua; IMTIHAN 2025+ sakht) - user "D" baqi.
 **User ka (jab chahe):** QDM export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 (+ #23 ke liye XAUUSD 2015-2020) ->
 upload -> Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
@@ -76,11 +83,11 @@ Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid =
 
 ## 7. Demo (472716649) aur IBS ka haal
 
-| EA | Chart | Magic | Markets | Haal 13 Oct |
+| EA | Chart | Magic | Markets | Haal 20 Oct (SS ✅) |
 |---|---|---|---|---|
-| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC | 17 Oct: "SIRF DIKHANA" mila -> theek, ab TRADE CHALU (USDJPYm D1 chart). Radar ki XAG SELL (13 din) + EUR SELL (23 din) EA band hone mein chhoot gayin - TV milaap mein in ko "chhooti" likho. USDJPYm BUY 0.33 @ 158.527, SL 157.510. Gold NEECHE: SELL < 4066.30 |
-| JasRsi2EA c2 | US500m D1 | 20261012 | US500, USTEC, US30 | intezar |
-| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | 16 Oct: USOIL BUY 0.05 @ 93.810, SL 86.126 (TP nahi - qaida) |
+| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC | TRADE CHALU, suffix 'm'. USDJPYm BUY 0.33 @ 158.527, SL 157.543. Chhooti (EA band tha): XAG SELL, EUR SELL. USDJPYm chart wala dusra EA hatana tha (ek magic = ek chart) |
+| JasRsi2EA c2 | US500m D1 | 20261012 | US500, USTEC, US30 | Pehle XPTUSDm par tha (suffix '' = 3 market "nahi mila") -> US500m, TRADE CHALU, intezar |
+| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | Inputs gold wale ho gaye the -> theek. USOIL BUY 0.05 @ 93.810, SL 88.987 (+0.78R). Chhooti: UKOIL BUY, XPT SELL, XPD SELL |
 
 - Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").

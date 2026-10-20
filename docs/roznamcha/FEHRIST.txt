@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-10-17  (16 kaam)
-   - TRADING.md: user ki Pine maang = test, ehtiyat ka lecture nahi
-   - Sawal-jawab file + CLAUDE.md: reply se pehle grep, token bachao
+2026-10-17  (13 kaam)
+   - TRADING.md: Exness USTECm data sirf Sep 2025 se - #21 data ka raasta
+   - Chat khatam ka tareeqa: CLAUDE.md + TRADING.md sec 9, tools/roznamcha.py
    - USTEC M1 2021-22 data (QDM Dukascopy), TRADING sec 5: agla 2023-24 export
 
 2026-10-18  (18 kaam)
@@ -17,6 +17,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - JAS AAINA a5: TV runtime error (historical offset beyond buffer) - chart ke saare nishan a
    - Chat khatam (16vi): sec 5 (AAINA a10 TV ✅, saaya poora; agla Commodity + Rsi2 demo), sawal
 
-2026-10-20  (2 kaam)
+2026-10-20  (6 kaam)
    - jas_aaina a11: SAAYA RECORD dabba (aakhri saayon ka ✔/✖ jod: sab, lakeerein ek taraf/alag,
-   - jas_aaina a12: record mein hara / laal saaya alag + har qatar ka bunyaad (isi muddat, aank
+   - jas_aaina_agli a13: 1m-1W chalti candle nishani -> agli 15m candle hari/laal andaza, chart
+   - jas_aaina a13: jaanch ke 5 sudhaar - okA/okB shadow nahi, rang sirf andaze ki taraf 2SE, m

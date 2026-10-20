@@ -5,6 +5,9 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Lafz | Jawab | Kab |
 |---|---|---|
 | TV | TradingView (chart, Pine, Strategy Tester). User ne kaha "TV" hi likho. | 17 Oct |
+| VPS / laptop band | Laptop ya MT5 band = EA band (na trade khule na band ho). MQL5 VPS ~$10-15/mahina (Navigator -> account right-click -> Register Virtual Server -> Migrate; phir laptop Algo Trading band). User: demo ke liye abhi NAHI - dobara mat chhero. | 20 Oct |
+| broker par nahi mila / suffix '' | EA suffix "auto" chart ke symbol se - chart EA ki apni list ka ho (Rsi2 = US500m, Commodity = XPTUSDm), warna suffix khali. | 20 Oct |
+| a13 / AGLI candle | `jas_aaina.pine` Settings 6: agli chart candle hari/laal % (isi nishani ke mauqe) + saaya candle + ✔/✖ + record 2 qataren vs bunyaad. a12 ki tweak, alag file NAHI. | 20 Oct |
 | CFD | Qeemat par sauda, asli cheez nahi (Exness USTECm). QQQ asli share. Chaal wahi, kharcha zyada. | 17 Oct |
 | TP / Kachhua | Tide/Kachhua mein TP jaan boojh kar NAHI; sarakta SL (5 candle low). Bari jeet hi faida; 2R par band = nuqsan deh. | 17 Oct |
 | JasTideEA vs JasTideRadarEA | JasTideEA purana (sirf gold, 2R aadhi band, kamzor) - hataya. JasTideRadarEA (9 market) demo par. TV "JAS Tide Test" = `jas_tide_seekh_test.pine` = Radar ke qaide. | 17 Oct |

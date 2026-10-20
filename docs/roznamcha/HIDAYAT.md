@@ -30,6 +30,8 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | settings | Pine / EA ki settings mein jo cheez user ne kahi ho wo PEHLE SE set karo (default). | 18 Oct |
 | kitab | Mashhoor kitab ka qaida (Elder, Weinstein, Faber...) istemal ho sakta hai - shart: chart misguide na kare, repaint / kachcha na lage. 19 Oct: naye kaam mein purani JAS scripts se kuch NAHI - mashhoor kitab / mashhoor tareeqa (maslan Lorentzian kNN). | 18-19 Oct |
 | table | Naye Pine ki table default BAND - chart ke nishan na chhupein; hisaab peechhe chale, setting se khule. | 19 Oct |
+| tweak | AAINA (aur chalti script) ka agla build = USI file mein tweak, sab purana qaim; alag chhoti nayi script NAHI ("800+ ko 200+ bana diya"). | 20 Oct |
+| VPS | Demo ke liye VPS ka kharcha abhi nahi - dobara mashwara mat do. | 20 Oct |
 
 ## C. Token / usage bachao (sab se pehli tarjeeh)
 
