@@ -180,6 +180,14 @@ iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
   lamba bura daur ho sakta hai. Girawat sirf band trades ki (asal zyada).
   Agla: broker (Exness) data par MT5 Tester, phir demo - `JasTideRadarEA.mq5`.
 
+### AAINA SAAYA record (20 Oct, 17vi chat, a11/a12 TV, XAUUSD, N 12)
+| Chart | Saaye | Sab (bunyaad) | Ek taraf | Alag | Kal 1D jaisa | Kal 1D ulat | Hara | Laal |
+|---|---|---|---|---|---|---|---|---|
+| 15m (1 Oct 26 se) | 99 | 52% (50) | 60% (50), 20 | 49% (50) | 50% (50) | 53% (49) | 50% (48) | 53% (52) |
+| 1D (16 Feb 22 se) | 100 | 61% (53) | 71% (54), 28 | 57% (52) | 56% (52) | 67% (52) neela | 65% (56) | 50% (44) |
+| 1D (4 Nov 12 se) | 300 | 55% (50) | 56% (51) | 54% (50) | 55% (51) | 54% (50) | 60% (54) | 48% (46) |
+Sab shor (2SE bunyaad par); 100 wala "kal ulat" neela 300 par gayab = ittefaq. 1D candle 1m ka raasta nahi rakhti (10 D = ~13,800 1m, sirf 40 number).
+
 ## 5. Tools ki purani table (13 Oct tak; ab har file ki ek line CLAUDE.md mein)
 
 | File | Kya karta hai | Haal |

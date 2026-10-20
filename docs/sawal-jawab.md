@@ -40,3 +40,8 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Aaina dabba ban kar chala jata | Har tick par naqsha naya; abhi ki nishani (maslan 15m KAHAN) badle to mauqe badal jate. a8: band candle + "saaya". | 19 Oct |
 | Saaya gayab / "0 mauqe" | Us band candle ki nishani ka koi purana mauqa (N candles poori) TV history mein nahi; a10 agli band candle par phir koshish karta hai. | 20 Oct |
 | Saaya ✔ / ✖ | ✔ = N candles baad asal chal ka rukh saaye (qareebi #1-#3 ka ausat) jaisa; ✖ = ulat / barabar. Peshgoi nahi. | 20 Oct |
+| Saaye ki moti / patli lakeer | Moti gehri = #1 (sab se milta purana mauqa), patli halki = #2/#3; rang teeno ke ausat se. Sab ek taraf = mutafiq, alag = ikhtilaf. | 20 Oct |
+| 0/12 / saaye ki candles kis TF | Chart ki TF; N 2 = 12 candles (15m = 3 ghante, 1H = 12 ghante). 12vi candle band hote hi ✔/✖ (12/12 nahi dikhta). | 20 Oct |
+| 1D candle mein 1m ka data | 10 D = ~13,800 1m candles, magar 1D sirf O/H/L/C - raasta (tarteeb) gum. Chhote TF ka backtest sirf asal M1 (Dukascopy) se. | 20 Oct |
+| Aaj ki 1D se 15m follow | Dhoka (din band hone par pata) - sirf KAL ki band 1D. a12: 15m par 50% = kuch nahi batata. | 20 Oct |
+| Saaya record / bunyaad | a11/a12 dabba (Settings 5). Bunyaad = isi muddat aankh band kar ke wahi rukh. Rang sirf 30+ saaye aur bunyaad se 2SE farq. 1D 300 saaye = shor. | 20 Oct |

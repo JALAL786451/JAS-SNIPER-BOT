@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 20 Oct 2026 subah (16vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 20 Oct 2026 shaam (17vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -55,13 +55,16 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**20 Oct (16vi chat):** `indicators/jas_aaina.pine` **a10 TV ✅** (15m + 1D screenshot; a7 TV ✅ pichli chat mein tha). a8: nishani BAND
-candle ki (mauqe / ABHI / table poori candle tak nahi badalte); SAAYA = qareebi #1-#3 mauqon ka asal raasta band candle se aage
-(nuqta lakeer, #1 gehri), har saaya N candles phir agla, aakhri 3 + 1 chalta, N baad label ✔ (rukh saaye jaisa) / ✖. a9: label
-chhote (✔ / ✖ / 4/12). a10: mauqa na mile to agli band candle par phir koshish, warna saleti "0 mauqe". AAINA saaya kaam POORA.
-**AGLA EK QADAM (Claude):** Commodity (XPTUSDm, magic 20261018) + Rsi2 (US500m, 20261012) demo haal - user se screenshot maango,
-TV milaap. **User:** kuch din 15m gold par saaye dekhe, ✔ / ✖ khud gine (sirf aankh, faisla nahi).
-**User ka (jab chahe):** QDM 3 export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 ->
+**20 Oct (17vi chat):** AAINA **a11 + a12 TV ✅** (15m + 1D): SAAYA RECORD dabba (Settings 5) - aakhri saayon ka ✔/✖ +
+BUNYAAD (isi muddat, aankh band kar ke wahi rukh); qataren sab / lakeerein ek taraf / alag / kal 1D jaisa / ulat / hara / laal.
+**Nateeja:** 15m (99 saaye) har qatar = bunyaad (sikka; kal ka 1D rang 15m ko kuch nahi batata). 1D: 100 saaye +8 (shor),
+300 saaye (2012 se) 55% vs 50% = +5, hadd ±6 = SHOR. Saaya = sirf aankh ka aala, signal NAHI (ginti barhi, farq ghata).
+**User ka maqsad (20 Oct):** Tide Radar jaisa nateeja chhote TF (1m/5m/15m) se - 10 saal musbat, DD kam, trades zyada;
+"a100 tak banayenge". 10 saal = Dukascopy M1 + Python (TV 15m history sirf mahine; 1D candle raasta nahi rakhti).
+**AGLA EK QADAM (Claude):** (1) Commodity (XPTUSDm, 20261018) + Rsi2 (US500m, 20261012) demo screenshot - TV milaap (baqi);
+(2) phir koshish **#23 ka sirf qaida** likho: Tide/Radar ka 1D rukh (band candle) + 15m entry, gold, TALAASH Dukascopy
+M1 2015-2024, IMTIHAN 2025+ sakht. Sabaq yaad: "1D faisla chhoti TF par = wohi nateeja", trades zyada = zyada market.
+**User ka (jab chahe):** QDM export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 (+ #23 ke liye XAUUSD 2015-2020) ->
 upload -> Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
 entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
