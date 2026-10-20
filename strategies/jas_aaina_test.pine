@@ -1,0 +1,144 @@
+//@version=6
+// ============================================================================
+//  JAS AAINA — TEST  (build t1, Pine v6)
+//  21 Oct 2026 - user: "1D par strategy Pine par result test karna hai".
+//  indicators/jas_aaina.pine a18 ka AGLI candle andaza (Settings 1 + 6)
+//  jyon ka tyon, STRATEGY ki shakal mein (TV Strategy Tester):
+//    - har BAND candle par andaza: isi nishani ke pichhle mauqon mein AGLI
+//      candle kitni dafa hari / laal bani - sirf us waqt tak ki band candles
+//      se (aage ka kuch nahi). 50 / 50 = bunyaad ka rang (aaina jaisa).
+//    - HARI = BUY, LAAL = SELL - agli candle ke OPEN par; usi candle ke CLOSE
+//      par band (aaina a15 P/L qatar jaisa: open -> close).
+//    - andaza nahi (mauqe kam az kam se kam) = trade nahi.
+//    - ek waqt ek trade, 1 unit (gold 1 oz). Spread: Properties > Commission
+//      0.15 $ har taraf = 0.30 aana-jana (a15 jaisa). Badalna ho to wahan.
+//  1D chart par 15m / 1H / 4H chart se chhoti - nishani sirf 1D (+ 1W agar
+//  ON) = asal mein "kal ka 1D rang".
+//  Sirf Candles chart (Heikin Ashi par Tester ke bhaav ghalat).
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+//  Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par) Python se.
+// ============================================================================
+strategy("JAS Aaina Test t1", shorttitle = "JAS AAINA TEST t1", overlay = true,
+     initial_capital    = 10000,
+     default_qty_type   = strategy.fixed,
+     default_qty_value  = 1,
+     commission_type    = strategy.commission.cash_per_contract,
+     commission_value   = 0.15,
+     pyramiding         = 0,
+     calc_on_every_tick = false)
+
+// --------------------------------------------------------- 1. NISHANI (aaina jaisa)
+g1   = "1. Nishani (bari TF ki chalti candle)"
+onA  = input.bool(true, "", group = g1, inline = "a")
+tfA  = input.timeframe("15",  "TF 1", group = g1, inline = "a")
+onB  = input.bool(true, "", group = g1, inline = "b")
+tfB  = input.timeframe("60",  "TF 2", group = g1, inline = "b")
+onC  = input.bool(true, "", group = g1, inline = "c")
+tfC  = input.timeframe("240", "TF 3", group = g1, inline = "c")
+onD  = input.bool(true, "", group = g1, inline = "d")
+tfD  = input.timeframe("D",   "TF 4", group = g1, inline = "d")
+onE  = input.bool(false, "", group = g1, inline = "e")
+tfE  = input.timeframe("W",   "TF 5", group = g1, inline = "e", tooltip = "a13: 1W (default band). Chalu karein to nishani sakht - mauqe kam.")
+mode = input.string("Rang + Kahan", "Milaap", options = ["Rang + Kahan", "Sirf Rang"], group = g1, tooltip = "Rang + Kahan = har TF ka rang AUR range mein jagah (Upar / Beech / Neeche) dono milein. Sirf Rang = sirf hari / laal milein (zyada mauqe, kam sakht).")
+
+// ------------------------------------------------------- 6. AGLI CANDLE (aaina jaisa)
+g6      = "6. AGLI candle"
+agMode  = input.string("Sirf Rang", "AGLI ka milaap", options = ["Sirf Rang", "Settings 1 jaisa"], group = g6, tooltip = "Sirf Rang = har TF ka sirf rang (zyada mauqe). Settings 1 jaisa = upar wala Milaap (Rang + Kahan par mauqe bohot kam).")
+agMin   = input.int(30, "Kam az kam mauqe (warna andaza / trade nahi)", minval = 10, maxval = 500, group = g6)
+
+// ============================================================================
+//  DATA — aaina jaisa (asal candles, chart ki apni TF)
+// ============================================================================
+tkStd = ticker.standard(syminfo.tickerid)
+[sO, sH, sL, sC] = request.security(tkStd, timeframe.period, [open, high, low, close])
+
+// Bari TF ki chalti candle, chart candle ke close tak (jaisa us waqt dikhta tha)
+// wapsi: [shamil?, tayyar?, rang 0 barabar / 1 hari / 2 laal, jagah 0 Neeche / 1 Beech / 2 Upar, kahan %]
+f_htf(simple string _tf, simple bool _on) =>
+    var float _o   = na
+    var float _h   = na
+    var float _l   = na
+    var bool _seen = false
+    // TF chart TF ka poora guna ho (mahina hamesha poori candles ka - seconds barabar nahi batte)
+    bool _mul = timeframe.in_seconds(_tf) >= 2592000 or timeframe.in_seconds(_tf) % timeframe.in_seconds() == 0
+    bool _in  = _on and timeframe.in_seconds(_tf) >= timeframe.in_seconds() and _mul
+    bool _new = timeframe.change(_tf)
+    if _new or na(_o)
+        _o := sO
+        _h := sH
+        _l := sL
+        // chart ki pehli candle par TF candle aadhi hoti hai - agli nayi candle se tayyar
+        if _new and bar_index > 0
+            _seen := true
+    else
+        _h := math.max(_h, sH)
+        _l := math.min(_l, sL)
+    float _rg = _h - _l
+    // JAS TF LIVE jaisa (bina gol kiye)
+    float _kp = _rg > 0 ? (sC - _l) / _rg * 100 : 50.0
+    int _rang = sC > _o ? 1 : sC < _o ? 2 : 0
+    int _zone = _kp >= 67 ? 2 : _kp <= 33 ? 0 : 1
+    [_in, _seen, _rang, _zone, _kp]
+
+[inA, okA, rgA, znA, kpA] = f_htf(tfA, onA)
+[inB, okB, rgB, znB, kpB] = f_htf(tfB, onB)
+[inC, okC, rgC, znC, kpC] = f_htf(tfC, onC)
+[inD, okD, rgD, znD, kpD] = f_htf(tfD, onD)
+[inE, okE, rgE, znE, kpE] = f_htf(tfE, onE)
+
+// har TF ki halat ek number (0-8); nishani = 5 halaton ka ek number
+f_st(bool _in, int _rang, int _zone) => _in ? (mode == "Sirf Rang" ? _rang : _rang * 3 + _zone) : 0
+int  key   = f_st(inA, rgA, znA) + f_st(inB, rgB, znB) * 9 + f_st(inC, rgC, znC) * 81 + f_st(inD, rgD, znD) * 729 + f_st(inE, rgE, znE) * 6561
+// AGLI candle ki nishani - "Sirf Rang" par sirf rang (0-2) har TF ka
+int  keyR  = (inA ? rgA : 0) + (inB ? rgB : 0) * 3 + (inC ? rgC : 0) * 9 + (inD ? rgD : 0) * 27 + (inE ? rgE : 0) * 81
+int  agKey = agMode == "Sirf Rang" ? keyR : key
+bool chartOk = chart.is_standard
+bool valid = chartOk and (inA or inB or inC or inD or inE) and (not inA or okA) and (not inB or okB) and (not inC or okC) and (not inD or okD) and (not inE or okE)
+
+// ============================================================================
+//  AGLI ANDAZA — aaina a13 jaisa: nishani -> agli candle hari / laal ki ginti
+// ============================================================================
+type Gn
+    int up = 0
+    int dn = 0
+
+f_add(Gn _g, float _mv) =>
+    _g.up := _g.up + (_mv > 0 ? 1 : 0)
+    _g.dn := _g.dn + (_mv < 0 ? 1 : 0)
+
+var map<int, Gn> M0 = map.new<int, Gn>()
+var Gn B0 = Gn.new()
+
+// 1 = HARI (BUY) / 2 = LAAL (SELL) / 0 = andaza nahi
+int gPr = 0
+if barstate.isconfirmed
+    // seekho: pichli band candle ki nishani -> ye candle (sirf ab tak ka data)
+    if bar_index > 0 and valid[1] and sO > 0
+        float mv0 = sC - sO
+        f_add(B0, mv0)
+        int k0 = agKey[1]
+        Gn s0 = map.get(M0, k0)
+        if na(s0)
+            s0 := Gn.new()
+            map.put(M0, k0, s0)
+        f_add(s0, mv0)
+    // agli candle ka andaza - is band candle ki nishani, ab tak ki ginti se
+    float gBu = B0.up + B0.dn > 0 ? 100.0 * B0.up / (B0.up + B0.dn) : na
+    if valid and not na(gBu)
+        Gn s1 = map.get(M0, agKey)
+        int n1g = na(s1) ? 0 : s1.up + s1.dn
+        if n1g >= agMin
+            float gP = 100.0 * s1.up / n1g
+            int gBs = gBu >= 50 ? 1 : 2
+            gPr := gP > 50 ? 1 : gP < 50 ? 2 : gBs
+
+// ============================================================================
+//  TRADE — candle band: pichli trade isi close par band, phir agli candle ke
+//  OPEN par naya andaza (open -> close, ek waqt ek trade)
+// ============================================================================
+if barstate.isconfirmed
+    strategy.close_all(comment = "band", immediately = true)
+    if gPr == 1
+        strategy.entry("BUY", strategy.long, comment = "HARI")
+    else if gPr == 2
+        strategy.entry("SELL", strategy.short, comment = "LAAL")

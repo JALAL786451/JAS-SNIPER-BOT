@@ -38,7 +38,7 @@ basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `J
 (`supertrend_v6`, `ob_radar`, `gainzalgo_ml_smc`, `analogue_matcher_v2`, `candle_xray`,
 `fishing_live`, `trend_ribbon_levels`).
 
-**Pine - strategy Tester (`strategies/`):** `jas_ibs_test` (IBS S&P, radar jaisa, trade list),
+**Pine - strategy Tester (`strategies/`):** `jas_ibs_test` (IBS S&P, radar jaisa, trade list), `jas_aaina_test` (21 Oct t1: aaina ka AGLI andaza, agli candle open->close, spread 0.30),
 `jas_rsi2_test`, `jas_tide_seekh_test` (Kachhua 1D), `jas_tide2_test`, `jas_tide_smc_test`,
 `jas_seerhi_test`, `jas_pro_box_test`, `smc_coach_scalp_test`, `fishing_lots_test`,
 `jas_tide_v1`, `tony_ema_scalper_test`. `sniper_backtest.pine` (purana SMA cross, alag).
