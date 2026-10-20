@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a16, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a17, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -106,29 +106,11 @@
 //  andaze ke rukh mein, minus spread (Settings 6, default $0.30 = gold
 //  1 oz). Barabar candle bhi gini (sirf -spread). Ausat ±2SE: neela sirf
 //  jab Exp - 2SE > 0. Bunyaad kul = unhi candles par hamesha bunyaad rang.
-//  a16 (21 Oct, user: "EMA 1m se 1D TF BAND candle, aur IBS waghera - jo PASS
-//  hui hain un se naya script"): Milaap ka teesra rasta "a16 Band: EMA + IBS
-//  + Kachhua" (ab DEFAULT, Settings 1b). Nishani SIRF BAND candles se:
-//    EMA       har TF (1m, 5m, 15m, 1H, 4H, 1D) ki aakhri band candle ka
-//              close EMA50 se ooper = UPAR, neeche / barabar = NEECHE. Chart
-//              se chhoti TF shamil NAHI (15m chart par 1m / 5m bahar).
-//    IBS       koshish #15 ASLI PASS: 1D band candle (close - low) / range:
-//              0.2 se kam NEECHE, 0.8 se zyada UPAR, warna beech.
-//    KACHHUA   koshish #6 ASLI PASS (Tide 10 din): band close pichli 10 band
-//              candles ke high se ooper = toot ooper, low se neeche = toot
-//              neeche, warna andar.
-//    RANG      kal ki BAND 1D candle ka rang (a14 mein sirf isi ka asar dikha).
-//  Data request.security (ticker.standard) se - HTF ki poori history, EMA
-//  chart ki history par mohtaj nahi. Band candle = jo is chart candle ke
-//  close tak band ho chuki; jo chart candle khud HTF candle band karti hai
-//  (din ki aakhri 15m) usi par wahi candle - AGLI din ki pehli candle ke
-//  andaze mein kal ka rang shamil. History aur live ek jaise (repaint nahi).
-//  Hissay zyada = nishaniyan zyada = har ek ke mauqe KAM (default 15m: EMA
-//  2^4 = 16 x IBS 3 x toot 3 x rang 3 = 432). AGLI bhi isi nishani se.
-//  Qareebi khane: EMA TF ki band candle ka IBS %, khana 5 Kachhua naali %.
-//  Purane do Milaap (TF 1-5) bilkul waise hi (un par a16 ki bari TF request
-//  nahi). Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par)
-//  Python se.
+//  a16 (EMA + IBS + Kachhua khichdi) HATA DI - user: samajh nahi aati.
+//  a17 (21 Oct, user: "a15 ka saaya khatam, labels khatam"): a15 par wapas.
+//  SAAYA default BAND (Settings 4), chart ke saare LABEL band (Settings 4,
+//  "Chart par labels"), AGLI ka saaya candle band (Settings 6). Hisaab aur
+//  record dabba wahi chalte hain. Har cheez setting se dobara khul sakti hai.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -138,9 +120,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a16", "JAS AAINA a16", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
+indicator("JAS Aaina a17", "JAS AAINA a17", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
 
-BUILD = "a16"
+BUILD = "a17"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -154,32 +136,7 @@ onD  = input.bool(true, "", group = g1, inline = "d")
 tfD  = input.timeframe("D",   "TF 4", group = g1, inline = "d")
 onE  = input.bool(false, "", group = g1, inline = "e")
 tfE  = input.timeframe("W",   "TF 5", group = g1, inline = "e", tooltip = "a13: 1W (default band). Chalu karein to nishani sakht - mauqe kam.")
-mode = input.string("a16 Band: EMA + IBS + Kachhua", "Milaap", options = ["Rang + Kahan", "Sirf Rang", "a16 Band: EMA + IBS + Kachhua"], group = g1, tooltip = "Rang + Kahan = har TF ka rang AUR range mein jagah (Upar / Beech / Neeche) dono milein. Sirf Rang = sirf hari / laal milein (zyada mauqe, kam sakht). a16 Band (default) = Settings 1b ki nishani, sirf BAND candles se (EMA, IBS, Kachhua toot, kal ka 1D rang) - us par upar wali TF 1-5 istemal nahi hoti.")
-
-// ------------------------------------- 1b. a16 NISHANI (sirf BAND candle)
-g1b    = "1b. a16 nishani (sirf BAND candle)"
-mOn1   = input.bool(true, "", group = g1b, inline = "m1")
-mTf1   = input.timeframe("1",   "EMA TF 1", group = g1b, inline = "m1")
-mOn2   = input.bool(true, "", group = g1b, inline = "m2")
-mTf2   = input.timeframe("5",   "EMA TF 2", group = g1b, inline = "m2")
-mOn3   = input.bool(true, "", group = g1b, inline = "m3")
-mTf3   = input.timeframe("15",  "EMA TF 3", group = g1b, inline = "m3")
-mOn4   = input.bool(true, "", group = g1b, inline = "m4")
-mTf4   = input.timeframe("60",  "EMA TF 4", group = g1b, inline = "m4")
-mOn5   = input.bool(true, "", group = g1b, inline = "m5")
-mTf5   = input.timeframe("240", "EMA TF 5", group = g1b, inline = "m5")
-mOn6   = input.bool(true, "", group = g1b, inline = "m6")
-mTf6   = input.timeframe("D",   "EMA TF 6", group = g1b, inline = "m6", tooltip = "Har TF ki aakhri BAND candle ka close EMA se ooper = UPAR, neeche (ya barabar) = NEECHE. Chart se chhoti TF (15m chart par 1m / 5m) nishani mein NAHI aati. Har chalu TF nishaniyan 2 guna karti hai - mauqe kam.")
-emaLen = input.int(50, "EMA lambai", minval = 2, maxval = 500, group = g1b, tooltip = "Kachhua (Tide) D1 par EMA50 dekhta hai. EMA tab tak tayyar nahi jab tak us TF ki itni band candles na hon.")
-ibOn   = input.bool(true, "", group = g1b, inline = "ib")
-ibTf   = input.timeframe("D", "IBS TF", group = g1b, inline = "ib", tooltip = "IBS (koshish #15 ASLI PASS) = band candle ka (close - low) / (high - low). Range 0 ho to 0.5.")
-ibLo   = input.float(0.2, "IBS neeche: kam se", minval = 0, maxval = 1, step = 0.05, group = g1b, inline = "iv")
-ibHi   = input.float(0.8, "ooper: zyada se", minval = 0, maxval = 1, step = 0.05, group = g1b, inline = "iv", tooltip = "IBS is se kam = NEECHE, is se zyada = UPAR, warna BEECH (3 halatein).")
-kcOn   = input.bool(true, "", group = g1b, inline = "kc")
-kcTf   = input.timeframe("D", "Kachhua toot TF", group = g1b, inline = "kc")
-kcLen  = input.int(10, "candles", minval = 2, maxval = 100, group = g1b, inline = "kc", tooltip = "Kachhua (koshish #6 ASLI PASS, Tide 10 din): band close pichli 10 band candles (khud shamil nahi) ke sab se ooper high se ooper = TOOT OOPER, sab se neeche low se neeche = TOOT NEECHE, warna ANDAR.")
-dgOn   = input.bool(true, "", group = g1b, inline = "dg")
-dgTf   = input.timeframe("D", "Kal ka band rang TF", group = g1b, inline = "dg", tooltip = "a14: sirf kal ki BAND 1D candle ke rang ka asar dikha tha. Band candle close > open = HARI, < = LAAL, barabar = BARABAR.")
+mode = input.string("Rang + Kahan", "Milaap", options = ["Rang + Kahan", "Sirf Rang"], group = g1, tooltip = "Rang + Kahan = har TF ka rang AUR range mein jagah (Upar / Beech / Neeche) dono milein. Sirf Rang = sirf hari / laal milein (zyada mauqe, kam sakht).")
 
 // ------------------------------------------------------ 2. AAGE KYA HUA
 g2      = "2. Aage kitni candles (chart ki)"
@@ -205,7 +162,8 @@ showJT  = input.bool(true, "LGB = jhoota toot (Elder false breakout)", group = g
 showNow = input.bool(true, "ABHI: qareebi mauqon ka ausat dabba", group = g4)
 pvLen   = input.int(5, "Choti / tah: dono taraf kitni candles", minval = 2, maxval = 20, group = g4)
 jtLook  = input.int(20, "LGB: mauqe se kitni candles peeche tak", minval = 1, maxval = 100, group = g4)
-showSy  = input.bool(true, "SAAYA: qareebi #1-#3 ka raasta + ✔ / ✖", group = g4, tooltip = "Band candle se aage qareebi 3 mauqon ka asal raasta (%). Har saaya N candles (upar wala nateeja dabba N), phir agla. N poori hon to ✔ = asal chal saaye ke rukh mein, ✖ = nahi. Peshgoi NAHI.")
+showSy  = input.bool(false, "SAAYA: qareebi #1-#3 ka raasta + ✔ / ✖", group = g4, tooltip = "Band candle se aage qareebi 3 mauqon ka asal raasta (%). Har saaya N candles (upar wala nateeja dabba N), phir agla. N poori hon to ✔ = asal chal saaye ke rukh mein, ✖ = nahi. Peshgoi NAHI.")
+showLb  = input.bool(false, "Chart par labels (a17)", group = g4, tooltip = "a17: default BAND - chart par koi likhai (#1, ABHI, S / R, LGB, ✔ / ✖, AGLI) nahi. Hisaab peechhe wahi.")
 yKeep   = input.int(3, "Purane saaye kitne rakhein", minval = 1, maxval = 5, group = g4)
 
 // ------------------------------------------------------- 5. SAAYA RECORD
@@ -217,8 +175,9 @@ recPos  = input.string("Bottom Right", "Record kahan", options = ["Top Right", "
 // ------------------------------------------------- 6. a13 AGLI CANDLE
 g6      = "6. AGLI candle (a13)"
 showAg  = input.bool(true, "AGLI candle ka andaza chart par", group = g6, tooltip = "Isi nishani ke pichhle mauqon mein AGLI chart candle kitni dafa hari / laal bani. Chart par aage saaya candle + label. Peshgoi NAHI - sirf 'pehle aisa hua tha'.")
-agMode  = input.string("Sirf Rang", "AGLI ka milaap", options = ["Sirf Rang", "Settings 1 jaisa"], group = g6, tooltip = "Sirf Rang = har TF ka sirf rang (zyada mauqe, andaza aksar milta hai). Settings 1 jaisa = upar wala Milaap (Rang + Kahan par mauqe bohot kam). a16: Milaap 'a16 Band' ho to AGLI HAMESHA a16 nishani (Settings 1b) se - ye chunaav lagu nahi.")
+agMode  = input.string("Sirf Rang", "AGLI ka milaap", options = ["Sirf Rang", "Settings 1 jaisa"], group = g6, tooltip = "Sirf Rang = har TF ka sirf rang (zyada mauqe, andaza aksar milta hai). Settings 1 jaisa = upar wala Milaap (Rang + Kahan par mauqe bohot kam).")
 agMin   = input.int(30, "Kam az kam mauqe (warna andaza nahi)", minval = 10, maxval = 500, group = g6)
+agDraw  = input.bool(false, "AGLI saaya candle chart par (a17)", group = g6, tooltip = "a17: default BAND. Andaza aur record dabba ki qataren phir bhi chalti hain.")
 agSpr   = input.float(0.30, "Spread $ (P/L qatar, a15)", minval = 0, step = 0.05, group = g6, tooltip = "Har andaze par ek trade: agli candle open -> close andaze ke rukh mein, phir ye spread minus. Daam ki ikai mein (gold: $ fi 1 oz; 1 lot = 100 oz = x100). Asli se zyada rakhein.")
 agMk    = input.int(20, "✔ / ✖ kitni pichli candles par", minval = 0, maxval = 100, group = g6, tooltip = "0 = chart par ✔ / ✖ nahi (record dabba phir bhi ginta hai).")
 
@@ -272,103 +231,15 @@ f_htf(simple string _tf, simple bool _on) =>
 [inD, okD, rgD, znD, kpD] = f_htf(tfD, onD)
 [inE, okE, rgE, znE, kpE] = f_htf(tfE, onE)
 
-// ============================================================================
-//  a16 — sirf BAND candle ki nishani: EMA (har TF), IBS #15, Kachhua toot #6, kal ka band 1D rang
-// ============================================================================
-bool isA16 = mode == "a16 Band: EMA + IBS + Kachhua"
-// chart ki pehli candle ka waqt: is se pehle shuru hui HTF candle (chart ki pehli aadhi candle) ginti mein nahi
-var int tFirst = time
-
-// HTF ke andar halat yahin: [halat, IBS, tayyar?, waqt, naali %] abhi wali (0) + pichli (1) HTF candle - 10 cheezein
-// naali % (sirf Kachhua kaam ka): band close pichli _kL candles ki naali (sab se neeche low = 0, sab se ooper high = 100)
-// mein kahan - 100 se ooper / 0 se neeche = toot
-f_bnd(simple int _k, simple int _eL, simple int _kL) =>
-    float _e  = ta.ema(close, _eL)
-    float _hh = ta.highest(high, _kL)[1]
-    float _ll = ta.lowest(low, _kL)[1]
-    float _rg = high - low
-    float _ib = _rg > 0 ? (close - low) / _rg : 0.5
-    float _np = _hh > _ll ? (close - _ll) / (_hh - _ll) * 100 : 50.0
-    int   _st = _k == 0 ? (close > _e ? 1 : 2) : _k == 1 ? (_ib < ibLo ? 0 : _ib > ibHi ? 2 : 1) : _k == 2 ? (close > _hh ? 2 : close < _ll ? 0 : 1) : (close > open ? 1 : close < open ? 2 : 0)
-    bool  _rd = not na(open) and not na(close) and not na(_rg) and (_k == 0 ? (not na(_e) and bar_index >= _eL - 1) : _k == 2 ? (not na(_hh) and not na(_ll) and bar_index >= _kL) : true)
-    [_st, _ib, _rd, time, _np, _st[1], _ib[1], _rd[1], time[1], _np[1]]
-
-// ek hissa: TF ki aakhri BAND candle (is chart candle ke close tak) - wapsi [shamil?, tayyar?, halat, KAHAN % = IBS x 100
-// (Kachhua par naali %)]
-// _k: 0 EMA (1 UPAR / 2 NEECHE; barabar = NEECHE, bohot kam hota hai - teesri halat se nishaniyan na barhein)
-//     1 IBS (0 neeche / 1 beech / 2 upar), 2 Kachhua toot (0 neeche / 1 andar / 2 ooper), 3 rang (1 hari / 2 laal / 0 barabar)
-// REPAINT NAHI - saboot:
-//  (1) [1] + lookahead_on = pichli HTF candle, jo is chart candle se PEHLE band ho chuki. History par lookahead_on
-//      abhi wali HTF candle ko is chart candle se jorta hai, us ka [1] = pichli BAND candle; live par lookahead ka
-//      asar nahi, [1] phir bhi pichli band candle. Dono jagah wahi.
-//  (2) offset 0 + lookahead_on history par POORI HTF candle deta hai (aage ka data) - is liye SIRF us chart candle
-//      par jis ka close = HTF candle ka close (time_close == time_close(tf)). Us HTF candle ki aakhri chart candle
-//      yehi hai: open / high / low / close / EMA / toot sab is candle ke close tak ke data se - aage ka kuch nahi.
-//      Live par isi candle ki aakhri tick (barstate.isconfirmed) par HTF candle wahi poori hoti hai. Baqi chart
-//      candles par (1). Chart TF = HTF ho to har candle khud band candle.
-//  (3) HTF candle ki aakhri chart candle missing ho (chhutti / data) to agli HTF candle ki pehli chart candle
-//      (timeframe.change) par (1) khud wahi band candle deta hai - ek candle der, ghalat nahi.
-f_a16(simple string _tf, simple bool _on, simple int _k) =>
-    int    _cs = timeframe.in_seconds()
-    int    _ts = timeframe.in_seconds(_tf)
-    // f_htf jaisa: chart se chhoti nahi, aur chart TF ka poora guna (mahina hamesha poori candles ka)
-    bool   _in = _on and _ts >= _cs and (_ts >= 2592000 or _ts % _cs == 0)
-    // bahar wali TF (chart se chhoti) ki request NAHI - us ki jagah chart TF (nateeja istemal nahi hota)
-    string _tx = _in ? _tf : timeframe.period
-    [_s0, _i0, _r0, _t0, _p0, _s1, _i1, _r1, _t1, _p1] = request.security(tkStd, _tx, f_bnd(_k, emaLen, kcLen), lookahead = barmerge.lookahead_on)
-    // ye chart candle HTF candle band karti hai?
-    bool   _dn = time_close == time_close(_tx)
-    int    _st = nz(_dn ? _s0 : _s1)
-    float  _ib = nz(_dn ? _i0 : _i1, 0.5)
-    int    _t  = _dn ? _t0 : _t1
-    // tayyar: poori band candle jo chart ke andar shuru hui; EMA ko emaLen band candles, toot ko kcLen pichli candles
-    bool   _ok = _in and (_dn ? _r0 : _r1) and not na(_t) and _t >= tFirst
-    // KAHAN %: Kachhua (_k 2) par naali %, baqi par IBS x 100
-    float  _kp = _k == 2 ? nz(_dn ? _p0 : _p1, 50.0) : _ib * 100
-    [_in, _ok, _st, _kp]
-
-// har hissa ek request (kul 9 + DATA 1 = 10, hadd 40); tuple 10 x 9 + 4 = 94 (hadd 127 KUL - sab request mila kar)
-// sirf a16 Milaap par: purane Milaap par _in = false - har request chart TF ki (koi bari TF data load nahi)
-[m1In, m1Ok, m1St, m1Kp] = f_a16(mTf1, isA16 and mOn1, 0)
-[m2In, m2Ok, m2St, m2Kp] = f_a16(mTf2, isA16 and mOn2, 0)
-[m3In, m3Ok, m3St, m3Kp] = f_a16(mTf3, isA16 and mOn3, 0)
-[m4In, m4Ok, m4St, m4Kp] = f_a16(mTf4, isA16 and mOn4, 0)
-[m5In, m5Ok, m5St, m5Kp] = f_a16(mTf5, isA16 and mOn5, 0)
-[m6In, m6Ok, m6St, m6Kp] = f_a16(mTf6, isA16 and mOn6, 0)
-[ibIn, ibOk, ibSt, ibKp] = f_a16(ibTf, isA16 and ibOn, 1)
-[kcIn, kcOk, kcSt, kcKp] = f_a16(kcTf, isA16 and kcOn, 2)
-[dgIn, dgOk, dgSt, dgKp] = f_a16(dgTf, isA16 and dgOn, 3)
-
-// a16 nishani ek number: EMA hissa 3 ka (0 bahar / 1 UPAR / 2 NEECHE), IBS / toot / rang 4 ka (0 bahar, warna halat + 1)
-f_d16(bool _in, int _st) => _in ? _st + 1 : 0
-int  key16 = (m1In ? m1St : 0) + (m2In ? m2St : 0) * 3 + (m3In ? m3St : 0) * 9 + (m4In ? m4St : 0) * 27 + (m5In ? m5St : 0) * 81 + (m6In ? m6St : 0) * 243 + f_d16(ibIn, ibSt) * 729 + f_d16(kcIn, kcSt) * 2916 + f_d16(dgIn, dgSt) * 11664
-bool any16 = m1In or m2In or m3In or m4In or m5In or m6In or ibIn or kcIn or dgIn
-bool ok16  = any16 and (not m1In or m1Ok) and (not m2In or m2Ok) and (not m3In or m3Ok) and (not m4In or m4Ok) and (not m5In or m5Ok) and (not m6In or m6Ok) and (not ibIn or ibOk) and (not kcIn or kcOk) and (not dgIn or dgOk)
-// qareebi (Lorentzian) ke 5 khane: purane Milaap = TF 1-5 ka chalti candle KAHAN %; a16 = EMA TF ki BAND candle ka
-// KAHAN % (IBS x 100): khana 1 = EMA TF 1 (bahar ho to TF 2), khane 2-4 = EMA TF 3-5, khana 5 = Kachhua naali %
-// (EMA TF 6 = D ka IBS wahi IBS hissa dohrata; Kachhua bahar ho to EMA TF 6)
-bool  qInA = isA16 ? (m1In or m2In) : inA
-float qKpA = isA16 ? (m1In ? m1Kp : m2Kp) : kpA
-bool  qInB = isA16 ? m3In : inB
-float qKpB = isA16 ? m3Kp : kpB
-bool  qInC = isA16 ? m4In : inC
-float qKpC = isA16 ? m4Kp : kpC
-bool  qInD = isA16 ? m5In : inD
-float qKpD = isA16 ? m5Kp : kpD
-bool  qInE = isA16 ? (kcIn or m6In) : inE
-float qKpE = isA16 ? (kcIn ? kcKp : m6Kp) : kpE
-
 // har TF ki halat ek number (0-8); nishani = 5 halaton ka ek number
 f_st(bool _in, int _rang, int _zone) => _in ? (mode == "Sirf Rang" ? _rang : _rang * 3 + _zone) : 0
-// a16 Milaap par nishani = key16 (upar)
-int  key   = isA16 ? key16 : f_st(inA, rgA, znA) + f_st(inB, rgB, znB) * 9 + f_st(inC, rgC, znC) * 81 + f_st(inD, rgD, znD) * 729 + f_st(inE, rgE, znE) * 6561
+int  key   = f_st(inA, rgA, znA) + f_st(inB, rgB, znB) * 9 + f_st(inC, rgC, znC) * 81 + f_st(inD, rgD, znD) * 729 + f_st(inE, rgE, znE) * 6561
 // a13: AGLI candle ki nishani - "Sirf Rang" par sirf rang (0-2) har TF ka
 int  keyR  = (inA ? rgA : 0) + (inB ? rgB : 0) * 3 + (inC ? rgC : 0) * 9 + (inD ? rgD : 0) * 27 + (inE ? rgE : 0) * 81
-// a16 Milaap par AGLI bhi hamesha key16 (agMode lagu nahi)
-int  agKey = isA16 ? key16 : agMode == "Sirf Rang" ? keyR : key
+int  agKey = agMode == "Sirf Rang" ? keyR : key
 // Renko / Range / Kagi waghera par candle = waqt nahi - ginti sirf Candles / Heikin Ashi par
 bool chartOk = chart.is_standard or chart.is_heikinashi
-bool valid = isA16 ? (chartOk and ok16) : (chartOk and (inA or inB or inC or inD or inE) and (not inA or okA) and (not inB or okB) and (not inC or okC) and (not inD or okD) and (not inE or okE))
+bool valid = chartOk and (inA or inB or inC or inD or inE) and (not inA or okA) and (not inB or okB) and (not inC or okC) and (not inD or okD) and (not inE or okE)
 bool isNew = valid and (not valid[1] or key != key[1])
 // abhi wali chal kab shuru hui
 var int runT = na
@@ -381,11 +252,11 @@ if isNew
 bool  chalti = not barstate.isconfirmed
 int   fKey  = chalti ? key[1] : key
 bool  fOk   = chalti ? valid[1] : valid
-float fKpA  = chalti ? qKpA[1] : qKpA
-float fKpB  = chalti ? qKpB[1] : qKpB
-float fKpC  = chalti ? qKpC[1] : qKpC
-float fKpD  = chalti ? qKpD[1] : qKpD
-float fKpE  = chalti ? qKpE[1] : qKpE
+float fKpA  = chalti ? kpA[1] : kpA
+float fKpB  = chalti ? kpB[1] : kpB
+float fKpC  = chalti ? kpC[1] : kpC
+float fKpD  = chalti ? kpD[1] : kpD
+float fKpE  = chalti ? kpE[1] : kpE
 int   fRgA  = chalti ? rgA[1] : rgA
 int   fRgB  = chalti ? rgB[1] : rgB
 int   fRgC  = chalti ? rgC[1] : rgC
@@ -626,11 +497,11 @@ if barstate.isconfirmed
     array.push(aBI, bar_index)
     array.push(aKey, key)
     array.push(aOk, valid)
-    array.push(aKA, qInA ? qKpA : na)
-    array.push(aKB, qInB ? qKpB : na)
-    array.push(aKC, qInC ? qKpC : na)
-    array.push(aKD, qInD ? qKpD : na)
-    array.push(aKE, qInE ? qKpE : na)
+    array.push(aKA, inA ? kpA : na)
+    array.push(aKB, inB ? kpB : na)
+    array.push(aKC, inC ? kpC : na)
+    array.push(aKD, inD ? kpD : na)
+    array.push(aKE, inE ? kpE : na)
     array.push(aC, sC)
     array.push(aH, sH)
     array.push(aL, sL)
@@ -728,16 +599,6 @@ f_now(int _r, simple string _tf, bool _in, bool _ok, int _rang, float _kp) =>
         f_cell(2, _r, mode == "Sirf Rang" ? "-" : _kw + str.tostring(_kp, "0") + "%", _kc, color.white, "Close range mein kahan: 67% ya zyada Upar, 33% ya kam Neeche (JAS TF LIVE jaisa).")
         f_cell(3, _r, _ok ? "" : "(nayi)", cGr, color.white, _ok ? "" : "Chart ki history is TF ki ek poori candle se kam - ginti abhi tayyar nahi.")
 
-// a16 qataren: EMA TF ka tukra ("15m ▲"), bahar wali TF ka naam, aur ek qatar = naam (kalam 0) + halat (kalam 1-3 jore)
-f_mTx(simple string _tf, bool _in, bool _ok, int _st) => _in ? f_tfName(_tf) + (_ok ? (_st == 1 ? " ▲   " : " ▼   ") : " …   ") : ""
-f_mOut(simple string _tf, simple bool _on, bool _in) => _on and not _in ? f_tfName(_tf) + " " : ""
-f_n16(int _r, string _nm, string _t, color _c, string _tip) =>
-    f_cell(0, _r, _nm, cTxt, color.white, "")
-    f_cell(1, _r, _t, _c, color.white, _tip)
-    table.merge_cells(TB, 1, _r, 3, _r)
-// a16 qatar 5: shamil hissa jo abhi tayyar nahi - us ka naam + TF ("EMA 4H")
-f_wt16(string _nm, simple string _tf, bool _in, bool _ok) => _in and not _ok ? _nm + " " + f_tfName(_tf) + "  " : ""
-
 // ============================================================================
 //  a4 CHART — sab se qareebi purane mauqe (sirf aakhri candle par banta hai)
 // ============================================================================
@@ -749,18 +610,18 @@ var string qTxt = "Qareebi mauqe: -"
 // KAHAN % ke 5% khane (har tick par chhoti harkat se qareebi mauqe na badlein)
 f_q(float _x) => math.round(_x / 5) * 5
 
-// Lorentzian faasla: har shamil TF ke KAHAN % (khane) ka log(1 + |farq|) - jitna kam utna qareeb (a16: EMA TF ki band candle - upar qInA..qInE)
+// Lorentzian faasla: har shamil TF ke KAHAN % (khane) ka log(1 + |farq|) - jitna kam utna qareeb
 f_dist(int _i, float _a, float _b, float _c, float _e, float _w) =>
     float _d = 0.0
-    if qInA
+    if inA
         _d += math.log(1 + math.abs(f_q(array.get(aKA, _i)) - f_q(_a)))
-    if qInB
+    if inB
         _d += math.log(1 + math.abs(f_q(array.get(aKB, _i)) - f_q(_b)))
-    if qInC
+    if inC
         _d += math.log(1 + math.abs(f_q(array.get(aKC, _i)) - f_q(_c)))
-    if qInD
+    if inD
         _d += math.log(1 + math.abs(f_q(array.get(aKD, _i)) - f_q(_e)))
-    if qInE
+    if inE
         _d += math.log(1 + math.abs(f_q(array.get(aKE, _i)) - f_q(_w)))
     _d
 
@@ -920,7 +781,7 @@ if barstate.isconfirmed and showSy and valid and (na(yNext) or bar_index >= yNex
     if not barstate.isrealtime and bar_index < last_bar_index - math.max(yKeep + 2, showRec ? recN + 1 : 0) * nD - 2
         yNext := bar_index + nD
     else
-        array<int> yPk = f_near(array.size(aBI) - 1, key, qKpA, qKpB, qKpC, qKpD, qKpE, 3)
+        array<int> yPk = f_near(array.size(aBI) - 1, key, kpA, kpB, kpC, kpD, kpE, 3)
         // a10: koi mauqa nahi = yNext wahi rahe, agli band candle par phir koshish
         if array.size(yPk) > 0
             yNext := bar_index + nD
@@ -1094,7 +955,7 @@ if barstate.islast
                 label.new(tE, p0 * (1 + sAv / 100), sLb, xloc = xloc.bar_time, style = label.style_label_left, color = color.new(sLc, 20), textcolor = color.white, size = size.tiny, tooltip = sTp + "\nPeshgoi NAHI - sirf aankh se jaanch.")
 
 // a13 AGLI: aage saaya candle + label, pichli candles par ✔ / ✖ (upar sab nishan mit chuke - naye yahan)
-if barstate.islast and showAg and chartOk
+if barstate.islast and showAg and agDraw and chartOk
     int   tfMsG = timeframe.in_seconds() * 1000
     // chalti candle = andaza isi ke liye (open maloom); band = agli ke liye (open ≈ abhi ka close)
     int   tG = chalti ? time : time + tfMsG
@@ -1104,7 +965,7 @@ if barstate.islast and showAg and chartOk
         for i = math.max(0, nM - agMk) to nM - 1
             bool okM = array.get(gmOk, i)
             label.new(array.get(gmT, i), array.get(gmL, i), okM ? "✔" : "✖", xloc = xloc.bar_time, style = label.style_label_up, color = color.new(okM ? cOk : cNo, 30), textcolor = color.white, size = size.tiny, tooltip = array.get(gmTp, i))
-    string agTp = "AGLI candle (a13) - peshgoi NAHI, sirf 'pehle aisa hua tha'. Milaap: " + (isA16 ? "a16 nishani (Settings 1b)" : agMode) + "."
+    string agTp = "AGLI candle (a13) - peshgoi NAHI, sirf 'pehle aisa hua tha'. Milaap: " + agMode + "."
     if gPr == 0
         string why = not fOk ? "nishani tayyar nahi" : na(gBu) ? "ginti abhi shuru" : "is nishani ke sirf " + str.tostring(gK) + " mauqe (chahiye " + str.tostring(agMin) + ")"
         label.new(tG, math.max(sH, oG), "AGLI: andaza nahi", xloc = xloc.bar_time, style = label.style_label_lower_left, color = color.new(cGr, 100), textcolor = cGr, size = size.small, tooltip = agTp + "\n" + why)
@@ -1157,36 +1018,11 @@ if barstate.islast and showTbl
     table.clear(TB, 0, 0, 3, 19)
     f_cell(0, 0, "JAS AAINA · " + BUILD, cTxt, cHd, "Abhi wali nishani history mein - aage kya hua. Sirf naap - faisla nahi.")
     table.merge_cells(TB, 0, 0, 3, 0)
-    if isA16
-        // a16: aakhri BAND chart candle wali halat (chalti candle par pichli - fKey jaisa)
-        int    sh   = chalti ? 1 : 0
-        string mTx  = f_mTx(mTf1, m1In, m1Ok[sh], m1St[sh]) + f_mTx(mTf2, m2In, m2Ok[sh], m2St[sh]) + f_mTx(mTf3, m3In, m3Ok[sh], m3St[sh]) + f_mTx(mTf4, m4In, m4Ok[sh], m4St[sh]) + f_mTx(mTf5, m5In, m5Ok[sh], m5St[sh]) + f_mTx(mTf6, m6In, m6Ok[sh], m6St[sh])
-        string mOut = f_mOut(mTf1, mOn1, m1In) + f_mOut(mTf2, mOn2, m2In) + f_mOut(mTf3, mOn3, m3In) + f_mOut(mTf4, mOn4, m4In) + f_mOut(mTf5, mOn5, m5In) + f_mOut(mTf6, mOn6, m6In)
-        f_n16(1, "EMA" + str.tostring(emaLen), (mTx == "" ? "sab band " : mTx) + (mOut == "" ? "" : "· bahar: " + mOut), cTxt, "a16: har TF ki aakhri BAND candle ka close EMA" + str.tostring(emaLen) + " se ooper = ▲ UPAR, neeche (ya barabar) = ▼ NEECHE. … = abhi tayyar nahi (EMA ko " + str.tostring(emaLen) + " band candles chahiye, ya chart ki pehli poori candle baqi). Bahar = chart se chhoti ya chart TF ka poora guna nahi - nishani mein nahi.")
-        int    ibS  = ibSt[sh]
-        bool   ibR  = ibIn and ibOk[sh]
-        f_n16(2, "IBS " + f_tfName(ibTf), not ibIn ? "bahar" : not ibR ? "(nayi) tayyar nahi" : str.tostring(ibKp[sh] / 100, "0.00") + (ibS == 0 ? " · NEECHE" : ibS == 2 ? " · UPAR" : " · beech"), ibR ? (ibS == 0 ? cDn : ibS == 2 ? cUp : cTxt) : cGr, "a16: koshish #15 ASLI PASS. Aakhri BAND candle ka IBS = (close - low) / (high - low): " + str.tostring(ibLo, "0.00") + " se kam NEECHE, " + str.tostring(ibHi, "0.00") + " se zyada UPAR, warna beech.")
-        int    kcS  = kcSt[sh]
-        bool   kcR  = kcIn and kcOk[sh]
-        f_n16(3, "Kachhua " + f_tfName(kcTf), not kcIn ? "bahar" : not kcR ? "(nayi) tayyar nahi" : (kcS == 2 ? "▲ TOOT OOPER" : kcS == 0 ? "▼ TOOT NEECHE" : "andar (toot nahi)") + " · naali " + str.tostring(kcKp[sh], "0") + "%", kcR ? (kcS == 2 ? cUp : kcS == 0 ? cDn : cTxt) : cGr, "a16: koshish #6 ASLI PASS (Tide). Aakhri BAND close pichli " + str.tostring(kcLen) + " band candles ke sab se ooper high se ooper / sab se neeche low se neeche. Naali % = un candles ke low (0) se high (100) tak band close kahan - qareebi khana 5 bhi yahi.")
-        int    dgS  = dgSt[sh]
-        bool   dgR  = dgIn and dgOk[sh]
-        f_n16(4, "Rang " + f_tfName(dgTf), not dgIn ? "bahar" : not dgR ? "(nayi) tayyar nahi" : dgS == 1 ? "▲ HARI (band)" : dgS == 2 ? "▼ LAAL (band)" : "= BARABAR (band)", dgR ? (dgS == 1 ? cUp : dgS == 2 ? cDn : cGr) : cGr, "a16 (a14): aakhri BAND candle ka rang - 1D par kal ka band din; din ki aakhri chart candle par usi din ka.")
-        // mumkin nishaniyan: har EMA 2, IBS / toot / rang 3 - zyada = har ek ke mauqe kam
-        int    nm16 = (m1In ? 1 : 0) + (m2In ? 1 : 0) + (m3In ? 1 : 0) + (m4In ? 1 : 0) + (m5In ? 1 : 0) + (m6In ? 1 : 0)
-        int    n316 = (ibIn ? 1 : 0) + (kcIn ? 1 : 0) + (dgIn ? 1 : 0)
-        int    nCmb = int(math.pow(2, nm16) * math.pow(3, n316))
-        // tayyar nahi to kaun sa hissa baqi (chart Renko waghera ho to list khali)
-        string wt16 = f_wt16("EMA", mTf1, m1In, m1Ok[sh]) + f_wt16("EMA", mTf2, m2In, m2Ok[sh]) + f_wt16("EMA", mTf3, m3In, m3Ok[sh]) + f_wt16("EMA", mTf4, m4In, m4Ok[sh]) + f_wt16("EMA", mTf5, m5In, m5Ok[sh]) + f_wt16("EMA", mTf6, m6In, m6Ok[sh]) + f_wt16("IBS", ibTf, ibIn, ibOk[sh]) + f_wt16("Toot", kcTf, kcIn, kcOk[sh]) + f_wt16("Rang", dgTf, dgIn, dgOk[sh])
-        string st16 = fOk ? "tayyar" : "abhi tayyar nahi" + (not any16 ? ": koi hissa shamil nahi (1b)" : wt16 == "" ? "" : ": " + wt16)
-        f_cell(0, 5, "a16 BAND nishani · mumkin " + str.tostring(nCmb) + " · " + st16, fOk ? cTxt : cGr, color.white, "Hissay zyada = nishaniyan zyada = har nishani ke mauqe KAM (30 se kam par bharosa nahi). Kam karne ke liye Settings 1b mein kuch hissay band karein. Pine sirf andaza - sahi nateeja MT5 / Python se.")
-        table.merge_cells(TB, 0, 5, 3, 5)
-    else
-        f_now(1, tfA, inA, okA, fRgA, fKpA)
-        f_now(2, tfB, inB, okB, fRgB, fKpB)
-        f_now(3, tfC, inC, okC, fRgC, fKpC)
-        f_now(4, tfD, inD, okD, fRgD, fKpD)
-        f_now(5, tfE, inE, okE, fRgE, fKpE)
+    f_now(1, tfA, inA, okA, fRgA, fKpA)
+    f_now(2, tfB, inB, okB, fRgB, fKpB)
+    f_now(3, tfC, inC, okC, fRgC, fKpC)
+    f_now(4, tfD, inD, okD, fRgD, fKpD)
+    f_now(5, tfE, inE, okE, fRgE, fKpE)
     // abhi wali chal pehle hi gini ja chuki (band bazaar / candle band) to us ko nikalo
     bool inRun = fOk and map.get(LAST, fKey) == fRunT
     int nSeen  = nz(map.get(SEEN, fKey)) - (inRun ? 1 : 0)
@@ -1293,3 +1129,8 @@ if barstate.islast
             f_rc(2, 2 + i, str.tostring(no), cTxt, color.white, "")
             f_rc(3, 2 + i, na(p) ? "-" : str.tostring(p, "0") + "%", pc, color.white, n < 30 ? "30 se kam - bharosa nahi." : "Neela = bunyaad se behtar, narangi = bunyaad se bura, siyah = shor. Shor hadd ±" + str.tostring(hd, "0") + "%.")
             f_rc(4, 2 + i, na(bs) ? "-" : str.tostring(bs, "0") + "%", cGr, color.white, bTx)
+
+// a17: labels band ho to chart ke saare label mitao (sab ke ban jane ke baad - script ke aakhir mein)
+if barstate.islast and not showLb
+    for _lb in label.all
+        label.delete(_lb)
