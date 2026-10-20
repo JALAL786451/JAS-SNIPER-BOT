@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a14, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a15, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -101,6 +101,11 @@
 //  candles (ek ✔, doosra ✖) se banta hai: 2SE = 2 x sqrt(ikh - (✔ farq)^2/n)
 //  / n. Pehle bunyaad ko pakka number maana tha (tareeqa ghalat). a14 TV ✅
 //  15m: jori hadd ke baad bhi 'sab' 52% vs 50% NEELA raha (sirf naap).
+//  a15 (20 Oct, a14 TV ✅; % sahi hona kaafi nahi - paisa bacha?): AGLI
+//  record mein P/L $ qataren: har andaze par agli candle open -> close
+//  andaze ke rukh mein, minus spread (Settings 6, default $0.30 = gold
+//  1 oz). Barabar candle bhi gini (sirf -spread). Ausat ±2SE: neela sirf
+//  jab Exp - 2SE > 0. Bunyaad kul = unhi candles par hamesha bunyaad rang.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -110,9 +115,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a14", "JAS AAINA a14", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
+indicator("JAS Aaina a15", "JAS AAINA a15", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
 
-BUILD = "a14"
+BUILD = "a15"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -166,6 +171,7 @@ g6      = "6. AGLI candle (a13)"
 showAg  = input.bool(true, "AGLI candle ka andaza chart par", group = g6, tooltip = "Isi nishani ke pichhle mauqon mein AGLI chart candle kitni dafa hari / laal bani. Chart par aage saaya candle + label. Peshgoi NAHI - sirf 'pehle aisa hua tha'.")
 agMode  = input.string("Sirf Rang", "AGLI ka milaap", options = ["Sirf Rang", "Settings 1 jaisa"], group = g6, tooltip = "Sirf Rang = har TF ka sirf rang (zyada mauqe, andaza aksar milta hai). Settings 1 jaisa = upar wala Milaap (Rang + Kahan par mauqe bohot kam).")
 agMin   = input.int(30, "Kam az kam mauqe (warna andaza nahi)", minval = 10, maxval = 500, group = g6)
+agSpr   = input.float(0.30, "Spread $ (P/L qatar, a15)", minval = 0, step = 0.05, group = g6, tooltip = "Har andaze par ek trade: agli candle open -> close andaze ke rukh mein, phir ye spread minus. Daam ki ikai mein (gold: $ fi 1 oz; 1 lot = 100 oz = x100). Asli se zyada rakhein.")
 agMk    = input.int(20, "✔ / ✖ kitni pichli candles par", minval = 0, maxval = 100, group = g6, tooltip = "0 = chart par ✔ / ✖ nahi (record dabba phir bhi ginta hai).")
 
 // ---------------------------------------------------------------- RANG
@@ -354,6 +360,15 @@ var int nlBNo = 0
 var int agDf  = 0
 var int nlDf  = 0
 var int agFirstT = na
+// a15: P/L $ (1 unit) spread ke baad - ginti, jod, jod^2; bunyaad ka jod (unhi candles par)
+var int   agPn  = 0
+var float agPs  = 0.0
+var float agPq  = 0.0
+var float agBPs = 0.0
+var int   nlPn  = 0
+var float nlPs  = 0.0
+var float nlPq  = 0.0
+var float nlBPs = 0.0
 // chart ke ✔ / ✖ (aakhri 100): candle ka waqt, low, sahi?, tooltip
 var array<int>    gmT  = array.new<int>()
 var array<float>  gmL  = array.new<float>()
@@ -364,6 +379,19 @@ f_hl(float _x) => (_x > 0 ? "+" : "") + str.tostring(_x, "0.00") + "%"
 
 int agRang = sC > sO ? 1 : sC < sO ? 2 : 0
 if barstate.isconfirmed and showAg
+    // a15: andaze ke rukh trade open -> close, minus spread (barabar candle bhi - sirf -spread)
+    if gPr != 0
+        float plA = (gPr == 1 ? sC - sO : sO - sC) - agSpr
+        float plB = (gBs == 1 ? sC - sO : sO - sC) - agSpr
+        agPn  += 1
+        agPs  += plA
+        agPq  += plA * plA
+        agBPs += plB
+        if gNl
+            nlPn  += 1
+            nlPs  += plA
+            nlPq  += plA * plA
+            nlBPs += plB
     // 1. pichli band candle par bana andaza - ye candle ab band: ✔ / ✖ (barabar candle gini nahi)
     if gPr != 0 and agRang != 0
         bool hitA = agRang == gPr
@@ -1012,7 +1040,7 @@ if barstate.islast and showTbl
 // ============================================================================
 //  a11 SAAYA RECORD — aakhri saayon ka ✔ / ✖ jod (sirf naap, faisla nahi)
 // ============================================================================
-var table RT = table.new(f_pos(recPos), 5, 12, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
+var table RT = table.new(f_pos(recPos), 5, 15, border_width = 1, border_color = color.new(#CFD8DC, tblClear ? 75 : 0))
 
 f_rc(int _col, int _row, string _t, color _fg, color _bg, string _tip) =>
     table.cell(RT, _col, _row, _t, text_color = f_tc(_fg), bgcolor = f_bg(_bg), text_size = f_size(tblSize), text_halign = text.align_left, tooltip = _tip)
@@ -1031,19 +1059,41 @@ f_agRow(int _r, string _nm, string _tp, int _ok, int _no, int _bok, int _bno, in
     f_rc(3, _r, na(_p) ? "-" : str.tostring(_p, "0") + "%", _pc, color.white, _n < 30 ? "30 se kam - bharosa nahi." : "Neela = bunyaad se behtar, narangi = bunyaad se bura, siyah = shor. Shor hadd ±" + str.tostring(_hd, "0.0") + "% (a14 jori: " + str.tostring(_df) + " ikhtilaf wali candles se).")
     f_rc(4, _r, na(_bs) ? "-" : str.tostring(_bs, "0") + "%", cGr, color.white, "Bunyaad: inhi candles par aankh band kar ke hamesha wohi rang jo ab tak zyada bana.")
 
+// a15 P/L qatar: ausat ±2SE (Exp - 2SE > 0 = neela), kul, bunyaad kul (unhi candles par)
+f_usd(float _x) => (_x > 0 ? "+" : _x < 0 ? "-" : "") + "$" + str.tostring(math.abs(_x), "0.00")
+
+f_plRow(int _r, string _nm, string _tp, int _n, float _s, float _q, float _bs) =>
+    float _m  = _n > 0 ? _s / _n : na
+    float _vr = _n > 1 ? (_q - _n * _m * _m) / (_n - 1) : na
+    float _se = na(_vr) ? na : math.sqrt(math.max(_vr, 0) / _n)
+    color _mc = na(_se) or _n < 30 ? cGr : _m - 2 * _se > 0 ? cOk : _m + 2 * _se < 0 ? cNo : cTxt
+    f_rc(0, _r, _nm, cTxt, color.white, _tp)
+    f_rc(1, _r, str.tostring(_n), cTxt, color.white, "")
+    f_rc(2, _r, na(_m) ? "-" : f_usd(_m), _mc, color.white, _n < 30 ? "30 se kam - bharosa nahi." : "Ausat har trade, shor ±" + str.tostring(2 * _se, "0.00") + " (2SE). Neela = Exp - 2SE > 0 (spread ke baad bhi musbat), narangi = Exp + 2SE < 0, siyah = shor. 1 unit (gold 1 oz); 1 lot = x100.")
+    f_rc(3, _r, _n > 0 ? f_usd(_s) : "-", cTxt, color.white, "Kul P/L (1 unit) spread ke baad.")
+    f_rc(4, _r, _n > 0 ? f_usd(_bs) : "-", cGr, color.white, "Bunyaad: inhi candles par hamesha bunyaad rang (aankh band) - kul, spread ke baad.")
+
 if barstate.islast
-    table.clear(RT, 0, 0, 4, 11)
+    table.clear(RT, 0, 0, 4, 14)
     if showRec and showAg
         string agFr = na(agFirstT) ? "" : " (" + str.format_time(agFirstT, "dd MMM yy", syminfo.timezone) + " se)"
         f_agRow(9, "AGLI candle: sab", "a13: har band candle par agli candle ka andaza (hari / laal)" + agFr + ". Barabar candle gini nahi.", agOk, agNo, agBOk, agBNo, agDf)
         f_agRow(10, "AGLI: sirf rang wale", "a13: sirf wo andaze jin mein nishani ka hari % bunyaad se 2SE door tha (chart par rangeen saaya candle).", nlOk, nlNo, nlBOk, nlBNo, nlDf)
+        string plTp = "a15: har andaze par agli candle open -> close andaze ke rukh, minus spread $" + str.tostring(agSpr, "0.00") + " (Settings 6). Barabar candle bhi gini (sirf -spread), is liye trade ✔ + ✖ se zyada ho sakti hain."
+        f_rc(0, 11, "P/L $ · spread $" + str.tostring(agSpr, "0.00") + " ke baad", cTxt, cHd, plTp)
+        f_rc(1, 11, "Trade", cTxt, cHd, "")
+        f_rc(2, 11, "Ausat", cTxt, cHd, "Ausat har trade (1 unit). Neela sirf jab Exp - 2SE > 0.")
+        f_rc(3, 11, "Kul", cTxt, cHd, "")
+        f_rc(4, 11, "Bunyaad kul", cGr, cHd, "Inhi candles par hamesha bunyaad rang.")
+        f_plRow(12, "P/L: sab", plTp, agPn, agPs, agPq, agBPs)
+        f_plRow(13, "P/L: sirf rang wale", plTp, nlPn, nlPs, nlPq, nlBPs)
     if showRec and (showSy or showAg)
         f_rc(0, 1, showSy ? "Saaya" : "Andaza", cTxt, cHd, "")
         f_rc(1, 1, "✔", cOk, cHd, "Saaye / andaze ke rukh mein")
         f_rc(2, 1, "✖", cNo, cHd, "Saaye / andaze ke ulat / barabar")
         f_rc(3, 1, "%", cTxt, cHd, "✔ ka hissa.")
-        f_rc(0, 11, "Neela sirf jab bunyaad se behtar · sirf naap, faisla nahi (koshish #23 qaida)", cGr, color.white, "Rang sirf 30+ saaye aur farq 2SE se bara. Trade se pehle TALAASH / IMTIHAN (TRADING.md sec 4).")
-        table.merge_cells(RT, 0, 11, 4, 11)
+        f_rc(0, 14, "Neela sirf jab bunyaad se behtar · sirf naap, faisla nahi (koshish #23 qaida)", cGr, color.white, "Rang sirf 30+ saaye aur farq 2SE se bara. Trade se pehle TALAASH / IMTIHAN (TRADING.md sec 4).")
+        table.merge_cells(RT, 0, 14, 4, 14)
         if not showSy
             f_rc(0, 0, "RECORD · AGLI candle (a13)", cTxt, cHd, "Saaya (Settings 4) band - sirf AGLI candle ki qataren.")
             table.merge_cells(RT, 0, 0, 4, 0)
