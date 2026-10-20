@@ -1,0 +1,218 @@
+//@version=6
+// ============================================================================
+//  JAS AAINA  (build a13, Pine v6)  — AGLI candle kaunsi: hari ya laal?
+//
+//  a13 (20 Oct 2026, user: "1m se 1W tak har TF ki CHALTI candle ka haal -
+//  purane data mein yahi haal dhoondo - agli 15m candle kaunsi bani thi"):
+//  JAS TF LIVE wala concept (har TF ki abhi wali candle: rang + kahan), a12
+//  jaisa aaina, magar ab sawal sirf EK: agli chart candle hari ya laal.
+//
+//  Har chart candle (15m) BAND hone par:
+//    NISHANI   1m, 5m (chart se chhoti: is candle ki aakhri 1m / 5m candle),
+//              chart candle khud, 1H, 4H, 1D, 1W (bari: us waqt tak ki chalti
+//              candle - jaisa asal mein dikh raha tha). Har TF ka rang
+//              (hari / laal / barabar) aur "Rang + Kahan" par range mein jagah
+//              (Upar 67+ / Beech / Neeche 33 tak - JAS TF LIVE jaisa).
+//    SEEKHNA   pichli candle ki nishani -> is candle ka rang (ginti mein jama).
+//              Sirf PEECHHE ka data; aage ka kuch nahi.
+//    ANDAZA    abhi wali nishani pehle kitni dafa bani + agli candle kitni %
+//              hari bani. 50% se zyada = HARI, kam = LAAL (barabar = bunyaad).
+//              Kam az kam X purane mauqe (Settings 2) warna andaza NAHI.
+//    RECORD    har andaza agli candle band hone par ✔ / ✖. Muqabla BUNYAAD se:
+//              aankh band kar ke hamesha wohi rang jo ab tak zyada bana.
+//              Rang (neela) sirf jab farq > shor (100/sqrt(n) %) aur 30+ andaze.
+//
+//  Imaandari: andaza peshgoi nahi, sirf "pehle aisa hua tha". 55% bhi 15m par
+//  spread ke baad faida NAHI ho sakta. Trade ka faisla sirf koshish #23
+//  (TALAASH / IMTIHAN, TRADING.md sec 4). Pichla sabaq (TF-Rang Ginti r2):
+//  akeli TF ka rang agli candle par halka PALAT-ta hai - a13 sab TF mila kar.
+//
+//  Base chart: 15m (5m bhi chalega). 1m / 5m ki history TradingView par kam
+//  hai (chhoti TF ke candles ki hadd) - un ke bina zyada purana record milta
+//  hai; dabba batata hai record kis tareekh se hai.
+// ============================================================================
+indicator("JAS Aaina a13", "JAS AAINA a13", overlay = true, max_labels_count = 300)
+
+BUILD = "a13"
+
+// --------------------------------------------------------- 1. NISHANI
+g1   = "1. Nishani (har TF ki chalti candle)"
+on1  = input.bool(true, "1m", group = g1, inline = "l")
+on5  = input.bool(true, "5m", group = g1, inline = "l")
+onCh = input.bool(true, "Chart candle", group = g1, inline = "l")
+onH1 = input.bool(true, "1H", group = g1, inline = "h")
+onH4 = input.bool(true, "4H", group = g1, inline = "h")
+onD  = input.bool(true, "1D", group = g1, inline = "h")
+onW  = input.bool(true, "1W", group = g1, inline = "h")
+mode = input.string("Sirf Rang", "Milaap", options = ["Sirf Rang", "Rang + Kahan"], group = g1, tooltip = "Sirf Rang = har TF hari / laal (zyada mauqe). Rang + Kahan = rang AUR range mein jagah (bohot kam mauqe - kam TF chunein).")
+
+// ------------------------------------------------------------ 2. GINTI
+g2   = "2. Ginti"
+minN = input.int(30, "Kam az kam purane mauqe (warna andaza nahi)", minval = 5, maxval = 500, group = g2)
+nRec = input.int(300, "Record: aakhri kitne andaze", minval = 20, maxval = 3000, group = g2)
+
+// ------------------------------------------------------------ 3. CHART
+g3      = "3. Chart"
+showMk  = input.bool(true, "✔ / ✖ chart par", group = g3)
+nMk     = input.int(30, "Kitne ✔ / ✖", minval = 1, maxval = 200, group = g3)
+showTbl = input.bool(true, "Record dabba", group = g3)
+tblPos  = input.string("Top Right", "Dabba kahan", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = g3)
+
+cUp  = color.new(#26a69a, 0)
+cDn  = color.new(#ef5350, 0)
+cGr  = color.new(#9e9e9e, 0)
+cBl  = color.new(#2962ff, 0)
+
+// ============================================================================
+// Har TF ki halat: rang 0 barabar / 1 hari / 2 laal, jagah 0 Neeche / 1 Beech / 2 Upar
+f_state(float _o, float _h, float _l, float _c) =>
+    float _rg = _h - _l
+    float _kp = _rg > 0 ? (_c - _l) / _rg * 100 : 50.0
+    int _rang = _c > _o ? 1 : _c < _o ? 2 : 0
+    int _zone = _kp >= 67 ? 2 : _kp <= 33 ? 0 : 1
+    mode == "Sirf Rang" ? _rang : _rang * 3 + _zone
+
+// Chhoti TF: is chart candle ki aakhri 1m / 5m candle (band) - [shamil?, mila?, halat]
+f_low(simple string _tf, simple bool _on) =>
+    bool _in = _on and timeframe.in_seconds(_tf) < timeframe.in_seconds()
+    _rq = timeframe.in_seconds(_tf) < timeframe.in_seconds() ? _tf : timeframe.period
+    [_ao, _ah, _al, _ac] = request.security_lower_tf(syminfo.tickerid, _rq, [open, high, low, close])
+    bool _ok = array.size(_ac) > 0
+    int _s = _ok ? f_state(array.last(_ao), array.last(_ah), array.last(_al), array.last(_ac)) : 0
+    [_in, _ok, _s]
+
+// Bari TF: chalti candle chart candle ke close tak (a12 jaisa) - [shamil?, tayyar?, halat]
+f_htf(simple string _tf, simple bool _on) =>
+    var float _o   = na
+    var float _h   = na
+    var float _l   = na
+    var bool _seen = false
+    bool _mul = timeframe.in_seconds(_tf) % timeframe.in_seconds() == 0
+    bool _in  = _on and timeframe.in_seconds(_tf) > timeframe.in_seconds() and _mul
+    bool _new = timeframe.change(_tf)
+    if _new or na(_o)
+        _o := open
+        _h := high
+        _l := low
+        // chart ki pehli TF candle aadhi hoti hai - agli nayi candle se tayyar
+        if _new and bar_index > 0
+            _seen := true
+    else
+        _h := math.max(_h, high)
+        _l := math.min(_l, low)
+    [_in, _seen, f_state(_o, _h, _l, close)]
+
+[in1, ok1, s1]   = f_low("1", on1)
+[in5, ok5, s5]   = f_low("5", on5)
+[inH1, okH1, sH1] = f_htf("60", onH1)
+[inH4, okH4, sH4] = f_htf("240", onH4)
+[inD, okD, sD]   = f_htf("D", onD)
+[inW, okW, sW]   = f_htf("W", onW)
+int sCh = f_state(open, high, low, close)
+
+// nishani = sab shamil TF ki halat ek number mein
+int BASE = mode == "Sirf Rang" ? 3 : 9
+f_add(int _k, bool _in, int _s) => _in ? _k * BASE + _s : _k
+int key = 1
+key := f_add(key, in1, s1)
+key := f_add(key, in5, s5)
+key := f_add(key, onCh, sCh)
+key := f_add(key, inH1, sH1)
+key := f_add(key, inH4, sH4)
+key := f_add(key, inD, sD)
+key := f_add(key, inW, sW)
+bool anyIn = in1 or in5 or onCh or inH1 or inH4 or inD or inW
+bool chartOk = chart.is_standard or chart.is_heikinashi
+bool valid = chartOk and anyIn and (not in1 or ok1) and (not in5 or ok5) and (not inH1 or okH1) and (not inH4 or okH4) and (not inD or okD) and (not inW or okW)
+
+// TF ke naam (dabba ke liye)
+string tfTxt = (in1 ? "1m " : "") + (in5 ? "5m " : "") + (onCh ? timeframe.period + "(chart) " : "") + (inH1 ? "1H " : "") + (inH4 ? "4H " : "") + (inD ? "1D " : "") + (inW ? "1W" : "")
+
+// ============================================================================
+var map<int, int> mT = map.new<int, int>()
+var map<int, int> mH = map.new<int, int>()
+var int gT       = 0
+var int gH       = 0
+var int prevKey  = -1
+var int pred     = 0
+var int predBase = 0
+var float predP  = na
+var int predN    = 0
+var array<int> rA   = array.new<int>()
+var array<int> rB   = array.new<int>()
+var array<int> rTm  = array.new<int>()
+var array<label> mk = array.new<label>()
+
+int outc = close > open ? 1 : close < open ? 2 : 0
+
+if barstate.isconfirmed and chartOk
+    // 1. pichla andaza jaancho (barabar candle = gina nahi)
+    if pred != 0 and outc != 0
+        int okA = outc == pred ? 1 : 0
+        int okB = outc == predBase ? 1 : 0
+        array.push(rA, okA)
+        array.push(rB, okB)
+        array.push(rTm, time)
+        if array.size(rA) > nRec
+            array.shift(rA)
+            array.shift(rB)
+            array.shift(rTm)
+        if showMk
+            array.push(mk, label.new(bar_index, low, okA == 1 ? "✔" : "✖", style = label.style_none, yloc = yloc.belowbar, textcolor = okA == 1 ? cUp : cDn, size = size.small, tooltip = "Andaza " + (pred == 1 ? "HARI" : "LAAL") + " " + str.tostring(predP * 100, "0") + "% (" + str.tostring(predN) + " mauqe) | bani " + (outc == 1 ? "HARI" : "LAAL")))
+            if array.size(mk) > nMk
+                label.delete(array.shift(mk))
+    // 2. seekho: pichli candle ki nishani -> is candle ka rang
+    if prevKey >= 0 and outc != 0
+        mT.put(prevKey, nz(mT.get(prevKey)) + 1)
+        gT += 1
+        if outc == 1
+            mH.put(prevKey, nz(mH.get(prevKey)) + 1)
+            gH += 1
+    // 3. agli candle ka andaza (sirf ab tak ki ginti se)
+    prevKey := valid ? key : -1
+    pred := 0
+    predN := 0
+    predP := na
+    if valid and gT >= minN
+        predBase := gH * 2 >= gT ? 1 : 2
+        int n = nz(mT.get(key))
+        if n >= minN
+            float p = nz(mH.get(key)) / n
+            predN := n
+            predP := p > 0.5 ? p : p < 0.5 ? 1 - p : 0.5
+            pred := p > 0.5 ? 1 : p < 0.5 ? 2 : predBase
+
+// ------------------------------------------------------------ ABHI label
+var label nowLb = na
+if barstate.islast
+    label.delete(nowLb)
+    int x = barstate.isconfirmed ? bar_index + 1 : bar_index
+    string bTxt = gT > 0 ? (gH * 2 >= gT ? "HARI " : "LAAL ") + str.tostring(math.max(gH, gT - gH) * 100.0 / gT, "0") + "%" : "-"
+    string t = pred == 0 ? "AGLI: andaza nahi\n(is nishani ke " + str.tostring(nz(mT.get(key))) + " mauqe, chahiye " + str.tostring(minN) + ")" : "AGLI: " + (pred == 1 ? "HARI " : "LAAL ") + str.tostring(predP * 100, "0") + "%\n" + str.tostring(predN) + " mauqe | bunyaad " + bTxt
+    nowLb := label.new(x, pred == 2 ? high : low, t, style = pred == 2 ? label.style_label_down : label.style_label_up, color = pred == 1 ? cUp : pred == 2 ? cDn : cGr, textcolor = color.white, size = size.small)
+
+// ------------------------------------------------------------ RECORD dabba
+f_pos(_s) => _s == "Top Left" ? position.top_left : _s == "Bottom Right" ? position.bottom_right : _s == "Bottom Left" ? position.bottom_left : position.top_right
+var table tb = table.new(f_pos(tblPos), 2, 7, bgcolor = color.new(chart.bg_color, 15), border_width = 1, border_color = cGr)
+if showTbl and barstate.islast
+    int n = array.size(rA)
+    float pA = n > 0 ? array.sum(rA) * 100.0 / n : na
+    float pB = n > 0 ? array.sum(rB) * 100.0 / n : na
+    float fq = pA - pB
+    float sh = n > 0 ? 100.0 / math.sqrt(n) : na
+    bool dam = n >= 30 and math.abs(fq) > sh
+    string fromTxt = n > 0 ? str.format_time(array.get(rTm, 0), "dd MMM yy HH:mm", syminfo.timezone) : "-"
+    table.cell(tb, 0, 0, "JAS AAINA " + BUILD + " — agli candle", text_color = chart.fg_color, text_size = size.small)
+    table.merge_cells(tb, 0, 0, 1, 0)
+    table.cell(tb, 0, 1, "Andaze", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 1, 1, str.tostring(n) + " (" + fromTxt + " se)", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 0, 2, "Aaina sahi", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 1, 2, n > 0 ? str.tostring(pA, "0.0") + "%" : "-", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 0, 3, "Bunyaad sahi", text_color = chart.fg_color, text_size = size.small, tooltip = "Aankh band kar ke hamesha wohi rang jo ab tak zyada bana - wahi candles.")
+    table.cell(tb, 1, 3, n > 0 ? str.tostring(pB, "0.0") + "%" : "-", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 0, 4, "Farq (shor ±)", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 1, 4, n > 0 ? (fq > 0 ? "+" : "") + str.tostring(fq, "0.0") + " (±" + str.tostring(sh, "0.0") + ")" : "-", text_color = color.white, bgcolor = dam ? cBl : cGr, text_size = size.small)
+    table.cell(tb, 0, 5, "Faisla", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 1, 5, n < 30 ? "kam andaze" : dam ? (fq > 0 ? "farq shor se bara" : "aaina bunyaad se BURA") : "SHOR (sikka)", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 0, 6, "Nishani", text_color = chart.fg_color, text_size = size.small)
+    table.cell(tb, 1, 6, tfTxt + " | " + mode + " | " + str.tostring(map.size(mT)) + " shakal", text_color = chart.fg_color, text_size = size.small)
