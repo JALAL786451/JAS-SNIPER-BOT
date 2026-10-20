@@ -12,8 +12,7 @@ sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/roznamcha/README.md` - **din ba din** (har tareekh ki file, git commits): user "X tareekh tak peechhe jao" kahe to yahin se
 - `docs/files-tafseel.md` - har file ki lambi kahani; files ki list bhi yahin; `CLAUDE.md` - sirf EA/MQL5 qaide
 
-Purani files mein `TRADING-MERI-KAHANI` likha ho = ab `docs/trading-pakki.md`;
-`TRADING-ABHI-KAHAN-HAIN` = ab ye file (purana hissa `docs/purana-haal.md`).
+Purana naam `TRADING-MERI-KAHANI` = `docs/trading-pakki.md`; `TRADING-ABHI-KAHAN-HAIN` = ye file.
 
 ---
 
@@ -55,15 +54,12 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**20 Oct shaam (18vi chat):** demo 3 EA theek (SS ✅, sec 7). VPS (~$10-15) user abhi NAHI lega - us ki baat band.
-a12 natija (17vi): 15m saaya = bunyaad (sikka), 1D 300 saaye +5 (hadd ±6) = shor (`docs/trading-pakki.md` sec 4).
-**AAINA a13 = a12 ki TWEAK, wahi file `indicators/jas_aaina.pine` (1062 lines, raw `1eae50b`).** User: alag chhoti script
-NAHI ("800+ ko 200+ bana diya" - maine alag `jas_aaina_agli.pine` banayi thi, delete). Har agla build isi file mein.
-a13 = **Settings 6 AGLI candle:** har band candle par isi nishani (default "Sirf Rang"; TF 15m/1H/4H/1D + TF 5 1W band) ke
-pichhle mauqon mein AGLI candle hari/laal % + ausat high/low/close (open se) -> aage saaya candle + label "AGLI 15m: HARI x%
-· n mauqe · bunyaad y%" (rang sirf andaze ki taraf bunyaad se 2SE, warna saleti "shor"); chalti candle par halka "ABHI
-chalti"; pichli 20 candles par ✔/✖ (tooltip); Record dabba qatar "AGLI candle: sab" + "AGLI: sirf rang wale" vs bunyaad
-(hamesha zyada wala rang). Sirf pichhla data. pinecheck ✅ + 5 reviewer jaanch (5 chhoti theek). **TV compile BAAQI.**
+**20 Oct shaam (18vi chat):** demo 3 EA theek (sec 7). VPS user abhi NAHI lega - baat band. a12: saaya = shor (pakki sec 4).
+**AAINA a13 = a12 ki TWEAK, wahi file `indicators/jas_aaina.pine` (1062 lines, `1eae50b`)** - alag script NAHI (user).
+**Settings 6 AGLI candle:** isi nishani (default "Sirf Rang"; 15m/1H/4H/1D, TF 5 1W band) ke pichhle mauqon mein agli candle
+hari/laal % + ausat high/low/close -> aage saaya candle + label "AGLI 15m: HARI x% · n mauqe · bunyaad y%" (rang sirf
+bunyaad se 2SE, warna saleti); chalti par halka "ABHI chalti"; pichli 20 candles ✔/✖; Record qatar "AGLI candle: sab" +
+"AGLI: sirf rang wale" vs bunyaad. pinecheck ✅ + 5 reviewer jaanch. **TV compile BAAQI.**
 **AGLI CHAT - user a13 SS bhejega. Jaanch:** (1) error/warning? (2) saaya candle + label + ✔/✖ dikhe; "andaza nahi" =
 mauqe < 30 (agMin); (3) record 2 qataren: % vs bunyaad, neela sirf 30+ aur 2SE - 15m par umeed ~bunyaad (a12 sabaq);
 (4) nishan a12 ke labels par charhe? Timeout -> agMk / recN kam. **Tweak (ek waqt ek, user "D"):** AGLI 1D chart par (dam

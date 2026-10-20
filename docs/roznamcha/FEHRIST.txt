@@ -17,7 +17,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - JAS AAINA a5: TV runtime error (historical offset beyond buffer) - chart ke saare nishan a
    - Chat khatam (16vi): sec 5 (AAINA a10 TV ✅, saaya poora; agla Commodity + Rsi2 demo), sawal
 
-2026-10-20  (6 kaam)
+2026-10-20  (7 kaam)
    - jas_aaina a11: SAAYA RECORD dabba (aakhri saayon ka ✔/✖ jod: sab, lakeerein ek taraf/alag,
    - jas_aaina_agli a13: 1m-1W chalti candle nishani -> agli 15m candle hari/laal andaza, chart
-   - jas_aaina a13: jaanch ke 5 sudhaar - okA/okB shadow nahi, rang sirf andaze ki taraf 2SE, m
+   - Chat khatam (18vi): demo 3 EA theek (sec 7), AAINA a13 = a12 ki tweak (AGLI candle, Settin
