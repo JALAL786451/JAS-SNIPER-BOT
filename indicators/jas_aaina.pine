@@ -99,7 +99,8 @@
 //  ke rang mein): AGLI qataron ka shor hadd ab JORI (paired) - aaina aur
 //  bunyaad unhi candles par gine jate hain, is liye farq sirf IKHTILAF wali
 //  candles (ek ✔, doosra ✖) se banta hai: 2SE = 2 x sqrt(ikh - (✔ farq)^2/n)
-//  / n. Pehle bunyaad ko pakka number maana tha - 15m ka 52% ghalat neela.
+//  / n. Pehle bunyaad ko pakka number maana tha (tareeqa ghalat). a14 TV ✅
+//  15m: jori hadd ke baad bhi 'sab' 52% vs 50% NEELA raha (sirf naap).
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
