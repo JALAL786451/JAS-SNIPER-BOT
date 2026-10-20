@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS AAINA  (build a13, Pine v6)  — abhi wali nishani, history ke aaine mein
+//  JAS AAINA  (build a14, Pine v6)  — abhi wali nishani, history ke aaine mein
 //
 //  a1 (19 Oct 2026, user ki marzi): JAS TF LIVE jo ABHI dikhata hai (bari TF
 //  ki chalti candle ka RANG + KAHAN), wahi nishani chart ki history mein
@@ -95,6 +95,11 @@
 //  Milaap alag: "Sirf Rang" (default, zyada mauqe) ya Settings 1 jaisa.
 //  (2) TF 5 = 1W (default band - chalu karne se mauqe kam). 1m / 5m chart
 //  (15m) se chhoti - un ki candle 15m ke andar hi band hoti hai.
+//  a14 (20 Oct, a13 TV ✅ 15m + 1D; jaanch: ginti sahi, ghalati sirf record
+//  ke rang mein): AGLI qataron ka shor hadd ab JORI (paired) - aaina aur
+//  bunyaad unhi candles par gine jate hain, is liye farq sirf IKHTILAF wali
+//  candles (ek ✔, doosra ✖) se banta hai: 2SE = 2 x sqrt(ikh - (✔ farq)^2/n)
+//  / n. Pehle bunyaad ko pakka number maana tha - 15m ka 52% ghalat neela.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -104,9 +109,9 @@
 //  Misaal ka khayal: Lorentzian Classification (kNN) - yahan "bilkul wahi
 //  nishani" wala seedha milaap hai, koi andaza / training nahi.
 // ============================================================================
-indicator("JAS Aaina a13", "JAS AAINA a13", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
+indicator("JAS Aaina a14", "JAS AAINA a14", overlay = true, max_bars_back = 1000, max_boxes_count = 60, max_lines_count = 200, max_labels_count = 300, max_polylines_count = 20)
 
-BUILD = "a13"
+BUILD = "a14"
 
 // --------------------------------------------------------- 1. NISHANI
 g1   = "1. Nishani (bari TF ki chalti candle)"
@@ -344,6 +349,9 @@ var int nlOk  = 0
 var int nlNo  = 0
 var int nlBOk = 0
 var int nlBNo = 0
+// a14: ikhtilaf - aaina aur bunyaad mein se sirf ek ✔ (jori shor hadd isi se)
+var int agDf  = 0
+var int nlDf  = 0
 var int agFirstT = na
 // chart ke ✔ / ✖ (aakhri 100): candle ka waqt, low, sahi?, tooltip
 var array<int>    gmT  = array.new<int>()
@@ -363,11 +371,13 @@ if barstate.isconfirmed and showAg
         agNo  += hitA ? 0 : 1
         agBOk += hitB ? 1 : 0
         agBNo += hitB ? 0 : 1
+        agDf  += hitA != hitB ? 1 : 0
         if gNl
             nlOk  += hitA ? 1 : 0
             nlNo  += hitA ? 0 : 1
             nlBOk += hitB ? 1 : 0
             nlBNo += hitB ? 0 : 1
+            nlDf  += hitA != hitB ? 1 : 0
         array.push(gmT, time)
         array.push(gmL, sL)
         array.push(gmOk, hitA)
@@ -1007,24 +1017,25 @@ f_rc(int _col, int _row, string _t, color _fg, color _bg, string _tip) =>
     table.cell(RT, _col, _row, _t, text_color = f_tc(_fg), bgcolor = f_bg(_bg), text_size = f_size(tblSize), text_halign = text.align_left, tooltip = _tip)
 
 // a13 AGLI qatar: aaina ✔ / ✖ vs bunyaad (wahi candles)
-f_agRow(int _r, string _nm, string _tp, int _ok, int _no, int _bok, int _bno) =>
+// a14: shor hadd JORI - farq sirf ikhtilaf (_df) wali candles se: 2SE = 200 x sqrt(_df - (✔ farq)^2 / n) / n
+f_agRow(int _r, string _nm, string _tp, int _ok, int _no, int _bok, int _bno, int _df) =>
     int   _n  = _ok + _no
     float _p  = _n > 0 ? 100.0 * _ok / _n : na
     float _bs = _bok + _bno > 0 ? 100.0 * _bok / (_bok + _bno) : na
-    float _hd = na(_bs) or _n == 0 ? na : 200 * math.sqrt(math.max(_bs / 100 * (1 - _bs / 100), 0) / _n)
+    float _hd = na(_bs) or _n == 0 ? na : 200 * math.sqrt(math.max(_df - math.pow(_ok - _bok, 2) / _n, 0)) / _n
     color _pc = na(_p) or na(_bs) or _n < 30 ? cGr : _p > _bs + _hd ? cOk : _p < _bs - _hd ? cNo : cTxt
     f_rc(0, _r, _nm, cTxt, color.white, _tp)
     f_rc(1, _r, str.tostring(_ok), cTxt, color.white, "")
     f_rc(2, _r, str.tostring(_no), cTxt, color.white, "")
-    f_rc(3, _r, na(_p) ? "-" : str.tostring(_p, "0") + "%", _pc, color.white, _n < 30 ? "30 se kam - bharosa nahi." : "Neela = bunyaad se behtar, narangi = bunyaad se bura, siyah = shor. Shor hadd ±" + str.tostring(_hd, "0") + "%.")
+    f_rc(3, _r, na(_p) ? "-" : str.tostring(_p, "0") + "%", _pc, color.white, _n < 30 ? "30 se kam - bharosa nahi." : "Neela = bunyaad se behtar, narangi = bunyaad se bura, siyah = shor. Shor hadd ±" + str.tostring(_hd, "0.0") + "% (a14 jori: " + str.tostring(_df) + " ikhtilaf wali candles se).")
     f_rc(4, _r, na(_bs) ? "-" : str.tostring(_bs, "0") + "%", cGr, color.white, "Bunyaad: inhi candles par aankh band kar ke hamesha wohi rang jo ab tak zyada bana.")
 
 if barstate.islast
     table.clear(RT, 0, 0, 4, 11)
     if showRec and showAg
         string agFr = na(agFirstT) ? "" : " (" + str.format_time(agFirstT, "dd MMM yy", syminfo.timezone) + " se)"
-        f_agRow(9, "AGLI candle: sab", "a13: har band candle par agli candle ka andaza (hari / laal)" + agFr + ". Barabar candle gini nahi.", agOk, agNo, agBOk, agBNo)
-        f_agRow(10, "AGLI: sirf rang wale", "a13: sirf wo andaze jin mein nishani ka hari % bunyaad se 2SE door tha (chart par rangeen saaya candle).", nlOk, nlNo, nlBOk, nlBNo)
+        f_agRow(9, "AGLI candle: sab", "a13: har band candle par agli candle ka andaza (hari / laal)" + agFr + ". Barabar candle gini nahi.", agOk, agNo, agBOk, agBNo, agDf)
+        f_agRow(10, "AGLI: sirf rang wale", "a13: sirf wo andaze jin mein nishani ka hari % bunyaad se 2SE door tha (chart par rangeen saaya candle).", nlOk, nlNo, nlBOk, nlBNo, nlDf)
     if showRec and (showSy or showAg)
         f_rc(0, 1, showSy ? "Saaya" : "Andaza", cTxt, cHd, "")
         f_rc(1, 1, "✔", cOk, cHd, "Saaye / andaze ke rukh mein")
