@@ -123,10 +123,12 @@
 //  close tak band ho chuki; jo chart candle khud HTF candle band karti hai
 //  (din ki aakhri 15m) usi par wahi candle - AGLI din ki pehli candle ke
 //  andaze mein kal ka rang shamil. History aur live ek jaise (repaint nahi).
-//  Hissay zyada = nishaniyan zyada = har ek ke mauqe KAM (default 15m: 4 EMA
-//  x IBS 3 x toot 3 x rang 3 = 432). AGLI bhi isi nishani se. Purane do
-//  Milaap (TF 1-5) bilkul waise hi. Pine nateeja sirf ANDAZA - sahi nateeja
-//  MT5 ya (data milne par) Python se.
+//  Hissay zyada = nishaniyan zyada = har ek ke mauqe KAM (default 15m: EMA
+//  2^4 = 16 x IBS 3 x toot 3 x rang 3 = 432). AGLI bhi isi nishani se.
+//  Qareebi khane: EMA TF ki band candle ka IBS %, khana 5 Kachhua naali %.
+//  Purane do Milaap (TF 1-5) bilkul waise hi (un par a16 ki bari TF request
+//  nahi). Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par)
+//  Python se.
 //
 //  Base chart: 5m / 15m. Chart se chhoti TF nishani mein nahi aati.
 //  1D candle chart ki candles se banti hai: spot / CFD gold par TV jaisi;
@@ -277,15 +279,22 @@ bool isA16 = mode == "a16 Band: EMA + IBS + Kachhua"
 // chart ki pehli candle ka waqt: is se pehle shuru hui HTF candle (chart ki pehli aadhi candle) ginti mein nahi
 var int tFirst = time
 
-// HTF ke andar chalta hai: [open, high, low, close, EMA, pichli _kL candles (khud shamil nahi) ka high / low, candle number, waqt]
-// pehle 9 = abhi wali HTF candle (0), agle 9 = pichli (1)
-f_bnd(simple int _eL, simple int _kL) =>
+// HTF ke andar halat yahin: [halat, IBS, tayyar?, waqt, naali %] abhi wali (0) + pichli (1) HTF candle - 10 cheezein
+// naali % (sirf Kachhua kaam ka): band close pichli _kL candles ki naali (sab se neeche low = 0, sab se ooper high = 100)
+// mein kahan - 100 se ooper / 0 se neeche = toot
+f_bnd(simple int _k, simple int _eL, simple int _kL) =>
     float _e  = ta.ema(close, _eL)
     float _hh = ta.highest(high, _kL)[1]
     float _ll = ta.lowest(low, _kL)[1]
-    [open, high, low, close, _e, _hh, _ll, bar_index, time, open[1], high[1], low[1], close[1], _e[1], _hh[1], _ll[1], bar_index - 1, time[1]]
+    float _rg = high - low
+    float _ib = _rg > 0 ? (close - low) / _rg : 0.5
+    float _np = _hh > _ll ? (close - _ll) / (_hh - _ll) * 100 : 50.0
+    int   _st = _k == 0 ? (close > _e ? 1 : 2) : _k == 1 ? (_ib < ibLo ? 0 : _ib > ibHi ? 2 : 1) : _k == 2 ? (close > _hh ? 2 : close < _ll ? 0 : 1) : (close > open ? 1 : close < open ? 2 : 0)
+    bool  _rd = not na(open) and not na(close) and not na(_rg) and (_k == 0 ? (not na(_e) and bar_index >= _eL - 1) : _k == 2 ? (not na(_hh) and not na(_ll) and bar_index >= _kL) : true)
+    [_st, _ib, _rd, time, _np, _st[1], _ib[1], _rd[1], time[1], _np[1]]
 
-// ek hissa: TF ki aakhri BAND candle (is chart candle ke close tak) - wapsi [shamil?, tayyar?, halat, KAHAN % = IBS x 100]
+// ek hissa: TF ki aakhri BAND candle (is chart candle ke close tak) - wapsi [shamil?, tayyar?, halat, KAHAN % = IBS x 100
+// (Kachhua par naali %)]
 // _k: 0 EMA (1 UPAR / 2 NEECHE; barabar = NEECHE, bohot kam hota hai - teesri halat se nishaniyan na barhein)
 //     1 IBS (0 neeche / 1 beech / 2 upar), 2 Kachhua toot (0 neeche / 1 andar / 2 ooper), 3 rang (1 hari / 2 laal / 0 barabar)
 // REPAINT NAHI - saboot:
@@ -306,39 +315,29 @@ f_a16(simple string _tf, simple bool _on, simple int _k) =>
     bool   _in = _on and _ts >= _cs and (_ts >= 2592000 or _ts % _cs == 0)
     // bahar wali TF (chart se chhoti) ki request NAHI - us ki jagah chart TF (nateeja istemal nahi hota)
     string _tx = _in ? _tf : timeframe.period
-    [_o0, _h0, _l0, _c0, _e0, _hh0, _ll0, _n0, _t0, _o1, _h1, _l1, _c1, _e1, _hh1, _ll1, _n1, _t1] = request.security(tkStd, _tx, f_bnd(emaLen, kcLen), lookahead = barmerge.lookahead_on)
+    [_s0, _i0, _r0, _t0, _p0, _s1, _i1, _r1, _t1, _p1] = request.security(tkStd, _tx, f_bnd(_k, emaLen, kcLen), lookahead = barmerge.lookahead_on)
     // ye chart candle HTF candle band karti hai?
     bool   _dn = time_close == time_close(_tx)
-    float  _o  = _dn ? _o0 : _o1
-    float  _h  = _dn ? _h0 : _h1
-    float  _l  = _dn ? _l0 : _l1
-    float  _c  = _dn ? _c0 : _c1
-    float  _e  = _dn ? _e0 : _e1
-    float  _hh = _dn ? _hh0 : _hh1
-    float  _ll = _dn ? _ll0 : _ll1
-    int    _n  = _dn ? _n0 : _n1
+    int    _st = nz(_dn ? _s0 : _s1)
+    float  _ib = nz(_dn ? _i0 : _i1, 0.5)
     int    _t  = _dn ? _t0 : _t1
-    float  _rg = _h - _l
-    float  _ib = _rg > 0 ? (_c - _l) / _rg : 0.5
     // tayyar: poori band candle jo chart ke andar shuru hui; EMA ko emaLen band candles, toot ko kcLen pichli candles
-    bool   _ok = _in and not na(_o) and not na(_c) and not na(_rg) and not na(_t) and _t >= tFirst
-    if _k == 0
-        _ok := _ok and not na(_e) and not na(_n) and _n >= emaLen - 1
-    if _k == 2
-        _ok := _ok and not na(_hh) and not na(_ll) and not na(_n) and _n >= kcLen
-    int    _st = _k == 0 ? (_c > _e ? 1 : 2) : _k == 1 ? (_ib < ibLo ? 0 : _ib > ibHi ? 2 : 1) : _k == 2 ? (_c > _hh ? 2 : _c < _ll ? 0 : 1) : (_c > _o ? 1 : _c < _o ? 2 : 0)
-    [_in, _ok, _st, _ib * 100]
+    bool   _ok = _in and (_dn ? _r0 : _r1) and not na(_t) and _t >= tFirst
+    // KAHAN %: Kachhua (_k 2) par naali %, baqi par IBS x 100
+    float  _kp = _k == 2 ? nz(_dn ? _p0 : _p1, 50.0) : _ib * 100
+    [_in, _ok, _st, _kp]
 
-// har hissa ek request (kul 9 + DATA wali 1 = 10, hadd 40); tuple 18 (hadd 127)
-[m1In, m1Ok, m1St, m1Kp] = f_a16(mTf1, mOn1, 0)
-[m2In, m2Ok, m2St, m2Kp] = f_a16(mTf2, mOn2, 0)
-[m3In, m3Ok, m3St, m3Kp] = f_a16(mTf3, mOn3, 0)
-[m4In, m4Ok, m4St, m4Kp] = f_a16(mTf4, mOn4, 0)
-[m5In, m5Ok, m5St, m5Kp] = f_a16(mTf5, mOn5, 0)
-[m6In, m6Ok, m6St, m6Kp] = f_a16(mTf6, mOn6, 0)
-[ibIn, ibOk, ibSt, ibKp] = f_a16(ibTf, ibOn, 1)
-[kcIn, kcOk, kcSt, kcKp] = f_a16(kcTf, kcOn, 2)
-[dgIn, dgOk, dgSt, dgKp] = f_a16(dgTf, dgOn, 3)
+// har hissa ek request (kul 9 + DATA 1 = 10, hadd 40); tuple 10 x 9 + 4 = 94 (hadd 127 KUL - sab request mila kar)
+// sirf a16 Milaap par: purane Milaap par _in = false - har request chart TF ki (koi bari TF data load nahi)
+[m1In, m1Ok, m1St, m1Kp] = f_a16(mTf1, isA16 and mOn1, 0)
+[m2In, m2Ok, m2St, m2Kp] = f_a16(mTf2, isA16 and mOn2, 0)
+[m3In, m3Ok, m3St, m3Kp] = f_a16(mTf3, isA16 and mOn3, 0)
+[m4In, m4Ok, m4St, m4Kp] = f_a16(mTf4, isA16 and mOn4, 0)
+[m5In, m5Ok, m5St, m5Kp] = f_a16(mTf5, isA16 and mOn5, 0)
+[m6In, m6Ok, m6St, m6Kp] = f_a16(mTf6, isA16 and mOn6, 0)
+[ibIn, ibOk, ibSt, ibKp] = f_a16(ibTf, isA16 and ibOn, 1)
+[kcIn, kcOk, kcSt, kcKp] = f_a16(kcTf, isA16 and kcOn, 2)
+[dgIn, dgOk, dgSt, dgKp] = f_a16(dgTf, isA16 and dgOn, 3)
 
 // a16 nishani ek number: EMA hissa 3 ka (0 bahar / 1 UPAR / 2 NEECHE), IBS / toot / rang 4 ka (0 bahar, warna halat + 1)
 f_d16(bool _in, int _st) => _in ? _st + 1 : 0
@@ -346,7 +345,8 @@ int  key16 = (m1In ? m1St : 0) + (m2In ? m2St : 0) * 3 + (m3In ? m3St : 0) * 9 +
 bool any16 = m1In or m2In or m3In or m4In or m5In or m6In or ibIn or kcIn or dgIn
 bool ok16  = any16 and (not m1In or m1Ok) and (not m2In or m2Ok) and (not m3In or m3Ok) and (not m4In or m4Ok) and (not m5In or m5Ok) and (not m6In or m6Ok) and (not ibIn or ibOk) and (not kcIn or kcOk) and (not dgIn or dgOk)
 // qareebi (Lorentzian) ke 5 khane: purane Milaap = TF 1-5 ka chalti candle KAHAN %; a16 = EMA TF ki BAND candle ka
-// KAHAN % (IBS x 100): khana 1 = EMA TF 1 (bahar ho to TF 2), khane 2-5 = EMA TF 3-6
+// KAHAN % (IBS x 100): khana 1 = EMA TF 1 (bahar ho to TF 2), khane 2-4 = EMA TF 3-5, khana 5 = Kachhua naali %
+// (EMA TF 6 = D ka IBS wahi IBS hissa dohrata; Kachhua bahar ho to EMA TF 6)
 bool  qInA = isA16 ? (m1In or m2In) : inA
 float qKpA = isA16 ? (m1In ? m1Kp : m2Kp) : kpA
 bool  qInB = isA16 ? m3In : inB
@@ -355,8 +355,8 @@ bool  qInC = isA16 ? m4In : inC
 float qKpC = isA16 ? m4Kp : kpC
 bool  qInD = isA16 ? m5In : inD
 float qKpD = isA16 ? m5Kp : kpD
-bool  qInE = isA16 ? m6In : inE
-float qKpE = isA16 ? m6Kp : kpE
+bool  qInE = isA16 ? (kcIn or m6In) : inE
+float qKpE = isA16 ? (kcIn ? kcKp : m6Kp) : kpE
 
 // har TF ki halat ek number (0-8); nishani = 5 halaton ka ek number
 f_st(bool _in, int _rang, int _zone) => _in ? (mode == "Sirf Rang" ? _rang : _rang * 3 + _zone) : 0
@@ -735,6 +735,8 @@ f_n16(int _r, string _nm, string _t, color _c, string _tip) =>
     f_cell(0, _r, _nm, cTxt, color.white, "")
     f_cell(1, _r, _t, _c, color.white, _tip)
     table.merge_cells(TB, 1, _r, 3, _r)
+// a16 qatar 5: shamil hissa jo abhi tayyar nahi - us ka naam + TF ("EMA 4H")
+f_wt16(string _nm, simple string _tf, bool _in, bool _ok) => _in and not _ok ? _nm + " " + f_tfName(_tf) + "  " : ""
 
 // ============================================================================
 //  a4 CHART — sab se qareebi purane mauqe (sirf aakhri candle par banta hai)
@@ -1166,7 +1168,7 @@ if barstate.islast and showTbl
         f_n16(2, "IBS " + f_tfName(ibTf), not ibIn ? "bahar" : not ibR ? "(nayi) tayyar nahi" : str.tostring(ibKp[sh] / 100, "0.00") + (ibS == 0 ? " · NEECHE" : ibS == 2 ? " · UPAR" : " · beech"), ibR ? (ibS == 0 ? cDn : ibS == 2 ? cUp : cTxt) : cGr, "a16: koshish #15 ASLI PASS. Aakhri BAND candle ka IBS = (close - low) / (high - low): " + str.tostring(ibLo, "0.00") + " se kam NEECHE, " + str.tostring(ibHi, "0.00") + " se zyada UPAR, warna beech.")
         int    kcS  = kcSt[sh]
         bool   kcR  = kcIn and kcOk[sh]
-        f_n16(3, "Kachhua " + f_tfName(kcTf), not kcIn ? "bahar" : not kcR ? "(nayi) tayyar nahi" : kcS == 2 ? "▲ TOOT OOPER" : kcS == 0 ? "▼ TOOT NEECHE" : "andar (toot nahi)", kcR ? (kcS == 2 ? cUp : kcS == 0 ? cDn : cTxt) : cGr, "a16: koshish #6 ASLI PASS (Tide). Aakhri BAND close pichli " + str.tostring(kcLen) + " band candles ke sab se ooper high se ooper / sab se neeche low se neeche.")
+        f_n16(3, "Kachhua " + f_tfName(kcTf), not kcIn ? "bahar" : not kcR ? "(nayi) tayyar nahi" : (kcS == 2 ? "▲ TOOT OOPER" : kcS == 0 ? "▼ TOOT NEECHE" : "andar (toot nahi)") + " · naali " + str.tostring(kcKp[sh], "0") + "%", kcR ? (kcS == 2 ? cUp : kcS == 0 ? cDn : cTxt) : cGr, "a16: koshish #6 ASLI PASS (Tide). Aakhri BAND close pichli " + str.tostring(kcLen) + " band candles ke sab se ooper high se ooper / sab se neeche low se neeche. Naali % = un candles ke low (0) se high (100) tak band close kahan - qareebi khana 5 bhi yahi.")
         int    dgS  = dgSt[sh]
         bool   dgR  = dgIn and dgOk[sh]
         f_n16(4, "Rang " + f_tfName(dgTf), not dgIn ? "bahar" : not dgR ? "(nayi) tayyar nahi" : dgS == 1 ? "▲ HARI (band)" : dgS == 2 ? "▼ LAAL (band)" : "= BARABAR (band)", dgR ? (dgS == 1 ? cUp : dgS == 2 ? cDn : cGr) : cGr, "a16 (a14): aakhri BAND candle ka rang - 1D par kal ka band din; din ki aakhri chart candle par usi din ka.")
@@ -1174,7 +1176,10 @@ if barstate.islast and showTbl
         int    nm16 = (m1In ? 1 : 0) + (m2In ? 1 : 0) + (m3In ? 1 : 0) + (m4In ? 1 : 0) + (m5In ? 1 : 0) + (m6In ? 1 : 0)
         int    n316 = (ibIn ? 1 : 0) + (kcIn ? 1 : 0) + (dgIn ? 1 : 0)
         int    nCmb = int(math.pow(2, nm16) * math.pow(3, n316))
-        f_cell(0, 5, "a16 BAND nishani · mumkin " + str.tostring(nCmb) + " · " + (fOk ? "tayyar" : "abhi tayyar nahi"), fOk ? cTxt : cGr, color.white, "Hissay zyada = nishaniyan zyada = har nishani ke mauqe KAM (30 se kam par bharosa nahi). Kam karne ke liye Settings 1b mein kuch hissay band karein. Pine sirf andaza - sahi nateeja MT5 / Python se.")
+        // tayyar nahi to kaun sa hissa baqi (chart Renko waghera ho to list khali)
+        string wt16 = f_wt16("EMA", mTf1, m1In, m1Ok[sh]) + f_wt16("EMA", mTf2, m2In, m2Ok[sh]) + f_wt16("EMA", mTf3, m3In, m3Ok[sh]) + f_wt16("EMA", mTf4, m4In, m4Ok[sh]) + f_wt16("EMA", mTf5, m5In, m5Ok[sh]) + f_wt16("EMA", mTf6, m6In, m6Ok[sh]) + f_wt16("IBS", ibTf, ibIn, ibOk[sh]) + f_wt16("Toot", kcTf, kcIn, kcOk[sh]) + f_wt16("Rang", dgTf, dgIn, dgOk[sh])
+        string st16 = fOk ? "tayyar" : "abhi tayyar nahi" + (not any16 ? ": koi hissa shamil nahi (1b)" : wt16 == "" ? "" : ": " + wt16)
+        f_cell(0, 5, "a16 BAND nishani · mumkin " + str.tostring(nCmb) + " · " + st16, fOk ? cTxt : cGr, color.white, "Hissay zyada = nishaniyan zyada = har nishani ke mauqe KAM (30 se kam par bharosa nahi). Kam karne ke liye Settings 1b mein kuch hissay band karein. Pine sirf andaza - sahi nateeja MT5 / Python se.")
         table.merge_cells(TB, 0, 5, 3, 5)
     else
         f_now(1, tfA, inA, okA, fRgA, fKpA)
