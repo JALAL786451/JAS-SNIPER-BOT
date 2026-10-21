@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.10, Pine v6)
+//  JAS TIDE + SMC   (build s2.11, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -76,14 +76,30 @@
 //  swing (pivot 5, band candle - repaint nahi), daam ke upar qareebi 2 R,
 //  neeche qareebi 2 S, dashed lakeer + qeemat. Default ON (Settings → 6).
 //  Sirf dekhna - Tide ka faisla WAHI, S/R naapa nahi gaya.
+//  s2.11 (21 Oct, user: "BOS/CHOCH, S/R, FVG/LGB sare TFs par PERFECT, ZONES aur
+//  MA bhi, chart achha lage aur samajh bhi aaye"): SMC ab HAR TF (1m - 1M) par,
+//  asal candles se (Heikin Ashi par bhi asal daam). Sab BAND candle par pakka;
+//  nishan sirf aakhri candle par bante (repaint nahi, chhupi cheezein nahi).
+//  BOS/CHOCH: toot pehle, nayi swing baad mein (pehle toot chhoot jata tha);
+//  BOS = seedhi patli lakeer, CHOCH = moti nuqte wali + rangeen label, likhai
+//  lakeer ke beech; aakhri 2 gehre, purane halke. S/R aur DZ/SZ ek hi swing ka
+//  record: sirf NA-TOOTI (band close paar = khatam), 1m par paas paas do ho to
+//  ek. FVG sirf jab beech wali candle poora gap paar kare (session / weekend
+//  gap FVG nahi); jitna bhara utna chhota. LGB har na-tooti swing par + sweep
+//  hue level ki nuqte wali lakeer. Zinda S/R / zone / FVG daayen tak, likhai
+//  daayen EK qatar mein (paas wali mil kar 'R 4143.40 · SZ↓' - ek dusre par nahi
+//  charhti). Har nishan par tooltip (kya hai + D1 rukh se rishta). MA = Tide ka
+//  APNA rukh: D1 EMA50 (hara / laal) + EMA200, default ON (chhoti TF par door ho
+//  to chhupi - candles chapti nahi). PEHCHAN table Settings → 7 (default BAND).
+//  Engine, signal, SL, Tide dabba, table WAHI - SMC phir bhi naapa nahi gaya.
 //
 //  Naap: strategies/jas_tide_smc_test.pine. Peshangoi nahi. Tide ~55-60% trades
 //  haarta hai; kamai chand bari jeet se.
 // ============================================================================
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
-     max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
+     max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
 
-BUILD = "s2.10"
+BUILD = "s2.11"
 
 // ============================================================================
 //  INPUTS
@@ -108,15 +124,15 @@ showFaisla = input.bool(true, "Faisle ka waqt (daily close) - khari lakeer", gro
 nMarks     = input.int(5, "Purane nateeje (±R) kitne", minval = 0, maxval = 10, group = grT, display = display.none)
 
 grS = "3 · SMC (sirf dikhawa, NAAPA NAHI)"
-smcOn    = input.bool(true, "SMC nishan", tooltip = "Trade ka faisla sirf Tide dabba. SMC kabhi naapa nahi gaya. 15m se chhoti aur 1D se bari TF par khud band.", group = grS, display = display.none)
-showMA   = input.bool(false, "MA21 / MA63 (chart TF) - Tide ka rukh NAHI", group = grS, display = display.none)
-showBOS  = input.bool(true, "BOS / CHOCH (aakhri 2)", group = grS, display = display.none)
-showZone = input.bool(true, "DZ / SZ (qareeb wala 1-1)", group = grS, display = display.none)
-showFVG  = input.bool(true, "FVG (qareeb wale 2)", group = grS, display = display.none)
-showLGB  = input.bool(true, "LGB (liquidity sweep)", group = grS, display = display.none)
-swLen    = input.int(5, "Swing: pivot left/right", minval = 2, maxval = 20, group = grS, display = display.none)
-keepN    = input.int(3, "Har qisam ke kitne yaad rakhne", minval = 1, maxval = 8, group = grS, display = display.none)
-fvgMin   = input.float(0.1, "FVG kam az kam (x ATR)", minval = 0, step = 0.05, group = grS, display = display.none)
+smcOn    = input.bool(true, "SMC nishan", tooltip = "Trade ka faisla sirf Tide dabba (DAILY close). SMC kabhi naapa nahi gaya. s2.11: har TF (1m - 1M) par, sab band candle par pakka; har nishan par mouse rakhein - tooltip mein matlab.", group = grS, display = display.none)
+showMA   = input.bool(false, "EMA21 / EMA63 (chart TF) - Tide ka rukh NAHI", tooltip = "Tide ka asal rukh: Settings → 7 · D1 EMA50 / EMA200 (default ON).", group = grS, display = display.none)
+showBOS  = input.bool(true, "BOS / CHOCH (aakhri 2 gehre + purane halke)", tooltip = "BOS = pichli pakki swing ke paar BAND close (structure jari) - seedhi patli lakeer. CHOCH = ulta pehla toot - moti nuqte wali lakeer + rangeen label. Likhai lakeer ke beech.", group = grS, display = display.none)
+showZone = input.bool(true, "DZ / SZ (qareeb wala 1-1)", tooltip = "Swing candle ka zone (wick se body, 0.1 - 1 ATR). Band close paar = khatam. SZ aur R ek hi choti ho to ek likhai 'R ... · SZ↓'.", group = grS, display = display.none)
+showFVG  = input.bool(true, "FVG (qareebi 1 upar + 1 neeche)", tooltip = "Sirf jab beech wali candle poora gap paar kare (session / weekend ka gap FVG nahi). Jitna bhara utna chhota, poora bhare to khatam.", group = grS, display = display.none)
+showLGB  = input.bool(true, "LGB (liquidity sweep)", tooltip = "Har na-tooti swing par: wick paar, close wapas andar. Teer = umeed ki taraf (s2.5).", group = grS, display = display.none)
+swLen    = input.int(5, "Swing: pivot left/right", minval = 2, maxval = 20, tooltip = "Swing itni candle baad pakki hoti hai (bari TF 1W / 1M par der se).", group = grS, display = display.none)
+keepN    = input.int(3, "Purane BOS / CHOCH aur LGB kitne (halke)", minval = 1, maxval = 8, tooltip = "s2.11: aakhri 2 gehre + itne purane halke. Zone / FVG / S-R ki yaad alag (50 / 30) - dikhte sirf qareebi.", group = grS, display = display.none)
+fvgMin   = input.float(0.1, "FVG kam az kam (x ATR)", minval = 0, step = 0.05, tooltip = "Chhoti TF (1m / 5m) par 0.2 - 0.3 se chart saaf.", group = grS, display = display.none)
 
 grL = "4 · Lot (MT5)"
 bal     = input.float(0, "Balance (account currency)", minval = 0, group = grL, display = display.none)
@@ -130,7 +146,7 @@ grR = "6 · S/R lakeerein (sirf dekhna - Tide ka faisla NAHI)"
 showWk  = input.bool(false, "Pichle HAFTE ka high / low", group = grR, display = display.none)
 showMo  = input.bool(false, "Pichle MAHINE ka high / low", group = grR, display = display.none)
 showNal = input.bool(false, "Tide naali (10 din high / low - toot ka level)", group = grR, display = display.none)
-showSR  = input.bool(true, "Swing S / R (pichli pakki choti / tah)", tooltip = "s2.10: Elder / Weinstein - pichli choti = R (daam ke upar), pichli tah = S (neeche). Swing = Settings 3 wala pivot, sirf band candle par pakka.", group = grR, display = display.none)
+showSR  = input.bool(true, "Swing S / R (pichli pakki choti / tah)", tooltip = "s2.10: Elder / Weinstein - pichli choti = R (daam ke upar), pichli tah = S (neeche). Swing = Settings 3 wala pivot, sirf band candle par pakka. s2.11: sirf NA-TOOTI (kisi band close ne paar nahi ki), 0.2 ATR ke andar do ho to ek; har TF par.", group = grR, display = display.none)
 srN     = input.int(2, "S / R kitni (har taraf)", minval = 1, maxval = 5, group = grR, display = display.none)
 
 grV = "5 · Table"
@@ -145,6 +161,16 @@ tblAlpha  = input.int(85, "Kitna transparent (0 = thos, 100 = bilkul gayab)", mi
 chartFont = input.string("Normal", "Chart ki likhai (SMC + Tide dabba)", options = ["Small", "Normal", "Large"], group = grV, display = display.none)
 tz        = input.string("Asia/Karachi", "Waqt ka zone", group = grV, display = display.none)
 tzName    = input.string("PKT", "Zone ka naam", group = grV, display = display.none)
+
+// s2.11: naye inputs sab se AAKHIR mein (purani saved settings apni jagah rahein)
+grP = "7 · MA + pehchan (sirf dekhna)"
+showDMA = input.bool(true, "Tide ka rukh: D1 EMA50 / EMA200 lakeer (har TF)", tooltip = "s2.11 (user: MA bhi). Wahi EMA jin se Tide ka rukh (kal tak ki band daily candles, repaint nahi). EMA50 hara = rukh UPAR (sirf BUY), laal = NEECHE (sirf SELL).", group = grP, display = display.none)
+maFar   = input.float(8.0, "Chhoti TF: EMA kitne chart-ATR tak qareeb ho to dikhe", minval = 0, step = 1, tooltip = "1D se chhoti TF par door ki lakeer candles ko patli kar deti - is liye chhupti. 0 = hamesha dikhao. 1D aur bari TF par hamesha.", group = grP, display = display.none)
+maFill  = input.bool(false, "EMA50 aur EMA200 ke beech halka rang", group = grP, display = display.none)
+rOff    = input.int(3, "Daayen likhai: kitni candle aage", minval = 2, maxval = 30, tooltip = "Zinda zone / S-R / FVG yahan tak, likhai yahan se. Likhai kate to TradingView ka right margin barhayein.", group = grP, display = display.none)
+showLeg = input.bool(false, "PEHCHAN table (har nishan ka matlab)", tooltip = "Default BAND (naye table default band). Har nishan ke tooltip mein bhi yahi matlab hai.", group = grP, display = display.none)
+legPos  = input.string("Bottom Left", "PEHCHAN ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], tooltip = "Tide table wale kone mein ho to khud upar / neeche ho jati.", group = grP, display = display.none)
+legFont = input.string("Small", "PEHCHAN ka font", options = ["Tiny", "Small", "Normal"], group = grP, display = display.none)
 
 // ============================================================================
 //  HELPERS
@@ -338,8 +364,13 @@ csT     = tD == 1 ? math.max(tSL, nz(tLx1, tSL)) : tD == -1 ? math.min(tSL, nz(t
 // ============================================================================
 //  TIDE CHART PAR: sarakta SL + purane nateeje
 // ============================================================================
-bool wkNew = ta.change(wkH) != 0 or ta.change(wkL) != 0
-bool moNew = ta.change(moH) != 0 or ta.change(moL) != 0
+// s2.11: ta.change alag (Pine v6 mein 'or' ka doosra hissa kabhi chhoot jata - warning); nateeja wahi
+wkHc = ta.change(wkH)
+wkLc = ta.change(wkL)
+moHc = ta.change(moH)
+moLc = ta.change(moL)
+bool wkNew = wkHc != 0 or wkLc != 0
+bool moNew = moHc != 0 or moLc != 0
 plot(showWk and not isHi and not wkNew ? wkH : na, "Hafta high", color = color.new(#EF5350, 35), style = plot.style_linebr, linewidth = 1, display = display.pane)
 plot(showWk and not isHi and not wkNew ? wkL : na, "Hafta low", color = color.new(#26A69A, 35), style = plot.style_linebr, linewidth = 1, display = display.pane)
 plot(showMo and not isHi and not moNew ? moH : na, "Mahina high", color = color.new(#EF5350, 0), style = plot.style_linebr, linewidth = 2, display = display.pane)
@@ -498,284 +529,434 @@ if barstate.islast
                  color = color.new(C_PLAN, 40), style = line.style_dotted, width = 1)
 
 // ============================================================================
-//  SMC NISHAN (chart ki TF, sirf dikhawa, NAAPA NAHI) — sab ta.* bahar (Pine v6)
+//  SMC NISHAN (chart ki TF, sirf dikhawa, NAAPA NAHI) — s2.11: HAR TF (1m - 1M)
+//  Tarteeb: (1) sab ta.* bahar, har candle par (Pine v6). (2) yaad (swing, toot,
+//  sweep, FVG) sirf BAND candle par badalti. (3) nishan sirf AAKHRI candle par
+//  bante - purane mita kar naye: repaint nahi, chhupi cheezein nahi, TradingView
+//  ki hadd kabhi nahi bharti. Qeemat: asal candles stO/stH/stL/stC (Heikin Ashi
+//  par bhi asal daam; aam chart par bilkul open/high/low/close).
+//  Rang: upar wale hare (C_UP), neeche wale laal (C_DN), zone halke, FVG aur
+//  halke - Tide ke dabbe sab se gehre rehte hain.
 // ============================================================================
-smcAct = smcOn and not na(tfSec) and tfSec >= 900 and tfSec <= 86400
-atrC = ta.atr(14)
-e21  = ta.ema(close, 21)
-e63  = ta.ema(close, 63)
-ph   = ta.pivothigh(high, swLen, swLen)
-pl   = ta.pivotlow(low, swLen, swLen)
+smcAct = smcOn                                   // s2.11: TF ki hadd khatam (pehle sirf 15m - 1D)
+trS    = na(stC[1]) ? stH - stL : math.max(stH - stL, math.abs(stH - stC[1]), math.abs(stL - stC[1]))
+atrC   = ta.rma(trS, 14)                         // chart TF ka ATR(14), asal candles se
+e21    = ta.ema(stC, 21)
+e63    = ta.ema(stC, 63)
+ph     = ta.pivothigh(stH, swLen, swLen)
+pl     = ta.pivotlow(stL, swLen, swLen)
+refC   = barstate.isconfirmed ? stC : stC[1]     // aakhri BAND close: chalti candle par R / S / zone na uchhlein
+smEND  = "\nBand candle par pakka (repaint nahi). Sirf dekhna - Tide ka faisla NAHI (Tide: sirf DAILY close, D1 rukh + " + str.tostring(entryLen) + " din ka toot)."
+// bar_index wala x 9999 candle se peeche = script ruk jati (s2.2 ka sabaq) - har SMC ka bayan kinara is se
+f_x(int b) => math.max(b, bar_index - 9990)
+// nishan ka D1 rukh (Tide) se rishta - tooltip ke liye
+f_rk(int rk, int d) => rk == d ? "D1 rukh bhi isi taraf (Tide ke saath)." : rk == -d ? "D1 rukh ULTA - Tide is taraf trade nahi deta." : "D1 rukh saaf nahi."
 
-plot(showMA and smcAct ? e21 : na, "MA21 (chart TF)", color = color.new(#42A5F5, 30), linewidth = 1, display = display.pane)
-plot(showMA and smcAct ? e63 : na, "MA63 (chart TF)", color = color.new(#AB47BC, 30), linewidth = 1, display = display.pane)
+// --- MA: chart TF ki EMA21 / EMA63 (purani, default BAND) + s2.11 Tide ka APNA rukh: D1 EMA50 / EMA200
+// D1 EMA: bilkul wahi values jin se tRk banta ([1] + lookahead_on = repaint nahi). Din bhar wohi EMA jo
+// aaj ki DAILY close par Tide ka faisla karegi. Chhoti TF par qeemat se door ho to chhupi (warna
+// TradingView candles ko patli lakeer bana deta). 1D aur bari TF par hamesha.
+[dE50, dE200] = request.security(tkStd, "D", [ta.ema(close, emaFLen)[1], ta.ema(close, emaSLen)[1]], barmerge.gaps_off, barmerge.lookahead_on)
+dmaLo  = (na(tfSec) or tfSec < 86400) and maFar > 0
+pE50   = showDMA and not na(dE50) and (not dmaLo or math.abs(dE50 - stC) <= maFar * nz(atrC, 0)) ? dE50 : na
+pE200  = showDMA and not na(dE200) and (not dmaLo or math.abs(dE200 - stC) <= maFar * nz(atrC, 0)) ? dE200 : na
+cE50   = tRk == 1 ? C_BULL : tRk == -1 ? C_BEAR : color.new(chart.fg_color, 50)   // rukh ka rang (Tide wala hara / laal)
+cE200  = color.new(chart.fg_color, 45)
 
-// --- swing + BOS / CHOCH + LGB ---------------------------------------------
-var float sH = na
-var int   sHB = na
-var bool  sHUsed = true    // toot gaya ya sweep ho chuka (dobara nishan nahi)
-var bool  sHBrk  = true
-var float sL = na
-var int   sLB = na
-var bool  sLUsed = true
-var bool  sLBrk  = true
-var int   sDir = 0
-// swing sirf band candle par (chalti candle ka pivot abhi pakka nahi)
-if barstate.isconfirmed and not na(ph)
-    sH     := ph
-    sHB    := bar_index - swLen
-    sHUsed := false
-    sHBrk  := false
-if barstate.isconfirmed and not na(pl)
-    sL     := pl
-    sLB    := bar_index - swLen
-    sLUsed := false
-    sLBrk  := false
+plot(showMA ? e21 : na, "EMA21 (chart TF)", color = color.new(#42A5F5, 30), linewidth = 1, display = display.pane)
+plot(showMA ? e63 : na, "EMA63 (chart TF)", color = color.new(#AB47BC, 30), linewidth = 1, display = display.pane)
+p50  = plot(pE50, "Tide rukh EMA50 (D1)", color = cE50, style = plot.style_linebr, linewidth = 2, display = display.pane)
+p200 = plot(pE200, "Tide rukh EMA200 (D1)", color = cE200, style = plot.style_linebr, linewidth = 2, display = display.pane)
+fill(p50, p200, color = maFill ? color.new(cE50, 92) : na, title = "Tide rukh: EMA50 - EMA200 ke beech")
 
-var array<line>  bosLn = array.new<line>()
-var array<label> bosLb = array.new<label>()
-var array<int>   bosD  = array.new<int>()    // 1 = upar toota (hara), -1 = neeche (laal)
-var array<label> lgbLb = array.new<label>()
+// --- s2.11 YAAD: har cheez pehle data mein (sirf band candle par), nishan baad mein (aakhri candle par)
+// ek pakki swing = EK record: daam (R / S level), candle, zone (SZ / DZ) ke kinare, sweep ho chuka?
+type SmcSwing
+    float p
+    int   b
+    float zt
+    float zb
+    bool  swept = false
 
-f_bos(int d, float lvl, int fromBar) =>
-    string kind = ((d == 1 ? sDir < 0 : sDir > 0) ? "CHOCH" : "BOS") + (d == 1 ? "↑" : "↓")
-    color  cK   = d == 1 ? C_UP : C_DN
-    array.push(bosLn, line.new(fromBar, lvl, bar_index, lvl, xloc = xloc.bar_index, color = color.new(cK, 20), style = line.style_dashed, width = 2))
-    array.push(bosLb, label.new(bar_index, lvl, kind, xloc = xloc.bar_index, style = label.style_label_left, size = fsC,
-         color = color.new(#FFFFFF, 100), textcolor = cK, text_formatting = text.format_bold))
-    array.push(bosD, d)
-    while array.size(bosLn) > 2 * keepN
-        line.delete(array.shift(bosLn))
-        label.delete(array.shift(bosLb))
-        array.shift(bosD)
+// BOS / CHOCH: level, swing candle -> toot candle, rukh (1 upar / -1 neeche), CHOCH?, us waqt D1 rukh
+type SmcBreak
+    float lvl
+    int   x1
+    int   x2
+    int   dir
+    bool  choch = false
+    int   rk = 0
+
+// LGB: sweep wala level, swing candle -> sweep candle, wick ka daam, teer (1 = LGB↑, -1 = LGB↓), D1 rukh
+type SmcSweep
+    float lvl
+    int   x1
+    int   x2
+    float y
+    int   dir
+    int   rk = 0
+
+// FVG: abhi tak KHULA hissa (top / bot), rukh, pehli candle
+type SmcGap
+    float top
+    float bot
+    int   dir
+    int   x1
+
+// daayen qatar ki ek likhai: daam, likhai, rang, tooltip, mota?
+type SmcTag
+    float  p
+    string t
+    color  c
+    string k
+    bool   bo = false
+
+var array<SmcSwing> swH  = array.new<SmcSwing>()   // na-tooti chotiyan: R + SZ (aakhri 50)
+var array<SmcSwing> swL  = array.new<SmcSwing>()   // na-tooti tahen: S + DZ (aakhri 50)
+var array<SmcBreak> brk  = array.new<SmcBreak>()   // BOS / CHOCH (aakhri keepN + 2)
+var array<SmcSweep> swp  = array.new<SmcSweep>()   // LGB (aakhri keepN + 2)
+var array<SmcGap>   gaps = array.new<SmcGap>()     // khule FVG (aakhri 30)
+var float sH    = na      // BOS ke liye: aakhri pakki choti / tah
+var int   sHB   = na
+var bool  sHBrk = true
+var float sL    = na
+var int   sLB   = na
+var bool  sLBrk = true
+var int   sDir  = 0       // structure: 1 = upar, -1 = neeche, 0 = abhi nahi
 
 if barstate.isconfirmed
-    upBrk = not sHBrk and not na(sH) and close > sH
-    dnBrk = not sLBrk and not na(sL) and close < sL
+    // (1) BOS / CHOCH: is candle ka close PICHLI pakki swing ke paar? (s2.11: nayi swing is ke BAAD
+    //     judti - pehle naya pivot purani swing ko mita deta tha aur us ka toot chhoot jata tha)
+    bool upBrk = not sHBrk and not na(sH) and stC > sH
+    bool dnBrk = not sLBrk and not na(sL) and stC < sL
     if upBrk
-        if showBOS and smcAct
-            f_bos(1, sH, sHB)
-        sDir   := 1
-        sHBrk  := true
-        sHUsed := true
+        array.push(brk, SmcBreak.new(sH, sHB, bar_index, 1, sDir < 0, tRk))
+        sDir  := 1
+        sHBrk := true
     else if dnBrk
-        if showBOS and smcAct
-            f_bos(-1, sL, sLB)
-        sDir   := -1
-        sLBrk  := true
-        sLUsed := true
-    // LGB: swing ke paar wick, close wapas andar (ek swing par ek dafa)
-    if showLGB and smcAct and not sHUsed and not na(sH) and high > sH and close < sH
-        array.push(lgbLb, label.new(bar_index, high, "LGB↓", style = label.style_label_down, size = fsC,
-             color = color.new(#FFFFFF, 100), textcolor = C_DN, text_formatting = text.format_bold,
-             tooltip = "Swing HIGH ka sweep (SMC Coach mein isi ko LGB↑ kehte) · teer = neeche ka imkaan · NAAPA NAHI"))
-        sHUsed := true
-    if showLGB and smcAct and not sLUsed and not na(sL) and low < sL and close > sL
-        array.push(lgbLb, label.new(bar_index, low, "LGB↑", style = label.style_label_up, size = fsC,
-             color = color.new(#FFFFFF, 100), textcolor = C_UP, text_formatting = text.format_bold,
-             tooltip = "Swing LOW ka sweep (SMC Coach mein isi ko LGB↓ kehte) · teer = upar ka imkaan · NAAPA NAHI"))
-        sLUsed := true
-    while array.size(lgbLb) > keepN + 2
-        label.delete(array.shift(lgbLb))
+        array.push(brk, SmcBreak.new(sL, sLB, bar_index, -1, sDir > 0, tRk))
+        sDir  := -1
+        sLBrk := true
+    while array.size(brk) > keepN + 2
+        array.shift(brk)
+    // (2) har na-tooti swing (S / R + zone): close paar = TOOT (record khatam, phir R / S / zone nahi);
+    //     sirf wick paar aur close wapas andar = SWEEP (LGB, ek swing par ek dafa). Ek candle ka ek
+    //     LGB har taraf, sab se door wale sweep level par.
+    float wH  = na
+    int   wHB = na
+    int   nH  = array.size(swH)
+    if nH > 0
+        for i = nH - 1 to 0
+            SmcSwing hS = array.get(swH, i)
+            if stC > hS.p
+                array.remove(swH, i)
+            else if not hS.swept and stH > hS.p and stC < hS.p
+                hS.swept := true
+                if na(wH) or hS.p > wH
+                    wH  := hS.p
+                    wHB := hS.b
+    if not na(wH)
+        array.push(swp, SmcSweep.new(wH, wHB, bar_index, stH, -1, tRk))
+    float wL  = na
+    int   wLB = na
+    int   nL  = array.size(swL)
+    if nL > 0
+        for i = nL - 1 to 0
+            SmcSwing lS = array.get(swL, i)
+            if stC < lS.p
+                array.remove(swL, i)
+            else if not lS.swept and stL < lS.p and stC > lS.p
+                lS.swept := true
+                if na(wL) or lS.p < wL
+                    wL  := lS.p
+                    wLB := lS.b
+    if not na(wL)
+        array.push(swp, SmcSweep.new(wL, wLB, bar_index, stL, 1, tRk))
+    while array.size(swp) > keepN + 2
+        array.shift(swp)
+    // (3) nayi pakki swing (pivot swLen candle pehle wali candle par) - S / R, zone aur BOS ke liye.
+    //     Zone = swing candle ki wick se body tak, kam az kam 0.1 aur zyada se zyada 1 ATR mota.
+    if not na(ph)
+        int   bH = bar_index - swLen
+        float aH = nz(atrC[swLen], stH[swLen] - stL[swLen])
+        float zB = math.min(math.max(math.min(stO[swLen], stC[swLen]), ph - aH), ph - 0.1 * aH)
+        array.push(swH, SmcSwing.new(ph, bH, ph, zB))
+        if array.size(swH) > 50
+            array.shift(swH)
+        sH    := ph
+        sHB   := bH
+        sHBrk := false
+    if not na(pl)
+        int   bL = bar_index - swLen
+        float aL = nz(atrC[swLen], stH[swLen] - stL[swLen])
+        float zT = math.max(math.min(math.max(stO[swLen], stC[swLen]), pl + aL), pl + 0.1 * aL)
+        array.push(swL, SmcSwing.new(pl, bL, zT, pl))
+        if array.size(swL) > 50
+            array.shift(swL)
+        sL    := pl
+        sLB   := bL
+        sLBrk := false
+    // (4) FVG: pehle purane (banne ke AGLE candle se): jitna bhara utna chhota, poora bhare to khatam
+    int nG = array.size(gaps)
+    if nG > 0
+        for i = nG - 1 to 0
+            SmcGap gS = array.get(gaps, i)
+            if bar_index > gS.x1 + 2
+                if gS.dir == 1
+                    if stL <= gS.bot
+                        array.remove(gaps, i)
+                    else if stL < gS.top
+                        gS.top := stL
+                else
+                    if stH >= gS.top
+                        array.remove(gaps, i)
+                    else if stH > gS.bot
+                        gS.bot := stH
+    // naya FVG: candle 1 aur 3 ke beech khula gap, aur BEECH wali candle poora gap paar kare - is se
+    // session / weekend / chhutti ka khulne wala gap FVG nahi banta (har TF par). Kam az kam fvgMin x ATR.
+    if not na(atrC)
+        bool fvUp = stL > stH[2] and stL[1] <= stH[2] and stH[1] >= stL and stL - stH[2] >= fvgMin * atrC
+        bool fvDn = stH < stL[2] and stH[1] >= stL[2] and stL[1] <= stH and stL[2] - stH >= fvgMin * atrC
+        if fvUp
+            array.push(gaps, SmcGap.new(stL, stH[2], 1, bar_index - 2))
+        if fvDn
+            array.push(gaps, SmcGap.new(stL[2], stH, -1, bar_index - 2))
+        while array.size(gaps) > 30
+            array.shift(gaps)
 
-// --- s2.10 SWING S / R: pakki choti / tah yaad (aakhri 50), aakhri candle par qareebi srN har taraf
-var array<float> srHp = array.new<float>()
-var array<int>   srHb = array.new<int>()
-var array<float> srLp = array.new<float>()
-var array<int>   srLb = array.new<int>()
-var array<line>  srLn = array.new<line>()
-var array<label> srLl = array.new<label>()
-if barstate.isconfirmed and not na(ph)
-    array.push(srHp, ph)
-    array.push(srHb, bar_index - swLen)
-    if array.size(srHp) > 50
-        array.shift(srHp)
-        array.shift(srHb)
-if barstate.isconfirmed and not na(pl)
-    array.push(srLp, pl)
-    array.push(srLb, bar_index - swLen)
-    if array.size(srLp) > 50
-        array.shift(srLp)
-        array.shift(srLb)
+// --- NISHAN: sirf aakhri candle par (har dafa purane mita kar naye, ~40 cheezein) -----------
+var array<line>  smLn = array.new<line>()
+var array<label> smLb = array.new<label>()
+var array<box>   smBx = array.new<box>()
 
-// _up = R (daam ke upar wali choti), warna S (neeche wali tah); qareeb pehle, ek qeemat ek dafa
-f_srDraw(array<float> _p, array<int> _b, bool _up) =>
-    array<float> _used = array.new<float>()
-    int _n = array.size(_p)
-    for _k = 1 to srN
-        float _best  = na
-        int   _bestB = na
-        if _n > 0
-            for _i = _n - 1 to 0
-                float _v = array.get(_p, _i)
-                bool  _side = _up ? _v > close : _v < close
-                if _side and not array.includes(_used, _v) and (na(_best) or math.abs(_v - close) < math.abs(_best - close))
-                    _best  := _v
-                    _bestB := array.get(_b, _i)
-        if not na(_best)
-            array.push(_used, _best)
-            color _c = _up ? C_DN : C_UP
-            array.push(srLn, line.new(_bestB, _best, bar_index + 3, _best, xloc = xloc.bar_index, color = color.new(_c, 30), style = line.style_dashed, width = 1))
-            array.push(srLl, label.new(bar_index + 3, _best, (_up ? "R " : "S ") + str.tostring(_best, format.mintick), xloc = xloc.bar_index,
-                 style = label.style_label_left, size = fsC, color = color.new(#FFFFFF, 100), textcolor = _c,
-                 tooltip = (_up ? "Resistance: pichli pakki choti" : "Support: pichli pakki tah") + " (Elder / Weinstein) · sirf dekhna, NAAPA NAHI"))
+// daayen qatar ki likhai: candles ke DAAYEN khali jagah mein (candles par nahi), text_formatting
+// 'const' maangta hai - is liye do shakhen
+f_tag(float _p, string _t, color _c, string _k, bool _bo, int _x) =>
+    if _bo
+        array.push(smLb, label.new(_x, _p, _t, xloc = xloc.bar_index, style = label.style_label_left, size = fsC,
+             color = color.new(#FFFFFF, 100), textcolor = _c, tooltip = _k, text_formatting = text.format_bold))
+    else
+        array.push(smLb, label.new(_x, _p, _t, xloc = xloc.bar_index, style = label.style_label_left, size = fsC,
+             color = color.new(#FFFFFF, 100), textcolor = _c, tooltip = _k))
+
+// qareebi srN na-tooti swing (_up: daam ke upar = R, warna neeche = S); qareeb pehle, kisi chuni hui
+// se _gap (0.2 ATR) ke andar ho to dobara nahi (1m par do chotiyan chand tick door = ek lakeer)
+f_srPick(array<SmcSwing> _a, bool _up, float _ref, float _gap) =>
+    array<int> _out = array.new<int>()
+    int _n = array.size(_a)
+    if _n > 0
+        for _k = 1 to srN
+            int   _best = -1
+            float _bd   = na
+            for _i = 0 to _n - 1
+                SmcSwing _s = array.get(_a, _i)
+                float _d    = _up ? _s.p - _ref : _ref - _s.p
+                bool  _near = false
+                for _j in _out
+                    SmcSwing _o = array.get(_a, _j)
+                    if math.abs(_o.p - _s.p) <= _gap
+                        _near := true
+                if _d >= 0 and not _near and (na(_bd) or _d < _bd)
+                    _best := _i
+                    _bd   := _d
+            if _best >= 0
+                array.push(_out, _best)
+    _out
 
 if barstate.islast
-    while array.size(srLn) > 0
-        line.delete(array.shift(srLn))
-    while array.size(srLl) > 0
-        label.delete(array.shift(srLl))
+    while array.size(smLn) > 0
+        line.delete(array.pop(smLn))
+    while array.size(smLb) > 0
+        label.delete(array.pop(smLb))
+    while array.size(smBx) > 0
+        box.delete(array.pop(smBx))
+    int   xR   = bar_index + (showLbl ? rOff + 12 : rOff)   // daayen qatar (Tide ki likhai chalu ho to us se aage)
+    int   xMin = bar_index - 9990
+    float aC   = nz(atrC, 0)
+    string rkNow = tRk == 1 ? "UPAR (sirf BUY)" : tRk == -1 ? "NEECHE (sirf SELL)" : "saaf nahi"
+    array<SmcTag> tags = array.new<SmcTag>()
+    bool zOn = showZone and smcAct
+    // --- DZ / SZ: qareebi 1-1 (qeemat zone ke andar ho to wahi) --------------------------
+    int   iSZ = -1
+    int   iDZ = -1
+    float bSZ = na
+    float tDZ = na
+    for [i, zH] in swH
+        if na(bSZ) or zH.zb < bSZ
+            iSZ := i
+            bSZ := zH.zb
+    for [i, zL] in swL
+        if na(tDZ) or zL.zt > tDZ
+            iDZ := i
+            tDZ := zL.zt
+    // --- S / R: qareebi srN na-tooti har taraf. Jo choti SZ wali hi ho us ki alag lakeer nahi -
+    //     zone ka kinara wahi level hai, likhai ek: 'R 4143.40 · SZ↓' (do dafa ek hi baat nahi)
+    bool rInZ = false
+    bool sInZ = false
     if showSR
-        f_srDraw(srHp, srHb, true)
-        f_srDraw(srLp, srLb, false)
+        array<int> rI = f_srPick(swH, true, refC, 0.2 * aC)
+        array<int> sI = f_srPick(swL, false, refC, 0.2 * aC)
+        for j in rI
+            SmcSwing rS = array.get(swH, j)
+            if zOn and j == iSZ
+                rInZ := true
+            else
+                array.push(smLn, line.new(f_x(rS.b), rS.p, xR, rS.p, xloc = xloc.bar_index, color = color.new(C_DN, 25), style = line.style_dotted, width = 1))
+                array.push(tags, SmcTag.new(rS.p, "R " + f_px(rS.p), C_DN, "R = Resistance " + f_px(rS.p) + " · pichli pakki CHOTI, abhi tak kisi band close ne nahi todi · qeemat yahan ruk / palat sakti. Close UPAR = toot (phir R nahi)." + smEND, false))
+        for j in sI
+            SmcSwing sS = array.get(swL, j)
+            if zOn and j == iDZ
+                sInZ := true
+            else
+                array.push(smLn, line.new(f_x(sS.b), sS.p, xR, sS.p, xloc = xloc.bar_index, color = color.new(C_UP, 25), style = line.style_dotted, width = 1))
+                array.push(tags, SmcTag.new(sS.p, "S " + f_px(sS.p), C_UP, "S = Support " + f_px(sS.p) + " · pichli pakki TAH, abhi tak kisi band close ne nahi todi · qeemat yahan ruk / uchhal sakti. Close NEECHE = toot (phir S nahi)." + smEND, false))
+    if zOn and iSZ >= 0
+        SmcSwing zS = array.get(swH, iSZ)
+        array.push(smBx, box.new(f_x(zS.b), zS.zt, xR, zS.zb, xloc = xloc.bar_index, border_color = color.new(C_DN, 55), border_width = 1, bgcolor = color.new(C_DN, 90)))
+        string tipSZ = "SZ↓ = Supply zone (bechne wale) " + f_px(zS.zb) + " - " + f_px(zS.zt) + " · swing CHOTI wali candle (wick se body tak) · qeemat wapas aaye to ruk / palat sakti. Close UPAR = zone khatam.\n" + f_rk(tRk, -1) + smEND
+        if rInZ
+            array.push(tags, SmcTag.new(zS.p, "R " + f_px(zS.p) + " · SZ↓", C_DN, "R = Resistance " + f_px(zS.p) + " = isi zone ki choti, abhi tak kisi band close ne nahi todi.\n\n" + tipSZ, true))
+        else
+            array.push(tags, SmcTag.new((zS.zt + zS.zb) / 2, "SZ↓", C_DN, tipSZ, true))
+    if zOn and iDZ >= 0
+        SmcSwing zD = array.get(swL, iDZ)
+        array.push(smBx, box.new(f_x(zD.b), zD.zt, xR, zD.zb, xloc = xloc.bar_index, border_color = color.new(C_UP, 55), border_width = 1, bgcolor = color.new(C_UP, 90)))
+        string tipDZ = "DZ↑ = Demand zone (khareedar) " + f_px(zD.zb) + " - " + f_px(zD.zt) + " · swing TAH wali candle (wick se body tak) · qeemat wapas aaye to ruk / uchhal sakti. Close NEECHE = zone khatam.\n" + f_rk(tRk, 1) + smEND
+        if sInZ
+            array.push(tags, SmcTag.new(zD.p, "S " + f_px(zD.p) + " · DZ↑", C_UP, "S = Support " + f_px(zD.p) + " = isi zone ki tah, abhi tak kisi band close ne nahi todi.\n\n" + tipDZ, true))
+        else
+            array.push(tags, SmcTag.new((zD.zt + zD.zb) / 2, "DZ↑", C_UP, tipDZ, true))
+    // --- FVG: qareebi 1 upar (FVG↓) + 1 neeche (FVG↑), sirf abhi tak KHULA hissa -------------
+    if showFVG and smcAct
+        int   iFU = -1
+        int   iFD = -1
+        float tFU = na
+        float bFD = na
+        for [i, gq] in gaps
+            if gq.dir == 1 and (na(tFU) or gq.top > tFU)
+                iFU := i
+                tFU := gq.top
+            if gq.dir == -1 and (na(bFD) or gq.bot < bFD)
+                iFD := i
+                bFD := gq.bot
+        if iFU >= 0
+            SmcGap gU = array.get(gaps, iFU)
+            array.push(smBx, box.new(f_x(gU.x1), gU.top, xR, gU.bot, xloc = xloc.bar_index, border_color = color.new(C_UP, 60), border_style = line.style_dotted, border_width = 1, bgcolor = color.new(C_UP, 93)))
+            array.push(tags, SmcTag.new((gU.top + gU.bot) / 2, "FVG↑", C_UP, "FVG↑ = Fair Value Gap " + f_px(gU.bot) + " - " + f_px(gU.top) + " · 3 candle ki tez chaal UPAR mein khula gap · qeemat aksar wapas aa kar bharti (wahan ruk / uchhal sakti) · jitna bhara utna chhota, poora bhare to khatam.\n" + f_rk(tRk, 1) + smEND, true))
+        if iFD >= 0
+            SmcGap gD = array.get(gaps, iFD)
+            array.push(smBx, box.new(f_x(gD.x1), gD.top, xR, gD.bot, xloc = xloc.bar_index, border_color = color.new(C_DN, 60), border_style = line.style_dotted, border_width = 1, bgcolor = color.new(C_DN, 93)))
+            array.push(tags, SmcTag.new((gD.top + gD.bot) / 2, "FVG↓", C_DN, "FVG↓ = Fair Value Gap " + f_px(gD.bot) + " - " + f_px(gD.top) + " · 3 candle ki tez chaal NEECHE mein khula gap · qeemat aksar wapas aa kar bharti (wahan ruk / palat sakti) · jitna bhara utna chhota, poora bhare to khatam.\n" + f_rk(tRk, -1) + smEND, true))
+    // --- D1 EMA ki likhai (sirf jab lakeer chart par ho) ------------------------------------
+    string tipE = "Tide ka RUKH = D1 EMA" + str.tostring(emaFLen) + " " + f_px(dE50) + " vs EMA" + str.tostring(emaSLen) + " " + f_px(dE200) + " · abhi rukh " + rkNow + ".\nEMA" + str.tostring(emaFLen) + " UPAR = sirf BUY, NEECHE = sirf SELL. Kal tak ki band daily candles se (repaint nahi) - aaj ki DAILY close par Tide isi se faisla karta. Ye Tide ka hissa hai; lakeer sirf dikhati hai."
+    if not na(pE50)
+        array.push(tags, SmcTag.new(pE50, "EMA" + str.tostring(emaFLen) + " D1", cE50, tipE, false))
+    if not na(pE200)
+        array.push(tags, SmcTag.new(pE200, "EMA" + str.tostring(emaSLen) + " D1", color.new(chart.fg_color, 20), tipE, false))
+    // --- daayen EK qatar: daam ke hisaab se tarteeb; 0.3 ATR ke andar wali ek likhai mein (' · ')
+    //     taake likhai ek dusre par na charhe
+    int nT = array.size(tags)
+    if nT > 0
+        array<float> tagP = array.new<float>()
+        for tg0 in tags
+            array.push(tagP, tg0.p)
+        array<int> ord = array.sort_indices(tagP, order.ascending)
+        float  gSum = 0.0
+        int    gCnt = 0
+        float  gLst = na
+        string gTxt = ""
+        string gTip = ""
+        color  gCol = na
+        bool   gBo  = false
+        for j in ord
+            SmcTag tg = array.get(tags, j)
+            if gCnt > 0 and tg.p - gLst > 0.3 * aC
+                f_tag(gSum / gCnt, gTxt, gCol, gTip, gBo, xR)
+                gSum := 0.0
+                gCnt := 0
+                gTxt := ""
+                gTip := ""
+                gBo  := false
+            gTxt := gCnt == 0 ? tg.t : gTxt + " · " + tg.t
+            gTip := gCnt == 0 ? tg.k : gTip + "\n\n" + tg.k
+            gCol := gCnt == 0 ? tg.c : gCol == tg.c ? gCol : chart.fg_color
+            gBo  := gBo or tg.bo
+            gSum += tg.p
+            gCnt += 1
+            gLst := tg.p
+        f_tag(gSum / gCnt, gTxt, gCol, gTip, gBo, xR)
+    // --- BOS / CHOCH: swing se toot tak lakeer, likhai lakeer ke BEECH (upar toot: likhai upar).
+    //     BOS = seedhi patli, CHOCH = moti nuqte wali + rangeen label. Aakhri 2 (aur aakhri CHOCH)
+    //     gehre, purane halke - peeche scroll karein to structure ki kahani nazar aaye.
+    if showBOS and smcAct
+        int nB     = array.size(brk)
+        int lastCh = -1
+        for [i, eB] in brk
+            if eB.choch
+                lastCh := i
+        for [i, eB] in brk
+            if eB.x2 >= xMin
+                bool   bStrong = i >= nB - 2 or i == lastCh
+                color  cB = eB.dir == 1 ? C_UP : C_DN
+                int    bx1 = f_x(eB.x1)
+                int    bxm = int((bx1 + eB.x2) / 2)
+                string bNm = (eB.choch ? "CHOCH" : "BOS") + (eB.dir == 1 ? "↑" : "↓")
+                string bTip = eB.choch ? (eB.dir == 1 ? "CHOCH↑ = pehla ULTA toot: neeche wala silsila toota (choti " + f_px(eB.lvl) + " ke UPAR band close) · rukh badalne ka PEHLA ishara, pakka nahi. Tide ka rukh sirf D1 EMA se badalta." : "CHOCH↓ = pehla ULTA toot: upar wala silsila toota (tah " + f_px(eB.lvl) + " ke NEECHE band close) · rukh badalne ka PEHLA ishara, pakka nahi. Tide ka rukh sirf D1 EMA se badalta.") : (eB.dir == 1 ? "BOS↑ = candle pichli pakki CHOTI " + f_px(eB.lvl) + " ke UPAR band hui · structure UPAR jari." : "BOS↓ = candle pichli pakki TAH " + f_px(eB.lvl) + " ke NEECHE band hui · structure NEECHE jari.")
+                array.push(smLn, line.new(bx1, eB.lvl, eB.x2, eB.lvl, xloc = xloc.bar_index, color = color.new(cB, eB.choch ? (bStrong ? 0 : 60) : (bStrong ? 15 : 65)),
+                     style = eB.choch ? line.style_dashed : line.style_solid, width = eB.choch and bStrong ? 2 : 1))
+                array.push(smLb, label.new(bxm, eB.lvl, bNm, xloc = xloc.bar_index, style = eB.dir == 1 ? label.style_label_down : label.style_label_up, size = fsC,
+                     color = eB.choch ? color.new(cB, bStrong ? 0 : 55) : color.new(#FFFFFF, 100), textcolor = eB.choch ? color.new(color.white, bStrong ? 0 : 25) : color.new(cB, bStrong ? 0 : 50),
+                     tooltip = bTip + "\nUs waqt: " + f_rk(eB.rk, eB.dir) + smEND, text_formatting = text.format_bold))
+    // --- LGB: sweep candle ki wick par teer (s2.5: teer = umeed ki taraf) + sweep hue level ki
+    //     chhoti nuqte wali lakeer (kaun si choti / tah uthai gayi)
+    if showLGB and smcAct
+        int nS = array.size(swp)
+        for [i, eS] in swp
+            if eS.x2 >= xMin
+                bool  sStrong = i >= nS - 2
+                color cS = eS.dir == 1 ? C_UP : C_DN
+                string sTip = eS.dir == -1 ? "LGB↓ = liquidity sweep: wick pichli pakki CHOTI " + f_px(eS.lvl) + " ke UPAR gayi, close wapas NEECHE · upar ke stop uthaye, toot jhoota · teer = neeche ka imkaan.\nUs waqt: " + f_rk(eS.rk, -1) + "\n(SMC Coach mein isi ko LGB↑ kehte.)" : "LGB↑ = liquidity sweep: wick pichli pakki TAH " + f_px(eS.lvl) + " ke NEECHE gayi, close wapas UPAR · neeche ke stop uthaye, toot jhoota · teer = upar ka imkaan.\nUs waqt: " + f_rk(eS.rk, 1) + "\n(SMC Coach mein isi ko LGB↓ kehte.)"
+                array.push(smLn, line.new(f_x(eS.x1), eS.lvl, eS.x2, eS.lvl, xloc = xloc.bar_index, color = color.new(cS, sStrong ? 40 : 70), style = line.style_dotted, width = 1))
+                array.push(smLb, label.new(eS.x2, eS.y, eS.dir == 1 ? "LGB↑" : "LGB↓", xloc = xloc.bar_index, style = eS.dir == 1 ? label.style_label_up : label.style_label_down, size = fsC,
+                     color = color.new(#FFFFFF, 100), textcolor = color.new(cS, sStrong ? 0 : 45), tooltip = sTip + smEND, text_formatting = text.format_bold))
 
-// --- DZ / SZ: swing candle ka zone (max 1 ATR mota), toot jaye to mit jaye --
-var array<box> dzB = array.new<box>()
-var array<box> szB = array.new<box>()
-var array<label> dzL = array.new<label>()   // s2.5: likhai box ke bahar (patle dabbe mein ghaib na ho)
-var array<label> szL = array.new<label>()
+// --- s2.11 PEHCHAN: har nishan ka matlab, alag chhoti table (default BAND - HIDAYAT 19 Oct;
+//     Settings → 7). Tide ki table ko haath nahi lagaya; usi kone mein ho to upar / neeche badal jati.
+f_flip(string s) => s == "Top Right" ? "Bottom Right" : s == "Top Left" ? "Bottom Left" : s == "Bottom Right" ? "Top Right" : "Top Left"
+legPosE = showTable and legPos == tablePos ? f_flip(legPos) : legPos
+var table lg = table.new(f_pos(legPosE), 3, 9, border_width = 0)
+f_lgRow(int _r, string _a, color _ca, string _b, color _cb, string _m, string _tip, string _fs, color _bg) =>
+    table.cell(lg, 0, _r, _a, text_color = _ca, bgcolor = _bg, text_size = _fs, text_halign = text.align_center, tooltip = _tip, text_formatting = text.format_bold)
+    table.cell(lg, 1, _r, _b, text_color = _cb, bgcolor = _bg, text_size = _fs, text_halign = text.align_center, tooltip = _tip, text_formatting = text.format_bold)
+    table.cell(lg, 2, _r, _m, text_color = chart.fg_color, bgcolor = _bg, text_size = _fs, text_halign = text.align_left, tooltip = _tip)
 
-if showZone and smcAct and barstate.isconfirmed and not na(pl)
-    float zBot = pl
-    float zTop = math.min(math.max(open[swLen], close[swLen]), pl + nz(atrC[swLen], 0))
-    zTop := math.max(zTop, pl + 0.1 * nz(atrC[swLen], 0))
-    array.push(dzB, box.new(bar_index - swLen, zTop, bar_index, zBot, xloc = xloc.bar_index,
-         border_color = color.new(C_UP, 30), bgcolor = color.new(C_UP, 85)))
-    array.push(dzL, label.new(bar_index, (zTop + zBot) / 2, "DZ↑", xloc = xloc.bar_index, style = label.style_label_left,
-         size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_UP, text_formatting = text.format_bold))
-    while array.size(dzB) > keepN
-        box.delete(array.shift(dzB))
-        label.delete(array.shift(dzL))
-if showZone and smcAct and barstate.isconfirmed and not na(ph)
-    float zTop2 = ph
-    float zBot2 = math.max(math.min(open[swLen], close[swLen]), ph - nz(atrC[swLen], 0))
-    zBot2 := math.min(zBot2, ph - 0.1 * nz(atrC[swLen], 0))
-    array.push(szB, box.new(bar_index - swLen, zTop2, bar_index, zBot2, xloc = xloc.bar_index,
-         border_color = color.new(C_DN, 30), bgcolor = color.new(C_DN, 85)))
-    array.push(szL, label.new(bar_index, (zTop2 + zBot2) / 2, "SZ↓", xloc = xloc.bar_index, style = label.style_label_left,
-         size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_DN, text_formatting = text.format_bold))
-    while array.size(szB) > keepN
-        box.delete(array.shift(szB))
-        label.delete(array.shift(szL))
-
-// --- FVG: 3 candle ka khula gap (kam az kam fvgMin x ATR), bhar jaye to mit jaye
-var array<box> fvB = array.new<box>()
-var array<int> fvD = array.new<int>()
-var array<label> fvL = array.new<label>()
-if showFVG and smcAct and barstate.isconfirmed and not na(atrC)
-    if low > high[2] and low - high[2] >= fvgMin * atrC
-        array.push(fvB, box.new(bar_index - 2, low, bar_index, high[2], xloc = xloc.bar_index,
-             border_color = color.new(C_UP, 30), bgcolor = color.new(C_UP, 85)))
-        array.push(fvL, label.new(bar_index, (low + high[2]) / 2, "FVG↑", xloc = xloc.bar_index, style = label.style_label_left,
-             size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_UP, text_formatting = text.format_bold))
-        array.push(fvD, 1)
-    if high < low[2] and low[2] - high >= fvgMin * atrC
-        array.push(fvB, box.new(bar_index - 2, low[2], bar_index, high, xloc = xloc.bar_index,
-             border_color = color.new(C_DN, 30), bgcolor = color.new(C_DN, 85)))
-        array.push(fvL, label.new(bar_index, (low[2] + high) / 2, "FVG↓", xloc = xloc.bar_index, style = label.style_label_left,
-             size = fsC, color = color.new(#FFFFFF, 100), textcolor = C_DN, text_formatting = text.format_bold))
-        array.push(fvD, -1)
-    while array.size(fvB) > 2 * keepN
-        box.delete(array.shift(fvB))
-        array.shift(fvD)
-        label.delete(array.shift(fvL))
-
-// toote zone / bhare FVG hatao (sirf band candle par)
-if barstate.isconfirmed
-    int n1 = array.size(dzB)
-    if n1 > 0
-        for i = n1 - 1 to 0
-            if close < box.get_bottom(array.get(dzB, i))
-                box.delete(array.get(dzB, i))
-                array.remove(dzB, i)
-                label.delete(array.remove(dzL, i))
-    int n2 = array.size(szB)
-    if n2 > 0
-        for i = n2 - 1 to 0
-            if close > box.get_top(array.get(szB, i))
-                box.delete(array.get(szB, i))
-                array.remove(szB, i)
-                label.delete(array.remove(szL, i))
-    int n3 = array.size(fvB)
-    if n3 > 0
-        for i = n3 - 1 to 0
-            bx = array.get(fvB, i)
-            bool filled = array.get(fvD, i) == 1 ? low <= box.get_bottom(bx) : high >= box.get_top(bx)
-            if filled and bar_index > box.get_left(bx) + 2
-                box.delete(bx)
-                array.remove(fvB, i)
-                array.remove(fvD, i)
-                label.delete(array.remove(fvL, i))
-
-// aakhri candle par sirf QAREEB wale dikhao (baqi chhupao): 1 DZ neeche,
-// 1 SZ upar, 2 FVG, aakhri 2 BOS/CHOCH - chart saaf rahe
-f_boxVis(box b, label l, bool on, color c) =>
-    box.set_border_color(b, color.new(c, on ? 30 : 100))
-    box.set_bgcolor(b, color.new(c, on ? 85 : 100))
-    label.set_textcolor(l, color.new(c, on ? 0 : 100))
-    if on
-        box.set_right(b, bar_index + 4)
-        // likhai abhi ki candle par khatam (Tide ke label bar_index+2 se shuru - un ke neeche na chhupe)
-        label.set_x(l, bar_index)
-        label.set_style(l, label.style_label_right)
-
-if barstate.islast
-    // DZ: qeemat ke neeche (ya andar) sab se qareeb
-    int nz1 = array.size(dzB)
-    int bestDZ = -1
-    float bestDZtop = na
-    if nz1 > 0
-        for i = 0 to nz1 - 1
-            box b = array.get(dzB, i)
-            if box.get_bottom(b) <= close and (na(bestDZtop) or box.get_top(b) > bestDZtop)
-                bestDZ := i
-                bestDZtop := box.get_top(b)
-        for i = 0 to nz1 - 1
-            f_boxVis(array.get(dzB, i), array.get(dzL, i), i == bestDZ, C_UP)
-    // SZ: qeemat ke upar (ya andar) sab se qareeb
-    int nz2 = array.size(szB)
-    int bestSZ = -1
-    float bestSZbot = na
-    if nz2 > 0
-        for i = 0 to nz2 - 1
-            box b = array.get(szB, i)
-            if box.get_top(b) >= close and (na(bestSZbot) or box.get_bottom(b) < bestSZbot)
-                bestSZ := i
-                bestSZbot := box.get_bottom(b)
-        for i = 0 to nz2 - 1
-            f_boxVis(array.get(szB, i), array.get(szL, i), i == bestSZ, C_DN)
-    // FVG: qeemat se sab se qareeb 2
-    int nz3 = array.size(fvB)
-    int f1 = -1
-    int f2 = -1
-    float d1 = na
-    float d2 = na
-    if nz3 > 0
-        for i = 0 to nz3 - 1
-            box b = array.get(fvB, i)
-            float dist = close > box.get_top(b) ? close - box.get_top(b) : close < box.get_bottom(b) ? box.get_bottom(b) - close : 0.0
-            if na(d1) or dist < d1
-                f2 := f1
-                d2 := d1
-                f1 := i
-                d1 := dist
-            else if na(d2) or dist < d2
-                f2 := i
-                d2 := dist
-        for i = 0 to nz3 - 1
-            f_boxVis(array.get(fvB, i), array.get(fvL, i), i == f1 or i == f2, array.get(fvD, i) == 1 ? C_UP : C_DN)
-    // BOS / CHOCH: sirf aakhri 2
-    int nb = array.size(bosLn)
-    if nb > 0
-        for i = 0 to nb - 1
-            bool  on = i >= nb - 2
-            color cK = array.get(bosD, i) == 1 ? C_UP : C_DN
-            line.set_color(array.get(bosLn, i), color.new(cK, on ? 20 : 100))
-            label.set_textcolor(array.get(bosLb, i), color.new(cK, on ? 0 : 100))
-            if on
-                // likhai swing ke shuru par (Tide ke label se door)
-                label.set_x(array.get(bosLb, i), line.get_x1(array.get(bosLn, i)))
-                label.set_style(array.get(bosLb, i), label.style_label_right)
+if showLeg and barstate.islast
+    string lfs = f_size(legFont)
+    color  lbg = tblClear ? color.new(#FFFFFF, 100) : color.new(chart.bg_color, 10)
+    table.clear(lg, 0, 0, 2, 8)
+    int r = 0
+    f_lgRow(r, "PEHCHAN", chart.fg_color, "", chart.fg_color, "sirf dekhna · faisla sirf Tide", "Har nishan par mouse rakhein - tooltip mein poora matlab. SMC kabhi naapa nahi gaya; Tide ka faisla sirf DAILY close par (badi table).", lfs, lbg)
+    r += 1
+    if smcAct and showBOS
+        f_lgRow(r, "BOS↑", C_UP, "BOS↓", C_DN, "toot · structure jari", "BOS = pichli pakki choti / tah ke paar BAND close · structure usi taraf jari. Seedhi patli lakeer, likhai beech mein.", lfs, lbg)
+        r += 1
+        f_lgRow(r, "CHOCH↑", C_UP, "CHOCH↓", C_DN, "ulta toot · rukh badla?", "CHOCH = structure ke ULTA pehla toot · rukh badalne ka pehla ishara, pakka nahi. Moti nuqte wali lakeer + rangeen label. Tide ka rukh sirf D1 EMA se badalta.", lfs, lbg)
+        r += 1
+    if showSR
+        f_lgRow(r, "S", C_UP, "R", C_DN, "na-tooti tah / choti", "S = neeche ki pakki tah, R = upar ki pakki choti (Elder / Weinstein) - jo abhi tak kisi band close ne nahi todi. Nuqte wali lakeer.", lfs, lbg)
+        r += 1
+    if smcAct and showZone
+        f_lgRow(r, "DZ↑", C_UP, "SZ↓", C_DN, "khareed / farokht zone", "DZ = swing tah wali candle ka zone (khareedar), SZ = swing choti wali (bechne wale). Band close zone ke paar = khatam.", lfs, lbg)
+        r += 1
+    if smcAct and showFVG
+        f_lgRow(r, "FVG↑", C_UP, "FVG↓", C_DN, "khula gap (bharta hai)", "FVG = 3 candle ki tez chaal mein khula gap (beech wali candle poora paar). Jitna bhara utna chhota, poora bhare to khatam. Halka dabba, nuqte wala kinara.", lfs, lbg)
+        r += 1
+    if smcAct and showLGB
+        f_lgRow(r, "LGB↑", C_UP, "LGB↓", C_DN, "sweep · wick paar, close wapas", "LGB = liquidity sweep: wick swing ke paar, close wapas andar. Teer = umeed ki taraf (choti ka sweep = LGB↓ laal).", lfs, lbg)
+        r += 1
+    if showDMA
+        string door = not na(dE50) and (na(pE50) or na(pE200)) ? " (door - chhupi)" : ""
+        f_lgRow(r, "EMA" + str.tostring(emaFLen), cE50, "EMA" + str.tostring(emaSLen), color.new(chart.fg_color, 20), (tRk == 1 ? "D1 rukh UPAR = sirf BUY" : tRk == -1 ? "D1 rukh NEECHE = sirf SELL" : "D1 rukh saaf nahi") + door, "Tide ka RUKH: D1 EMA50 upar EMA200 = sirf BUY, neeche = sirf SELL (kal tak ki band daily candles). Chhoti TF par qeemat se door ho to lakeer chhupi - chart chapta na ho (Settings → 7).", lfs, lbg)
 
 // ============================================================================
 //  TABLE (Top Right, chhoti) — sirf aakhri candle par
