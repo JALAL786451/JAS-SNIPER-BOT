@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS TIDE + SMC   (build s2.9, Pine v6)
+//  JAS TIDE + SMC   (build s2.10, Pine v6)
 //  Naqsha: docs/tide_smc_s2_naqsha.md (11 Oct - 3 agent samjhe, 3 designer,
 //  3 judge; design C + A/B ki achhi cheezein). Pehla naqsha: docs/tide_smc_naqsha.md.
 //
@@ -71,6 +71,11 @@
 //  candles nazar aati hain; likhai chart ke rang (chart.fg_color) mein taake
 //  kaali aur safed dono chart par parhi jaye. Settings → 5 se band / kitna.
 //  Engine, signal, SL, table ki baatein WAHI.
+//  s2.10 (21 Oct, user: "is mein S/R bhi aana chahiye"): SWING S / R (Elder,
+//  Weinstein: pichli choti = resistance, pichli tah = support). Sirf PAKKI
+//  swing (pivot 5, band candle - repaint nahi), daam ke upar qareebi 2 R,
+//  neeche qareebi 2 S, dashed lakeer + qeemat. Default ON (Settings → 6).
+//  Sirf dekhna - Tide ka faisla WAHI, S/R naapa nahi gaya.
 //
 //  Naap: strategies/jas_tide_smc_test.pine. Peshangoi nahi. Tide ~55-60% trades
 //  haarta hai; kamai chand bari jeet se.
@@ -78,7 +83,7 @@
 indicator("JAS Tide + SMC", shorttitle = "JAS Tide+SMC", overlay = true,
      max_boxes_count = 50, max_lines_count = 50, max_labels_count = 100)
 
-BUILD = "s2.9"
+BUILD = "s2.10"
 
 // ============================================================================
 //  INPUTS
@@ -125,6 +130,8 @@ grR = "6 · S/R lakeerein (sirf dekhna - Tide ka faisla NAHI)"
 showWk  = input.bool(false, "Pichle HAFTE ka high / low", group = grR, display = display.none)
 showMo  = input.bool(false, "Pichle MAHINE ka high / low", group = grR, display = display.none)
 showNal = input.bool(false, "Tide naali (10 din high / low - toot ka level)", group = grR, display = display.none)
+showSR  = input.bool(true, "Swing S / R (pichli pakki choti / tah)", tooltip = "s2.10: Elder / Weinstein - pichli choti = R (daam ke upar), pichli tah = S (neeche). Swing = Settings 3 wala pivot, sirf band candle par pakka.", group = grR, display = display.none)
+srN     = input.int(2, "S / R kitni (har taraf)", minval = 1, maxval = 5, group = grR, display = display.none)
 
 grV = "5 · Table"
 showTable = input.bool(true, "Table dikhao", group = grV, display = display.none)
@@ -570,6 +577,57 @@ if barstate.isconfirmed
         sLUsed := true
     while array.size(lgbLb) > keepN + 2
         label.delete(array.shift(lgbLb))
+
+// --- s2.10 SWING S / R: pakki choti / tah yaad (aakhri 50), aakhri candle par qareebi srN har taraf
+var array<float> srHp = array.new<float>()
+var array<int>   srHb = array.new<int>()
+var array<float> srLp = array.new<float>()
+var array<int>   srLb = array.new<int>()
+var array<line>  srLn = array.new<line>()
+var array<label> srLl = array.new<label>()
+if barstate.isconfirmed and not na(ph)
+    array.push(srHp, ph)
+    array.push(srHb, bar_index - swLen)
+    if array.size(srHp) > 50
+        array.shift(srHp)
+        array.shift(srHb)
+if barstate.isconfirmed and not na(pl)
+    array.push(srLp, pl)
+    array.push(srLb, bar_index - swLen)
+    if array.size(srLp) > 50
+        array.shift(srLp)
+        array.shift(srLb)
+
+// _up = R (daam ke upar wali choti), warna S (neeche wali tah); qareeb pehle, ek qeemat ek dafa
+f_srDraw(array<float> _p, array<int> _b, bool _up) =>
+    array<float> _used = array.new<float>()
+    int _n = array.size(_p)
+    for _k = 1 to srN
+        float _best  = na
+        int   _bestB = na
+        if _n > 0
+            for _i = _n - 1 to 0
+                float _v = array.get(_p, _i)
+                bool  _side = _up ? _v > close : _v < close
+                if _side and not array.includes(_used, _v) and (na(_best) or math.abs(_v - close) < math.abs(_best - close))
+                    _best  := _v
+                    _bestB := array.get(_b, _i)
+        if not na(_best)
+            array.push(_used, _best)
+            color _c = _up ? C_DN : C_UP
+            array.push(srLn, line.new(_bestB, _best, bar_index + 3, _best, xloc = xloc.bar_index, color = color.new(_c, 30), style = line.style_dashed, width = 1))
+            array.push(srLl, label.new(bar_index + 3, _best, (_up ? "R " : "S ") + str.tostring(_best, format.mintick), xloc = xloc.bar_index,
+                 style = label.style_label_left, size = fsC, color = color.new(#FFFFFF, 100), textcolor = _c,
+                 tooltip = (_up ? "Resistance: pichli pakki choti" : "Support: pichli pakki tah") + " (Elder / Weinstein) · sirf dekhna, NAAPA NAHI"))
+
+if barstate.islast
+    while array.size(srLn) > 0
+        line.delete(array.shift(srLn))
+    while array.size(srLl) > 0
+        label.delete(array.shift(srLl))
+    if showSR
+        f_srDraw(srHp, srHb, true)
+        f_srDraw(srLp, srLb, false)
 
 // --- DZ / SZ: swing candle ka zone (max 1 ATR mota), toot jaye to mit jaye --
 var array<box> dzB = array.new<box>()
