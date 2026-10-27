@@ -64,6 +64,7 @@ SMC + S/R default BAND (user: "bohot complicated") -> SMC ke liye TV ka **LuxAlg
 - JasIbsEA i3 (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
   Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo. #23 (1D rukh + 15m entry, Python) - aaina FAIL ke baad kamzor, user kahe to.
+**Koshish #24 qaida (27 Oct, badalna mana) - Supertrend 10/3 (`jas_trend_pro_test.pine` s1):** XAUUSD 1D, BUY/SELL nishan par palat (agli open), SL = line paar band, 1 oz, 0.25$/taraf. TALAASH TV shuru-2018: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat; BUY/SELL alag.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
 entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
 asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
@@ -87,7 +88,7 @@ Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid =
 
 1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
 16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
-20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · Aaina 1D andaza (Pine, 21 Oct) FAIL.
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · **24 Supertrend gold 1D - TALAASH chal raha** · Aaina 1D andaza (Pine, 21 Oct) FAIL.
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

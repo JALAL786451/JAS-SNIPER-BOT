@@ -1,0 +1,103 @@
+//@version=6
+// ============================================================================
+//  JAS TREND PRO — TEST  (build s1, Pine v6) - Koshish #24
+//  27 Oct 2026. indicators/jas_trend_pro.pine t1 ka Supertrend 10 / 3.0
+//  jyon ka tyon, STRATEGY ki shakal mein. Qaida test se PEHLE likha (badalna mana):
+//    - BUY nishan (band candle) = long, SELL nishan = short; agli candle ke
+//      OPEN par. Hamesha ek trade (ulta nishan = band + palat).
+//    - SL = trend line: candle line ke paar BAND = nikal (wahi nishan).
+//    - XAUUSD 1D. 1 oz fixed. Spread asli se zyada: 0.25 $ har taraf (0.50 aana-jana).
+//    - TALAASH = shuru se 2018 tak (default). PASS: trades >= 100,
+//      Exp - 2SE > 0, aadhe se zyada saal musbat. BUY / SELL alag dekho.
+//    - IMTIHAN (2019 se aaj) sirf TALAASH PASS ke baad, ek dafa, bina tabdeeli.
+//  Sirf Candles chart (Heikin Ashi par Tester ke bhaav ghalat).
+//  Ek position ek waqt mein. Koi grid, martingale, hedging ya averaging nahi.
+//  Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par) Python se.
+// ============================================================================
+strategy("JAS Trend Pro Test s1", shorttitle = "JAS TREND TEST s1", overlay = true,
+     initial_capital    = 10000,
+     default_qty_type   = strategy.fixed,
+     default_qty_value  = 1,
+     commission_type    = strategy.commission.cash_per_contract,
+     commission_value   = 0.25,
+     pyramiding         = 0,
+     calc_on_every_tick = false)
+
+atrLen = input.int(10, "ATR length", minval = 1, group = "Trend")
+atrMult = input.float(3.0, "ATR multiplier", minval = 0.1, step = 0.1, group = "Trend")
+tStart = input.time(timestamp("1900-01-01T00:00:00"), "Trade kab se", group = "Muddat")
+tEnd   = input.time(timestamp("2019-01-01T00:00:00"), "Trade kab tak (is se pehle)", group = "Muddat", tooltip = "TALAASH = 2019 tak. IMTIHAN sirf PASS ke baad - us ki alag file milegi.")
+
+colUp = color.new(#26a69a, 0)
+colDn = color.new(#ef5350, 0)
+
+[st, dir] = ta.supertrend(atrMult, atrLen)
+isUp   = dir < 0
+flipUp = isUp and not isUp[1]
+flipDn = not isUp and isUp[1]
+inWin  = time >= tStart and time < tEnd
+
+plot(isUp ? st : na, "BUY line", colUp, 2, plot.style_linebr)
+plot(isUp ? na : st, "SELL line", colDn, 2, plot.style_linebr)
+
+if barstate.isconfirmed
+    if inWin and flipUp
+        strategy.entry("BUY", strategy.long)
+    if inWin and flipDn
+        strategy.entry("SELL", strategy.short)
+    if not inWin and strategy.position_size != 0
+        strategy.close_all("Muddat khatam")
+
+// ---- Nateeja dabba: Exp, SE, BUY / SELL alag, saal ----
+var table tb = table.new(position.top_right, 2, 9, bgcolor = color.new(color.black, 80), border_width = 1)
+if barstate.islast
+    n = strategy.closedtrades
+    float sum = 0.0
+    float sq  = 0.0
+    int   nB  = 0
+    float sB  = 0.0
+    int   nS  = 0
+    float sS  = 0.0
+    yr = map.new<int, float>()
+    for i = 0 to n - 1
+        if n == 0
+            break
+        p = strategy.closedtrades.profit(i)
+        sum += p
+        sq  += p * p
+        if strategy.closedtrades.size(i) > 0
+            nB += 1
+            sB += p
+        else
+            nS += 1
+            sS += p
+        y = year(strategy.closedtrades.entry_time(i))
+        yr.put(y, nz(yr.get(y)) + p)
+    exp = n > 0 ? sum / n : 0.0
+    sd  = n > 1 ? math.sqrt(math.max((sq - n * exp * exp) / (n - 1), 0.0)) : 0.0
+    se  = n > 0 ? sd / math.sqrt(n) : 0.0
+    edge = exp - 2 * se
+    int yPos = 0
+    for v in yr.values()
+        if v > 0
+            yPos += 1
+    yAll = yr.size()
+    pass = n >= 100 and edge > 0 and yPos * 2 > yAll
+    table.cell(tb, 0, 0, "JAS Trend Test s1", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 0, pass ? "PASS" : "FAIL", text_color = pass ? colUp : colDn, text_size = size.small)
+    table.cell(tb, 0, 1, "Trades", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 1, str.tostring(n), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 2, "Exp $/trade", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 2, str.tostring(exp, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 3, "SE", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 3, str.tostring(se, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 4, "Exp - 2SE", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 4, str.tostring(edge, "#.##"), text_color = edge > 0 ? colUp : colDn, text_size = size.small)
+    table.cell(tb, 0, 5, "BUY trades / Exp", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 5, str.tostring(nB) + " / " + str.tostring(nB > 0 ? sB / nB : 0.0, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 6, "SELL trades / Exp", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 6, str.tostring(nS) + " / " + str.tostring(nS > 0 ? sS / nS : 0.0, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 7, "Saal musbat", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 7, str.tostring(yPos) + " / " + str.tostring(yAll), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 8, "Muddat", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 8, "shuru - 2018 (TALAASH)", text_color = color.white, text_size = size.small)
