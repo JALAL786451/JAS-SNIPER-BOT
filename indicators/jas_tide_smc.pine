@@ -100,7 +100,10 @@
 //  s2.12 (27 Oct, user TV: "Runtime error ... historical offset (1651) beyond
 //  buffer (1650)" - kisi TF par tikta nahi tha): SMC nishan ab WAQT se
 //  (xloc.bar_time), candle number se nahi - purani swing kitni bhi peeche ho,
-//  script nahi rukti. Nishan aur qaide WAHI. Tide engine / SL / table WAHI.
+//  script nahi rukti. Tide RISK dabba bhi waqt se. Tide engine / SL / table WAHI.
+//  User: "bohot complicated" - SMC + S/R default BAND (Settings 3 / 6 se wapas).
+//  SMC ke liye TradingView ka mashhoor "Smart Money Concepts (SMC)" (LuxAlgo)
+//  saath lagayein; ye script sirf Tide (dabba + table + D1 EMA rukh).
 //
 //  Naap: strategies/jas_tide_smc_test.pine. Peshangoi nahi. Tide ~55-60% trades
 //  haarta hai; kamai chand bari jeet se.
@@ -133,7 +136,7 @@ showFaisla = input.bool(true, "Faisle ka waqt (daily close) - khari lakeer", gro
 nMarks     = input.int(5, "Purane nateeje (±R) kitne", minval = 0, maxval = 10, group = grT, display = display.none)
 
 grS = "3 · SMC (sirf dikhawa, NAAPA NAHI)"
-smcOn    = input.bool(true, "SMC nishan", tooltip = "Trade ka faisla sirf Tide dabba (DAILY close). SMC kabhi naapa nahi gaya. s2.11: har TF (1m - 1M) par, sab band candle par pakka; har nishan par mouse rakhein - tooltip mein matlab.", group = grS, display = display.none)
+smcOn    = input.bool(false, "SMC nishan", tooltip = "Trade ka faisla sirf Tide dabba (DAILY close). SMC kabhi naapa nahi gaya. s2.11: har TF (1m - 1M) par, sab band candle par pakka; har nishan par mouse rakhein - tooltip mein matlab.", group = grS, display = display.none)
 showMA   = input.bool(false, "EMA21 / EMA63 (chart TF) - Tide ka rukh NAHI", tooltip = "Tide ka asal rukh: Settings → 7 · D1 EMA50 / EMA200 (default ON).", group = grS, display = display.none)
 showBOS  = input.bool(true, "BOS / CHOCH (aakhri 2 gehre + purane halke)", tooltip = "BOS = pichli pakki swing ke paar BAND close (structure jari) - seedhi patli lakeer. CHOCH = ulta pehla toot - moti dash (- - -) wali lakeer + rangeen label. Likhai lakeer ke beech.", group = grS, display = display.none)
 showZone = input.bool(true, "DZ / SZ (qareeb wala 1-1)", tooltip = "Swing candle ka zone (wick se body, 0.1 - 1 ATR). Band close paar = khatam. SZ aur R ek hi choti ho to ek likhai 'R ... · SZ↓'.", group = grS, display = display.none)
@@ -155,7 +158,7 @@ grR = "6 · S/R lakeerein (sirf dekhna - Tide ka faisla NAHI)"
 showWk  = input.bool(false, "Pichle HAFTE ka high / low", group = grR, display = display.none)
 showMo  = input.bool(false, "Pichle MAHINE ka high / low", group = grR, display = display.none)
 showNal = input.bool(false, "Tide naali (10 din high / low - toot ka level)", group = grR, display = display.none)
-showSR  = input.bool(true, "Swing S / R (pichli pakki choti / tah)", tooltip = "s2.10: Elder / Weinstein - pichli choti = R (daam ke upar), pichli tah = S (neeche). Swing = Settings 3 wala pivot, sirf band candle par pakka. s2.11: sirf NA-TOOTI (kisi band close ne paar nahi ki), 0.2 ATR ke andar do ho to ek; har TF par.", group = grR, display = display.none)
+showSR  = input.bool(false, "Swing S / R (pichli pakki choti / tah)", tooltip = "s2.10: Elder / Weinstein - pichli choti = R (daam ke upar), pichli tah = S (neeche). Swing = Settings 3 wala pivot, sirf band candle par pakka. s2.11: sirf NA-TOOTI (kisi band close ne paar nahi ki), 0.2 ATR ke andar do ho to ek; har TF par.", group = grR, display = display.none)
 srN     = input.int(2, "S / R kitni (har taraf)", minval = 1, maxval = 5, group = grR, display = display.none)
 
 grV = "5 · Table"
@@ -395,8 +398,10 @@ f_keep(array<label> a, int k) =>
 endTrade = not na(tN[1]) and tN > tN[1]   // pehli candle par pichli ginti maloom nahi - nishan nahi
 newT     = tD != 0 and (nz(tD[1]) != tD or tE != tE[1] or tN != tN[1])   // nayi trade (usi din dobara khuli bhi)
 var int eBar = na      // entry ke baad pehli chart candle - RISK dabba yahan se
+var int eTm  = na      // s2.12: usi candle ka WAQT (dabba waqt se banta)
 if newT
     eBar := bar_index
+    eTm  := time
 dayT = time("D")       // aaj ki daily candle ka shuru (har candle par ek dafa)
 var int exDay = na     // jis din pata chala ke trade close par band hui (MT5 mein khud band nahi hoti)
 if endTrade
@@ -498,7 +503,10 @@ if barstate.islast
             string t1 = (tD == 1 ? "▲ TIDE BUY" : "▼ TIDE SELL") + " · din " + str.tostring(tAge) + (slHit or na(stC) ? "" : " · abhi " + f_r(tD * (stC - tE) / tR)) + " · entry " + f_px(tE) + " (" + eDay + " daily close" + (clamp ? ", chart se pehle" : "") + ")"
             string t2 = slHit ? "AAJ SL CHHU GAYA @ " + f_px(slPx) + " · ~" + f_r(slR) + " (qaide se) · MT5 mein band karein" : "SL abhi " + f_px(tSL) + " · SL par band ~" + f_r(rSL) + " (qaide se; gap ho to kam, swap/spread nahi gina)" + (dDone ? ((tRk == -tD or pastCs) ? "\nDaily close ho chuki · BAND ka imkaan · agle session ki PEHLI candle par table dekhein" : not na(csT) and csT != tSL ? "\nAgle session se SL " + f_px(csT) : "") : (not na(csT) and csT != tSL ? "\nAaj DAILY close " + f_px(csT) + (tD == 1 ? " ke neeche" : " ke upar") + " = BAND" : "") + (tRk == -tD ? "\nD1 rukh palta: aaj daily close par BAND" : ""))
             string t3 = "Laal = 1R risk (shuru ka SL " + f_px(sl0) + ") · TP NAHI: SL roz aage"
-            bxRisk := box.new(lft, math.max(tE, sl0), rgt, math.min(tE, sl0), xloc = xloc.bar_index,
+            // s2.12: dabba WAQT se (entry candle 4000+ candle peeche = 'historical offset' error tha)
+            int    lftT  = math.max(nz(eTm, firstT), firstT)
+            int    rgtT  = time + 20 * nz(timeframe.in_seconds(), 60) * 1000
+            bxRisk := box.new(lftT, math.max(tE, sl0), rgtT, math.min(tE, sl0), xloc = xloc.bar_time,
                  border_color = color.new(C_BEAR, 30), border_style = slHit ? line.style_dashed : line.style_solid, border_width = 1,
                  bgcolor = color.new(C_BEAR, 85))
             // likhai abhi ke SL par (qeemat ke qareeb rehta hai), SL ke us taraf jidhar nuqsan
