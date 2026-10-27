@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD i2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD i3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                     JasIbsEA.mq5 |
@@ -31,6 +31,11 @@
 //|  i2 (14 Oct): Journal mein har trade ki ek line (TRADE: signal   |
 //|  din, khuli, band, R) - strategies/jas_ibs_test.pine ki list se  |
 //|  din-ba-din milane ke liye. Trading ke qaide i1 wale hi.         |
+//|  i3 (27 Oct): daily candle ab EA khud H1 se banata hai, 17:00     |
+//|  New York par band (TV / OANDA jaisi; US DST khud, JasImomEA se). |
+//|  Faisla 17:00 NY se InpPreMin (5) minute pehle - Jumma ko bhi     |
+//|  (Itwar raat ka weekend gap khatam). Chhutti / tick na aaye to    |
+//|  bazaar khulne par mukammal candle se (i2 jaisa). Qaide wahi.     |
 //|                                                                  |
 //|  NO grid / NO martingale / NO averaging. Har market ek position. |
 //+------------------------------------------------------------------+
@@ -38,7 +43,7 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "i2"          // har nayi file par ye number barhta hai
+#define EA_BUILD "i3"          // har nayi file par ye number barhta hai
 #define MAXM 10
 
 CTrade trade;
@@ -70,6 +75,8 @@ input int    InpBars       = 1200;     // Kitni daily candles parhni
 input int    InpSlippage   = 50;       // Max slippage (points)
 input int    InpMagic      = 20261022; // Magic number
 input datetime InpStatFrom = D'2019.01.01'; // Tester: hisaab is tareekh se khuli trades ka
+input int    InpServerGMT  = 0;        // Broker server ka GMT farq (Exness = 0)
+input int    InpPreMin     = 5;        // 17:00 NY se kitne minute pehle faisla
 
 //--------------------------- HAAL (har market ka alag) ---------------
 int      g_n = 0;
@@ -78,7 +85,9 @@ string   g_base[MAXM];
 string   g_sym[MAXM];
 bool     g_have[MAXM];
 string   g_label = "";
-datetime g_lastD1[MAXM];       // broker ki aakhri band D1 candle (jo dekh li)
+datetime g_lastD1[MAXM];       // NY session (din) jis ke shuru par mukammal candle dekh li
+int      g_dstY = 0;
+datetime g_dstA = 0, g_dstB = 0;
 datetime g_doneT[MAXM];        // mili hui (Sunday ke baad) aakhri candle jis par faisla ho gaya
 datetime g_failT[MAXM];
 bool     g_initBar[MAXM];      // EA lagne ke baad pehli candle: sirf band ki jaanch, nayi trade nahi (der se entry nahi)
@@ -126,6 +135,60 @@ int YMD(datetime t)
   }
 
 double Base() { return(AccountInfoDouble(ACCOUNT_BALANCE)); }
+
+//+------------------------------------------------------------------+
+//|  NEW YORK WAQT (JasImomEA se) - US DST: March 2nd Sun - Nov 1st Sun|
+//+------------------------------------------------------------------+
+datetime NthSunday(int year, int mon, int n)
+  {
+   MqlDateTime s;
+   ZeroMemory(s);
+   s.year = year;
+   s.mon  = mon;
+   s.day  = 1;
+   datetime d1 = StructToTime(s);
+   MqlDateTime w;
+   TimeToStruct(d1, w);
+   int add = (7 - w.day_of_week) % 7;
+   return(AddSec(d1, (long)(add + 7 * (n - 1)) * 86400));
+  }
+
+bool UsDst(datetime utc)
+  {
+   MqlDateTime s;
+   TimeToStruct(utc, s);
+   if(s.year != g_dstY)
+     {
+      g_dstY = s.year;
+      g_dstA = AddSec(NthSunday(s.year, 3, 2), 7 * 3600);
+      g_dstB = AddSec(NthSunday(s.year, 11, 1), 6 * 3600);
+     }
+   return(utc >= g_dstA && utc < g_dstB);
+  }
+
+datetime ServerToNy(datetime srv)
+  {
+   datetime utc = AddSec(srv, -(long)InpServerGMT * 3600);
+   if(UsDst(utc)) return(AddSec(utc, -4 * 3600));
+   return(AddSec(utc, -5 * 3600));
+  }
+
+datetime NyToServer(datetime ny)
+  {
+   datetime utc = AddSec(ny, 4 * 3600);
+   if(!UsDst(utc)) utc = AddSec(ny, 5 * 3600);
+   return(AddSec(utc, (long)InpServerGMT * 3600));
+  }
+
+// NY waqt -> session ka din (00:00). 17:00 NY ke baad = agla din (TV / OANDA daily candle)
+datetime SessDay(datetime ny)
+  {
+   long x = (long)ny + 7 * 3600;
+   return((datetime)(x - x % 86400));
+  }
+
+// Session (din) kis server waqt par shuru hui = pichhle din 17:00 NY
+datetime SessStart(datetime day) { return(NyToServer(AddSec(day, -7 * 3600))); }
 
 double MinStop()
   {
@@ -298,26 +361,30 @@ bool ClosePos(ulong tk, string why)
   }
 
 //+------------------------------------------------------------------+
-//|  DAILY CANDLES - Sunday/Saturday ki chhoti candle agle din mein   |
-//|  (Radar EA ka LoadBars). 24/7 symbol (BTC/ETH) par nahi.          |
+//|  DAILY CANDLES (i3) - H1 se, 17:00 NY par band. T = session ka din |
+//|  (NY tareekh 00:00, TV ki tareekh). Sat/Sun ki chhoti candle agle |
+//|  din mein (24/7 symbol BTC/ETH par nahi). withNow = chalti session|
+//|  bhi (close = abhi ki qeemat); false = sirf mukammal sessions.    |
 //+------------------------------------------------------------------+
-int LoadBars(datetime &T[], double &H[], double &L[], double &C[])
+int LoadBars(datetime &T[], double &H[], double &L[], double &C[], bool withNow)
   {
    MqlRates rt[];
-   int got = CopyRates(S, PERIOD_D1, 1, InpBars, rt);   // 1 = chalti candle nahi
+   int got = CopyRates(S, PERIOD_H1, 0, InpBars * 24 + 48, rt);
    if(got <= 0) return(0);
    ArrayResize(T, got);
    ArrayResize(H, got);
    ArrayResize(L, got);
    ArrayResize(C, got);
    bool nonstop = Is247();
+   datetime nowDay = SessDay(ServerToNy(TimeCurrent()));
    int  m = 0;
    bool pend = false;
    double pH = 0.0, pL = 0.0;
    for(int k = 0; k < got; k++)
      {
+      datetime d = SessDay(ServerToNy(rt[k].time));
       MqlDateTime st;
-      TimeToStruct(rt[k].time, st);
+      TimeToStruct(d, st);
       bool wkend = (!nonstop) && (st.day_of_week == 0 || st.day_of_week == 6);
       if(wkend)
         {
@@ -325,7 +392,14 @@ int LoadBars(datetime &T[], double &H[], double &L[], double &C[])
          else      { pH = MathMax(pH, rt[k].high); pL = MathMin(pL, rt[k].low); }
          continue;
         }
-      T[m] = rt[k].time;
+      if(m > 0 && T[m - 1] == d)
+        {
+         H[m - 1] = MathMax(H[m - 1], rt[k].high);
+         L[m - 1] = MathMin(L[m - 1], rt[k].low);
+         C[m - 1] = rt[k].close;
+         continue;
+        }
+      T[m] = d;
       H[m] = rt[k].high;
       L[m] = rt[k].low;
       C[m] = rt[k].close;
@@ -337,7 +411,19 @@ int LoadBars(datetime &T[], double &H[], double &L[], double &C[])
         }
       m++;
      }
-   // aakhir mein weekend ki candle ho (Monday abhi band nahi) to chhor di
+   // sab se purani session adhoori ho sakti hai (H1 ki ginti wahan khatam) - chhor do
+   int from = 1;
+   if(m > 0 && T[m - 1] == nowDay && !withNow) m--;   // chalti session nahi chahiye
+   if(withNow && (m == 0 || T[m - 1] != nowDay)) return(0);
+   m -= from;
+   if(m < 0) m = 0;
+   for(int k = 0; k < m; k++)
+     {
+      T[k] = T[k + from];
+      H[k] = H[k + from];
+      L[k] = L[k + from];
+      C[k] = C[k + from];
+     }
    ArrayResize(T, m);
    ArrayResize(H, m);
    ArrayResize(L, m);
@@ -452,15 +538,16 @@ int SymIdx(string sym)
   }
 
 //+------------------------------------------------------------------+
-//|  FAISLA - market i ki nayi band daily candle par ek dafa           |
+//|  FAISLA - market i ki har daily candle par ek dafa: 17:00 NY se   |
+//|  thora pehle (withNow) ya der se mukammal candle par              |
 //|  false = abhi nahi ho saka (data / market band / order fail)     |
 //+------------------------------------------------------------------+
-bool Decide(int i, bool canTrade)
+bool Decide(int i, bool canTrade, bool withNow)
   {
    Use(i);
    datetime T[];
    double   H[], L[], C[];
-   int m = LoadBars(T, H, L, C);
+   int m = LoadBars(T, H, L, C, withNow);
    int need = MathMax(InpTrendLen, InpAtrLen + 1) + 5;
    if(m < need)
      {
@@ -515,8 +602,7 @@ bool Decide(int i, bool canTrade)
       if(g_ibs[i] >= 0.0 && g_ibs[i] < InpIbsLo && g_c[i] > g_smaT[i])
         {
          int day = YMD(T[k]);
-         datetime since = T[k];
-         if(k > 0) since = AddSec(T[k - 1], 86400);   // Monday: Sunday wala hissa bhi isi candle ka
+         datetime since = SessStart(T[k]);            // Monday: Sunday raat wala hissa bhi isi candle ka
          if(SlHitSince(since))
             Note(StringFormat("BUY signal %s magar is candle par SL laga tha - Pine jaisa nayi nahi", TimeToString(T[k], TIME_DATE)));
          else if(!SigUsed(day))
@@ -750,15 +836,25 @@ void Pass()
    bool tester = (MQLInfoInteger(MQL_TESTER) != 0);
    bool canTrade = tester || (InpTrade && TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) != 0 &&
                               MQLInfoInteger(MQL_TRADE_ALLOWED) != 0);
+   datetime ny     = ServerToNy(now);
+   datetime nowDay = SessDay(ny);
+   MqlDateTime nt, dt;
+   TimeToStruct(ny, nt);
+   TimeToStruct(nowDay, dt);
+   int  mins   = nt.hour * 60 + nt.min;
+   bool preWin = (mins >= 17 * 60 - InpPreMin && mins < 17 * 60 && dt.day_of_week >= 1 && dt.day_of_week <= 5);
    for(int i = 0; i < g_n; i++)
      {
       if(!g_have[i]) continue;
       Use(i);
-      datetime t1 = iTime(S, PERIOD_D1, 1);
-      if(t1 != 0 && t1 != g_lastD1[i] && now - g_failT[i] > 60)
+      if(now - g_failT[i] <= 60) continue;
+      // nayi session shuru hui: pichhli mukammal candle ka faisla na hua ho (chhutti / EA baad mein laga)
+      if(nowDay != g_lastD1[i])
         {
-         if(Decide(i, canTrade)) g_lastD1[i] = t1;
+         if(Decide(i, canTrade, false)) g_lastD1[i] = nowDay;
         }
+      // 17:00 NY se InpPreMin minute pehle: chalti candle par faisla (TV close jaisa, Jumma bhi)
+      if(preWin && g_doneT[i] != nowDay) Decide(i, canTrade, true);
      }
    if(tester && MQLInfoInteger(MQL_VISUAL_MODE) == 0) return;
 
@@ -817,6 +913,11 @@ int OnInit()
       InpTrendLen < 10 || InpAtrLen < 2 || InpSlMult <= 0.0)
      {
       Print("ERROR: qawaid ke number ghalat hain.");
+      return(INIT_PARAMETERS_INCORRECT);
+     }
+   if(InpPreMin < 1 || InpPreMin > 50)
+     {
+      Print("ERROR: InpPreMin 1 se 50 ke darmiyan hona chahiye.");
       return(INIT_PARAMETERS_INCORRECT);
      }
    if(InpRiskPct <= 0.0 || InpRiskPct > 3.0)
