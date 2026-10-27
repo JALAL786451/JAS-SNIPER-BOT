@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 27 Oct 2026 (20vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 27 Oct 2026 (21vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -54,12 +54,11 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**20-27 Oct (20vi chat):** AAINA a15 (P/L spread ke baad) TV ✅: 15m -$0.18/trade, 1D -$0.03 = spread kha jata. a16 (EMA+IBS+Kachhua
-ek number) = khichdi, user rad - hata di. a18 `c06dadd` = chart khaali (nishan / Record default band). Strategy `strategies/jas_aaina_test.pine`
-t2 `abd5cfa` (Settings 7 "Trade kab se"): 1D 2019+ 1974 trades -$623, PF 0.968 = **FAIL** (spread se pehle bhi ~0). Aaina sirf dekhna.
-**Tide+SMC:** s2.10 S/R ✅ · s2.11 (6 agent, har TF SMC) TV runtime error · **s2.12 `4e02fe9`** = nishan + RISK dabba WAQT se (error theek),
-SMC + S/R default BAND (user: "bohot complicated") -> SMC ke liye TV ka **LuxAlgo "Smart Money Concepts"** saath. Versions: s2.8 `e48459b`, s2.9 `b35c676`.
-**AGLI CHAT pehla kaam:** user s2.12 TV par lagaye (1m / 1H / 1D par tikta hai?) + LuxAlgo - screenshot dekho; error ho to SIRF wohi line theek.
+**27 Oct (21vi chat):** user: "world famous, har TF, uljhan nahi" -> `indicators/jas_trend_pro.pine` t1 `13f9d53` (Supertrend 10/3, TV ✅ BTC 1D,
+gold 15m/1H; settings badalni nahi - user). Koshish #24 (1D strategy) = FAIL. User ka maqsad: **FTMO 2-step EA se pass**.
+`tools/ftmo_imkaan.py` f2 `1f862ca` (Monte Carlo, `--jaal`): IBS 2% + Kachhua 0.25% = 36m 59% pass / 5% fail, 60m 81% / 7%. IBS EA risk 1% - Claude NAHI barhata.
+FTMO fee sirf demo 6 mahine ke baad. Aaina / Tide+SMC s2.12 (`4e02fe9`) user: theek, koi masla nahi.
+**AGLI CHAT pehla kaam (user ne pooch kar diya):** JasIbsEA i3 mukammal (sec 6) -> demo, phir "FTMO Pehra" (din 4% / kul 8% band) EA mein.
 **RUKE HUE KAAM (user jab kahe - khud mat chhero; Pine par sirf yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->

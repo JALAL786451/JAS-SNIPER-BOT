@@ -56,3 +56,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Tide+SMC versions | s2.8 `e48459b`, s2.9 `b35c676` (table transparent), s2.10 `364d2b4` (S/R), s2.12 `4e02fe9` (error theek, SMC default band). | 27 Oct |
 | "historical offset beyond buffer" | Pine nishan purani candle se (bar_index 1650+ / 4000+ peeche) - xloc.bar_time (WAQT) se banao. | 27 Oct |
 | SMC kaunsa | Apna nahi - TV ka LuxAlgo "Smart Money Concepts (SMC)" saath lagao; Tide+SMC sirf Tide (dabba + table + D1 EMA). | 27 Oct |
+- FTMO EA se pass? -> `tools/ftmo_imkaan.py --preset ibs --preset kachhua --jaal`: IBS 2% + Kachhua 0.25% ~59% (36m), fail ~5%; asal dushman waqt. Fee demo 6 mahine baad (27 Oct).
