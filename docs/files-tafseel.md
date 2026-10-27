@@ -10,6 +10,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv` | LIVE kitab har lot (183 pos, 16 Oct 12:30) - JasDeskView CSV; nayi CSV isi folder mein tareekh ke naam se |
 | `indicators/jas_trend_pro.pine` | JAS Trend Pro t1 (27 Oct): ATR Supertrend 10/3.0 (duniya ki standard), har TF, BUY/SELL sirf band candle, EMA 200 filter + candle rangat default band, dabba (rukh / SL / candle), alerts. Settings badalni nahi (user) |
 | `strategies/jas_trend_pro_test.pine` | Koshish #24 s1 (27 Oct): Trend Pro Supertrend 10/3 strategy, XAUUSD 1D, flip par palat, 0.25$/taraf, TALAASH shuru-2018, dabba Exp / SE / BUY-SELL / saal / PASS |
+| `tools/ftmo_imkaan.py` | FTMO imkaan f1 (27 Oct): Monte Carlo FTMO 2-step (P1 10%, P2 5%, din 5%, kul 10%, min 4 din), presets ibs / kachhua / --system, faida SE ke saath. Pehla nateeja: tokri 0.5% = dono pass 47%, ~18 mahine |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
 | `indicators/jas_aaina.pine` | JAS AAINA a18 (21 Oct): a15 (AGLI record + P/L spread ke baad) + chart khaali (saaya, labels, LGB, S/R, qareebi, ABHI, Record default BAND). a16 khichdi hata di. Test: `strategies/jas_aaina_test.pine` t2 = FAIL |
 | `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
