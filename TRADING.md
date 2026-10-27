@@ -63,7 +63,7 @@ FTMO fee sirf demo 6 mahine ke baad. Aaina / Tide+SMC s2.12 (`4e02fe9`) user: th
 - JasIbsEA i3 (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
   Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo. #23 (1D rukh + 15m entry, Python) - aaina FAIL ke baad kamzor, user kahe to.
-**Koshish #24 = TALAASH FAIL (27 Oct, idea band; indicator t1 sirf dekhne ko)** - qaida tha - Supertrend 10/3 (`jas_trend_pro_test.pine` s1):** XAUUSD 1D, BUY/SELL nishan par palat (agli open), SL = line paar band, 1 oz, 0.25$/taraf. TALAASH TV shuru-2018: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat; BUY/SELL alag.
+**Koshish #25 qaida (27 Oct, test se PEHLE, badalna mana) - `strategies/jas_trend_pro_test_s2.pine` s2:** Supertrend 10/3 SIRF BUY (SELL nishan = band, short nahi), agli open, 1 oz, 0.25$/taraf, 1R = 3xATR(10). TALAASH: 1D/1W = 1975-2018, chhoti TF = pehli 70% candles. PASS: >= 100 tr, Exp(R) - 2SE > 0, saal > 50%. Nateeja dekh kar chuna = IMTIHAN SAKHT (>= 30 tr, Exp-2SE > 0), ek dafa.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
 entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
 asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
@@ -87,7 +87,7 @@ Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid =
 
 1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
 16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
-20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL.
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL · **25 Supertrend sirf BUY (s2) - TV test ka intezar**.
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

@@ -632,3 +632,8 @@ bana. **Exness USTECm data sirf 2025.09.21 se** (Tester: no history 2021-24) = E
 website = ek din fi file; is liye QDM.
 Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa bhi grep karo (mashwaray wahan).
 
+
+
+## TRADING.md sec 5 se (27 Oct, #25 ke liye jagah)
+
+**Koshish #24 = TALAASH FAIL (27 Oct, idea band; indicator t1 sirf dekhne ko)** - qaida tha - Supertrend 10/3 (`jas_trend_pro_test.pine` s1):** XAUUSD 1D, BUY/SELL nishan par palat (agli open), SL = line paar band, 1 oz, 0.25$/taraf. TALAASH TV shuru-2018: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat; BUY/SELL alag.
