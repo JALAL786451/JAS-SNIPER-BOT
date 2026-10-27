@@ -76,7 +76,8 @@ if barstate.isconfirmed
 
 // ---- Nateeja dabba (R mein) ----
 var table tb = table.new(position.top_right, 2, 11, bgcolor = color.new(color.black, 80), border_width = 1)
-if barstate.islast
+// calc_on_every_tick = false: chalti candle band hone tak strategy nahi chalti -> aakhri BAND candle par bhi banao
+if barstate.islastconfirmedhistory or barstate.islast
     n = strategy.closedtrades
     float sR  = 0.0
     float sqR = 0.0
