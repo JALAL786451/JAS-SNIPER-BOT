@@ -9,7 +9,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 |---|---|
 | `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv` | LIVE kitab har lot (183 pos, 16 Oct 12:30) - JasDeskView CSV; nayi CSV isi folder mein tareekh ke naam se |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
-| `indicators/jas_aaina.pine` | JAS AAINA a13 (a13: AGLI candle andaza Settings 6 - saaya candle + ✔/✖ + record ki 2 qataren vs bunyaad; TF 5 = 1W default band; a12: SAAYA RECORD dabba ✔/✖ + bunyaad, Settings 5; band candle nishani + SAAYA #1-#3 raasta, N baad ✔ / ✖; table default band): TF LIVE ki abhi wali nishani (15m/1H/4H/1D rang + kahan) history mein - agli N candles ka nateeja vs har candle; chart par sab se qareebi mauqe (Lorentzian faasla) + nateeja dabba + Elder/Weinstein S/R + LGB (jhoota toot) + ABHI ausat dabba (sirf naap) |
+| `indicators/jas_aaina.pine` | JAS AAINA a18 (21 Oct): a15 (AGLI record + P/L spread ke baad) + chart khaali (saaya, labels, LGB, S/R, qareebi, ABHI, Record default BAND). a16 khichdi hata di. Test: `strategies/jas_aaina_test.pine` t2 = FAIL |
 | `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
 | `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
 | `JasIbsEA.mq5` | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (`TRADING.md`) |
@@ -33,7 +33,7 @@ basket method; `_BTC` ko `tools/make_btc.py` banata hai, haath se mat badlo), `J
 **Pine - naap / radar (`indicators/`):** `jas_tide_radar` (Kachhua 9 market), `jas_tide_tokri`
 (commodity, #6 PASS), `jas_rsi2_radar`, `jas_ibs_radar` (#14-15), `jas_of_draft` (#16 draft dekhne wala, T-YES/T-NO/MISS), `jas_tom_radar` (#5),
 `jas_ichimoku_radar` (#7-8), `jas_ema_sma_band` (18 Oct m5: Elder value zone EMA13/26 + AutoEnvelope OB/OS, Weinstein SMA 30W, Faber SMA 10M, S/R band candle), `jas_coint_radar` (#10-11), ginti scripts (`jas_*_ginti`),
-`jas_tide_smc`, `jas_tide_seekh`, `jas_tide_signal`, `jas_seerhi`, `jas_pro_box`,
+`jas_tide_smc` (s2.12 27 Oct: SMC default band, LuxAlgo saath), `jas_tide_seekh`, `jas_tide_signal`, `jas_seerhi`, `jas_pro_box`,
 `smc_coach_pro_v3/v4`, `smc_coach_scalp_v6`, `smc_trend_pro`, aur doosron ke scripts
 (`supertrend_v6`, `ob_radar`, `gainzalgo_ml_smc`, `analogue_matcher_v2`, `candle_xray`,
 `fishing_live`, `trend_ribbon_levels`).

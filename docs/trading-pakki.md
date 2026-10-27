@@ -138,6 +138,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - Claude (20 Oct): AAINA ka agla build hamesha USI file mein tweak (a12 -> a13, sab purana qaim) - user ne alag 200 line script rad ki.
 - AAINA AGLI (20 Oct, a14): 15m agli candle rang ~sikka (51.6% vs 49.6%, hadd ±1.9); 1D 54% vs 51% sirf kal ke 1D rang se - 1W/1M kuch nahi jodte. Bari TF ka faida chhoti candle mein sqrt(ginti) patla (1D->15m ~10x). Record jori (paired) hadd se.
 - EA suffix "auto" (20 Oct): EA ko apni market list wale chart par lagao (Rsi2 XPTUSDm par = 3 market "nahi mila"); EA dobara lagao to Inputs (markets, magic, TRADE) check - Commodity gold list par chal raha tha.
+- AAINA 1D andaza (21 Oct): 2019+ Strategy Tester PF 0.968 (spread se pehle ~0) - faida sirf purane dor ka; Pine aaina se trade NAHI, sirf dekhna.
 
 ## 5. Mere tools
 

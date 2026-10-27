@@ -33,6 +33,9 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | tweak | AAINA (aur chalti script) ka agla build = USI file mein tweak, sab purana qaim; alag chhoti nayi script NAHI ("800+ ko 200+ bana diya"). | 20 Oct |
 | VPS | Demo ke liye VPS ka kharcha abhi nahi - dobara mashwara mat do. | 20 Oct |
 | pine test | TALAASH / IMTIHAN qaida EA ke liye hai. Pine par kaam ho to sirf YAAD dilao: "sahi nateeja MT5 ya (data milne par) Python se". Pine pass hone tak usi ko tweak karo; Python / MT5 / data ka kaam khud mat chhero - user khud kahega. | 21 Oct |
+| discussion | User concept SAMJHA raha ho to kaam / agents shuru NAHI - pehle 2-3 line mein apni samajh likh kar poochho, user ke "D" ke baad kaam (a16 par tokens zaya, user naraz). | 21 Oct |
+| agents | Agent / workflow sirf jab user USI kaam ke liye khud kahe; agle kaam par khud mat chalao. User tokens par sakht: chhote jawab, kam tool qadam, ek dafa sahi. | 27 Oct |
+| SMC | Apna SMC script mat banao - TV ka LuxAlgo "Smart Money Concepts" saath lagao. Tide+SMC sirf Tide (SMC default band). | 27 Oct |
 
 ## C. Token / usage bachao (sab se pehli tarjeeh)
 
@@ -52,6 +55,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 - MQL5: doori se pehle `SYMBOL_DIGITS` aur `SYMBOL_TRADE_STOPS_LEVEL` (3-digit gold par 300 points = $0.30).
 - MQL5: `OrderCalcProfit` jaisi warning bhi theek karo (0 maan kar ghalat faisla).
 - Pine: `request.security` tuple 127 se kam; v6 mein `ta.*` if ke bahar. Repaint nahi: HTF = `[1]` + `lookahead_on`, ishare `barstate.isconfirmed`.
+- Pine: purani candle par nishan (line / box / label) = `xloc.bar_time` (WAQT) - `xloc.bar_index` 1650+ candle peeche = runtime error "historical offset beyond buffer" (aaina a5, Tide+SMC s2.12).
 - Cloud (Linux) mein MT5 / TradingView nahi - compile yahan NAHI; `python3 tools/pinecheck.py <file>`. User F7 / TV par compile kar ke screenshot bhejta hai.
 - Windows: `tools\compile.bat <file>` (0 errors tak), `tools\backtest.bat <EA>` - ek waqt ek input badlo.
 - Live par EA / script se pehle Algo Trading hara, kaam ke baad laal.

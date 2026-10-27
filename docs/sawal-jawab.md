@@ -50,3 +50,9 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | Saaya record / bunyaad | a11/a12 dabba (Settings 5). Bunyaad = isi muddat aankh band kar ke wahi rukh. Rang sirf 30+ saaye aur bunyaad se 2SE farq. 1D 300 saaye = shor. | 20 Oct |
 | LGB / S-R / FVG se AAINA kharab? | Nahi - FVG/OB hain hi nahi; LGB/S-R sirf nishan, AGLI ka agKey sirf TF rang. | 20 Oct |
 | 1W / 1M ko 1D ki buniyaad | 1D chart par 1D+1W 54.1%, 1D+1M 54.0% = sirf 1D 54.0% - kuch nahi joda. Buniyaad sirf kal ka 1D rang. | 20 Oct |
+| Aaina spread ke baad | a15: 15m -$0.18/trade (spread se pehle ~+$0.12), 1D -$0.03 - $0.30 spread sab kha jata. | 21 Oct |
+| Aaina strategy 1D | `jas_aaina_test` t2: 2019+ 1974 trades -$623 PF 0.968 (spread se pehle ~0) = FAIL; poori history -$922 PF 0.979. Tide ke saath milana bekaar. | 21 Oct |
+| Aaina a16 khichdi | EMA + IBS + Kachhua + rang ek number = 432 nishani, samajh nahi aati, nateeja shor - hata di (a17/a18 = a15 + chart khaali). | 21 Oct |
+| Tide+SMC versions | s2.8 `e48459b`, s2.9 `b35c676` (table transparent), s2.10 `364d2b4` (S/R), s2.12 `4e02fe9` (error theek, SMC default band). | 27 Oct |
+| "historical offset beyond buffer" | Pine nishan purani candle se (bar_index 1650+ / 4000+ peeche) - xloc.bar_time (WAQT) se banao. | 27 Oct |
+| SMC kaunsa | Apna nahi - TV ka LuxAlgo "Smart Money Concepts (SMC)" saath lagao; Tide+SMC sirf Tide (dabba + table + D1 EMA). | 27 Oct |

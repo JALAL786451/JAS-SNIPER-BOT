@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 20 Oct 2026 raat (19vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 27 Oct 2026 (20vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -54,14 +54,16 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**20 Oct raat (19vi chat):** a13 TV ✅ (15m+1D). Jaanch (20 agent): ginti SAHI, look-ahead nahi; LGB/S-R sirf nishan, hisaab mein nahi.
-Ghalati sirf record rang -> **a14** (`33251cd`, TV ✅): shor hadd jori (paired). 15m "sab" 51.6% vs ~49.6%, hadd ±1.9 = kinare par;
-"sirf rang wale" 51% vs 53% (ulta). 15m rang ~sikka. 1D: 54% vs 51% (±1.3) = sirf "kal ka 1D rang" (hara->~56% hara);
-1D+1W 54.1%, 1D+1M 54.0% = kuch nahi joda; 1W chart 0 ikhtilaf. Daily faida 15m mein ~50.4% reh jata (92 candles).
-**AGLI CHAT pehla kaam: a15** - AGLI record mein qatar "P/L $ spread ke baad" (andaze ke rukh open->close, spread input
-default $0.30), 1D + 15m SS. Phir koshish #23 (1D rukh + 15m entry, 10 saal Python). TV par sab history dekhi = IMTIHAN sakht.
-**User ka (jab chahe):** QDM export (Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, XAUUSD 2023-24 (+ #23 ke liye XAUUSD 2015-2020) ->
-upload -> Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo.
+**20-27 Oct (20vi chat):** AAINA a15 (P/L spread ke baad) TV ✅: 15m -$0.18/trade, 1D -$0.03 = spread kha jata. a16 (EMA+IBS+Kachhua
+ek number) = khichdi, user rad - hata di. a18 `c06dadd` = chart khaali (nishan / Record default band). Strategy `strategies/jas_aaina_test.pine`
+t2 `abd5cfa` (Settings 7 "Trade kab se"): 1D 2019+ 1974 trades -$623, PF 0.968 = **FAIL** (spread se pehle bhi ~0). Aaina sirf dekhna.
+**Tide+SMC:** s2.10 S/R ✅ · s2.11 (6 agent, har TF SMC) TV runtime error · **s2.12 `4e02fe9`** = nishan + RISK dabba WAQT se (error theek),
+SMC + S/R default BAND (user: "bohot complicated") -> SMC ke liye TV ka **LuxAlgo "Smart Money Concepts"** saath. Versions: s2.8 `e48459b`, s2.9 `b35c676`.
+**AGLI CHAT pehla kaam:** user s2.12 TV par lagaye (1m / 1H / 1D par tikta hai?) + LuxAlgo - screenshot dekho; error ho to SIRF wohi line theek.
+**RUKE HUE KAAM (user jab kahe - khud mat chhero; Pine par sirf yaad dilao "sahi nateeja MT5 / data milne par Python"):**
+- JasIbsEA i3 (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
+- QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
+  Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo. #23 (1D rukh + 15m entry, Python) - aaina FAIL ke baad kamzor, user kahe to.
 **Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
 entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
 asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
@@ -85,7 +87,7 @@ Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid =
 
 1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
 16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
-20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar**.
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · Aaina 1D andaza (Pine, 21 Oct) FAIL.
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
