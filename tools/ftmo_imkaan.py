@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FTMO imkaan f1 (27 Oct 2026) - kisi system / tokri ka FTMO 2-step pass hone ka andaza.
+"""FTMO imkaan f2 (27 Oct 2026) - kisi system / tokri ka FTMO 2-step pass hone ka andaza.
 
 Monte Carlo: har run mein din ba din trades, FTMO ke qaide:
   Phase 1 target +10%, Phase 2 +5%, din ka max nuksan 5% (shuru ke balance ka),
@@ -16,6 +16,7 @@ Misaal:
   python3 tools/ftmo_imkaan.py --preset ibs
   python3 tools/ftmo_imkaan.py --preset ibs --preset kachhua --risk 0.5 1 1.5
   python3 tools/ftmo_imkaan.py --system naya:0.10:0.03:0.8:4:0.55
+  python3 tools/ftmo_imkaan.py --preset ibs --preset kachhua --jaal   (f2: har system ka alag risk)
 """
 import argparse
 import math
@@ -39,7 +40,10 @@ def do_qeemat(exp, sd, q):
     return exp + sd * math.sqrt((1 - q) / q), exp - sd * math.sqrt(q / (1 - q))
 
 
-def chalao(systems, risk, runs, mahine, pakka, rng):
+def chalao(systems, risks, runs, mahine, pakka, rng):
+    """risks: ek number (sab systems) ya har system ki list (f2)."""
+    if not isinstance(risks, (list, tuple)):
+        risks = [risks] * len(systems)
     din = mahine * DIN_MAHINA
     phase = np.ones(runs, dtype=int)          # 1, 2; 3 = dono pass
     bal = np.zeros(runs)                      # % (shuru ke balance ka)
@@ -59,11 +63,11 @@ def chalao(systems, risk, runs, mahine, pakka, rng):
             break
         pnl = np.zeros(runs)
         aaj = np.zeros(runs, dtype=bool)
-        for (w, l, p, q) in sys:
+        for (w, l, p, q), risk in zip(sys, risks):
             t = rng.random(runs) < p
             jeet = rng.random(runs) < q
             pnl += np.where(t, np.where(jeet, w, l), 0.0) * risk
-            aaj |= t
+            aaj |= t & (risk > 0)
         pnl[~zinda] = 0.0
         bal += pnl
         trade_din += (aaj & zinda)
@@ -92,6 +96,8 @@ def main():
     ap.add_argument('--runs', type=int, default=20000)
     ap.add_argument('--pakka-faida', action='store_true', help='Exp bilkul pakka maano (SE nahi)')
     ap.add_argument('--seed', type=int, default=1)
+    ap.add_argument('--jaal', action='store_true',
+                    help='f2: pehle do system ka alag alag risk - har khane mein DONO pass / fail kul / mahine')
     a = ap.parse_args()
 
     systems = [PRESETS[p] for p in a.preset]
@@ -101,10 +107,26 @@ def main():
     if not systems:
         systems = [PRESETS['ibs']]
 
-    print('FTMO imkaan f1 - 2-step (P1 +10%, P2 +5%, din 5%, kul 10%, min 4 din)')
+    print('FTMO imkaan f2 - 2-step (P1 +10%, P2 +5%, din 5%, kul 10%, min 4 din)')
     for (n, e, se, sd, t, q) in systems:
         print(f'  {n}: Exp {e:+.3f}R  SE {se:.3f}  SD {sd:.2f}  {t:.1f} trade/mahina  jeet {q:.0%}')
     print(f'  {a.runs} runs, {a.mahine} mahine tak, faida {"pakka" if a.pakka_faida else "SE ke saath (asli)"}\n')
+    if a.jaal and len(systems) >= 2:
+        ra = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+        rb = [0.0, 0.1, 0.25, 0.5]
+        print(f'JAAL: qatar = {systems[0][0]} risk %, khana = {systems[1][0]} risk %')
+        print('har khane mein: DONO pass / fail kul / ausat mahine\n')
+        print('      ' + ''.join(f'{b:>17.2f}%' for b in rb))
+        for r1 in ra:
+            row = f'{r1:>5.1f}%'
+            for r2 in rb:
+                rng = np.random.default_rng(a.seed)
+                nat, _, p2 = chalao(systems[:2], [r1, r2], a.runs, a.mahine, a.pakka_faida, rng)
+                w = p2[nat == 1]
+                m = f'{np.median(w) / DIN_MAHINA:.0f}m' if w.size else '-'
+                row += f'{(nat == 1).mean():>8.0%} /{(nat == 3).mean():>4.0%} /{m:>4}'
+            print(row)
+        return
     print(f'{"Risk":>5} | {"P1 pass":>7} | {"DONO pass":>9} | {"Fail din":>8} | {"Fail kul":>8} | {"Abhi baqi":>9} | {"Ausat waqt (dono)":>17}')
     print('-' * 82)
     for r in a.risk:
