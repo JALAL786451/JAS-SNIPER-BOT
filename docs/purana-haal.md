@@ -721,3 +721,16 @@ mein 18 Python se din ba din mili (1 XAG +-1 din data farq, 1 US500 - Exness ind
 US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). User: LIVE cent swap-free (sahi); Tester demo 472716649 ki symbol setting se swap lagata hai. FTMO Free Trial NAHI ban raha (Gmail restrict) ->
 FTMO support se poochhna (naya Gmail se bypass nahi). Agla SBS: Tester pehra jaanch (StartBal 100000, Target 5) -> demo 472716649 par 5wan chart (pehra band).
 **Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.
+
+**Koshish #30 qaida (28 Oct, 26vi chat, test se PEHLE, badalna mana) - Gold "raat ki tezi" H1 Python (`tools/gold_raat_test.py`):**
+Idea (Claude ka; tehqeeq: GLD/gold ka faida zyada-tar raat / Asia waqt mein, US din mein kamzor). Sirf XAUUSD, data Dukascopy H1 UTC -> NY waqt (DST sahi).
+**A (asal):** BUY = 19:00 NY wali H1 ki open par (Itwar-Jumeraat; 18:00 reopen ka spread chhoda), band = agle din 08:00 NY H1 ki open par
+(COMEX se pehle; 17:00 rollover nahi = swap nahi). SL = 1 x ATR14 daily (pichhle band din, 17:00 NY) entry se = 1R; H1 low <= SL -> SL par
+(gap = open). TP nahi. Ek waqt ek position. **B (aaina, alag gino):** SELL 08:00 NY open -> 16:00 NY open, SL wahi 1R.
+Kharcha har trade (aana+jaana) = max($0.50, 0.03% qeemat) (spread ~$0.25 + slippage; purane saal $ mein mehnga) -> R mein ghataya.
+**TALAASH** entry 2003..2018: PASS = trades >= 100, Exp(R) - 2SE > 0, saal musbat > 50%. BUY/SELL alag (A=BUY, B=SELL) khud hi.
+Maloomat (shart nahi): "din" BUY 08->16 NY ka Exp - agar ye bhi utna hi musbat to faida sirf gold ki tezi (drift), waqt ka nahi.
+**IMTIHAN** 2019+ ek dafa, bina tabdeeli, sirf TALAASH PASS wale par; 2 mein se chuna -> SAKHT: trades >= 30 aur Exp - 2SE > 0. Ginti +2 (A, B).
+**Koshish #30 nateeja (28 Oct, 26vi chat) = A aur B dono TALAASH FAIL** (IMTIHAN nahi khola). A raat BUY: 4039 tr, Exp -0.033R, Exp-2SE -0.044, saal 3/16.
+B din SELL: 3989 tr, Exp -0.045R, saal 3/16. Din BUY (maloomat) -0.030R. Bina kharcha bhi: A +0.007R (Exp-2SE -0.004), B -0.005R = waqt ka koi asar nahi;
+kharcha ~0.04R/trade (1 x daily ATR SL par) baqi kha gaya. Sabaq: gold H1 "waqt" (session) idea mein faida nahi - 9wan gold intraday FAIL.
