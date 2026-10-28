@@ -1,6 +1,10 @@
 //@version=6
-// JAS Trend Pro t1 (27 Oct 2026) - ATR Supertrend (10, 3.0), har TF, repaint nahi (nishan sirf band candle par)
-indicator("JAS Trend Pro t1", shorttitle="JAS Trend t1", overlay=true)
+// JAS Trend Pro t2 (28 Oct 2026) - ATR Supertrend (10, 3.0), har TF, repaint nahi (nishan sirf band candle par)
+// t2: chhote B / S nishan; daayen dabba = rukh, SL, chalti trade (sirf BUY) + is chart ka nateeja.
+// Koshish #26 ASLI PASS (28 Oct): 1D, 6 market tokri (XAU, XAG, XPT, USOIL, SPX, NDX), SIRF BUY:
+//   B = BUY agli candle ke open par, S = BUY band agli open par (short nahi), 1R = 3 x ATR(10), kharcha 0.03%/taraf.
+// Dabbe ka nateeja sirf ANDAZA (is chart ka saara data, EMA filter ke baghair) - sahi nateeja MT5 / demo se.
+indicator("JAS Trend Pro t2", shorttitle="JAS Trend t2", overlay=true)
 
 // Settings - default hi pakki hain, badalne ki zaroorat nahi
 atrLen   = input.int(10, "ATR length", minval=1, group="Trend")
@@ -27,21 +31,73 @@ plot(isUp ? st : na, "BUY line", colUp, 2, plot.style_linebr)
 plot(isUp ? na : st, "SELL line", colDn, 2, plot.style_linebr)
 plot(useEma ? ema : na, "EMA 200", color.new(color.gray, 30), 1)
 
-plotshape(buySig, "BUY", shape.labelup, location.belowbar, colUp, text="BUY", textcolor=color.white, size=size.small)
-plotshape(sellSig, "SELL", shape.labeldown, location.abovebar, colDn, text="SELL", textcolor=color.white, size=size.small)
+plotshape(buySig, "BUY", shape.labelup, location.belowbar, colUp, text="B", textcolor=color.white, size=size.tiny)
+plotshape(sellSig, "SELL", shape.labeldown, location.abovebar, colDn, text="S", textcolor=color.white, size=size.tiny)
 
 barcolor(colorBar ? (isUp ? colUp : colDn) : na)
 
 alertcondition(buySig, "BUY", "JAS Trend Pro: BUY {{ticker}} {{interval}} @ {{close}}")
 alertcondition(sellSig, "SELL", "JAS Trend Pro: SELL {{ticker}} {{interval}} @ {{close}}")
 
-var table box = table.new(position.top_right, 2, 4, bgcolor=color.new(color.black, 80), border_width=1)
+// ---- Sirf BUY ka hisaab (Koshish #26 ke qaide, tokri k1 jaisa) ----
+COST = 0.0003                            // 0.03% har taraf
+atr = ta.atr(atrLen)
+var int   pos   = 0                      // 0 = khali, 1 = BUY khuli
+var bool  pEnt  = false                  // B aya: agli candle ke open par khulegi
+var bool  pExit = false                  // S aya: agli candle ke open par band
+var float ruP   = na
+var float eP    = na
+var float ru    = na
+var int   cN    = 0
+var float cR    = 0.0
+var float cR2   = 0.0
+var int   cW    = 0
+// candle ka open: pichhli candle ke order bharo
+if pExit and pos == 1
+    if ru > 0
+        r = (open - eP - COST * (eP + open)) / ru
+        cN  += 1
+        cR  += r
+        cR2 += r * r
+        cW  += r > 0 ? 1 : 0
+    pos := 0
+pExit := false
+if pEnt and pos == 0
+    pos := 1
+    eP  := open
+    ru  := ruP
+pEnt := false
+// candle band: faisla
+if barstate.isconfirmed
+    if flipUp and pos == 0 and bar_index > atrLen * 3
+        pEnt := true
+        ruP  := atrMult * atr
+    if flipDn and pos == 1
+        pExit := true
+
+var table box = table.new(position.top_right, 2, 9, bgcolor=color.new(color.black, 80), border_width=1)
 if showBox and barstate.islast
-    table.cell(box, 0, 0, "JAS Trend Pro t1", text_color=color.white, text_size=size.small)
-    table.cell(box, 1, 0, "", text_size=size.small)
+    expR = cN > 0 ? cR / cN : 0.0
+    sd   = cN > 1 ? math.sqrt(math.max((cR2 - cN * expR * expR) / (cN - 1), 0.0)) : 0.0
+    edge = expR - 2 * (cN > 0 ? sd / math.sqrt(cN) : 0.0)
+    rNow = pos == 1 and ru > 0 ? (close - eP) / ru : 0.0
+    tr   = pos == 1 ? "BUY @ " + str.tostring(eP, format.mintick) + " | " + (rNow >= 0 ? "+" : "") + str.tostring(rNow, "#.##") + "R" :
+           pEnt ? "B aya - agli candle par" : "khali - B ka intezar"
+    table.cell(box, 0, 0, "JAS Trend Pro t2", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 0, timeframe.period, text_color=color.white, text_size=size.small)
     table.cell(box, 0, 1, "Rukh", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 1, isUp ? "BUY" : "SELL", text_color=isUp ? colUp : colDn, text_size=size.small)
-    table.cell(box, 0, 2, "SL", text_color=color.white, text_size=size.small)
+    table.cell(box, 0, 2, "SL (line)", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 2, str.tostring(st, format.mintick), text_color=color.white, text_size=size.small)
     table.cell(box, 0, 3, "Candle", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 3, str.tostring(nz(since) + 1), text_color=color.white, text_size=size.small)
+    table.cell(box, 0, 4, "Trade (sirf BUY)", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 4, tr, text_color=pos == 1 ? (rNow >= 0 ? colUp : colDn) : color.white, text_size=size.small)
+    table.cell(box, 0, 5, "Is chart: trades / jeet", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 5, str.tostring(cN) + " / " + str.tostring(cN > 0 ? 100.0 * cW / cN : 0.0, "#") + "%", text_color=color.white, text_size=size.small)
+    table.cell(box, 0, 6, "Exp R / trade", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 6, str.tostring(expR, "#.###"), text_color=expR > 0 ? colUp : colDn, text_size=size.small)
+    table.cell(box, 0, 7, "Exp - 2SE (R)", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 7, str.tostring(edge, "#.###"), text_color=edge > 0 ? colUp : colDn, text_size=size.small)
+    table.cell(box, 0, 8, "Pakka (#26)", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 8, "1D, 6 market tokri: ASLI PASS", text_color=colUp, text_size=size.small)
