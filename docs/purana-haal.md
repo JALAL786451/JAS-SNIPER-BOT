@@ -747,3 +747,15 @@ Kharcha har trade max($0.50, 0.03% qeemat) + swap 3%/saal har 17:00 NY raat (don
 **Koshish #31 nateeja (28 Oct, 26vi chat) = TALAASH FAIL** (IMTIHAN nahi khola). 1470 tr, Exp -0.074R, Exp-2SE -0.109, jeet 57.6%, saal 2/16.
 BUY 725 tr -0.052R, SELL 745 tr -0.096R. Bina kharcha bhi -0.016R (jeet 61%) = edge nahi; kharcha+swap ~0.06R/trade. Band: RSI 1022, SL 371, rukh 77,
 ausat 4.2 H4. Sabaq: RSI(2) pullback (S&P par chalta) gold H4 par nahi - chhote faide, bara SL. 10wan gold intraday FAIL.
+
+**Koshish #32 qaida (28 Oct, 26vi chat, test se PEHLE, badalna mana) - Gold daily rukh, H1 entry, chhota SL (`tools/gold_h1_trend.py`):**
+User ne 28 Oct wahi H1 zip dobara bheji (sha256 = `data/ftmo/XAU_XAG_H1_dukascopy.zip`). Sirf XAUUSD H1 (UTC), din 17:00 NY (`session_day`).
+**Rukh:** daily Supertrend 10/3 (#26), pichhla BAND din: upar = sirf BUY, neeche = sirf SELL.
+**Entry:** H1 band EMA20(H1) ke upar cross (pichhli band <= EMA, ab >) aur rukh upar -> agli H1 open par BUY; SELL ulta (neeche cross, rukh neeche).
+SL = 2 x ATR14(H1) entry se = 1R, TP nahi, trail nahi. **Band:** SL (H1 low/high, gap = open) ya daily rukh palta -> naye din ki pehli H1 open.
+SL ke baad isi rukh mein naya cross = nayi entry. Ek waqt ek position. Kharcha max($0.50, 0.03%) + swap 3%/saal har raat (calendar din) -> R.
+**TALAASH** entry 2003..2018: PASS = trades >= 100, Exp(R) - 2SE > 0, saal musbat > 50%. BUY/SELL alag + bina kharcha = maloomat.
+**IMTIHAN** 2019+ ek dafa, bina tabdeeli, SAKHT (gold 2019+ pehle dekha): trades >= 30 aur Exp - 2SE > 0. Ginti +1.
+**Koshish #32 nateeja (28 Oct, 26vi chat) = TALAASH FAIL** (IMTIHAN nahi khola). 445 tr, Exp -0.061R, SE 0.212, Exp-2SE -0.484, jeet 9.4%, saal 6/16.
+BUY 192 tr +0.470R (SE 0.397, Exp-2SE -0.32, saal 10/16), SELL 253 tr -0.463R. Bina kharcha +0.203R (Exp-2SE -0.25). Band SL 388, rukh 57; ausat 195 H1,
+bari jeet +44R (lottery jaisa, 1-2 trade par sab). Chhote SL par lambi trade = swap R mein bhaari (~0.26R/trade kharcha). 11wan gold intraday FAIL.
