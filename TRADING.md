@@ -58,7 +58,7 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 - `docs/purana-haal.md` grep "25vi chat". FTMO Free Trial: user FTMO support se poochhe.
 **26vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "26vi chat": gold intraday 13 FAIL (#30-33, #22; bina kharcha bhi ~0). **#34 JAS Trend 4H TOKRI
 ASLI PASS** (sec 8). #35 us ka FTMO FAIL. FTMO 1 mahine mein = jua (`tools/ftmo_ek_mahina.py`); JasTrend daily 1% = 163/0 magar ~3 saal.
-**AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (100-300/mahina, 1000 nahi), FTMO; sirf research idea,
+**AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (user maqsad ~100/mahina; "1000" ghalti thi), FTMO; sirf research idea,
 qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary momentum (US index 30m) (2) ORB 5m (#21) (3) VWAP trend
 (4) Gao-Han-Li-Zhou 2018. User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
