@@ -685,3 +685,12 @@ EA1 = JasTrend (#26 sirf BUY, server SL nahi tha -> hifazati 2R = 6xATR, TP nahi
 Python FTMO test qaida (likha): asli tareekh, 2010 se har mahine naya challenge, $100k, P1 +10% P2 +5%, din 5% (khuli trade shamil, CET), kul 10%,
 min 4 din; risk/SL sirf 2019 se pehle chuno, 2019+ ek dafa; PASS = 2019+ pass > fail aur P1 fail < 20%. Risk Claude nahi barhata. Swing account (weekend) check.
 15 din demo = sirf EA chalta hai, faida nahi (tokri 1.8 tr/mahina).
+
+**Koshish #28 qaida (28 Oct, 25vi chat, test se PEHLE, badalna mana) - EA2 IBS 4 market Python (`tools/ftmo_test.py --ibs`):**
+#15 (`jas_ibs_radar.pine` b2) jyon ka tyon, daily H1 se (17:00 NY, Sat/Sun -> Mon): IBS = (C-L)/(H-L); BUY jab IBS < 0.2 AUR C > SMA200, din ke
+close par (sirf BUY). Band: IBS > 0.8 ya 5 din (close par); SL 3 x ATR(14) = 1R (H1 low par, gap = open). Band / SL wale din nayi nahi.
+Kharcha 0.03%/taraf (#27 jaisa, #15 mein 0.01 tha) + swap 3%/saal. 4 market XAUUSD, XAGUSD, US500, USTEC.
+**TALAASH** (entry < 2019): PASS = kul >= 100 tr, kul Exp(R) - 2SE > 0, 4 mein >= 3 market Exp > 0, (market x saal) musbat > 50%.
+**IMTIHAN** 2019+ ek dafa SAKHT (US500 2019+ #15 mein dekha hua): kul >= 30 tr aur Exp - 2SE > 0. TALAASH FAIL = IMTIHAN nahi, agla Kachhua.
+**ASLI PASS ho to FTMO jor:** JasTrend 1%/4xATR (#27, fix) + IBS risk 0.25/0.5/0.75/1.0% (4; ginti +4), #27 ka chunao (2012-18) / imtihan (2019+)
+qaida jyon ka tyon. Har EA ek market par ek position (dono EA ek market par saath ho sakte hain).
