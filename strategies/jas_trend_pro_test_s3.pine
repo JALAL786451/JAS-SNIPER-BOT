@@ -1,0 +1,146 @@
+//@version=6
+// ============================================================================
+//  JAS TREND PRO — TEST  (build s3, Pine v6) - Koshish #26 (TOKRI)
+//  28 Oct 2026. s2 (Koshish #25) ke qaide JYON KE TYON - sirf kharcha badla.
+//  Qaida test se PEHLE likha (badalna mana):
+//    - Supertrend 10 / 3.0, SIRF BUY: BUY nishan = long agli open,
+//      SELL nishan = band agli open. Short NAHI. 1R = 3 x ATR(10).
+//    - Kharcha 0.03% har taraf (har market par ek jaisa; 0.25$ sirf gold par theek tha).
+//    - 6 market 1D, pehle se tay: OANDA:XAUUSD, OANDA:XAGUSD, OANDA:XPTUSD,
+//      TVC:USOIL, SP:SPX, NASDAQ:NDX. Har market ka dabba alag, phir Claude JOR
+//      ("Jor R" aur "Jor R2" se - poora hisaab, andaza nahi).
+//    - TALAASH: 1975 (ya chart ki pehli candle) se 2018 tak.
+//    - TOKRI PASS: kul trades >= 100, kul Exp(R) - 2SE > 0, aur 6 mein se
+//      kam az kam 4 market ka Exp(R) > 0.
+//    - IMTIHAN SAKHT (2019-aaj, EK dafa, bina tabdeeli): kul trades >= 30,
+//      kul Exp(R) - 2SE > 0.
+//  Repaint nahi: faisla sirf band candle par, bhar agli candle ke open par.
+//  Sirf Candles chart. Ek position ek waqt. Koi grid, martingale, hedging ya averaging nahi.
+//  Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par) Python se.
+// ============================================================================
+strategy("JAS Trend Pro Test s3", shorttitle = "JAS TREND TEST s3", overlay = true,
+     initial_capital         = 1000000,     // bara - NDX ki 1 unit par margin call na ho (R par asar nahi)
+     default_qty_type        = strategy.fixed,
+     default_qty_value       = 1,
+     commission_type         = strategy.commission.percent,
+     commission_value        = 0.03,
+     pyramiding              = 0,
+     calc_on_every_tick      = false,
+     process_orders_on_close = false)
+
+atrLen  = input.int(10, "ATR length", minval = 1, group = "Trend")
+atrMult = input.float(3.0, "ATR multiplier", minval = 0.1, step = 0.1, group = "Trend")
+exam    = input.bool(false, "IMTIHAN kholo", group = "Muddat", tooltip = "Sirf TALAASH PASS ke baad, EK dafa, bina koi setting badle.")
+
+colUp = color.new(#26a69a, 0)
+colDn = color.new(#ef5350, 0)
+
+tA = timestamp("1975-01-01T00:00:00")
+tB = timestamp("2019-01-01T00:00:00")
+tC = timestamp("2016-01-01T00:00:00")
+
+var int t0 = time                       // chart ki pehli candle
+var int tSplit = na                     // 70% wali candle ka waqt
+dateMode = t0 < tC
+splitIdx = int(math.floor(last_bar_index * 0.7))
+if bar_index == splitIdx
+    tSplit := time
+
+talaash = dateMode ? (time >= tA and time < tB) : bar_index < splitIdx
+imtihan = dateMode ? time >= tB : bar_index >= splitIdx
+inWin   = exam ? imtihan : talaash
+ready   = bar_index > atrLen * 3
+
+atr = ta.atr(atrLen)
+[st, dir] = ta.supertrend(atrMult, atrLen)
+isUp   = dir < 0
+flipUp = isUp and not isUp[1]
+flipDn = not isUp and isUp[1]
+
+plot(isUp ? st : na, "BUY line", colUp, 2, plot.style_linebr)
+plot(isUp ? na : st, "SELL line", colDn, 2, plot.style_linebr)
+
+// har entry ka 1R ($ fi unit), bhar wali candle (agli) ke number par
+var map<int, float> rMap = map.new<int, float>()
+
+if barstate.isconfirmed
+    if inWin and ready and flipUp and strategy.position_size == 0
+        strategy.entry("BUY", strategy.long, comment = "BUY")
+        rMap.put(bar_index + 1, atrMult * atr)
+    if flipDn and strategy.position_size > 0
+        strategy.close("BUY", comment = "SELL nishan")
+    if not inWin and strategy.position_size != 0
+        strategy.close_all("Muddat khatam")
+
+// ---- Nateeja dabba (R mein) ----
+var table tb = table.new(position.top_right, 2, 13, bgcolor = color.new(color.black, 80), border_width = 1)
+// calc_on_every_tick = false: chalti candle band hone tak strategy nahi chalti -> aakhri BAND candle par bhi banao
+if barstate.islastconfirmedhistory or barstate.islast
+    n = strategy.closedtrades
+    float sR  = 0.0
+    float sqR = 0.0
+    float sD  = 0.0
+    int   nR  = 0
+    int   nW  = 0
+    int   win = 0
+    yr = map.new<int, float>()
+    if n > 0
+        for i = 0 to n - 1
+            et  = strategy.closedtrades.entry_time(i)
+            // sirf woh trade jo muddat ke andar khuli (aakhri candle ka signal bahar bhara = gina nahi)
+            inW = dateMode ? (exam ? et >= tB : et >= tA and et < tB) : (exam ? et >= tSplit : et < tSplit)
+            if inW
+                p  = strategy.closedtrades.profit(i)
+                ru = rMap.get(strategy.closedtrades.entry_bar_index(i))
+                q  = math.abs(strategy.closedtrades.size(i)) * syminfo.pointvalue
+                sD += p
+                nW += 1
+                if p > 0
+                    win += 1
+                if not na(ru) and ru > 0 and q > 0
+                    r = p / (ru * q)
+                    sR  += r
+                    sqR += r * r
+                    nR  += 1
+                    y = year(et)
+                    yr.put(y, nz(yr.get(y)) + r)
+    expR = nR > 0 ? sR / nR : 0.0
+    sd   = nR > 1 ? math.sqrt(math.max((sqR - nR * expR * expR) / (nR - 1), 0.0)) : 0.0
+    se   = nR > 0 ? sd / math.sqrt(nR) : 0.0
+    edge = expR - 2 * se
+    int yPos = 0
+    for v in yr.values()
+        if v > 0
+            yPos += 1
+    yAll = yr.size()
+    pass = exam ? (nR >= 30 and edge > 0) : (nR >= 100 and edge > 0 and yPos * 2 > yAll)
+    fmt  = "yyyy-MM-dd"
+    win1 = dateMode ? (exam ? "2019 - aaj" : str.format_time(math.max(t0, tA), fmt) + " - 2018") :
+           (exam ? str.format_time(tSplit, fmt) + " - aaj" : str.format_time(t0, fmt) + " - " + str.format_time(tSplit, fmt))
+    txtC = color.white
+    table.cell(tb, 0, 0, "JAS Trend Test s3", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 0, pass ? "PASS" : "FAIL", text_color = pass ? colUp : colDn, text_size = size.small)
+    table.cell(tb, 0, 1, exam ? "IMTIHAN" : "TALAASH", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 1, win1, text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 2, "TF / tareeqa", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 2, timeframe.period + " / " + (dateMode ? "tareekh" : "70% candles"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 3, "Trades (sirf BUY)", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 3, str.tostring(nR), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 4, "Jeet %", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 4, str.tostring(nW > 0 ? 100.0 * win / nW : 0.0, "#.#"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 5, "Exp R / trade", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 5, str.tostring(expR, "#.###"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 6, "SE (R)", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 6, str.tostring(se, "#.###"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 7, "Exp - 2SE (R)", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 7, str.tostring(edge, "#.###"), text_color = edge > 0 ? colUp : colDn, text_size = size.small)
+    table.cell(tb, 0, 8, "Exp $ / trade", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 8, str.tostring(nW > 0 ? sD / nW : 0.0, "#.##"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 9, "Saal musbat", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 9, str.tostring(yPos) + " / " + str.tostring(yAll), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 11, "Jor R", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 11, str.tostring(sR, "#.###"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 12, "Jor R2", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 12, str.tostring(sqR, "#.###"), text_color = txtC, text_size = size.small)
+    table.cell(tb, 0, 10, "Shart (sirf is market)", text_color = txtC, text_size = size.small)
+    table.cell(tb, 1, 10, exam ? ">= 30 tr, Exp-2SE > 0" : ">= 100 tr, Exp-2SE > 0, saal > 50%", text_color = txtC, text_size = size.small)

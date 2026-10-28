@@ -637,3 +637,5 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 ## TRADING.md sec 5 se (27 Oct, #25 ke liye jagah)
 
 **Koshish #24 = TALAASH FAIL (27 Oct, idea band; indicator t1 sirf dekhne ko)** - qaida tha - Supertrend 10/3 (`jas_trend_pro_test.pine` s1):** XAUUSD 1D, BUY/SELL nishan par palat (agli open), SL = line paar band, 1 oz, 0.25$/taraf. TALAASH TV shuru-2018: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat; BUY/SELL alag.
+
+**Koshish #25 qaida (27 Oct, test se PEHLE, badalna mana) - `strategies/jas_trend_pro_test_s2.pine` s2:** Supertrend 10/3 SIRF BUY (SELL nishan = band, short nahi), agli open, 1 oz, 0.25$/taraf, 1R = 3xATR(10). TALAASH: 1D/1W = 1975-2018, chhoti TF = pehli 70% candles. PASS: >= 100 tr, Exp(R) - 2SE > 0, saal > 50%. Nateeja dekh kar chuna = IMTIHAN SAKHT (>= 30 tr, Exp-2SE > 0), ek dafa.
