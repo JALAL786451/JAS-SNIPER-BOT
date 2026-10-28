@@ -63,6 +63,9 @@ CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fa
 **Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
 saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
 **AGLI CHAT pehla kaam:** EA2 = Kachhua (#6) TALAASH Python mein inhi 4 par (qaida pehle likho, #28 jaisa) - fail = JasTrend akela. "D" nahi chahiye.
+**Demo theek karna SBS (28 Oct, user ke SS: teeno "SIRF DIKHANA", IBS/RSI2 XAUUSDm par = market nahi mila):** 4 chart -
+(1) XAUUSDm Kachhua 20261009 9 market (2) XPTUSDm Commodity 20261018 6 market (3) US500m RSI2 20261012 (4) US500m IBS i3 20261022 (F7 pehle).
+Har ek TRADE true, SS. Qadam 1 diya, user SS baqi.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 F7 + Tester US500m D1 2015-aaj (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
