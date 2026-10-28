@@ -35,6 +35,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | pine test | TALAASH / IMTIHAN qaida EA ke liye hai. Pine par kaam ho to sirf YAAD dilao: "sahi nateeja MT5 ya (data milne par) Python se". Pine pass hone tak usi ko tweak karo; Python / MT5 / data ka kaam khud mat chhero - user khud kahega. | 21 Oct |
 | discussion | User concept SAMJHA raha ho to kaam / agents shuru NAHI - pehle 2-3 line mein apni samajh likh kar poochho, user ke "D" ke baad kaam (a16 par tokens zaya, user naraz). | 21 Oct |
 | agents | Agent / workflow sirf jab user USI kaam ke liye khud kahe; agle kaam par khud mat chalao. User tokens par sakht: chhote jawab, kam tool qadam, ek dafa sahi. | 27 Oct |
+| agent judge | User (28 Oct): "agents laazmi hon / faida ho to use kar lein" - TV ko bhejne se pehle mushkil Pine / EA ki alag agent jaanch (judge) theek; ghalat dekha gaya = time + token dono zaya. | 28 Oct |
 | SMC | Apna SMC script mat banao - TV ka LuxAlgo "Smart Money Concepts" saath lagao. Tide+SMC sirf Tide (SMC default band). | 27 Oct |
 
 ## C. Token / usage bachao (sab se pehli tarjeeh)

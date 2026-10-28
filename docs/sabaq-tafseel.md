@@ -188,6 +188,13 @@ iraada: SELL khatam, BUY rakho - tukdon mein (har dafa 0.20 se zyada nahi),
 | 1D (4 Nov 12 se) | 300 | 55% (50) | 56% (51) | 54% (50) | 55% (51) | 54% (50) | 60% (54) | 48% (46) |
 Sab shor (2SE bunyaad par); 100 wala "kal ulat" neela 300 par gayab = ittefaq. 1D candle 1m ka raasta nahi rakhti (10 D = ~13,800 1m, sirf 40 number).
 
+### Tokri (28 Oct, Koshish #24-26, Supertrend 10/3 1D)
+- #24 gold 1D BUY+SELL palat, 0.25$/taraf, shuru-2018: 425 tr, Exp 2.76$, SE 1.84, Exp-2SE -0.91; BUY 213 tr +5.71$, SELL 212 tr -0.22$; saal 27/77 (1971 se pehle sarkari qeemat).
+- #25 sirf BUY, 1975-2018, R mein: gold 156 tr, Exp 0.27R, SE 0.151, -2SE -0.032; 4H 50 / 1H 90 / 15m 54 tr (TV data kam = FAIL ginti se).
+- #26 s3 0.03%/taraf, tokri k1 TALAASH 1975-2018: XAU 156 tr 0.291R, XAG 255 0.256, XPT 54 0.146, USOIL 136 0.087, SPX 180 0.239, NDX 150 0.385; KUL 931 tr 0.248R, -2SE +0.119, saal 31/44.
+- #26 IMTIHAN 2019-aaj: XAU 25 0.773, XAG 24 0.685, XPT 28 0.021, USOIL 22 0.414, SPX 36 0.338, NDX 30 0.585; KUL 165 tr 0.455R, -2SE +0.214, saal 7/8. Market jure hue (SE asal se chhota).
+- Pine strategy dabba (calc_on_every_tick false): `barstate.islast` chalti candle par nahi chalta -> `barstate.islastconfirmedhistory or barstate.islast`.
+
 ## 5. Tools ki purani table (13 Oct tak; ab har file ki ek line CLAUDE.md mein)
 
 | File | Kya karta hai | Haal |

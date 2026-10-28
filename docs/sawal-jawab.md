@@ -57,3 +57,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 | "historical offset beyond buffer" | Pine nishan purani candle se (bar_index 1650+ / 4000+ peeche) - xloc.bar_time (WAQT) se banao. | 27 Oct |
 | SMC kaunsa | Apna nahi - TV ka LuxAlgo "Smart Money Concepts (SMC)" saath lagao; Tide+SMC sirf Tide (dabba + table + D1 EMA). | 27 Oct |
 - FTMO EA se pass? -> `tools/ftmo_imkaan.py --preset ibs --preset kachhua --jaal`: IBS 2% + Kachhua 0.25% ~59% (36m), fail ~5%; asal dushman waqt. Fee demo 6 mahine baad (27 Oct).
+- Supertrend / Trend Pro kaam karta hai? -> Akele gold par sabit nahi (#25 FAIL kinare par); 6 market tokri 1D sirf BUY = #26 ASLI PASS (IMTIHAN +0.214R). Indicator t2 demo ke liye, EA agla (28 Oct).

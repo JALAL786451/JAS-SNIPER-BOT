@@ -54,21 +54,19 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**27 Oct (21vi chat):** user: "world famous, har TF, uljhan nahi" -> `indicators/jas_trend_pro.pine` t1 `13f9d53` (Supertrend 10/3, TV ✅ BTC 1D,
-gold 15m/1H; settings badalni nahi - user). Koshish #24 (1D strategy) = FAIL. User ka maqsad: **FTMO 2-step EA se pass**.
-`tools/ftmo_imkaan.py` f2 `1f862ca` (Monte Carlo, `--jaal`): IBS 2% + Kachhua 0.25% = 36m 59% pass / 5% fail, 60m 81% / 7%. IBS EA risk 1% - Claude NAHI barhata.
-FTMO fee sirf demo 6 mahine ke baad. Aaina / Tide+SMC s2.12 (`4e02fe9`) user: theek, koi masla nahi.
-**AGLI CHAT pehla kaam (user ne pooch kar diya):** JasIbsEA i3 mukammal (sec 6) -> demo, phir "FTMO Pehra" (din 4% / kul 8% band) EA mein.
-**RUKE HUE KAAM (user jab kahe - khud mat chhero; Pine par sirf yaad dilao "sahi nateeja MT5 / data milne par Python"):**
-- JasIbsEA i3 (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
+**28 Oct (22vi chat):** JasIbsEA **i3** `4483a03` likha (H1 se 17:00 NY candle, faisla 16:55 NY, Jumma bhi) - F7 + Tester baqi (user ne roka).
+Supertrend: #25 s2 (sirf BUY, gold 1D) FAIL -0.032R -> **#26 TOKRI ASLI PASS** (`strategies/jas_trend_tokri.pine` k1, 1D, sirf BUY, 6 market):
+TALAASH 931 tr Exp-2SE +0.119R; IMTIHAN 2019+ 165 tr Exp 0.455R, -2SE +0.214R, 6/6 (`data/koshish26/`). Tokri ki gold line = s3 bilkul mili.
+User ijazat: agent jaanch (judge) jab faida ho - 2 asli ghaltiyan pakdin. Indicator `indicators/jas_trend_pro.pine` **t2** `e691715`: B/S chhote
+nishan, daayen dabba (rukh / SL / chalti BUY trade / is chart nateeja / #26 PASS) - user demo par HAMESHA lagayega. TV compile ✅ baqi.
+User ka maqsad: **FTMO 2-step EA se pass** (`tools/ftmo_imkaan.py`, fee sirf demo 6 mahine baad; risk Claude NAHI barhata).
+**AGLI CHAT pehla kaam:** user se t2 TV ✅ poochho -> **JasTrendEA** (MT5, #26 qaide jyon ke tyon: D1, XAU/XAG/XPT/USOIL/US500/USTEC + 'm',
+sirf BUY, Supertrend 10/3 flip par agli open, flip-down par band, 1R = 3xATR(10), risk 1%, naya magic, ek market ek position) -> demo
+472716649, 6 mahine. Hifazati server SL (test mein nahi tha) ka faisla EA likhne se pehle user se.
+**RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
+- JasIbsEA i3 F7 + Tester US500m D1 2015-aaj (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
-  Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo. #23 (1D rukh + 15m entry, Python) - aaina FAIL ke baad kamzor, user kahe to.
-**Koshish #26 qaida (28 Oct, test se PEHLE, badalna mana) - `strategies/jas_trend_pro_test_s3.pine` s3 TOKRI:** #25 (s2) jyon ka tyon, kharcha 0.03%/taraf. 1D: OANDA XAUUSD, XAGUSD, XPTUSD, TVC:USOIL, SP:SPX, NASDAQ:NDX; TALAASH 1975-2018. PASS: kul >= 100 tr, kul Exp(R)-2SE > 0, 6 mein >= 4 market Exp > 0. IMTIHAN SAKHT 2019-aaj ek dafa (kul >= 30 tr, Exp-2SE > 0). Jor "Jor R" / "Jor R2" se.
-**Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
-entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
-asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
-**Koshish #21 qaida (17 Oct, badalna mana):** sirf USTEC 5m (`JasOrb5EA.mq5` o1). Exness USTECm data sirf 2025.09.21 se = Dukascopy (QDM).
-Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid = spread fixed, zyada rakho).
+  Python #21 (`JasOrb5EA`) phir #22 (Fib OTE). Dono ke qaide `docs/purana-haal.md` (grep "Koshish #21 qaida", "#22 qaida"). 2025+ mat kholo.
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
 

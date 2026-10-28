@@ -639,3 +639,23 @@ Nayi chat: `docs/trading-pakki.md` sec 4 aur `docs/purana-haal.md` aakhri hissa 
 **Koshish #24 = TALAASH FAIL (27 Oct, idea band; indicator t1 sirf dekhne ko)** - qaida tha - Supertrend 10/3 (`jas_trend_pro_test.pine` s1):** XAUUSD 1D, BUY/SELL nishan par palat (agli open), SL = line paar band, 1 oz, 0.25$/taraf. TALAASH TV shuru-2018: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat; BUY/SELL alag.
 
 **Koshish #25 qaida (27 Oct, test se PEHLE, badalna mana) - `strategies/jas_trend_pro_test_s2.pine` s2:** Supertrend 10/3 SIRF BUY (SELL nishan = band, short nahi), agli open, 1 oz, 0.25$/taraf, 1R = 3xATR(10). TALAASH: 1D/1W = 1975-2018, chhoti TF = pehli 70% candles. PASS: >= 100 tr, Exp(R) - 2SE > 0, saal > 50%. Nateeja dekh kar chuna = IMTIHAN SAKHT (>= 30 tr, Exp-2SE > 0), ek dafa.
+
+
+## TRADING.md sec 5 se (28 Oct, 22vi chat ke aakhir mein)
+
+**27 Oct (21vi chat):** user: "world famous, har TF, uljhan nahi" -> `indicators/jas_trend_pro.pine` t1 `13f9d53` (Supertrend 10/3, TV ✅ BTC 1D,
+gold 15m/1H; settings badalni nahi - user). Koshish #24 (1D strategy) = FAIL. User ka maqsad: **FTMO 2-step EA se pass**.
+`tools/ftmo_imkaan.py` f2 `1f862ca` (Monte Carlo, `--jaal`): IBS 2% + Kachhua 0.25% = 36m 59% pass / 5% fail, 60m 81% / 7%. IBS EA risk 1% - Claude NAHI barhata.
+FTMO fee sirf demo 6 mahine ke baad. Aaina / Tide+SMC s2.12 (`4e02fe9`) user: theek, koi masla nahi.
+**AGLI CHAT pehla kaam (user ne pooch kar diya):** JasIbsEA i3 mukammal (sec 6) -> demo, phir "FTMO Pehra" (din 4% / kul 8% band) EA mein.
+**RUKE HUE KAAM (user jab kahe - khud mat chhero; Pine par sirf yaad dilao "sahi nateeja MT5 / data milne par Python"):**
+- JasIbsEA i3 (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
+- QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
+  Python #21 (`JasOrb5EA`, UTC->NY) phir #22. 2025+ mat kholo. #23 (1D rukh + 15m entry, Python) - aaina FAIL ke baad kamzor, user kahe to.
+**Koshish #26 qaida (28 Oct, test se PEHLE, badalna mana) - `strategies/jas_trend_pro_test_s3.pine` s3 TOKRI:** #25 (s2) jyon ka tyon, kharcha 0.03%/taraf. 1D: OANDA XAUUSD, XAGUSD, XPTUSD, TVC:USOIL, SP:SPX, NASDAQ:NDX; TALAASH 1975-2018. PASS: kul >= 100 tr, kul Exp(R)-2SE > 0, 6 mein >= 4 market Exp > 0. IMTIHAN SAKHT 2019-aaj ek dafa (kul >= 30 tr, Exp-2SE > 0). Jor "Jor R" / "Jor R2" se.
+**Koshish #22 qaida (18 Oct, badalna mana) - Fib OTE (`jas_fib_swing.pine` f5):** XAUUSD 15m, swing 1H pivot 5 (band candle),
+entry 0.618 limit, SL swing + 5% swing, TP 1.272, intraday, 1 trade ek waqt / 1 fi leg, risk 1%, ek candle SL+TP = SL, spread
+asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (gold 58 trade +2.7R, bina spread) = IMTIHAN SAKHT.
+**Koshish #21 qaida (17 Oct, badalna mana):** sirf USTEC 5m (`JasOrb5EA.mq5` o1). Exness USTECm data sirf 2025.09.21 se = Dukascopy (QDM).
+Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid = spread fixed, zyada rakho).
+

@@ -139,6 +139,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - AAINA AGLI (20 Oct, a14): 15m agli candle rang ~sikka (51.6% vs 49.6%, hadd ±1.9); 1D 54% vs 51% sirf kal ke 1D rang se - 1W/1M kuch nahi jodte. Bari TF ka faida chhoti candle mein sqrt(ginti) patla (1D->15m ~10x). Record jori (paired) hadd se.
 - EA suffix "auto" (20 Oct): EA ko apni market list wale chart par lagao (Rsi2 XPTUSDm par = 3 market "nahi mila"); EA dobara lagao to Inputs (markets, magic, TRADE) check - Commodity gold list par chal raha tha.
 - AAINA 1D andaza (21 Oct): 2019+ Strategy Tester PF 0.968 (spread se pehle ~0) - faida sirf purane dor ka; Pine aaina se trade NAHI, sirf dekhna.
+- TOKRI (28 Oct, #26): ek market par Exp-2SE kinare par (gold 1D -0.01R) = trades kam, idea bekaar nahi; wahi qaida 6 market = 931 tr PASS, IMTIHAN +0.214R. Tweak se nahi, zyada MARKET se.
 
 ## 5. Mere tools
 
