@@ -55,11 +55,7 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
 **28 Oct (22vi chat):** JasIbsEA **i3** `4483a03` likha (H1 se 17:00 NY candle, faisla 16:55 NY, Jumma bhi) - F7 + Tester baqi (user ne roka).
-Supertrend: #25 s2 (sirf BUY, gold 1D) FAIL -0.032R -> **#26 TOKRI ASLI PASS** (`strategies/jas_trend_tokri.pine` k1, 1D, sirf BUY, 6 market):
-TALAASH 931 tr Exp-2SE +0.119R; IMTIHAN 2019+ 165 tr Exp 0.455R, -2SE +0.214R, 6/6 (`data/koshish26/`). Tokri ki gold line = s3 bilkul mili.
-User ijazat: agent jaanch (judge) jab faida ho - 2 asli ghaltiyan pakdin. Indicator `indicators/jas_trend_pro.pine` **t2** `e691715`: B/S chhote
-nishan, daayen dabba (rukh / SL / chalti BUY trade / is chart nateeja / #26 PASS) - user demo par HAMESHA lagayega. TV compile ✅ baqi.
-User ka maqsad: **FTMO 2-step EA se pass** (`tools/ftmo_imkaan.py`, fee sirf demo 6 mahine baad; risk Claude NAHI barhata).
+22vi chat tafseel (#26 tokri, indicator t2 `e691715`, TV ✅ baqi): `docs/purana-haal.md` (grep "22vi chat").
 **28 Oct (23vi chat, user rest par):** user ka NAYA MAQSAD (sirf yahi kaam): **FTMO 2-step CFD, max 2 EA + 4 instrument** (dono EA wahi 4),
 EA+VPS allowed. 15 din demo phir challenge (user ka faisla). Faisla: 4 = **XAUUSD, XAGUSD, US500, US100** (#26 TALAASH Exp se; XPT/OIL kamzor).
 EA1 = JasTrend (#26 sirf BUY, server SL nahi tha -> hifazati 2R = 6xATR, TP nahi). EA2 = IBS ya Kachhua - Python mein inhi 4 par TALAASH pehle; dono fail = JasTrend akela.

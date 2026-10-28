@@ -659,3 +659,11 @@ asli se zyada. TALAASH 2021-24: trades >= 100, Exp - 2SE > 0. TV pehli nazar (go
 **Koshish #21 qaida (17 Oct, badalna mana):** sirf USTEC 5m (`JasOrb5EA.mq5` o1). Exness USTECm data sirf 2025.09.21 se = Dukascopy (QDM).
 Data 2021-22 repo mein `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (sirf Bid = spread fixed, zyada rakho).
 
+
+## 22vi chat (28 Oct) - TRADING.md sec 5 se hataya
+
+Supertrend: #25 s2 (sirf BUY, gold 1D) FAIL -0.032R -> **#26 TOKRI ASLI PASS** (`strategies/jas_trend_tokri.pine` k1, 1D, sirf BUY, 6 market):
+TALAASH 931 tr Exp-2SE +0.119R; IMTIHAN 2019+ 165 tr Exp 0.455R, -2SE +0.214R, 6/6 (`data/koshish26/`). Tokri ki gold line = s3 bilkul mili.
+User ijazat: agent jaanch (judge) jab faida ho - 2 asli ghaltiyan pakdin. Indicator `indicators/jas_trend_pro.pine` **t2** `e691715`: B/S chhote
+nishan, daayen dabba (rukh / SL / chalti BUY trade / is chart nateeja / #26 PASS) - user demo par HAMESHA lagayega. TV compile ✅ baqi.
+User ka maqsad: **FTMO 2-step EA se pass** (`tools/ftmo_imkaan.py`, fee sirf demo 6 mahine baad; risk Claude NAHI barhata).

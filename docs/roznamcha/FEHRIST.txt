@@ -22,7 +22,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - ftmo_imkaan f2: --jaal (har system ka alag risk, risk parity jaal)
    - Koshish #25 nateeja: TALAASH FAIL (Exp-2SE -0.032R)
 
-2026-10-28  (8 kaam)
+2026-10-28  (10 kaam)
    - Koshish #26 qaida + jas_trend_pro_test_s3.pine (Supertrend sirf BUY, 6 market tokri, 0.03%
-   - Koshish #26 TALAASH PASS (tokri 931 tr, Exp-2SE +0.119R) - IMTIHAN se pehle likha
-   - Chat khatam (22vi): sec 5 naya, #24-26 sabaq, sawal-jawab, HIDAYAT (agent judge), roznamch
+   - Koshish #26 IMTIHAN ASLI PASS (tokri 165 tr, Exp-2SE +0.214R)
+   - 23vi chat: FTMO maqsad (2 EA, 4 instrument), Python FTMO test qaida, data QDM se
