@@ -63,7 +63,7 @@ CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fa
 **Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
 saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
 **Koshish #29 Kachhua 4 market (`--kachhua`) = TALAASH FAIL** (366 tr, Exp +0.072R, Exp-2SE -0.037; XAU +0.196, XAG +0.024, US500 -0.035, USTEC +0.025).
-= FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1** (magic 20261028) F7 ✅ + Tester ✅ (t2: pehra Tester mein nahi chala/dikha -> Journal fix, F7 baqi) (Exness 2021-26, 1m OHLC): aakhri 20 trades
+= FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1** (magic 20261028) F7 ✅ + Tester ✅ (t2 F7 ✅: target pehra Tester ✅ - 5% par 2025.10.09 equity 105,012 = sab band, phir 12 palte rok diye; din/kul hadd jaanch baqi) (Exness 2021-26, 1m OHLC): aakhri 20 trades
 mein 18 Python se din ba din mili (1 XAG +-1 din data farq, 1 US500 - Exness index data Sep 2025 se). 44 tr, +0.192R, kul +8.45R, 100k -> 106,238.
 **Swap bhaari:** Exness ~9%/saal (44 tr mein -7.55R). Python maloomat 2019+: swap 3% = 80 pass/0 fail, 6% = 71/9, 9% = 66/14 -> FTMO ka swap dekhna zaroori.
 US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). User: LIVE cent swap-free (sahi); Tester demo 472716649 ki symbol setting se swap lagata hai. FTMO Free Trial NAHI ban raha (Gmail restrict) ->
