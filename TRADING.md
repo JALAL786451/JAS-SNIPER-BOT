@@ -62,7 +62,9 @@ US500 lot hadd 2 = ~0.6% risk (user ka faisla). FTMO Free Trial Gmail restrict -
 **26vi chat (28 Oct): #30 H1 raat/din, #31 H4 RSI2, #32 daily rukh + H1 entry, #22 Fib OTE 15m (QDM M1 2021-24, `data/qdm/`) - SAB TALAASH FAIL,
 bina kharcha bhi 0 / manfi** (`tools/gold_*.py`, `tools/fib_ote_test.py`; `docs/purana-haal.md` grep "Koshish #30/#31/#32", "#22 nateeja").
 **#34 4H TOKRI ASLI PASS** (sec 8; ~6.9 tr/mahina, sirf BUY, 2025 tezi ka hissa bara).
-#35 isi tokri ka FTMO = FAIL (`tools/ftmo_4h.py`). **Agla (user "D"):** JasTrendEA **t3** 4H (nayi magic) F7 -> Tester -> demo 6 mahine; FTMO = JasTrend daily.
+#35 tokri FTMO FAIL. **NAYA MANSOOBA (user 28 Oct): 1 EA, 15m-4H, tez trades, FTMO** - sirf kitabi/research idea, qaida pehle, bahut market.
+Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary intraday momentum (US index 30m) (2) Zarattini-Aziz 2023 ORB 5m (#21) (3) VWAP trend
+(4) Gao-Han-Li-Zhou 2018 intraday momentum. Pehla: user se USATECH + USA500 M1 2021-24 (QDM, ek line PowerShell). Gold M1 hai.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM M1 (Generic bar, Timezone Original): USATECHIDXUSD 2021-24 -> Python #21 ORB (`docs/purana-haal.md` grep "Koshish #21 qaida"). Gold M1 2021-24 aa gaya.
