@@ -59,3 +59,7 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - FTMO EA se pass? -> `tools/ftmo_imkaan.py --preset ibs --preset kachhua --jaal`: IBS 2% + Kachhua 0.25% ~59% (36m), fail ~5%; asal dushman waqt. Fee demo 6 mahine baad (27 Oct).
 - Supertrend / Trend Pro kaam karta hai? -> Akele gold par sabit nahi (#25 FAIL kinare par); 6 market tokri 1D sirf BUY = #26 ASLI PASS (IMTIHAN +0.214R). Indicator t2 demo ke liye, EA agla (28 Oct).
 - Trend Pro / tokri FTMO ke liye? -> Haan, ek hissa; akele 1% risk: `ftmo_imkaan.py --system tokri_talaash:0.248:0.0645:1.97:1.76:0.418` 24m 42% pass / 22% fail, 60m 66% / 32%; IMTIHAN wale number (0.455R) 24m 67% / 3%. Correlation nahi gina (asal fail zyada). 1.8 trade/mahina = dheema. Multi-day / weekend hold: FTMO account type khud check. Agla: IBS ke saath --jaal (28 Oct).
+- Cloud se data nikal sakte? -> NAHI: Dukascopy + Yahoo 429, Stooq reset. User QDM se export kare (5 qadam, H1 zip upload) (28 Oct).
+- Claude QDM khud chalaye (computer use)? -> Desktop app Settings > This computer > Computer use ON; magar ~20-40 guna mehnga, user khud kare (28 Oct).
+- Tokri SELL / SL? -> #26 sirf BUY; SELL #24/#17 FAIL; test mein server SL nahi (flip-down band); hifazati 2R sirf TALAASH par jaanch; TP nahi (28 Oct).
+- Teeno system 1% FTMO? -> tokri+IBS+Kachhua Monte Carlo 12m dono pass 56%, fail 35%, ausat 5 mahine; 3m 13% / 11% (28 Oct).

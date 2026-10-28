@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 27 Oct 2026 (21vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 28 Oct 2026 (23vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -60,9 +60,14 @@ TALAASH 931 tr Exp-2SE +0.119R; IMTIHAN 2019+ 165 tr Exp 0.455R, -2SE +0.214R, 6
 User ijazat: agent jaanch (judge) jab faida ho - 2 asli ghaltiyan pakdin. Indicator `indicators/jas_trend_pro.pine` **t2** `e691715`: B/S chhote
 nishan, daayen dabba (rukh / SL / chalti BUY trade / is chart nateeja / #26 PASS) - user demo par HAMESHA lagayega. TV compile ✅ baqi.
 User ka maqsad: **FTMO 2-step EA se pass** (`tools/ftmo_imkaan.py`, fee sirf demo 6 mahine baad; risk Claude NAHI barhata).
-**AGLI CHAT pehla kaam:** user se t2 TV ✅ poochho -> **JasTrendEA** (MT5, #26 qaide jyon ke tyon: D1, XAU/XAG/XPT/USOIL/US500/USTEC + 'm',
-sirf BUY, Supertrend 10/3 flip par agli open, flip-down par band, 1R = 3xATR(10), risk 1%, naya magic, ek market ek position) -> demo
-472716649, 6 mahine. Hifazati server SL (test mein nahi tha) ka faisla EA likhne se pehle user se.
+**28 Oct (23vi chat, user rest par):** user ka NAYA MAQSAD (sirf yahi kaam): **FTMO 2-step CFD, max 2 EA + 4 instrument** (dono EA wahi 4),
+EA+VPS allowed. 15 din demo phir challenge (user ka faisla). Faisla: 4 = **XAUUSD, XAGUSD, US500, US100** (#26 TALAASH Exp se; XPT/OIL kamzor).
+EA1 = JasTrend (#26 sirf BUY, server SL nahi tha -> hifazati 2R = 6xATR, TP nahi). EA2 = IBS ya Kachhua - Python mein inhi 4 par TALAASH pehle; dono fail = JasTrend akela.
+Python FTMO test qaida (likha): asli tareekh, 2010 se har mahine naya challenge, $100k, P1 +10% P2 +5%, din 5% (khuli trade shamil, CET), kul 10%,
+min 4 din; risk/SL sirf 2019 se pehle chuno, 2019+ ek dafa; PASS = 2019+ pass > fail aur P1 fail < 20%. Risk Claude nahi barhata. Swing account (weekend) check.
+15 din demo = sirf EA chalta hai, faida nahi (tokri 1.8 tr/mahina).
+**AGLI CHAT pehla kaam:** user QDM (Dukascopy, Generic bar, **H1**, Timezone Original, sab se purana) 4 symbols XAUUSD, XAGUSD, USA500IDXUSD,
+USATECHIDXUSD -> zip -> GitHub upload ("D"). Claude zip `data/ftmo/` mein -> Python test. Cloud se data NAHI nikalta (Dukascopy/Yahoo 429).
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 F7 + Tester US500m D1 2015-aaj (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
