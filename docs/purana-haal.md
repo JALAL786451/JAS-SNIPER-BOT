@@ -704,3 +704,20 @@ C SL ke paar = close par band. Close par band wale din nayi nahi; SL wale din na
 (market x saal) musbat > 50%. BUY / SELL alag sirf maloomat. **IMTIHAN** 2019+ ek dafa SAKHT (gold/silver 2019+ pehle dekha): kul >= 30 tr,
 Exp - 2SE > 0. FAIL = FTMO ke liye JasTrend akela. **ASLI PASS ho to FTMO jor:** JasTrend 1%/4xATR + Kachhua risk 0.25/0.5/0.75/1.0% (ginti +4),
 Kachhua mein gold+silver ek (EA jaisa: ek khuli to doosri nahi), #27 ka chunao / imtihan qaida jyon ka tyon.
+
+**25vi chat (28 Oct) tafseel (TRADING.md sec 5 se hataya):**
+**28 Oct (22vi chat):** JasIbsEA **i3** `4483a03` likha (H1 se 17:00 NY candle, faisla 16:55 NY, Jumma bhi) - F7 + Tester baqi (user ne roka).
+22vi chat tafseel (#26 tokri, indicator t2 `e691715`, TV ✅ baqi): `docs/purana-haal.md` (grep "22vi chat").
+**23vi chat** (FTMO maqsad: 2 EA + 4 instrument XAU/XAG/US500/US100, 15 din demo phir challenge, Swing account): `docs/purana-haal.md` grep "23vi chat".
+**28 Oct (25vi chat): Koshish #27 JasTrend FTMO (Python `tools/ftmo_test.py`, data `data/ftmo/`) = qaide se PASS** (qaida `docs/purana-haal.md` grep "Koshish #27").
+CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fail, 78 adhoora). IMTIHAN 2019+ ek dafa: 94 challenge -> **80 pass, 0 fail**,
+14 adhoora, pass ~**32 mahine** (median), 19 mein 4 din kam. Imaandari: fail kabhi nahi magar BOHOT dheema (1.2 tr/mahina), 2019+ tezi ka faida; challenge overlap (azad nahi).
+**Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
+saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
+**Koshish #29 Kachhua 4 market (`--kachhua`) = TALAASH FAIL** (366 tr, Exp +0.072R, Exp-2SE -0.037; XAU +0.196, XAG +0.024, US500 -0.035, USTEC +0.025).
+= FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1** (magic 20261028) F7 ✅ + Tester ✅ (t2 F7 ✅: target pehra Tester ✅ - 5% par 2025.10.09 equity 105,012 = sab band, phir 12 palte rok diye; din 1% = 2021.11.03 DIN KI HADD ✅, kul 3% = 2022.01.27 KUL HADD + EA ruka ✅ - teeno pehre sahi) (Exness 2021-26, 1m OHLC): aakhri 20 trades
+mein 18 Python se din ba din mili (1 XAG +-1 din data farq, 1 US500 - Exness index data Sep 2025 se). 44 tr, +0.192R, kul +8.45R, 100k -> 106,238.
+**Swap bhaari:** Exness ~9%/saal (44 tr mein -7.55R). Python maloomat 2019+: swap 3% = 80 pass/0 fail, 6% = 71/9, 9% = 66/14 -> FTMO ka swap dekhna zaroori.
+US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). User: LIVE cent swap-free (sahi); Tester demo 472716649 ki symbol setting se swap lagata hai. FTMO Free Trial NAHI ban raha (Gmail restrict) ->
+FTMO support se poochhna (naya Gmail se bypass nahi). Agla SBS: Tester pehra jaanch (StartBal 100000, Target 5) -> demo 472716649 par 5wan chart (pehra band).
+**Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.

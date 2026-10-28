@@ -54,21 +54,15 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**28 Oct (22vi chat):** JasIbsEA **i3** `4483a03` likha (H1 se 17:00 NY candle, faisla 16:55 NY, Jumma bhi) - F7 + Tester baqi (user ne roka).
-22vi chat tafseel (#26 tokri, indicator t2 `e691715`, TV ✅ baqi): `docs/purana-haal.md` (grep "22vi chat").
-**23vi chat** (FTMO maqsad: 2 EA + 4 instrument XAU/XAG/US500/US100, 15 din demo phir challenge, Swing account): `docs/purana-haal.md` grep "23vi chat".
-**28 Oct (25vi chat): Koshish #27 JasTrend FTMO (Python `tools/ftmo_test.py`, data `data/ftmo/`) = qaide se PASS** (qaida `docs/purana-haal.md` grep "Koshish #27").
-CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fail, 78 adhoora). IMTIHAN 2019+ ek dafa: 94 challenge -> **80 pass, 0 fail**,
-14 adhoora, pass ~**32 mahine** (median), 19 mein 4 din kam. Imaandari: fail kabhi nahi magar BOHOT dheema (1.2 tr/mahina), 2019+ tezi ka faida; challenge overlap (azad nahi).
-**Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
-saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
-**Koshish #29 Kachhua 4 market (`--kachhua`) = TALAASH FAIL** (366 tr, Exp +0.072R, Exp-2SE -0.037; XAU +0.196, XAG +0.024, US500 -0.035, USTEC +0.025).
-= FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1** (magic 20261028) F7 ✅ + Tester ✅ (t2 F7 ✅: target pehra Tester ✅ - 5% par 2025.10.09 equity 105,012 = sab band, phir 12 palte rok diye; din 1% = 2021.11.03 DIN KI HADD ✅, kul 3% = 2022.01.27 KUL HADD + EA ruka ✅ - teeno pehre sahi) (Exness 2021-26, 1m OHLC): aakhri 20 trades
-mein 18 Python se din ba din mili (1 XAG +-1 din data farq, 1 US500 - Exness index data Sep 2025 se). 44 tr, +0.192R, kul +8.45R, 100k -> 106,238.
-**Swap bhaari:** Exness ~9%/saal (44 tr mein -7.55R). Python maloomat 2019+: swap 3% = 80 pass/0 fail, 6% = 71/9, 9% = 66/14 -> FTMO ka swap dekhna zaroori.
-US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). User: LIVE cent swap-free (sahi); Tester demo 472716649 ki symbol setting se swap lagata hai. FTMO Free Trial NAHI ban raha (Gmail restrict) ->
-FTMO support se poochhna (naya Gmail se bypass nahi). Agla SBS: Tester pehra jaanch (StartBal 100000, Target 5) -> demo 472716649 par 5wan chart (pehra band).
-**Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.
+**22-24vi chat:** IBS i3 `4483a03`, #26 tokri, FTMO maqsad (2 EA + 4 instrument, Swing): `docs/purana-haal.md` (grep "22vi chat", "23vi chat").
+**25vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "25vi chat": #27 JasTrend FTMO Python **PASS** (1% / SL 4xATR; 2019+ 80 pass / 0 fail,
+~32 mahine) · #28 IBS + #29 Kachhua 4 market FAIL = FTMO par **JasTrend akela**. **JasTrendEA t2** (magic 20261028): Tester 18/20 Python se mili,
+teeno pehre (target / din / kul) Tester ✅, demo par TRADE CHALU (pehra band - account par 5 EA). Exness demo swap ~9%/saal (FTMO ka swap dekhna),
+US500 lot hadd 2 = ~0.6% risk (user ka faisla). FTMO Free Trial Gmail restrict -> user FTMO support se poochhe (bypass nahi).
+**AGLI CHAT pehla kaam (user 28 Oct: "intehai zaroori - kharcha nikalna"): NAYA test CHHOTI TF, SIRF GOLD, Python mein.**
+Data: `data/ftmo/XAU_XAG_H1_dukascopy.zip` (H1 2003-2026 UTC) = H1 / H4 abhi; 15m / 5m ke liye QDM M1 export (user). Sec 4 qaida: idea + qaida
+PEHLE likho, TALAASH < 2019, IMTIHAN 2019+ ek dafa. Asli kharcha (XAUUSDm spread ~$0.25 + slippage) R mein - pehle 8 gold intraday FAIL isi se
+(`docs/trading-pakki.md` grep "Gold intraday"). Idea Claude tay kare (user ka idea ho to wahi), seedha shuru - "D" nahi chahiye.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
