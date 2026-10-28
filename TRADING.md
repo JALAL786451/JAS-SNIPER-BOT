@@ -62,7 +62,8 @@ CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fa
 14 adhoora, pass ~**32 mahine** (median), 19 mein 4 din kam. Imaandari: fail kabhi nahi magar BOHOT dheema (1.2 tr/mahina), 2019+ tezi ka faida; challenge overlap (azad nahi).
 **Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
 saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
-**AGLI CHAT pehla kaam:** EA2 = Kachhua (#6) TALAASH Python mein inhi 4 par (qaida pehle likho, #28 jaisa) - fail = JasTrend akela. "D" nahi chahiye.
+**Koshish #29 Kachhua 4 market (`--kachhua`) = TALAASH FAIL** (366 tr, Exp +0.072R, Exp-2SE -0.037; XAU +0.196, XAG +0.024, US500 -0.035, USTEC +0.025).
+= FTMO ke liye **JasTrend akela** (qaida). Agla: **JasTrendEA** (MQL5) banana.
 **Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
@@ -87,7 +88,7 @@ saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/pu
 
 1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
 16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
-20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL (1D 1975-2018: 156 tr, Exp 0.27R, SE 0.151, Exp-2SE -0.032, saal 24/44; 4H/1H/15m < 100 tr - TV data kam) · **26 Supertrend tokri TALAASH PASS** (931 tr, Exp 0.248R, Exp-2SE +0.119, 6/6 market musbat, saal 31/44; `data/koshish26/talaash.csv`)  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr, Exp 0.455R, Exp-2SE +0.214, 6/6, saal 7/8; `imtihan.csv`) = demo ki taraf. · **27 JasTrend FTMO Python PASS** (1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine) · 28 IBS 4 market FAIL.
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL (1D 1975-2018: 156 tr, Exp 0.27R, SE 0.151, Exp-2SE -0.032, saal 24/44; 4H/1H/15m < 100 tr - TV data kam) · **26 Supertrend tokri TALAASH PASS** (931 tr, Exp 0.248R, Exp-2SE +0.119, 6/6 market musbat, saal 31/44; `data/koshish26/talaash.csv`)  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr, Exp 0.455R, Exp-2SE +0.214, 6/6, saal 7/8; `imtihan.csv`) = demo ki taraf. · **27 JasTrend FTMO Python PASS** (1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine) · 28 IBS 4 market FAIL · 29 Kachhua 4 market FAIL.
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

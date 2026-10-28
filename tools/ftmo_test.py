@@ -80,7 +80,7 @@ def supertrend_up(h, l, c):
 
 
 def trades_for(df, k):
-    """Account se azad trades: (entry H1 idx, exit H1 idx, entry, exit, SL doori)."""
+    """Account se azad trades: (entry H1 idx, exit H1 idx, entry, exit, SL doori, rukh +1/-1)."""
     df = df.copy()
     df['sd'] = session_day(df['t'])
     g = df.groupby('sd', sort=True)
@@ -113,7 +113,7 @@ def trades_for(df, k):
             jj += 1
         if ex_i is None:
             ex_i, ex_p = len(df) - 1, cl[-1]
-        out.append((nxt, ex_i, e, ex_p, k * atr[j]))
+        out.append((nxt, ex_i, e, ex_p, k * atr[j], 1))
         j = jj + 1                           # SL / flip ke baad sirf naya flip upar
     return out
 
@@ -164,23 +164,72 @@ def ibs_trades(df):
             jj += 1
         if ex_i is None:
             break                             # data khatam, khuli trade nahi gini
-        out.append((last[j] + 1, ex_i, e, ex_p, r))
+        out.append((last[j] + 1, ex_i, e, ex_p, r, 1))
         j = jj + 1                           # band / SL wale din nayi nahi
     return out
 
 
+def daily(df):
+    """H1 -> daily (17:00 NY): har din ki aakhri H1 idx, H, L, C."""
+    g = df.assign(sd=session_day(df['t'])).groupby('sd', sort=True)
+    last = g.apply(lambda x: x.index[-1], include_groups=False).values
+    return last, g['High'].max().values, g['Low'].min().values, g['Close'].last().values
+
+
+def kachhua_trades(df):
+    """Koshish #29: Kachhua (Tide 1, Radar r3 f_tide) - BUY aur SELL, 2xATR SL, SL roz sarakta."""
+    last, h, l, c = daily(df)
+    a = atr_rma(h, l, c, 14)
+    ef = pd.Series(c).ewm(span=50, adjust=False).mean().values
+    es = pd.Series(c).ewm(span=200, adjust=False).mean().values
+    sh = pd.Series(h).shift(1)
+    sl_ = pd.Series(l).shift(1)
+    hb, lb = sh.rolling(10).max().values, sl_.rolling(10).min().values   # t-10..t-1
+    hx, lx = sh.rolling(5).max().values, sl_.rolling(5).min().values     # t-5..t-1
+    o, hi, lo = df['Open'].values, df['High'].values, df['Low'].values
+    out, d, e, r, sl, ent = [], 0, 0.0, 0.0, 0.0, 0
+    for t in range(200, len(last) - 1):
+        at_c = False
+        if d != 0:
+            a0, b0 = last[t - 1] + 1, last[t] + 1
+            hit = np.nonzero(lo[a0:b0] <= sl)[0] if d == 1 else np.nonzero(hi[a0:b0] >= sl)[0]
+            ex_i = ex_p = None
+            if len(hit):
+                ex_i = a0 + hit[0]
+                ex_p = min(o[ex_i], sl) if d == 1 else max(o[ex_i], sl)
+            elif (ef[t - 1] < es[t - 1]) if d == 1 else (ef[t - 1] > es[t - 1]):
+                ex_i, ex_p, at_c = last[t] + 1, c[t], True
+            else:
+                sl = max(sl, lx[t]) if d == 1 else min(sl, hx[t])
+                if (c[t] <= sl) if d == 1 else (c[t] >= sl):
+                    ex_i, ex_p, at_c = last[t] + 1, c[t], True
+            if ex_i is not None:
+                out.append((ent, ex_i, e, ex_p, r, d))
+                d = 0
+        if d == 0 and not at_c and a[t] > 0 and not np.isnan(hb[t]):
+            live = a[t] / c[t] * 100 >= 0.25
+            if c[t] > hb[t] and ef[t - 1] > es[t - 1] and live:
+                d = 1
+            elif c[t] < lb[t] and ef[t - 1] < es[t - 1] and live:
+                d = -1
+            if d:
+                e, r, ent = c[t], 2.0 * a[t], last[t] + 1
+                sl = e - d * r
+    return out
+
+
 def r_stats(df, trades, r_div=1.0, a='1900', b='2100'):
-    """Har trade ka R (kharcha + swap ke baad), saal ke saath. r_div: SL doori / R."""
+    """Har trade ka R (kharcha + swap ke baad), saal aur rukh ke saath. r_div: SL doori / R."""
     t = df['t'].values
-    out = []
-    for ei, xi, e, x, sd in trades:
+    out, yrs, dirs = [], [], []
+    for ei, xi, e, x, sd, d in trades:
         if not (np.datetime64(a) <= t[ei] < np.datetime64(b)):
             continue
-        rr = sd / r_div
         nights = (t[xi] - t[ei]) / np.timedelta64(1, 'D')
-        out.append(((x - e) - COST * (e + x) - SWAP * nights * e) / rr)
-    yrs = [pd.Timestamp(t[ei]).year for ei, xi, e, x, sd in trades if np.datetime64(a) <= t[ei] < np.datetime64(b)]
-    return np.array(out), np.array(yrs)
+        out.append((d * (x - e) - COST * (e + x) - SWAP * nights * e) / (sd / r_div))
+        yrs.append(pd.Timestamp(t[ei]).year)
+        dirs.append(d)
+    return np.array(out), np.array(yrs), np.array(dirs)
 
 
 class Mkt:
@@ -197,22 +246,25 @@ class Mkt:
         clf = pd.Series(clf).ffill().values
         lowf[:] = clf
         lowf[gi] = df['Low'].values
-        self.lowf, self.clf = lowf, clf
+        highf = clf.copy()
+        highf[gi] = df['High'].values
+        self.lowf, self.highf, self.clf = lowf, highf, clf
         self.df = df
 
 
 def run(mkts, systems, start_ns, end_ns, grid, cetday):
     """Ek challenge: 'pass' / 'fail1' / 'fail2' / 'adhoora', mahine, kam_din.
-    systems = [(risk %, [har market ki trades])]; slot = (system, market) - ek slot ek position."""
-    # (global entry, global exit, slot, entry, exit, units, market)
+    systems = [(risk %, [har market ki trades], slot map)]; slot = (system, market) - ek slot ek position.
+    slot map {market: slot} se do market ek slot (Kachhua: gold+silver ek)."""
+    # (global entry, global exit, slot, entry, exit, units, market, rukh)
     tl = []
-    for si, (risk, trades) in enumerate(systems):
+    for si, (risk, trades, smap) in enumerate(systems):
         risk_usd = BAL0 * risk / 100
         for mi, m in enumerate(mkts):
-            for (ei, xi, e, x, sd) in trades[mi]:
+            for (ei, xi, e, x, sd, d) in trades[mi]:
                 ge, gx = m.gi[ei], m.gi[xi]
                 if grid[ge] >= start_ns and grid[ge] < end_ns:
-                    tl.append((ge, gx, si * 10 + mi, e, x, risk_usd / sd, mi))
+                    tl.append((ge, gx, si * 10 + smap.get(mi, mi), e, x, risk_usd / sd, mi, d))
     tl.sort()
     i0 = np.searchsorted(grid, start_ns)
     i_end = np.searchsorted(grid, end_ns)
@@ -230,9 +282,9 @@ def run(mkts, systems, start_ns, end_ns, grid, cetday):
             dstart = bal
         # bandish (SL ya flip) is ghante
         for slot in list(open_):
-            ge, gx, _, e, x, u, _ = open_[slot][2]
+            ge, gx, _, e, x, u, _, d = open_[slot][2]
             if gx == t:
-                bal += (x - e) * u - COST * x * u
+                bal += d * (x - e) * u - COST * x * u
                 del open_[slot]
         # nayi entry
         while ti < len(tl) and tl[ti][0] <= t:
@@ -244,8 +296,9 @@ def run(mkts, systems, start_ns, end_ns, grid, cetday):
             open_[tr[2]] = (tr[3], tr[5], tr)
             days.add(day)
         # equity: bura (low) aur close
-        worst = bal + sum((mkts[p[2][6]].lowf[t] - p[0]) * p[1] for p in open_.values())
-        eq = bal + sum((mkts[p[2][6]].clf[t] - p[0]) * p[1] for p in open_.values())
+        worst = bal + sum(((mkts[p[2][6]].lowf[t] if p[2][7] > 0 else mkts[p[2][6]].highf[t]) - p[0]) * p[2][7] * p[1]
+                          for p in open_.values())
+        eq = bal + sum((mkts[p[2][6]].clf[t] - p[0]) * p[2][7] * p[1] for p in open_.values())
         if worst < dstart - 0.05 * BAL0 or worst < 0.90 * BAL0:
             return ('fail1' if phase == 1 else 'fail2'), (grid[t] - start_ns) / 2.63e15, kam_din
         if eq >= target * BAL0:
@@ -265,10 +318,14 @@ def main():
     ap.add_argument('--risk', type=float, nargs='*', default=[0.25, 0.5, 0.75, 1.0])
     ap.add_argument('--k', type=float, nargs='*', default=[4, 6, 8])
     ap.add_argument('--ibs', action='store_true', help='#28: IBS ka TALAASH (trade R), --imtihan = 2019+')
-    ap.add_argument('--jor', type=float, nargs='*', help='#28 FTMO jor: JasTrend 1%%/4xATR + IBS in risk par')
+    ap.add_argument('--kachhua', action='store_true', help='#29: Kachhua ka TALAASH (trade R), --imtihan = 2019+')
+    ap.add_argument('--jor', type=float, nargs='*', help='FTMO jor: JasTrend 1%%/4xATR + EA2 (--ea2) in risk par')
+    ap.add_argument('--ea2', choices=['ibs', 'kachhua'], default='kachhua')
     a = ap.parse_args()
     if a.ibs:
-        return ibs_report(a.imtihan)
+        return edge_report('#28 IBS', ibs_trades, a.imtihan)
+    if a.kachhua:
+        return edge_report('#29 Kachhua', kachhua_trades, a.imtihan)
     dfs = {s: load(s) for s in FILES}
     grid = np.unique(np.concatenate([d['t'].values.astype('datetime64[ns]').astype(np.int64) for d in dfs.values()]))
     cet = pd.to_datetime(grid, utc=True).tz_convert('Europe/Prague')
@@ -285,12 +342,13 @@ def main():
     combos = []
     if a.jor:
         jt = [trades_for(m.df, 4) for m in mkts]
-        ib = [ibs_trades(m.df) for m in mkts]
-        combos = [(r, 'IBS', [(1.0, jt), (r, ib)]) for r in a.jor]
+        fn, smap = (ibs_trades, {}) if a.ea2 == 'ibs' else (kachhua_trades, {1: 0})   # Kachhua: gold+silver ek
+        e2 = [fn(m.df) for m in mkts]
+        combos = [(r, a.ea2[:3].upper(), [(1.0, jt, {}), (r, e2, smap)]) for r in a.jor]
     else:
         for k in a.k:
             trades = [trades_for(m.df, k) for m in mkts]
-            combos += [(r, k, [(r, trades)]) for r in a.risk]
+            combos += [(r, k, [(r, trades, {})]) for r in a.risk]
     for r, k, systems in combos:
         trades = [sum((sy[1][mi] for sy in systems), []) for mi in range(4)]
         res = [run(mkts, systems, s.value, end, grid, cetday) for s in starts]
@@ -307,13 +365,14 @@ def main():
               f' {med:6.1f} | {kd:3d} | {n_tr / mon:.2f}')
 
 
-def ibs_report(imtihan):
+def edge_report(name, fn, imtihan):
     a, b = ('2019', '2100') if imtihan else ('1900', '2019')
-    print(f"#28 IBS {'IMTIHAN 2019+' if imtihan else 'TALAASH < 2019'} (R = 3xATR14, kharcha + swap ke baad)")
-    allr, ypos, yall, mpos = [], 0, 0, 0
+    print(f"{name} {'IMTIHAN 2019+' if imtihan else 'TALAASH < 2019'} (R = server SL, kharcha + swap ke baad)")
+    allr, alld, ypos, yall, mpos = [], [], 0, 0, 0
     for s in FILES:
         df = load(s)
-        r, y = r_stats(df, ibs_trades(df), 1.0, a, b)
+        r, y, dr = r_stats(df, fn(df), 1.0, a, b)
+        alld.append(dr)
         allr.append(r)
         ys = pd.Series(r).groupby(y).sum() if len(r) else pd.Series(dtype=float)
         ypos += int((ys > 0).sum())
@@ -322,7 +381,11 @@ def ibs_report(imtihan):
         se = r.std(ddof=1) / len(r) ** 0.5 if len(r) > 1 else float('nan')
         print(f'{s:7s} {len(r):4d} tr  jeet {100 * (r > 0).mean():4.1f}%  Exp {r.mean():+.3f}R  SE {se:.3f}'
               f'  Exp-2SE {r.mean() - 2 * se:+.3f}  saal {int((ys > 0).sum())}/{len(ys)}  {y.min() if len(y) else "-"}-{y.max() if len(y) else "-"}')
-    r = np.concatenate(allr)
+    r, dr = np.concatenate(allr), np.concatenate(alld)
+    for dd, nm in ((1, 'BUY'), (-1, 'SELL')):
+        x = r[dr == dd]
+        if len(x) > 1:
+            print(f'  {nm:4s} {len(x):4d} tr  Exp {x.mean():+.3f}R  SE {x.std(ddof=1) / len(x) ** 0.5:.3f}  (maloomat)')
     se = r.std(ddof=1) / len(r) ** 0.5
     edge = r.mean() - 2 * se
     ok = (len(r) >= 30 and edge > 0) if imtihan else (len(r) >= 100 and edge > 0 and mpos >= 3 and ypos * 2 > yall)

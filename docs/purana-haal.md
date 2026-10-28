@@ -694,3 +694,13 @@ Kharcha 0.03%/taraf (#27 jaisa, #15 mein 0.01 tha) + swap 3%/saal. 4 market XAUU
 **IMTIHAN** 2019+ ek dafa SAKHT (US500 2019+ #15 mein dekha hua): kul >= 30 tr aur Exp - 2SE > 0. TALAASH FAIL = IMTIHAN nahi, agla Kachhua.
 **ASLI PASS ho to FTMO jor:** JasTrend 1%/4xATR (#27, fix) + IBS risk 0.25/0.5/0.75/1.0% (4; ginti +4), #27 ka chunao (2012-18) / imtihan (2019+)
 qaida jyon ka tyon. Har EA ek market par ek position (dono EA ek market par saath ho sakte hain).
+
+**Koshish #29 qaida (28 Oct, 25vi chat, test se PEHLE, badalna mana) - EA2 Kachhua 4 market Python (`tools/ftmo_test.py --kachhua`):**
+Tide 1 (`jas_tide_tokri.pine` k1 / Radar r3 ka f_tide) jyon ka tyon, daily H1 se (17:00 NY, Sat/Sun -> Mon). Din t band hone par:
+BUY = C > pichhle 10 din (t-10..t-1) ka high AUR EMA50 > EMA200 (t-1) AUR ATR14/C >= 0.25%; SELL ulta. Entry din ke close par, SL = 2 x ATR14 = 1R.
+Khuli trade: SL H1 par (gap = open) -> warna EMA rukh ulta = close par band -> warna SL = max(SL, 5 din low) (SELL: min, 5 din high),
+C SL ke paar = close par band. Close par band wale din nayi nahi; SL wale din nayi ho sakti. Kharcha 0.03%/taraf + swap 3%/saal (dono rukh).
+4 market XAUUSD, XAGUSD, US500, USTEC. **TALAASH** (entry < 2019): PASS = kul >= 100 tr, kul Exp(R) - 2SE > 0, >= 3/4 market Exp > 0,
+(market x saal) musbat > 50%. BUY / SELL alag sirf maloomat. **IMTIHAN** 2019+ ek dafa SAKHT (gold/silver 2019+ pehle dekha): kul >= 30 tr,
+Exp - 2SE > 0. FAIL = FTMO ke liye JasTrend akela. **ASLI PASS ho to FTMO jor:** JasTrend 1%/4xATR + Kachhua risk 0.25/0.5/0.75/1.0% (ginti +4),
+Kachhua mein gold+silver ek (EA jaisa: ek khuli to doosri nahi), #27 ka chunao / imtihan qaida jyon ka tyon.
