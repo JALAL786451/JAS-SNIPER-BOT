@@ -58,7 +58,7 @@ sim(float mult, int len, int ta0, int tb0, bool ex) =>
     if pExit and pos == 1
         r = (open - eP - COST * (eP + open)) / ru
         inW = ex ? eT >= tb0 : (eT >= ta0 and eT < tb0)
-        if inW
+        if inW and ru > 0
             cN    += 1
             cR    += r
             cR2   += r * r
@@ -113,7 +113,7 @@ edgeOf(int n, float s, float s2) =>
     se  = nn > 0 ? sd / math.sqrt(nn) : 0.0
     [e, se, e - 2 * se]
 
-var table tb = table.new(position.top_right, 5, 12, bgcolor = color.new(color.black, 80), border_width = 1)
+var table tb = table.new(position.top_right, 6, 12, bgcolor = color.new(color.black, 80), border_width = 1)
 cellT(int c, int r, string t, color tc) =>
     table.cell(tb, c, r, t, text_color = tc, text_size = size.small)
 
@@ -124,6 +124,7 @@ row(int r, string name, int n, float s, float s2, int w) =>
     cellT(2, r, str.tostring(nz(n) > 0 ? 100.0 * nz(w) / nz(n) : 0.0, "#.#"), color.white)
     cellT(3, r, str.tostring(e, "#.###"), e > 0 ? colUp : colDn)
     cellT(4, r, str.tostring(ed, "#.###"), ed > 0 ? colUp : colDn)
+    cellT(5, r, str.tostring(nz(s), "#.###"), color.white)
     e > 0 and nz(n) > 0 ? 1 : 0
 
 if barstate.islast
@@ -132,6 +133,7 @@ if barstate.islast
     cellT(2, 0, "Jeet %", color.white)
     cellT(3, 0, "Exp R", color.white)
     cellT(4, 0, "Exp-2SE", color.white)
+    cellT(5, 0, "Jor R", color.white)
     pm = 0
     pm += row(1, m1, n1, r1, q1, w1)
     pm += row(2, m2, n2, r2, q2, w2)
