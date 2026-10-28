@@ -63,23 +63,22 @@ CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fa
 **Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
 saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
 **AGLI CHAT pehla kaam:** EA2 = Kachhua (#6) TALAASH Python mein inhi 4 par (qaida pehle likho, #28 jaisa) - fail = JasTrend akela. "D" nahi chahiye.
-**Demo theek karna SBS (28 Oct, user ke SS: teeno "SIRF DIKHANA", IBS/RSI2 XAUUSDm par = market nahi mila):** 4 chart -
-(1) XAUUSDm Kachhua 20261009 9 market (2) XPTUSDm Commodity 20261018 6 market (3) US500m RSI2 20261012 (4) US500m IBS i3 20261022 (F7 pehle).
-Har ek TRADE true, SS. Qadam 1 diya, user SS baqi.
+**Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
-- JasIbsEA i3 F7 + Tester US500m D1 2015-aaj (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
+- JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
   Python #21 (`JasOrb5EA`) phir #22 (Fib OTE). Dono ke qaide `docs/purana-haal.md` (grep "Koshish #21 qaida", "#22 qaida"). 2025+ mat kholo.
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
 
-## 7. Demo (472716649) aur IBS ka haal
+## 7. Demo (472716649) - 28 Oct dobara lagaye, chaaron TRADE CHALU (user SS ✅)
 
-| EA | Chart | Magic | Markets | Haal 20 Oct (SS ✅) |
-|---|---|---|---|---|
-| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC | TRADE CHALU, suffix 'm'. USDJPYm BUY 0.33 @ 158.527, SL 157.543. Chhooti (EA band tha): XAG SELL, EUR SELL. USDJPYm chart wala dusra EA hatana tha (ek magic = ek chart) |
-| JasRsi2EA c2 | US500m D1 | 20261012 | US500, USTEC, US30 | Pehle XPTUSDm par tha (suffix '' = 3 market "nahi mila") -> US500m, TRADE CHALU, intezar |
-| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD | Inputs gold wale ho gaye the -> theek. USOIL BUY 0.05 @ 93.810, SL 88.987 (+0.78R). Chhooti: UKOIL BUY, XPT SELL, XPD SELL |
+| EA | Chart | Magic | Markets |
+|---|---|---|---|
+| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC (9) |
+| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD (6) |
+| JasRsi2EA c2 | US500m H1 (EA D1 parhta) | 20261012 | US500, USTEC, US30 |
+| JasIbsEA **i3** (F7 0 errors ✅) | US500m H1 (doosra chart) | 20261022 | US500 (faisla 16:55 NY) |
 
 - Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").
