@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 28 Oct 2026 (26vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 28 Oct 2026 (26vi chat, khatam). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -54,20 +54,15 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**22-24vi chat:** IBS i3 `4483a03`, #26 tokri, FTMO maqsad (2 EA + 4 instrument, Swing): `docs/purana-haal.md` (grep "22vi chat", "23vi chat").
-**25vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "25vi chat": #27 JasTrend FTMO Python **PASS** (1% / SL 4xATR; 2019+ 80 pass / 0 fail,
-~32 mahine) · #28 IBS + #29 Kachhua 4 market FAIL = FTMO par **JasTrend akela**. **JasTrendEA t2** (magic 20261028): Tester 18/20 Python se mili,
-teeno pehre (target / din / kul) Tester ✅, demo par TRADE CHALU (pehra band - account par 5 EA). Exness demo swap ~9%/saal (FTMO ka swap dekhna),
-US500 lot hadd 2 = ~0.6% risk (user ka faisla). FTMO Free Trial Gmail restrict -> user FTMO support se poochhe (bypass nahi).
-**26vi chat (28 Oct): #30 H1 raat/din, #31 H4 RSI2, #32 daily rukh + H1 entry, #22 Fib OTE 15m (QDM M1 2021-24, `data/qdm/`) - SAB TALAASH FAIL,
-bina kharcha bhi 0 / manfi** (`tools/gold_*.py`, `tools/fib_ote_test.py`; `docs/purana-haal.md` grep "Koshish #30/#31/#32", "#22 nateeja").
-**#34 4H TOKRI ASLI PASS** (sec 8; ~6.9 tr/mahina, sirf BUY, 2025 tezi ka hissa bara).
-#35 tokri FTMO FAIL. **NAYA MANSOOBA (user 28 Oct): 1 EA, 15m-4H, tez trades, FTMO** - sirf kitabi/research idea, qaida pehle, bahut market.
-Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary intraday momentum (US index 30m) (2) Zarattini-Aziz 2023 ORB 5m (#21) (3) VWAP trend
-(4) Gao-Han-Li-Zhou 2018 intraday momentum. Pehla: user se USATECH + USA500 M1 2021-24 (QDM, ek line PowerShell). Gold M1 hai.
+**22-25vi chat:** IBS i3, #26 tokri, FTMO maqsad, #27 JasTrend FTMO PASS (1%/4xATR, 2019+ 80/0, ~32 mahine), **JasTrendEA t2** demo (magic 20261028)
+- `docs/purana-haal.md` grep "25vi chat". FTMO Free Trial: user FTMO support se poochhe.
+**26vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "26vi chat": gold intraday 13 FAIL (#30-33, #22; bina kharcha bhi ~0). **#34 JAS Trend 4H TOKRI
+ASLI PASS** (sec 8). #35 us ka FTMO FAIL. FTMO 1 mahine mein = jua (`tools/ftmo_ek_mahina.py`); JasTrend daily 1% = 163/0 magar ~3 saal.
+**AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (100-300/mahina, 1000 nahi), FTMO; sirf research idea,
+qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary momentum (US index 30m) (2) ORB 5m (#21) (3) VWAP trend
+(4) Gao-Han-Li-Zhou 2018. User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
-- QDM M1 (Generic bar, Timezone Original): USATECHIDXUSD 2021-24 -> Python #21 ORB (`docs/purana-haal.md` grep "Koshish #21 qaida"). Gold M1 2021-24 aa gaya.
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
 

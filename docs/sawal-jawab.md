@@ -70,3 +70,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Demo par JasTrend shuru balance 0 kyun? -> account par 5 EA, pehra poore account ki equity dekhta; FTMO par akela: 100000 / target 10 (P2 5) / din 4 / kul 8 (28 Oct).
 - FTMO trial Gmail se restrict? -> naye Gmail se bypass nahi (ek shakhs ek profile, baad mein payout khatra); FTMO support (28 Oct).
 - FTMO 1 mahine mein pass (1 EA)? -> NAHI (sabit edge se). `tools/ftmo_ek_mahina.py` 176 challenge 2012-26: JasTrend daily 1% = 163 pass / 0 fail magar 1 mahine mein 0%; 4H tokri 5% = 1 mahine mein 13.6% pass / 54.5% fail (jua). $400k = wahi % target, sirf fee bari (28 Oct).
+- Tide Radar kitne instrument / trades? -> 15 (9 + 6 commodity), ~110 tr/saal = ~2/hafta. FTMO akela nahi: 1% par girawat 14.9% > 10% (28 Oct).
+- FTMO samajh? -> payout har ~14 din, fee pehli payout ke saath wapas, funded par target nahi; masla EA ki raftaar (~5-6%/saal) (28 Oct).

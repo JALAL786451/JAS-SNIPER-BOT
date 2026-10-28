@@ -807,3 +807,7 @@ Shart: P1 fail < 20% aur pass > fail; in mein max (pass - fail), barabar = kam r
 **Koshish #35 nateeja (28 Oct, 26vi chat) = CHUNAO FAIL** (2019+ nahi khola). 84 challenge 2012-18, 12 setting: koi bhi "P1 fail < 20% aur pass > fail" nahi.
 Qareeb: 0.5%/k4 = 8 pass / 16 fail (P1 19%), 0.75%/k8 = 1/6, 1.0%/k4 = 21/54 (pass 10.6 mahine magar P1 fail 49%); 0.25% = sab adhoora. ~5.9 tr/mahina.
 Sabaq: 4H tokri ka trade edge (#34) asli hai magar FTMO ki din/kul hadd par jure market ek saath girte hain -> fail > pass. FTMO = JasTrend daily (#27) hi.
+
+**26vi chat (28 Oct) khulasa:** #30/#31/#32/#22/#33 gold intraday FAIL; #34 4H tokri ASLI PASS; #35 FTMO FAIL; FTMO 1 mahina = jua. User ki zaroorat: ghar ka
+kharcha; Claude ne bataya sabit edge ~5-6%/saal, funded $100k ~ $370/mahina. User ka faisla: research wale tez-trade EA par sara waqt. PowerShell: user ko
+mushkil - hamesha poore pate wali EK line (`Set-Location -LiteralPath`), file Explorer mein `explorer "<folder>"` se dikhao.
