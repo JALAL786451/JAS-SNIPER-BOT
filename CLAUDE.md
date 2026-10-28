@@ -18,7 +18,10 @@ jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; 
 - ~15 message ho jayein to Claude KHUD kahe: "chat lambi ho gayi - 'chat khatam' likhein, nayi chat sasti".
 - **Chat khatam** (user kahe, ya ~15-20 message): `TRADING.md` sec 9 ki list - sec 5 naya (<=8 KB), naye jawab
   `docs/sawal-jawab.md`, `python3 tools/roznamcha.py`, commit + push (default branch bhi). Har chat yahi kare.
-  Push ke FAURAN baad (user 17 Oct) nayi chat ABHI kholo (`create_session`, repo source, prompt "TRADING") - schedule/time NAHI.
+  Push ke FAURAN baad (user 17 Oct) nayi chat ABHI kholo - schedule NAHI. `create_session`: source_url
+  `https://github.com/JALAL786451/JAS-SNIPER-BOT`, source_revision ye branch, prompt sirf "TRADING" NAHI (28 Oct: akela lafz
+  "background notice" samjha, kaam nahi kiya) balke: "Jalal ki nayi TRADING chat (pichli chat ne kholi). CLAUDE.md + TRADING.md
+  parho, sec 5 ka agla kaam seedha shuru karo: <kaam ek line>". User ko fallback bhi do (TRADING.md upar wala lamba message).
 - Agent / workflow sirf jab user naam le kar maange; hafte ki limit 50%+ ho to bilkul nahi.
 - User ki marzi / hidayat ka pata na ho (yahan + `TRADING.md` mein nahi) -> `grep -i <lafz> docs/roznamcha/HIDAYAT.md`. Poori file nahi.
 
