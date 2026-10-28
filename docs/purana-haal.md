@@ -783,3 +783,13 @@ gold 2019+ pehle dekha + 3 mein se chuna -> SAKHT Exp - 2SE > 0, trades >= 30.
 saal 10/16, bina kharcha +0.272R. **1H** 1049 tr, +0.046R, Exp-2SE -0.051, saal 9/16 (bina kharcha +0.151R). **15m** 1235 tr, -0.206R, saal 0/4 (bina
 kharcha -0.005R). Sabaq: Supertrend BUY ka edge TF ke saath ghatta hai (1D #25 +0.27R -> 4H +0.18 -> 1H +0.05 -> 15m 0); kharcha + swap chhoti TF ko kha jata.
 Agla idea (TALAASH, ginti alag): 4H par #26 jaisi TOKRI (4 market H1 data) - zyada market = zyada trades = SE chhota.
+
+**Koshish #34 qaida (28 Oct, 26vi chat, test se PEHLE, badalna mana) - JAS Trend t2 4H TOKRI (`tools/st_tokri_4h.py`):**
+#33 ka 4H jyon ka tyon (H1 se 4H NY 17:00 se jura, Supertrend 10/3 SIRF BUY, flip upar = agli open BUY, flip neeche = agli open band, SL nahi,
+1R = 3 x ATR10, bar > 30) - 4 market XAUUSD, XAGUSD, US500, USTEC (`data/ftmo/` Dukascopy H1), har market ek position, har trade 1R barabar.
+Kharcha har trade 0.03% x (entry+exit) (Pine), gold par kam az kam $0.50; swap 3%/saal har raat (calendar din) -> R.
+**TALAASH** entry < 2019: PASS = kul >= 100 tr, kul Exp(R) - 2SE > 0, >= 3/4 market Exp > 0, (market x saal) musbat > 50%. Bina kharcha = maloomat.
+**IMTIHAN** 2019+ ek dafa, bina tabdeeli; in market ka 2019+ pehle dekha (#27-29) -> SAKHT: kul trades >= 30 aur Exp - 2SE > 0. Ginti +1.
+Imaandari: market aapas mein jure (gold-chandi, US500-USTEC) = asal SE thoda bara.
+**Koshish #34 TALAASH (28 Oct, 26vi chat) = PASS (bal baal):** kul 760 tr, Exp +0.107R, SE 0.053, Exp-2SE **+0.0018**, bina kharcha +0.185R; market musbat 3/4
+(XAU +0.183 / 281 tr, XAG +0.058 / 246, US500 -0.018 / 117, USTEC +0.155 / 116), (market x saal) 29/46. Market jure = asal SE bara -> PASS kamzor. IMTIHAN agla (commit ke baad).

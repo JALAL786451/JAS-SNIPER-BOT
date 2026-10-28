@@ -29,7 +29,7 @@ def h4_from_h1(df):
                  Low=('Low', 'min'), Close=('Close', 'last')).sort_values('t').reset_index(drop=True)
 
 
-def trades(x, cost_on=True):
+def trades(x, cost_on=True, min_usd=COST_USD):
     o, h, l, c = (x[k].values for k in ('Open', 'High', 'Low', 'Close'))
     up, atr = supertrend_up(h, l, c)
     day = session_day(x['t']).values
@@ -43,7 +43,7 @@ def trades(x, cost_on=True):
             cost = 0.0
             if cost_on:
                 nights = (pd.Timestamp(day[i + 1]) - pd.Timestamp(day[e])).days
-                cost = max(COST_USD, COST_PCT * (ep + xp)) + SWAP * nights * ep
+                cost = max(min_usd, COST_PCT * (ep + xp)) + SWAP * nights * ep
             out.append((pd.Timestamp(tt[e], tz='UTC'), 1, (xp - ep - cost) / ru, i + 1 - e))
             pos = 0
     return pd.DataFrame(out, columns=['t', 'side', 'r', 'bars'])
