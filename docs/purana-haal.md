@@ -796,3 +796,14 @@ Imaandari: market aapas mein jure (gold-chandi, US500-USTEC) = asal SE thoda bar
 **Koshish #34 IMTIHAN 2019+ (ek dafa, 28 Oct) = ASLI PASS (sakht):** 641 tr, Exp +0.208R, SE 0.062, Exp-2SE **+0.085**, bina kharcha +0.281R, market 4/4 musbat
 (XAU +0.310, XAG +0.343, US500 +0.111, USTEC +0.110), (market x saal) 25/32, kul saal 5/8 (2021 -2.1R, 2022 -8.7R, 2026 -0.3R manfi). ~6.9 tr/mahina (daily tokri 1.8).
 Imaandari: sirf BUY + 2019-25 tezi (2025 akela +48.8R, zyada gold/chandi); 2025 hata kar bhi +84R / 7 saal. Agla: JasTrendEA 4H (t3) -> F7 -> Tester -> demo 6 mahine.
+
+**Koshish #35 qaida (28 Oct, 26vi chat, user "D", test se PEHLE, badalna mana) - 4H tokri FTMO Python (`tools/ftmo_4h.py`):**
+#34 trades (4H NY 17:00, Supertrend 10/3 sirf BUY, flip upar = agli 4H open, flip neeche = agli 4H open band) + **server SL = k x ATR10(4H)** entry se
+(H1 low par, gap = open; SL ke baad sirf naya flip upar). 4 market XAU, XAG, US500, USTEC, har market ek position. #27 ka FTMO `run` jyon ka tyon:
+$100k 2-step (P1 +10%, P2 +5%), har mahine naya challenge, din 5% CET khuli trade shamil, kul 10%, min 4 din, lot = risk% x $100k / SL doori,
+kharcha 0.03%/taraf + swap 3%/saal. **CHUNAO** challenge 2012-01..2018-12 (data 2018-12-31 par kata): risk 0.25/0.5/0.75/1.0% x k 4/6/8 (12; ginti +12).
+Shart: P1 fail < 20% aur pass > fail; in mein max (pass - fail), barabar = kam risk, phir k=6. Koi na bache = FAIL, 2019 nahi kholna.
+**IMTIHAN** 2019-01..aaj ek dafa chuni setting: PASS = pass > fail aur P1 fail < 20%. Maloomat: pass mahine (median) vs #27 JasTrend daily (~32 mahine).
+**Koshish #35 nateeja (28 Oct, 26vi chat) = CHUNAO FAIL** (2019+ nahi khola). 84 challenge 2012-18, 12 setting: koi bhi "P1 fail < 20% aur pass > fail" nahi.
+Qareeb: 0.5%/k4 = 8 pass / 16 fail (P1 19%), 0.75%/k8 = 1/6, 1.0%/k4 = 21/54 (pass 10.6 mahine magar P1 fail 49%); 0.25% = sab adhoora. ~5.9 tr/mahina.
+Sabaq: 4H tokri ka trade edge (#34) asli hai magar FTMO ki din/kul hadd par jure market ek saath girte hain -> fail > pass. FTMO = JasTrend daily (#27) hi.
