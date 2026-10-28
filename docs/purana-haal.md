@@ -759,3 +759,15 @@ SL ke baad isi rukh mein naya cross = nayi entry. Ek waqt ek position. Kharcha m
 **Koshish #32 nateeja (28 Oct, 26vi chat) = TALAASH FAIL** (IMTIHAN nahi khola). 445 tr, Exp -0.061R, SE 0.212, Exp-2SE -0.484, jeet 9.4%, saal 6/16.
 BUY 192 tr +0.470R (SE 0.397, Exp-2SE -0.32, saal 10/16), SELL 253 tr -0.463R. Bina kharcha +0.203R (Exp-2SE -0.25). Band SL 388, rukh 57; ausat 195 H1,
 bari jeet +44R (lottery jaisa, 1-2 trade par sab). Chhote SL par lambi trade = swap R mein bhaari (~0.26R/trade kharcha). 11wan gold intraday FAIL.
+
+**Koshish #22 Python tarjuma (28 Oct, 26vi chat, test se PEHLE; asal qaida 18 Oct upar, badalna mana) - `tools/fib_ote_test.py`:**
+Data QDM Dukascopy M1 UTC (`data/qdm/XAUUSD_M1_2021_24.zip`, user ne 28 Oct bheja; 2015 ki H1 se 5989/5989 candle bilkul mili). 15m aur 1H M1 se.
+`jas_fib_swing.pine` f5 jyon ka tyon: 1H pivot 5 (beech wali left se bari, right se >=), pivot 1H k+5 band hone ke baad maloom; leg tracking Pine
+jaisa (wahi taraf = sirf naya extreme). Entry 0.618 limit (fill = min(open, entry) BUY), har leg par 1, ek waqt 1; SL swing + 5% swing; TP 1.272;
+ek 15m mein SL+TP = SL, entry wali 15m par TP nahi. Din (17:00 NY) badle = khuli trade pichhli 15m close par band. **Farq (imaandari):**
+Pine "toot gaya" usi candle ki close se entry rokta hai (lookahead) -> Python mein sirf PICHHLI band 15m tak toota leg; SL gap par open.
+Kharcha max($0.50, 0.03%) har trade (asli $0.25 spread se zyada) R mein. **TALAASH 2021-24:** trades >= 100, Exp - 2SE > 0, + sec 4 saal musbat
+> 50% (>= 3/4). BUY/SELL alag + bina kharcha = maloomat. **IMTIHAN** 2025-aaj (M1 abhi nahi - pass ho to user se), SAKHT Exp - 2SE > 0.
+**Koshish #22 nateeja (28 Oct, 26vi chat) = TALAASH FAIL** (Python, QDM M1 2021-24). 1089 tr, Exp -0.332R, SE 0.051, Exp-2SE -0.434, jeet 34.3%, saal 0/4.
+BUY 512 tr -0.323R, SELL 577 tr -0.341R. Bina kharcha bhi -0.063R (Exp-2SE -0.141, saal 0/4) = edge nahi. Band: SL 566, din 370, TP 153.
+Kharcha median 0.10R, ausat 0.27R (chhoti leg par SL $1-2 = kharcha bara). TV ka "+2.7R / 58 trade" (2026, bina spread) ittefaq tha. 12wan gold intraday FAIL.
