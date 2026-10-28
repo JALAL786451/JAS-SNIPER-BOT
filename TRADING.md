@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 28 Oct 2026 (24vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 28 Oct 2026 (25vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -56,15 +56,11 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
 **28 Oct (22vi chat):** JasIbsEA **i3** `4483a03` likha (H1 se 17:00 NY candle, faisla 16:55 NY, Jumma bhi) - F7 + Tester baqi (user ne roka).
 22vi chat tafseel (#26 tokri, indicator t2 `e691715`, TV ✅ baqi): `docs/purana-haal.md` (grep "22vi chat").
-**28 Oct (23vi chat, user rest par):** user ka NAYA MAQSAD (sirf yahi kaam): **FTMO 2-step CFD, max 2 EA + 4 instrument** (dono EA wahi 4),
-EA+VPS allowed. 15 din demo phir challenge (user ka faisla). Faisla: 4 = **XAUUSD, XAGUSD, US500, US100** (#26 TALAASH Exp se; XPT/OIL kamzor).
-EA1 = JasTrend (#26 sirf BUY, server SL nahi tha -> hifazati 2R = 6xATR, TP nahi). EA2 = IBS ya Kachhua - Python mein inhi 4 par TALAASH pehle; dono fail = JasTrend akela.
-Python FTMO test qaida (likha): asli tareekh, 2010 se har mahine naya challenge, $100k, P1 +10% P2 +5%, din 5% (khuli trade shamil, CET), kul 10%,
-min 4 din; risk/SL sirf 2019 se pehle chuno, 2019+ ek dafa; PASS = 2019+ pass > fail aur P1 fail < 20%. Risk Claude nahi barhata. Swing account (weekend) check.
-15 din demo = sirf EA chalta hai, faida nahi (tokri 1.8 tr/mahina).
-**28 Oct (24vi chat):** QDM data ✅ `data/ftmo/` (H1, UTC, Dukascopy): XAU+XAG 2003-, US500+USTEC 2012- (zip, `a9180d3`).
-**AGLI CHAT pehla kaam:** Python FTMO test (qaida upar) - pehle JasTrend (#26 sirf BUY, 6xATR SL) in 4 par; 2012-2018 par risk/SL chuno,
-2019+ ek dafa. Phir EA2 (IBS / Kachhua) TALAASH. Daily candle H1 se banao (17:00 NY). User se "D" nahi chahiye - seedha shuru.
+**23vi chat** (FTMO maqsad: 2 EA + 4 instrument XAU/XAG/US500/US100, 15 din demo phir challenge, Swing account): `docs/purana-haal.md` grep "23vi chat".
+**28 Oct (25vi chat): Koshish #27 JasTrend FTMO (Python `tools/ftmo_test.py`, data `data/ftmo/`) = qaide se PASS** (qaida `docs/purana-haal.md` grep "Koshish #27").
+CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fail, 78 adhoora). IMTIHAN 2019+ ek dafa: 94 challenge -> **80 pass, 0 fail**,
+14 adhoora, pass ~**32 mahine** (median), 19 mein 4 din kam. Imaandari: fail kabhi nahi magar BOHOT dheema (1.2 tr/mahina), 2019+ tezi ka faida; challenge overlap (azad nahi).
+**AGLI CHAT pehla kaam:** EA2 TALAASH Python mein (IBS phir Kachhua, inhi 4 par, `ftmo_test.py` jaisa) - maqsad pass jaldi. Qaida test se pehle. "D" nahi chahiye.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 F7 + Tester US500m D1 2015-aaj (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
@@ -87,7 +83,7 @@ min 4 din; risk/SL sirf 2019 se pehle chuno, 2019+ ek dafa; PASS = 2019+ pass > 
 
 1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
 16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
-20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL (1D 1975-2018: 156 tr, Exp 0.27R, SE 0.151, Exp-2SE -0.032, saal 24/44; 4H/1H/15m < 100 tr - TV data kam) · **26 Supertrend tokri TALAASH PASS** (931 tr, Exp 0.248R, Exp-2SE +0.119, 6/6 market musbat, saal 31/44; `data/koshish26/talaash.csv`)  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr, Exp 0.455R, Exp-2SE +0.214, 6/6, saal 7/8; `imtihan.csv`) = demo ki taraf.
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · **22 Fib OTE gold 15m - data ka intezar** · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL (1D 1975-2018: 156 tr, Exp 0.27R, SE 0.151, Exp-2SE -0.032, saal 24/44; 4H/1H/15m < 100 tr - TV data kam) · **26 Supertrend tokri TALAASH PASS** (931 tr, Exp 0.248R, Exp-2SE +0.119, 6/6 market musbat, saal 31/44; `data/koshish26/talaash.csv`)  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr, Exp 0.455R, Exp-2SE +0.214, 6/6, saal 7/8; `imtihan.csv`) = demo ki taraf. · **27 JasTrend FTMO Python PASS** (1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine).
 Faida sirf daily par mila; zyada trades chahiye to zyada MARKET, chhoti TF nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

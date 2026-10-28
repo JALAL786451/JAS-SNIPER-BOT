@@ -667,3 +667,21 @@ TALAASH 931 tr Exp-2SE +0.119R; IMTIHAN 2019+ 165 tr Exp 0.455R, -2SE +0.214R, 6
 User ijazat: agent jaanch (judge) jab faida ho - 2 asli ghaltiyan pakdin. Indicator `indicators/jas_trend_pro.pine` **t2** `e691715`: B/S chhote
 nishan, daayen dabba (rukh / SL / chalti BUY trade / is chart nateeja / #26 PASS) - user demo par HAMESHA lagayega. TV compile ✅ baqi.
 User ka maqsad: **FTMO 2-step EA se pass** (`tools/ftmo_imkaan.py`, fee sirf demo 6 mahine baad; risk Claude NAHI barhata).
+
+**Koshish #27 qaida (28 Oct, 25vi chat, test se PEHLE, badalna mana) - JasTrend FTMO Python (`tools/ftmo_test.py`):**
+#26 jyon ka tyon: Supertrend 10/3 daily (H1 se, din 17:00 NY par band, Sat/Sun -> Mon), sirf BUY, flip upar = agli H1 open par long,
+flip neeche = agli open par band. Server SL = k x ATR(10) entry se (k = 4 / 6 / 8), TP nahi. 4 market XAUUSD, XAGUSD, US500, USTEC,
+har market ek position. Lot = risk% x $100k / SL doori (shuru ke balance ka, fixed). Kharcha 0.03%/taraf + swap 3%/saal (long, har raat).
+FTMO 2-step: har mahine ki pehli tareekh naya challenge (EA khali shuru, sirf naye flip). P1 +10%, P2 +5% (P2 naya $100k, pass ke waqt sab
+band); target = equity (H1 close) >= target -> sab band (EA ka "target lock"). Din: CET aadhi raat ka balance - $5k se equity (H1 low,
+khuli trade shamil) neeche = FAIL; kul: equity < $90k = FAIL. Min 4 din (trade khuli ho us CET din); kam din par target = pass, alag gino.
+Waqt ki hadd nahi; data khatam = adhoora. **CHUNAO:** challenge 2012-01..2018-12, data 2018-12-31 par kata. Grid risk 0.25/0.5/0.75/1.0% x
+k 4/6/8 (12; ginti +12). Shart: P1 fail < 20% aur pass > fail; in mein max (pass - fail), barabar = kam risk, phir k=6. Koi na bache = FAIL, 2019 nahi kholna.
+**IMTIHAN** 2019-01..aaj ek dafa chuni setting par: PASS = pass > fail aur P1 fail < 20% (adhoore gine, shart mein nahi). Swing account (weekend) zaroori.
+
+**28 Oct (23vi chat, user rest par):** user ka NAYA MAQSAD (sirf yahi kaam): **FTMO 2-step CFD, max 2 EA + 4 instrument** (dono EA wahi 4),
+EA+VPS allowed. 15 din demo phir challenge (user ka faisla). Faisla: 4 = **XAUUSD, XAGUSD, US500, US100** (#26 TALAASH Exp se; XPT/OIL kamzor).
+EA1 = JasTrend (#26 sirf BUY, server SL nahi tha -> hifazati 2R = 6xATR, TP nahi). EA2 = IBS ya Kachhua - Python mein inhi 4 par TALAASH pehle; dono fail = JasTrend akela.
+Python FTMO test qaida (likha): asli tareekh, 2010 se har mahine naya challenge, $100k, P1 +10% P2 +5%, din 5% (khuli trade shamil, CET), kul 10%,
+min 4 din; risk/SL sirf 2019 se pehle chuno, 2019+ ek dafa; PASS = 2019+ pass > fail aur P1 fail < 20%. Risk Claude nahi barhata. Swing account (weekend) check.
+15 din demo = sirf EA chalta hai, faida nahi (tokri 1.8 tr/mahina).
