@@ -1,0 +1,161 @@
+//@version=6
+// ============================================================================
+//  JAS TREND TOKRI  (build k1, Pine v6) - Koshish #26 ka JOR (ek dabba)
+//  28 Oct 2026. strategies/jas_trend_pro_test_s3.pine ke qaide JYON KE TYON,
+//  6 market ek saath (har market apne hi data par, request.security ke andar):
+//    - Supertrend 10 / 3.0, SIRF BUY: BUY nishan = long agli open,
+//      SELL nishan = band agli open. Short NAHI. 1R = 3 x ATR(10) signal candle par.
+//    - Kharcha 0.03% har taraf. TALAASH 1975-2018 (signal aur bhar dono muddat mein).
+//    - TOKRI PASS: kul trades >= 100, kul Exp(R) - 2SE > 0, 6 mein >= 4 market Exp > 0.
+//    - IMTIHAN SAKHT (2019-aaj, EK dafa): kul trades >= 30, kul Exp(R) - 2SE > 0.
+//  JAANCH: gold ki line s3 ke gold dabbe se milni chahiye (156 tr, Jor R 45.458).
+//  Chart: OANDA:XAUUSD 1D (sirf waqt ki line; har market apni candles par chalta hai).
+//  Dhyan: market aapas mein jure hain (gold/silver, SPX/NDX) - kul SE asal se
+//  thora chhota dikhta hai. Is liye IMTIHAN sakht hai.
+//  Repaint nahi: faisla band candle par, bhar agli candle ke open par. Sirf dekhna.
+//  Pine nateeja sirf ANDAZA - sahi nateeja MT5 ya (data milne par) Python se.
+// ============================================================================
+indicator("JAS Trend Tokri k1", shorttitle = "JAS TOKRI k1", overlay = true)
+
+atrLen  = input.int(10, "ATR length", minval = 1, group = "Trend")
+atrMult = input.float(3.0, "ATR multiplier", minval = 0.1, step = 0.1, group = "Trend")
+exam    = input.bool(false, "IMTIHAN kholo", group = "Muddat", tooltip = "Sirf TALAASH PASS ke baad, EK dafa, bina koi setting badle.")
+m1 = input.symbol("OANDA:XAUUSD", "Market 1", group = "Tokri (qaida #26 - mat badlein)")
+m2 = input.symbol("OANDA:XAGUSD", "Market 2", group = "Tokri (qaida #26 - mat badlein)")
+m3 = input.symbol("OANDA:XPTUSD", "Market 3", group = "Tokri (qaida #26 - mat badlein)")
+m4 = input.symbol("TVC:USOIL", "Market 4", group = "Tokri (qaida #26 - mat badlein)")
+m5 = input.symbol("SP:SPX", "Market 5", group = "Tokri (qaida #26 - mat badlein)")
+m6 = input.symbol("NASDAQ:NDX", "Market 6", group = "Tokri (qaida #26 - mat badlein)")
+
+COST = 0.0003                            // 0.03% har taraf
+tA = timestamp("1975-01-01T00:00:00")
+tB = timestamp("2019-01-01T00:00:00")
+
+colUp = color.new(#26a69a, 0)
+colDn = color.new(#ef5350, 0)
+
+// Ek market ki saari trades - us market ki apni candles par (s3 ki strategy jaisa).
+// Wapas: [kul trades, jor R, jor R2, jeet, aakhri trade ka saal]
+sim(float mult, int len, int ta0, int tb0, bool ex) =>
+    var int   pos   = 0                  // 0 = khali, 1 = BUY khuli
+    var bool  pEnt  = false              // BUY order (is candle ke open par bharega)
+    var bool  pExit = false              // band order (is candle ke open par)
+    var float ruP   = na                 // pending BUY ka 1R
+    var float eP    = na
+    var float ru    = na
+    var int   eT    = na
+    var int   cN    = 0
+    var float cR    = 0.0
+    var float cR2   = 0.0
+    var int   cW    = 0
+    var int   lastY = na
+    a = ta.atr(len)
+    [st, d] = ta.supertrend(mult, len)
+    up  = d < 0
+    fUp = up and not up[1]
+    fDn = not up and up[1]
+    // 1) candle ka open: pichhli candle ke order bharo
+    if pExit and pos == 1
+        r = (open - eP - COST * (eP + open)) / ru
+        inW = ex ? eT >= tb0 : (eT >= ta0 and eT < tb0)
+        if inW
+            cN    += 1
+            cR    += r
+            cR2   += r * r
+            cW    += r > 0 ? 1 : 0
+            lastY := year(eT)
+        pos := 0
+    pExit := false
+    if pEnt and pos == 0
+        pos := 1
+        eP  := open
+        ru  := ruP
+        eT  := time
+    pEnt := false
+    // 2) candle band: faisla (agli candle ke open par bharega)
+    win   = ex ? time >= tb0 : (time >= ta0 and time < tb0)
+    ready = bar_index > len * 3
+    if win and ready and fUp and pos == 0
+        pEnt := true
+        ruP  := mult * a
+    if fDn and pos == 1
+        pExit := true
+    if not win and pos == 1
+        pExit := true
+    [cN, cR, cR2, cW, lastY]
+
+[n1, r1, q1, w1, y1] = request.security(m1, "D", sim(atrMult, atrLen, tA, tB, exam), lookahead = barmerge.lookahead_off)
+[n2, r2, q2, w2, y2] = request.security(m2, "D", sim(atrMult, atrLen, tA, tB, exam), lookahead = barmerge.lookahead_off)
+[n3, r3, q3, w3, y3] = request.security(m3, "D", sim(atrMult, atrLen, tA, tB, exam), lookahead = barmerge.lookahead_off)
+[n4, r4, q4, w4, y4] = request.security(m4, "D", sim(atrMult, atrLen, tA, tB, exam), lookahead = barmerge.lookahead_off)
+[n5, r5, q5, w5, y5] = request.security(m5, "D", sim(atrMult, atrLen, tA, tB, exam), lookahead = barmerge.lookahead_off)
+[n6, r6, q6, w6, y6] = request.security(m6, "D", sim(atrMult, atrLen, tA, tB, exam), lookahead = barmerge.lookahead_off)
+
+// Saal ka hisaab: nayi trade band hui (ginti barhi) = us ka R us ke saal mein
+var map<int, float> yr = map.new<int, float>()
+bucket(map<int, float> m, int nNow, int nPrev, float rNow, float rPrev, int y) =>
+    if not na(nNow) and nNow > nz(nPrev) and not na(y)
+        m.put(y, nz(m.get(y)) + (rNow - nz(rPrev)))
+
+bucket(yr, n1, n1[1], r1, r1[1], y1)
+bucket(yr, n2, n2[1], r2, r2[1], y2)
+bucket(yr, n3, n3[1], r3, r3[1], y3)
+bucket(yr, n4, n4[1], r4, r4[1], y4)
+bucket(yr, n5, n5[1], r5, r5[1], y5)
+bucket(yr, n6, n6[1], r6, r6[1], y6)
+
+plot(na, "khali", display = display.none)
+
+edgeOf(int n, float s, float s2) =>
+    nn  = nz(n)
+    e   = nn > 0 ? nz(s) / nn : 0.0
+    sd  = nn > 1 ? math.sqrt(math.max((nz(s2) - nn * e * e) / (nn - 1), 0.0)) : 0.0
+    se  = nn > 0 ? sd / math.sqrt(nn) : 0.0
+    [e, se, e - 2 * se]
+
+var table tb = table.new(position.top_right, 5, 12, bgcolor = color.new(color.black, 80), border_width = 1)
+cellT(int c, int r, string t, color tc) =>
+    table.cell(tb, c, r, t, text_color = tc, text_size = size.small)
+
+row(int r, string name, int n, float s, float s2, int w) =>
+    [e, se, ed] = edgeOf(n, s, s2)
+    cellT(0, r, name, color.white)
+    cellT(1, r, str.tostring(nz(n)), color.white)
+    cellT(2, r, str.tostring(nz(n) > 0 ? 100.0 * nz(w) / nz(n) : 0.0, "#.#"), color.white)
+    cellT(3, r, str.tostring(e, "#.###"), e > 0 ? colUp : colDn)
+    cellT(4, r, str.tostring(ed, "#.###"), ed > 0 ? colUp : colDn)
+    e > 0 and nz(n) > 0 ? 1 : 0
+
+if barstate.islast
+    cellT(0, 0, "JAS Tokri k1", color.white)
+    cellT(1, 0, "Trades", color.white)
+    cellT(2, 0, "Jeet %", color.white)
+    cellT(3, 0, "Exp R", color.white)
+    cellT(4, 0, "Exp-2SE", color.white)
+    pm = 0
+    pm += row(1, m1, n1, r1, q1, w1)
+    pm += row(2, m2, n2, r2, q2, w2)
+    pm += row(3, m3, n3, r3, q3, w3)
+    pm += row(4, m4, n4, r4, q4, w4)
+    pm += row(5, m5, n5, r5, q5, w5)
+    pm += row(6, m6, n6, r6, q6, w6)
+    nT = nz(n1) + nz(n2) + nz(n3) + nz(n4) + nz(n5) + nz(n6)
+    sT = nz(r1) + nz(r2) + nz(r3) + nz(r4) + nz(r5) + nz(r6)
+    qT = nz(q1) + nz(q2) + nz(q3) + nz(q4) + nz(q5) + nz(q6)
+    wT = nz(w1) + nz(w2) + nz(w3) + nz(w4) + nz(w5) + nz(w6)
+    row(7, "KUL (tokri)", nT, sT, qT, wT)
+    [eT, seT, edT] = edgeOf(nT, sT, qT)
+    int yPos = 0
+    for v in yr.values()
+        if v > 0
+            yPos += 1
+    pass = exam ? (nT >= 30 and edT > 0) : (nT >= 100 and edT > 0 and pm >= 4)
+    cellT(0, 8, "Muddat", color.white)
+    cellT(1, 8, exam ? "IMTIHAN 2019 - aaj" : "TALAASH 1975 - 2018", color.white)
+    cellT(0, 9, "Market Exp > 0", color.white)
+    cellT(1, 9, str.tostring(pm) + " / 6", pm >= 4 ? colUp : colDn)
+    cellT(0, 10, "Saal musbat (kul)", color.white)
+    cellT(1, 10, str.tostring(yPos) + " / " + str.tostring(yr.size()), color.white)
+    cellT(0, 11, "TOKRI", color.white)
+    cellT(1, 11, pass ? "PASS" : "FAIL", pass ? colUp : colDn)
+    cellT(2, 11, exam ? ">= 30 tr, Exp-2SE > 0" : ">= 100 tr, Exp-2SE > 0, >= 4 market", color.white)
