@@ -734,3 +734,16 @@ Maloomat (shart nahi): "din" BUY 08->16 NY ka Exp - agar ye bhi utna hi musbat t
 **Koshish #30 nateeja (28 Oct, 26vi chat) = A aur B dono TALAASH FAIL** (IMTIHAN nahi khola). A raat BUY: 4039 tr, Exp -0.033R, Exp-2SE -0.044, saal 3/16.
 B din SELL: 3989 tr, Exp -0.045R, saal 3/16. Din BUY (maloomat) -0.030R. Bina kharcha bhi: A +0.007R (Exp-2SE -0.004), B -0.005R = waqt ka koi asar nahi;
 kharcha ~0.04R/trade (1 x daily ATR SL par) baqi kha gaya. Sabaq: gold H1 "waqt" (session) idea mein faida nahi - 9wan gold intraday FAIL.
+
+**Koshish #31 qaida (28 Oct, 26vi chat, test se PEHLE, badalna mana) - Gold H4 pullback daily rukh ke saath (`tools/gold_h4_pullback.py`):**
+Sirf XAUUSD, Dukascopy H1 UTC se H4 banaya, NY 17:00 se jura (17, 21, 01, 05, 09, 13 NY; Sat/Sun -> Mon, `session_day`).
+**Rukh:** daily Supertrend 10/3 (#26 wala) - pichhla BAND din upar = sirf BUY, neeche = sirf SELL.
+**Entry:** H4 band par RSI(2) (Wilder) < 10 (BUY) / > 90 (SELL) -> agli H4 ki open par. SL = 2 x ATR14(H4) entry se = 1R, TP nahi.
+**Band (pehla jo ho):** SL (H4 low/high, gap = open) · H4 band RSI(2) > 70 (BUY) / < 30 (SELL) -> agli open · daily rukh palta -> naye din
+ki pehli H4 open · 30 H4 (~5 din) -> agli open. Ek waqt ek position; band wali H4 par nayi entry nahi (agli band se dekho).
+Kharcha har trade max($0.50, 0.03% qeemat) + swap 3%/saal har 17:00 NY raat (dono rukh) -> R mein.
+**TALAASH** entry 2003..2018: PASS = trades >= 100, Exp(R) - 2SE > 0, saal musbat > 50%. BUY/SELL alag + bina kharcha = maloomat.
+**IMTIHAN** 2019+ ek dafa, bina tabdeeli; gold 2019+ pehle dekha (#26/#29) -> SAKHT: trades >= 30 aur Exp - 2SE > 0. Ginti +1.
+**Koshish #31 nateeja (28 Oct, 26vi chat) = TALAASH FAIL** (IMTIHAN nahi khola). 1470 tr, Exp -0.074R, Exp-2SE -0.109, jeet 57.6%, saal 2/16.
+BUY 725 tr -0.052R, SELL 745 tr -0.096R. Bina kharcha bhi -0.016R (jeet 61%) = edge nahi; kharcha+swap ~0.06R/trade. Band: RSI 1022, SL 371, rukh 77,
+ausat 4.2 H4. Sabaq: RSI(2) pullback (S&P par chalta) gold H4 par nahi - chhote faide, bara SL. 10wan gold intraday FAIL.
