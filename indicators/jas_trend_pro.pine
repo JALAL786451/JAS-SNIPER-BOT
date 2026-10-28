@@ -1,13 +1,14 @@
 //@version=6
-// JAS Trend Pro t3.2 (29 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
+// JAS Trend Pro t3.3 (29 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
 // t2: chhote B / S nishan; daayen dabba = rukh, SL, chalti trade (sirf BUY) + is chart ka nateeja.
 // t3: 4H (Koshish #34 ASLI PASS: 4H TOKRI XAU, XAG, US500, USTEC, sirf BUY; 2019+ 641 tr +0.208R) + 1D (#26).
 //     Dabbe mein "Pakka TF" is chart ki TF ke hisaab se. Patli S/R lakeerein (band pivot, qareeb wali mila di).
 // t3.1: 1D pehchaan theek. t3.2: Resistance laal, Support hari (patli dashed).
+// t3.3: neeche TOKRI table - 4 market (isi TF par) ka sirf-BUY nateeja + KUL (Exp, Exp - 2SE), wahi qaida.
 // Koshish #26 ASLI PASS (28 Oct): 1D, 6 market tokri (XAU, XAG, XPT, USOIL, SPX, NDX), SIRF BUY:
 //   B = BUY agli candle ke open par, S = BUY band agli open par (short nahi), 1R = 3 x ATR(10), kharcha 0.03%/taraf.
 // Dabbe ka nateeja sirf ANDAZA (is chart ka saara data, EMA filter ke baghair) - sahi nateeja MT5 / demo se.
-indicator("JAS Trend Pro t3.2", shorttitle="JAS Trend t3.2", overlay=true, max_lines_count=50)
+indicator("JAS Trend Pro t3.3", shorttitle="JAS Trend t3.3", overlay=true, max_lines_count=50)
 
 // Settings - default hi pakki hain, badalne ki zaroorat nahi
 atrLen   = input.int(10, "ATR length", minval=1, group="Trend")
@@ -22,6 +23,11 @@ srCount  = input.int(3, "Upar / neeche kitni", minval=1, maxval=6, group="S/R")
 srMerge  = input.float(0.5, "Qareeb mila do (x ATR)", minval=0.0, step=0.1, group="S/R")
 resCol   = input.color(color.new(#ef5350, 25), "Resistance (upar)", group="S/R")
 supCol   = input.color(color.new(#26a69a, 25), "Support (neeche)", group="S/R")
+tokOn    = input.bool(true, "Tokri table", group="Tokri (#34)")
+tk1      = input.symbol("OANDA:XAUUSD", "1", group="Tokri (#34)")
+tk2      = input.symbol("OANDA:XAGUSD", "2", group="Tokri (#34)")
+tk3      = input.symbol("OANDA:SPX500USD", "3", group="Tokri (#34)")
+tk4      = input.symbol("OANDA:NAS100USD", "4", group="Tokri (#34)")
 
 colUp = color.new(#26a69a, 0)
 colDn = color.new(#ef5350, 0)
@@ -92,7 +98,7 @@ if showBox and barstate.islast
     rNow = pos == 1 and ru > 0 ? (close - eP) / ru : 0.0
     tr   = pos == 1 ? "BUY @ " + str.tostring(eP, format.mintick) + " | " + (rNow >= 0 ? "+" : "") + str.tostring(rNow, "#.##") + "R" :
            pEnt ? "B aya - agli candle par" : "khali - B ka intezar"
-    table.cell(box, 0, 0, "JAS Trend Pro t3.2", text_color=color.white, text_size=size.small)
+    table.cell(box, 0, 0, "JAS Trend Pro t3.3", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 0, timeframe.period, text_color=color.white, text_size=size.small)
     table.cell(box, 0, 1, "Rukh", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 1, isUp ? "BUY" : "SELL", text_color=isUp ? colUp : colDn, text_size=size.small)
@@ -162,3 +168,71 @@ if srOn and barstate.islast and array.size(lv) > 0
     if array.size(sv) > 0
         for i = 0 to array.size(sv) - 1
             array.push(srLines, line.new(array.get(st2, i), array.get(sv, i), time, array.get(sv, i), xloc=xloc.bar_time, extend=extend.right, color=supCol, width=1, style=line.style_dashed))
+
+// ---- TOKRI: har market par wahi sirf-BUY qaida (pichhli band candle ka flip -> is candle ke open par), isi TF par ----
+f_tok() =>
+    [stT, dirT] = ta.supertrend(atrMult, atrLen)
+    upT = dirT < 0
+    aT  = ta.atr(atrLen)
+    var int   p  = 0
+    var float e  = na
+    var float u  = na
+    var int   n  = 0
+    var float sr = 0.0
+    var float s2 = 0.0
+    var int   w  = 0
+    bool fu = upT[1] and not upT[2]
+    bool fd = not upT[1] and upT[2]
+    if p == 1 and fd
+        float r = (open - e - COST * (e + open)) / u
+        n  += 1
+        sr += r
+        s2 += r * r
+        w  += r > 0 ? 1 : 0
+        p  := 0
+    if p == 0 and fu and bar_index > atrLen * 3 and aT[1] > 0
+        p := 1
+        e := open
+        u := atrMult * aT[1]
+    float rn = p == 1 ? (close - e) / u : 0.0
+    [n, sr, s2, w, p, rn, upT ? 1 : -1]
+
+[n1, r1, q1, w1, p1, k1, d1] = request.security(tk1, timeframe.period, f_tok(), barmerge.gaps_off, barmerge.lookahead_off)
+[n2, r2, q2, w2, p2, k2, d2] = request.security(tk2, timeframe.period, f_tok(), barmerge.gaps_off, barmerge.lookahead_off)
+[n3, r3, q3, w3, p3, k3, d3] = request.security(tk3, timeframe.period, f_tok(), barmerge.gaps_off, barmerge.lookahead_off)
+[n4, r4, q4, w4, p4, k4, d4] = request.security(tk4, timeframe.period, f_tok(), barmerge.gaps_off, barmerge.lookahead_off)
+
+var table tok = table.new(position.bottom_right, 6, 6, bgcolor=color.new(color.black, 80), border_width=1)
+f_row(int row, string sym, int n, float sr, int w, int p, float rn, int d) =>
+    float ex = n > 0 ? sr / n : 0.0
+    string nm = array.get(str.split(sym, ":"), array.size(str.split(sym, ":")) - 1)
+    table.cell(tok, 0, row, nm, text_color=color.white, text_size=size.small)
+    table.cell(tok, 1, row, d > 0 ? "BUY" : "SELL", text_color=d > 0 ? colUp : colDn, text_size=size.small)
+    table.cell(tok, 2, row, str.tostring(n), text_color=color.white, text_size=size.small)
+    table.cell(tok, 3, row, str.tostring(n > 0 ? 100.0 * w / n : 0.0, "#") + "%", text_color=color.white, text_size=size.small)
+    table.cell(tok, 4, row, str.tostring(ex, "#.###"), text_color=ex > 0 ? colUp : colDn, text_size=size.small)
+    table.cell(tok, 5, row, p == 1 ? (rn >= 0 ? "+" : "") + str.tostring(rn, "#.##") + "R" : "-", text_color=p == 1 ? (rn >= 0 ? colUp : colDn) : color.gray, text_size=size.small)
+
+if tokOn and barstate.islast
+    table.cell(tok, 0, 0, "TOKRI " + timeframe.period, text_color=color.white, text_size=size.small)
+    table.cell(tok, 1, 0, "Rukh", text_color=color.white, text_size=size.small)
+    table.cell(tok, 2, 0, "Trades", text_color=color.white, text_size=size.small)
+    table.cell(tok, 3, 0, "Jeet", text_color=color.white, text_size=size.small)
+    table.cell(tok, 4, 0, "Exp R", text_color=color.white, text_size=size.small)
+    table.cell(tok, 5, 0, "Khuli", text_color=color.white, text_size=size.small)
+    f_row(1, tk1, nz(n1), nz(r1), nz(w1), nz(p1), nz(k1), nz(d1))
+    f_row(2, tk2, nz(n2), nz(r2), nz(w2), nz(p2), nz(k2), nz(d2))
+    f_row(3, tk3, nz(n3), nz(r3), nz(w3), nz(p3), nz(k3), nz(d3))
+    f_row(4, tk4, nz(n4), nz(r4), nz(w4), nz(p4), nz(k4), nz(d4))
+    int   nK = nz(n1) + nz(n2) + nz(n3) + nz(n4)
+    float rK = nz(r1) + nz(r2) + nz(r3) + nz(r4)
+    float qK = nz(q1) + nz(q2) + nz(q3) + nz(q4)
+    int   wK = nz(w1) + nz(w2) + nz(w3) + nz(w4)
+    float eK = nK > 0 ? rK / nK : 0.0
+    float sK = nK > 1 ? math.sqrt(math.max((qK - nK * eK * eK) / (nK - 1), 0.0)) / math.sqrt(nK) : 0.0
+    table.cell(tok, 0, 5, "KUL", text_color=color.white, text_size=size.small)
+    table.cell(tok, 1, 5, "Exp-2SE", text_color=color.white, text_size=size.small)
+    table.cell(tok, 2, 5, str.tostring(nK), text_color=color.white, text_size=size.small)
+    table.cell(tok, 3, 5, str.tostring(nK > 0 ? 100.0 * wK / nK : 0.0, "#") + "%", text_color=color.white, text_size=size.small)
+    table.cell(tok, 4, 5, str.tostring(eK, "#.###"), text_color=eK > 0 ? colUp : colDn, text_size=size.small)
+    table.cell(tok, 5, 5, str.tostring(eK - 2 * sK, "#.###"), text_color=eK - 2 * sK > 0 ? colUp : colDn, text_size=size.small)
