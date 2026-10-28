@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-10-19  (7 kaam)
-   - JAS AAINA a6: ABHI dabba sab mauqon ka ausat (shor = saleti), qareebi mauqe KAHAN 5% khano
+2026-10-19  (4 kaam)
    - JAS AAINA a8: nishani band candle ki (mauqe poori candle tak nahi badalte), SAAYA qareebi 
+   - JAS AAINA a10: mauqa na mile to saaya agli band candle par phir koshish (gayab nahi), warn
    - Chat khatam (16vi): sec 5 (AAINA a10 TV ✅, saaya poora; agla Commodity + Rsi2 demo), sawal
 
 2026-10-20  (18 kaam)
@@ -22,7 +22,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - ftmo_imkaan f2: --jaal (har system ka alag risk, risk parity jaal)
    - Koshish #25 nateeja: TALAASH FAIL (Exp-2SE -0.032R)
 
-2026-10-28  (10 kaam)
+2026-10-28  (14 kaam)
    - Koshish #26 qaida + jas_trend_pro_test_s3.pine (Supertrend sirf BUY, 6 market tokri, 0.03%
-   - Koshish #26 IMTIHAN ASLI PASS (tokri 165 tr, Exp-2SE +0.214R)
-   - 23vi chat: FTMO maqsad (2 EA, 4 instrument), Python FTMO test qaida, data QDM se
+   - Chat khatam (22vi): sec 5 naya, #24-26 sabaq, sawal-jawab, HIDAYAT (agent judge), roznamch
+   - data/ftmo: USA500IDXUSD H1 Dukascopy (2012-2026) - charon symbol mukammal

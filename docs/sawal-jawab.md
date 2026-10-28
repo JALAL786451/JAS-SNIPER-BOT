@@ -63,3 +63,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Claude QDM khud chalaye (computer use)? -> Desktop app Settings > This computer > Computer use ON; magar ~20-40 guna mehnga, user khud kare (28 Oct).
 - Tokri SELL / SL? -> #26 sirf BUY; SELL #24/#17 FAIL; test mein server SL nahi (flip-down band); hifazati 2R sirf TALAASH par jaanch; TP nahi (28 Oct).
 - Teeno system 1% FTMO? -> tokri+IBS+Kachhua Monte Carlo 12m dono pass 56%, fail 35%, ausat 5 mahine; 3m 13% / 11% (28 Oct).
+- QDM se H1 export kaise? -> Export tab > Export to CSV (MT5 wala NAHI): All time, Timeframe H1, No Session, Original, "Generic bar format (comma delimited)"; ek symbol ek dafa. Download: Data sources > Dukascopy > M1, Update all (tareekh nahi poochhta, sab purana). File chat mein bhej sakte (zip/csv) - GitHub upload zaroori nahi (28 Oct).

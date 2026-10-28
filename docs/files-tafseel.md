@@ -7,6 +7,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 **Demo par chal rahe EA** (demo 472716649):
 | File | Kya |
 |---|---|
+| `data/ftmo/*.zip` | FTMO test data (28 Oct, QDM Dukascopy H1, UTC, Generic bar): XAU_XAG (2003-), USA500, USATECH (2012-) - 27 Oct 2026 tak |
 | `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv` | LIVE kitab har lot (183 pos, 16 Oct 12:30) - JasDeskView CSV; nayi CSV isi folder mein tareekh ke naam se |
 | `indicators/jas_trend_pro.pine` | JAS Trend Pro t2 (28 Oct): ATR Supertrend 10/3.0, har TF, chhote B / S nishan sirf band candle, EMA 200 filter + candle rangat default band, dabba (rukh / SL / candle / chalti sirf-BUY trade / is chart nateeja R / #26 PASS), alerts. Settings badalni nahi (user). Demo par hamesha |
 | `strategies/jas_trend_pro_test.pine` | Koshish #24 s1 (27 Oct): Trend Pro Supertrend 10/3 strategy, XAUUSD 1D, flip par palat, 0.25$/taraf, TALAASH shuru-2018, dabba Exp / SE / BUY-SELL / saal / PASS |

@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 28 Oct 2026 (23vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 28 Oct 2026 (24vi chat). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -62,8 +62,9 @@ EA1 = JasTrend (#26 sirf BUY, server SL nahi tha -> hifazati 2R = 6xATR, TP nahi
 Python FTMO test qaida (likha): asli tareekh, 2010 se har mahine naya challenge, $100k, P1 +10% P2 +5%, din 5% (khuli trade shamil, CET), kul 10%,
 min 4 din; risk/SL sirf 2019 se pehle chuno, 2019+ ek dafa; PASS = 2019+ pass > fail aur P1 fail < 20%. Risk Claude nahi barhata. Swing account (weekend) check.
 15 din demo = sirf EA chalta hai, faida nahi (tokri 1.8 tr/mahina).
-**AGLI CHAT pehla kaam:** user QDM (Dukascopy, Generic bar, **H1**, Timezone Original, sab se purana) 4 symbols XAUUSD, XAGUSD, USA500IDXUSD,
-USATECHIDXUSD -> zip -> GitHub upload ("D"). Claude zip `data/ftmo/` mein -> Python test. Cloud se data NAHI nikalta (Dukascopy/Yahoo 429).
+**28 Oct (24vi chat):** QDM data ✅ `data/ftmo/` (H1, UTC, Dukascopy): XAU+XAG 2003-, US500+USTEC 2012- (zip, `a9180d3`).
+**AGLI CHAT pehla kaam:** Python FTMO test (qaida upar) - pehle JasTrend (#26 sirf BUY, 6xATR SL) in 4 par; 2012-2018 par risk/SL chuno,
+2019+ ek dafa. Phir EA2 (IBS / Kachhua) TALAASH. Daily candle H1 se banao (17:00 NY). User se "D" nahi chahiye - seedha shuru.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 F7 + Tester US500m D1 2015-aaj (sec 6). Demo 3 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 - QDM export (user, Generic bar, M1, Timezone Original): USATECHIDXUSD 2023-24, XAUUSD 2021-22, 2023-24 (+ 2015-2020) -> upload ->
