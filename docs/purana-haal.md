@@ -771,3 +771,15 @@ Kharcha max($0.50, 0.03%) har trade (asli $0.25 spread se zyada) R mein. **TALAA
 **Koshish #22 nateeja (28 Oct, 26vi chat) = TALAASH FAIL** (Python, QDM M1 2021-24). 1089 tr, Exp -0.332R, SE 0.051, Exp-2SE -0.434, jeet 34.3%, saal 0/4.
 BUY 512 tr -0.323R, SELL 577 tr -0.341R. Bina kharcha bhi -0.063R (Exp-2SE -0.141, saal 0/4) = edge nahi. Band: SL 566, din 370, TP 153.
 Kharcha median 0.10R, ausat 0.27R (chhoti leg par SL $1-2 = kharcha bara). TV ka "+2.7R / 58 trade" (2026, bina spread) ittefaq tha. 12wan gold intraday FAIL.
+
+**Koshish #33 qaida (28 Oct, 26vi chat, test se PEHLE, badalna mana) - JAS Trend Pro t2 (user ka indicator) gold CHHOTI TF (`tools/gold_st_tf.py`):**
+User ne D: wali text file bheji = `JAS Trend Pro t2` Pine (#26). Pine jyon ka tyon: Supertrend 10/3, SIRF BUY: flip upar (band candle) = agli open BUY,
+flip neeche = agli open band; SL nahi; 1R = 3 x ATR(10) signal candle par; bar_index > 30. Sirf XAUUSD. Kharcha har trade max($0.50, 0.03% x
+(entry+exit)) (Pine 0.03%/taraf) + swap 3%/saal har 17:00 NY raat (calendar din) -> R. 3 TF (ginti +3):
+**4H** (H1 se, NY 17:00 se jura) + **1H**: Dukascopy H1, TALAASH entry 2003..2018; **15m**: QDM M1, TALAASH 2021..2024.
+PASS (har TF alag) = trades >= 100, Exp(R) - 2SE > 0, saal musbat > 50%. Bina kharcha = maloomat. IMTIHAN: 4H/1H 2019+ ek dafa, 15m 2025+ (M1 nahi);
+gold 2019+ pehle dekha + 3 mein se chuna -> SAKHT Exp - 2SE > 0, trades >= 30.
+**Koshish #33 nateeja (28 Oct, 26vi chat) = teeno TF TALAASH FAIL** (IMTIHAN nahi khola). **4H** 281 tr, Exp +0.183R, SE 0.093, Exp-2SE **-0.004** (bal baal),
+saal 10/16, bina kharcha +0.272R. **1H** 1049 tr, +0.046R, Exp-2SE -0.051, saal 9/16 (bina kharcha +0.151R). **15m** 1235 tr, -0.206R, saal 0/4 (bina
+kharcha -0.005R). Sabaq: Supertrend BUY ka edge TF ke saath ghatta hai (1D #25 +0.27R -> 4H +0.18 -> 1H +0.05 -> 15m 0); kharcha + swap chhoti TF ko kha jata.
+Agla idea (TALAASH, ginti alag): 4H par #26 jaisi TOKRI (4 market H1 data) - zyada market = zyada trades = SE chhota.
