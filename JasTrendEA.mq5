@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD t1   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD t2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasTrendEA.mq5 |
@@ -31,6 +31,10 @@
 //|  FTMO: InpSymbols = XAUUSD,XAGUSD,US500.cash,US100.cash, suffix   |
 //|  khali (ya auto, XAUUSD chart par). Swing account (weekend).     |
 //|  InpTrade false = SIRF DIKHANA.                                   |
+//|  t2 (28 Oct): pehra ki har baat Journal mein (Tester mein bhi) +  |
+//|  shuru mein pehra ki settings; "market closed" par is waqt dobara |
+//|  koshish nahi (agli session khulne par); faisla na ho sake to     |
+//|  minute baad dobara (Tester tez). Trading ke qaide t1 wale hi.    |
 //|                                                                  |
 //|  NO grid / NO martingale / NO hedging / NO averaging.            |
 //+------------------------------------------------------------------+
@@ -38,7 +42,7 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "t1"          // har nayi file par ye number barhta hai
+#define EA_BUILD "t2"          // har nayi file par ye number barhta hai
 #define MAXM 10
 
 CTrade trade;
@@ -386,10 +390,10 @@ bool SlHitSince(datetime since)
    return(false);
   }
 
-void Note(string s)
+void Note(string s, bool always = false)
   {
    g_lastAct = TimeToString(TimeCurrent(), TIME_DATE | TIME_MINUTES) + " " + S + " " + s;
-   if(MQLInfoInteger(MQL_TESTER) == 0)
+   if(always || MQLInfoInteger(MQL_TESTER) == 0)
       Print("JAS TREND " + EA_BUILD + " | " + g_lastAct);
   }
 
@@ -403,6 +407,7 @@ bool ClosePos(ulong tk, string why)
       return(true);
      }
    g_failT[g_i] = TimeCurrent();
+   if(trade.ResultRetcode() == TRADE_RETCODE_MARKET_CLOSED) g_failT[g_i] = AddSec(TimeCurrent(), 900);   // bazaar khulne tak
    PrintFormat("JAS TREND %s | %s band nahi hui: %d %s", EA_BUILD, S, trade.ResultRetcode(), trade.ResultRetcodeDescription());
    return(false);
   }
@@ -570,6 +575,7 @@ bool TryOpen(double c, double atr, int day, bool canTrade)
       return(true);
      }
    g_failT[g_i] = TimeCurrent();
+   if(trade.ResultRetcode() == TRADE_RETCODE_MARKET_CLOSED) g_failT[g_i] = AddSec(TimeCurrent(), 900);   // bazaar khulne tak
    PrintFormat("JAS TREND %s | %s BUY nahi khuli: %d %s", EA_BUILD, S, trade.ResultRetcode(), trade.ResultRetcodeDescription());
    return(HasPos());   // broker ka jawab jo bhi ho, position bani = kaam ho gaya
   }
@@ -641,7 +647,7 @@ bool Decide(int i, bool canTrade, bool withNow)
      {
       int day = YMD(T[k]);
       if(g_stop > 0 || g_dayStop)
-         Note(StringFormat("BUY palta %s magar FTMO pehra laga hai - nayi nahi", TimeToString(T[k], TIME_DATE)));
+         Note(StringFormat("BUY palta %s magar FTMO pehra laga hai - nayi nahi", TimeToString(T[k], TIME_DATE)), true);
       else if(SlHitSince(SessStart(T[k])))
          Note(StringFormat("BUY palta %s magar is candle par SL laga tha - nayi nahi", TimeToString(T[k], TIME_DATE)));
       else if(!SigUsed(day))
@@ -665,7 +671,7 @@ void CloseAll(string why, bool canTrade)
       double   op = 0.0, sl = 0.0;
       datetime t0 = 0;
       if(!FindPos(tk, dir, op, sl, pday, t0)) continue;
-      if(canTrade && TimeCurrent() - g_failT[i] > 60) ClosePos(tk, why);   // fail ho to minute baad dobara
+      if(canTrade && TimeCurrent() - g_failT[i] > 60) ClosePos(tk, why);   // fail ho to minute baad (closed = bazaar khulne par)
      }
   }
 
@@ -702,20 +708,20 @@ void Guard(bool canTrade)
       g_stop = 1;
       GlobalVariableSet(g_gv + "S", 1);
       S = "";
-      Note(StringFormat("TARGET POORA: equity %.2f >= %.2f - sab band, EA ruk gaya", eq, target));
+      Note(StringFormat("TARGET POORA: equity %.2f >= %.2f - sab band, EA ruk gaya", eq, target), true);
      }
    if(g_stop == 0 && eq <= ddFloor)
      {
       g_stop = 2;
       GlobalVariableSet(g_gv + "S", 2);
       S = "";
-      Note(StringFormat("KUL HADD: equity %.2f <= %.2f - sab band, EA ruk gaya", eq, ddFloor));
+      Note(StringFormat("KUL HADD: equity %.2f <= %.2f - sab band, EA ruk gaya", eq, ddFloor), true);
      }
    if(!g_dayStop && g_stop == 0 && eq <= dayFloor)
      {
       g_dayStop = true;
       S = "";
-      Note(StringFormat("DIN KI HADD: equity %.2f <= %.2f - sab band, aaj nayi nahi", eq, dayFloor));
+      Note(StringFormat("DIN KI HADD: equity %.2f <= %.2f - sab band, aaj nayi nahi", eq, dayFloor), true);
      }
    if(g_stop > 0 || g_dayStop) CloseAll(Pick(g_stop == 1, "target", Pick(g_stop == 2, "kul hadd", "din ki hadd")), canTrade);
    string st = "chalu";
@@ -959,11 +965,12 @@ void Pass()
      {
       if(!g_have[i]) continue;
       Use(i);
-      if(now - g_failT[i] <= 60) continue;
+      if(now - g_failT[i] <= 60) continue;       // order fail / market closed (g_failT aage bhi ho sakta) / faisla na hua
       // nayi session shuru hui: pichhli mukammal candle ka faisla na hua ho (chhutti / EA baad mein laga)
       if(nowDay != g_lastD1[i])
         {
          if(Decide(i, canTrade, false)) g_lastD1[i] = nowDay;
+         else if(g_failT[i] < now) g_failT[i] = now;   // data / bazaar band: minute baad dobara (har tick nahi)
         }
       // 17:00 NY se InpPreMin minute pehle: chalti candle par faisla (TV close jaisa, Jumma bhi)
       if(preWin && g_doneT[i] != nowDay) Decide(i, canTrade, true);
@@ -1085,6 +1092,11 @@ int OnInit()
    g_stop = 0;
    double gs = 0.0;
    if(InpStartBal > 0.0 && GlobalVariableGet(g_gv + "S", gs)) g_stop = (int)gs;
+   if(InpStartBal > 0.0)
+      PrintFormat("JAS TREND %s | FTMO pehra CHALU: shuru %.0f | target %.1f%% = %.0f | din %.1f%% | kul %.1f%% = %.0f",
+                  EA_BUILD, InpStartBal, InpTargetPct, InpStartBal * (1.0 + InpTargetPct / 100.0), InpDayStopPct,
+                  InpMaxDdPct, InpStartBal * (1.0 - InpMaxDdPct / 100.0));
+   else PrintFormat("JAS TREND %s | FTMO pehra BAND (shuru balance %.0f)", EA_BUILD, InpStartBal);
    if(g_stop > 0) PrintFormat("JAS TREND %s | FTMO pehra pehle se ruka hai (%d). Naye challenge par GlobalVariable %sS mitayein (F3).", EA_BUILD, g_stop, g_gv);
    g_dayId   = 0;
    g_dayStop = false;
@@ -1119,6 +1131,7 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
 double OnTester()
   {
    Stats(true);
+   PrintFormat("JAS TREND %s | %s", EA_BUILD, g_guardTxt);
    return(g_totR);
   }
 //+------------------------------------------------------------------+
