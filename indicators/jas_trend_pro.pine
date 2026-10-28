@@ -1,10 +1,12 @@
 //@version=6
-// JAS Trend Pro t2 (28 Oct 2026) - ATR Supertrend (10, 3.0), har TF, repaint nahi (nishan sirf band candle par)
+// JAS Trend Pro t3 (29 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
 // t2: chhote B / S nishan; daayen dabba = rukh, SL, chalti trade (sirf BUY) + is chart ka nateeja.
+// t3: 4H (Koshish #34 ASLI PASS: 4H TOKRI XAU, XAG, US500, USTEC, sirf BUY; 2019+ 641 tr +0.208R) + 1D (#26).
+//     Dabbe mein "Pakka TF" is chart ki TF ke hisaab se. Patli S/R lakeerein (band pivot, qareeb wali mila di).
 // Koshish #26 ASLI PASS (28 Oct): 1D, 6 market tokri (XAU, XAG, XPT, USOIL, SPX, NDX), SIRF BUY:
 //   B = BUY agli candle ke open par, S = BUY band agli open par (short nahi), 1R = 3 x ATR(10), kharcha 0.03%/taraf.
 // Dabbe ka nateeja sirf ANDAZA (is chart ka saara data, EMA filter ke baghair) - sahi nateeja MT5 / demo se.
-indicator("JAS Trend Pro t2", shorttitle="JAS Trend t2", overlay=true)
+indicator("JAS Trend Pro t3", shorttitle="JAS Trend t3", overlay=true, max_lines_count=50)
 
 // Settings - default hi pakki hain, badalne ki zaroorat nahi
 atrLen   = input.int(10, "ATR length", minval=1, group="Trend")
@@ -13,6 +15,11 @@ useEma   = input.bool(false, "EMA 200 filter", group="Filter")
 emaLen   = input.int(200, "EMA length", minval=1, group="Filter")
 colorBar = input.bool(false, "Candle rangat", group="Dikhawa")
 showBox  = input.bool(true, "Dabba", group="Dikhawa")
+srOn     = input.bool(true, "S/R lakeerein", group="S/R")
+srLen    = input.int(10, "Pivot (dono taraf candle)", minval=2, group="S/R")
+srCount  = input.int(3, "Upar / neeche kitni", minval=1, maxval=6, group="S/R")
+srMerge  = input.float(0.5, "Qareeb mila do (x ATR)", minval=0.0, step=0.1, group="S/R")
+srCol    = input.color(color.new(color.gray, 35), "Rang", group="S/R")
 
 colUp = color.new(#26a69a, 0)
 colDn = color.new(#ef5350, 0)
@@ -83,7 +90,7 @@ if showBox and barstate.islast
     rNow = pos == 1 and ru > 0 ? (close - eP) / ru : 0.0
     tr   = pos == 1 ? "BUY @ " + str.tostring(eP, format.mintick) + " | " + (rNow >= 0 ? "+" : "") + str.tostring(rNow, "#.##") + "R" :
            pEnt ? "B aya - agli candle par" : "khali - B ka intezar"
-    table.cell(box, 0, 0, "JAS Trend Pro t2", text_color=color.white, text_size=size.small)
+    table.cell(box, 0, 0, "JAS Trend Pro t3", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 0, timeframe.period, text_color=color.white, text_size=size.small)
     table.cell(box, 0, 1, "Rukh", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 1, isUp ? "BUY" : "SELL", text_color=isUp ? colUp : colDn, text_size=size.small)
@@ -99,5 +106,57 @@ if showBox and barstate.islast
     table.cell(box, 1, 6, str.tostring(expR, "#.###"), text_color=expR > 0 ? colUp : colDn, text_size=size.small)
     table.cell(box, 0, 7, "Exp - 2SE (R)", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 7, str.tostring(edge, "#.###"), text_color=edge > 0 ? colUp : colDn, text_size=size.small)
-    table.cell(box, 0, 8, "Pakka (#26)", text_color=color.white, text_size=size.small)
-    table.cell(box, 1, 8, "1D, 6 market tokri: ASLI PASS", text_color=colUp, text_size=size.small)
+    is4h = timeframe.period == "240"
+    is1d = timeframe.period == "D"
+    pk   = is4h ? "4H tokri (XAU, XAG, US500, USTEC): ASLI PASS #34" : is1d ? "1D, 6 market tokri: ASLI PASS #26" : "is TF par PASS nahi - 4H / 1D lagayein"
+    table.cell(box, 0, 8, "Pakka TF", text_color=color.white, text_size=size.small)
+    table.cell(box, 1, 8, pk, text_color=is4h or is1d ? colUp : colDn, text_size=size.small)
+
+// ---- S/R: band pivot (srLen dono taraf) ki satah; price se qareeb wali upar / neeche, qareeb satah mila di ----
+ph = ta.pivothigh(high, srLen, srLen)
+pl = ta.pivotlow(low, srLen, srLen)
+var array<float> lv = array.new<float>()
+var array<int>   lt = array.new<int>()
+if not na(ph)
+    array.push(lv, ph)
+    array.push(lt, time[srLen])
+if not na(pl)
+    array.push(lv, pl)
+    array.push(lt, time[srLen])
+while array.size(lv) > 60
+    array.shift(lv)
+    array.shift(lt)
+var array<line> srLines = array.new<line>()
+f_pick(bool above) =>
+    array<float> got = array.new<float>()
+    array<int>   gt  = array.new<int>()
+    if array.size(lv) > 0
+        for k = 1 to srCount
+            float best = na
+            int   bt   = na
+            for i = 0 to array.size(lv) - 1
+                float v = array.get(lv, i)
+                bool side = above ? v > close : v < close
+                bool far = true
+                if array.size(got) > 0
+                    for g = 0 to array.size(got) - 1
+                        if math.abs(array.get(got, g) - v) < srMerge * atr
+                            far := false
+                if side and far and (na(best) or (above ? v < best : v > best))
+                    best := v
+                    bt   := array.get(lt, i)
+            if not na(best)
+                array.push(got, best)
+                array.push(gt, bt)
+    [got, gt]
+if srOn and barstate.islast and array.size(lv) > 0
+    while array.size(srLines) > 0
+        line.delete(array.shift(srLines))
+    [rv, rt] = f_pick(true)
+    [sv, st2] = f_pick(false)
+    if array.size(rv) > 0
+        for i = 0 to array.size(rv) - 1
+            array.push(srLines, line.new(array.get(rt, i), array.get(rv, i), time, array.get(rv, i), xloc=xloc.bar_time, extend=extend.right, color=srCol, width=1, style=line.style_dotted))
+    if array.size(sv) > 0
+        for i = 0 to array.size(sv) - 1
+            array.push(srLines, line.new(array.get(st2, i), array.get(sv, i), time, array.get(sv, i), xloc=xloc.bar_time, extend=extend.right, color=srCol, width=1, style=line.style_dotted))
