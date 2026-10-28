@@ -63,8 +63,10 @@ CHUNAO 2012-18 (12 setting): sirf **1% risk / SL 4xATR** shart par (6 pass, 0 fa
 **Koshish #28 IBS 4 market (Python `--ibs`) = TALAASH FAIL** (731 tr, Exp -0.001R, Exp-2SE -0.031; XAU -0.025, XAG -0.043, US500 +0.034, USTEC +0.075;
 saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/purana-haal.md` grep "Koshish #28".
 **Koshish #29 Kachhua 4 market (`--kachhua`) = TALAASH FAIL** (366 tr, Exp +0.072R, Exp-2SE -0.037; XAU +0.196, XAG +0.024, US500 -0.035, USTEC +0.025).
-= FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1 likha** (magic 20261028, 4 market, 1%, SL 4xATR, sirf BUY, 17:00 NY candle
-i3 jaisi; FTMO pehra: target / din 4% / kul 8%; Supertrend Python se 0 farq). Agla SBS: user F7 -> Tester -> FTMO Free Trial (14 din) par.
+= FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1** (magic 20261028) F7 ✅ + Tester ✅ (Exness 2021-26, 1m OHLC): aakhri 20 trades
+mein 18 Python se din ba din mili (1 XAG +-1 din data farq, 1 US500 - Exness index data Sep 2025 se). 44 tr, +0.192R, kul +8.45R, 100k -> 106,238.
+**Swap bhaari:** Exness ~9%/saal (44 tr mein -7.55R). Python maloomat 2019+: swap 3% = 80 pass/0 fail, 6% = 71/9, 9% = 66/14 -> FTMO ka swap dekhna zaroori.
+US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). Agla SBS: FTMO Free Trial (MT5, 100k) -> swap SS -> EA.
 **Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
