@@ -793,3 +793,6 @@ Kharcha har trade 0.03% x (entry+exit) (Pine), gold par kam az kam $0.50; swap 3
 Imaandari: market aapas mein jure (gold-chandi, US500-USTEC) = asal SE thoda bara.
 **Koshish #34 TALAASH (28 Oct, 26vi chat) = PASS (bal baal):** kul 760 tr, Exp +0.107R, SE 0.053, Exp-2SE **+0.0018**, bina kharcha +0.185R; market musbat 3/4
 (XAU +0.183 / 281 tr, XAG +0.058 / 246, US500 -0.018 / 117, USTEC +0.155 / 116), (market x saal) 29/46. Market jure = asal SE bara -> PASS kamzor. IMTIHAN agla (commit ke baad).
+**Koshish #34 IMTIHAN 2019+ (ek dafa, 28 Oct) = ASLI PASS (sakht):** 641 tr, Exp +0.208R, SE 0.062, Exp-2SE **+0.085**, bina kharcha +0.281R, market 4/4 musbat
+(XAU +0.310, XAG +0.343, US500 +0.111, USTEC +0.110), (market x saal) 25/32, kul saal 5/8 (2021 -2.1R, 2022 -8.7R, 2026 -0.3R manfi). ~6.9 tr/mahina (daily tokri 1.8).
+Imaandari: sirf BUY + 2019-25 tezi (2025 akela +48.8R, zyada gold/chandi); 2025 hata kar bhi +84R / 7 saal. Agla: JasTrendEA 4H (t3) -> F7 -> Tester -> demo 6 mahine.

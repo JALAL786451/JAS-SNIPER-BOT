@@ -125,6 +125,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 
 **Jo nahi chala:**
 - Gold intraday 13 idea FAIL: Pro Box, SMC Trend, Seerhi, Fishing f1, Chakkar k4, ORB, SMC Scalp (15m/1H/4H), MTF, #30 raat/din waqt H1, #31 H4 RSI2 pullback (dono bina kharcha bhi 0/manfi), #32 daily rukh + H1 EMA20 entry (chhota SL = swap bhaari, jeet 9%), #22 Fib OTE 15m (QDM M1 2021-24, bina kharcha bhi -0.06R), #33 JAS Trend t2 4H/1H/15m (4H Exp-2SE -0.004 bal baal; edge TF ke saath ghatta). Jitni chhoti trade, utna bara spread R mein.
+- **#34 (28 Oct) JAS Trend t2 4H TOKRI (XAU, XAG, US500, USTEC) ASLI PASS**: TALAASH <2019 Exp-2SE +0.002, IMTIHAN 2019+ 641 tr +0.208R (Exp-2SE +0.085), 4/4 market. Akela gold 4H FAIL, tokri PASS = zyada market, chhoti TF nahi.
 - Holy Grail (#1-2), Volatility Breakout (#3), Ichimoku (#7-8), Intraday Momentum (#9), Cointegration / jori (#10-11), user ka 15m $1/$2 (#12: 89,203 trades, jeet 59.8% < 66.7%, -18,446 USD).
 - Ginti scripts sab ITTEFAQ: swing fail (toot ~72% aage jata hai = asli), kal-toot, candle ka rang, wick, numayan candle, FVG. Ghanta ginti: shaam 6-9 PKT sab se zyada harkat - risk ke liye, rukh ke liye nahi.
 - Jori (Close By) se kul P/L / equity NAHI badalti - sirf kaun sa nuqsan pakka ho aur kaun si lot bache. Jori se pehle BACHI kitab dekho (14 Oct: bina nuqsan jori neeche wali BUY kha jati).

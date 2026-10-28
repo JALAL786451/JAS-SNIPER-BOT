@@ -21,6 +21,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/gold_h1_trend.py` | Koshish #32 (28 Oct): gold daily Supertrend rukh + H1 EMA20 cross entry, SL 2xATR14 H1, band SL / rukh palta, `--imtihan`. TALAASH FAIL (445 tr, -0.061R; BUY +0.47R magar SE bara) |
 | `tools/fib_ote_test.py` | Koshish #22 (28 Oct): `jas_fib_swing.pine` f5 ka Python, gold 15m QDM M1 2021-24, 1H pivot 5 leg, 0.618 limit, TP 1.272, din khatam band. TALAASH FAIL (1089 tr, -0.33R; bina kharcha -0.06R) |
 | `tools/gold_st_tf.py` | Koshish #33 (28 Oct): JAS Trend Pro t2 (Supertrend 10/3 sirf BUY) gold 4H/1H (H1 2003-18) + 15m (M1 2021-24). Teeno FAIL (4H +0.18R, Exp-2SE -0.004) |
+| `tools/st_tokri_4h.py` | Koshish #34 (28 Oct): JAS Trend t2 (Supertrend 10/3 sirf BUY) 4H tokri XAU/XAG/US500/USTEC (`data/ftmo/` H1 se), `--imtihan`. TALAASH PASS (bal baal) + IMTIHAN 2019+ ASLI PASS (641 tr, +0.208R) |
 | `data/qdm/XAUUSD_M1_2021_24.zip`, `XAUUSD_M1_2015.zip` | QDM Dukascopy gold M1 UTC (user 28 Oct; 2015 H1 se 100% mila). 2016-20 aur 2025+ abhi nahi |
 | `tools/ftmo_imkaan.py` | FTMO imkaan f2 (27 Oct; f2 = --jaal har system ka alag risk: IBS 2% + Kachhua 0.25% = 36m mein 59% pass, 5% fail; 60m mein 81% / 7%): Monte Carlo FTMO 2-step (P1 10%, P2 5%, din 5%, kul 10%, min 4 din), presets ibs / kachhua / --system, faida SE ke saath. Pehla nateeja: tokri 0.5% = dono pass 47%, ~18 mahine |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
