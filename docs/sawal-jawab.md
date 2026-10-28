@@ -69,3 +69,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - JasTrend 1D / sirf BUY / SL? -> EA andar daily (17:00 NY) par faisla; SELL FAIL (#24, #17); TV #26 mein SL nahi tha, FTMO ke liye 4xATR hifazat (#27 SL ke saath hi PASS); Tester 44 mein 2 SL (28 Oct).
 - Demo par JasTrend shuru balance 0 kyun? -> account par 5 EA, pehra poore account ki equity dekhta; FTMO par akela: 100000 / target 10 (P2 5) / din 4 / kul 8 (28 Oct).
 - FTMO trial Gmail se restrict? -> naye Gmail se bypass nahi (ek shakhs ek profile, baad mein payout khatra); FTMO support (28 Oct).
+- FTMO 1 mahine mein pass (1 EA)? -> NAHI (sabit edge se). `tools/ftmo_ek_mahina.py` 176 challenge 2012-26: JasTrend daily 1% = 163 pass / 0 fail magar 1 mahine mein 0%; 4H tokri 5% = 1 mahine mein 13.6% pass / 54.5% fail (jua). $400k = wahi % target, sirf fee bari (28 Oct).
