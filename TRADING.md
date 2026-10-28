@@ -66,7 +66,8 @@ saal 18/43). Gold/chandi par IBS nahi chalta. IMTIHAN nahi khola. Qaida `docs/pu
 = FTMO ke liye **JasTrend akela** (qaida). **JasTrendEA t1** (magic 20261028) F7 ✅ + Tester ✅ (Exness 2021-26, 1m OHLC): aakhri 20 trades
 mein 18 Python se din ba din mili (1 XAG +-1 din data farq, 1 US500 - Exness index data Sep 2025 se). 44 tr, +0.192R, kul +8.45R, 100k -> 106,238.
 **Swap bhaari:** Exness ~9%/saal (44 tr mein -7.55R). Python maloomat 2019+: swap 3% = 80 pass/0 fail, 6% = 71/9, 9% = 66/14 -> FTMO ka swap dekhna zaroori.
-US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). Agla SBS: FTMO Free Trial (MT5, 100k) -> swap SS -> EA.
+US500 par lot hadd 2.00 = $100k par ~0.6% risk (hadd user ka faisla, Claude nahi badhata). User: LIVE cent swap-free (sahi); Tester demo 472716649 ki symbol setting se swap lagata hai. FTMO Free Trial NAHI ban raha (Gmail restrict) ->
+FTMO support se poochhna (naya Gmail se bypass nahi). Agla SBS: Tester pehra jaanch (StartBal 100000, Target 5) -> demo 472716649 par 5wan chart (pehra band).
 **Demo theek (28 Oct, SBS 5 qadam ✅):** chaaron EA TRADE CHALU, sahi magic (sec 7). Pehle teeno "SIRF DIKHANA" the + IBS/RSI2 XAUUSDm par.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
