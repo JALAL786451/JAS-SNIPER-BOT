@@ -816,3 +816,17 @@ mushkil - hamesha poore pate wali EK line (`Set-Location -LiteralPath`), file Ex
 +-0.102 2SE), PF 1.33, +21.35R, girawat 10.4R, swap+comm -13.14R, 121,777. XAU 114 +12.51R, XAG 107 +11.95R, US500 22 -1.66, USTEC 25 -1.46 (Exness index data
 Sep 2025 se). SAAL 21 -5.4, 22 -3.4, 23 +3.2, 24 +7.7, 25 +19.7, 26 -0.3. Python same arsa: XAU 111 / XAG 101 tr (gold-silver ginti mili), Sep-Oct 2026 ki
 16 Python trades mein 11 tareekh-ba-tareekh mili, 5 mein data farq (1 candle flip). SL kabhi nahi laga = Python jaisa. Exness swap bhaari (Python 3%). = EA qaide par ✅.
+
+**Koshish #36 qaida (29 Oct, 26vi chat, user ki ChatGPT Pine "HTF + AOI + M30 Engulfing" ka ASAL idea, Claude ki tareef; test se PEHLE, badalna mana) - `tools/aoi_engulf_test.py`:**
+Sirf XAUUSD. HTF Dukascopy H1 (`data/ftmo/`, 2025 se pehle kata), M30 + SL/TP jaanch QDM M1 2021-24 (`data/qdm/`). Sab UTC -> NY.
+**Rukh:** pichhli BAND W / D / 4H candle (D = 17:00 NY, W = Jumma 17:00 NY, 4H NY 17:00 se jura) ka close vs us TF ka EMA50: 3 mein >= 2 upar = sirf BUY,
+>= 2 neeche = sirf SELL. **AOI:** pichhle 90 din ki 4H pivot high/low (5 dono taraf, band hone ke baad maloom); satah "mazboot" = 0.5 x ATR14(D) ke andar
+kam az kam 2 pivot. Zone = satah +- 0.25 x ATR(D). **Entry:** M30 band engulfing: BUY = pichhli candle laal, ye hari, O <= pichhla C aur C >= pichhla O,
+body > pichhli body; engulfing ka low zone ko chhoye (low <= satah + 0.25A), close zone ke upar ya andar (C >= satah - 0.25A), satah <= C. SELL ulta.
+Agli M30 open par. **SL** = engulfing low - 0.1 x ATR14(M30) (SELL: high + ...), **TP** = 2R. M1 par jaanch, ek M1 mein dono = SL, gap = open. 240 M30 (5 din)
+= agli open band. Ek waqt ek position. Kharcha max($0.50, 0.03%) + swap 3%/saal har raat -> R.
+**TALAASH 2021-24:** trades >= 100, Exp(R) - 2SE > 0, saal >= 3/4 musbat. BUY/SELL alag + bina kharcha = maloomat. **IMTIHAN** 2025+ ek dafa (M1 user se),
+Exp > 0 + trades >= 30; gold 2025 tezi -> BUY/SELL alag dekho. Ginti +1. (27vi chat ka noise-boundary ab #37.)
+**Koshish #36 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). 1762 tr, Exp -0.380R, Exp-2SE -0.643, jeet 33.7%, saal 0/4. BUY 1064 -0.453R, SELL 698 -0.268R.
+Bina kharcha +0.011R (Exp-2SE -0.057, saal 2/4) = edge ~0. Kharcha median 0.22R / ausat 0.39R (M30 engulfing ka SL chhota, $1-3). 14wan gold intraday FAIL.
+ChatGPT Pine ki ghaltiyan (user ko bataya): AOI = EMA50 se 0.5% (asal zone nahi), HTF chalti candle (repaint), kharcha 0, lot 10% equity.
