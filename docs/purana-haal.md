@@ -887,3 +887,6 @@ Sirf sign: >0 = BUY, <0 = SELL, 0 = chhod do. Ek trade har din (kisi market mein
 **R** = ATR14(H1) us din ke 15:00 candle par (unit). Kharcha 0.03% x (entry+exit) -> R. Swap: nahi (din ke andar).
 **TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono index musbat, (market x saal) > 50% musbat. BUY/SELL alag + bina kharcha = maloomat.
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. Asli paper (M1 data, 9:30-10:00 / 15:30-16:00) M1 zip aane par dobara - alag test, ginti +1.
+**Koshish #41 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi, H1 proxy). KUL 3246 tr, Exp -0.221R, Exp-2SE -0.255, jeet 38%, (market x saal) 0/14.
+US500 -0.25R (bina +0.03), USTEC -0.19R (bina +0.03). Bina kharcha +0.03R = chhota, kharcha ~0.25R/trade kha jata. BUY/SELL dono manfi. ~20 tr/mahina/market.
+Nota: H1 proxy paper ka asal nahi (9:30-10:00 / 15:30-16:00 ki jagah 09:00 candle / 15:00 open). Asli test M1 zip par.
