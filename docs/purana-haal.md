@@ -854,3 +854,5 @@ Fill = max(open, stop) (SELL: min). Ulta fill = palat (purani band + nayi khuli,
 TV par "behtar" kyun dikha: TV default kharcha 0 + ek market + ek daur dikh kar chuna. User ko bataya.
 **#39 gold QDM M1 2021-24 (user ne kaha, maloomat):** XAU 1H 1984 tr -0.20R (saal 0/4), bina kharcha +0.097R (SE ~0.06 -> Exp-2SE ~ -0.03, kinare par);
 15m 8143 tr -0.60R (bina +0.000); M1 114793 tr -2.77R (bina +0.08). Kharcha 1H ~0.30R/trade = edge (agar hai) kha jata. Sirf gold chuna = IMTIHAN sakht (pakki 4c).
+**#39 gold 1H length 6/12/24/48/96 (TALAASH, Dukascopy 2003-18 + QDM 2021-24):** sab manfi kharcha ke saath (-0.08 se -0.46R); bina kharcha lamba length
++0.16-0.27R (kharcha 0.4-0.5R kha jata). Koi Exp-2SE > 0 nahi = gold 1H FAIL.
