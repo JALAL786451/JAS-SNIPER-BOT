@@ -66,7 +66,7 @@ qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundar
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
 
-## 7. Demo (472716649) - 28 Oct dobara lagaye, paanchon TRADE CHALU (user SS ✅)
+## 7. Demo (472716649) - 6 EA TRADE CHALU (t3 4H 29 Oct, user SS ✅)
 
 | EA | Chart | Magic | Markets |
 |---|---|---|---|
@@ -75,6 +75,7 @@ qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundar
 | JasRsi2EA c2 | US500m H1 (EA D1 parhta) | 20261012 | US500, USTEC, US30 |
 | JasIbsEA **i3** (F7 0 errors ✅) | US500m H1 (doosra chart) | 20261022 | US500 (faisla 16:55 NY) |
 | **JasTrendEA t2** (28 Oct, 15 din) | XAUUSDm H1 (5wan chart) | 20261028 | XAU, XAG, US500, USTEC - pehra BAND (account par aur EA), GMT +0 ✅, Supertrend line Python se mili |
+| **JasTrendEA t3 4H** (29 Oct, #34) | XAUUSDm H4 (6ta chart) | 20261029 | XAU, XAG, US500, USTEC - SL 6xATR, pehra band, Tester ✅ |
 
 - Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").
