@@ -1,14 +1,17 @@
 //@version=6
-// JAS Trend Pro t3.3 (29 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
+// JAS Trend Pro t3.4 (30 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
 // t2: chhote B / S nishan; daayen dabba = rukh, SL, chalti trade (sirf BUY) + is chart ka nateeja.
 // t3: 4H (Koshish #34 ASLI PASS: 4H TOKRI XAU, XAG, US500, USTEC, sirf BUY; 2019+ 641 tr +0.208R) + 1D (#26).
 //     Dabbe mein "Pakka TF" is chart ki TF ke hisaab se. Patli S/R lakeerein (band pivot, qareeb wali mila di).
 // t3.1: 1D pehchaan theek. t3.2: Resistance laal, Support hari (patli dashed).
 // t3.3: neeche TOKRI table - 4 market (isi TF par) ka sirf-BUY nateeja + KUL (Exp, Exp - 2SE), wahi qaida.
+// t3.4: B / S nishan default BAND (setting se on). LuxAlgo "SuperTrend AI (Clustering)" andar (CC BY-NC-SA 4.0, (c) LuxAlgo):
+//       ATR, factor range / step, performance memory, cluster, AI lakeer + AMA + candle rang + score nishan.
+//       AI hissa sirf DEKHNE ke liye (test NAHI hua) - dabba / tokri ka nateeja wahi PASS wala Supertrend 10/3.
 // Koshish #26 ASLI PASS (28 Oct): 1D, 6 market tokri (XAU, XAG, XPT, USOIL, SPX, NDX), SIRF BUY:
 //   B = BUY agli candle ke open par, S = BUY band agli open par (short nahi), 1R = 3 x ATR(10), kharcha 0.03%/taraf.
 // Dabbe ka nateeja sirf ANDAZA (is chart ka saara data, EMA filter ke baghair) - sahi nateeja MT5 / demo se.
-indicator("JAS Trend Pro t3.3", shorttitle="JAS Trend t3.3", overlay=true, max_lines_count=50)
+indicator("JAS Trend Pro t3.4", shorttitle="JAS Trend t3.4", overlay=true, max_lines_count=50, max_labels_count=500)
 
 // Settings - default hi pakki hain, badalne ki zaroorat nahi
 atrLen   = input.int(10, "ATR length", minval=1, group="Trend")
@@ -16,6 +19,7 @@ atrMult  = input.float(3.0, "ATR multiplier", minval=0.1, step=0.1, group="Trend
 useEma   = input.bool(false, "EMA 200 filter", group="Filter")
 emaLen   = input.int(200, "EMA length", minval=1, group="Filter")
 colorBar = input.bool(false, "Candle rangat", group="Dikhawa")
+showBS   = input.bool(false, "B / S nishan", group="Dikhawa")
 showBox  = input.bool(true, "Dabba", group="Dikhawa")
 srOn     = input.bool(true, "S/R lakeerein", group="S/R")
 srLen    = input.int(10, "Pivot (dono taraf candle)", minval=2, group="S/R")
@@ -28,6 +32,19 @@ tk1      = input.symbol("OANDA:XAUUSD", "1", group="Tokri (#34)")
 tk2      = input.symbol("OANDA:XAGUSD", "2", group="Tokri (#34)")
 tk3      = input.symbol("OANDA:SPX500USD", "3", group="Tokri (#34)")
 tk4      = input.symbol("OANDA:NAS100USD", "4", group="Tokri (#34)")
+GAI      = "AI Supertrend (LuxAlgo) - test nahi"
+aiOn     = input.bool(true, "AI Supertrend dikhao", group=GAI)
+aiLen    = input.int(10, "ATR Length", minval=1, group=GAI)
+aiMin    = input.int(1, "Factor Range", minval=0, inline="aif", group=GAI)
+aiMax    = input.int(5, "", minval=0, inline="aif", group=GAI)
+aiStep   = input.float(0.5, "Step", minval=0.1, step=0.1, group=GAI)
+aiAlpha  = input.float(10, "Performance Memory", minval=2, group=GAI)
+aiFrom   = input.string("Best", "From Cluster", options=["Best", "Average", "Worst"], group=GAI)
+aiIter   = input.int(1000, "Maximum Iteration Steps", minval=0, group=GAI)
+aiData   = input.int(10000, "Historical Bars Calculation", minval=0, group=GAI)
+aiAma    = input.bool(true, "AMA lakeer", group=GAI)
+aiCandle = input.bool(true, "Candle Coloring (AI)", group=GAI)
+aiSig    = input.bool(true, "AI score nishan (0-10)", group=GAI)
 
 colUp = color.new(#26a69a, 0)
 colDn = color.new(#ef5350, 0)
@@ -46,10 +63,105 @@ plot(isUp ? st : na, "BUY line", colUp, 2, plot.style_linebr)
 plot(isUp ? na : st, "SELL line", colDn, 2, plot.style_linebr)
 plot(useEma ? ema : na, "EMA 200", color.new(color.gray, 30), 1)
 
-plotshape(buySig, "BUY", shape.labelup, location.belowbar, colUp, text="B", textcolor=color.white, size=size.tiny)
-plotshape(sellSig, "SELL", shape.labeldown, location.abovebar, colDn, text="S", textcolor=color.white, size=size.tiny)
+plotshape(showBS and buySig, "BUY", shape.labelup, location.belowbar, colUp, text="B", textcolor=color.white, size=size.tiny)
+plotshape(showBS and sellSig, "SELL", shape.labeldown, location.abovebar, colDn, text="S", textcolor=color.white, size=size.tiny)
 
-barcolor(colorBar ? (isUp ? colUp : colDn) : na)
+// ---- AI Supertrend (LuxAlgo clustering, CC BY-NC-SA 4.0) - sirf dikhawa ----
+type aiST
+    float upper = hl2
+    float lower = hl2
+    float output
+    float perf = 0
+    float factor
+    int trend = 0
+
+type aiVec
+    array<float> out
+
+var aiHolder  = array.new<aiST>(0)
+var aiFactors = array.new<float>(0)
+if barstate.isfirst and aiOn
+    if aiMin > aiMax
+        runtime.error("AI: Factor Range ka pehla number doosre se bara hai")
+    for i = 0 to int((aiMax - aiMin) / aiStep)
+        aiFactors.push(aiMin + i * aiStep)
+        aiHolder.push(aiST.new())
+
+aiAtr = ta.atr(aiLen)
+aiDen = ta.ema(math.abs(close - close[1]), int(aiAlpha))
+
+var array<aiVec> aiFClu = na
+var array<aiVec> aiPClu = na
+var float aiTarget = na
+var float aiPerf = na
+var float aiPama = na
+var aiUpper = hl2
+var aiLower = hl2
+var int aiOs = 0
+float aiTs = na
+aiFromIdx = aiFrom == "Best" ? 2 : aiFrom == "Average" ? 1 : 0
+
+if aiOn
+    k = 0
+    for f in aiFactors
+        g = aiHolder.get(k)
+        upF = hl2 + aiAtr * f
+        dnF = hl2 - aiAtr * f
+        g.trend := close > g.upper ? 1 : close < g.lower ? 0 : g.trend
+        g.upper := close[1] < g.upper ? math.min(upF, g.upper) : upF
+        g.lower := close[1] > g.lower ? math.max(dnF, g.lower) : dnF
+        diff = nz(math.sign(close[1] - g.output))
+        g.perf += 2 / (aiAlpha + 1) * (nz(close - close[1]) * diff - g.perf)
+        g.output := g.trend == 1 ? g.lower : g.upper
+        g.factor := f
+        k += 1
+    if last_bar_index - bar_index <= aiData
+        data = array.new<float>(0)
+        facA = array.new<float>(0)
+        for el in aiHolder
+            data.push(el.perf)
+            facA.push(el.factor)
+        cents = array.from(data.percentile_linear_interpolation(25), data.percentile_linear_interpolation(50), data.percentile_linear_interpolation(75))
+        for _ = 0 to aiIter
+            aiFClu := array.from(aiVec.new(array.new<float>(0)), aiVec.new(array.new<float>(0)), aiVec.new(array.new<float>(0)))
+            aiPClu := array.from(aiVec.new(array.new<float>(0)), aiVec.new(array.new<float>(0)), aiVec.new(array.new<float>(0)))
+            j = 0
+            for v in data
+                d0 = math.abs(v - cents.get(0))
+                d1 = math.abs(v - cents.get(1))
+                d2 = math.abs(v - cents.get(2))
+                idx = d0 <= d1 and d0 <= d2 ? 0 : d1 <= d2 ? 1 : 2
+                aiPClu.get(idx).out.push(v)
+                aiFClu.get(idx).out.push(facA.get(j))
+                j += 1
+            nc = array.from(aiPClu.get(0).out.avg(), aiPClu.get(1).out.avg(), aiPClu.get(2).out.avg())
+            if nc.get(0) == cents.get(0) and nc.get(1) == cents.get(1) and nc.get(2) == cents.get(2)
+                break
+            cents := nc
+    if not na(aiPClu)
+        aiTarget := nz(aiFClu.get(aiFromIdx).out.avg(), aiTarget)
+        aiPerf := math.max(nz(aiPClu.get(aiFromIdx).out.avg()), 0) / aiDen
+    upA = hl2 + aiAtr * aiTarget
+    dnA = hl2 - aiAtr * aiTarget
+    aiUpper := close[1] < aiUpper ? math.min(upA, aiUpper) : upA
+    aiLower := close[1] > aiLower ? math.max(dnA, aiLower) : dnA
+    aiOs := close > aiUpper ? 1 : close < aiLower ? 0 : aiOs
+    aiTs := aiOs == 1 ? aiLower : aiUpper
+    if na(aiTs[1]) and not na(aiTs)
+        aiPama := aiTs
+    else
+        aiPama += aiPerf * (aiTs - aiPama)
+
+aiCss = aiOs == 1 ? color.teal : color.red
+aiCross = ta.cross(close, aiPama)
+plot(aiOn ? aiTs : na, "AI Trailing Stop", aiOs != aiOs[1] ? na : aiCss)
+plot(aiOn and aiAma ? aiPama : na, "AI AMA", aiCross ? na : close > aiPama ? color.new(color.teal, 50) : color.new(color.red, 50))
+if aiOn and aiSig and barstate.isconfirmed and aiOs != aiOs[1] and not na(aiPerf)
+    label.new(time, aiTs, str.tostring(int(aiPerf * 10)), xloc=xloc.bar_time, color=aiCss,
+      style=aiOs > aiOs[1] ? label.style_label_up : label.style_label_down, textcolor=color.white, size=size.tiny)
+
+aiBar = aiOn and aiCandle and not na(aiPerf) ? color.from_gradient(aiPerf, 0, 1, color.new(aiCss, 80), aiCss) : na
+barcolor(colorBar ? (isUp ? colUp : colDn) : aiBar)
 
 alertcondition(buySig, "BUY", "JAS Trend Pro: BUY {{ticker}} {{interval}} @ {{close}}")
 alertcondition(sellSig, "SELL", "JAS Trend Pro: SELL {{ticker}} {{interval}} @ {{close}}")
