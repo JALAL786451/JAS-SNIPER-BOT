@@ -75,3 +75,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | `docs/roznamcha/<tareekh>.md` | user "X tareekh" kahe - ijazat se, ek din |
 | `docs/screenshots/`, `*.html`, `data/` | bilkul zaroorat par |
 | bilkul saada | User non-technical: jawab bohot chhota, aam zubaan, R/SE/Exp jaise lafz NAHI (sirf "faida / nuqsaan"); "nayi chat kholo" baar baar NAHI kehna (user 29 Oct, naraz). | 29 Oct |
+| FTMO maqsad | User (30 Oct): data ke baad FTMO ke liye **~100 trade/mahina + ~80% jeet** ki koshish mein koi kasar na chhorein. Claude ka mansooba: bari tokri (~35 market) par trend 4H + "girawat par khareedo" (IBS/RSI2/Double7, jeet 70-80%) dono; sach batana agar dono saath na milein. | 30 Oct |
