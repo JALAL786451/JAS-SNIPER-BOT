@@ -978,3 +978,6 @@ Data `data/ftmo/` H1 -> **#46a daily** + **#46b 4H** (NY 17:00). 4 market XAU, X
 **SL** = doosri taraf: BUY low[i] - 0.1 ATR14, SELL high[i] + 0.1 ATR14. 1R = |entry - SL|. **Exit:** close SMA20 ke ulti taraf (BUY: close < SMA20) -> open agla; ya SL. TP nahi.
 Kharcha #34 jaisa (0.03% x (entry+exit), gold min $0.50, swap 3%/saal). **TALAASH** entry < 2019: har TF PASS = kul >= 100 tr, Exp(R) - 2SE > 0, >= 3/4 market Exp > 0,
 (market x saal) musbat > 50%. Ginti +2. **IMTIHAN** 2019+ ek dafa: tr >= 30, Exp > 0; ek hi TF PASS = sakht (Exp - 2SE > 0).
+**Koshish #46 nateeja (29 Oct, 28vi chat) = #46a + #46b TALAASH FAIL** (IMTIHAN band). #46a daily: 305 tr, Exp +0.313R magar SE 0.253 (chhota NR7 SL = kuch bari jeet), Exp-2SE -0.192,
+jeet 28%, market 3/4, (market x saal) 20/45, saal 9/16. #46b 4H: 1553 tr, Exp -0.194R, Exp-2SE -0.389, jeet 18%, 1/4, 10/46; bina kharcha +0.09R. BUY/SELL dono kamzor.
+Sabaq: "shant ke baad toot" = tukka; daily ka + sirf chand bari trades se (bharosa nahi).
