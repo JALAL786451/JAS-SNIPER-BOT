@@ -830,3 +830,14 @@ Exp > 0 + trades >= 30; gold 2025 tezi -> BUY/SELL alag dekho. Ginti +1. (27vi c
 **Koshish #36 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). 1762 tr, Exp -0.380R, Exp-2SE -0.643, jeet 33.7%, saal 0/4. BUY 1064 -0.453R, SELL 698 -0.268R.
 Bina kharcha +0.011R (Exp-2SE -0.057, saal 2/4) = edge ~0. Kharcha median 0.22R / ausat 0.39R (M30 engulfing ka SL chhota, $1-3). 14wan gold intraday FAIL.
 ChatGPT Pine ki ghaltiyan (user ko bataya): AOI = EMA50 se 0.5% (asal zone nahi), HTF chalti candle (repaint), kharcha 0, lot 10% equity.
+
+**Koshish #37 qaida (29 Oct, 27vi chat, Zarattini-Aziz-Barbon 2024 "Beat the Market" noise-boundary intraday momentum, paper jaisa; test se PEHLE, badalna mana) - `tools/noise_boundary_test.py`:**
+USATECH + USA500, QDM M1 2021-24 (`data/qdm/`), UTC -> NY. Sirf cash session 09:30-16:00 NY; din ka Open = 09:30 M1 open, kal ka Close = 15:59 M1 close.
+Din jis mein 09:30 ya 15:59 bar na ho / session mein < 300 M1 = chhor do (half-day bhi). **Noise:** har minute t (09:30 se) ke liye
+sigma(t) = pichhle 14 din ka ausat |Close(t) / Open(din) - 1| (aaj shamil nahi). **Hadd:** UB = max(Open, kal Close) x (1 + sigma), LB = min(Open, kal Close) x (1 - sigma).
+**Entry:** sirf :00 aur :30 par (10:00 se 15:30 tak), us minute ka close > UB = BUY, < LB = SELL, usi close par. **Stop (trailing):** BUY = max(UB, VWAP), SELL = min(LB, VWAP),
+sirf :00 / :30 ke close par jaancho (paper jaisa, beech mein nahi). Stop lage to usi din agle :00 / :30 signal par dobara entry jaiz. **16:00 = sab band** (raat nahi, swap nahi).
+VWAP = aaj 09:30 se M1 (H+L+C)/3 x volume; volume 0 ho to bina volume ausat. Ek market ek position, grid / martingale / hedge nahi.
+**R** = sigma(t) x entry (entry waqt ka noise faasla). Kharcha 0.03%/taraf (`ftmo_test.py` COST) -> R. Paper ka vol-target lot = sirf maloomat (% munafa bhi likho).
+**TALAASH 2021-24 (TOKRI = dono market saath):** trades >= 100, Exp(R) - 2SE > 0, saal >= 3/4 musbat. Har market alag, BUY/SELL alag, bina kharcha = maloomat.
+Ek market chuna to IMTIHAN sakht (Exp - 2SE > 0, pakki 4c). **IMTIHAN** 2025+ ek dafa (M1 user se), Exp > 0 + trades >= 30. Andaza ~15-25 tr/mahina/market. Ginti +1.
