@@ -965,3 +965,6 @@ Hifazat SL = entry - 3 x ATR14[i] (RMA; low <= SL -> SL, gap neeche = open). 1R 
 **IMTIHAN** 2019+ ek dafa, bina tabdeeli: tr >= 30 aur Exp > 0.
 **Koshish #45 TALAASH (29 Oct) = PASS** (IMTIHAN se PEHLE likha): index 163 tr, Exp +0.202R, SE 0.054, Exp-2SE +0.095, jeet 79%, US500 83 tr +0.18R, USTEC 80 tr +0.22R,
 (market x saal) 9/13, bina kharcha +0.248R, ausat 5.5 din, ~23 tr/saal. Maloomat: XAU 132 tr +0.007R, XAG 110 tr +0.029R (gold/silver par ~0, RSI2 jaisa).
+**Koshish #45 IMTIHAN 2019+ (ek dafa, 29 Oct) = ASLI PASS (qaide se, magar KAMZOR):** index 178 tr, Exp +0.054R, SE 0.048, Exp-2SE -0.042, jeet 71%, US500 88 tr +0.071R,
+USTEC 90 tr +0.038R, saal 4/8, (market x saal) 8/16, bina kharcha +0.086R. Maloomat XAU 88 tr +0.117R, XAG 74 tr +0.040R. TALAASH +0.20 -> IMTIHAN +0.05 = edge 1/4 reh gaya.
+Agla: IBS (#15, wahi khandaan) ke saath din milao - nakal ho to naya EA bekaar; alag ho to demo.
