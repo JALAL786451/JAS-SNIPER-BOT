@@ -879,3 +879,11 @@ Ek market ek position; cross ke baad sirf nayi entry (kisi nayi ulti position se
 **Koshish #40 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 15179 tr, Exp -0.251R, Exp-2SE -0.277, jeet 24%, market 0/3, (market x saal) 1/30.
 Bina kharcha +0.009R = edge ~0. Gold -0.19R (bina +0.03), US500 -0.34R, USTEC -0.29R. BUY/SELL dono manfi. ~42-46 tr/mahina/market.
 Nota: pehla script Volume column drop hone se fail hua (ftmo_test.load); script ab apna loader use karti hai (Volume ke saath).
+
+**Koshish #41 qaida (29 Oct, 27vi chat, fehrist (4) Gao-Han-Li-Zhou 2018 "intraday momentum": pehle aadhe ghante ka return aakhri aadhe ghante ki disha batata hai; test se PEHLE, badalna mana) - `tools/intraday_mom_test.py`:**
+TOKRI US500 + USTEC (Dukascopy H1, `data/ftmo/`, UTC -> NY). Paper ka asal (9:30-10:00 return -> 15:30-16:00 trade) H1 data par seedha nahi naap sakte;
+**proxy:** pehla signal = 09:00 NY wali H1 candle (09:00-10:00, 9:30-10:00 isme shamil): sign(Close - Open). Entry = 15:00 NY candle ka open (15:30 ka qareeb), **exit = 16:00 NY candle ka open**.
+Sirf sign: >0 = BUY, <0 = SELL, 0 = chhod do. Ek trade har din (kisi market mein). Koi SL / TP nahi, koi pyramiding nahi.
+**R** = ATR14(H1) us din ke 15:00 candle par (unit). Kharcha 0.03% x (entry+exit) -> R. Swap: nahi (din ke andar).
+**TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono index musbat, (market x saal) > 50% musbat. BUY/SELL alag + bina kharcha = maloomat.
+**IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. Asli paper (M1 data, 9:30-10:00 / 15:30-16:00) M1 zip aane par dobara - alag test, ginti +1.
