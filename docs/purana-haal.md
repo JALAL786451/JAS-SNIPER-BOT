@@ -953,3 +953,6 @@ Shart: |close[i] - FP| >= 0.8 x 38 = 30.4 point. Entry open[i+1], TP 38 / SL 25 
 **Exit:** TP / SL M1 high-low se (ek hi candle mein dono = SL); 60 candle mein na lage = 60vi ki close. Session mein **reversion ki lagataar 3 haar = session band**.
 **Kharcha** (PASS isi par): 3.0 point har trade (spread ~1.5-2 + slippage; Bid data). Maloomat: 0 kharcha aur 0.03%/taraf (purana sakht). R = (point - kharcha) / SL.
 **PASS (TALAASH 2021-22):** >= 100 tr, Exp(R) - 2SE > 0, dono saal musbat, A aur B alag bhi dikhao (sirf ek PASS = sirf woh IMTIHAN, sakht). Ginti +1.
+**Koshish #44 nateeja (29 Oct, 28vi chat) = TALAASH FAIL** (IMTIHAN band). 2491 tr (**103.8/mahina**), Exp -0.135R, SE 0.023, Exp-2SE -0.182, jeet 39.6% (38/25 ka
+barabar = 39.7%), 2021 -146R, 2022 -190R. A 432 tr -0.082R, B 2059 tr -0.146R; Asia -0.13, NY -0.18, NYPM -0.04; BUY/SELL dono manfi. Bina kharcha -0.018R (~0), 0.03% -0.33R.
+Sabaq: 1m "fair price" bias = sikka (jeet bilkul tukka jitni); JJ khud kehta hai faida prop-firm ke hisaab (sasti eval, 45 account, payout) se, market se "slightly +EV". 100 tr/mahina mil gaye magar edge nahi.

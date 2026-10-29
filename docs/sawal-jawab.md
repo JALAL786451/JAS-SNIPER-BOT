@@ -85,3 +85,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - QDM / data ka folder? -> `tools/JAS_DATA_BG.bat` (QDM folder mein ya kahin bhi) = `D:\JAS_DATA\<INSTRUMENT>\`, peechhe chalta; QDM database bahar se nahi likh sakte (29 Oct).
 - "Smart App Control blocked" .bat? -> right-click > Properties > Unblock tick > OK; SAC band NA karo (wapas on nahi hota). JAS_DATA_BG chal gaya: qdmcli nahi, Dukascopy py -3 (29 Oct).
 - J Law (Chart Fanatics) multiple edge EA? -> #43 FAIL: 4 CFD par toot + kam volume pullback, daily 3 tr, 4H -0.11R; asal faida stocks catalyst/sector (29 Oct).
+- JJ Simon 1m fair price (NQ) EA? -> #44 FAIL: 104 tr/mahina magar jeet 39.6% = tukka (38/25 barabari 39.7%), -0.135R; uska faida prop-firm hisaab (29 Oct).
