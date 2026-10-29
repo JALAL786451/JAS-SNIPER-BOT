@@ -900,3 +900,5 @@ US500 + USTEC, Dukascopy H1 (`data/ftmo/`, UTC -> NY). **Sirf BUY:** 16:00 NY ca
 **R** = ATR14(D, 17:00 NY din) entry waqt (unit). Kharcha 0.03% x (entry+exit) + swap 3%/saal har raat -> R. Ulta leg (09:00 -> 16:00 din mein BUY) = sirf maloomat.
 **TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono index musbat, (market x saal) > 50% musbat. Bina kharcha = maloomat.
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. ~20 tr/mahina/market. Ginti +1.
+**Koshish #42 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 2898 tr, Exp -0.039R, (market x saal) 0/14. **Asar asli hai** (bina kharcha raat +0.028R
+vs din +0.006R, paper jaisa) magar kharcha + swap ~0.07R/trade > edge. CFD par raat ka drift kamaya nahi ja sakta.
