@@ -90,3 +90,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Mashhoor kitab wala naya? -> #45 Connors Double 7s (US500+USTEC daily, sirf BUY): TALAASH +0.20R, IMTIHAN +0.054R = ASLI PASS magar kamzor; IBS se milana baqi (29 Oct).
 - Double 7 ka EA banayein? -> NAHI: 77% entries IBS/RSI2 (demo par) ke saath, mel 0.5-0.6 = nakal; naya khandaan chahiye (29 Oct).
 - User ki 4 PDF (10 Most Profitable, 9 Advanced, Day Trading Guide, Swing Guide)? -> zyada tar pehle FAIL wali / penny stock / exit saaf nahi; #46 squeeze+NR7 test = FAIL (29 Oct).
+- PDF "Introduction to Trading System Development" (WPI student project)? -> trend (S/R toot) + MA crossover har stock par optimize (= curve-fit, #18 FAIL); kaam ki baat "system of systems" = kai sabit EA mila kar, hamara mansooba yahi (29 Oct). Day Trading Guide dobara aayi (wahi file).
