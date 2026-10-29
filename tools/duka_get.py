@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""duka_get d3 (29 Oct 2026) - Dukascopy datafeed se seedha H1 / M1 (QDM ki jagah), sirf standard library.
+"""duka_get d4 (29 Oct 2026) - Dukascopy datafeed se seedha H1 / M1 (QDM ki jagah), sirf standard library.
 Cloud (Claude) se Dukascopy rokta hai (~0.04 file/s) - laptop par chalao: tools/JAS_DATA.bat (ek click).
 d3: d2 (4 saath + jaldi retry) ne laptop par bhi rok lagwa di - ab AAHISTA: ek waqt ek file, har file ke baad
 waqfa, rok par 30s se 10 min tak intezar; har 100 file par progress line.
+d4: --per-folder = <out>/<SYMBOL>/<file>.zip (tools/JAS_DATA_BG.bat, D:\\JAS_DATA); bani hui file chhor do; zip .tmp se rename.
 
   python3 tools/duka_get.py h1              # docs/qdm-data-list.md ke H1 symbol -> data/duka/H1/<ID>_H1.zip
   python3 tools/duka_get.py m1              # 4 index M1 2021-aaj -> data/duka/M1/<ID>_M1_<saal>.zip (har saal alag, < 25 MB)
@@ -100,8 +101,14 @@ def write_zip(rows, fac, zpath, name):
     for t, o, h, l, c, v in rows:
         buf.write(f'{t:%Y%m%d},{t:%H:%M:%S},{o:.{nd}f},{h:.{nd}f},{l:.{nd}f},{c:.{nd}f},{v:.4f}\n')
     zpath.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED) as z:
+    tmp = zpath.with_name(zpath.name + '.tmp')                    # adhoori zip folder mein na dikhe
+    with zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as z:
         z.writestr(name, buf.getvalue())
+    tmp.replace(zpath)
+
+
+def target(out, sym, sub, fname, per):
+    return out / sym / fname if per else out / sub / fname
 
 
 def run(jobs, cache, workers):
@@ -115,8 +122,11 @@ def run(jobs, cache, workers):
     return dict(zip([j[0] for j in jobs], res))
 
 
-def get_h1(sym, cache, workers, today, out):
+def get_h1(sym, cache, workers, today, out, per=False):
     fac = factor(sym)
+    zp = target(out, sym, 'H1', f'{sym}_H1.zip', per)
+    if per and zp.exists():
+        return 'pehle se'
     years = range(2003, today.year + 1)
     yr = run([(f'{sym}/{y}/BID_candles_day_1.bi5', None) for y in years], cache, workers)
     if all(v is None for v in yr.values()):
@@ -133,14 +143,18 @@ def get_h1(sym, cache, workers, today, out):
     if any(v is None for v in got.values()):
         return 'adhoora (dobara chalao)'
     rows = [r for p, s in jobs for r in candles(got[p], s, fac)]
-    write_zip(rows, fac, out / 'H1' / f'{sym}_H1.zip', f'{sym}_H1.csv')
+    write_zip(rows, fac, zp, f'{sym}_H1.csv')
     return f'{len(rows)} candle {rows[0][0]:%Y-%m} - {rows[-1][0]:%Y-%m}' if rows else 'khaali'
 
 
-def get_m1(sym, cache, workers, today, out):
+def get_m1(sym, cache, workers, today, out, per=False):
     fac = factor(sym)
     msg = []
     for y in range(2021, today.year + 1):                         # 2021-24 TALAASH, 2025+ IMTIHAN
+        zp = target(out, sym, 'M1', f'{sym}_M1_{y}.zip', per)
+        if per and y < today.year and zp.exists():                # chalta saal har dafa naya
+            msg.append(f'{y} pehle se')
+            continue
         tag, d0, d1 = str(y), dt.date(y, 1, 1), min(dt.date(y, 12, 31), today - dt.timedelta(days=1))
         days = [d0 + dt.timedelta(days=i) for i in range((d1 - d0).days + 1)]
         days = [d for d in days if d.weekday() != 5]               # Hafta: market band
@@ -151,7 +165,7 @@ def get_m1(sym, cache, workers, today, out):
             msg.append(f'{tag} adhoora (dobara chalao)')
             continue
         rows = [r for p, s in jobs for r in candles(got[p], s, fac)]
-        write_zip(rows, fac, out / 'M1' / f'{sym}_M1_{tag}.zip', f'{sym}_M1_{tag}.csv')
+        write_zip(rows, fac, zp, f'{sym}_M1_{tag}.csv')
         msg.append(f'{tag} {len(rows)} candle')
     return ', '.join(msg)
 
@@ -163,6 +177,7 @@ def main():
     ap.add_argument('--cache', default=str(Path.home() / '.cache' / 'duka'))
     ap.add_argument('--workers', type=int, default=1)
     ap.add_argument('--out')
+    ap.add_argument('--per-folder', action='store_true')
     a = ap.parse_args()
     cache, today = Path(a.cache), dt.date.today()
     out = Path(a.out) if a.out else (ROOT / 'data' / 'duka' if (ROOT / 'data').is_dir()
@@ -172,7 +187,7 @@ def main():
     print(f'{a.tf.upper()}: {len(syms)} symbol -> {out}', flush=True)
     for s in syms:
         t0 = time.time()
-        r = (get_h1 if a.tf == 'h1' else get_m1)(s, cache, a.workers, today, out)
+        r = (get_h1 if a.tf == 'h1' else get_m1)(s, cache, a.workers, today, out, a.per_folder)
         bad += 'adhoora' in r
         print(f'{s:15s} {r}  ({time.time() - t0:.0f}s)', flush=True)
     print('SAB MUKAMMAL' if not bad else f'{bad} adhoore - dobara chalao (cache se wahin se)')

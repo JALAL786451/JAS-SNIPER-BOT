@@ -82,3 +82,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - QDM ki .exe Claude ko doon? -> NAHI: cloud Linux + Dukascopy cloud ko rokta; QDM apna database format, bahar se file nahi (29 Oct).
 - ".bat could harm your device"? -> Keep (Show more > Keep anyway); "Windows protected" -> More info > Run anyway. duka_get.py khud na kholo (Claude mein khulti) (29 Oct).
 - Nayi chat Claude khud kyun nahi kholta kabhi? -> khudkar chain 8 chat tak (lineage depth 8); 8vi ke baad user khud kholo (sirf "TRADING" likho) = chain dobara 0 se (29 Oct).
+- QDM / data ka folder? -> `tools/JAS_DATA_BG.bat` (QDM folder mein ya kahin bhi) = `D:\JAS_DATA\<INSTRUMENT>\`, peechhe chalta; QDM database bahar se nahi likh sakte (29 Oct).

@@ -1,5 +1,7 @@
 # QDM data list (29 Oct 2026) - ek hi dafa sab
 
+**PEECHHE WALA (29 Oct g1):** `tools/JAS_DATA_BG.bat` - QDM ho to QDM, warna Dukascopy; `D:\JAS_DATA\<INSTRUMENT>\`, kaam nahi rokta.
+
 **ASAAN TAREEQA (29 Oct, user ne manga):** laptop par `tools/JAS_DATA.bat` double-click = sab (36 H1 + 4 index M1 2021-aaj)
 seedha Dukascopy se, QDM ke baghair (`tools/duka_get.py`, resume + retry). XPTUSD / XPDUSD Dukascopy par nahi (list se bahar).
 Cloud (Claude) se Dukascopy rokta hai (29 Oct naap: 529s mein 22 file) - is liye laptop. Neeche QDM wala purana tareeqa.
