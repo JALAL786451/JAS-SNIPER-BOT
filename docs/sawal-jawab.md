@@ -88,3 +88,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - JJ Simon 1m fair price (NQ) EA? -> #44 FAIL: 104 tr/mahina magar jeet 39.6% = tukka (38/25 barabari 39.7%), -0.135R; uska faida prop-firm hisaab (29 Oct).
 - QDM se 34 ek saath file se? -> NAHI: QDM "Free version" (SS 29 Oct), bahar se file se nahi chalta; wahi kaam JAS_DATA_BG kar raha (har instrument D:\JAS_DATA\<naam>). Dono saath = Dukascopy zyada rokta. QDM mein M1: USA500/USATECH 2012-2026, XAU/XAG 2003-2026 (29 Oct).
 - Mashhoor kitab wala naya? -> #45 Connors Double 7s (US500+USTEC daily, sirf BUY): TALAASH +0.20R, IMTIHAN +0.054R = ASLI PASS magar kamzor; IBS se milana baqi (29 Oct).
+- Double 7 ka EA banayein? -> NAHI: 77% entries IBS/RSI2 (demo par) ke saath, mel 0.5-0.6 = nakal; naya khandaan chahiye (29 Oct).

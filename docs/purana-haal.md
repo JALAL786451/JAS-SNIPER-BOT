@@ -968,3 +968,5 @@ Hifazat SL = entry - 3 x ATR14[i] (RMA; low <= SL -> SL, gap neeche = open). 1R 
 **Koshish #45 IMTIHAN 2019+ (ek dafa, 29 Oct) = ASLI PASS (qaide se, magar KAMZOR):** index 178 tr, Exp +0.054R, SE 0.048, Exp-2SE -0.042, jeet 71%, US500 88 tr +0.071R,
 USTEC 90 tr +0.038R, saal 4/8, (market x saal) 8/16, bina kharcha +0.086R. Maloomat XAU 88 tr +0.117R, XAG 74 tr +0.040R. TALAASH +0.20 -> IMTIHAN +0.05 = edge 1/4 reh gaya.
 Agla: IBS (#15, wahi khandaan) ke saath din milao - nakal ho to naya EA bekaar; alag ho to demo.
+**#45 vs IBS/RSI2 (29 Oct, daily 2012-aaj):** Double7 ki entry +-1 din IBS ya RSI2 ke saath: US500 76%, USTEC 78%; roz ka mel D7-IBS 0.49-0.52, D7-RSI2 0.57-0.63.
+= zyada tar NAKAL (demo par RSI2 c2 US500/USTEC/US30 + IBS US500 pehle se) -> **naya EA NAHI**. Sabaq: index "girawat par khareedo" khandaan ek hi edge hai.
