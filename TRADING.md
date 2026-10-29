@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 29 Oct 2026 (26vi chat, khatam). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 29 Oct 2026 (27vi chat, khatam). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -53,18 +53,15 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
-**22-25vi chat:** IBS i3, #26 tokri, FTMO maqsad, #27 JasTrend FTMO PASS (1%/4xATR, 2019+ 80/0, ~32 mahine), **JasTrendEA t2** demo (magic 20261028)
-- `docs/purana-haal.md` grep "25vi chat". FTMO Free Trial: user FTMO support se poochhe.
-**26vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "26vi chat": gold intraday 13 FAIL (#30-33, #22; bina kharcha bhi ~0). **#34 JAS Trend 4H TOKRI
-ASLI PASS** (sec 8). #35 us ka FTMO FAIL. FTMO 1 mahine mein = jua (`tools/ftmo_ek_mahina.py`); JasTrend daily 1% = 163/0 magar ~3 saal.
-**29 Oct (isi chat):** JAS Trend Pro **t3.3** Pine (4H/1D pakka TF, S/R laal/hari, neeche TOKRI table 4 market + KUL) TV ✅ (1D KUL 747 tr Exp-2SE +0.28,
-4H 313 tr +0.15). **JasTrendEA t3 4H** (magic 20261029, SL 6xATR) F7 ✅ Tester ✅ (268 tr +21R, Python se 11/16 mili) -> demo 6ta chart TRADE CHALU.
-**AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (user maqsad ~100/mahina; "1000" ghalti thi), FTMO; sirf research idea,
-qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary momentum (US index 30m) (2) ORB 5m (#21) (3) VWAP trend
-(4) Gao-Han-Li-Zhou 2018 (5) #38 failed breakdown kal ke H/L, NY open (Carmine / Turtle Soup). User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.
-**RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
-- JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
+**27vi chat (29 Oct)** - tafseel `docs/purana-haal.md` grep "27vi chat" + "Koshish #37".."#42". Purani 22-26vi: grep "sec 5 se (29 Oct 27vi".
+5 naye FAIL: #38 failed breakdown, #39 TV Momentum H1, #40 VWAP, #41 Gao-Han-Li-Zhou (H1 proxy), #42 raat ka drift (asar asli, kharcha bara).
+NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100 tr/mahina = ZYADA MARKET, chhoti TF nahi.
+**DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` (folder > cmd > JAS_DATA.bat) -> `tools/duka_get.py` d3 = Dukascopy se
+36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se Dukascopy rokta. Pehli dafa (d2, 4 saath + laptop sleep) adhoora; d3 aahista.
+**AGLA KAAM:** (a) user SS / zip (`data/duka/H1`, `M1`) -> loader -> #34 4H trend qaida BARI tokri (~40 market), qaida pehle; trade ginti + FTMO.
+(b) M1 -> #37 noise-boundary (qaida likha) + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
+**Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089 - `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
+**RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
 
@@ -86,7 +83,7 @@ qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundar
 
 1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
 16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
-20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · 22 Fib OTE gold 15m FAIL (Python M1 2021-24) · 24 Supertrend gold 1D FAIL (425 tr, Exp 2.76$ - 2SE = -0.91; BUY +5.71, SELL -0.22; saal 27/77) · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL (1D 1975-2018: 156 tr, Exp 0.27R, SE 0.151, Exp-2SE -0.032, saal 24/44; 4H/1H/15m < 100 tr - TV data kam) · **26 Supertrend tokri TALAASH PASS** (931 tr, Exp 0.248R, Exp-2SE +0.119, 6/6 market musbat, saal 31/44; `data/koshish26/talaash.csv`)  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr, Exp 0.455R, Exp-2SE +0.214, 6/6, saal 7/8; `imtihan.csv`) = demo ki taraf. · **27 JasTrend FTMO Python PASS** (1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine) · 28 IBS 4 market FAIL · 29 Kachhua 4 market FAIL · 30 gold H1 raat BUY / din SELL FAIL · 31 gold H4 RSI2 pullback FAIL · 32 gold daily rukh + H1 entry FAIL · 33 JAS Trend t2 gold 4H/1H/15m FAIL · **34 JAS Trend 4H TOKRI (XAU/XAG/US500/USTEC) ASLI PASS** (2019+ 641 tr, +0.208R, Exp-2SE +0.085, 4/4) · 35 4H tokri FTMO FAIL · 36 HTF+AOI+M30 engulfing gold FAIL.
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · 22 Fib OTE gold 15m FAIL (Python M1 2021-24) · 24 Supertrend gold 1D FAIL · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL · **26 Supertrend tokri TALAASH PASS**  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr +0.455R) = demo ki taraf. · **27 JasTrend FTMO Python PASS** (1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine) · 28 IBS 4 market FAIL · 29 Kachhua 4 market FAIL · 30 gold H1 raat BUY / din SELL FAIL · 31 gold H4 RSI2 pullback FAIL · 32 gold daily rukh + H1 entry FAIL · 33 JAS Trend t2 gold 4H/1H/15m FAIL · **34 JAS Trend 4H TOKRI (XAU/XAG/US500/USTEC) ASLI PASS** (2019+ 641 tr, +0.208R, Exp-2SE +0.085, 4/4) · 35 4H tokri FTMO FAIL · 36 HTF+AOI+M30 engulfing gold FAIL · 37 noise-boundary (qaida likha, M1 baqi) · 38 failed breakdown · 39 TV Momentum H1 · 40 VWAP · 41 Gao-Han-Li-Zhou H1 · 42 raat drift = sab FAIL.
 Faida daily + 4H TOKRI par; akela market chhoti TF par nahi.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

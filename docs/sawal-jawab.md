@@ -75,3 +75,9 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - TV dabba 1D trades 4H se zyada? -> TV har TF par barabar candles deta: 1D ~40 saal, 4H ~2-3 saal; saal ke hisaab 4H ~4 guna tez (29 Oct).
 - JAS Trend 4H pass? -> sirf 4 market TOKRI (#34), gold akela FAIL (#33). EA = JasTrendEA t3 (InpTfH 4, magic 20261029) (29 Oct).
 - Carmine Rosato order flow podcast (transcript 29 Oct dobara)? -> wahi #16 video (14 Oct draft `docs/es_orderflow_draft.md`), gold par SIKKA; footprint/delta CFD par nahi. Qeemat wala hissa (failed breakdown / Turtle Soup) = #38 US index par (29 Oct).
+- TV "Momentum strategy" 1H par behtar? -> TV kharcha 0 + ek market; Python #39 tokri 19737 tr -0.39R, gold 1H har length FAIL (29 Oct).
+- VWAP trend / Gao-Han-Li-Zhou / raat ka drift / failed breakdown? -> #40 / #41 / #42 / #38 sab TALAASH FAIL; raat drift asli magar kharcha bara (29 Oct).
+- QDM se kaunsa TF? -> 36 symbol H1 all time + 4 index (USA500, USATECH, USA30, DEU) M1 2021-aaj; list `docs/qdm-data-list.md` (29 Oct).
+- Sab data ek click? -> laptop par `tools/JAS_DATA.bat` (Dukascopy seedha, resume); folder > address bar `cmd` > `JAS_DATA.bat`; raat ko, sleep Never (29 Oct).
+- QDM ki .exe Claude ko doon? -> NAHI: cloud Linux + Dukascopy cloud ko rokta; QDM apna database format, bahar se file nahi (29 Oct).
+- ".bat could harm your device"? -> Keep (Show more > Keep anyway); "Windows protected" -> More info > Run anyway. duka_get.py khud na kholo (Claude mein khulti) (29 Oct).

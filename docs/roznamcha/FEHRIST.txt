@@ -2,19 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-10-20  (3 kaam)
-   - jas_aaina a17: a15 par wapas (a16 khichdi hata di) - saaya default band, chart labels band
-   - jas_aaina a18: chart khaali (LGB, S/R, qareebi, ABHI, Record dabba default band) + strateg
-   - jas_aaina_test t2: 'Trade kab se' tareekh (default 2019) - andaza poori history se, trade 
-
-2026-10-21  (3 kaam)
-   - jas_tide_smc s2.10: swing S / R (pakki choti = R, tah = S, qareebi 2 har taraf, default ON
-   - jas_tide_smc s2.11: SMC har TF (1m - 1M), sirf na-tooti S/R + zone, FVG beech wali candle 
-   - jas_tide_smc s2.11: jaanch ki durustiyan - D1 EMA door ho to daayen '↑ door', likhai font 
-
-2026-10-27  (14 kaam)
-   - jas_tide_smc s2.12: runtime error 'historical offset beyond buffer' theek - SMC nishan WAQ
-   - ftmo_imkaan f2: --jaal (har system ka alag risk, risk parity jaal)
+2026-10-27  (6 kaam)
+   - Chat khatam (21vi): sec 5 naya, FTMO jawab, roznamcha
+   - s2: jaanch ke baad - muddat se bahar wali trade nahi gini, 1R bar number se, TALAASH label
    - Koshish #25 nateeja: TALAASH FAIL (Exp-2SE -0.032R)
 
 2026-10-28  (49 kaam)
@@ -22,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - TRADING sec 5: FTMO trial restrict, agla SBS pehra Tester + demo
    - JAS Trend Pro t3.3: tokri table (4 market + KUL)
 
-2026-10-29  (3 kaam)
+2026-10-29  (25 kaam)
    - JasTrendEA t3: 4H candle (#34 tokri), SL 6xATR, magic 20261029
-   - JasTrendEA t3: Tester milaan + R label theek
-   - Demo: JasTrendEA t3 4H 6ta chart TRADE CHALU
+   - Koshish #38: failed breakdown kal ke H/L NY open - TALAASH FAIL
+   - duka_get d3: aahista (1 file, 1.5s waqfa, lamba intezar) - d2 ne laptop par bhi rok lagwai

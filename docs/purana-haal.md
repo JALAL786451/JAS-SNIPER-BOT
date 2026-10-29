@@ -902,3 +902,27 @@ US500 + USTEC, Dukascopy H1 (`data/ftmo/`, UTC -> NY). **Sirf BUY:** 16:00 NY ca
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. ~20 tr/mahina/market. Ginti +1.
 **Koshish #42 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 2898 tr, Exp -0.039R, (market x saal) 0/14. **Asar asli hai** (bina kharcha raat +0.028R
 vs din +0.006R, paper jaisa) magar kharcha + swap ~0.07R/trade > edge. CFD par raat ka drift kamaya nahi ja sakta.
+
+
+## TRADING.md sec 5 se (29 Oct 27vi chat khatam par yahan)
+
+
+**Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089, equity ~43,743 - har lot `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
+**22-25vi chat:** IBS i3, #26 tokri, FTMO maqsad, #27 JasTrend FTMO PASS (1%/4xATR, 2019+ 80/0, ~32 mahine), **JasTrendEA t2** demo (magic 20261028)
+- `docs/purana-haal.md` grep "25vi chat". FTMO Free Trial: user FTMO support se poochhe.
+**26vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "26vi chat": gold intraday 13 FAIL (#30-33, #22; bina kharcha bhi ~0). **#34 JAS Trend 4H TOKRI
+ASLI PASS** (sec 8). #35 us ka FTMO FAIL. FTMO 1 mahine mein = jua (`tools/ftmo_ek_mahina.py`); JasTrend daily 1% = 163/0 magar ~3 saal.
+**29 Oct (isi chat):** JAS Trend Pro **t3.3** Pine (4H/1D pakka TF, S/R laal/hari, neeche TOKRI table 4 market + KUL) TV ✅ (1D KUL 747 tr Exp-2SE +0.28,
+4H 313 tr +0.15). **JasTrendEA t3 4H** (magic 20261029, SL 6xATR) F7 ✅ Tester ✅ (268 tr +21R, Python se 11/16 mili) -> demo 6ta chart TRADE CHALU.
+**AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (user maqsad ~100/mahina; "1000" ghalti thi), FTMO; sirf research idea,
+qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary momentum (US index 30m) (2) ORB 5m (#21) (3) VWAP trend
+(4) Gao-Han-Li-Zhou 2018 (5) #38 failed breakdown kal ke H/L, NY open (Carmine / Turtle Soup). User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.
+**RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
+- JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
+
+
+**27vi chat (29 Oct) khulasa:** #37 noise-boundary qaida likha (USATECH/USA500 M1 nahi aaya). User ki maang par #39 TV Momentum (H1 tokri +
+gold QDM 1H/15m/M1 + length 6-96), #38, #40 (+ tasheeh: qaide se bahar slope shart thi), #41 (H1 proxy), #42 (Cooper 2008 / Lou-Polk-Skouras 2019)
+- sab TALAASH FAIL. Data: `docs/qdm-data-list.md` (38 H1 + 4 M1, XPT/XPD Dukascopy par nahi -> 36), `tools/qdm_export.bat` (qdmcli, free version
+mein pakka nahi), `tools/duka_get.py` (Dukascopy bi5 seedha, USA500 QDM se mila), `tools/JAS_DATA.bat` (laptop ek click). Cloud: Dukascopy 529s mein
+22 file (rok). Laptop d2 (4 saath) = 5 symbol ke baad har request fail (+ laptop sleep) -> d3 aahista (1 file, 1.5s, 30s-10min). User raat ko chalayega.

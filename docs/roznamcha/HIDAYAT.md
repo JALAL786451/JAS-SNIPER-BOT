@@ -37,6 +37,8 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | agents | Agent / workflow sirf jab user USI kaam ke liye khud kahe; agle kaam par khud mat chalao. User tokens par sakht: chhote jawab, kam tool qadam, ek dafa sahi. | 27 Oct |
 | agent judge | User (28 Oct): "agents laazmi hon / faida ho to use kar lein" - TV ko bhejne se pehle mushkil Pine / EA ki alag agent jaanch (judge) theek; ghalat dekha gaya = time + token dono zaya. | 28 Oct |
 | SMC | Apna SMC script mat banao - TV ka LuxAlgo "Smart Money Concepts" saath lagao. Tide+SMC sirf Tide (SMC default band). | 27 Oct |
+- Lambe kaam (download, ghanton wale) RAAT ko; din mein jab user fresh ho = FTMO ke qareeb le jaane wala kaam (29 Oct).
+- Trading kitabein / research ka imaandar istemal, koi repaint nahi, poori imaandari (29 Oct).
 
 ## C. Token / usage bachao (sab se pehli tarjeeh)
 
