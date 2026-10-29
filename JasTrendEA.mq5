@@ -935,8 +935,8 @@ void Stats(bool doPrint)
    PrintFormat("JAS TREND %s | %s | BAND: Supertrend %d | SL %d | bina comment %d", EA_BUILD, g_label, nEa, nSL, noSL);
    PrintFormat("JAS TREND %s | %s | KUL: %d trades | jeet %.1f%% | Exp %+.3fR (+-%.3f = 2SE) | PF %.2f | kul %+.2fR | girawat %.1fR (%d-%d) | swap+commission %+.2fR",
                EA_BUILD, g_label, n, winPct, ex, se2, pf, sumR, dd, ddA, ddB, sumC);
-   PrintFormat("JAS TREND %s | %s | hisaab %s se | R = 4xATR SL (Python #27 mein R = SL bhi)", EA_BUILD, g_label,
-               TimeToString(InpStatFrom, TIME_DATE));
+   PrintFormat("JAS TREND %s | %s | hisaab %s se | R = server SL (%.1f x ATR, %s candle)", EA_BUILD, g_label,
+               TimeToString(InpStatFrom, TIME_DATE), InpSlMult, Pick(InpTfH >= 24, "D1", "4H"));
   }
 
 //+------------------------------------------------------------------+

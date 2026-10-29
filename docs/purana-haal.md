@@ -811,3 +811,8 @@ Sabaq: 4H tokri ka trade edge (#34) asli hai magar FTMO ki din/kul hadd par jure
 **26vi chat (28 Oct) khulasa:** #30/#31/#32/#22/#33 gold intraday FAIL; #34 4H tokri ASLI PASS; #35 FTMO FAIL; FTMO 1 mahina = jua. User ki zaroorat: ghar ka
 kharcha; Claude ne bataya sabit edge ~5-6%/saal, funded $100k ~ $370/mahina. User ka faisla: research wale tez-trade EA par sara waqt. PowerShell: user ko
 mushkil - hamesha poore pate wali EK line (`Set-Location -LiteralPath`), file Explorer mein `explorer "<folder>"` se dikhao.
+
+**JasTrendEA t3 Tester (29 Oct, user; XAUUSDm H4, 2021.01.01-2026.10.26, 1m OHLC, 100k, SL 6, pehra band):** 268 tr, jeet 38.1%, Exp +0.080R (R = 6xATR SL;
++-0.102 2SE), PF 1.33, +21.35R, girawat 10.4R, swap+comm -13.14R, 121,777. XAU 114 +12.51R, XAG 107 +11.95R, US500 22 -1.66, USTEC 25 -1.46 (Exness index data
+Sep 2025 se). SAAL 21 -5.4, 22 -3.4, 23 +3.2, 24 +7.7, 25 +19.7, 26 -0.3. Python same arsa: XAU 111 / XAG 101 tr (gold-silver ginti mili), Sep-Oct 2026 ki
+16 Python trades mein 11 tareekh-ba-tareekh mili, 5 mein data farq (1 candle flip). SL kabhi nahi laga = Python jaisa. Exness swap bhaari (Python 3%). = EA qaide par ✅.
