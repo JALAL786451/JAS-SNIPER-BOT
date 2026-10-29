@@ -841,3 +841,11 @@ VWAP = aaj 09:30 se M1 (H+L+C)/3 x volume; volume 0 ho to bina volume ausat. Ek 
 **R** = sigma(t) x entry (entry waqt ka noise faasla). Kharcha 0.03%/taraf (`ftmo_test.py` COST) -> R. Paper ka vol-target lot = sirf maloomat (% munafa bhi likho).
 **TALAASH 2021-24 (TOKRI = dono market saath):** trades >= 100, Exp(R) - 2SE > 0, saal >= 3/4 musbat. Har market alag, BUY/SELL alag, bina kharcha = maloomat.
 Ek market chuna to IMTIHAN sakht (Exp - 2SE > 0, pakki 4c). **IMTIHAN** 2025+ ek dafa (M1 user se), Exp > 0 + trades >= 30. Andaza ~15-25 tr/mahina/market. Ginti +1.
+
+**Koshish #39 qaida (29 Oct, 27vi chat, user ki TV built-in "Momentum strategy" Pine, length 12, H1; test se PEHLE, badalna mana) - `tools/mom_h1_test.py`:**
+TOKRI XAUUSD, XAGUSD, US500, USTEC, Dukascopy H1 (`data/ftmo/`, UTC), #34 jaisa. mom0 = C - C[12], mom1 = mom0 - mom0[1].
+Band candle par mom0 > 0 aur mom1 > 0 = agli candle ke liye BUY STOP high + 1 tick; mom0 < 0 aur mom1 < 0 = SELL STOP low - 1 tick; warna order cancel.
+Fill = max(open, stop) (SELL: min). Ulta fill = palat (purani band + nayi khuli, hedge nahi); usi taraf dobara = kuch nahi (pyramiding 1). SL / TP nahi.
+**R** = ATR14(H1) entry waqt (unit). Kharcha 0.03% x (entry+exit), gold min $0.50; swap 3%/saal har raat. Trade = entry se palat tak.
+**TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, market musbat >= 3/4, (market x saal) > 50% musbat. Bina kharcha = maloomat.
+**IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. TV ka nateeja (kharcha 0, ek market, dikha kar chuna) = sirf ishara. Ginti +1.
