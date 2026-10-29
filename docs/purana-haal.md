@@ -938,3 +938,6 @@ Naap (har TF par): ATR14 (RMA), SMA20, EMA20, VOL20 = pichhle 20 bar ka ausat vo
 Kharcha #34 jaisa: 0.03% x (entry+exit), gold kam az kam $0.50, swap 3%/saal har raat. R = (exit - entry - kharcha) / 1R.
 **TALAASH** entry < 2019 (index data 2012 se): har TF alag PASS = kul >= 100 tr, Exp(R) - 2SE > 0, >= 3/4 market Exp > 0, (market x saal) musbat > 50%. Ginti +2.
 **IMTIHAN** 2019+ ek dafa, bina tabdeeli: tr >= 30 aur Exp > 0; dono mein se ek TF chuna = sakht (Exp - 2SE > 0). Earnings / sector / RS wala hissa CFD par nahi (sirf chart).
+**Koshish #43 nateeja (29 Oct, 28vi chat) = #43a + #43b TALAASH FAIL** (IMTIHAN nahi khola). #43a daily: 3 tr (toot 58 range wale, volume 1.5x sirf 5 - CFD volume) = ginti kam.
+#43b 4H: 293 tr, Exp -0.115R, SE 0.119, Exp-2SE -0.353, jeet 26%, market 1/4 (sirf USTEC +0.26R, 33 tr), saal 4/16; bina kharcha +0.031R (~0).
+Sabaq: J Law ka asal faida stocks ke catalyst / sector / RS mein hai; sirf chart wala hissa (toot + kam volume pullback) 4 CFD par edge nahi.

@@ -84,3 +84,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Nayi chat Claude khud kyun nahi kholta kabhi? -> khudkar chain 8 chat tak (lineage depth 8); 8vi ke baad user khud kholo (sirf "TRADING" likho) = chain dobara 0 se (29 Oct).
 - QDM / data ka folder? -> `tools/JAS_DATA_BG.bat` (QDM folder mein ya kahin bhi) = `D:\JAS_DATA\<INSTRUMENT>\`, peechhe chalta; QDM database bahar se nahi likh sakte (29 Oct).
 - "Smart App Control blocked" .bat? -> right-click > Properties > Unblock tick > OK; SAC band NA karo (wapas on nahi hota). JAS_DATA_BG chal gaya: qdmcli nahi, Dukascopy py -3 (29 Oct).
+- J Law (Chart Fanatics) multiple edge EA? -> #43 FAIL: 4 CFD par toot + kam volume pullback, daily 3 tr, 4H -0.11R; asal faida stocks catalyst/sector (29 Oct).
