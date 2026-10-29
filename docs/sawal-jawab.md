@@ -83,3 +83,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - ".bat could harm your device"? -> Keep (Show more > Keep anyway); "Windows protected" -> More info > Run anyway. duka_get.py khud na kholo (Claude mein khulti) (29 Oct).
 - Nayi chat Claude khud kyun nahi kholta kabhi? -> khudkar chain 8 chat tak (lineage depth 8); 8vi ke baad user khud kholo (sirf "TRADING" likho) = chain dobara 0 se (29 Oct).
 - QDM / data ka folder? -> `tools/JAS_DATA_BG.bat` (QDM folder mein ya kahin bhi) = `D:\JAS_DATA\<INSTRUMENT>\`, peechhe chalta; QDM database bahar se nahi likh sakte (29 Oct).
+- "Smart App Control blocked" .bat? -> right-click > Properties > Unblock tick > OK; SAC band NA karo (wapas on nahi hota). JAS_DATA_BG chal gaya: qdmcli nahi, Dukascopy py -3 (29 Oct).
