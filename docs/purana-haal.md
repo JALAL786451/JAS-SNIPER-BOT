@@ -941,3 +941,15 @@ Kharcha #34 jaisa: 0.03% x (entry+exit), gold kam az kam $0.50, swap 3%/saal har
 **Koshish #43 nateeja (29 Oct, 28vi chat) = #43a + #43b TALAASH FAIL** (IMTIHAN nahi khola). #43a daily: 3 tr (toot 58 range wale, volume 1.5x sirf 5 - CFD volume) = ginti kam.
 #43b 4H: 293 tr, Exp -0.115R, SE 0.119, Exp-2SE -0.353, jeet 26%, market 1/4 (sirf USTEC +0.26R, 33 tr), saal 4/16; bina kharcha +0.031R (~0).
 Sabaq: J Law ka asal faida stocks ke catalyst / sector / RS mein hai; sirf chart wala hissa (toot + kam volume pullback) 4 CFD par edge nahi.
+
+**Koshish #44 qaida (29 Oct, 28vi chat, user ne video di, test se PEHLE, badalna mana) - JJ Simon "Fair Pricing Theory" 1m NASDAQ (Chart Fanatics) - `tools/jj_fair_price_test.py`:**
+Data `data/ustec/USTEC_M1_2021-2022_dukascopy.zip` (UTC, Bid) = sab TALAASH; IMTIHAN = USATECH M1 2025+ (laptop JAS_DATA_BG) aane par EK dafa. Sirf USTEC (wo sirf NQ).
+**Session** (NY waqt, DST ke saath), har ek 90 min: Asia 18:00, NY 09:30, NY PM 14:00. **FP** (fair price) = session ki pehli 1m candle ki open. News wala hissa nahi (calendar nahi).
+**A. Continuation** (session mein ek): pehli candle; rang = sign(close-open); bias = pichhle 6 ghante ki chaal ulti (open se 6h pehle ki open -> pehli candle se pichhli close:
+upar = SHORT bias). Rang == bias, aur close pichhli 3 candles ke low se neeche (SELL) / high se upar (BUY) -> entry agli candle ki open. TP 38 / SL 25 point; pehli candle ka (H-L) > 25 = TP 76 / SL 50.
+**B. Reversion FP ki taraf** (A ke baad / A na ho): candle i (session ke 90 min ke andar) close FP se upar = SELL dhoondo, neeche = BUY. Signal (koi ek), SELL (BUY ulta):
+(1) displacement: i laal, i-1 hari, body[i] > body[i-1], close[i] < low[i-1]; (2) BOS: aakhri na-toota swing low (low[j] < low[j-1] aur < low[j+1], i-1 tak pakka) ke neeche pehli close.
+Shart: |close[i] - FP| >= 0.8 x 38 = 30.4 point. Entry open[i+1], TP 38 / SL 25 (static, TP FP par band nahi). Ek waqt ek position.
+**Exit:** TP / SL M1 high-low se (ek hi candle mein dono = SL); 60 candle mein na lage = 60vi ki close. Session mein **reversion ki lagataar 3 haar = session band**.
+**Kharcha** (PASS isi par): 3.0 point har trade (spread ~1.5-2 + slippage; Bid data). Maloomat: 0 kharcha aur 0.03%/taraf (purana sakht). R = (point - kharcha) / SL.
+**PASS (TALAASH 2021-22):** >= 100 tr, Exp(R) - 2SE > 0, dono saal musbat, A aur B alag bhi dikhao (sirf ek PASS = sirf woh IMTIHAN, sakht). Ginti +1.
