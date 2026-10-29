@@ -74,3 +74,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | `docs/files-tafseel.md` | file dhoondni ho - grep file ka naam |
 | `docs/roznamcha/<tareekh>.md` | user "X tareekh" kahe - ijazat se, ek din |
 | `docs/screenshots/`, `*.html`, `data/` | bilkul zaroorat par |
+| bilkul saada | User non-technical: jawab bohot chhota, aam zubaan, R/SE/Exp jaise lafz NAHI (sirf "faida / nuqsaan"); "nayi chat kholo" baar baar NAHI kehna (user 29 Oct, naraz). | 29 Oct |
