@@ -865,3 +865,5 @@ aur ye candle L ke UPAR band (wapsi). **SELL ulta:** 3 candle ka high >= H + 0.1
 Ek market ek position. Kharcha 0.03% x (entry+exit) -> R.
 **TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono market musbat, (market x saal) > 50% musbat. BUY/SELL alag + bina kharcha = maloomat.
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0 (2 market, sakht), trades >= 30. Andaza ~3-6 tr/mahina/market (kam - user ka ~100 maqsad nahi). Ginti +1.
+**Koshish #38 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 1390 tr, Exp -0.178R, Exp-2SE -0.241, jeet 37.7%, (market x saal) 0/14.
+US500 675 tr -0.17R (bina +0.05), USTEC 715 tr -0.18R (bina -0.01). KUL bina kharcha +0.02R = edge ~0; ~8 tr/mahina/market. BUY/SELL dono manfi.
