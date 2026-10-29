@@ -856,3 +856,12 @@ TV par "behtar" kyun dikha: TV default kharcha 0 + ek market + ek daur dikh kar 
 15m 8143 tr -0.60R (bina +0.000); M1 114793 tr -2.77R (bina +0.08). Kharcha 1H ~0.30R/trade = edge (agar hai) kha jata. Sirf gold chuna = IMTIHAN sakht (pakki 4c).
 **#39 gold 1H length 6/12/24/48/96 (TALAASH, Dukascopy 2003-18 + QDM 2021-24):** sab manfi kharcha ke saath (-0.08 se -0.46R); bina kharcha lamba length
 +0.16-0.27R (kharcha 0.4-0.5R kha jata). Koi Exp-2SE > 0 nahi = gold 1H FAIL.
+
+**Koshish #38 qaida (29 Oct, 27vi chat, Carmine Rosato draft Qaida 1 "failed breakdown" + Raschke Turtle Soup, US index; aankre draft ki table se; test se PEHLE, badalna mana) - `tools/fail_break_test.py`:**
+US500 + USTEC, Dukascopy H1 (`data/ftmo/`, UTC -> NY). Din = 17:00 NY se (session_day). **Level:** kal ke din ka high (H) / low (L). ATR = ATR14(H1).
+**Waqt:** sirf woh H1 candle jo 09:00, 10:00, 11:00 NY par shuru ho (NY open ke ~2 ghante). **BUY:** is candle samet pichhli 3 candle ka sab se neecha low <= L - 0.1 ATR
+aur ye candle L ke UPAR band (wapsi). **SELL ulta:** 3 candle ka high >= H + 0.1 ATR aur close H ke neeche. Din mein har market ki sirf pehli signal; agli candle open par entry.
+**SL** = 3 candle ka low - 0.2 ATR (SELL: high + 0.2 ATR), **TP** = 3R (draft min RR 3). H1 par jaanch, ek candle mein dono = SL, gap = open. **16:00 NY candle ke open par baqi band** (raat nahi).
+Ek market ek position. Kharcha 0.03% x (entry+exit) -> R.
+**TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono market musbat, (market x saal) > 50% musbat. BUY/SELL alag + bina kharcha = maloomat.
+**IMTIHAN 2019+** ek dafa: Exp - 2SE > 0 (2 market, sakht), trades >= 30. Andaza ~3-6 tr/mahina/market (kam - user ka ~100 maqsad nahi). Ginti +1.
