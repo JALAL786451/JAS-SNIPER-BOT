@@ -1,5 +1,5 @@
 //@version=6
-// JAS Trend Pro t3.4 (30 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
+// JAS Trend Pro t3.5 (30 Oct 2026) - ATR Supertrend (10, 3.0), repaint nahi (nishan sirf band candle par)
 // t2: chhote B / S nishan; daayen dabba = rukh, SL, chalti trade (sirf BUY) + is chart ka nateeja.
 // t3: 4H (Koshish #34 ASLI PASS: 4H TOKRI XAU, XAG, US500, USTEC, sirf BUY; 2019+ 641 tr +0.208R) + 1D (#26).
 //     Dabbe mein "Pakka TF" is chart ki TF ke hisaab se. Patli S/R lakeerein (band pivot, qareeb wali mila di).
@@ -8,10 +8,11 @@
 // t3.4: B / S nishan default BAND (setting se on). LuxAlgo "SuperTrend AI (Clustering)" andar (CC BY-NC-SA 4.0, (c) LuxAlgo):
 //       ATR, factor range / step, performance memory, cluster, AI lakeer + AMA + candle rang + score nishan.
 //       AI hissa sirf DEKHNE ke liye (test NAHI hua) - dabba / tokri ka nateeja wahi PASS wala Supertrend 10/3.
+// t3.5: Supertrend 10/3 ki moti laal / hari lakeer default BAND (hisaab chalta rehta hai; setting se on).
 // Koshish #26 ASLI PASS (28 Oct): 1D, 6 market tokri (XAU, XAG, XPT, USOIL, SPX, NDX), SIRF BUY:
 //   B = BUY agli candle ke open par, S = BUY band agli open par (short nahi), 1R = 3 x ATR(10), kharcha 0.03%/taraf.
 // Dabbe ka nateeja sirf ANDAZA (is chart ka saara data, EMA filter ke baghair) - sahi nateeja MT5 / demo se.
-indicator("JAS Trend Pro t3.4", shorttitle="JAS Trend t3.4", overlay=true, max_lines_count=50, max_labels_count=500)
+indicator("JAS Trend Pro t3.5", shorttitle="JAS Trend t3.5", overlay=true, max_lines_count=50, max_labels_count=500)
 
 // Settings - default hi pakki hain, badalne ki zaroorat nahi
 atrLen   = input.int(10, "ATR length", minval=1, group="Trend")
@@ -20,6 +21,7 @@ useEma   = input.bool(false, "EMA 200 filter", group="Filter")
 emaLen   = input.int(200, "EMA length", minval=1, group="Filter")
 colorBar = input.bool(false, "Candle rangat", group="Dikhawa")
 showBS   = input.bool(false, "B / S nishan", group="Dikhawa")
+showST   = input.bool(false, "Supertrend 10/3 lakeer (moti)", group="Dikhawa")
 showBox  = input.bool(true, "Dabba", group="Dikhawa")
 srOn     = input.bool(true, "S/R lakeerein", group="S/R")
 srLen    = input.int(10, "Pivot (dono taraf candle)", minval=2, group="S/R")
@@ -59,8 +61,8 @@ flipDn = not isUp and isUp[1]
 buySig  = flipUp and (not useEma or close > ema) and barstate.isconfirmed
 sellSig = flipDn and (not useEma or close < ema) and barstate.isconfirmed
 
-plot(isUp ? st : na, "BUY line", colUp, 2, plot.style_linebr)
-plot(isUp ? na : st, "SELL line", colDn, 2, plot.style_linebr)
+plot(showST and isUp ? st : na, "BUY line", colUp, 2, plot.style_linebr)
+plot(showST and not isUp ? st : na, "SELL line", colDn, 2, plot.style_linebr)
 plot(useEma ? ema : na, "EMA 200", color.new(color.gray, 30), 1)
 
 plotshape(showBS and buySig, "BUY", shape.labelup, location.belowbar, colUp, text="B", textcolor=color.white, size=size.tiny)
@@ -210,7 +212,7 @@ if showBox and barstate.islast
     rNow = pos == 1 and ru > 0 ? (close - eP) / ru : 0.0
     tr   = pos == 1 ? "BUY @ " + str.tostring(eP, format.mintick) + " | " + (rNow >= 0 ? "+" : "") + str.tostring(rNow, "#.##") + "R" :
            pEnt ? "B aya - agli candle par" : "khali - B ka intezar"
-    table.cell(box, 0, 0, "JAS Trend Pro t3.3", text_color=color.white, text_size=size.small)
+    table.cell(box, 0, 0, "JAS Trend Pro t3.5", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 0, timeframe.period, text_color=color.white, text_size=size.small)
     table.cell(box, 0, 1, "Rukh", text_color=color.white, text_size=size.small)
     table.cell(box, 1, 1, isUp ? "BUY" : "SELL", text_color=isUp ? colUp : colDn, text_size=size.small)
