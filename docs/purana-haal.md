@@ -963,3 +963,5 @@ BUY: close[i] > SMA200[i] aur close[i] = pichhle 7 din (i samet) ki sab se kam c
 Hifazat SL = entry - 3 x ATR14[i] (RMA; low <= SL -> SL, gap neeche = open). 1R = 3 x ATR14[i]. Kharcha #34 jaisa: 0.03% x (entry+exit) + swap 3%/saal har raat.
 **TALAASH** entry < 2019 (index data 2012 se): PASS = kul >= 100 tr, Exp(R) - 2SE > 0, dono index Exp > 0, (market x saal) musbat > 50%. Ginti +1.
 **IMTIHAN** 2019+ ek dafa, bina tabdeeli: tr >= 30 aur Exp > 0.
+**Koshish #45 TALAASH (29 Oct) = PASS** (IMTIHAN se PEHLE likha): index 163 tr, Exp +0.202R, SE 0.054, Exp-2SE +0.095, jeet 79%, US500 83 tr +0.18R, USTEC 80 tr +0.22R,
+(market x saal) 9/13, bina kharcha +0.248R, ausat 5.5 din, ~23 tr/saal. Maloomat: XAU 132 tr +0.007R, XAG 110 tr +0.029R (gold/silver par ~0, RSI2 jaisa).
