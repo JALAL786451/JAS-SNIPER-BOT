@@ -1,5 +1,5 @@
 @echo off
-REM JAS_DATA_BG g1 (29 Oct 2026) - sab data PEECHHE (background): low priority, chhoti (minimized) window, aap kaam karte rahein.
+REM JAS_DATA_BG g2 (29 Oct 2026; g2: 'pehle se chal raha' asli window se, flag se nahi) - sab data PEECHHE (background): low priority, chhoti (minimized) window, aap kaam karte rahein.
 REM Kahan rakhein: QDM ke folder mein (jahan qdmcli.exe hai) - ya kahin bhi (Desktop\JAS). Bas double-click.
 REM 1) qdmcli.exe mila (is file ke saath ya C:\QuantDataManager) aur QDM ki window band = QDM se update + export, ek ek symbol.
 REM 2) jo QDM se na bana (qdmcli nahi / free version / QDM khula) = tools/duka_get.py d4 se seedha Dukascopy, aahista.
@@ -25,11 +25,10 @@ set FLAG=%WORK%\chal_raha.txt
 set LOG=%BASE%\log.txt
 mkdir "%WORK%" 2>nul
 
-REM pehle se chal raha? (flag hai aur log 2 ghante ke andar likha gaya)
-powershell -NoProfile -Command "if((Test-Path '%FLAG%') -and (Test-Path '%LOG%') -and ((Get-Date)-(Get-Item '%LOG%').LastWriteTime).TotalHours -lt 2){exit 1}"
+REM pehle se chal raha? (peechhe wali "JAS_DATA_BG.bat run" window zinda hai)
+powershell -NoProfile -Command "if(Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and $_.CommandLine -match 'JAS_DATA_BG\.bat\W+run' }){exit 1}"
 if errorlevel 1 (
-  echo JAS_DATA_BG pehle se chal raha hai - taskbar par chhoti window dekhein.
-  echo Pakka band hai to ye file delete kar ke dobara chalayein: %FLAG%
+  echo JAS_DATA_BG pehle se chal raha hai - taskbar par chhoti window dekhein. Kuch karne ki zaroorat nahi.
   pause
   exit /b 0
 )
