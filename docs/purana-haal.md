@@ -970,3 +970,11 @@ USTEC 90 tr +0.038R, saal 4/8, (market x saal) 8/16, bina kharcha +0.086R. Maloo
 Agla: IBS (#15, wahi khandaan) ke saath din milao - nakal ho to naya EA bekaar; alag ho to demo.
 **#45 vs IBS/RSI2 (29 Oct, daily 2012-aaj):** Double7 ki entry +-1 din IBS ya RSI2 ke saath: US500 76%, USTEC 78%; roz ka mel D7-IBS 0.49-0.52, D7-RSI2 0.57-0.63.
 = zyada tar NAKAL (demo par RSI2 c2 US500/USTEC/US30 + IBS US500 pehle se) -> **naya EA NAHI**. Sabaq: index "girawat par khareedo" khandaan ek hi edge hai.
+
+**Koshish #46 qaida (29 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - Bollinger Squeeze + Crabel NR7 toot (user ki PDF "9 Advanced", #7 + #8) - `tools/squeeze_nr7_test.py`:**
+Data `data/ftmo/` H1 -> **#46a daily** + **#46b 4H** (NY 17:00). 4 market XAU, XAG, US500, USTEC. BUY + SELL (alag bhi dikhao), har market ek position.
+**Setup bar i:** NR7 = (H-L)[i] pichhle 7 bar (i samet) mein sab se kam; aur Squeeze = BW[i] = (upper-lower)/SMA20 (Bollinger 20, 2) pichhle 125 bar ke **neeche ke 20%** mein (percentile <= 20).
+**Entry:** i+1..i+5 mein pehla bar jo high[i] se upar jaye = BUY (stop high[i], gap = open) / low[i] se neeche = SELL. Ek hi bar mein dono = BUY/SELL jo open ke qareeb, aur usi bar SL = -1R. Naya setup purana khatam.
+**SL** = doosri taraf: BUY low[i] - 0.1 ATR14, SELL high[i] + 0.1 ATR14. 1R = |entry - SL|. **Exit:** close SMA20 ke ulti taraf (BUY: close < SMA20) -> open agla; ya SL. TP nahi.
+Kharcha #34 jaisa (0.03% x (entry+exit), gold min $0.50, swap 3%/saal). **TALAASH** entry < 2019: har TF PASS = kul >= 100 tr, Exp(R) - 2SE > 0, >= 3/4 market Exp > 0,
+(market x saal) musbat > 50%. Ginti +2. **IMTIHAN** 2019+ ek dafa: tr >= 30, Exp > 0; ek hi TF PASS = sakht (Exp - 2SE > 0).
