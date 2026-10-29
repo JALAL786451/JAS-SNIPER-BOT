@@ -867,3 +867,12 @@ Ek market ek position. Kharcha 0.03% x (entry+exit) -> R.
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0 (2 market, sakht), trades >= 30. Andaza ~3-6 tr/mahina/market (kam - user ka ~100 maqsad nahi). Ginti +1.
 **Koshish #38 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 1390 tr, Exp -0.178R, Exp-2SE -0.241, jeet 37.7%, (market x saal) 0/14.
 US500 675 tr -0.17R (bina +0.05), USTEC 715 tr -0.18R (bina -0.01). KUL bina kharcha +0.02R = edge ~0; ~8 tr/mahina/market. BUY/SELL dono manfi.
+
+**Koshish #40 qaida (29 Oct, 27vi chat, fehrist (3) VWAP trend; test se PEHLE, badalna mana) - `tools/vwap_trend_test.py`:**
+TOKRI US500 + USTEC (Dukascopy H1, `data/ftmo/`, UTC -> NY), XAUUSD bhi (bina kharcha maloomat). Din = 17:00 NY se (session_day). **VWAP** = din ke andar H1 typical (H+L+C)/3 x Volume ka
+ausat (Volume 0 ho to 1). **Signal (band candle par):** BUY = close pichhle close ke neeche tha aur ab VWAP ke UPAR (cross up), 15:00 NY se pehle. SELL ulta.
+**Entry:** agli candle open. **SL** = entry -/+ 1 x ATR14(H1). **Exit:** pehle jo ho - (a) SL, (b) band candle close VWAP ke ulte taraf (cross), (c) 16:00 NY open par flat.
+Ek market ek position; cross ke baad sirf nayi entry (kisi nayi ulti position se pehle exit). Pyramiding / grid nahi. Kharcha 0.03% x (entry+exit) -> R.
+**R** = ATR14 entry waqt. SL candle mein dono hon to SL pehle (conservative).
+**TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono index musbat, (market x saal) > 50% musbat. Bina kharcha = maloomat.
+**IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. Ginti +1.
