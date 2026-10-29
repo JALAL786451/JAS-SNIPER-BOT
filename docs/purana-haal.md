@@ -926,3 +926,15 @@ gold QDM 1H/15m/M1 + length 6-96), #38, #40 (+ tasheeh: qaide se bahar slope sha
 - sab TALAASH FAIL. Data: `docs/qdm-data-list.md` (38 H1 + 4 M1, XPT/XPD Dukascopy par nahi -> 36), `tools/qdm_export.bat` (qdmcli, free version
 mein pakka nahi), `tools/duka_get.py` (Dukascopy bi5 seedha, USA500 QDM se mila), `tools/JAS_DATA.bat` (laptop ek click). Cloud: Dukascopy 529s mein
 22 file (rok). Laptop d2 (4 saath) = 5 symbol ke baad har request fail (+ laptop sleep) -> d3 aahista (1 file, 1.5s, 30s-10min). User raat ko chalayega.
+
+**Koshish #43 qaida (29 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - J Law "Multiple Edge" (Chart Fanatics, 25 Oct 2026) - `tools/jlaw_mea_test.py`:**
+Data `data/ftmo/` H1 (Dukascopy, Volume ke saath) -> **#43a daily** (NY 17:00) aur **#43b 4H** (NY 17:00 se, #34 jaisa). 4 market XAU, XAG, US500, USTEC. **Sirf BUY**, har market ek position.
+Naap (har TF par): ATR14 (RMA), SMA20, EMA20, VOL20 = pichhle 20 bar ka ausat volume (B-1 tak). Swing high = high[k] = max(high[k-3..k+3]), pakka k+3 par.
+(1) **Momentum toot (bar B):** L = B-1 tak aakhri pakka swing high; close[B] > L, close[B-1] <= L, close[B] > open[B], (H-L)[B] >= 1.5 x ATR[B-1], vol[B] >= 1.5 x VOL20[B-1].
+(2) **Intezar** B+1..B+15; close < L - 1.0 ATR = setup khatam; naya toot = naya setup.
+(3) **Pullback / entry bar i:** low[i] <= L + 0.5 ATR[i]; |EMA20[i] - L| <= 1.0 ATR[i] (level + MA ek jagah); close[i] >= L - 0.5 ATR[i];
+**kam volume:** B+1..i ka ausat volume < VOL20[B-1]. Entry = open[i+1]. **SL** = min(L, low[i]) - 0.5 ATR[i] (entry <= SL = chhor do). 1R = entry - SL.
+(4) **Exit:** SL (low <= SL -> SL par, gap neeche = open); ya close[j] < SMA20[j] - 0.5 ATR[j] -> open[j+1] ("sell into weakness"). TP nahi.
+Kharcha #34 jaisa: 0.03% x (entry+exit), gold kam az kam $0.50, swap 3%/saal har raat. R = (exit - entry - kharcha) / 1R.
+**TALAASH** entry < 2019 (index data 2012 se): har TF alag PASS = kul >= 100 tr, Exp(R) - 2SE > 0, >= 3/4 market Exp > 0, (market x saal) musbat > 50%. Ginti +2.
+**IMTIHAN** 2019+ ek dafa, bina tabdeeli: tr >= 30 aur Exp > 0; dono mein se ek TF chuna = sakht (Exp - 2SE > 0). Earnings / sector / RS wala hissa CFD par nahi (sirf chart).
