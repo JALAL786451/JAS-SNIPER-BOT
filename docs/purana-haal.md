@@ -852,3 +852,5 @@ Fill = max(open, stop) (SELL: min). Ulta fill = palat (purani band + nayi khuli,
 **Koshish #39 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 19737 tr, Exp -0.388R, Exp-2SE -0.427, jeet 25%, market 0/4, (market x saal) 3/46.
 **Bina kharcha bhi -0.087R** (XAU -0.013, XAG -0.20, US500 -0.08, USTEC +0.02) = edge nahi, kharcha ne aur dabaya. ~30-40 tr/mahina/market (SL nahi, har palat ek trade).
 TV par "behtar" kyun dikha: TV default kharcha 0 + ek market + ek daur dikh kar chuna. User ko bataya.
+**#39 gold QDM M1 2021-24 (user ne kaha, maloomat):** XAU 1H 1984 tr -0.20R (saal 0/4), bina kharcha +0.097R (SE ~0.06 -> Exp-2SE ~ -0.03, kinare par);
+15m 8143 tr -0.60R (bina +0.000); M1 114793 tr -2.77R (bina +0.08). Kharcha 1H ~0.30R/trade = edge (agar hai) kha jata. Sirf gold chuna = IMTIHAN sakht (pakki 4c).
