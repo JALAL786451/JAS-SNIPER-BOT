@@ -62,7 +62,7 @@ ASLI PASS** (sec 8). #35 us ka FTMO FAIL. FTMO 1 mahine mein = jua (`tools/ftmo_
 4H 313 tr +0.15). **JasTrendEA t3 4H** (magic 20261029, SL 6xATR) F7 ✅ Tester ✅ (268 tr +21R, Python se 11/16 mili) -> demo 6ta chart TRADE CHALU.
 **AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (user maqsad ~100/mahina; "1000" ghalti thi), FTMO; sirf research idea,
 qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary momentum (US index 30m) (2) ORB 5m (#21) (3) VWAP trend
-(4) Gao-Han-Li-Zhou 2018. User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.
+(4) Gao-Han-Li-Zhou 2018 (5) #38 failed breakdown kal ke H/L, NY open (Carmine / Turtle Soup). User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.
 **RUKE HUE KAAM (user jab kahe; Pine par yaad dilao "sahi nateeja MT5 / data milne par Python"):**
 - JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 4 EA (sec 7): 6 mahine (~Apr 2027), har trade TV se milao.
 

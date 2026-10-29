@@ -74,3 +74,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - FTMO samajh? -> payout har ~14 din, fee pehli payout ke saath wapas, funded par target nahi; masla EA ki raftaar (~5-6%/saal) (28 Oct).
 - TV dabba 1D trades 4H se zyada? -> TV har TF par barabar candles deta: 1D ~40 saal, 4H ~2-3 saal; saal ke hisaab 4H ~4 guna tez (29 Oct).
 - JAS Trend 4H pass? -> sirf 4 market TOKRI (#34), gold akela FAIL (#33). EA = JasTrendEA t3 (InpTfH 4, magic 20261029) (29 Oct).
+- Carmine Rosato order flow podcast (transcript 29 Oct dobara)? -> wahi #16 video (14 Oct draft `docs/es_orderflow_draft.md`), gold par SIKKA; footprint/delta CFD par nahi. Qeemat wala hissa (failed breakdown / Turtle Soup) = #38 US index par (29 Oct).
