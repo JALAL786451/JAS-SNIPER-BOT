@@ -849,3 +849,6 @@ Fill = max(open, stop) (SELL: min). Ulta fill = palat (purani band + nayi khuli,
 **R** = ATR14(H1) entry waqt (unit). Kharcha 0.03% x (entry+exit), gold min $0.50; swap 3%/saal har raat. Trade = entry se palat tak.
 **TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, market musbat >= 3/4, (market x saal) > 50% musbat. Bina kharcha = maloomat.
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. TV ka nateeja (kharcha 0, ek market, dikha kar chuna) = sirf ishara. Ginti +1.
+**Koshish #39 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 19737 tr, Exp -0.388R, Exp-2SE -0.427, jeet 25%, market 0/4, (market x saal) 3/46.
+**Bina kharcha bhi -0.087R** (XAU -0.013, XAG -0.20, US500 -0.08, USTEC +0.02) = edge nahi, kharcha ne aur dabaya. ~30-40 tr/mahina/market (SL nahi, har palat ek trade).
+TV par "behtar" kyun dikha: TV default kharcha 0 + ek market + ek daur dikh kar chuna. User ko bataya.
