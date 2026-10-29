@@ -4,7 +4,7 @@
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`
 
-Aakhri update: 28 Oct 2026 (26vi chat, khatam). Ye file **~8 KB se lambi NA ho**. Baqi sab
+Aakhri update: 29 Oct 2026 (26vi chat, khatam). Ye file **~8 KB se lambi NA ho**. Baqi sab
 sirf zaroorat par, poori file nahi - `grep` se:
 - `docs/trading-pakki.md` - accounts, user ki method, har pakka sabaq ki ek line, live kitab
 - `docs/sabaq-tafseel.md` - sabaq ke poore number
@@ -58,6 +58,8 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 - `docs/purana-haal.md` grep "25vi chat". FTMO Free Trial: user FTMO support se poochhe.
 **26vi chat (28 Oct)** - tafseel `docs/purana-haal.md` grep "26vi chat": gold intraday 13 FAIL (#30-33, #22; bina kharcha bhi ~0). **#34 JAS Trend 4H TOKRI
 ASLI PASS** (sec 8). #35 us ka FTMO FAIL. FTMO 1 mahine mein = jua (`tools/ftmo_ek_mahina.py`); JasTrend daily 1% = 163/0 magar ~3 saal.
+**29 Oct (isi chat):** JAS Trend Pro **t3.3** Pine (4H/1D pakka TF, S/R laal/hari, neeche TOKRI table 4 market + KUL) TV ✅ (1D KUL 747 tr Exp-2SE +0.28,
+4H 313 tr +0.15). **JasTrendEA t3 4H** (magic 20261029, SL 6xATR) F7 ✅ Tester ✅ (268 tr +21R, Python se 11/16 mili) -> demo 6ta chart TRADE CHALU.
 **AGLA KAAM - NAYA MANSOOBA (user 28 Oct, sab se pehle):** 1 EA, 15m-4H, tez trades (user maqsad ~100/mahina; "1000" ghalti thi), FTMO; sirf research idea,
 qaida pehle, bahut market. Fehrist: (1) Zarattini-Aziz-Barbon 2024 noise-boundary momentum (US index 30m) (2) ORB 5m (#21) (3) VWAP trend
 (4) Gao-Han-Li-Zhou 2018. User USATECH + USA500 M1 2021-24 zip bhejega (`USATECH_2021_24.zip`) -> `data/qdm/` -> (1) ka qaida likho -> test. "D" nahi.

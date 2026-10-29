@@ -72,3 +72,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - FTMO 1 mahine mein pass (1 EA)? -> NAHI (sabit edge se). `tools/ftmo_ek_mahina.py` 176 challenge 2012-26: JasTrend daily 1% = 163 pass / 0 fail magar 1 mahine mein 0%; 4H tokri 5% = 1 mahine mein 13.6% pass / 54.5% fail (jua). $400k = wahi % target, sirf fee bari (28 Oct).
 - Tide Radar kitne instrument / trades? -> 15 (9 + 6 commodity), ~110 tr/saal = ~2/hafta. FTMO akela nahi: 1% par girawat 14.9% > 10% (28 Oct).
 - FTMO samajh? -> payout har ~14 din, fee pehli payout ke saath wapas, funded par target nahi; masla EA ki raftaar (~5-6%/saal) (28 Oct).
+- TV dabba 1D trades 4H se zyada? -> TV har TF par barabar candles deta: 1D ~40 saal, 4H ~2-3 saal; saal ke hisaab 4H ~4 guna tez (29 Oct).
+- JAS Trend 4H pass? -> sirf 4 market TOKRI (#34), gold akela FAIL (#33). EA = JasTrendEA t3 (InpTfH 4, magic 20261029) (29 Oct).
