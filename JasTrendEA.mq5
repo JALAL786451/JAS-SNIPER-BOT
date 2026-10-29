@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD t2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD t3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasTrendEA.mq5 |
@@ -35,6 +35,12 @@
 //|  shuru mein pehra ki settings; "market closed" par is waqt dobara |
 //|  koshish nahi (agli session khulne par); faisla na ho sake to     |
 //|  minute baad dobara (Tester tez). Trading ke qaide t1 wale hi.    |
+//|  t3 (29 Oct): InpTfH = 4 -> 4H candle (H1 se, NY 17:00 se jura:  |
+//|  17,21,01,05,09,13 NY) = Koshish #34 4H TOKRI ASLI PASS (2019+    |
+//|  641 tr +0.208R). Hifazati SL 6 x ATR(4H) = 2R (Python: 2019+     |
+//|  kabhi nahi laga, nateeja wahi). InpTfH = 24 -> purana daily      |
+//|  (#27 FTMO: tab InpSlMult 4). Faisla candle band se InpPreMin     |
+//|  pehle. Nayi magic 20261029 (t2 daily 20261028 alag chalta hai).  |
 //|                                                                  |
 //|  NO grid / NO martingale / NO hedging / NO averaging.            |
 //+------------------------------------------------------------------+
@@ -42,7 +48,7 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "t2"          // har nayi file par ye number barhta hai
+#define EA_BUILD "t3"          // har nayi file par ye number barhta hai
 #define MAXM 10
 
 CTrade trade;
@@ -58,7 +64,8 @@ input string InpSuffix     = "auto";   // Suffix (Exness demo m) - auto = chart 
 input group "=== 1 - Qawaid (Python #27 jaise - mat badlein) ==="
 input int    InpAtrLen     = 10;       // Supertrend ATR length
 input double InpStMult     = 3.0;      // Supertrend multiplier
-input double InpSlMult     = 4.0;      // Server SL (x ATR) - #27 ki chuni setting
+input int    InpTfH        = 4;        // Candle: 4 = 4H (#34 ASLI PASS), 24 = daily (#26/#27)
+input double InpSlMult     = 6.0;      // Server SL (x ATR): 4H = 6 (hifazat 2R), daily FTMO #27 = 4
 
 input group "=== 2 - Risk ==="
 input bool   InpTrade      = false;    // TRADE KARE? false = sirf dikhaye (Tester mein hamesha trade)
@@ -75,7 +82,7 @@ input double InpMaxDdPct   = 8.0;      // Kul nuksan % (FTMO 10) - is par sab ba
 input group "=== 4 - Amal ==="
 input int    InpBars       = 1200;     // Kitni daily candles parhni
 input int    InpSlippage   = 50;       // Max slippage (points)
-input int    InpMagic      = 20261028; // Magic number
+input int    InpMagic      = 20261029; // Magic number (t2 daily = 20261028)
 input datetime InpStatFrom = D'2019.01.01'; // Tester: hisaab is tareekh se khuli trades ka
 input int    InpServerGMT  = -1;       // Broker server ka GMT farq (-1 = auto, Exness = 0)
 input int    InpPreMin     = 5;        // 17:00 NY se kitne minute pehle faisla
@@ -209,6 +216,26 @@ datetime SessDay(datetime ny)
 
 // Session (din) kis server waqt par shuru hui = pichhle din 17:00 NY
 datetime SessStart(datetime day) { return(NyToServer(AddSec(day, -7 * 3600))); }
+
+// t3: candle ki lambai (sec) - 4H ya daily
+long BlkSec() { return((long)InpTfH * 3600); }
+// NY waqt -> candle ki chabi: session din (00:00) + 4H block (0..5) x 4 ghante. Daily = SessDay
+datetime BarKey(datetime ny)
+  {
+   datetime d = SessDay(ny);
+   if(InpTfH >= 24) return(d);
+   long x = ((long)ny + 7 * 3600) % 86400;
+   return(AddSec(d, (x / BlkSec()) * BlkSec()));
+  }
+datetime DayOf(datetime key) { return((datetime)((long)key - (long)key % 86400)); }
+// candle kis server waqt par shuru hui
+datetime BarStart(datetime key) { return(AddSec(SessStart(DayOf(key)), (long)key % 86400)); }
+// comment ka number: daily = yyyymmdd, 4H = yyyymmdd x 10 + block
+int BarId(datetime key)
+  {
+   if(InpTfH >= 24) return(YMD(key));
+   return(YMD(key) * 10 + (int)(((long)key % 86400) / BlkSec()));
+  }
 
 //+------------------------------------------------------------------+
 //|  CET / CEST (FTMO ka din) - EU DST: March aakhri Sun - Oct aakhri |
@@ -427,13 +454,13 @@ int LoadBars(datetime &T[], double &H[], double &L[], double &C[], bool withNow)
    ArrayResize(L, got);
    ArrayResize(C, got);
    bool nonstop = Is247();
-   datetime nowDay = SessDay(ServerToNy(TimeCurrent()));
+   datetime nowDay = BarKey(ServerToNy(TimeCurrent()));
    int  m = 0;
    bool pend = false;
    double pH = 0.0, pL = 0.0;
    for(int k = 0; k < got; k++)
      {
-      datetime d = SessDay(ServerToNy(rt[k].time));
+      datetime d = BarKey(ServerToNy(rt[k].time));
       MqlDateTime st;
       TimeToStruct(d, st);
       bool wkend = (!nonstop) && (st.day_of_week == 0 || st.day_of_week == 6);
@@ -604,7 +631,7 @@ bool Decide(int i, bool canTrade, bool withNow)
    int need = InpAtrLen * 3 + 5;
    if(m < need)
      {
-      g_state[i] = StringFormat("daily candles kam hain (%d, chahiye %d) - History load ho rahi hai", m, need);
+      g_state[i] = StringFormat("candles kam hain (%d, chahiye %d) - History load ho rahi hai", m, need);
       return(false);
      }
    double A[], ST[];
@@ -645,10 +672,10 @@ bool Decide(int i, bool canTrade, bool withNow)
      }
    else if(!has && !closedNow && flipUp)
      {
-      int day = YMD(T[k]);
+      int day = BarId(T[k]);
       if(g_stop > 0 || g_dayStop)
          Note(StringFormat("BUY palta %s magar FTMO pehra laga hai - nayi nahi", TimeToString(T[k], TIME_DATE)), true);
-      else if(SlHitSince(SessStart(T[k])))
+      else if(SlHitSince(BarStart(T[k])))
          Note(StringFormat("BUY palta %s magar is candle par SL laga tha - nayi nahi", TimeToString(T[k], TIME_DATE)));
       else if(!SigUsed(day))
          if(!TryOpen(g_c[i], g_atr[i], day, canTrade)) return(false);
@@ -922,8 +949,8 @@ void Panel(bool canTrade)
    if(MQLInfoInteger(MQL_TESTER) != 0) mode = "TESTER";
    double base = Base();
    string s = "=== JAS TREND  " + EA_BUILD + "  ===  " + mode + "\n";
-   s += StringFormat("Risk %.2f%% = %.2f har market | SL %.1f x ATR | lot hadd %.2f | suffix '%s' | %d market | magic %d | GMT %+d\n",
-                     InpRiskPct, base * InpRiskPct / 100.0, InpSlMult, InpMaxLot, g_suffix, g_n, InpMagic, GmtOff());
+   s += StringFormat("Candle %s | Risk %.2f%% = %.2f har market | SL %.1f x ATR | lot hadd %.2f | suffix '%s' | %d market | magic %d | GMT %+d\n",
+                     Pick(InpTfH >= 24, "D1", "4H"), InpRiskPct, base * InpRiskPct / 100.0, InpSlMult, InpMaxLot, g_suffix, g_n, InpMagic, GmtOff());
    s += g_guardTxt + "\n";
    for(int i = 0; i < g_n; i++)
      {
@@ -935,7 +962,7 @@ void Panel(bool canTrade)
         }
       string ln = g_sym[i] + " | ";
       if(g_barT[i] > 0 && g_st[i] > 0.0)
-         ln += StringFormat("%s | Supertrend %s (line %s) | ", TimeToString(g_barT[i], TIME_DATE),
+         ln += StringFormat("%s | Supertrend %s (line %s) | ", TimeToString(g_barT[i], TIME_DATE | TIME_MINUTES),
                             Pick(g_up[i], "UPAR", "NEECHE"), Px(g_st[i]));
       s += ln + g_state[i] + "\n";
      }
@@ -955,12 +982,11 @@ void Pass()
                               MQLInfoInteger(MQL_TRADE_ALLOWED) != 0);
    Guard(canTrade);
    datetime ny     = ServerToNy(now);
-   datetime nowDay = SessDay(ny);
-   MqlDateTime nt, dt;
-   TimeToStruct(ny, nt);
-   TimeToStruct(nowDay, dt);
-   int  mins   = nt.hour * 60 + nt.min;
-   bool preWin = (mins >= 17 * 60 - InpPreMin && mins < 17 * 60 && dt.day_of_week >= 1 && dt.day_of_week <= 5);
+   datetime nowDay = BarKey(ny);
+   MqlDateTime dt;
+   TimeToStruct(DayOf(nowDay), dt);
+   long into   = (((long)ny + 7 * 3600) % 86400) % BlkSec();   // candle shuru hue kitne sec
+   bool preWin = (into >= BlkSec() - (long)InpPreMin * 60 && dt.day_of_week >= 1 && dt.day_of_week <= 5);
    for(int i = 0; i < g_n; i++)
      {
       if(!g_have[i]) continue;
@@ -1031,6 +1057,11 @@ int OnInit()
    if(InpAtrLen < 2 || InpStMult <= 0.0 || InpSlMult <= 0.0)
      {
       Print("ERROR: qawaid ke number ghalat hain.");
+      return(INIT_PARAMETERS_INCORRECT);
+     }
+   if(InpTfH != 4 && InpTfH != 24)
+     {
+      Print("ERROR: InpTfH sirf 4 (4H) ya 24 (daily).");
       return(INIT_PARAMETERS_INCORRECT);
      }
    if(InpPreMin < 1 || InpPreMin > 50)
@@ -1107,7 +1138,7 @@ int OnInit()
      {
       if(!EventSetTimer(30)) Print("Timer nahi laga - sirf tick par chalega.");
      }
-   Comment("=== JAS TREND  " + EA_BUILD + " ===\nshuru ho raha hai - daily candles parh raha hai...");
+   Comment("=== JAS TREND  " + EA_BUILD + " ===\nshuru ho raha hai - candles parh raha hai...");
    return(INIT_SUCCEEDED);
   }
 
