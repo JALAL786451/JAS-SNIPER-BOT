@@ -1,5 +1,9 @@
 # QDM data list (29 Oct 2026) - ek hi dafa sab
 
+**ASAAN TAREEQA (29 Oct, user ne manga):** laptop par `tools/JAS_DATA.bat` double-click = sab (36 H1 + 4 index M1 2021-aaj)
+seedha Dukascopy se, QDM ke baghair (`tools/duka_get.py`, resume + retry). XPTUSD / XPDUSD Dukascopy par nahi (list se bahar).
+Cloud (Claude) se Dukascopy rokta hai (29 Oct naap: 529s mein 22 file) - is liye laptop. Neeche QDM wala purana tareeqa.
+
 Export tareeqa (har symbol): Export tab > **Export to CSV** (MT5 wala nahi) > Timeframe > No Session > Original >
 "Generic bar format (comma delimited)". Pehle Data sources > Dukascopy mein symbol chun kar **Update** (download, ghante lag sakte).
 Naam QDM mein thoda alag ho sakta hai - search box mein lafz likhein (jaise "DEU", "LIGHT").
