@@ -56,7 +56,7 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 **27vi chat (29 Oct)** - tafseel `docs/purana-haal.md` grep "27vi chat" + "Koshish #37".."#42". Purani 22-26vi: grep "sec 5 se (29 Oct 27vi".
 5 naye FAIL: #38 failed breakdown, #39 TV Momentum H1, #40 VWAP, #41 Gao-Han-Li-Zhou (H1 proxy), #42 raat ka drift (asar asli, kharcha bara).
 NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100 tr/mahina = ZYADA MARKET, chhoti TF nahi.
-**DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` (folder > cmd > JAS_DATA.bat) -> `tools/duka_get.py` d3 = Dukascopy se
+**DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` -> `tools/duka_get.py` d3 = Dukascopy se
 36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se rok; d2 adhoora (4 saath + sleep), d3 aahista.
 **SAB SE PEHLE (user 29 Oct, aakhir mein):** data ki NAYI file banao jo (1) user ka kaam na roke (background, low priority, minimized);
 (2) QDM ke saath bhi chale - QDM folder mein rakhne wali .bat (qdmcli update/export) ya duka_get d3 - sab instrument AAHISTA AAHISTA;
