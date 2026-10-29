@@ -3,7 +3,7 @@
 Cloud (Claude) se Dukascopy rokta hai (~0.04 file/s) - laptop par chalao: tools/JAS_DATA.bat (ek click).
 d3: d2 (4 saath + jaldi retry) ne laptop par bhi rok lagwa di - ab AAHISTA: ek waqt ek file, har file ke baad
 waqfa, rok par 30s se 10 min tak intezar; har 100 file par progress line.
-d4: --per-folder = <out>/<SYMBOL>/<file>.zip (tools/JAS_DATA_BG.bat, D:\\JAS_DATA); bani hui file chhor do; zip .tmp se rename.
+d4: rok ki wajah log mein (HTTP code / error). --per-folder = <out>/<SYMBOL>/<file>.zip (tools/JAS_DATA_BG.bat, D:\\JAS_DATA); bani hui file chhor do; zip .tmp se rename.
 
   python3 tools/duka_get.py h1              # docs/qdm-data-list.md ke H1 symbol -> data/duka/H1/<ID>_H1.zip
   python3 tools/duka_get.py m1              # 4 index M1 2021-aaj -> data/duka/M1/<ID>_M1_<saal>.zip (har saal alag, < 25 MB)
@@ -67,10 +67,11 @@ def fetch(path, cache, tries=10):
             if e.code == 404:
                 b = b''
                 break
-        except Exception:
-            pass
+            why = f'HTTP {e.code}'
+        except Exception as e:
+            why = f'{type(e).__name__}: {str(e)[:80]}'
         if k >= 2:
-            print(f'   server ne roka - {wait}s ruk kar dobara', flush=True)
+            print(f'   server ne roka ({why}) - {wait}s ruk kar dobara', flush=True)
         time.sleep(wait if k >= 1 else 5)
         if k >= 1:
             wait = min(600, wait * 2)
