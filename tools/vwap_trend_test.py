@@ -80,10 +80,10 @@ def trades(df, cost_on=True):
                 close(i, x)
                 pos = None
         if pos is None and hr[i] < LAST_ENTRY_HR and not np.isnan(atr[i]) and day[i] == day[i + 1]:
-            if up[i] and vwap[i] > vwap[i - 1]:
+            if up[i]:
                 e = o[i + 1]
                 pos = (1, e, e - SL_ATR * atr[i], atr[i], i)
-            elif dn[i] and vwap[i] < vwap[i - 1]:
+            elif dn[i]:
                 e = o[i + 1]
                 pos = (-1, e, e + SL_ATR * atr[i], atr[i], i)
     return pd.DataFrame(out, columns=['t', 'd', 'r'])

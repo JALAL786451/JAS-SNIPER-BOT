@@ -890,3 +890,13 @@ Sirf sign: >0 = BUY, <0 = SELL, 0 = chhod do. Ek trade har din (kisi market mein
 **Koshish #41 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi, H1 proxy). KUL 3246 tr, Exp -0.221R, Exp-2SE -0.255, jeet 38%, (market x saal) 0/14.
 US500 -0.25R (bina +0.03), USTEC -0.19R (bina +0.03). Bina kharcha +0.03R = chhota, kharcha ~0.25R/trade kha jata. BUY/SELL dono manfi. ~20 tr/mahina/market.
 Nota: H1 proxy paper ka asal nahi (9:30-10:00 / 15:30-16:00 ki jagah 09:00 candle / 15:00 open). Asli test M1 zip par.
+**#40 TASHEEH (29 Oct, Claude ki ghalti):** pehle code mein VWAP slope shart thi jo qaide mein NAHI thi. Qaide ke mutabiq dobara: KUL 22321 tr, Exp -0.253R,
+bina kharcha +0.007R, (market x saal) 0/30 = phir bhi TALAASH FAIL. Sabaq: test se pehle code ko qaide se line-ba-line milao.
+
+**Koshish #42 qaida (29 Oct, 27vi chat, research: Cooper-Cliff-Gulen 2008 "Return differences between trading and non-trading hours", Lou-Polk-Skouras 2019
+"A tug of war: overnight vs intraday" - US index ka munafa zyada tar RAAT mein (close -> open); test se PEHLE, badalna mana) - `tools/overnight_test.py`:**
+US500 + USTEC, Dukascopy H1 (`data/ftmo/`, UTC -> NY). **Sirf BUY:** 16:00 NY candle ke open par khareedo (cash close), agle trading din 09:00 NY candle ke open par becho
+(9:30 open ke qareeb, H1 jaal). Har din ek trade, har market ek position. SL / TP nahi. Jumma -> Peer = ek trade (3 raat swap).
+**R** = ATR14(D, 17:00 NY din) entry waqt (unit). Kharcha 0.03% x (entry+exit) + swap 3%/saal har raat -> R. Ulta leg (09:00 -> 16:00 din mein BUY) = sirf maloomat.
+**TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono index musbat, (market x saal) > 50% musbat. Bina kharcha = maloomat.
+**IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. ~20 tr/mahina/market. Ginti +1.
