@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""duka_get d2 (29 Oct 2026) - Dukascopy datafeed se seedha H1 / M1 (QDM ki jagah), sirf standard library.
+"""duka_get d3 (29 Oct 2026) - Dukascopy datafeed se seedha H1 / M1 (QDM ki jagah), sirf standard library.
 Cloud (Claude) se Dukascopy rokta hai (~0.04 file/s) - laptop par chalao: tools/JAS_DATA.bat (ek click).
+d3: d2 (4 saath + jaldi retry) ne laptop par bhi rok lagwa di - ab AAHISTA: ek waqt ek file, har file ke baad
+waqfa, rok par 30s se 10 min tak intezar; har 100 file par progress line.
 
   python3 tools/duka_get.py h1              # docs/qdm-data-list.md ke H1 symbol -> data/duka/H1/<ID>_H1.zip
   python3 tools/duka_get.py m1              # 4 index M1 2021-aaj -> data/duka/M1/<ID>_M1_<saal>.zip (har saal alag, < 25 MB)
@@ -46,11 +48,15 @@ def factor(sym):
     return 1_000
 
 
-def fetch(path, cache, tries=8):
+DELAY = 1.5                       # har download ke baad (Dukascopy ki rok se bachne ke liye)
+
+
+def fetch(path, cache, tries=10):
     """bi5 bytes (b'' = khaali / 404). Cache mein ho to wahi. Na mile to None (dobara chalao)."""
     f = cache / path
     if f.exists():
         return f.read_bytes()
+    wait = 30
     for k in range(tries):
         try:
             req = urllib.request.Request(URL + path, headers={'User-Agent': 'Mozilla/5.0'})
@@ -62,11 +68,16 @@ def fetch(path, cache, tries=8):
                 break
         except Exception:
             pass
-        time.sleep(min(60, 2 ** k))
+        if k >= 2:
+            print(f'   server ne roka - {wait}s ruk kar dobara', flush=True)
+        time.sleep(wait if k >= 1 else 5)
+        if k >= 1:
+            wait = min(600, wait * 2)
     else:
         return None
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_bytes(b)
+    time.sleep(DELAY)
     return b
 
 
@@ -94,9 +105,13 @@ def write_zip(rows, fac, zpath, name):
 
 
 def run(jobs, cache, workers):
-    """jobs = [(path, start)] -> {path: bytes|None}"""
+    """jobs = [(path, start)] -> {path: bytes|None}; har 100 file par progress."""
+    res = []
     with ThreadPoolExecutor(workers) as ex:
-        res = list(ex.map(lambda j: fetch(j[0], cache), jobs))
+        for i, r in enumerate(ex.map(lambda j: fetch(j[0], cache), jobs), 1):
+            res.append(r)
+            if i % 100 == 0 and i < len(jobs):
+                print(f'   ... {i}/{len(jobs)} file', flush=True)
     return dict(zip([j[0] for j in jobs], res))
 
 
@@ -104,10 +119,11 @@ def get_h1(sym, cache, workers, today, out):
     fac = factor(sym)
     years = range(2003, today.year + 1)
     yr = run([(f'{sym}/{y}/BID_candles_day_1.bi5', None) for y in years], cache, workers)
-    if any(v is None for v in yr.values()):
-        return 'adhoora (saal)'
+    if all(v is None for v in yr.values()):
+        return 'adhoora (server ne roka - dobara chalao)'
     have = [y for y in years                                     # >= 20 asli din (2011 mein akeli candle jaisi nahi)
-            if len(candles(yr[f'{sym}/{y}/BID_candles_day_1.bi5'], dt.datetime(y, 1, 1), fac)) >= 20]
+            if yr[f'{sym}/{y}/BID_candles_day_1.bi5'] is None
+            or len(candles(yr[f'{sym}/{y}/BID_candles_day_1.bi5'], dt.datetime(y, 1, 1), fac)) >= 20]
     if not have:
         return 'Dukascopy par nahi'
     months = [(y, m) for y in range(have[0], today.year + 1) for m in range(12)
@@ -145,7 +161,7 @@ def main():
     ap.add_argument('tf', choices=['h1', 'm1'])
     ap.add_argument('symbols', nargs='*')
     ap.add_argument('--cache', default=str(Path.home() / '.cache' / 'duka'))
-    ap.add_argument('--workers', type=int, default=4)
+    ap.add_argument('--workers', type=int, default=1)
     ap.add_argument('--out')
     a = ap.parse_args()
     cache, today = Path(a.cache), dt.date.today()
