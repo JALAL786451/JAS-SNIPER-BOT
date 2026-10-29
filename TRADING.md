@@ -57,11 +57,11 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 5 naye FAIL: #38 failed breakdown, #39 TV Momentum H1, #40 VWAP, #41 Gao-Han-Li-Zhou (H1 proxy), #42 raat ka drift (asar asli, kharcha bara).
 NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100 tr/mahina = ZYADA MARKET, chhoti TF nahi.
 **DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` (folder > cmd > JAS_DATA.bat) -> `tools/duka_get.py` d3 = Dukascopy se
-36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se Dukascopy rokta. Pehli dafa (d2, 4 saath + laptop sleep) adhoora; d3 aahista.
+36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se rok; d2 adhoora (4 saath + sleep), d3 aahista.
 **SAB SE PEHLE (user 29 Oct, aakhir mein):** data ki NAYI file banao jo (1) user ka kaam na roke (background, low priority, minimized);
 (2) QDM ke saath bhi chale - QDM folder mein rakhne wali .bat (qdmcli update/export) ya duka_get d3 - sab instrument AAHISTA AAHISTA;
 (3) `D:\JAS_DATA\<INSTRUMENT>\` har instrument ka folder, har mukammal file foran wahan (D na ho to C). Hadd user ko batao: QDM ka database
-bahar se nahi likh sakte; qdmcli free version mein pakka nahi (pehle QDM folder mein `qdmcli.exe` dekhwao). User ko kuch dobara na poochho.
+bahar se nahi likh sakte; qdmcli free version mein pakka nahi (pehle QDM folder mein `qdmcli.exe` dekhwao). User se dobara na poochho.
 **AGLA KAAM:** (a) user SS / zip (`data/duka/H1`, `M1`) -> loader -> #34 4H trend qaida BARI tokri (~40 market), qaida pehle; trade ginti + FTMO.
 (b) M1 -> #37 noise-boundary (qaida likha) + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089 - `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.
