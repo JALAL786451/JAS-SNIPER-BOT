@@ -956,3 +956,10 @@ Shart: |close[i] - FP| >= 0.8 x 38 = 30.4 point. Entry open[i+1], TP 38 / SL 25 
 **Koshish #44 nateeja (29 Oct, 28vi chat) = TALAASH FAIL** (IMTIHAN band). 2491 tr (**103.8/mahina**), Exp -0.135R, SE 0.023, Exp-2SE -0.182, jeet 39.6% (38/25 ka
 barabar = 39.7%), 2021 -146R, 2022 -190R. A 432 tr -0.082R, B 2059 tr -0.146R; Asia -0.13, NY -0.18, NYPM -0.04; BUY/SELL dono manfi. Bina kharcha -0.018R (~0), 0.03% -0.33R.
 Sabaq: 1m "fair price" bias = sikka (jeet bilkul tukka jitni); JJ khud kehta hai faida prop-firm ke hisaab (sasti eval, 45 account, payout) se, market se "slightly +EV". 100 tr/mahina mil gaye magar edge nahi.
+
+**Koshish #45 qaida (29 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - Connors & Alvarez "Double 7s" (Short Term Trading Strategies That Work, 2008) - `tools/double7_test.py`:**
+Data `data/ftmo/` H1 -> daily (NY 17:00). **PASS sirf US500 + USTEC** (kitab index ki); XAU/XAG sirf maloomat. Sirf BUY, har market ek position.
+BUY: close[i] > SMA200[i] aur close[i] = pichhle 7 din (i samet) ki sab se kam close -> open[i+1]. Band: close[j] = pichhle 7 din ki sab se zyada close -> open[j+1].
+Hifazat SL = entry - 3 x ATR14[i] (RMA; low <= SL -> SL, gap neeche = open). 1R = 3 x ATR14[i]. Kharcha #34 jaisa: 0.03% x (entry+exit) + swap 3%/saal har raat.
+**TALAASH** entry < 2019 (index data 2012 se): PASS = kul >= 100 tr, Exp(R) - 2SE > 0, dono index Exp > 0, (market x saal) musbat > 50%. Ginti +1.
+**IMTIHAN** 2019+ ek dafa, bina tabdeeli: tr >= 30 aur Exp > 0.
