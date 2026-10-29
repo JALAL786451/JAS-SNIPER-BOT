@@ -86,3 +86,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - "Smart App Control blocked" .bat? -> right-click > Properties > Unblock tick > OK; SAC band NA karo (wapas on nahi hota). JAS_DATA_BG chal gaya: qdmcli nahi, Dukascopy py -3 (29 Oct).
 - J Law (Chart Fanatics) multiple edge EA? -> #43 FAIL: 4 CFD par toot + kam volume pullback, daily 3 tr, 4H -0.11R; asal faida stocks catalyst/sector (29 Oct).
 - JJ Simon 1m fair price (NQ) EA? -> #44 FAIL: 104 tr/mahina magar jeet 39.6% = tukka (38/25 barabari 39.7%), -0.135R; uska faida prop-firm hisaab (29 Oct).
+- QDM se 34 ek saath file se? -> NAHI: QDM "Free version" (SS 29 Oct), bahar se file se nahi chalta; wahi kaam JAS_DATA_BG kar raha (har instrument D:\JAS_DATA\<naam>). Dono saath = Dukascopy zyada rokta. QDM mein M1: USA500/USATECH 2012-2026, XAU/XAG 2003-2026 (29 Oct).
