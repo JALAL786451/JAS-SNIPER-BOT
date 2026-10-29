@@ -876,3 +876,6 @@ Ek market ek position; cross ke baad sirf nayi entry (kisi nayi ulti position se
 **R** = ATR14 entry waqt. SL candle mein dono hon to SL pehle (conservative).
 **TALAASH entry < 2019:** trades >= 100, Exp - 2SE > 0, dono index musbat, (market x saal) > 50% musbat. Bina kharcha = maloomat.
 **IMTIHAN 2019+** ek dafa: Exp - 2SE > 0, trades >= 30. Ginti +1.
+**Koshish #40 nateeja (29 Oct) = TALAASH FAIL** (IMTIHAN nahi). KUL 15179 tr, Exp -0.251R, Exp-2SE -0.277, jeet 24%, market 0/3, (market x saal) 1/30.
+Bina kharcha +0.009R = edge ~0. Gold -0.19R (bina +0.03), US500 -0.34R, USTEC -0.29R. BUY/SELL dono manfi. ~42-46 tr/mahina/market.
+Nota: pehla script Volume column drop hone se fail hua (ftmo_test.load); script ab apna loader use karti hai (Volume ke saath).
