@@ -62,7 +62,7 @@ NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100
 (3) `tools/JAS_ZIP.bat` download + Unblock, usi folder mein double-click (zip + D:\JAS_DATA, GitHub page khud) (4) zip khench > Commit (5) loader + #34 bari tokri.
 **AGLA KAAM:** (a) user SS / zip (`data/duka/H1`, `M1`) -> loader -> #34 4H trend qaida BARI tokri (~40 market), qaida pehle; trade ginti + FTMO.
 (b) M1 -> #37 noise-boundary (qaida likha) + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
-**Kitab (30 Oct raat, LIVE, gold 3,877):** 87 BUY 1.78 lot @3989.55 + 1 SELL 1.65 @3904.33, NET +0.13; balance 50,296 / equity 34,729 USC, margin 25.93. $1 = 13 USC; SELL band ho to 178 USC/$ -> ~195$ girawat (3,682) = equity khatam.
+**Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. $1 = 20 USC (~1,700$ door); SELL band = 185 USC/$ -> ~3,690 par khatam. Barabar 4,653.
 **RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
 
 ## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
