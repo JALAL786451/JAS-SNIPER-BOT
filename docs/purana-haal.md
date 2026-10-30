@@ -1019,3 +1019,6 @@ Koi na bache = FAIL. **IMTIHAN** 2019-01..aaj ek dafa: pass > fail aur P1 fail <
 **Koshish #49 CHUNAO (31 Oct, IMTIHAN se PEHLE likha):** 84 challenge 2012-18, trend 5.9 + IBS 1.7 tr/mahina. Shart poori: 0.25/2.0 (5/0), 0.5/0.5 (1/0), 0.5/1.0 (1/0),
 0.5/2.0 (22/1), **0.75/2.0 = 52 pass / 15 fail (8/7), 17 adhoora, P1 fail 9.5%, pass median 39.3 mahine** = CHUNI (max pass-fail). 0.75/0.5 aur 0.75/1.0 P1 fail >= 19-24%.
 Note: chuni setting grid ke kinare par (sab se zyada risk) - IMTIHAN sakhti se dekho.
+**Koshish #49 IMTIHAN 2019+ (ek dafa, 31 Oct) = ASLI PASS:** trend 0.75% + IBS 2.0%: 94 challenge, **69 pass / 14 fail (13 P1 / 1 P2) / 11 adhoora, P1 fail 13.8%**,
+**pass median 11.1 mahine** (#27 akela ~32), ~8.9 tr/mahina (trend 6.8 + IBS 2.1). Ehtiyat: 2019+ gold tezi trend ko madad; IBS 2% = EA default (1%) se zyada -
+risk barhana user ka faisla (CLAUDE.md). Ek saath max khula risk ~5% (4 trend x 0.75 + IBS 2) = din ki 5% hadd ke qareeb (sim mein khuli trade ka bura ghanta gina).

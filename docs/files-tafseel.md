@@ -41,7 +41,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/jj_fair_price_test.py` | #44 (29 Oct): JJ Simon fair price 1m USTEC (session open continuation + reversion, 38/25) - FAIL |
 | `tools/double7_test.py` | #45 (29 Oct): Connors Double 7s daily (SMA200 upar, 7 din ki kam close BUY, 7 din ki zyada close band, SL 3 ATR) - ASLI PASS kamzor |
 | `tools/squeeze_nr7_test.py` | #46 (29 Oct): Bollinger squeeze + NR7 toot daily + 4H, BUY+SELL, SMA20 exit - FAIL |
-| `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL |
+| `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL | `--tf D1` = #48 FAIL.
+| `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `data/qdm/XAUUSD_M1_2021_24.zip`, `XAUUSD_M1_2015.zip` | QDM Dukascopy gold M1 UTC (user 28 Oct; 2015 H1 se 100% mila). 2016-20 aur 2025+ abhi nahi |
 | `tools/ftmo_imkaan.py` | FTMO imkaan f2 (27 Oct; f2 = --jaal har system ka alag risk: IBS 2% + Kachhua 0.25% = 36m mein 59% pass, 5% fail; 60m mein 81% / 7%): Monte Carlo FTMO 2-step (P1 10%, P2 5%, din 5%, kul 10%, min 4 din), presets ibs / kachhua / --system, faida SE ke saath. Pehla nateeja: tokri 0.5% = dono pass 47%, ~18 mahine |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
