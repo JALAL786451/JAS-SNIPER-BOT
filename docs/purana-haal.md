@@ -1009,3 +1009,10 @@ flip ke baad agle din ki open, **SL = 4 x ATR10(D1)** (#27 JasTrend FTMO PASS ja
 market 9/20, (market x saal) 81/192. Group: US idx +0.204R, metal +0.166, oil +0.094, Asia 0.0, EU idx -0.184, USD fx -0.147 (412 tr), fasal kam data.
 **#47 + #48 ka bara sabaq:** trend ka faida (4H aur daily dono) SIRF gold / silver / US index (+ thoda oil) - yahi #26 / #34 ke market the. Europe index aur forex
 par trend ulta nuqsaan. Zyada market = sirf trade barhte hain, edge nahi. FTMO ke liye sabit tukde: #27 daily, #34 4H (4 market), #15 IBS S&P.
+
+**Koshish #49 qaida (31 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - FTMO: #34 4H trend tokri + #15 IBS S&P MILA KAR - `tools/ftmo49.py`:**
+System 1 = #34/#35: XAU, XAG, US500, USTEC 4H Supertrend 10/3 sirf BUY, **SL 6 x ATR10(4H)** (`ftmo_4h.st4h_trades`). System 2 = #15 IBS sirf **US500** (`ftmo_test.ibs_trades`:
+SMA200 upar, IBS < 0.2 BUY, IBS > 0.8 ya 5 din band, SL 3 ATR). `ftmo_test.run` jyon ka tyon (#27: $100k 2-step, P1 +10% P2 +5%, din 5% CET khuli shamil, kul 10%,
+har mahine naya challenge, kharcha 0.03% + swap 3%); har system har market ek position (do system ek market par alag slot). Pehra nahi.
+**CHUNAO** 2012-01..2018-12: trend risk 0.25 / 0.5 / 0.75% x IBS risk 0.5 / 1.0 / 2.0% (9). Shart P1 fail < 20% aur pass > fail; max (pass - fail); barabar = kam kul risk.
+Koi na bache = FAIL. **IMTIHAN** 2019-01..aaj ek dafa: pass > fail aur P1 fail < 20%. Maloomat: pass median mahine (vs #27 ~32), trade/mahina. Ginti +1.
