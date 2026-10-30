@@ -1016,3 +1016,6 @@ SMA200 upar, IBS < 0.2 BUY, IBS > 0.8 ya 5 din band, SL 3 ATR). `ftmo_test.run` 
 har mahine naya challenge, kharcha 0.03% + swap 3%); har system har market ek position (do system ek market par alag slot). Pehra nahi.
 **CHUNAO** 2012-01..2018-12: trend risk 0.25 / 0.5 / 0.75% x IBS risk 0.5 / 1.0 / 2.0% (9). Shart P1 fail < 20% aur pass > fail; max (pass - fail); barabar = kam kul risk.
 Koi na bache = FAIL. **IMTIHAN** 2019-01..aaj ek dafa: pass > fail aur P1 fail < 20%. Maloomat: pass median mahine (vs #27 ~32), trade/mahina. Ginti +1.
+**Koshish #49 CHUNAO (31 Oct, IMTIHAN se PEHLE likha):** 84 challenge 2012-18, trend 5.9 + IBS 1.7 tr/mahina. Shart poori: 0.25/2.0 (5/0), 0.5/0.5 (1/0), 0.5/1.0 (1/0),
+0.5/2.0 (22/1), **0.75/2.0 = 52 pass / 15 fail (8/7), 17 adhoora, P1 fail 9.5%, pass median 39.3 mahine** = CHUNI (max pass-fail). 0.75/0.5 aur 0.75/1.0 P1 fail >= 19-24%.
+Note: chuni setting grid ke kinare par (sab se zyada risk) - IMTIHAN sakhti se dekho.
