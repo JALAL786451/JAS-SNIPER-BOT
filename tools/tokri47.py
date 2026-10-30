@@ -6,6 +6,7 @@ Qaida (badalna mana): docs/purana-haal.md, grep "Koshish #47 qaida".
   python3 tools/tokri47.py edge --imtihan       # A: 2019+ EK dafa (sirf TALAASH PASS ke baad)
   python3 tools/tokri47.py ftmo                 # B: CHUNAO 2012-2018 (risk 0.25/0.5/0.75)
   python3 tools/tokri47.py ftmo --imtihan --risk 0.5   # B: 2019+ EK dafa
+  --tf D1 = Koshish #48 (daily, SL 4 x ATR, risk 0.5/0.75/1.0) - qaida grep "Koshish #48 qaida"
 
 Data: data/ftmo (4) + data/duka/H1/JAS_ZIP (24), UTC H1. Index/metal/oil/fasal/BTC sirf BUY;
 forex + DOLLARIDX BUY + SELL. SL = 6 x ATR10(4H). Kharcha 0.03%/taraf + swap 3%/saal.
@@ -19,7 +20,8 @@ import pandas as pd
 
 from ftmo_test import ATR_LEN, BAL0, COST, ROOT, SWAP, Mkt, load, session_day, supertrend_up
 
-K = 6.0
+K = 6.0                                      # #47 (4H); #48 (D1) = 4.0
+TF = 'H4'
 CUT = pd.Timestamp('2019-01-01', tz='UTC')
 GROUPS = {
     'US idx': ['US500', 'USTEC', 'USA30IDXUSD', 'USSC2000IDXUSD'],
@@ -46,9 +48,11 @@ def load_any(sym):
 
 
 def trades4h(df, k, both):
-    """(entry H1 idx, exit H1 idx, entry, exit, SL doori, rukh) - 4H Supertrend flip, server SL = k x ATR10(4H)."""
+    """(entry H1 idx, exit H1 idx, entry, exit, SL doori, rukh) - 4H (ya TF = D1) Supertrend flip, server SL = k x ATR10."""
     day = session_day(df['t'])
     blk = ((df['t'].dt.tz_convert('America/New_York') + pd.Timedelta(hours=7)).dt.hour // 4).values
+    if TF == 'D1':
+        blk = np.zeros(len(df), dtype=int)
     g = pd.DataFrame({'i': np.arange(len(df)), 'd': day.values, 'b': blk,
                       'H': df['High'].values, 'L': df['Low'].values, 'C': df['Close'].values})
     g = g.groupby(['d', 'b'], sort=True).agg(f=('i', 'first'), la=('i', 'last'),
@@ -225,8 +229,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('part', choices=['edge', 'ftmo'])
     ap.add_argument('--imtihan', action='store_true')
-    ap.add_argument('--risk', type=float, nargs='*', default=[0.25, 0.5, 0.75])
+    ap.add_argument('--risk', type=float, nargs='*')
+    ap.add_argument('--tf', choices=['H4', 'D1'], default='H4')
     a = ap.parse_args()
+    global K, TF
+    TF = a.tf
+    K = 4.0 if TF == 'D1' else 6.0
+    print(f'TF {TF}, SL {K:.0f} x ATR10')
+    if a.risk is None:
+        a.risk = [0.5, 0.75, 1.0] if TF == 'D1' else [0.25, 0.5, 0.75]
     if a.part == 'edge':
         edge(a.imtihan)
     else:

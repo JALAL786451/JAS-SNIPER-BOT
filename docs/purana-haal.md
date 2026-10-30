@@ -1005,3 +1005,7 @@ Sabaq: 4H trend ka faida sirf gold/silver/US index mein; Europe / oil / forex / 
 **Koshish #48 qaida (31 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - DAILY trend 28 market (#26 / #27 jaisa) + pehra + FTMO - `tools/tokri47.py --tf D1`:**
 #47 jyon ka tyon (wahi 28 market, groups, rukh: forex + DOLLARIDX BUY+SELL, baqi sirf BUY; kharcha, PASS shartein, pehra) - farq sirf: **daily candle** (NY 17:00),
 flip ke baad agle din ki open, **SL = 4 x ATR10(D1)** (#27 JasTrend FTMO PASS jaisa). FTMO CHUNAO 2012-2018 risk **0.5 / 0.75 / 1.0%**, IMTIHAN 2019+ ek dafa. Ginti +2.
+**Koshish #48 nateeja (31 Oct, 28vi chat) = A TALAASH FAIL** (IMTIHAN / FTMO band). 852 tr (~5/mahina), Exp -0.058R (R = 4 ATR), Exp-2SE -0.124, jeet 34%, bina kharcha +0.051R;
+market 9/20, (market x saal) 81/192. Group: US idx +0.204R, metal +0.166, oil +0.094, Asia 0.0, EU idx -0.184, USD fx -0.147 (412 tr), fasal kam data.
+**#47 + #48 ka bara sabaq:** trend ka faida (4H aur daily dono) SIRF gold / silver / US index (+ thoda oil) - yahi #26 / #34 ke market the. Europe index aur forex
+par trend ulta nuqsaan. Zyada market = sirf trade barhte hain, edge nahi. FTMO ke liye sabit tukde: #27 daily, #34 4H (4 market), #15 IBS S&P.
