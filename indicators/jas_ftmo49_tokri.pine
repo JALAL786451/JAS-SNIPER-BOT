@@ -1,0 +1,230 @@
+//@version=6
+// ============================================================================
+//  JAS FTMO 49 TOKRI  (build t1, Pine v6) - Koshish #49 ASLI PASS ka TOKRI DABBA
+//  31 Oct 2026. Har market apne hi data par (request.security ke andar), #49 ke qaide:
+//    - TREND 4H: XAU, XAG, SPX500, NAS100 - Supertrend 10/3 SIRF BUY, flip ke baad agli 4H open,
+//      ulta flip = agli open band, SL = 6 x ATR10 (4H). Risk 0.75% = $750 har trade ($100k).
+//    - IBS 1D: SPX500 - close > SMA200 aur IBS < 0.2 = din ke close par BUY; IBS > 0.8 ya 5 din = band;
+//      SL 3 x ATR14. Risk 2% = $2,000 har trade.
+//    - Kharcha 0.03% har taraf (swap nahi gina). Muddat: entry ka waqt.
+//  PASS (Python #49 jaisi shartein, Pine sirf ANDAZA): TALAASH 2012-2018 = kul >= 100 tr, Exp-2SE > 0;
+//  IMTIHAN 2019-aaj = kul >= 30 tr, Exp-2SE > 0. DD = BAND trades ka (khuli trade ka nuqsaan shamil nahi).
+//  Chart: OANDA:XAUUSD 4H behtar. TV par purana 4H data kam ho sakta hai - "Data se" line dekhein.
+//  Python ka asal FTMO nateeja (tools/ftmo49.py): 2019+ 94 challenge = 69 pass / 14 fail.
+// ============================================================================
+indicator("JAS FTMO 49 Tokri t1", shorttitle = "JAS FTMO49 TOKRI t1", overlay = true)
+
+muddat = input.string("IMTIHAN 2019-aaj", "Muddat", options = ["TALAASH 2012-2018", "IMTIHAN 2019-aaj", "SAB 2012-aaj"])
+bal    = input.float(100000, "Account ($)")
+rT     = input.float(0.75, "Trend risk %")
+rI     = input.float(2.0, "IBS risk %")
+safaid = input.bool(true, "Safaid dabba")
+m1 = input.symbol("OANDA:XAUUSD", "Trend 1", group = "Markets (#49 - mat badlein)")
+m2 = input.symbol("OANDA:XAGUSD", "Trend 2", group = "Markets (#49 - mat badlein)")
+m3 = input.symbol("OANDA:SPX500USD", "Trend 3", group = "Markets (#49 - mat badlein)")
+m4 = input.symbol("OANDA:NAS100USD", "Trend 4", group = "Markets (#49 - mat badlein)")
+mI = input.symbol("OANDA:SPX500USD", "IBS", group = "Markets (#49 - mat badlein)")
+
+COST = 0.0003
+tA = muddat == "IMTIHAN 2019-aaj" ? timestamp("2019-01-01T00:00:00") : timestamp("2012-01-01T00:00:00")
+tB = muddat == "TALAASH 2012-2018" ? timestamp("2019-01-01T00:00:00") : timestamp("2100-01-01T00:00:00")
+
+// TREND 4H - wapas: [trades, jor R, jor R2, jeet, jor $, pehli candle ka waqt]
+simT(float usd) =>
+    var int   pos = 0
+    var bool  pEnt = false
+    var bool  pEx = false
+    var float sdP = na
+    var float eP = na
+    var float sd = na
+    var float sl = na
+    var int   eT = na
+    var int   cN = 0
+    var float cR = 0.0
+    var float cR2 = 0.0
+    var int   cW = 0
+    var float cU = 0.0
+    var int   t0 = na
+    a = ta.atr(10)
+    [st, d] = ta.supertrend(3.0, 10)
+    up = d < 0
+    if na(t0)
+        t0 := time
+    float xP = na
+    if pEx and pos == 1
+        xP := open
+    pEx := false
+    if pEnt and pos == 0 and na(xP)
+        pos := 1
+        eP := open
+        sd := sdP
+        sl := open - sdP
+        eT := time
+    pEnt := false
+    if pos == 1 and na(xP) and low <= sl
+        xP := math.min(open, sl)
+    if pos == 1 and not na(xP)
+        r = (xP - eP - COST * (eP + xP)) / sd
+        if eT >= tA and eT < tB
+            cN += 1
+            cR += r
+            cR2 += r * r
+            cW += r > 0 ? 1 : 0
+            cU += r * usd
+        pos := 0
+    if bar_index > 30 and up and not up[1] and pos == 0
+        pEnt := true
+        sdP := 6.0 * a
+    if pos == 1 and not up and up[1]
+        pEx := true
+    [cN, cR, cR2, cW, cU, t0]
+
+// IBS 1D - wapas: wahi
+simI(float usd) =>
+    var int   pos = 0
+    var float eP = na
+    var float sd = na
+    var float sl = na
+    var int   eT = na
+    var int   dd = 0
+    var int   cN = 0
+    var float cR = 0.0
+    var float cR2 = 0.0
+    var int   cW = 0
+    var float cU = 0.0
+    var int   t0 = na
+    s = ta.sma(close, 200)
+    a = ta.atr(14)
+    ibs = high > low ? (close - low) / (high - low) : 0.5
+    if na(t0)
+        t0 := time
+    float xP = na
+    if pos == 1
+        dd += 1
+        if low <= sl
+            xP := math.min(open, sl)
+        else if ibs > 0.8 or dd >= 5
+            xP := close
+    if pos == 1 and not na(xP)
+        r = (xP - eP - COST * (eP + xP)) / sd
+        if eT >= tA and eT < tB
+            cN += 1
+            cR += r
+            cR2 += r * r
+            cW += r > 0 ? 1 : 0
+            cU += r * usd
+        pos := 0
+    else if pos == 0 and na(xP) and not na(s) and close > s and ibs < 0.2 and a > 0
+        pos := 1
+        eP := close
+        sd := 3.0 * a
+        sl := close - sd
+        eT := time
+        dd := 0
+    [cN, cR, cR2, cW, cU, t0]
+
+uT = bal * rT / 100
+uI = bal * rI / 100
+[n1, r1, q1, w1, u1, s1] = request.security(m1, "240", simT(uT), lookahead = barmerge.lookahead_off)
+[n2, r2, q2, w2, u2, s2] = request.security(m2, "240", simT(uT), lookahead = barmerge.lookahead_off)
+[n3, r3, q3, w3, u3, s3] = request.security(m3, "240", simT(uT), lookahead = barmerge.lookahead_off)
+[n4, r4, q4, w4, u4, s4] = request.security(m4, "240", simT(uT), lookahead = barmerge.lookahead_off)
+[n5, r5, q5, w5, u5, s5] = request.security(mI, "D", simI(uI), lookahead = barmerge.lookahead_off)
+
+// DD: sab ka jor $ (band trades) - chothi se sab se neeche
+kul = nz(u1) + nz(u2) + nz(u3) + nz(u4) + nz(u5)
+var float peak = 0.0
+var float mdd = 0.0
+peak := math.max(peak, kul)
+mdd := math.max(mdd, peak - kul)
+
+// saal ba saal $ (kul jor badla to us saal mein)
+var map<int, float> yr = map.new<int, float>()
+dK = kul - nz(kul[1])
+if dK != 0 and time >= tA and time < tB
+    yr.put(year, nz(yr.get(year)) + dK)
+
+plot(na, "khali", display = display.none)
+
+edgeOf(int n, float s, float s2) =>
+    nn = nz(n)
+    e = nn > 0 ? nz(s) / nn : 0.0
+    sdv = nn > 1 ? math.sqrt(math.max((nz(s2) - nn * e * e) / (nn - 1), 0.0)) : 0.0
+    se = nn > 0 ? sdv / math.sqrt(nn) : 0.0
+    [e, se, e - 2 * se]
+
+bg  = safaid ? color.new(color.white, 0) : color.new(#11141c, 0)
+fg  = safaid ? color.new(#111111, 0) : color.white
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = safaid ? color.new(#1a237e, 0) : color.new(#ffd54f, 0)
+
+var table tb = table.new(position.top_right, 6, 16, bgcolor = bg, border_color = color.new(#9e9e9e, 0), border_width = 1)
+cellT(int c, int r, string t, color tc) =>
+    table.cell(tb, c, r, t, text_color = tc, text_size = size.small)
+
+row(int r, string name, int n, float s, float s2, int w, float u) =>
+    [e, se, ed] = edgeOf(n, s, s2)
+    cellT(0, r, name, fg)
+    cellT(1, r, str.tostring(nz(n)), fg)
+    cellT(2, r, str.tostring(nz(n) > 0 ? 100.0 * nz(w) / nz(n) : 0.0, "#") + "%", fg)
+    cellT(3, r, (nz(u) >= 0 ? "+$" : "-$") + str.tostring(math.abs(nz(u)), "#,###"), nz(u) >= 0 ? cUp : cDn)
+    cellT(4, r, str.tostring(e, "+0.00;-0.00") + "R", e > 0 ? cUp : cDn)
+    cellT(5, r, nz(n) == 0 ? "-" : e > 0 ? "faida" : "nuqsaan", e > 0 ? cUp : cDn)
+
+nm(string s) =>
+    str.replace_all(s, "OANDA:", "")
+
+if barstate.islast
+    cellT(0, 0, "JAS FTMO 49 TOKRI t1", cHd)
+    cellT(1, 0, "Trades", cHd)
+    cellT(2, 0, "Jeet", cHd)
+    cellT(3, 0, "Faida $", cHd)
+    cellT(4, 0, "Har trade", cHd)
+    cellT(5, 0, "Haal", cHd)
+    row(1, nm(m1) + " 4H", n1, r1, q1, w1, u1)
+    row(2, nm(m2) + " 4H", n2, r2, q2, w2, u2)
+    row(3, nm(m3) + " 4H", n3, r3, q3, w3, u3)
+    row(4, nm(m4) + " 4H", n4, r4, q4, w4, u4)
+    row(5, "IBS " + nm(mI) + " 1D", n5, r5, q5, w5, u5)
+    nT = nz(n1) + nz(n2) + nz(n3) + nz(n4) + nz(n5)
+    sT = nz(r1) + nz(r2) + nz(r3) + nz(r4) + nz(r5)
+    qT = nz(q1) + nz(q2) + nz(q3) + nz(q4) + nz(q5)
+    wT = nz(w1) + nz(w2) + nz(w3) + nz(w4) + nz(w5)
+    row(6, "KUL (2 EA, 5 line)", nT, sT, qT, wT, kul)
+    [eT, seT, edT] = edgeOf(nT, sT, qT)
+    exam = muddat == "IMTIHAN 2019-aaj"
+    pass = exam ? (nT >= 30 and edT > 0) : (nT >= 100 and edT > 0)
+    int yPos = 0
+    string ys = ""
+    for [k, v] in yr
+        yPos += v > 0 ? 1 : 0
+        ys += str.tostring(k) + ": " + (v >= 0 ? "+" : "") + str.tostring(100 * v / bal, "#.#") + "%  "
+    cellT(0, 7, "Muddat", fg)
+    cellT(1, 7, muddat, fg)
+    table.merge_cells(tb, 1, 7, 5, 7)
+    cellT(0, 8, "Kul faida", fg)
+    cellT(1, 8, (kul >= 0 ? "+" : "") + str.tostring(100 * kul / bal, "#.#") + "% of $" + str.tostring(bal, "#,###"), kul >= 0 ? cUp : cDn)
+    table.merge_cells(tb, 1, 8, 5, 8)
+    cellT(0, 9, "Bari girawat (DD)", fg)
+    cellT(1, 9, str.tostring(100 * mdd / bal, "#.#") + "%  (band trades par; FTMO hadd 10%)", mdd / bal < 0.10 ? cUp : cDn)
+    table.merge_cells(tb, 1, 9, 5, 9)
+    cellT(0, 10, "Saal musbat", fg)
+    cellT(1, 10, str.tostring(yPos) + " / " + str.tostring(yr.size()), fg)
+    table.merge_cells(tb, 1, 10, 5, 10)
+    cellT(0, 11, "Saal ba saal", fg)
+    cellT(1, 11, ys, fg)
+    table.merge_cells(tb, 1, 11, 5, 11)
+    cellT(0, 12, "Data se (TV)", fg)
+    cellT(1, 12, "Gold 4H " + str.tostring(year(s1)) + "  |  SPX 4H " + str.tostring(year(s3)) + "  |  IBS 1D " + str.tostring(year(s5)), fg)
+    table.merge_cells(tb, 1, 12, 5, 12)
+    cellT(0, 13, "TOKRI", fg)
+    cellT(1, 13, pass ? "PASS" : "FAIL", pass ? cUp : cDn)
+    cellT(2, 13, exam ? ">= 30 tr, Exp-2SE > 0" : ">= 100 tr, Exp-2SE > 0", fg)
+    table.merge_cells(tb, 2, 13, 5, 13)
+    cellT(0, 14, "Python FTMO", fg)
+    cellT(1, 14, "2019+: 94 challenge = 69 PASS / 14 fail, median 11 mahine  = ASLI PASS #49", cUp)
+    table.merge_cells(tb, 1, 14, 5, 14)
+    cellT(0, 15, "Note", fg)
+    cellT(1, 15, "TV sirf andaza (OANDA data, swap nahi). Sahi nateeja Python / MT5 demo.", fg)
+    table.merge_cells(tb, 1, 15, 5, 15)
