@@ -981,3 +981,7 @@ Kharcha #34 jaisa (0.03% x (entry+exit), gold min $0.50, swap 3%/saal). **TALAAS
 **Koshish #46 nateeja (29 Oct, 28vi chat) = #46a + #46b TALAASH FAIL** (IMTIHAN band). #46a daily: 305 tr, Exp +0.313R magar SE 0.253 (chhota NR7 SL = kuch bari jeet), Exp-2SE -0.192,
 jeet 28%, market 3/4, (market x saal) 20/45, saal 9/16. #46b 4H: 1553 tr, Exp -0.194R, Exp-2SE -0.389, jeet 18%, 1/4, 10/46; bina kharcha +0.09R. BUY/SELL dono kamzor.
 Sabaq: "shant ke baad toot" = tukka; daily ka + sirf chand bari trades se (bharosa nahi).
+
+**Demo 472716649 haal (30 Oct, user SS):** band (13-25 Oct): USDJPYm BUY 0.33 SL -206.11 · XAUUSDm SELL 0.02 +43.13 · AUDUSDm BUY 0.48 +43.68 · USOILm BUY 0.05 +371.65
+(teeno 25 Oct 22:34 hafte ki pehli tick par D1 exit) + dividend 1.14 = **+252.35**. Khuli: US500m BUY 1.87 (IBS 20261028, SL 7492.13, 1% = $447) -89.93. Balance 44,724.71.
+Har trade par SL ✅, ek market ek trade ✅. History ka -31,090 = user ki haath wali trades + demo deposit/withdrawal (EA nahi).

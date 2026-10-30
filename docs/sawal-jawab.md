@@ -92,3 +92,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - User ki 4 PDF (10 Most Profitable, 9 Advanced, Day Trading Guide, Swing Guide)? -> zyada tar pehle FAIL wali / penny stock / exit saaf nahi; #46 squeeze+NR7 test = FAIL (29 Oct).
 - PDF "Introduction to Trading System Development" (WPI student project)? -> trend (S/R toot) + MA crossover har stock par optimize (= curve-fit, #18 FAIL); kaam ki baat "system of systems" = kai sabit EA mila kar, hamara mansooba yahi (29 Oct). Day Trading Guide dobara aayi (wahi file).
 - Data tez kaise? -> QDM (free) GUI: faltu symbol hata kar 26 tick > Update selected = saal ba saal tez (30 Oct 02:33 chal pada); JAS_DATA_BG band (Dukascopy rok). Agla: QDM Export H1 -> zip -> GitHub data/duka/H1 (30 Oct).
+- Demo EA ghaate mein? -> NAHI (30 Oct): 18 Oct se band EA trades +252 (USOIL +372, JPY SL -206), khuli IBS US500 -90; -31k History = haath wali trades. Jaanch: History > Custom period > Comment.
