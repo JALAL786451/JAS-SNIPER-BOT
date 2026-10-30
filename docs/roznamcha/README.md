@@ -12,4 +12,5 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | 2026-10-27 | 14 | `2026-10-27.md` | jas_tide_smc s2.12: runtime error 'historical offset beyond  / Koshish #25 nateeja: TALAASH FAIL (Exp-2SE -0.032R) |
 | 2026-10-28 | 49 | `2026-10-28.md` | Koshish #26 qaida + jas_trend_pro_test_s3.pine (Supertrend s / JAS Trend Pro t3.3: tokri table (4 market + KUL) |
 | 2026-10-29 | 52 | `2026-10-29.md` | JasTrendEA t3: 4H candle (#34 tokri), SL 6xATR, magic 202610 / jas_trend_pro.pine t3.5: moti Supertrend 10/3 lakeer default |
-| 2026-10-30 | 2 | `2026-10-30.md` | Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab pa / JAS_ZIP.bat z1: QDM export ki har CSV zip + GitHub upload pa |
+| 2026-10-30 | 13 | `2026-10-30.md` | Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab pa / JAS_ZIP z3: TASHEEH - folder ZIP_UPLOAD, explorer se (z2 khu |
+| 2026-10-31 | 1 | `2026-10-31.md` | Add files via upload / Add files via upload |

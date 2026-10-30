@@ -58,9 +58,9 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100 tr/mahina = ZYADA MARKET, chhoti TF nahi.
 **DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` -> `tools/duka_get.py` d3 = Dukascopy se
 36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se rok; d2 adhoora (4 saath + sleep), d3 aahista.
-**DATA (30 Oct raat):** QDM GUI 26 symbol Update 17/26 (tez); JAS_DATA_BG band, 5 H1 `D:\JAS_DATA`. **SUBAH SBS:** (1) QDM 26/26? (2) Export H1 ek folder
-(3) `tools/JAS_ZIP.bat` download + Unblock, usi folder mein double-click (zip + D:\JAS_DATA, GitHub page khud) (4) zip khench > Commit (5) loader + #34 bari tokri.
-**AGLA KAAM:** (a) user SS / zip (`data/duka/H1`, `M1`) -> loader -> #34 4H trend qaida BARI tokri (~40 market), qaida pehle; trade ginti + FTMO.
+**DATA AA GAYA (31 Oct):** `data/duka/H1/JAS_ZIP/` 24 H1 zip (index, forex, oil, fasal, BTC, dollar) + `data/ftmo/` 4 = **28 market**. Kai 2017-19 se shuru
+(TALAASH chhoti). Baqi (EURUSD, USDJPY, copper, gas, sugar, NLD, ETH, AUDUSD) baad mein QDM se. `tools/JAS_ZIP.bat` z3 (z2 chakkar wali ghalti theek).
+**AGLA KAAM:** (a) #47 qaida PEHLE: #34 4H trend + pehra (group max 2, kul risk 3%) BARI tokri 28 market; trade ginti + FTMO. User "D".
 (b) M1 -> #37 noise-boundary (qaida likha) + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
 **Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. $1 = 20 USC (~1,700$ door); SELL band = 185 USC/$ -> ~3,690 par khatam. Barabar 4,653.
 **RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
