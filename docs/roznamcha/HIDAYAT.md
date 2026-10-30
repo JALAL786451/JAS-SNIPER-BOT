@@ -76,3 +76,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | `docs/screenshots/`, `*.html`, `data/` | bilkul zaroorat par |
 | bilkul saada | User non-technical: jawab bohot chhota, aam zubaan, R/SE/Exp jaise lafz NAHI (sirf "faida / nuqsaan"); "nayi chat kholo" baar baar NAHI kehna (user 29 Oct, naraz). | 29 Oct |
 | FTMO maqsad | User (30 Oct): data ke baad FTMO ke liye **~100 trade/mahina + ~80% jeet** ki koshish mein koi kasar na chhorein. Claude ka mansooba: bari tokri (~35 market) par trend 4H + "girawat par khareedo" (IBS/RSI2/Double7, jeet 70-80%) dono; sach batana agar dono saath na milein. | 30 Oct |
+| faisle Claude ke | User (31 Oct): "saare faisle aap imaandari se khud karein" - FTMO #49: tested setting (trend 0.75% + IBS 2%) naye Exness demo $100k par, baqi EA demo se hatao, phir VPS, phir FTMO challenge. Har faisle ki wajah batao. | 31 Oct |

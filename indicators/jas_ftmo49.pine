@@ -1,0 +1,130 @@
+//@version=6
+// JAS FTMO 49 f1 (31 Oct 2026) - Koshish #49 ASLI PASS ka TV dabba (sirf dekhne ke liye, trade nahi).
+// Mansooba: (1) JAS Trend 4H tokri - XAU, XAG, US500, USTEC: Supertrend 10/3 sirf BUY, flip ke baad agli 4H open,
+//           ulta flip = agli open band, server SL = 6 x ATR10(4H), risk 0.75% har trade.
+//           (2) IBS sirf US500 daily: SMA200 upar + IBS < 0.2 = din ke close par BUY, IBS > 0.8 ya 5 din = band,
+//           SL 3 x ATR14, risk 2% har trade.
+// Python (tools/ftmo49.py, #49): 2019+ 94 FTMO challenge = 69 pass / 14 fail, P1 fail 13.8%, pass median 11 mahine.
+// Repaint nahi: har market ka haal AAKHRI BAND 4H / daily candle se ([1] + lookahead_on). Sahi nateeja MT5 demo se.
+indicator("JAS FTMO 49 f1", shorttitle="JAS FTMO49 f1", overlay=true)
+
+tk1  = input.symbol("OANDA:XAUUSD", "Trend 1", group="Trend 4H (0.75%)")
+tk2  = input.symbol("OANDA:XAGUSD", "Trend 2", group="Trend 4H (0.75%)")
+tk3  = input.symbol("OANDA:SPX500USD", "Trend 3", group="Trend 4H (0.75%)")
+tk4  = input.symbol("OANDA:NAS100USD", "Trend 4", group="Trend 4H (0.75%)")
+tkI  = input.symbol("OANDA:SPX500USD", "IBS", group="IBS daily (2%)")
+bal  = input.float(100000, "Account (FTMO)", group="Risk")
+rT   = input.float(0.75, "Trend risk %", group="Risk")
+rI   = input.float(2.0, "IBS risk %", group="Risk")
+pos_ = input.string("Top Right", "Dabba", options=["Top Right", "Bottom Right", "Bottom Left", "Top Left"])
+
+// ---- trend 4H: khuli BUY ka haal (#34 / #49 qaida) ----
+f_trend() =>
+    [st, dir] = ta.supertrend(3.0, 10)
+    a = ta.atr(10)
+    up = dir < 0
+    var int   p   = 0
+    var float ep  = na
+    var float sl  = na
+    var float sd  = na
+    var bool  pend = false
+    var bool  xpend = false
+    if pend
+        p := 1
+        ep := open
+        sl := open - sd
+        pend := false
+    if xpend and p == 1
+        p := 0
+        xpend := false
+    if p == 1 and low <= sl
+        p := 0
+    if p == 1 and not up and up[1]
+        xpend := true
+    if p == 0 and up and not up[1]
+        pend := true
+        sd := 6.0 * a
+    r = p == 1 ? (close - ep) / sd : na
+    [p, ep, sl, r, up ? 1 : -1]
+
+f_trend_prev() =>
+    [p, ep, sl, r, u] = f_trend()
+    [p[1], ep[1], sl[1], r[1], u[1]]
+
+// ---- IBS daily (#15 qaida) ----
+f_ibs() =>
+    s = ta.sma(close, 200)
+    a = ta.atr(14)
+    ibs = high > low ? (close - low) / (high - low) : 0.5
+    var int   p  = 0
+    var float ep = na
+    var float sl = na
+    var int   d  = 0
+    if p == 1
+        d += 1
+        if low <= sl
+            p := 0
+        else if ibs > 0.8 or d >= 5
+            p := 0
+    else if close > s and ibs < 0.2 and a > 0
+        p := 1
+        ep := close
+        sl := close - 3.0 * a
+        d := 0
+    r = p == 1 ? (close - ep) / (ep - sl) : na
+    [p, ep, sl, r, ibs, close > s ? 1 : -1]
+
+f_ibs_prev() =>
+    [p, ep, sl, r, ibs, u] = f_ibs()
+    [p[1], ep[1], sl[1], r[1], ibs[1], u[1]]
+
+[p1, e1, s1, r1, u1] = request.security(tk1, "240", f_trend_prev(), lookahead=barmerge.lookahead_on)
+[p2, e2, s2, r2, u2] = request.security(tk2, "240", f_trend_prev(), lookahead=barmerge.lookahead_on)
+[p3, e3, s3, r3, u3] = request.security(tk3, "240", f_trend_prev(), lookahead=barmerge.lookahead_on)
+[p4, e4, s4, r4, u4] = request.security(tk4, "240", f_trend_prev(), lookahead=barmerge.lookahead_on)
+[pI, eI, sI, rIb, iI, uI] = request.security(tkI, "D", f_ibs_prev(), lookahead=barmerge.lookahead_on)
+
+var table tb = table.new(pos_ == "Top Right" ? position.top_right : pos_ == "Bottom Right" ? position.bottom_right :
+     pos_ == "Bottom Left" ? position.bottom_left : position.top_left, 6, 12, bgcolor=#11141c, border_color=#363a45, border_width=1)
+
+cG = color.new(#26a69a, 0)
+cR = color.new(#ef5350, 0)
+cY = color.new(#ffd54f, 0)
+cW = color.white
+cS = color.new(#b0b0b0, 0)
+
+f_name(string sym) =>
+    str.replace_all(sym, "OANDA:", "")
+
+f_row(int row, string nm, int p, float ep, float sl, float r, int u) =>
+    table.cell(tb, 0, row, nm, text_color=cW, text_size=size.small)
+    table.cell(tb, 1, row, u > 0 ? "UPAR" : "NEECHE", text_color=u > 0 ? cG : cR, text_size=size.small)
+    table.cell(tb, 2, row, p == 1 ? "BUY khuli" : "khali", text_color=p == 1 ? cG : cS, text_size=size.small)
+    table.cell(tb, 3, row, p == 1 ? str.tostring(ep, format.mintick) : "-", text_color=cW, text_size=size.small)
+    table.cell(tb, 4, row, p == 1 ? str.tostring(sl, format.mintick) : "-", text_color=cR, text_size=size.small)
+    table.cell(tb, 5, row, p == 1 ? str.tostring(r, "+0.00;-0.00") + "R" : "-", text_color=p == 1 ? (r >= 0 ? cG : cR) : cS, text_size=size.small)
+
+if barstate.islast
+    table.cell(tb, 0, 0, "JAS FTMO 49 f1", text_color=cY, text_size=size.small)
+    table.merge_cells(tb, 0, 0, 5, 0)
+    table.cell(tb, 0, 1, "Market", text_color=cY, text_size=size.small)
+    table.cell(tb, 1, 1, "Rukh", text_color=cY, text_size=size.small)
+    table.cell(tb, 2, 1, "Trade", text_color=cY, text_size=size.small)
+    table.cell(tb, 3, 1, "Entry", text_color=cY, text_size=size.small)
+    table.cell(tb, 4, 1, "SL", text_color=cY, text_size=size.small)
+    table.cell(tb, 5, 1, "Abhi", text_color=cY, text_size=size.small)
+    f_row(2, f_name(tk1) + " 4H", p1, e1, s1, r1, u1)
+    f_row(3, f_name(tk2) + " 4H", p2, e2, s2, r2, u2)
+    f_row(4, f_name(tk3) + " 4H", p3, e3, s3, r3, u3)
+    f_row(5, f_name(tk4) + " 4H", p4, e4, s4, r4, u4)
+    f_row(6, "IBS " + f_name(tkI) + " 1D", pI, eI, sI, rIb, uI)
+    table.cell(tb, 0, 7, "Rukh = SMA200 se upar/neeche.  IBS kal: " + str.tostring(iI, "0.00") + (iI < 0.2 ? " (< 0.2 BUY zone)" : iI > 0.8 ? " (> 0.8 band zone)" : ""), text_color=cS, text_size=size.small)
+    table.merge_cells(tb, 0, 7, 5, 7)
+    table.cell(tb, 0, 8, "Risk: trend " + str.tostring(rT) + "% = $" + str.tostring(bal * rT / 100, "#") + "   IBS " + str.tostring(rI) + "% = $" + str.tostring(bal * rI / 100, "#"), text_color=cW, text_size=size.small)
+    table.merge_cells(tb, 0, 8, 5, 8)
+    table.cell(tb, 0, 9, "#49 ASLI PASS (Python, 2019+): 94 challenge = 69 pass / 14 fail", text_color=cG, text_size=size.small)
+    table.merge_cells(tb, 0, 9, 5, 9)
+    table.cell(tb, 0, 10, "P1 fail 13.8%  |  pass median 11 mahine  |  ~9 trade / mahina", text_color=cG, text_size=size.small)
+    table.merge_cells(tb, 0, 10, 5, 10)
+    table.cell(tb, 0, 11, "Sirf dekhne ke liye - sahi nateeja MT5 demo se milao", text_color=cS, text_size=size.small)
+    table.merge_cells(tb, 0, 11, 5, 11)
