@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v5.3                                  |
+//|  JAS DESK VIEW   -   build v5.4                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,11 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v5.3"
+#define EA_BUILD "v5.4"
+// v5.4 (31 Oct 2026): panel BARA aur RANGEEN (apni bitmap tasveer - TextOut + ResourceCreate,
+//   koi include file nahi, koi button nahi). Upar KHULASA: kul P/L, equity, NET ka $1 asar,
+//   stop out ki doori, aur DHAAL (chhoti taraf band ho jaye to kitna khatra). Purana
+//   Comment() wala panel InpBigPanel = false se.
 
 input group "=== Dikhane ke liye ==="
 input bool InpShowSizes = true;   // Lot ke size ke hisaab se toor kar dikhao
@@ -48,6 +52,12 @@ input group "=== Poori kitab Claude ke liye (v5.3) ==="
 input bool   InpShowLadder  = true;   // QEEMAT KI SEERHI: har $X ke khane mein BUY / SELL lots
 input double InpLadderStep  = 10.0;   // Seerhi ka ek khana kitne dollar ka
 input bool   InpSaveCsv     = true;   // Har lot ki poori list CSV file mein (MQL5\Files) - Claude ko bhejne ke liye
+
+input group "=== Bara, rangeen panel (v5.4) ==="
+input bool   InpBigPanel   = true;        // Bara rangeen panel (false = purana chhota likha hua)
+input int    InpFontSize   = 11;          // Likhai ka size
+input string InpFontName   = "Consolas";  // Font (barabar chaurai wala rakhein)
+input bool   InpKhulasa    = true;        // Upar KHULASA (sab se zaroori baatein)
 
 input group "=== Jori muqabla (v5) ==="
 input bool   InpShowMuqabla = false;   // SELL khatam: sasti BUY pehle (A) vs mehngi BUY pehle (B)
@@ -100,6 +110,8 @@ void OnDeinit(const int reason)
    EventKillTimer();
    Comment("");
    ObjectsDeleteAll(0, "JDV_");
+   ObjectsDeleteAll(0, "JDVP");
+   ResourceFree("::JDVP_PANEL");
    // Timeframe ya setting badalne par MT5 EA dobara load nahi karta, sirf
    // OnDeinit/OnInit chalata hai - g_sig purana reh jata. Lakeerein upar mit
    // chuki hain, is liye yaad bhi mita do taake agli dafa dobara banein.
@@ -897,6 +909,132 @@ string PlanText(Book &b, double net, double tot, double basket)
   }
 
 //+------------------------------------------------------------------+
+//--- v5.4: sab se zaroori baatein, panel ke upar
+string KhulasaText(Book &b, double net, double basket, double perPt, double bid, double eq, double mgn)
+  {
+   string k = "KHULASA - sab se zaroori\n";
+   k += StringFormat("KUL P/L %s %s      EQUITY %s\n", M(basket), g_ccy, M(eq));
+   if(perPt <= 0.0) return(k + "\n");
+   if(MathAbs(net) < 1e-8)
+      k += "NET 0 - qeemat kahin bhi jaye, kitab nahi badlegi\n";
+   else
+      k += StringFormat("NET %+.2f lot: gold $1 %s to %s %s nuqsaan\n",
+                        net, Pick(net > 0, "gire", "chadhe"), M(MathAbs(net) * perPt), g_ccy);
+
+   long   soMode = AccountInfoInteger(ACCOUNT_MARGIN_SO_MODE);
+   double soVal  = AccountInfoDouble(ACCOUNT_MARGIN_SO_SO);
+   if(soMode != ACCOUNT_STOPOUT_MODE_PERCENT) soVal = 0.0;
+   if(soVal <= 0.0) soVal = 50.0;
+   double eqMin = mgn * soVal / 100.0;
+   if(MathAbs(net) >= 1e-8)
+     {
+      double room = (eq - eqMin) / (MathAbs(net) * perPt);
+      k += StringFormat("STOP OUT: ~%s door  (qeemat ~%s)\n", Px(room), Px(net > 0 ? bid - room : bid + room));
+     }
+   if(b.lotBuy > 0 && b.lotSell > 0)
+     {
+      bool   buyBig = b.lotBuy >= b.lotSell;
+      double big    = buyBig ? b.lotBuy : b.lotSell;
+      double room2  = eq / (big * perPt);
+      k += StringFormat("DHAAL: %s band ki to $1 = %s %s, ~%s door (qeemat ~%s) equity khatam\n",
+                        Pick(buyBig, "SELL", "BUY"), M(big * perPt), g_ccy, Px(room2),
+                        Px(buyBig ? bid - room2 : bid + room2));
+     }
+   return(k + "\n");
+  }
+
+//--- v5.4: line ka rang (sirf dikhawa)
+color LineColor(string ln)
+  {
+   string t = ln;
+   StringTrimLeft(t);
+   StringTrimRight(t);
+   if(t == "") return(clrSilver);
+   if(StringFind(t, "KHATRA") >= 0 || StringFind(t, "DHAAL") == 0) return(clrOrangeRed);
+   if(StringFind(t, "KHULASA") == 0 || StringFind(t, "NET ") == 0 || StringFind(t, "STOP OUT") == 0) return(clrAqua);
+   if(StringFind(t, "===") == 0) return(clrGold);
+   if(StringFind(t, "---") == 0) return(clrYellow);
+   if(StringFind(t, "BARABAR") >= 0) return(clrGold);
+   if(StringFind(t, ">>>") == 0) return(clrMagenta);
+   if(StringFind(t, ">>") == 0) return(clrAqua);
+   if(StringFind(t, "Stop out") >= 0) return(clrOrange);
+   // aakhri lafz number ho to: manfi laal, musbat hara
+   string parts[];
+   int n = StringSplit(t, ' ', parts);
+   for(int i = n - 1; i >= 0; i--)
+     {
+      if(parts[i] == "") continue;
+      string w = parts[i];
+      ushort c0 = StringGetCharacter(w, 0);
+      bool num = (c0 == '-' || c0 == '+' || (c0 >= '0' && c0 <= '9'));
+      if(!num) break;
+      double v = StringToDouble(w);
+      if(v < 0) return(clrTomato);
+      if(v > 0) return(clrLimeGreen);
+      break;
+     }
+   return(clrWhiteSmoke);
+  }
+
+//--- v5.4: panel dikhana - bara rangeen (bitmap) ya purana Comment()
+void ShowPanel(string s)
+  {
+   if(!InpBigPanel)
+     {
+      ObjectsDeleteAll(0, "JDVP");
+      Comment(s);
+      return;
+     }
+   Comment("");
+   string lines[];
+   int n = StringSplit(s, '\n', lines);
+   if(n <= 0) return;
+   TextSetFont(InpFontName, -InpFontSize * 10);
+   uint tw = 0, th = 0;
+   TextGetSize("Ay", tw, th);
+   int lh  = (int)th + 2;
+   int pad = 8;
+   int w   = 0;
+   for(int i = 0; i < n; i++)
+     {
+      TextGetSize(Pick(lines[i] == "", " ", lines[i]), tw, th);
+      if((int)tw > w) w = (int)tw;
+     }
+   int W = w + 2 * pad;
+   int chartH = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS);
+   int maxN   = (chartH - 10 - 2 * pad) / lh;
+   if(maxN < 5) maxN = 5;
+   bool cut = (n > maxN);
+   int  show = cut ? maxN - 1 : n;
+   int H = (show + (cut ? 1 : 0)) * lh + 2 * pad;
+   if(W < 50 || H < 20) return;
+
+   uint buf[];
+   ArrayResize(buf, W * H);
+   ArrayInitialize(buf, ColorToARGB(C'12,14,20', 235));
+   for(int i = 0; i < show; i++)
+      TextOut(lines[i], pad, pad + i * lh, TA_LEFT | TA_TOP, buf, W, H,
+              ColorToARGB(LineColor(lines[i]), 255), COLOR_FORMAT_ARGB_NORMALIZE);
+   if(cut)
+      TextOut("... baqi hissa chhup gaya - Inputs mein kuch hisse band karein ya font chhota",
+              pad, pad + show * lh, TA_LEFT | TA_TOP, buf, W, H,
+              ColorToARGB(clrOrange, 255), COLOR_FORMAT_ARGB_NORMALIZE);
+
+   if(!ResourceCreate("::JDVP_PANEL", buf, W, H, 0, 0, W, COLOR_FORMAT_ARGB_NORMALIZE)) return;
+   string nm = "JDVP_PANEL";
+   if(ObjectFind(0, nm) < 0)
+     {
+      ObjectCreate(0, nm, OBJ_BITMAP_LABEL, 0, 0, 0);
+      ObjectSetInteger(0, nm, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+      ObjectSetInteger(0, nm, OBJPROP_XDISTANCE, 5);
+      ObjectSetInteger(0, nm, OBJPROP_YDISTANCE, 18);
+      ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+      ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
+      ObjectSetString(0, nm, OBJPROP_BMPFILE, "::JDVP_PANEL");
+     }
+   ChartRedraw(0);
+  }
+
 void Draw()
   {
    Book b; ReadBook(b);
@@ -927,10 +1065,12 @@ void Draw()
          s += StringFormat("MAGAR account par %d lot khuli hain: %s\n", allN, OtherSymbols());
          s += "   >> Us symbol ka chart kholein aur wahan ye EA lagayein <<\n";
         }
-      Comment(s);
+      ShowPanel(s);
       DrawLines(b, 0.0);
       return;
      }
+
+   if(InpKhulasa) s += KhulasaText(b, net, basket, perPt, bid, eq, mgn);
 
    //--- A) WOHI GINTI JO BROKER KE 'CLOSE ALL' DIALOG MEIN AATI HAI ----
    s += "--- Jaisi ginti broker ke Close-All dialog mein aati hai ---\n";
@@ -1039,7 +1179,7 @@ void Draw()
          s += StringFormat("KHATRA: stop out %.0f%% ke bohot qareeb hain.\n", soVal);
      }
 
-   Comment(s);
+   ShowPanel(s);
    DrawLines(b, net);
   }
 //+------------------------------------------------------------------+
