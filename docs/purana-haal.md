@@ -1001,3 +1001,7 @@ din 5% CET, kul 10%, har mahine naya challenge. **CHUNAO** 2012-01..2018-12: ris
 Exp-2SE -0.041, jeet 36%, bina kharcha +0.031R; >=10 tr market musbat 12/27, (market x saal) 86/200. Group: metal +0.068R (529 tr, Exp-2SE +0.001), US idx +0.045,
 Asia 0.000, EU idx -0.039, oil -0.036, fasal -0.035, USD fx -0.049 (2514 tr, BUY+SELL), BTC +0.267 (34 tr). Jaanch: 4 purane market ~+0.06R x 2 = #34 ke +0.107 jaisa (code theek).
 Sabaq: 4H trend ka faida sirf gold/silver/US index mein; Europe / oil / forex / fasal par nahi -> "zyada market = zyada trade" 4H par edge patla kar deta hai.
+
+**Koshish #48 qaida (31 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - DAILY trend 28 market (#26 / #27 jaisa) + pehra + FTMO - `tools/tokri47.py --tf D1`:**
+#47 jyon ka tyon (wahi 28 market, groups, rukh: forex + DOLLARIDX BUY+SELL, baqi sirf BUY; kharcha, PASS shartein, pehra) - farq sirf: **daily candle** (NY 17:00),
+flip ke baad agle din ki open, **SL = 4 x ATR10(D1)** (#27 JasTrend FTMO PASS jaisa). FTMO CHUNAO 2012-2018 risk **0.5 / 0.75 / 1.0%**, IMTIHAN 2019+ ek dafa. Ginti +2.
