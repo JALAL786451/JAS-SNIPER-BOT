@@ -997,3 +997,7 @@ TALAASH PASS -> IMTIHAN 2019+ ek dafa: tr >= 30 aur Exp - 2SE > 0 (sakht - marke
 **B. FTMO** (sirf A ki TALAASH PASS ho to): #27 ka `run` + pehra: **ek group mein max 2 khuli**, **kul khuli <= 3% risk** (risk r% -> max floor(3/r) trade). $100k 2-step,
 din 5% CET, kul 10%, har mahine naya challenge. **CHUNAO** 2012-01..2018-12: risk 0.25 / 0.5 / 0.75%; shart P1 fail < 20% aur pass > fail; max (pass - fail), barabar = kam risk.
 **IMTIHAN** 2019-01..aaj ek dafa: pass > fail aur P1 fail < 20%. Maloomat: pass ka median mahina, trade/mahina. Ginti +2 (#47a edge, #47b FTMO).
+**Koshish #47 nateeja (31 Oct, 28vi chat) = A TALAASH FAIL** (IMTIHAN band; B FTMO qaide se nahi chala). 4673 tr (~25/mahina), Exp -0.021R (R = 6 ATR), SE 0.010,
+Exp-2SE -0.041, jeet 36%, bina kharcha +0.031R; >=10 tr market musbat 12/27, (market x saal) 86/200. Group: metal +0.068R (529 tr, Exp-2SE +0.001), US idx +0.045,
+Asia 0.000, EU idx -0.039, oil -0.036, fasal -0.035, USD fx -0.049 (2514 tr, BUY+SELL), BTC +0.267 (34 tr). Jaanch: 4 purane market ~+0.06R x 2 = #34 ke +0.107 jaisa (code theek).
+Sabaq: 4H trend ka faida sirf gold/silver/US index mein; Europe / oil / forex / fasal par nahi -> "zyada market = zyada trade" 4H par edge patla kar deta hai.
