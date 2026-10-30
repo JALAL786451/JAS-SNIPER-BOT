@@ -58,7 +58,8 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100 tr/mahina = ZYADA MARKET, chhoti TF nahi.
 **DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` -> `tools/duka_get.py` d3 = Dukascopy se
 36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se rok; d2 adhoora (4 saath + sleep), d3 aahista.
-**DATA (30 Oct):** JAS_DATA_BG = 5 H1 (USA30, US2000, DEU, GBR, FRA) `D:\JAS_DATA`, phir Dukascopy rok -> band. **QDM GUI 26 symbol Update chalu** (tez). Agla: QDM Export H1 -> GitHub.
+**DATA (30 Oct raat):** QDM GUI 26 symbol Update 17/26 (tez); JAS_DATA_BG band, 5 H1 `D:\JAS_DATA`. **SUBAH SBS:** (1) QDM 26/26? (2) Export H1 ek folder
+(3) `tools/JAS_ZIP.bat` download + Unblock, usi folder mein double-click (zip + D:\JAS_DATA, GitHub page khud) (4) zip khench > Commit (5) loader + #34 bari tokri.
 **AGLA KAAM:** (a) user SS / zip (`data/duka/H1`, `M1`) -> loader -> #34 4H trend qaida BARI tokri (~40 market), qaida pehle; trade ginti + FTMO.
 (b) M1 -> #37 noise-boundary (qaida likha) + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
 **Kitab (16 Oct, LIVE):** 183 pos, NET 0, balance 50,089 - `data/kitab/JasDeskView_XAUUSDc_2026-10-16_1230.csv`.

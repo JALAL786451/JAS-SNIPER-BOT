@@ -27,7 +27,11 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - TRADING sec 5: FTMO trial restrict, agla SBS pehra Tester + demo
    - JAS Trend Pro t3.3: tokri table (4 market + KUL)
 
-2026-10-29  (31 kaam)
+2026-10-29  (52 kaam)
    - JasTrendEA t3: 4H candle (#34 tokri), SL 6xATR, magic 20261029
-   - Koshish #41 qaida: Gao-Han-Li-Zhou intraday momentum H1 proxy (test se pehle)
-   - TRADING.md < 8 KB
+   - HIDAYAT: nayi 2 line table format mein
+   - jas_trend_pro.pine t3.5: moti Supertrend 10/3 lakeer default band
+
+2026-10-30  (2 kaam)
+   - Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab par SL
+   - JAS_ZIP.bat z1: QDM export ki har CSV zip + GitHub upload page khole
