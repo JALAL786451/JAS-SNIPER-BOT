@@ -985,3 +985,15 @@ Sabaq: "shant ke baad toot" = tukka; daily ka + sirf chand bari trades se (bharo
 **Demo 472716649 haal (30 Oct, user SS):** band (13-25 Oct): USDJPYm BUY 0.33 SL -206.11 · XAUUSDm SELL 0.02 +43.13 · AUDUSDm BUY 0.48 +43.68 · USOILm BUY 0.05 +371.65
 (teeno 25 Oct 22:34 hafte ki pehli tick par D1 exit) + dividend 1.14 = **+252.35**. Khuli: US500m BUY 1.87 (IBS 20261028, SL 7492.13, 1% = $447) -89.93. Balance 44,724.71.
 Har trade par SL ✅, ek market ek trade ✅. History ka -31,090 = user ki haath wali trades + demo deposit/withdrawal (EA nahi).
+
+**Koshish #47 qaida (31 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - BARI TOKRI 28 market: #34 JAS Trend 4H + pehra + FTMO - `tools/tokri47.py`:**
+Data: `data/ftmo/` (XAU, XAG, US500, USTEC) + `data/duka/H1/JAS_ZIP/` 24 (UTC H1). 4H NY 17:00 se (#34 jaisa). Supertrend 10/3, flip ke baad agli 4H open, ulta flip = agli 4H open band.
+**Rukh:** index / metal / oil / fasal / BTC = **sirf BUY** (#34). Forex (GBPUSD, NZDUSD, USDCAD, USDCHF) + DOLLARIDX = **BUY + SELL** (forex ka koi lamba jhukao nahi - pehle se tay).
+**SL** = 6 x ATR10(4H) server SL (JasTrendEA t3 4H jaisa). Kharcha 0.03%/taraf + swap 3%/saal. Har market ek position.
+**Groups (pehra):** US idx (US500, USTEC, USA30, US2000) · EU idx (DEU, FRA, GBR, EUS, ESP, CHE) · Asia idx (JPN, HKG, CHI, AUS) · metal (XAU, XAG) · oil (WTI, BRENT) ·
+fasal (COCOA, COFFEE, COTTON, SOYBEAN) · USD fx (GBPUSD, NZDUSD, USDCAD, USDCHF, DOLLARIDX) · crypto (BTC).
+**A. EDGE (har trade R):** TALAASH entry < 2019: PASS = kul >= 100 tr, Exp(R) - 2SE > 0, (market x saal) musbat > 50%, >= 10 tr wale market mein >= 60% Exp > 0.
+TALAASH PASS -> IMTIHAN 2019+ ek dafa: tr >= 30 aur Exp - 2SE > 0 (sakht - market khud chune). Maloomat: trade/mahina (2019+), BUY/SELL, group.
+**B. FTMO** (sirf A ki TALAASH PASS ho to): #27 ka `run` + pehra: **ek group mein max 2 khuli**, **kul khuli <= 3% risk** (risk r% -> max floor(3/r) trade). $100k 2-step,
+din 5% CET, kul 10%, har mahine naya challenge. **CHUNAO** 2012-01..2018-12: risk 0.25 / 0.5 / 0.75%; shart P1 fail < 20% aur pass > fail; max (pass - fail), barabar = kam risk.
+**IMTIHAN** 2019-01..aaj ek dafa: pass > fail aur P1 fail < 20%. Maloomat: pass ka median mahina, trade/mahina. Ginti +2 (#47a edge, #47b FTMO).
