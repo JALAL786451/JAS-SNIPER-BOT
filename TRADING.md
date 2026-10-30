@@ -37,7 +37,7 @@ Purana naam `TRADING-MERI-KAHANI` = `docs/trading-pakki.md`; `TRADING-ABHI-KAHAN
 
 | | Number | Kya |
 |---|---|---|
-| LIVE | 253687618 | Exness StandardCent, XAUUSDc, USC, swap-free, Hedge, 1:2000. Koi EA nahi |
+| LIVE | 253687618 | Exness-MT5Real34, StandardCent, XAUUSDc, USC, swap-free, Hedge, 1:2000. Koi EA nahi |
 | DEMO | 472716649 | Exness-MT5Trial16, USD, Hedge - saare EA demo yahin |
 
 Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kabhi nahi.
