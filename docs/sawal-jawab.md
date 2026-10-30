@@ -99,3 +99,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Daily trend 28 market? -> #48 FAIL (-0.058R); dono TF par trend sirf gold/silver/US idx (+oil), Europe/forex manfi = zyada market bekaar (31 Oct).
 - FTMO ka sab se achha mansooba? -> #49 ASLI PASS: JasTrend 4H (XAU, XAG, US500, USTEC) 0.75% + IBS US500 2%: 2019+ 94 challenge 69 pass / 14 fail, median 11 mahine, ~9 tr/mahina (31 Oct).
 - #49 ka seedha nateeja? -> report49.py: 2019-aaj $100k = +69% (~8.8%/saal), max DD 14.5%, bura din -2.9%, 836 tr; 2012-18 sirf +7% (gold/silver manfi) (31 Oct).
+- #49 2012 se aaj? -> $100k = +80% (~5.4%/saal), DD 15%, 15 mein 10 saal musbat; TV tokri dabba "SAB 2012-aaj" muddat (TV 4H data kam ho sakta) (31 Oct).

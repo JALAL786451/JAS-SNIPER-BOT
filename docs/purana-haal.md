@@ -1026,3 +1026,4 @@ risk barhana user ka faisla (CLAUDE.md). Ek saath max khula risk ~5% (4 trend x 
 2019-01..2026-10 (7.8 saal): 836 tr (~8.9/mahina), jeet 50%, **+69.0% ($69,003, ~8.8%/saal)**, **max DD 14.5%**, bura din -2.9%; saal 2019 +6.3, 2020 +21.0, 2021 -0.3,
 2022 -7.8, 2023 +13.0, 2024 +18.3, 2025 +25.7, 2026 +2.3. Trend $59,985 (642 tr, jeet 44%), IBS $18,478 (194, 69%); Gold $21k, Silver $19k, US500 $28.5k, USTEC $9.8k.
 2012-2018 (7 saal): 629 tr, **+7.2% (~1%/saal)**, DD 15.0%; gold -$1.8k, silver -$5.6k, US500 +$15k, USTEC +$9.2k, IBS +$13k. = faida bara hissa 2019+ (gold tezi).
+**#49 REPORT CARD poora 2012-01..2026-10 (14.8 saal):** 1469 tr (~8.3/mahina), jeet 48%, **+80.0% ($79,989, ~5.4%/saal)**, max DD 15.0%, bura din -3.2%; 15 mein se 10 saal musbat (2015 -5.4, 2022 -7.8 sab se bure).
