@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v5.4                                  |
+//|  JAS DESK VIEW   -   build v5.5                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,8 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v5.4"
+#define EA_BUILD "v5.5"
+// v5.5 (31 Oct 2026): panel chart se lamba ho to baqi hissa DAAYEN naye column mein (kat-ta nahi).
 // v5.4 (31 Oct 2026): panel BARA aur RANGEEN (apni bitmap tasveer - TextOut + ResourceCreate,
 //   koi include file nahi, koi button nahi). Upar KHULASA: kul P/L, equity, NET ka $1 asar,
 //   stop out ki doori, aur DHAAL (chhoti taraf band ho jaye to kitna khatra). Purana
@@ -1000,25 +1001,37 @@ void ShowPanel(string s)
       TextGetSize(Pick(lines[i] == "", " ", lines[i]), tw, th);
       if((int)tw > w) w = (int)tw;
      }
-   int W = w + 2 * pad;
    int chartH = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS);
-   int maxN   = (chartH - 10 - 2 * pad) / lh;
+   int chartW = (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS);
+   int maxN   = (chartH - 30 - 2 * pad) / lh;
    if(maxN < 5) maxN = 5;
-   bool cut = (n > maxN);
-   int  show = cut ? maxN - 1 : n;
-   int H = (show + (cut ? 1 : 0)) * lh + 2 * pad;
+   int colW   = w + 3 * pad;
+   int cols   = (n + maxN - 1) / maxN;
+   int fitC   = (chartW - 20) / colW;
+   if(fitC < 1) fitC = 1;
+   bool cut   = (cols > fitC);
+   if(cut) cols = fitC;
+   int rows   = (cols == 1) ? n : maxN;
+   int W = cols * colW + pad;
+   int H = rows * lh + 2 * pad;
    if(W < 50 || H < 20) return;
 
    uint buf[];
    ArrayResize(buf, W * H);
    ArrayInitialize(buf, ColorToARGB(C'12,14,20', 235));
-   for(int i = 0; i < show; i++)
-      TextOut(lines[i], pad, pad + i * lh, TA_LEFT | TA_TOP, buf, W, H,
+   int last = cut ? cols * maxN - 1 : n;
+   for(int i = 0; i < last && i < n; i++)
+     {
+      int c = i / rows, r = i % rows;
+      TextOut(lines[i], pad + c * colW, pad + r * lh, TA_LEFT | TA_TOP, buf, W, H,
               ColorToARGB(LineColor(lines[i]), 255), COLOR_FORMAT_ARGB_NORMALIZE);
+     }
    if(cut)
-      TextOut("... baqi hissa chhup gaya - Inputs mein kuch hisse band karein ya font chhota",
-              pad, pad + show * lh, TA_LEFT | TA_TOP, buf, W, H,
-              ColorToARGB(clrOrange, 255), COLOR_FORMAT_ARGB_NORMALIZE);
+      TextOut("... baqi chhup gaya - font chhota karein", pad + (cols - 1) * colW, pad + (rows - 1) * lh,
+              TA_LEFT | TA_TOP, buf, W, H, ColorToARGB(clrOrange, 255), COLOR_FORMAT_ARGB_NORMALIZE);
+   for(int c = 1; c < cols; c++)                 // column ke beech patli lakeer
+      for(int y = pad; y < H - pad; y++)
+         buf[y * W + c * colW - pad] = ColorToARGB(C'60,64,80', 255);
 
    if(!ResourceCreate("::JDVP_PANEL", buf, W, H, 0, 0, W, COLOR_FORMAT_ARGB_NORMALIZE)) return;
    string nm = "JDVP_PANEL";

@@ -52,7 +52,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 **Live / kitab ke aalay:**
 | File | Kya |
 |---|---|
-| `JasDeskView.mq5` | v5.4 (31 Oct): bara rangeen panel (bitmap, font input) + KHULASA (NET $1 asar, stop out, DHAAL). Sirf parhne wala panel: Close-All ginti, lots, ausat, NET, bari lot ki jori (live chal raha) |
+| `JasDeskView.mq5` | v5.5 (31 Oct): lamba panel daayen columns mein; v5.4 bara rangeen panel (bitmap, font input) + KHULASA (NET $1 asar, stop out, DHAAL). Sirf parhne wala panel: Close-All ginti, lots, ausat, NET, bari lot ki jori (live chal raha) |
 | `JasJoriClose.mq5` | SCRIPT: bari lot ki jori Close By se band (live 64/64) |
 | `JasBarExport.mq5` | x1 (16 Oct): Tester mein chalao - har band M1 candle saal-wise CSV `Common\Files\<symbol>_M1_<saal>.csv` (Export Bars wala format). Koi trade nahi. #17 ke M1 data ke liye |
 | `JasKitabSaathi.mq5` | x4 (16 Oct; panel: haath mein (Close All vs Close By), BUY/SELL ginti, breakeven, $10 seerhi; x3 200 had; x2 NET tukda 0.01, had 0.10, "Bari lot band" button + faide wali bari lot (>=0.05) ka alert) EA: khuli kitab ka saathi - panel (NET, equity, $1 = USC, stop out, faide wali lots, MAUQA), buttons NET BUY/SELL kholo (sirf faide wali ulti lots band, NET <= 0.50) aur NET 0 karo (NET wali taraf band), har button Yes/No; khula NET +50 USC par Alert + push. Khud trade NAHI, nayi lot NAHI |
