@@ -81,3 +81,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | koshish jari | User (31 Oct, dobara): "bas / ruk jao / talaash rok do" wala mashwara KABHI nahi - thakna / mayoos hona nahi, koshish kamyabi ki kunji. FAIL ki ginti par nahi, nateeje par nazar; ginti sirf is liye ke koi koshish DOHRANI na pare. | 31 Oct |
 | nayi chat (reset) | Hafte ki limit Itwar ko reset - us se pehle nayi chat ka faida nahi, isi chat mein kaam (user 31 Oct). | 31 Oct |
 | strategy badlo | "2-3 strategies par atak gaye" - naye raaste dhoondo (asli kharcha, chhoti TF, naye khandaan), purane par na atko (user 31 Oct). | 31 Oct |
+| ek link | Download / copy ke liye SIRF EK link do (branch wala). "Purani copy dikhe to ye" wala doosra link NAHI - user confuse hota hai (1 Nov). |

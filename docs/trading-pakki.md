@@ -19,8 +19,8 @@ Aakhri update: 13 Oct 2026 raat (saatvi chat). Kaam ki branch `claude/jas-desk-v
   lo, bata do kya kiya aur kyun, aur sirf AGLA EK QADAM do. Sawal sirf tab jab
   user ka paisa/account ya koi na-palatne wali cheez ho.
 - Mushkil baat ho to **misaal aur table** se, lambi tehreer se nahi.
-- Link hamesha **click hone wala** do (markdown link), aur raw link mein
-  commit hash wala bhi do (GitHub kabhi purani copy dikhata hai).
+- Link hamesha **click hone wala** do, aur **sirf EK** (branch wala). Doosra commit-hash link NAHI (user 1 Nov: 2 link = confusion).
+  Purani copy ka shak ho to file ki pehli line ka build number check karwao.
 - Mujhe baar baar "aaraam karo" mat kaho - jab thakunga khud bata doonga.
 - **Usage (13 Oct raat, chhati chat ke baad):** hafte ki limit 71% (reset Itwar 18 Oct 02:00 PKT), session 32% (reset Budh 02:00). 'Usage by product: Claude Code 100%' = istemal ka HISSA (sara Claude Code se), limit nahi. Pehle: 12-13 Oct 56%. Is chat mein ek 8-agent jaanch hui thi. Limit 50% se upar ho to agent/workflow bilkul nahi, chahe 'ultracode' chalu ho.
 - **Baar baar reminder NAHI (12 Oct raat):** jawab ke aakhir mein '19 Oct demo panels' jaisi yaad dihani mat do. Sirf user ki request par mashwara + us request ka agla qadam.

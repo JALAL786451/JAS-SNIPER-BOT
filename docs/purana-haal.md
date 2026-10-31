@@ -1136,6 +1136,9 @@ Sabaq: 4H trend ka pakka faida sirf gold / silver / US index (pehle se #53 mein)
 **TALAASH** entry saal < 2019 (TV data shuru se): PASS = kul >= 100 tr, kul Exp - 2SE > 0, dono index Exp > 0, (index x saal, sirf trade wale saal) musbat > 50%.
 **IMTIHAN** 2019+ table mein CHHUPA (input "IMTIHAN dikhao" band) jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr aur Exp - 2SE > 0 = ASLI PASS. Ginti +1.
 Maqsad: #53 jab khamosh (mandi) tab trade - PASS ho to FTMO hisaab alag (qaida pehle).
+**Koshish #58 nateeja (1 Nov, user TV SS - chart SP:SPX 1D aur OANDA SPX500USD 1D, dono par bilkul same = script khud SPX/NDX uthata hai) = TALAASH FAIL** (IMTIHAN band):
+SPX (1871 se data) 541 tr, jeet 58%, -0.026R (Exp-2SE -0.064), saal 24/50; NDX (1985 se) 366 tr, jeet 65%, +0.021R (-0.022), saal 18/27; KUL 907 tr, jeet 61%, **-0.007R**,
+Exp-2SE -0.036, (index x saal) 42/77. Sabaq: mandi mein girawat par khareed = sikka; IBS ka faida sirf upar ke rukh (close > SMA200) mein.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
