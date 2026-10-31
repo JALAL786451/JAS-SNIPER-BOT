@@ -1185,6 +1185,12 @@ Saboot: Wilcox & Crittenden 2005. Kharcha 0.03%/taraf + swap 5%/saal. Drift jaan
 **Koshish #63 TALAASH (1 Nov, user TV SS) = FAIL (drift shart)** (IMTIHAN band): 5,237 tr (2000-18 ~8.6/mahina), jeet 40%, **Exp +0.175R, Exp-2SE +0.123**, share 27/30,
 (share x saal) 680/1293 - magar **Trend ausat +2.04% vs aam tezi +2.31%** (trend ka waqt chunna kuch nahi deta, bas share mein rehna). Sabaq (#61-63): akele bare
 share par IBS / Tide / Trend teeno ka faida = share ki aam tezi (survivorship). Share ki line band; index / metal par hi asli faida.
+**Koshish #64 qaida (1 Nov, 28vi chat, test se PEHLE, badalna mana) - TURN OF THE MONTH, SPX + NDX (`indicators/jas_tom.pine` m1, TV, koi bhi Daily chart):**
+Ariel 1987, Lakonishok-Smidt 1988, McConnell-Xu 2008. #5 TOM (OANDA 10 index) kinare par FAIL tha - ye US "asal ghar", lamba data, SAKHT. Calendar #59 wala (NYSE 1971+).
+Jis din d ka AGLA trading din mahine ka AAKHRI trading din ho, d ke close par BUY; naye mahine ke TEESRE trading din ke close par band (4 din). 1R = ATR14, SL nahi.
+Kharcha 0.01%/taraf + swap 3%/saal. Python mein 2024 ki tareekhein jaanchi (Good Friday, Thanksgiving, 1 Jan sahi). **Drift jaanch:** TOM % >= 2 x (aam din % x din).
+**TALAASH** 1971-2018: kul >= 100 tr, Exp - 2SE > 0, dono index Exp > 0, (index x saal) > 50%, TOM % >= 2 x drift. **IMTIHAN** 2019+ CHHUPA; EK dafa:
+kul >= 30 tr, Exp - 2SE > 0, TOM % >= 2 x drift = ASLI PASS. Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
