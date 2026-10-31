@@ -1206,6 +1206,12 @@ andar) -> Daily chart sirf 2003 se, 4H chart 2022 se; NDX ki tareekh VIX se na m
 70 tr +0.099R (Exp-2SE -0.020) - ye SPX hissa shayad sahi tha = **#65 IMTIHAN "aadha dekha"**, qaida wahi aur sakht. **v2** (`jas_vix.pine` v2): poora hisaab har index
 ke apne daily data mein, VIX nested request se usi index ki candles par = chart / TF se azad. Qawaid / PASS shartein bilkul wahi. Purane scripts (#58-64) sab andar wale
 tareeqe se (#58: do alag chart par bilkul same number = saboot); #53 Python (Dukascopy) = TV se azad.
+**Judge 2 (Python, 1 Nov, CBOE VIX + Dukascopy US500/USTEC daily, SIRF entry < 2019):** #65 qaida 2012-18: 103 tr, jeet ~78%, Exp +0.121R, **Exp-2SE -0.007 = FAIL**
+(US500 50 tr +0.118, USTEC 53 tr +0.124); data soorakh wali 2 trade (+3.8R, +3.0R) hata kar 101 tr Exp +0.057, Exp-2SE -0.034, drift ratio 1.18 = aur kamzor.
+(`scratchpad/judge_vix/`, repo mein nahi.) TV v2 ka 1990-2018 nateeja abhi aana hai.
+**DATA KI KAMZORI (1 Nov, judge 2 ne pakri, Claude ne jaancha):** `data/ftmo` US500 + USTEC: 2012 ~9 H1/din, **2013-02-23..05-21 khali (89 din)**, 2015-17 ~15 H1/din
+(ghante gayab), **2018+ poora (23/din)**. XAU / XAG 2003+ poore. Matlab: #53 ka IMTIHAN 2019+ (83 / 0) SAAF data par; index wale TALAASH / CHUNAO 2012-18 (#34 index hissa,
+#49 / #53 risk chunao, #56, #60) kamzor data par. Ilaj: QDM se USA500IDXUSD + USATECHIDXUSD 2012-2018 dobara (M1 -> H1) aur jaanch.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)

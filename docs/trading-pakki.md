@@ -151,6 +151,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 
 - Akele bare share (Dow 30) par IBS / Tide / Trend: R mein faida dikhta hai magar sab share ki aam tezi (drift) - asli edge nahi (#61-63, 1 Nov). Share ke test mein drift jaanch zaroori.
 
+- `data/ftmo` US500/USTEC 2012-17 patla (2013 Feb-May khali, 2015-17 ~15 H1/din), 2018+ poora; gold/chandi poore. Index TALAASH 2012-18 par kam bharosa (1 Nov).
+
 ## 5. Mere tools
 
 Har file ki ek line `CLAUDE.md` mein, lambi kahani `docs/files-tafseel.md` mein, purani tools
