@@ -1,21 +1,22 @@
 //@version=6
-// JAS FTMO 49 f1 (31 Oct 2026) - Koshish #49 ASLI PASS ka TV dabba (sirf dekhne ke liye, trade nahi).
+// JAS FTMO 53 f2 (31 Oct 2026; f2 = #53: IBS ab SPX500 + NAS100, risk 1%) - Koshish #49 ASLI PASS ka TV dabba (sirf dekhne ke liye, trade nahi).
 // Mansooba: (1) JAS Trend 4H tokri - XAU, XAG, US500, USTEC: Supertrend 10/3 sirf BUY, flip ke baad agli 4H open,
 //           ulta flip = agli open band, server SL = 6 x ATR10(4H), risk 0.75% har trade.
 //           (2) IBS sirf US500 daily: SMA200 upar + IBS < 0.2 = din ke close par BUY, IBS > 0.8 ya 5 din = band,
 //           SL 3 x ATR14, risk 2% har trade.
 // Python (tools/ftmo49.py, #49): 2019+ 94 FTMO challenge = 69 pass / 14 fail, P1 fail 13.8%, pass median 11 mahine.
 // Repaint nahi: har market ka haal AAKHRI BAND 4H / daily candle se ([1] + lookahead_on). Sahi nateeja MT5 demo se.
-indicator("JAS FTMO 49 f1", shorttitle="JAS FTMO49 f1", overlay=true)
+indicator("JAS FTMO 53 f2", shorttitle="JAS FTMO53 f2", overlay=true)
 
 tk1  = input.symbol("OANDA:XAUUSD", "Trend 1", group="Trend 4H (0.75%)")
 tk2  = input.symbol("OANDA:XAGUSD", "Trend 2", group="Trend 4H (0.75%)")
 tk3  = input.symbol("OANDA:SPX500USD", "Trend 3", group="Trend 4H (0.75%)")
 tk4  = input.symbol("OANDA:NAS100USD", "Trend 4", group="Trend 4H (0.75%)")
-tkI  = input.symbol("OANDA:SPX500USD", "IBS", group="IBS daily (2%)")
+tkI  = input.symbol("OANDA:SPX500USD", "IBS 1", group="IBS daily (1%)")
+tkJ  = input.symbol("OANDA:NAS100USD", "IBS 2", group="IBS daily (1%)")
 bal  = input.float(100000, "Account (FTMO)", group="Risk")
 rT   = input.float(0.75, "Trend risk %", group="Risk")
-rI   = input.float(2.0, "IBS risk %", group="Risk")
+rI   = input.float(1.0, "IBS risk %", group="Risk")
 pos_ = input.string("Top Right", "Dabba", options=["Top Right", "Bottom Right", "Bottom Left", "Top Left"])
 
 // ---- trend 4H: khuli BUY ka haal (#34 / #49 qaida) ----
@@ -83,9 +84,10 @@ f_ibs_prev() =>
 [p3, e3, s3, r3, u3] = request.security(tk3, "240", f_trend_prev(), lookahead=barmerge.lookahead_on)
 [p4, e4, s4, r4, u4] = request.security(tk4, "240", f_trend_prev(), lookahead=barmerge.lookahead_on)
 [pI, eI, sI, rIb, iI, uI] = request.security(tkI, "D", f_ibs_prev(), lookahead=barmerge.lookahead_on)
+[pJ, eJ, sJ, rJb, iJ, uJ] = request.security(tkJ, "D", f_ibs_prev(), lookahead=barmerge.lookahead_on)
 
 var table tb = table.new(pos_ == "Top Right" ? position.top_right : pos_ == "Bottom Right" ? position.bottom_right :
-     pos_ == "Bottom Left" ? position.bottom_left : position.top_left, 6, 12, bgcolor=#11141c, border_color=#363a45, border_width=1)
+     pos_ == "Bottom Left" ? position.bottom_left : position.top_left, 6, 13, bgcolor=#11141c, border_color=#363a45, border_width=1)
 
 cG = color.new(#26a69a, 0)
 cR = color.new(#ef5350, 0)
@@ -105,7 +107,7 @@ f_row(int row, string nm, int p, float ep, float sl, float r, int u) =>
     table.cell(tb, 5, row, p == 1 ? str.tostring(r, "+0.00;-0.00") + "R" : "-", text_color=p == 1 ? (r >= 0 ? cG : cR) : cS, text_size=size.small)
 
 if barstate.islast
-    table.cell(tb, 0, 0, "JAS FTMO 49 f1", text_color=cY, text_size=size.small)
+    table.cell(tb, 0, 0, "JAS FTMO 53 f2", text_color=cY, text_size=size.small)
     table.merge_cells(tb, 0, 0, 5, 0)
     table.cell(tb, 0, 1, "Market", text_color=cY, text_size=size.small)
     table.cell(tb, 1, 1, "Rukh", text_color=cY, text_size=size.small)
@@ -118,13 +120,14 @@ if barstate.islast
     f_row(4, f_name(tk3) + " 4H", p3, e3, s3, r3, u3)
     f_row(5, f_name(tk4) + " 4H", p4, e4, s4, r4, u4)
     f_row(6, "IBS " + f_name(tkI) + " 1D", pI, eI, sI, rIb, uI)
-    table.cell(tb, 0, 7, "Rukh = SMA200 se upar/neeche.  IBS kal: " + str.tostring(iI, "0.00") + (iI < 0.2 ? " (< 0.2 BUY zone)" : iI > 0.8 ? " (> 0.8 band zone)" : ""), text_color=cS, text_size=size.small)
-    table.merge_cells(tb, 0, 7, 5, 7)
-    table.cell(tb, 0, 8, "Risk: trend " + str.tostring(rT) + "% = $" + str.tostring(bal * rT / 100, "#") + "   IBS " + str.tostring(rI) + "% = $" + str.tostring(bal * rI / 100, "#"), text_color=cW, text_size=size.small)
+    f_row(7, "IBS " + f_name(tkJ) + " 1D", pJ, eJ, sJ, rJb, uJ)
+    table.cell(tb, 0, 8, "Rukh = SMA200 se upar/neeche.  IBS kal: SPX " + str.tostring(iI, "0.00") + " / NAS " + str.tostring(iJ, "0.00") + "  (< 0.2 = BUY zone)", text_color=cS, text_size=size.small)
     table.merge_cells(tb, 0, 8, 5, 8)
-    table.cell(tb, 0, 9, "#49 ASLI PASS (Python, 2019+): 94 challenge = 69 pass / 14 fail", text_color=cG, text_size=size.small)
+    table.cell(tb, 0, 9, "Risk: trend " + str.tostring(rT) + "% = $" + str.tostring(bal * rT / 100, "#") + "   IBS " + str.tostring(rI) + "% = $" + str.tostring(bal * rI / 100, "#"), text_color=cW, text_size=size.small)
     table.merge_cells(tb, 0, 9, 5, 9)
-    table.cell(tb, 0, 10, "P1 fail 13.8%  |  pass median 11 mahine  |  ~9 trade / mahina", text_color=cG, text_size=size.small)
+    table.cell(tb, 0, 10, "#53 ASLI PASS (Python, 2019+): 94 challenge = 83 pass / 0 fail", text_color=cG, text_size=size.small)
     table.merge_cells(tb, 0, 10, 5, 10)
-    table.cell(tb, 0, 11, "Sirf dekhne ke liye - sahi nateeja MT5 demo se milao", text_color=cS, text_size=size.small)
+    table.cell(tb, 0, 11, "P1 fail 0%  |  pass median 12.7 mahine  |  ~11 trade / mahina", text_color=cG, text_size=size.small)
     table.merge_cells(tb, 0, 11, 5, 11)
+    table.cell(tb, 0, 12, "Sirf dekhne ke liye - sahi nateeja MT5 demo se milao", text_color=cS, text_size=size.small)
+    table.merge_cells(tb, 0, 12, 5, 12)
