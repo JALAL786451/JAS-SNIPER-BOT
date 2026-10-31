@@ -1326,4 +1326,7 @@ ilaj nahi hua. Tasalli: #53 ka TV tokri (OANDA, alag source) 2012-aaj +108.9% vs
 FTSE (1988) 263 tr 65% +0.380%, +0.081R (+0.041), 22/31; CAC (1987) 260 tr 61% +0.352%, +0.065R (+0.023), 19/31; SX5E (1986) 272 tr 64% +0.386%, +0.083R (+0.033), 22/32;
 N225 (1971) 366 tr 55% +0.228%, +0.046R (-0.007), 30/48; XJO (1980) 328 tr 59% +0.255%, +0.063R (+0.017), 29/39; HSI (1986) 257 tr 58% +0.440%, +0.092R (+0.039), 24/32.
 **KUL 2140 tr, jeet 61%, khirki +0.355% vs drift +0.058% (6.1x), +0.077R, Exp - 2x(2.14 SE) +0.037, saal 180/261, index 7/7 musbat.** IMTIHAN aadha dekha (research agent).
+**Koshish #67 IMTIHAN 2019+ (EK dafa, 1 Nov, user TV SS, 1D aur 4H par bilkul same) = PASS (aadha dekha - research agent):** DAX 73 tr 68% +0.091R (-2SE +0.031); FTSE 73 tr 70%
++0.117R (+0.058); CAC 73 tr 64% +0.068R (+0.008); SX5E 73 tr 64% +0.081R (+0.022); N225 71 tr 52% +0.035R (-0.048); XJO 73 tr 67% +0.081R (+0.004); HSI 69 tr 58% +0.049R (-0.026).
+**KUL 505 tr, jeet 64%, khirki +0.416% vs drift +0.073% (5.7x), +0.075R, Exp - 2x(2.14 SE) +0.020 = PASS.** Aakhri faisla: #68 FTMO hisaab (#53 ke saath) + demo forward.
 
