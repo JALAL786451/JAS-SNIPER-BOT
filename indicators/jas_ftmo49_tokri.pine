@@ -1,8 +1,9 @@
 //@version=6
 // ============================================================================
-//  JAS FTMO 49 TOKRI  (build t2, Pine v6) - Koshish #49 ASLI PASS ka TOKRI DABBA
+//  JAS FTMO 49 TOKRI  (build t3, Pine v6) - Koshish #49 ASLI PASS ka TOKRI DABBA
 //  31 Oct 2026. t2: teeno muddat EK SAATH (TALAASH 2012-18, IMTIHAN 2019-aaj, KUL 2012-aaj);
 //      neeche apne pane mein KUL P/L % aur DD % ki lakeer (daayein patti par label); dabba main chart par.
+//  t3: chart ki pehli candle se PEHLE ka jor (TV 4H data kam ho to IBS ka purana faida) "pehle" alag likha.
 //  #49 qaide (har market apne data par, request.security ke andar):
 //    - TREND 4H: XAU, XAG, SPX500, NAS100 - Supertrend 10/3 SIRF BUY, flip ke baad agli 4H open,
 //      ulta flip = agli open band, SL = 6 x ATR10 (4H). Risk 0.75% = $750 har trade ($100k).
@@ -13,7 +14,7 @@
 //  Chart: OANDA:XAUUSD 4H. TV par purana 4H data kam ho sakta hai - "Data se" line dekhein.
 //  Python ka asal nateeja (tools/report49.py, ftmo49.py): 2012-aaj +80%, DD 15%; FTMO 2019+ 69 pass / 14 fail.
 // ============================================================================
-indicator("JAS FTMO 49 Tokri t2", shorttitle = "JAS FTMO49 TOKRI t2", overlay = false)
+indicator("JAS FTMO 49 Tokri t3", shorttitle = "JAS FTMO49 TOKRI t3", overlay = false)
 
 bal    = input.float(100000, "Account ($)")
 rT     = input.float(0.75, "Trend risk %")
@@ -139,9 +140,13 @@ var float mdd = 0.0
 peak := math.max(peak, kul)
 mdd := math.max(mdd, peak - kul)
 var map<int, float> yr = map.new<int, float>()
-dK = kul - nz(kul[1])
-if dK != 0
-    yr.put(year, nz(yr.get(year)) + dK)
+var float pehle = na                  // chart ki pehli candle tak ka jor
+if na(pehle)
+    pehle := kul
+else
+    dK = kul - nz(kul[1])
+    if dK != 0
+        yr.put(year, nz(yr.get(year)) + dK)
 
 // neeche ka pane: daayein patti par label
 plot(100 * kul / bal, "Kul P/L %", color = color.new(#0a8f5a, 0), linewidth = 2)
@@ -190,7 +195,7 @@ pf(bool ok) =>
     ok ? "PASS" : "FAIL"
 
 if barstate.islast
-    cellT(0, 0, "JAS FTMO 49 TOKRI t2", cHd)
+    cellT(0, 0, "JAS FTMO 49 TOKRI t3", cHd)
     cellT(1, 0, "Trades", cHd)
     cellT(2, 0, "Jeet", cHd)
     cellT(3, 0, "2012-18 $", cHd)
@@ -216,7 +221,7 @@ if barstate.islast
     [eT_, seT_, edT] = edgeOf(nTa, sTa, qTa)
     [eI_, seI_, edI] = edgeOf(nIa, sIa, qIa)
     int yPos = 0
-    string ys = ""
+    string ys = nz(pehle) != 0 ? "pehle: " + (pehle >= 0 ? "+" : "") + str.tostring(100 * pehle / bal, "#.#") + "%  " : ""
     for [k, v] in yr
         yPos += v > 0 ? 1 : 0
         ys += str.tostring(k) + ": " + (v >= 0 ? "+" : "") + str.tostring(100 * v / bal, "#.#") + "%  "
