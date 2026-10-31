@@ -62,7 +62,7 @@ NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100
 **DATA AA GAYA (31 Oct):** `data/duka/H1/JAS_ZIP/` 24 H1 zip (index, forex, oil, fasal, BTC, dollar) + `data/ftmo/` 4 = **28 market**. Kai 2017-19 se shuru
 (TALAASH chhoti). Baqi (EURUSD, USDJPY, copper, gas, sugar, NLD, ETH, AUDUSD) baad mein QDM se. `tools/JAS_ZIP.bat` z3 (z2 chakkar wali ghalti theek).
 **AGLA KAAM:** (a) **FTMO DEMO (474832446) = #53**: JasTrendEA t4 (XAUUSDm H4, 4 market, 0.75%, pehra 110k/96k/92k) + JasIbsEA **i5 (US500m D1 chart, US500+USTEC, 1%)** TRADE CHALU (31 Oct). Har trade TV `jas_ftmo49` se milao; 1-2 hafte baad VPS, phir FTMO challenge.
-(b) M1 -> #37 noise-boundary (qaida likha) + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
+(b) #37 FAIL; TV 2026 SPX -46% (bina kharcha bhi -). Somwar spread SS -> #54 qaida -> TALAASH; IMTIHAN MT5 Tester. NAS TV par nahi. + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
 **Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. $1 = 20 USC (~1,700$ door); SELL band = 185 USC/$ -> ~3,690 par khatam. Barabar 4,653.
 **RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
 

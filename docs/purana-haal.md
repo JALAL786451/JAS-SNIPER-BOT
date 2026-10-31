@@ -1077,3 +1077,8 @@ saal 12/15 musbat (2012 -3.8, 2015 -5.0, 2022 -7.0). IBS ab 401 tr (jeet 70%) 20
 **MAGAR bina kharcha +0.134R** (US500 +0.163, USTEC +0.105) - edge kharche se pehle saaf; 0.03%/taraf (index par ~2.5 pt round-trip) ne kha liya. USTEC BUY +0.045 (455 tr).
 Sabaq: is strategy ka faisla KHARCHE par hai - agla qadam asli spread naapna (Exness / FTMO US500, US100), phir #54 naye (pehle se likhe) kharche ke saath.
 **#37 IMTIHAN-hissa dekha gaya (31 Oct, user TV SS):** TV 30m data sirf 2026-01-20..2026-10-30 = IMTIHAN muddat. SPX500 30m (OANDA): 203 tr (~22/mahina), jeet 23%, 0.03% par -0.294R, **bina kharcha -0.062R**. Is liye #54 ka 2025+ IMTIHAN "aadha dekha hua" - Python 2025+ ka nateeja sirf tasdeeq, aur sakht (Exp - 2SE > 0).
+**#37 TV Strategy Tester (31 Oct, user SS, s2 OANDA SPX500 30m, 2026-01-02..10-30):** -45.89%, Max DD 47.17%, jeet 23.15% (47/203), PF 0.5 (1% risk, 0.03%/taraf).
+Python 2021-24 saal-wise bina kharcha: US500 +0.258 / +0.164 / +0.126 / +0.117, USTEC +0.067 / +0.071 / +0.120 / +0.169R (har saal +, US500 ghat raha).
+0.03% kharcha = 0.09-0.30R har trade (kam halchal = mehnga). 2026 SPX bina kharcha -0.062R = har TALAASH saal se kharab -> SPX ka imtihan mushkil.
+Faisla (Claude): NAS100 TV par abhi NAHI (2025+ IMTIHAN bachao). #54 raasta: Somwar spread SS -> qaida pehle -> TALAASH Python 2021-24 asli kharche se
+-> pass ho to IMTIHAN = MT5 Strategy Tester (Exness asli ticks + spread, 2025-01..aaj) EK dafa (data na ho to Python QDM 2025+).
