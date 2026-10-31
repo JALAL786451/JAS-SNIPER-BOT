@@ -1055,3 +1055,8 @@ Daily candle NY 17:00, wahi 28 market (#47). Forex + DOLLARIDX = BUY + SELL (aai
 **Koshish #51 nateeja (31 Oct, 28vi chat) = 0 / 84 bache = FAIL** (IMTIHAN nahi). K1 trend ausat -0.031R, K2 girawat +0.004R, K3 toot +0.012R (TALAASH). Qareeb: K2 JPN 124 tr
 +0.085R (Exp-3.24SE -0.034, saal 5/7), K2 USTEC 130 tr +0.077 (-0.041, 6/7), K2 US500 138 tr +0.042; K1/K3 gold +0.27R magar 52-67 tr (SE bara). Sabaq: ek market ka data
 itna lamba nahi ke 84 imtihan mein ittefaq se alag sabit ho - isi liye TOKRI (sab market ka jor) chahiye: ek qaida, bohot market = ginti barhti hai, shor ghatta hai.
+
+**Koshish #52 qaida (31 Oct, 28vi chat, user ki "teacher" misaal, IMTIHAN se PEHLE, badalna mana) - #51 ke 84 jor mein se BEHTAREEN 5 - `tools/teacher52.py`:**
+Formula, market, kharcha, TALAASH data bilkul #51 (`har_market51.py`). **Chunao (sirf TALAASH entry < 2019):** >= 30 tr aur saal (R jor) musbat > 50% wale jor,
+TALAASH **Exp - 2SE** ke hisaab se sab se upar **5**. **IMTIHAN 2019+ EK dafa** sirf in 5 par: PASS = >= 15 tr aur **Exp - 2.33 SE > 0** (5 imtihan: 0.05/5 one-sided).
+PASS wale = SELECT (tokri / EA). Ginti +1.
