@@ -1167,6 +1167,9 @@ Share = **Dow Jones 30 (Nov 2024 list, pehle se chuni)**: AAPL AMGN AMZN AXP BA 
 Kharcha 0.03%/taraf + swap 5%/saal. **Drift jaanch** (survivorship - ye share aaj bare = barhte rahe): IBS ausat % >= 2 x (share ka aam din ausat % x trade ke din).
 **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, (>= 10 tr wale) share >= 70% Exp > 0, (share x saal) musbat > 50%, IBS % >= 2 x drift.
 **IMTIHAN** 2019+ CHHUPA (input) jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr, Exp - 2SE > 0, IBS % >= 2 x drift = ASLI PASS. Maqsad ~50+ tr/mahina. Ginti +1.
+**Koshish #61 TALAASH (1 Nov, user TV SS) = FAIL (drift shart)** (IMTIHAN band): 26,269 tr, **2000-2018 ~47 tr/mahina**, jeet 59%, Exp +0.014R, Exp-2SE +0.009,
+share faide mein 23/30, (share x saal) 654/1231 - magar **IBS ausat +0.25% vs aam tezi (drift) +0.20%** (shart >= 2x = 0.40%). Farq sirf +0.05% (kharche se pehle) < kharcha 0.06%.
+Sabaq: share par IBS ka faida = zyada tar share ka barhna (survivorship), girawat ki wapsi ka asar bohot chhota. Index par IBS chalta hai, akele share par nahi.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)

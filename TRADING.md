@@ -87,7 +87,7 @@ Somwar: pehli trades + TV `JAS FTMO 53 f2` dabba ka SS milao; 1-2 hafte baad VPS
 1-5 FAIL · **6 Kachhua commodity ASLI PASS** · 7-14 FAIL · **15 IBS S&P ASLI PASS** · 16-25 FAIL / sikka (19 SMC DZ/SZ 4H MT5 baqi; 21 ORB USTEC 5m asli kharcha FAIL 1 Nov) ·
 **26 Supertrend tokri ASLI PASS** · **27 JasTrend FTMO PASS** · 28-33 FAIL · **34 JAS Trend 4H TOKRI ASLI PASS** · 35-44 FAIL (37 noise boundary 0.03% kharcha par) ·
 **45 Double 7s ASLI PASS kamzor** · 46-48, 50, 51 FAIL · **49 FTMO trend + IBS S&P ASLI PASS** · **52 teacher: USTEC IBS ASLI PASS** ·
-**53 FTMO #49 + IBS USTEC 1% ASLI PASS (2019+ 83/0, 2012-aaj +92%, DD 13.4%) = FTMO mansooba** · 54 = #37 + asli spread: TALAASH PASS +0.113R, **IMTIHAN 2025+ FAIL** (-0.037R, bina kharcha bhi -) = band. · 55 trend tokri 1H FAIL · 56 IBS 4H FAIL (jeet 62%, faida 0) · 57 teacher 4H trend: 0 SELECT · 58 IBS mandi FAIL · **59 CHUTTI se pehle wala din (SPX+NDX) ASLI PASS** (2019+ 146 tr, jeet 68%) · 60 FTMO #53 + chutti FAIL (fail barhe).
+**53 FTMO #49 + IBS USTEC 1% ASLI PASS (2019+ 83/0, 2012-aaj +92%, DD 13.4%) = FTMO mansooba** · 54 = #37 + asli spread: TALAASH PASS +0.113R, **IMTIHAN 2025+ FAIL** (-0.037R, bina kharcha bhi -) = band. · 55 trend tokri 1H FAIL · 56 IBS 4H FAIL (jeet 62%, faida 0) · 57 teacher 4H trend: 0 SELECT · 58 IBS mandi FAIL · **59 CHUTTI se pehle wala din (SPX+NDX) ASLI PASS** (2019+ 146 tr, jeet 68%) · 60 FTMO #53 + chutti FAIL · 61 IBS x Dow 30 share FAIL (~47 tr/mahina, faida = drift).
 Faida daily + 4H TOKRI par; chhoti TF ab asli kharche se dobara (har ek pehle se likh kar).
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
