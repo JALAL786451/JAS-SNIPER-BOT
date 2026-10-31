@@ -1,10 +1,10 @@
 //@version=6
-// JAS Noise Boundary STRATEGY s1 (31 Oct 2026) - Koshish #37 (Zarattini-Aziz-Barbon 2024) TradingView Strategy Tester ke liye.
+// JAS Noise Boundary STRATEGY s2 (31 Oct 2026; s2: margin 1% = leverage 1:100 - v6 ka default 100% margin order rok deta tha) - Koshish #37 (Zarattini-Aziz-Barbon 2024) TradingView Strategy Tester ke liye.
 // CHART: 30 MINUTE - pehle OANDA:SPX500USD, phir OANDA:NAS100USD (har chart par alag report).
 // Qaida bilkul indicators/jas_noise_boundary.pine n1 jaisa: faisla 30m candle ke close par (10:00-15:30 NY),
 // close > UB = BUY, < LB = SELL, stop BUY max(UB, VWAP) / SELL min(LB, VWAP), 16:00 sab band. Har trade 1% risk (1R = sigma x entry).
 // Kharcha: Properties > Commission 0.03% (qaida). Sirf dekhne / ginti ke liye - faisla Python + pehle se likha qaida.
-strategy("JAS Noise Boundary s1", shorttitle = "JAS NOISE s1", overlay = true, initial_capital = 100000,
+strategy("JAS Noise Boundary s2", shorttitle = "JAS NOISE s2", overlay = true, initial_capital = 100000, margin_long = 1, margin_short = 1,
      commission_type = strategy.commission.percent, commission_value = 0.03, process_orders_on_close = true,
      default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0)
 
