@@ -127,8 +127,8 @@ def main():
         starts, end = pd.date_range('2012-01-01', '2018-12-01', freq='MS', tz='UTC'), pd.Timestamp('2019-01-01', tz='UTC').value
     for s, tl in zip(syms, ch):
         if tl:
-            t = dfs[s]['t'].values
-            k = [x for x in tl if starts[0].value <= t[x[0]].astype(np.int64) < end]
+            t = dfs[s]['t'].values.astype('datetime64[ns]').astype(np.int64)
+            k = [x for x in tl if starts[0].value <= t[x[0]] < end]
             pct = np.mean([x[3] / x[2] - 1 for x in k]) * 100
             print(f'chutti {s}: {len(k)} tr ({len(k) / ((end - starts[0].value) / 3.156e16):.1f}/saal), ausat {pct:+.3f}% (kharche se pehle)')
     print(f"{'IMTIHAN 2019+' if a.imtihan else 'CHUNAO 2012-2018'}: {len(starts)} challenge (kharcha asli)")

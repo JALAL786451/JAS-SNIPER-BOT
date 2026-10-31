@@ -1157,6 +1157,10 @@ IBS US500/USTEC 1%) + chutti leg US500 + USTEC (`data/ftmo/` H1): din d ke 16:00
 Kharcha ASLI (JasSpreadNaap x 1.5, `ftmo53_asli.run_cost`), swap 3%/saal. **CHUNAO 2012-2018** (har mahine nayi challenge): chutti risk 0.25 / 0.5 / 0.75 / 1.0 vs
 bina chutti (#53): shart P1 fail < 20%, pass > fail, (pass - fail) >= #53 ka; behtareen = zyada (pass - fail), phir kam median mahine, phir kam risk. Koi nahi = FAIL.
 **IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk): PASS = fail 0, pass >= 83 aur median < 11.7 mahine (#53 asli kharche wala). Ginti +1.
+**Koshish #60 CHUNAO 2012-2018 (1 Nov) = FAIL** (IMTIHAN nahi chala): 84 challenge, asli kharcha. #53 akela 62 pass / 4 fail (0/4) / 18 adhoora, median 36.3 mahine.
++chutti 0.25%: 59 / 7 (2/5), 35.4 · 0.5%: 54 / 12, 27.5 · 0.75%: 52 / 14, 20.8 · 1.0%: 51 / 15 (12/3), 17.7 -> har risk par (pass - fail) #53 se kam = KOI NAHI.
+Chutti H1 trades: 120 (2012-26, ~8/saal/market; 15 din H1 data mein khali, zyada 2017-18); 2012-18 US500 48 tr +0.033%, USTEC 48 tr +0.092% (2015-18 kamzor).
+Sabaq: #59 ka asar asli (TV 1971+ aur 2019+), magar 2012-18 mein kamzor tha; #53 ke upar risk barhane se FTMO fail barhe. FTMO mansooba = #53 hi. Chutti alag EA (demo) baad mein soch sakte.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
