@@ -1316,4 +1316,7 @@ Kharcha 0.02%/taraf + swap 3%/saal. Tareekh = `time_tradingday` (UTC). **Jure hu
 **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2 x (2.14 SE) > 0, >= 5/7 index Exp > 0, (index x saal) musbat > 50%, khirki ausat % >= 2 x drift.
 **IMTIHAN** 2019+ (CHHUPA, sirf TALAASH PASS par, EK dafa): kul >= 30, Exp - 2 x (2.14 SE) > 0, >= 2 x drift. **Imaandari:** research agent ne 2019+ dekh liya tha
 (+31..+49 bp) = IMTIHAN aadha dekha; aakhri faisla demo forward se bhi. Ginti +1.
+**#67 judge (1 Nov) = BUG (sirf compile): 7 x 19 = 133 tuple > 127 hadd** -> **k2**: drift ab ausat bheja (17 x 7 = 119). Baqi CLEAN: `f_win` Python mein 1971-2030 ki 516/516
+NYSE chuttiyan sahi (Monday / Good Friday / Thanksgiving / observed / Juneteenth 2022+), exit pehli session >= H (Europe Easter, Christmas, Japan 31 Dec-3 Jan sahi),
+time_tradingday UTC sahi (ASX garmi bhi), repaint nahi, PASS / IMTIHAN lock qaide jaisa. Note: Asia ke index ki khirki US chutti se pehle khatam (qaide jaisa).
 
