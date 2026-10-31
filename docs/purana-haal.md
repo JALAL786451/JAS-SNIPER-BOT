@@ -1041,3 +1041,6 @@ SL lage to us hafte dobara nahi (agle Juma set mein ho to nayi). Kharcha 0.03%/t
 **A. EDGE:** TALAASH entry < 2019: PASS = kul >= 100 tr, Exp(R) - 2SE > 0, saal (kul R) musbat > 50%. -> IMTIHAN 2019+ ek dafa: >= 30 tr, Exp - 2SE > 0. BUY/SELL alag maloomat.
 **B. FTMO** (sirf A TALAASH PASS ho): `ftmo_test.run`, har position risk 0.25 / 0.5 / 0.75% (CHUNAO 2012-18: P1 fail < 20% aur pass > fail, max pass-fail); IMTIHAN 2019+ ek dafa.
 + report card ($100k lagatar). Maloomat: trade/mahina. Ginti +2.
+**Koshish #50 nateeja (31 Oct, 28vi chat) = A TALAASH FAIL** (IMTIHAN / FTMO band). 774 tr (~9.8/mahina), Exp -0.083R, Exp-2SE -0.154, jeet 37%, **bina kharcha -0.005R (sifar)**;
+BUY -0.020R (404), SELL -0.152R (370); saal 2/7 musbat (2015 -23R, 2016 -26R, 2018 -18R). Sabaq: 28 CFD mein 60 din ki relative taqat (long/short) ka koi faida nahi;
+SELL taraf khaas nuqsaan (market ka lamba jhukao upar). Gend wala khayal (ulta chalne wale jore) is shakal mein nahi chala.
