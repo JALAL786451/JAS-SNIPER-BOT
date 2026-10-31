@@ -1130,6 +1130,12 @@ FTMO hisaab alag (#58, qaida pehle). Ginti +1.
 Baqi: BTC 34 tr +0.267 (saal 1/2 = shart nahi), USA30 94 tr +0.059 (3/6 = 50%, shart nahi), forex / EU / oil / fasal zyada tar manfi. TOP = JPN, ESP.
 **Koshish #57 IMTIHAN 2019+ (ek dafa, 1 Nov) = 0 SELECT = FAIL:** JPN 163 tr +0.069R (Exp-2.33SE -0.049, jeet 42%, saal 6/8) FAIL; ESP 122 tr +0.054R (-0.088, 5/8) FAIL.
 Sabaq: 4H trend ka pakka faida sirf gold / silver / US index (pehle se #53 mein); naya market nahi mila. JPN dono daur musbat magar kamzor (yaad rakho, jorna nahi).
+**Koshish #58 qaida (1 Nov, 28vi chat, user "D", test se PEHLE, badalna mana) - IBS MANDI (`indicators/jas_ibs_mandi.pine` m1, TV, chart SP:SPX Daily):**
+#14 / #15 IBS bilkul wahi (IBS < 0.2 din ke close par BUY, band IBS > 0.8 ya 5 din, SL 3 x ATR14 = 1R, gap = open, band / SL wale din nayi nahi, sirf BUY), farq sirf:
+**close < SMA200** (mandi). Index: SP:SPX + NASDAQ:NDX (har ek ki apni daily candle, band candle [1]). Kharcha 0.01%/taraf + swap 3%/saal har raat (calendar din).
+**TALAASH** entry saal < 2019 (TV data shuru se): PASS = kul >= 100 tr, kul Exp - 2SE > 0, dono index Exp > 0, (index x saal, sirf trade wale saal) musbat > 50%.
+**IMTIHAN** 2019+ table mein CHHUPA (input "IMTIHAN dikhao" band) jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr aur Exp - 2SE > 0 = ASLI PASS. Ginti +1.
+Maqsad: #53 jab khamosh (mandi) tab trade - PASS ho to FTMO hisaab alag (qaida pehle).
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)

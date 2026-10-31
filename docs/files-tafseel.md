@@ -45,6 +45,9 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL | `--tf D1` = #48 FAIL.
 | `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
+| `indicators/jas_ibs_mandi.pine` | m1 (1 Nov) #58: IBS jab close < SMA200 (mandi), SPX + NDX daily, TV table; IMTIHAN 2019+ chhupa (input) |
+| `tools/teacher57.py` | #57 (1 Nov): teacher tareeqa 4H trend 24 naye market - 0 SELECT (JPN qareeb) |
+| `tools/st_tokri_1h.py` / `tools/ibs4h_test.py` | #55 trend 1H / #56 IBS 4H (asli kharcha) - dono TALAASH FAIL |
 | `tools/orb21_test.py` | #21 (1 Nov): USTEC 5m ORB (Zarattini-Aziz 2023) M1 + asli kharcha - TALAASH FAIL (-2SE -0.042) |
 | `tools/ftmo53_asli.py` | #53 FTMO asli spread ke saath (sirf andaza): median 11.7 mahine, 83/0/11 |
 | `tools/noise54.py` | #54 (31 Oct): #37 noise boundary + asli kharcha (JasSpreadNaap); TALAASH 2021-24 PASS +0.113R; `--imtihan` 2025+ |
