@@ -103,3 +103,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - FTMO demo kaise chal raha? -> 31 Oct: Exness Demo 474832446 par JasTrendEA t4 + JasIbsEA i4 TRADE CHALU; purani khuli trade (TV par dikhi) naye account par nahi - agle signal se milao (31 Oct).
 - TV par 4H ka purana data? -> tokri dabba DAILY chart par lagao: request.security 240 ka data 2007 se aata hai (4H chart par sirf 2023) (31 Oct).
 - Ulte chalne wale market ki tokri (gend wala idea)? -> #50 cross-sectional momentum (top 4 BUY / bottom 4 SELL har hafte) FAIL: ~10 tr/mahina, bina kharcha bhi 0, SELL manfi (31 Oct).
+- Ek instrument par apna qaida? -> #51: 3 sabit khandaan x 28 = 84, sakht shart (3.24 SE) -> 0 bache; ek market ka data ittefaq se alag sabit karne ko kaafi nahi = tokri zaroori (31 Oct).

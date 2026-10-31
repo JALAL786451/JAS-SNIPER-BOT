@@ -1052,3 +1052,6 @@ Daily candle NY 17:00, wahi 28 market (#47). Forex + DOLLARIDX = BUY + SELL (aai
 **K3 TOOT (Turtle 20/10):** close > pichhle 20 din ka high -> agli open BUY; close < pichhle 10 din ka low -> agli open band; SL 2 x ATR20. (SELL aaina.)
 **TALAASH** entry < 2019 (har jor alag): PASS = >= 30 tr, **Exp - 3.24 x SE > 0** (84 imtihan ki wajah se sakht: 0.05/84 one-sided), saal (R jor) musbat > 50%.
 **IMTIHAN** 2019+ EK dafa sirf bache hue jor: PASS = >= 15 tr aur Exp - 2SE > 0. Dono PASS = tokri ka hissa. Ginti +1 (84 imtihan ek koshish).
+**Koshish #51 nateeja (31 Oct, 28vi chat) = 0 / 84 bache = FAIL** (IMTIHAN nahi). K1 trend ausat -0.031R, K2 girawat +0.004R, K3 toot +0.012R (TALAASH). Qareeb: K2 JPN 124 tr
++0.085R (Exp-3.24SE -0.034, saal 5/7), K2 USTEC 130 tr +0.077 (-0.041, 6/7), K2 US500 138 tr +0.042; K1/K3 gold +0.27R magar 52-67 tr (SE bara). Sabaq: ek market ka data
+itna lamba nahi ke 84 imtihan mein ittefaq se alag sabit ho - isi liye TOKRI (sab market ka jor) chahiye: ek qaida, bohot market = ginti barhti hai, shor ghatta hai.
