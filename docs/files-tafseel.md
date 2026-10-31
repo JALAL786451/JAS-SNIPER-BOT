@@ -46,6 +46,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
 | `tools/taqat50.py` | #50 (31 Oct): 28 market taqat ka muqabla (har Juma top 4 BUY / bottom 4 SELL, SL 3 ATR) - TALAASH FAIL |
 | `tools/har_market51.py` | #51 (31 Oct): har market x 3 khandaan (trend / IBS / turtle) daily, sakht shart - 0/84 FAIL |
+| `tools/teacher52.py` | #52 (31 Oct): #51 ke 84 mein se TALAASH top 5 -> IMTIHAN ek dafa; USTEC IBS SELECT |
 | `indicators/jas_ftmo49.pine` | f1 (31 Oct): #49 ka TV dabba - 4 market 4H trend (khuli BUY, entry, SL 6 ATR, abhi R) + IBS US500 daily + Python nateeja; sirf dekhne ke liye |
 | `indicators/jas_ftmo49_tokri.pine` | t2 (31 Oct): teeno muddat ek saath (2012-18 / 2019-aaj / KUL), neeche pane KUL P/L % + DD % (daayein label), TALAASH + IMTIHAN PASS dono. t1: #49 TOKRI dabba (k1 jaisa, safaid): har line trades / jeet / faida $ / Exp R, KUL, DD, saal ba saal, TALAASH-IMTIHAN-SAB muddat, PASS/FAIL + Python FTMO |
 | `data/qdm/XAUUSD_M1_2021_24.zip`, `XAUUSD_M1_2015.zip` | QDM Dukascopy gold M1 UTC (user 28 Oct; 2015 H1 se 100% mila). 2016-20 aur 2025+ abhi nahi |

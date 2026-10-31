@@ -104,3 +104,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - TV par 4H ka purana data? -> tokri dabba DAILY chart par lagao: request.security 240 ka data 2007 se aata hai (4H chart par sirf 2023) (31 Oct).
 - Ulte chalne wale market ki tokri (gend wala idea)? -> #50 cross-sectional momentum (top 4 BUY / bottom 4 SELL har hafte) FAIL: ~10 tr/mahina, bina kharcha bhi 0, SELL manfi (31 Oct).
 - Ek instrument par apna qaida? -> #51: 3 sabit khandaan x 28 = 84, sakht shart (3.24 SE) -> 0 bache; ek market ka data ittefaq se alag sabit karne ko kaafi nahi = tokri zaroori (31 Oct).
+- Teacher wala tareeqa (behtareen chuno, naya paper do)? -> #52: top 5 (sab IBS) mein se USTEC IBS ASLI PASS (2019+ 207 tr, 71% jeet, 7/8 saal) (31 Oct).

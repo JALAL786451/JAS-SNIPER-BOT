@@ -1061,3 +1061,5 @@ Formula, market, kharcha, TALAASH data bilkul #51 (`har_market51.py`). **Chunao 
 TALAASH **Exp - 2SE** ke hisaab se sab se upar **5**. **IMTIHAN 2019+ EK dafa** sirf in 5 par: PASS = >= 15 tr aur **Exp - 2.33 SE > 0** (5 imtihan: 0.05/5 one-sided).
 PASS wale = SELECT (tokri / EA). Ginti +1.
 **Koshish #52 CHUNAO (31 Oct, IMTIHAN se PEHLE likha):** 10 jor shart poori; TOP 5 (sab K2 girawat): JPN 124 tr +0.085R (Exp-2SE +0.011), USTEC 130 tr +0.077 (+0.004), ESP 51 tr +0.051 (-0.011), US500 138 tr +0.042 (-0.024), USDCAD 491 tr +0.000 (-0.031).
+**Koshish #52 IMTIHAN 2019+ (ek dafa, 31 Oct) = 1 SELECT:** **USTEC K2 IBS: 207 tr, Exp +0.071R, Exp-2.33SE +0.016, jeet 71%, saal 7/8 = ASLI PASS (SELECT)**.
+US500 IBS 194 tr +0.039R (-0.020, 5/8) FAIL; JPN 161 tr +0.007 FAIL; ESP -0.007 FAIL; USDCAD -0.057 FAIL. Agla: #49 + IBS USTEC ka FTMO asar (risk ek saath).
