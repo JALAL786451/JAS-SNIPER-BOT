@@ -1087,3 +1087,9 @@ asli ticks) ki line "faisle ke waqt" (10:00, 10:30 ... 16:00 NY ka pehla minute,
 (slippage + FTMO / asli farq); yani `COST` har taraf = 0.75 x spread%. US500 = US500m, USTEC = USTECm, alag alag. Naap kam ho ya zyada, wahi number.
 #54 = #37 qaida bilkul wahi (sirf kharcha naya). TALAASH M1 2021-24: PASS = tokri n >= 100, Exp - 2SE > 0, saal musbat >= 3/4.
 IMTIHAN (sirf TALAASH PASS ke baad, EK dafa): MT5 Tester real ticks 2025-01..aaj (ya Python QDM 2025+), Exp - 2SE > 0. Baqi intraday (#41 M1, #42) alag number, qaida pehle.
+**JasSpreadNaap s1 naap (31 Oct raat, user SS, Exness Demo, 20 din, server UTC+0):** US500m 0.40 = 0.0052% (NY, faisle ka waqt, poora din, 90% - sab barabar = demo par pakka spread),
+USTECm 1.12 = 0.0038%, XAUUSDm 0.240 = 0.0059%, XAGUSDm 0.025 = 0.0445%. Python ka 0.060% aana-jana = US500 11.5x, USTEC 16x, gold 10x zyada; chandi sirf 1.3x (chandi mehngi).
+**Koshish #54 nateeja (31 Oct raat) = TALAASH PASS** (`tools/noise54.py`, kharcha har taraf US500 0.0039%, USTEC 0.00285%): tokri 1808 tr (~38/mahina), **Exp +0.113R**, Exp-2SE +0.045,
+jeet 42%, saal 4/4 (+56 / +52 / +45 / +51R). US500 +0.134 (895 tr), USTEC +0.091 (913 tr); BUY dono mein behtar (+0.158 / +0.172), SELL kamzor (+0.108 / +0.012).
+Jaanch (faisla nahi): spread points mein pakka (2021 ki kam qeemat par % zyada) = +0.096R, Exp-2SE +0.028 - phir bhi musbat. Khatra: demo spread pakka (asli/FTMO floating),
+aur TV 2026 SPX bina kharcha -0.062R -> IMTIHAN mushkil. IMTIHAN (faisla Claude): Python QDM M1 2025-01-01..aaj (wohi code, wohi data source) `noise54.py --imtihan`, EK dafa.
