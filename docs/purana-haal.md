@@ -1093,6 +1093,12 @@ USTECm 1.12 = 0.0038%, XAUUSDm 0.240 = 0.0059%, XAGUSDm 0.025 = 0.0445%. Python 
 jeet 42%, saal 4/4 (+56 / +52 / +45 / +51R). US500 +0.134 (895 tr), USTEC +0.091 (913 tr); BUY dono mein behtar (+0.158 / +0.172), SELL kamzor (+0.108 / +0.012).
 Jaanch (faisla nahi): spread points mein pakka (2021 ki kam qeemat par % zyada) = +0.096R, Exp-2SE +0.028 - phir bhi musbat. Khatra: demo spread pakka (asli/FTMO floating),
 aur TV 2026 SPX bina kharcha -0.062R -> IMTIHAN mushkil. IMTIHAN (faisla Claude): Python QDM M1 2025-01-01..aaj (wohi code, wohi data source) `noise54.py --imtihan`, EK dafa.
+**Koshish #54 IMTIHAN (1 Nov, EK dafa, QDM M1 2025-01-01..2026-10-30) = FAIL -> idea band.** Tokri 830 tr, Exp -0.037R, Exp-2SE -0.136, jeet 34%, **bina kharcha bhi -0.015R**.
+US500 -0.084 (2025 -21.4R, 2026 -14.4R), USTEC +0.013 (2025 -9.6R, 2026 +14.8R). Sabaq: paper (2024) ke baad edge khatam - US500 2021 +0.26 se 2024 +0.12, 2025-26 manfi.
+**Koshish #21 kharcha (1 Nov, test se PEHLE; #21 qaida 17 Oct `JasOrb5EA.mq5` o1 header bilkul wahi):** USTEC 5m ORB (Zarattini-Aziz 2023): 09:30 NY pehli 5m candle hari = BUY,
+laal = SELL, doji = nahi; entry doosri candle ki open (09:35), SL pehli candle ka doosra kinara = 1R, TP 10R, warna 16:00 band, din mein ek. Python `tools/orb21_test.py`
+(QDM M1 `data/qdm/M1` USATECH). Ek minute mein SL aur TP dono = SL. Kharcha #54 wala: har taraf 0.75 x 0.0038% = 0.00285%. R = entry - SL (<= 0 = us din nahi).
+TALAASH 2021-24: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat. PASS -> IMTIHAN 2025+ EK dafa (Exp - 2SE > 0). Leverage 4x had sirf $ ke liye, faisla R par.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
