@@ -1113,6 +1113,11 @@ Maqsad: #53 ke trend hisse mein ~4 guna trade (FTMO tez) - PASS ho to FTMO hisaa
 **Koshish #55 nateeja (1 Nov) = TALAASH FAIL** (IMTIHAN nahi khola): kul 2830 tr (~15/mahina), Exp +0.027R, Exp-2SE -0.028, jeet 37%, bina kharcha +0.089R.
 XAU +0.066 (1049 tr), XAG -0.036 (909, chandi ka asli kharcha 0.033%/taraf mehnga), US500 +0.006 (436), USTEC +0.089 (436); market 3/4, (market x saal) 29/46.
 Sabaq: 1H par R chhota (3 x ATR10 H1) = kharcha + swap ab bhi ~0.06R kha jata; trend ka faida 4H / daily par hi pakka.
+**Koshish #56 qaida (1 Nov, 28vi chat, test se PEHLE, badalna mana) - IBS #15 bilkul wahi, sirf 4H candle (`tools/ibs4h_test.py`):** US500 + USTEC (`data/ftmo/`
+Dukascopy H1 -> 4H NY 17:00 se jura, #34 jaisa). BUY jab 4H candle band: IBS < 0.2 aur close > SMA200 (4H candles) -> usi close par. Band: IBS > 0.8 ya 5 candle
+(us candle ke close par), SL 3 x ATR14 (4H) = 1R (H1 low se jaanch, gap = open). Band / SL wali candle par nayi nahi. Sirf BUY, ek market ek position.
+Kharcha asli (har taraf US500 0.0039%, USTEC 0.00285%) + swap 3%/saal har 17:00 NY raat. **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, dono market
+Exp > 0, (market x saal) musbat > 50%. **IMTIHAN** 2019+ EK dafa, SAKHT (market daily IBS ke nateeje se chune): kul >= 30 tr aur Exp - 2SE > 0. Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
