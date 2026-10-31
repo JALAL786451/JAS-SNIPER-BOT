@@ -79,3 +79,5 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | faisle Claude ke | User (31 Oct): "saare faisle aap imaandari se khud karein" - FTMO #49: tested setting (trend 0.75% + IBS 2%) naye Exness demo $100k par, baqi EA demo se hatao, phir VPS, phir FTMO challenge. Har faisle ki wajah batao. | 31 Oct |
 | MT5 ke naam | User (31 Oct): "peela / neela" NAHI - kaho **"Exness Demo"** (EA wala MT5, C:\Program Files\MetaTrader 5 EXNESS, demo 474832446) aur **"Real A/C"** (C:\Program Files\MetaTrader 5, live 253687618). | 31 Oct |
 | koshish jari | User (31 Oct, dobara): "bas / ruk jao / talaash rok do" wala mashwara KABHI nahi - thakna / mayoos hona nahi, koshish kamyabi ki kunji. FAIL ki ginti par nahi, nateeje par nazar; ginti sirf is liye ke koi koshish DOHRANI na pare. | 31 Oct |
+| nayi chat (reset) | Hafte ki limit Itwar ko reset - us se pehle nayi chat ka faida nahi, isi chat mein kaam (user 31 Oct). | 31 Oct |
+| strategy badlo | "2-3 strategies par atak gaye" - naye raaste dhoondo (asli kharcha, chhoti TF, naye khandaan), purane par na atko (user 31 Oct). | 31 Oct |

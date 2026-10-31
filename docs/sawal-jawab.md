@@ -108,3 +108,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - FTMO ka naya mansooba? -> #53: JasTrend 4H tokri 0.75% + IBS US500 + USTEC 1%: 2019+ 83 pass / 0 fail, 2012-aaj +92%, DD 13.4%, ~11 tr/mahina (31 Oct).
 - Roz 1-3 trade wali (noise boundary #37)? -> M1 2021-24: ~38 tr/mahina, kharche se pehle +0.134R (asli edge) magar 0.03% kharche ke baad -0.047R = FAIL; asli spread naap kar #54 (31 Oct).
 - TV strategy "Trades are required" / koi trade nahi? -> Pine v6 default margin 100%: strategy() mein margin_long = 1, margin_short = 1 (31 Oct).
+- TV strategy SPX 2026 par -46%? -> sirf 2026 (IMTIHAN muddat), bina kharcha bhi -0.062R; 0.03% kharcha + 1% risk x 203 tr. "Umeed" wali baat Python 2021-24 (bina kharcha +0.134) ki thi (31 Oct).
+- Asli spread kitna? -> `JasSpreadNaap` s1 (Exness Demo, 20 din ticks): US500 0.40, USTEC 1.12, gold 0.24, chandi 0.025; Python ka 0.03%/taraf 10-16 guna zyada tha (chandi 1.3x) (31 Oct).
+- Noise boundary asli kharche se? -> #54 TALAASH PASS: 2021-24 1808 tr (~38/mahina), +0.113R, saal 4/4, jeet 42%; IMTIHAN QDM M1 2025+ baqi (31 Oct).

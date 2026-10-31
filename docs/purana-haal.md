@@ -1093,3 +1093,29 @@ USTECm 1.12 = 0.0038%, XAUUSDm 0.240 = 0.0059%, XAGUSDm 0.025 = 0.0445%. Python 
 jeet 42%, saal 4/4 (+56 / +52 / +45 / +51R). US500 +0.134 (895 tr), USTEC +0.091 (913 tr); BUY dono mein behtar (+0.158 / +0.172), SELL kamzor (+0.108 / +0.012).
 Jaanch (faisla nahi): spread points mein pakka (2021 ki kam qeemat par % zyada) = +0.096R, Exp-2SE +0.028 - phir bhi musbat. Khatra: demo spread pakka (asli/FTMO floating),
 aur TV 2026 SPX bina kharcha -0.062R -> IMTIHAN mushkil. IMTIHAN (faisla Claude): Python QDM M1 2025-01-01..aaj (wohi code, wohi data source) `noise54.py --imtihan`, EK dafa.
+
+
+## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
+
+
+**27vi chat (29 Oct)** - tafseel `docs/purana-haal.md` grep "27vi chat" + "Koshish #37".."#42". Purani 22-26vi: grep "sec 5 se (29 Oct 27vi".
+5 naye FAIL: #38 failed breakdown, #39 TV Momentum H1, #40 VWAP, #41 Gao-Han-Li-Zhou (H1 proxy), #42 raat ka drift (asar asli, kharcha bara).
+NichoR: <= H1 par CFD kharcha edge kha jata; PASS sirf 4H/daily (#34, #15). ~100 tr/mahina = ZYADA MARKET, chhoti TF nahi.
+**DATA (user raat ko chalata hai):** laptop `Desktop\JAS\JAS_DATA.bat` -> `tools/duka_get.py` d3 = Dukascopy se
+36 H1 all time + 4 index M1 2021-aaj (`docs/qdm-data-list.md`). Cloud se rok; d2 adhoora (4 saath + sleep), d3 aahista.
+**DATA AA GAYA (31 Oct):** `data/duka/H1/JAS_ZIP/` 24 H1 zip (index, forex, oil, fasal, BTC, dollar) + `data/ftmo/` 4 = **28 market**. Kai 2017-19 se shuru
+(TALAASH chhoti). Baqi (EURUSD, USDJPY, copper, gas, sugar, NLD, ETH, AUDUSD) baad mein QDM se. `tools/JAS_ZIP.bat` z3 (z2 chakkar wali ghalti theek).
+**AGLA KAAM:** (a) **FTMO DEMO (474832446) = #53**: JasTrendEA t4 (XAUUSDm H4, 4 market, 0.75%, pehra 110k/96k/92k) + JasIbsEA **i5 (US500m D1 chart, US500+USTEC, 1%)** TRADE CHALU (31 Oct). Har trade TV `jas_ftmo49` se milao; 1-2 hafte baad VPS, phir FTMO challenge.
+(b) **#54 TALAASH PASS** (asli spread US500 0.40 / USTEC 1.12, +0.113R, ~38 tr/mahina). Agla: QDM M1 2025.01.01-aaj export -> `D:\QDM_M1_2025` + JAS_M1ZIP -> upload -> `noise54.py --imtihan` EK dafa. NAS TV par nahi. + #41 asli. (c) din mein FTMO kaam (user: "raat = download, din = FTMO ke qareeb"). "D" nahi.
+**Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. $1 = 20 USC (~1,700$ door); SELL band = 185 USC/$ -> ~3,690 par khatam. Barabar 4,653.
+**RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
+
+
+## Koshish ginti 31 Oct (TRADING.md sec 8 ki poori line, 28vi chat)
+
+
+1-5 FAIL · **6 Kachhua commodity ASLI PASS (demo)** · 7-14 FAIL · **15 IBS S&P ASLI PASS (JasIbsEA)** ·
+16 order flow SIKKA · 17 SELL band/dobara FAIL · 18 MA 63/91 + EMA 63/93, 20/50 (MT5) FAIL · 19 SMC: LGB/FVG FAIL, DZ/SZ 4H MT5 baqi ·
+20 Kitab Tukda FAIL · **21 ORB USTEC 5m - data 2021-22 mila, 2023-24 baqi** · 22 Fib OTE gold 15m FAIL (Python M1 2021-24) · 24 Supertrend gold 1D FAIL · Aaina 1D andaza (Pine, 21 Oct) FAIL · 25 Supertrend sirf BUY FAIL · **26 Supertrend tokri TALAASH PASS**  -> **IMTIHAN 2019-aaj ASLI PASS** (165 tr +0.455R) = demo ki taraf. · **27 JasTrend FTMO Python PASS** (1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine) · 28 IBS 4 market FAIL · 29 Kachhua 4 market FAIL · 30 gold H1 raat BUY / din SELL FAIL · 31 gold H4 RSI2 pullback FAIL · 32 gold daily rukh + H1 entry FAIL · 33 JAS Trend t2 gold 4H/1H/15m FAIL · **34 JAS Trend 4H TOKRI (XAU/XAG/US500/USTEC) ASLI PASS** (2019+ 641 tr, +0.208R, Exp-2SE +0.085, 4/4) · 35 4H tokri FTMO FAIL · 36 HTF+AOI+M30 engulfing gold FAIL · 37 noise-boundary (qaida likha, M1 baqi) · 38 failed breakdown · 39 TV Momentum H1 · 40 VWAP · 41 Gao-Han-Li-Zhou H1 · 42 raat drift = sab FAIL · 43 J Law (4H -0.11R) FAIL · 44 JJ Simon 1m (104 tr/mahina) FAIL · **45 Connors Double 7s ASLI PASS kamzor** (= IBS/RSI2 nakal, EA nahi) · 46 squeeze + NR7 FAIL · 47 / 48 BARI TOKRI 28 market 4H + daily FAIL (trend sirf gold/silver/US idx; EU idx + forex manfi) · **49 FTMO: 4H trend tokri 0.75% + IBS S&P 2% ASLI PASS** (2019+ 69/14, P1 fail 13.8%, median 11 mahine) · 50 taqat ka muqabla long/short FAIL · 51 har market apna qaida 0/84 · **52 teacher: USTEC IBS ASLI PASS** · **53 FTMO #49 + IBS USTEC (IBS 1%) ASLI PASS: 2019+ 83 pass / 0 fail, 2012-aaj +92%, DD 13.4%** = naya FTMO mansooba · 37 noise boundary M1 FAIL (38 tr/mahina, bina kharcha +0.134R - kharcha faisla karega). · **54 = #37 + asli spread (0.40/1.12) TALAASH PASS +0.113R** (IMTIHAN baqi).
+Faida daily + 4H TOKRI par; akela market chhoti TF par nahi.
+

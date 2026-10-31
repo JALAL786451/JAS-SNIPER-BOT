@@ -32,10 +32,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - HIDAYAT: nayi 2 line table format mein
    - jas_trend_pro.pine t3.5: moti Supertrend 10/3 lakeer default band
 
-2026-10-30  (20 kaam)
+2026-10-30  (25 kaam)
    - Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab par SL
-   - JasDeskView v5.5: lamba panel daayen naye column mein (kat-ta nahi)
-   - Koshish #49 CHUNAO: trend 0.75% + IBS 2.0% (52/15) - IMTIHAN se pehle
+   - JAS_ZIP z3: TASHEEH - folder ZIP_UPLOAD, explorer se (z2 khud ko dobara chalati thi)
+   - #49 report card 2012-aaj: +80%, DD 15%
 
-2026-10-31  (1 kaam)
+2026-10-31  (32 kaam)
    - Add files via upload
+   - Koshish #53 qaida (FTMO: #49 + IBS USTEC, IBS risk 1/1.5/2) - test se pehle
+   - #54 TALAASH PASS: noise boundary asli spread ke saath +0.113R (2021-24, 1808 tr); spread n
