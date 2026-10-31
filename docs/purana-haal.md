@@ -1063,3 +1063,8 @@ PASS wale = SELECT (tokri / EA). Ginti +1.
 **Koshish #52 CHUNAO (31 Oct, IMTIHAN se PEHLE likha):** 10 jor shart poori; TOP 5 (sab K2 girawat): JPN 124 tr +0.085R (Exp-2SE +0.011), USTEC 130 tr +0.077 (+0.004), ESP 51 tr +0.051 (-0.011), US500 138 tr +0.042 (-0.024), USDCAD 491 tr +0.000 (-0.031).
 **Koshish #52 IMTIHAN 2019+ (ek dafa, 31 Oct) = 1 SELECT:** **USTEC K2 IBS: 207 tr, Exp +0.071R, Exp-2.33SE +0.016, jeet 71%, saal 7/8 = ASLI PASS (SELECT)**.
 US500 IBS 194 tr +0.039R (-0.020, 5/8) FAIL; JPN 161 tr +0.007 FAIL; ESP -0.007 FAIL; USDCAD -0.057 FAIL. Agla: #49 + IBS USTEC ka FTMO asar (risk ek saath).
+
+**Koshish #53 qaida (31 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - FTMO: #49 + IBS USTEC (#52 SELECT) - `tools/ftmo49.py --ibs-syms US500 USTEC`:**
+#49 jyon ka tyon: trend 4H tokri (XAU, XAG, US500, USTEC) 0.75%, SL 6 ATR + **IBS ab US500 AUR USTEC** (har ek alag slot, wahi #15 qaida). IBS risk **1.0 / 1.5 / 2.0%** (dono par ek jaisa).
+**CHUNAO** 2012-01..2018-12: shart P1 fail < 20% aur pass > fail; max (pass - fail); barabar = kam risk. **2019+** ek dafa (ehtiyat: 2019+ data #49 / #52 mein dekha ja chuka -
+is liye sirf tasdeeq): pass > fail aur P1 fail < 20%, aur #49 (69 pass / 14 fail) se muqabla. Maloomat: trade/mahina + report card. Ginti +1.
