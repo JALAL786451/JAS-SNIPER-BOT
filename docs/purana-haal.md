@@ -1118,6 +1118,9 @@ Dukascopy H1 -> 4H NY 17:00 se jura, #34 jaisa). BUY jab 4H candle band: IBS < 0
 (us candle ke close par), SL 3 x ATR14 (4H) = 1R (H1 low se jaanch, gap = open). Band / SL wali candle par nayi nahi. Sirf BUY, ek market ek position.
 Kharcha asli (har taraf US500 0.0039%, USTEC 0.00285%) + swap 3%/saal har 17:00 NY raat. **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, dono market
 Exp > 0, (market x saal) musbat > 50%. **IMTIHAN** 2019+ EK dafa, SAKHT (market daily IBS ke nateeje se chune): kul >= 30 tr aur Exp - 2SE > 0. Ginti +1.
+**Koshish #56 nateeja (1 Nov) = TALAASH FAIL** (IMTIHAN nahi khola): kul 1127 tr (~15/mahina), Exp -0.004R, Exp-2SE -0.031, **jeet 62%**, bina kharcha bhi +0.009R (~0).
+US500 -0.006 (568), USTEC -0.002 (559), market 0/2, (market x saal) 6/14. Code jaanch: wohi code daily candle par = ftmo_test.ibs_trades bilkul (333 tr, +0.066R, 70%).
+Sabaq: IBS ka faida SIRF din ke close (daily) par; 4H par jeet zyada magar faida sifar. (#55 + #56: pass shuda dono khandaan chhoti TF par nahi chalte.)
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
