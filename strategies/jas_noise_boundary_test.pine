@@ -1,0 +1,84 @@
+//@version=6
+// JAS Noise Boundary STRATEGY s1 (31 Oct 2026) - Koshish #37 (Zarattini-Aziz-Barbon 2024) TradingView Strategy Tester ke liye.
+// CHART: 30 MINUTE - pehle OANDA:SPX500USD, phir OANDA:NAS100USD (har chart par alag report).
+// Qaida bilkul indicators/jas_noise_boundary.pine n1 jaisa: faisla 30m candle ke close par (10:00-15:30 NY),
+// close > UB = BUY, < LB = SELL, stop BUY max(UB, VWAP) / SELL min(LB, VWAP), 16:00 sab band. Har trade 1% risk (1R = sigma x entry).
+// Kharcha: Properties > Commission 0.03% (qaida). Sirf dekhne / ginti ke liye - faisla Python + pehle se likha qaida.
+strategy("JAS Noise Boundary s1", shorttitle = "JAS NOISE s1", overlay = true, initial_capital = 100000,
+     commission_type = strategy.commission.percent, commission_value = 0.03, process_orders_on_close = true,
+     default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0)
+
+look  = input.int(14, "Noise ke din (lookback)", minval = 5)
+riskP = input.float(1.0, "Risk % har trade")
+showL = input.bool(true, "UB / LB / VWAP lakeerein")
+
+NY = "America/New_York"
+hm = hour(time, NY) * 60 + minute(time, NY)
+S0 = 9 * 60 + 30
+inS = hm >= S0 and hm < 16 * 60
+j = inS ? int(math.floor((hm - S0) / 30)) : -1
+is30 = timeframe.isintraday and timeframe.multiplier == 30
+
+var matrix<float> mv = matrix.new<float>(look, 13, na)
+var array<float> today = array.new<float>(13, na)
+var int ptr = 0
+var float dOpen = na
+var float prevC = na
+var float lastC = na
+var float cPV = 0.0
+var float cV = 0.0
+
+sigOf(int jj) =>
+    float s = 0.0
+    int c = 0
+    for r = 0 to look - 1
+        v = mv.get(r, jj)
+        if not na(v)
+            s += v
+            c += 1
+    c >= math.min(10, look) ? s / c : na
+
+float ubP = na
+float lbP = na
+float vwP = na
+pos = strategy.position_size
+
+if is30 and inS
+    if j == 0
+        dOpen := open
+        prevC := lastC
+        cPV := 0.0
+        cV := 0.0
+        today.fill(na)
+    vol = nz(volume) > 0 ? volume : 1.0
+    cPV += hlc3 * vol
+    cV += vol
+    vw = cPV / cV
+    today.set(j, math.abs(close / dOpen - 1))
+    sg = sigOf(j)
+    if not na(sg) and not na(prevC) and not na(dOpen)
+        ub = math.max(dOpen, prevC) * (1 + sg)
+        lb = math.min(dOpen, prevC) * (1 - sg)
+        ubP := ub
+        lbP := lb
+        vwP := vw
+        if j <= 11
+            qty = strategy.equity * riskP / 100 / (sg * close)
+            if pos > 0 and close < math.max(ub, vw)
+                strategy.close("BUY", comment = "stop")
+            else if pos < 0 and close > math.min(lb, vw)
+                strategy.close("SELL", comment = "stop")
+            else if pos == 0 and close > ub
+                strategy.entry("BUY", strategy.long, qty = qty)
+            else if pos == 0 and close < lb
+                strategy.entry("SELL", strategy.short, qty = qty)
+    if j == 12
+        strategy.close_all(comment = "16:00")
+        lastC := close
+        for c = 0 to 12
+            mv.set(ptr, c, today.get(c))
+        ptr := (ptr + 1) % look
+
+plot(showL ? ubP : na, "UB", color.new(#26a69a, 0), 1, plot.style_linebr)
+plot(showL ? lbP : na, "LB", color.new(#ef5350, 0), 1, plot.style_linebr)
+plot(showL ? vwP : na, "VWAP", color.new(#ffb300, 0), 1, plot.style_linebr)
