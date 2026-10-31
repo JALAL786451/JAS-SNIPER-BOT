@@ -1,0 +1,331 @@
+//@version=6
+// ============================================================================
+//  JAS IBS SHARES  (build s1, Pine v6)  -  Koshish #61 (1 Nov 2026, user 'D')
+//
+//  User: "mahine mein 50+ trade, imaandari aur sakht test". Hamara sab se
+//  mazboot qaida (IBS #15, US index par ASLI PASS) bilkul wahi, magar 30 bare
+//  Amreeki SHARES par (Dow Jones 30, Nov 2024 wali list - pehle se chuni,
+//  nateeja dekh kar NAHI). Saboot: Connors-Alvarez 2008, Jegadeesh 1990,
+//  Lehmann 1990 (chhoti girawat ke baad wapsi). TRADE NAHI - sirf naap.
+//
+//  QAWAID (har share ki apni DAILY candles, sirf BAND candle [1]):
+//   1) IBS = (close - low) / (high - low). BUY: IBS < 0.2 AUR close > SMA200,
+//      din ke close par. Band: IBS > 0.8 ya 5 din (close), SL 3 x ATR14 = 1R
+//      (gap = open). Band / SL wale din nayi nahi. Har share ek position.
+//   2) Kharcha 0.03% har taraf + swap 5%/saal har raat (calendar din) -> R.
+//   3) DRIFT JAANCH (survivorship): ye shares AAJ bare hain = barhte rahe.
+//      IBS trade ka ausat % >= 2 x "aam tezi" (us share ka aam din ka ausat %
+//      x trade ke din) - warna faida sirf achhe share chunne ka.
+//
+//  PEHLE SE LIKHA QAIDA (docs/purana-haal.md, grep "Koshish #61 qaida"):
+//   TALAASH = entry saal < 2019. PASS = kul >= 100 tr AUR Exp - 2SE > 0 AUR
+//   (>= 10 tr wale) shares mein >= 70% Exp > 0 AUR (share x saal) musbat > 50%
+//   AUR IBS ausat % >= 2 x drift.
+//   IMTIHAN (2019+) CHHUPA jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr
+//   AUR Exp - 2SE > 0 AUR IBS ausat % >= 2 x drift = ASLI PASS.
+//
+//  CHART: koi bhi DAILY chart (misaal SP:SPX). 30 share request.security se.
+// ============================================================================
+indicator("JAS IBS Shares s1 (#61)", shorttitle = "JAS IBS SHARES s1", overlay = true, max_bars_back = 300)
+
+BUILD = "s1"
+
+grI = "1 · 30 share (Dow 30, pehle se chune - badalna mana)"
+s0 = input.symbol("NASDAQ:AAPL", "1 AAPL", group = grI)
+s1 = input.symbol("NASDAQ:AMGN", "2 AMGN", group = grI)
+s2 = input.symbol("NASDAQ:AMZN", "3 AMZN", group = grI)
+s3 = input.symbol("NYSE:AXP", "4 AXP", group = grI)
+s4 = input.symbol("NYSE:BA", "5 BA", group = grI)
+s5 = input.symbol("NYSE:CAT", "6 CAT", group = grI)
+s6 = input.symbol("NYSE:CRM", "7 CRM", group = grI)
+s7 = input.symbol("NASDAQ:CSCO", "8 CSCO", group = grI)
+s8 = input.symbol("NYSE:CVX", "9 CVX", group = grI)
+s9 = input.symbol("NYSE:DIS", "10 DIS", group = grI)
+s10 = input.symbol("NYSE:GS", "11 GS", group = grI)
+s11 = input.symbol("NYSE:HD", "12 HD", group = grI)
+s12 = input.symbol("NASDAQ:HON", "13 HON", group = grI)
+s13 = input.symbol("NYSE:IBM", "14 IBM", group = grI)
+s14 = input.symbol("NYSE:JNJ", "15 JNJ", group = grI)
+s15 = input.symbol("NYSE:JPM", "16 JPM", group = grI)
+s16 = input.symbol("NYSE:KO", "17 KO", group = grI)
+s17 = input.symbol("NYSE:MCD", "18 MCD", group = grI)
+s18 = input.symbol("NYSE:MMM", "19 MMM", group = grI)
+s19 = input.symbol("NYSE:MRK", "20 MRK", group = grI)
+s20 = input.symbol("NASDAQ:MSFT", "21 MSFT", group = grI)
+s21 = input.symbol("NYSE:NKE", "22 NKE", group = grI)
+s22 = input.symbol("NASDAQ:NVDA", "23 NVDA", group = grI)
+s23 = input.symbol("NYSE:PG", "24 PG", group = grI)
+s24 = input.symbol("NYSE:SHW", "25 SHW", group = grI)
+s25 = input.symbol("NYSE:TRV", "26 TRV", group = grI)
+s26 = input.symbol("NYSE:UNH", "27 UNH", group = grI)
+s27 = input.symbol("NYSE:V", "28 V", group = grI)
+s28 = input.symbol("NYSE:VZ", "29 VZ", group = grI)
+s29 = input.symbol("NASDAQ:WMT", "30 WMT", group = grI)
+
+grQ = "2 · Qawaid (mat badlein)"
+ibsLo    = input.float(0.2, "BUY: IBS is se kam", step = 0.05, group = grQ, display = display.none)
+ibsHi    = input.float(0.8, "Band: IBS is se zyada", step = 0.05, group = grQ, display = display.none)
+maxDays  = input.int(5, "Zyada se zyada din", minval = 1, group = grQ, display = display.none)
+trendLen = input.int(200, "Rukh SMA", minval = 10, group = grQ, display = display.none)
+atrLen   = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+slMult   = input.float(3.0, "SL (x ATR)", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+costPct  = input.float(0.03, "Kharcha (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
+swapYr   = input.float(5.0, "Swap (% saal, har raat)", minval = 0, step = 0.5, group = grQ, display = display.none)
+splitYr  = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
+showIm   = input.bool(false, "IMTIHAN dikhao (SIRF TALAASH PASS ke baad, EK dafa)", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos  = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+showAll = input.bool(false, "Har share ki line (TALAASH)", group = grV, display = display.none)
+
+// ============================================================================
+//  ENGINE (har share ki apni daily candles par, sirf BAND candle)
+// ============================================================================
+f_ibs() =>
+    _atrA = ta.atr(atrLen)
+    _smA  = ta.sma(close, trendLen)
+    _o   = open[1]
+    _h   = high[1]
+    _l   = low[1]
+    _c   = close[1]
+    _cp  = close[2]
+    _a   = _atrA[1]
+    _sm  = _smA[1]
+    _t   = time[1]
+    _yr  = year(time_close[1])
+    _ibs = not na(_h) and _h > _l ? (_c - _l) / (_h - _l) : na
+    var int   _fy  = na
+    var bool  _in  = false
+    var float _e   = na
+    var float _r   = na
+    var float _sl  = na
+    var int   _ey  = na
+    var int   _et  = na
+    var int   _age = 0
+    var int   _nT = 0
+    var int   _wT = 0
+    var float _sT = 0.0
+    var float _qT = 0.0
+    var float _pT = 0.0
+    var int   _dT = 0
+    var int   _aN = 0
+    var float _aS = 0.0
+    var int   _yNT = 0
+    var int   _yPT = 0
+    var int   _cyT = na
+    var float _csT = 0.0
+    var int   _n2 = 0
+    var int   _nI = 0
+    var int   _wI = 0
+    var float _sI = 0.0
+    var float _qI = 0.0
+    var float _pI = 0.0
+    var int   _dI = 0
+    var int   _aNI = 0
+    var float _aSI = 0.0
+    if not na(_c)
+        if na(_fy)
+            _fy := _yr
+        if not na(_cp) and _cp > 0
+            if _yr < splitYr
+                _aN += 1
+                _aS += _c / _cp - 1
+            else
+                _aNI += 1
+                _aSI += _c / _cp - 1
+        bool  _cl = false
+        float _px = na
+        if _in
+            _age += 1
+            if _l <= _sl
+                _px := _o < _sl ? _o : _sl
+                _cl := true
+            else if (not na(_ibs) and _ibs > ibsHi) or _age >= maxDays
+                _px := _c
+                _cl := true
+        if _cl
+            _nights = math.round((_t - _et) / 86400000.0)
+            _rr = ((_px - _e) - costPct / 100.0 * (_e + _px) - swapYr / 100.0 / 365.0 * _nights * _e) / _r
+            _pc = _px / _e - 1
+            if _ey < splitYr
+                _nT += 1
+                _sT += _rr
+                _qT += _rr * _rr
+                _pT += _pc
+                _dT += _age
+                _wT += _rr > 0 ? 1 : 0
+                _n2 += _ey >= 2000 ? 1 : 0
+                if na(_cyT) or _ey != _cyT
+                    if not na(_cyT)
+                        _yNT += 1
+                        _yPT += _csT > 0 ? 1 : 0
+                    _cyT := _ey
+                    _csT := 0.0
+                _csT += _rr
+            else
+                _nI += 1
+                _sI += _rr
+                _qI += _rr * _rr
+                _pI += _pc
+                _dI += _age
+                _wI += _rr > 0 ? 1 : 0
+            _in := false
+        if not _in and not _cl and not na(_ibs) and not na(_sm) and not na(_a) and _a > 0 and _ibs < ibsLo and _c > _sm
+            _in  := true
+            _e   := _c
+            _r   := slMult * _a
+            _sl  := _c - _r
+            _ey  := _yr
+            _et  := _t
+            _age := 0
+    _yN = _yNT + (na(_cyT) ? 0 : 1)
+    _yP = _yPT + (not na(_cyT) and _csT > 0 ? 1 : 0)
+    [_nT, _wT, _sT, _qT, _pT, _dT, _aN, _aS, _yN, _yP, _n2, _nI, _wI, _sI, _qI, _pI, _dI, _aNI, _aSI, _fy]
+
+f_req(_s) => request.security(_s, "D", f_ibs(), barmerge.gaps_off, barmerge.lookahead_off)
+
+[nT0, wT0, sT0, qT0, pT0, dT0, aN0, aS0, yN0, yP0, n20, nI0, wI0, sI0, qI0, pI0, dI0, aNI0, aSI0, fy0] = f_req(s0)
+[nT1, wT1, sT1, qT1, pT1, dT1, aN1, aS1, yN1, yP1, n21, nI1, wI1, sI1, qI1, pI1, dI1, aNI1, aSI1, fy1] = f_req(s1)
+[nT2, wT2, sT2, qT2, pT2, dT2, aN2, aS2, yN2, yP2, n22, nI2, wI2, sI2, qI2, pI2, dI2, aNI2, aSI2, fy2] = f_req(s2)
+[nT3, wT3, sT3, qT3, pT3, dT3, aN3, aS3, yN3, yP3, n23, nI3, wI3, sI3, qI3, pI3, dI3, aNI3, aSI3, fy3] = f_req(s3)
+[nT4, wT4, sT4, qT4, pT4, dT4, aN4, aS4, yN4, yP4, n24, nI4, wI4, sI4, qI4, pI4, dI4, aNI4, aSI4, fy4] = f_req(s4)
+[nT5, wT5, sT5, qT5, pT5, dT5, aN5, aS5, yN5, yP5, n25, nI5, wI5, sI5, qI5, pI5, dI5, aNI5, aSI5, fy5] = f_req(s5)
+[nT6, wT6, sT6, qT6, pT6, dT6, aN6, aS6, yN6, yP6, n26, nI6, wI6, sI6, qI6, pI6, dI6, aNI6, aSI6, fy6] = f_req(s6)
+[nT7, wT7, sT7, qT7, pT7, dT7, aN7, aS7, yN7, yP7, n27, nI7, wI7, sI7, qI7, pI7, dI7, aNI7, aSI7, fy7] = f_req(s7)
+[nT8, wT8, sT8, qT8, pT8, dT8, aN8, aS8, yN8, yP8, n28, nI8, wI8, sI8, qI8, pI8, dI8, aNI8, aSI8, fy8] = f_req(s8)
+[nT9, wT9, sT9, qT9, pT9, dT9, aN9, aS9, yN9, yP9, n29, nI9, wI9, sI9, qI9, pI9, dI9, aNI9, aSI9, fy9] = f_req(s9)
+[nT10, wT10, sT10, qT10, pT10, dT10, aN10, aS10, yN10, yP10, n210, nI10, wI10, sI10, qI10, pI10, dI10, aNI10, aSI10, fy10] = f_req(s10)
+[nT11, wT11, sT11, qT11, pT11, dT11, aN11, aS11, yN11, yP11, n211, nI11, wI11, sI11, qI11, pI11, dI11, aNI11, aSI11, fy11] = f_req(s11)
+[nT12, wT12, sT12, qT12, pT12, dT12, aN12, aS12, yN12, yP12, n212, nI12, wI12, sI12, qI12, pI12, dI12, aNI12, aSI12, fy12] = f_req(s12)
+[nT13, wT13, sT13, qT13, pT13, dT13, aN13, aS13, yN13, yP13, n213, nI13, wI13, sI13, qI13, pI13, dI13, aNI13, aSI13, fy13] = f_req(s13)
+[nT14, wT14, sT14, qT14, pT14, dT14, aN14, aS14, yN14, yP14, n214, nI14, wI14, sI14, qI14, pI14, dI14, aNI14, aSI14, fy14] = f_req(s14)
+[nT15, wT15, sT15, qT15, pT15, dT15, aN15, aS15, yN15, yP15, n215, nI15, wI15, sI15, qI15, pI15, dI15, aNI15, aSI15, fy15] = f_req(s15)
+[nT16, wT16, sT16, qT16, pT16, dT16, aN16, aS16, yN16, yP16, n216, nI16, wI16, sI16, qI16, pI16, dI16, aNI16, aSI16, fy16] = f_req(s16)
+[nT17, wT17, sT17, qT17, pT17, dT17, aN17, aS17, yN17, yP17, n217, nI17, wI17, sI17, qI17, pI17, dI17, aNI17, aSI17, fy17] = f_req(s17)
+[nT18, wT18, sT18, qT18, pT18, dT18, aN18, aS18, yN18, yP18, n218, nI18, wI18, sI18, qI18, pI18, dI18, aNI18, aSI18, fy18] = f_req(s18)
+[nT19, wT19, sT19, qT19, pT19, dT19, aN19, aS19, yN19, yP19, n219, nI19, wI19, sI19, qI19, pI19, dI19, aNI19, aSI19, fy19] = f_req(s19)
+[nT20, wT20, sT20, qT20, pT20, dT20, aN20, aS20, yN20, yP20, n220, nI20, wI20, sI20, qI20, pI20, dI20, aNI20, aSI20, fy20] = f_req(s20)
+[nT21, wT21, sT21, qT21, pT21, dT21, aN21, aS21, yN21, yP21, n221, nI21, wI21, sI21, qI21, pI21, dI21, aNI21, aSI21, fy21] = f_req(s21)
+[nT22, wT22, sT22, qT22, pT22, dT22, aN22, aS22, yN22, yP22, n222, nI22, wI22, sI22, qI22, pI22, dI22, aNI22, aSI22, fy22] = f_req(s22)
+[nT23, wT23, sT23, qT23, pT23, dT23, aN23, aS23, yN23, yP23, n223, nI23, wI23, sI23, qI23, pI23, dI23, aNI23, aSI23, fy23] = f_req(s23)
+[nT24, wT24, sT24, qT24, pT24, dT24, aN24, aS24, yN24, yP24, n224, nI24, wI24, sI24, qI24, pI24, dI24, aNI24, aSI24, fy24] = f_req(s24)
+[nT25, wT25, sT25, qT25, pT25, dT25, aN25, aS25, yN25, yP25, n225, nI25, wI25, sI25, qI25, pI25, dI25, aNI25, aSI25, fy25] = f_req(s25)
+[nT26, wT26, sT26, qT26, pT26, dT26, aN26, aS26, yN26, yP26, n226, nI26, wI26, sI26, qI26, pI26, dI26, aNI26, aSI26, fy26] = f_req(s26)
+[nT27, wT27, sT27, qT27, pT27, dT27, aN27, aS27, yN27, yP27, n227, nI27, wI27, sI27, qI27, pI27, dI27, aNI27, aSI27, fy27] = f_req(s27)
+[nT28, wT28, sT28, qT28, pT28, dT28, aN28, aS28, yN28, yP28, n228, nI28, wI28, sI28, qI28, pI28, dI28, aNI28, aSI28, fy28] = f_req(s28)
+[nT29, wT29, sT29, qT29, pT29, dT29, aN29, aS29, yN29, yP29, n229, nI29, wI29, sI29, qI29, pI29, dI29, aNI29, aSI29, fy29] = f_req(s29)
+
+// ============================================================================
+//  TABLE (safaid)
+// ============================================================================
+f_pos(_p) => _p == "Top Left" ? position.top_left : _p == "Bottom Right" ? position.bottom_right : _p == "Bottom Left" ? position.bottom_left : position.top_right
+
+var table tb = table.new(f_pos(tblPos), 8, 40, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
+fg  = color.new(#111111, 0)
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = color.new(#1a237e, 0)
+
+f_cell(int _c, int _r, string _s, color _col) =>
+    table.cell(tb, _c, _r, _s, text_color = _col, text_size = size.small)
+
+f_r(float _x) => str.tostring(_x, "+0.000;-0.000")
+f_p(float _x) => str.tostring(100.0 * _x, "+0.00;-0.00") + "%"
+
+// ek hissa (TALAASH ya IMTIHAN) ka hisaab -> [n, w, e, se, ibs%, drift%]
+f_sum(array<int> n, array<int> w, array<float> s, array<float> q, array<float> p, array<int> d, array<int> an, array<float> asm) =>
+    int   N = 0
+    int   W = 0
+    float S = 0.0
+    float Q = 0.0
+    float P = 0.0
+    float DR = 0.0
+    if array.size(n) > 0
+        for i = 0 to array.size(n) - 1
+            N += array.get(n, i)
+            W += array.get(w, i)
+            S += array.get(s, i)
+            Q += array.get(q, i)
+            P += array.get(p, i)
+            if array.get(an, i) > 0
+                DR += array.get(asm, i) / array.get(an, i) * array.get(d, i)
+    float E = N > 0 ? S / N : 0.0
+    float SE = N > 1 ? math.sqrt(math.max((Q - N * E * E) / (N - 1), 0.0)) / math.sqrt(N) : 0.0
+    [N, W, E, SE, N > 0 ? P / N : 0.0, N > 0 ? DR / N : 0.0]
+
+f_line(int _r, string _nm, int N, float mon, int W, float ip, float dr, float E, float SE) =>
+    f_cell(0, _r, _nm, fg)
+    f_cell(1, _r, str.tostring(N), fg)
+    f_cell(2, _r, mon > 0 ? str.tostring(N / mon, "#.#") : "-", fg)
+    f_cell(3, _r, str.tostring(N > 0 ? 100.0 * W / N : 0.0, "#") + "%", fg)
+    f_cell(4, _r, f_p(ip), ip >= 2 * dr ? cUp : cDn)
+    f_cell(5, _r, f_p(dr), fg)
+    f_cell(6, _r, f_r(E), E > 0 ? cUp : cDn)
+    f_cell(7, _r, f_r(E - 2 * SE), E - 2 * SE > 0 ? cUp : cDn)
+
+if barstate.islast
+    aNT = array.from(nT0, nT1, nT2, nT3, nT4, nT5, nT6, nT7, nT8, nT9, nT10, nT11, nT12, nT13, nT14, nT15, nT16, nT17, nT18, nT19, nT20, nT21, nT22, nT23, nT24, nT25, nT26, nT27, nT28, nT29)
+    aWT = array.from(wT0, wT1, wT2, wT3, wT4, wT5, wT6, wT7, wT8, wT9, wT10, wT11, wT12, wT13, wT14, wT15, wT16, wT17, wT18, wT19, wT20, wT21, wT22, wT23, wT24, wT25, wT26, wT27, wT28, wT29)
+    aST = array.from(sT0, sT1, sT2, sT3, sT4, sT5, sT6, sT7, sT8, sT9, sT10, sT11, sT12, sT13, sT14, sT15, sT16, sT17, sT18, sT19, sT20, sT21, sT22, sT23, sT24, sT25, sT26, sT27, sT28, sT29)
+    aQT = array.from(qT0, qT1, qT2, qT3, qT4, qT5, qT6, qT7, qT8, qT9, qT10, qT11, qT12, qT13, qT14, qT15, qT16, qT17, qT18, qT19, qT20, qT21, qT22, qT23, qT24, qT25, qT26, qT27, qT28, qT29)
+    aPT = array.from(pT0, pT1, pT2, pT3, pT4, pT5, pT6, pT7, pT8, pT9, pT10, pT11, pT12, pT13, pT14, pT15, pT16, pT17, pT18, pT19, pT20, pT21, pT22, pT23, pT24, pT25, pT26, pT27, pT28, pT29)
+    aDT = array.from(dT0, dT1, dT2, dT3, dT4, dT5, dT6, dT7, dT8, dT9, dT10, dT11, dT12, dT13, dT14, dT15, dT16, dT17, dT18, dT19, dT20, dT21, dT22, dT23, dT24, dT25, dT26, dT27, dT28, dT29)
+    aAN = array.from(aN0, aN1, aN2, aN3, aN4, aN5, aN6, aN7, aN8, aN9, aN10, aN11, aN12, aN13, aN14, aN15, aN16, aN17, aN18, aN19, aN20, aN21, aN22, aN23, aN24, aN25, aN26, aN27, aN28, aN29)
+    aAS = array.from(aS0, aS1, aS2, aS3, aS4, aS5, aS6, aS7, aS8, aS9, aS10, aS11, aS12, aS13, aS14, aS15, aS16, aS17, aS18, aS19, aS20, aS21, aS22, aS23, aS24, aS25, aS26, aS27, aS28, aS29)
+    aYN = array.from(yN0, yN1, yN2, yN3, yN4, yN5, yN6, yN7, yN8, yN9, yN10, yN11, yN12, yN13, yN14, yN15, yN16, yN17, yN18, yN19, yN20, yN21, yN22, yN23, yN24, yN25, yN26, yN27, yN28, yN29)
+    aYP = array.from(yP0, yP1, yP2, yP3, yP4, yP5, yP6, yP7, yP8, yP9, yP10, yP11, yP12, yP13, yP14, yP15, yP16, yP17, yP18, yP19, yP20, yP21, yP22, yP23, yP24, yP25, yP26, yP27, yP28, yP29)
+    aN2 = array.from(n20, n21, n22, n23, n24, n25, n26, n27, n28, n29, n210, n211, n212, n213, n214, n215, n216, n217, n218, n219, n220, n221, n222, n223, n224, n225, n226, n227, n228, n229)
+    aNI = array.from(nI0, nI1, nI2, nI3, nI4, nI5, nI6, nI7, nI8, nI9, nI10, nI11, nI12, nI13, nI14, nI15, nI16, nI17, nI18, nI19, nI20, nI21, nI22, nI23, nI24, nI25, nI26, nI27, nI28, nI29)
+    aWI = array.from(wI0, wI1, wI2, wI3, wI4, wI5, wI6, wI7, wI8, wI9, wI10, wI11, wI12, wI13, wI14, wI15, wI16, wI17, wI18, wI19, wI20, wI21, wI22, wI23, wI24, wI25, wI26, wI27, wI28, wI29)
+    aSI = array.from(sI0, sI1, sI2, sI3, sI4, sI5, sI6, sI7, sI8, sI9, sI10, sI11, sI12, sI13, sI14, sI15, sI16, sI17, sI18, sI19, sI20, sI21, sI22, sI23, sI24, sI25, sI26, sI27, sI28, sI29)
+    aQI = array.from(qI0, qI1, qI2, qI3, qI4, qI5, qI6, qI7, qI8, qI9, qI10, qI11, qI12, qI13, qI14, qI15, qI16, qI17, qI18, qI19, qI20, qI21, qI22, qI23, qI24, qI25, qI26, qI27, qI28, qI29)
+    aPI = array.from(pI0, pI1, pI2, pI3, pI4, pI5, pI6, pI7, pI8, pI9, pI10, pI11, pI12, pI13, pI14, pI15, pI16, pI17, pI18, pI19, pI20, pI21, pI22, pI23, pI24, pI25, pI26, pI27, pI28, pI29)
+    aDI = array.from(dI0, dI1, dI2, dI3, dI4, dI5, dI6, dI7, dI8, dI9, dI10, dI11, dI12, dI13, dI14, dI15, dI16, dI17, dI18, dI19, dI20, dI21, dI22, dI23, dI24, dI25, dI26, dI27, dI28, dI29)
+    aANI = array.from(aNI0, aNI1, aNI2, aNI3, aNI4, aNI5, aNI6, aNI7, aNI8, aNI9, aNI10, aNI11, aNI12, aNI13, aNI14, aNI15, aNI16, aNI17, aNI18, aNI19, aNI20, aNI21, aNI22, aNI23, aNI24, aNI25, aNI26, aNI27, aNI28, aNI29)
+    aASI = array.from(aSI0, aSI1, aSI2, aSI3, aSI4, aSI5, aSI6, aSI7, aSI8, aSI9, aSI10, aSI11, aSI12, aSI13, aSI14, aSI15, aSI16, aSI17, aSI18, aSI19, aSI20, aSI21, aSI22, aSI23, aSI24, aSI25, aSI26, aSI27, aSI28, aSI29)
+    aFY = array.from(fy0, fy1, fy2, fy3, fy4, fy5, fy6, fy7, fy8, fy9, fy10, fy11, fy12, fy13, fy14, fy15, fy16, fy17, fy18, fy19, fy20, fy21, fy22, fy23, fy24, fy25, fy26, fy27, fy28, fy29)
+    aNm = array.from("AAPL", "AMGN", "AMZN", "AXP", "BA", "CAT", "CRM", "CSCO", "CVX", "DIS", "GS", "HD", "HON", "IBM", "JNJ", "JPM", "KO", "MCD", "MMM", "MRK", "MSFT", "NKE", "NVDA", "PG", "SHW", "TRV", "UNH", "V", "VZ", "WMT")
+    [nK, wK, eK, seK, ipK, drK] = f_sum(aNT, aWT, aST, aQT, aPT, aDT, aAN, aAS)
+    int el = 0
+    int ps = 0
+    for i = 0 to 29
+        if array.get(aNT, i) >= 10
+            el += 1
+            ps += array.get(aST, i) > 0 ? 1 : 0
+    yN = array.sum(aYN)
+    yP = array.sum(aYP)
+    n2 = array.sum(aN2)
+    f_cell(0, 0, "JAS IBS SHARES " + BUILD + "  (#61)  -  IBS #15 x 30 share (Dow 30)", cHd)
+    table.merge_cells(tb, 0, 0, 7, 0)
+    f_cell(0, 1, "Hissa", cHd)
+    f_cell(1, 1, "Trade", cHd)
+    f_cell(2, 1, "~ / mahina", cHd)
+    f_cell(3, 1, "Jeet", cHd)
+    f_cell(4, 1, "IBS ausat", cHd)
+    f_cell(5, 1, "Aam tezi (drift)", cHd)
+    f_cell(6, 1, "Har trade (R)", cHd)
+    f_cell(7, 1, "Exp - 2SE", cHd)
+    f_line(2, "TALAASH (shuru - " + str.tostring(splitYr - 1) + ")", nK, 0.0, wK, ipK, drK, eK, seK)
+    f_cell(0, 3, "2000-" + str.tostring(splitYr - 1) + ": ~" + str.tostring(n2 / ((splitYr - 2000) * 12.0), "#.#") + " trade / mahina  |  share faide mein " + str.tostring(ps) + " / " + str.tostring(el) + "  |  (share x saal) + " + str.tostring(yP) + " / " + str.tostring(yN), fg)
+    table.merge_cells(tb, 0, 3, 7, 3)
+    okT = nK >= 100 and eK - 2 * seK > 0 and el > 0 and ps >= 0.7 * el and yP * 2 > yN and ipK >= 2 * drK
+    f_cell(0, 4, okT ? "TALAASH PASS  -> IMTIHAN khol sakte hain" : "TALAASH FAIL  -> IMTIHAN band", okT ? cUp : cDn)
+    table.merge_cells(tb, 0, 4, 7, 4)
+    if showIm
+        [nI, wI, eI, seI, ipI, drI] = f_sum(aNI, aWI, aSI, aQI, aPI, aDI, aANI, aASI)
+        monI = (timenow - timestamp(splitYr, 1, 1, 0, 0)) / 2629800000.0
+        f_line(5, "IMTIHAN (" + str.tostring(splitYr) + " - aaj)", nI, monI, wI, ipI, drI, eI, seI)
+        okI = nI >= 30 and eI - 2 * seI > 0 and ipI >= 2 * drI
+        f_cell(0, 6, okI ? "IMTIHAN PASS = ASLI PASS" : "IMTIHAN FAIL = idea band", okI ? cUp : cDn)
+        table.merge_cells(tb, 0, 6, 7, 6)
+    else
+        f_cell(0, 5, "IMTIHAN " + str.tostring(splitYr) + "+ CHHUPA (TALAASH PASS ke baad, EK dafa)", fg)
+        table.merge_cells(tb, 0, 5, 7, 5)
+    if showAll
+        for i = 0 to 29
+            n = array.get(aNT, i)
+            e = n > 0 ? array.get(aST, i) / n : 0.0
+            f_cell(0, 8 + i, array.get(aNm, i) + "  (" + str.tostring(array.get(aFY, i)) + " se)", fg)
+            f_cell(1, 8 + i, str.tostring(n), fg)
+            f_cell(3, 8 + i, str.tostring(n > 0 ? 100.0 * array.get(aWT, i) / n : 0.0, "#") + "%", fg)
+            f_cell(6, 8 + i, f_r(e), e > 0 ? cUp : cDn)

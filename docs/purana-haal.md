@@ -1161,6 +1161,12 @@ bina chutti (#53): shart P1 fail < 20%, pass > fail, (pass - fail) >= #53 ka; be
 +chutti 0.25%: 59 / 7 (2/5), 35.4 · 0.5%: 54 / 12, 27.5 · 0.75%: 52 / 14, 20.8 · 1.0%: 51 / 15 (12/3), 17.7 -> har risk par (pass - fail) #53 se kam = KOI NAHI.
 Chutti H1 trades: 120 (2012-26, ~8/saal/market; 15 din H1 data mein khali, zyada 2017-18); 2012-18 US500 48 tr +0.033%, USTEC 48 tr +0.092% (2015-18 kamzor).
 Sabaq: #59 ka asar asli (TV 1971+ aur 2019+), magar 2012-18 mein kamzor tha; #53 ke upar risk barhane se FTMO fail barhe. FTMO mansooba = #53 hi. Chutti alag EA (demo) baad mein soch sakte.
+**Koshish #61 qaida (1 Nov, 28vi chat, user: "mahine mein 50+ trade, sakht test", "D", test se PEHLE, badalna mana) - IBS #15 x 30 SHARE (`indicators/jas_ibs_shares.pine` s1, TV):**
+#15 bilkul wahi (IBS < 0.2 + close > SMA200 din ke close par BUY; band IBS > 0.8 ya 5 din; SL 3 x ATR14 = 1R, gap = open; band / SL din nayi nahi; sirf BUY; har share ek position).
+Share = **Dow Jones 30 (Nov 2024 list, pehle se chuni)**: AAPL AMGN AMZN AXP BA CAT CRM CSCO CVX DIS GS HD HON IBM JNJ JPM KO MCD MMM MRK MSFT NKE NVDA PG SHW TRV UNH V VZ WMT.
+Kharcha 0.03%/taraf + swap 5%/saal. **Drift jaanch** (survivorship - ye share aaj bare = barhte rahe): IBS ausat % >= 2 x (share ka aam din ausat % x trade ke din).
+**TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, (>= 10 tr wale) share >= 70% Exp > 0, (share x saal) musbat > 50%, IBS % >= 2 x drift.
+**IMTIHAN** 2019+ CHHUPA (input) jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr, Exp - 2SE > 0, IBS % >= 2 x drift = ASLI PASS. Maqsad ~50+ tr/mahina. Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
