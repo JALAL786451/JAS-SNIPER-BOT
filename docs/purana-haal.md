@@ -1308,4 +1308,12 @@ Sabaq: research agent ko aainda saaf hidayat - 2019+ data NA dekhe (sirf TALAASH
 **Koshish #66 TALAASH (1 Nov, user TV SS, 1W chart) = FAIL** (IMTIHAN band): Platinum 293 tr, jeet 38%, trend +0.38% vs drift +0.05%, -0.009R (-2SE -0.094), saal 8/14;
 Palladium 274 tr, 34%, +0.82% vs +0.51%, -0.039R (-0.130), 5/14; Copper 354 tr, 35%, +0.07% vs +0.27%, +0.010R (-0.100), 9/16; KUL 921 tr, 36%, -0.010R, Exp-2SE -0.068, 22/44.
 Sabaq: platinum ka trend kharche se pehle achha (+0.38% vs 0.05%) magar asli spread (0.25% / 0.55%) ne kha liya; copper par trend = drift se kam. Trend sirf gold/chandi/US index.
+**Koshish #67 qaida (1 Nov, 28vi chat, user "D", test se PEHLE, badalna mana) - US CHUTTI KI KHIRKI x 7 NON-US INDEX (`indicators/jas_khirki67.pine`, TV):**
+Casado-Muga-Santamaria 2013, Ariel 1990 (research agent ka #1). Calendar #59 wala (NYSE chuttiyan 1971+). Har NYSE chutti H, P = H se pehle aakhri NYSE din.
+Index (local cash, pehle se chune): XETR:DAX, TVC:UKX, EURONEXT:PX1, TVC:SX5E, TVC:NI225, ASX:XJO, TVC:HSI. **BUY:** index ki us session ke close par jis ka AGLA weekday = P
+(us din index band ho to us waqia mein trade nahi). **Band:** pehli index session jis ki tareekh >= H, us ke close par. **SL** 3 x ATR20 = 1R (daily low, gap = open). Sirf BUY.
+Kharcha 0.02%/taraf + swap 3%/saal. Tareekh = `time_tradingday` (UTC). **Jure hue (ek waqia = 7 trade):** SE x 2.14 (rho 0.6 maan kar, pehle se tay).
+**TALAASH** entry < 2019: kul >= 100 tr, Exp - 2 x (2.14 SE) > 0, >= 5/7 index Exp > 0, (index x saal) musbat > 50%, khirki ausat % >= 2 x drift.
+**IMTIHAN** 2019+ (CHHUPA, sirf TALAASH PASS par, EK dafa): kul >= 30, Exp - 2 x (2.14 SE) > 0, >= 2 x drift. **Imaandari:** research agent ne 2019+ dekh liya tha
+(+31..+49 bp) = IMTIHAN aadha dekha; aakhri faisla demo forward se bhi. Ginti +1.
 
