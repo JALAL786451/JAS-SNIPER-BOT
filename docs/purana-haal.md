@@ -1076,3 +1076,4 @@ saal 12/15 musbat (2012 -3.8, 2015 -5.0, 2022 -7.0). IBS ab 401 tr (jeet 70%) 20
 **Koshish #37 nateeja (31 Oct, 28vi chat, M1 2021-24 aa gaya) = TALAASH FAIL** (IMTIHAN band). Tokri 1808 tr (**~38/mahina**), Exp -0.047R, Exp-2SE -0.115, jeet 36%, saal 1/4.
 **MAGAR bina kharcha +0.134R** (US500 +0.163, USTEC +0.105) - edge kharche se pehle saaf; 0.03%/taraf (index par ~2.5 pt round-trip) ne kha liya. USTEC BUY +0.045 (455 tr).
 Sabaq: is strategy ka faisla KHARCHE par hai - agla qadam asli spread naapna (Exness / FTMO US500, US100), phir #54 naye (pehle se likhe) kharche ke saath.
+**#37 IMTIHAN-hissa dekha gaya (31 Oct, user TV SS):** TV 30m data sirf 2026-01-20..2026-10-30 = IMTIHAN muddat. SPX500 30m (OANDA): 203 tr (~22/mahina), jeet 23%, 0.03% par -0.294R, **bina kharcha -0.062R**. Is liye #54 ka 2025+ IMTIHAN "aadha dekha hua" - Python 2025+ ka nateeja sirf tasdeeq, aur sakht (Exp - 2SE > 0).
