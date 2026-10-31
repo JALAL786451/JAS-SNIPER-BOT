@@ -1193,6 +1193,9 @@ Kharcha 0.01%/taraf + swap 3%/saal. Python mein 2024 ki tareekhein jaanchi (Good
 kul >= 30 tr, Exp - 2SE > 0, TOM % >= 2 x drift = ASLI PASS. Ginti +1.
 **Koshish #64 TALAASH (1 Nov, user TV SS) = PASS (mazboot)** - IMTIHAN se PEHLE likha: SPX 574 tr, jeet 56%, TOM +0.354% vs drift +0.132% (2.7x), +0.210R, Exp-2SE +0.084, 29/48;
 NDX 406 tr, 57%, +0.528% vs +0.237% (2.2x), +0.257R, +0.102, 21/34; **KUL 980 tr, jeet 57%, +0.426% vs drift +0.175% (2.4x), +0.230R, Exp-2SE +0.132**, saal 50/82.
+**Koshish #64 IMTIHAN 2019+ (EK dafa, 1 Nov, user TV SS) = FAIL -> idea band:** SPX 93 tr, 58%, +0.347% vs drift +0.258%, +0.162R (Exp-2SE -0.181); NDX 93 tr, 60%,
++0.491% vs +0.362%, +0.208R (-0.139); **KUL 186 tr, jeet 59%, +0.419% vs drift +0.310% (1.35x < 2x), +0.185R, Exp-2SE -0.058**. Asar musbat magar 2019+ mein jhatke
+zyada (2020, 2022) aur trade kam = saabit nahi; drift bhi tez tha. BANK mein "nazar" (pass nahi).
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
