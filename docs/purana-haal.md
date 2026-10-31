@@ -1338,4 +1338,7 @@ ka; behtareen = zyada (pass - fail), phir kam median, phir kam risk). **IMTIHAN 
 **Koshish #68 CHUNAO 2012-2018 (1 Nov, IMTIHAN se PEHLE likha):** khirki CFD trades 2012-18 (kharche se pehle): DEU 48 tr +0.034R, GBR 57 +0.091, FRA 61 +0.037, EUS 41 +0.016,
 JPN 60 +0.044, AUS 42 +0.047, HKG 46 +0.043 (~6-9/saal har index). FTMO 84 challenge: #53 akela 64 pass / 2 fail (0/2) / 18, median 36.8; +khirki 0.10%: 62 / 4, 35.8;
 **0.15%: 64 / 2, 36.3** ; 0.25%: 61 / 6 (2/4), 36.0. **CHUNI: 0.15% har index** (pass - fail = #53 jitna, median thora kam). (Is sim mein grid bara = #53 akela 64/2, #60 mein 62/4.)
+**Koshish #68 IMTIHAN 2019-01..2026-10 (EK dafa, 1 Nov) = PASS:** khirki CFD 2019+ (kharche se pehle) DEU 73 tr +0.099R, GBR 74 +0.135, FRA 73 +0.076, EUS 73 +0.084, JPN 73 +0.062,
+AUS 73 +0.088, HKG 68 +0.062 (~9/saal har index, TV cash nateeje jaisa). FTMO 94 challenge: #53 akela 83 / 0 / 11, median 11.7 -> **#53 + khirki 0.15%: 83 pass / 0 fail / 11, median 10.8**.
+Fail nahi barhe, pass ~1 mahina jaldi = **ASLI PASS** (khirki ka asar aadha dekha tha; FTMO jor ka imtihan naya). Agla: JasKhirkiEA (NYSE calendar + 7 index ke local close) + judge, phir demo.
 
