@@ -45,6 +45,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL | `--tf D1` = #48 FAIL.
 | `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
+| `indicators/jas_khirki67.pine` | k1 (1 Nov) #67: US chutti ki khirki x 7 non-US index (DAX, FTSE, CAC, SX5E, N225, XJO, HSI), SE x 2.14, drift, TV; IMTIHAN chhupa |
+| `indicators/jas_dhaat66.pine` | d2 (1 Nov) #66: trend 4H x platinum/palladium/copper, asli kharcha, pehle data jaanch - TALAASH FAIL |
 | `indicators/jas_vix.pine` | v1 (1 Nov) #65: Connors VIX Stretches, SPX + NDX daily (UDT engine), drift jaanch, TV table; IMTIHAN chhupa |
 | `indicators/jas_tom.pine` | m1 (1 Nov) #64: Turn of the Month (aakhri din + 3), SPX + NDX daily, NYSE calendar, drift jaanch, TV table; IMTIHAN chhupa |
 | `indicators/jas_trend_shares.pine` | r1 (1 Nov) #63: JAS Trend daily (Supertrend 10/3 sirf BUY, #26) x 30 share, drift jaanch, TV table; IMTIHAN chhupa |
