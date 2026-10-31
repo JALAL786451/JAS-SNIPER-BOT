@@ -1121,6 +1121,11 @@ Exp > 0, (market x saal) musbat > 50%. **IMTIHAN** 2019+ EK dafa, SAKHT (market 
 **Koshish #56 nateeja (1 Nov) = TALAASH FAIL** (IMTIHAN nahi khola): kul 1127 tr (~15/mahina), Exp -0.004R, Exp-2SE -0.031, **jeet 62%**, bina kharcha bhi +0.009R (~0).
 US500 -0.006 (568), USTEC -0.002 (559), market 0/2, (market x saal) 6/14. Code jaanch: wohi code daily candle par = ftmo_test.ibs_trades bilkul (333 tr, +0.066R, 70%).
 Sabaq: IBS ka faida SIRF din ke close (daily) par; 4H par jeet zyada magar faida sifar. (#55 + #56: pass shuda dono khandaan chhoti TF par nahi chalte.)
+**Koshish #57 qaida (1 Nov, 28vi chat, user: "teacher wali baat trend par bhi", IMTIHAN se PEHLE, badalna mana) - 4H TREND ke liye naye market - `tools/teacher57.py`:**
+Formula / kharcha / data bilkul #47 (`tokri47.py`: 4H Supertrend 10/3, SL 6 x ATR10, index/metal/oil/fasal/BTC sirf BUY, USD fx BUY+SELL, 0.03%/taraf + swap 3%/saal).
+Ummeedwar = #47 ke 28 mein se **24** (XAU, XAG, US500, USTEC pehle se #53 mein = bahar). **Chunao (sirf TALAASH entry < 2019):** >= 30 tr aur saal (R jor) musbat > 50%,
+**Exp - 2SE** se upar ke **5**. **IMTIHAN 2019+ EK dafa** sirf in 5 par: PASS = >= 15 tr aur **Exp - 2.33 SE > 0** = SELECT. SELECT ho to #53 trend tokri mein jorne ka
+FTMO hisaab alag (#58, qaida pehle). Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
