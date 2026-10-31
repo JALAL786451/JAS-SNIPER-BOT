@@ -1335,4 +1335,7 @@ asli kharcha) + khirki 7 Dukascopy CFD (`data/duka/H1/JAS_ZIP`: DEU, GBR, FRA, E
 >= H (wahi waqt). SL 3 x ATR20 (local din ki daily candles, pichhla din) = 1R, H1 low se (gap = open). Kharcha 0.02%/taraf + swap 3%/saal. Har index apna slot.
 **CHUNAO 2012-2018** (84 challenge): khirki risk har index 0.10 / 0.15 / 0.25% (ek waqia par x7) vs #53 akela; shart #60 wali (P1 fail < 20%, pass > fail, (pass - fail) >= #53
 ka; behtareen = zyada (pass - fail), phir kam median, phir kam risk). **IMTIHAN 2019-01..2026-10 EK dafa:** PASS = fail 0, pass >= 83, median < 11.7 mahine. Ginti +1.
+**Koshish #68 CHUNAO 2012-2018 (1 Nov, IMTIHAN se PEHLE likha):** khirki CFD trades 2012-18 (kharche se pehle): DEU 48 tr +0.034R, GBR 57 +0.091, FRA 61 +0.037, EUS 41 +0.016,
+JPN 60 +0.044, AUS 42 +0.047, HKG 46 +0.043 (~6-9/saal har index). FTMO 84 challenge: #53 akela 64 pass / 2 fail (0/2) / 18, median 36.8; +khirki 0.10%: 62 / 4, 35.8;
+**0.15%: 64 / 2, 36.3** ; 0.25%: 61 / 6 (2/4), 36.0. **CHUNI: 0.15% har index** (pass - fail = #53 jitna, median thora kam). (Is sim mein grid bara = #53 akela 64/2, #60 mein 62/4.)
 
