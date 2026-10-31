@@ -45,6 +45,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL | `--tf D1` = #48 FAIL.
 | `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
+| `tools/orb21_test.py` | #21 (1 Nov): USTEC 5m ORB (Zarattini-Aziz 2023) M1 + asli kharcha - TALAASH FAIL (-2SE -0.042) |
+| `tools/ftmo53_asli.py` | #53 FTMO asli spread ke saath (sirf andaza): median 11.7 mahine, 83/0/11 |
 | `tools/noise54.py` | #54 (31 Oct): #37 noise boundary + asli kharcha (JasSpreadNaap); TALAASH 2021-24 PASS +0.113R; `--imtihan` 2025+ |
 | `JasSpreadNaap.mq5` | s1 (31 Oct) script, sirf naap: pichhle 20 din ke asli ticks se spread (NY session, faisle ka waqt, 90%), #54 ka kharcha |
 | `tools/taqat50.py` | #50 (31 Oct): 28 market taqat ka muqabla (har Juma top 4 BUY / bottom 4 SELL, SL 3 ATR) - TALAASH FAIL |

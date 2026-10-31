@@ -1099,6 +1099,11 @@ US500 -0.084 (2025 -21.4R, 2026 -14.4R), USTEC +0.013 (2025 -9.6R, 2026 +14.8R).
 laal = SELL, doji = nahi; entry doosri candle ki open (09:35), SL pehli candle ka doosra kinara = 1R, TP 10R, warna 16:00 band, din mein ek. Python `tools/orb21_test.py`
 (QDM M1 `data/qdm/M1` USATECH). Ek minute mein SL aur TP dono = SL. Kharcha #54 wala: har taraf 0.75 x 0.0038% = 0.00285%. R = entry - SL (<= 0 = us din nahi).
 TALAASH 2021-24: trades >= 100, Exp - 2SE > 0, aadhe se zyada saal musbat. PASS -> IMTIHAN 2025+ EK dafa (Exp - 2SE > 0). Leverage 4x had sirf $ ke liye, faisla R par.
+**Koshish #21 nateeja (1 Nov) = TALAASH FAIL** (IMTIHAN nahi khola): 997 tr (~21/mahina), Exp +0.110R, SE 0.076, **Exp-2SE -0.042**, jeet 24%, bina kharcha +0.140R.
+Saal 4/4 musbat magar ghat-te: 2021 +48.6, 2022 +42.3, 2023 +9.1, 2024 +9.5R. BUY +0.150, SELL +0.065. TP 10R sirf 18 dafa, SL 753.
+Sabaq (#54 + #21): mashhoor paper wali US index intraday strategies 2021-22 mein taqatwar, 2023-24 kamzor, 2025-26 khatam (#54). Kharcha masla nahi, edge ghisa.
+**#53 asli kharche se (1 Nov, `tools/ftmo53_asli.py`, sirf andaza, setting wahi):** 2019-01..2026-10, 94 challenge: 0.03% par 83 pass / 0 fail / 11 adhoora, median 12.7 mahine
+(25% 9.3, 75% 22.7) - asli spread x 1.5 par 83 / 0 / 11, **median 11.7** (25% 8.5, 75% 22.2). Asli kharcha #53 ko thora tez karta hai, bas.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
