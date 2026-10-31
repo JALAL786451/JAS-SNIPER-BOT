@@ -1128,6 +1128,8 @@ Ummeedwar = #47 ke 28 mein se **24** (XAU, XAG, US500, USTEC pehle se #53 mein =
 FTMO hisaab alag (#58, qaida pehle). Ginti +1.
 **Koshish #57 CHUNAO (1 Nov, IMTIHAN se PEHLE likha):** 24 mein se shart sirf **2** ne poori: JPN 133 tr +0.058R (Exp-2SE -0.079, saal 4/7), ESP 72 tr -0.034R (-0.167, 5/7).
 Baqi: BTC 34 tr +0.267 (saal 1/2 = shart nahi), USA30 94 tr +0.059 (3/6 = 50%, shart nahi), forex / EU / oil / fasal zyada tar manfi. TOP = JPN, ESP.
+**Koshish #57 IMTIHAN 2019+ (ek dafa, 1 Nov) = 0 SELECT = FAIL:** JPN 163 tr +0.069R (Exp-2.33SE -0.049, jeet 42%, saal 6/8) FAIL; ESP 122 tr +0.054R (-0.088, 5/8) FAIL.
+Sabaq: 4H trend ka pakka faida sirf gold / silver / US index (pehle se #53 mein); naya market nahi mila. JPN dono daur musbat magar kamzor (yaad rakho, jorna nahi).
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
