@@ -1215,6 +1215,15 @@ tareeqe se (#58: do alag chart par bilkul same number = saboot); #53 Python (Duk
 **Judge 1 (TV, 1 Nov):** v2 mein VIX-index TAREEKH jaanch nahi thi (NDX khatra, gaps_off par VIX dohraya ja sakta) = BUG; data kitne saal se - dikhana zaroori; IMTIHAN lock code
 mein nahi. chutti / tom / ibs_mandi = CLEAN (repaint nahi). **v3:** VIX ke apne din par 3 din stretch -> map (VIX tareekh -> stretch), index ka din `time_tradingday`
 (UTC) se dhoonda; dabbe mein "data / VIX kis saal se, date-miss"; VIX 1990 se kam = FAIL; IMTIHAN sirf TALAASH PASS par. Qaida (#65) bilkul wahi.
+**Judge 3 (MT5 vs Python #53, 1 Nov) = DONO EA MISMATCH** (formule sahi: Supertrend / ATR RMA / 4H 17:00 NY blocks / DST / IBS / SMA200 / SL server - line-for-line Python jaise):
+- **JasTrendEA t4:** (T1 HIGH) faisla 4H candle band hone se 5 min PEHLE (`:1004` preWin) aur band par dobara jaanch nahi = adhoori candle; naap: XAU 2021-24 79 Python vs 72 same,
+  US500 2021-26 130 vs 122 same. (T2) SL signal close se, entry se nahi. (T3) pehra 110k/96k/92k Python #53 mein NAHI + sirf trend EA par: 2019+ 83 pass mein se 6 mein
+  equity 92k chhua (upar ki hadd) = EA ruk jata, Python pass - **user ka faisla**. (T4) pre-close entry ke 5 min mein restart = nayi trade band. (T5) restart ke baad pehla
+  faisla kabhi trade nahi kholta. (T6) lot current balance se (Python $100k pakka). (T7) server GMT auto (0 rakho). (T8) Dukascopy US500/USTEC 16:15-17:59 NY khali = Python
+  ka 13-17 4H bar 16:14 par khatam; Exness ke session jaancho; DST 1 Nov khatam.
+- **JasIbsEA i5:** (I1 HIGH) faisla 16:55 NY Exness data par, Python ka din ka close 16:14 NY (Dukascopy); 5 min pehle faisla = 119 mein 103 same, 1 min pehle = 110.
+  (I2) 16:55-17:00 mein restart = nayi trade band. (I3) koi pehra nahi. (I4) lot current balance. (I5) restart pehla faisla. (I6) comment gum ho to din ginti 1 kam. (I7) aadha din.
+Ilaj: JasTrendEA t5 + JasIbsEA i6 (band candle par faisla, IBS cut-off 16:15 NY, restart, SL entry se, $100k base, GMT 0); pehra user se poochh kar.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
