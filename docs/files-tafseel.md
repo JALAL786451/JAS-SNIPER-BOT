@@ -49,6 +49,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/har_market51.py` | #51 (31 Oct): har market x 3 khandaan (trend / IBS / turtle) daily, sakht shart - 0/84 FAIL |
 | `tools/teacher52.py` | #52 (31 Oct): #51 ke 84 mein se TALAASH top 5 -> IMTIHAN ek dafa; USTEC IBS SELECT |
 | `tools/noise_boundary_test.py` | #37 (31 Oct): Zarattini noise boundary M1 US500+USTEC 2021-24 (data/qdm/M1) - FAIL kharche se; bina kharcha +0.134R |
+| `indicators/jas_noise_boundary.pine` | n1 (31 Oct): #37 noise boundary TV dabba - 30m chart (SPX500 / NAS100), UB/LB/VWAP, BUY/SELL nishan, trades / jeet / Exp (kharcha input) / bina kharcha |
 | `indicators/jas_ftmo49.pine` | f2 (31 Oct): #53 - IBS SPX + NAS 1%. f1 (31 Oct): #49 ka TV dabba - 4 market 4H trend (khuli BUY, entry, SL 6 ATR, abhi R) + IBS US500 daily + Python nateeja; sirf dekhne ke liye |
 | `indicators/jas_ftmo49_tokri.pine` | t4 (31 Oct): #53 - IBS NAS100 line + 1%. t3: pehle alag. t2 (31 Oct): teeno muddat ek saath (2012-18 / 2019-aaj / KUL), neeche pane KUL P/L % + DD % (daayein label), TALAASH + IMTIHAN PASS dono. t1: #49 TOKRI dabba (k1 jaisa, safaid): har line trades / jeet / faida $ / Exp R, KUL, DD, saal ba saal, TALAASH-IMTIHAN-SAB muddat, PASS/FAIL + Python FTMO |
 | `data/qdm/XAUUSD_M1_2021_24.zip`, `XAUUSD_M1_2015.zip` | QDM Dukascopy gold M1 UTC (user 28 Oct; 2015 H1 se 100% mila). 2016-20 aur 2025+ abhi nahi |

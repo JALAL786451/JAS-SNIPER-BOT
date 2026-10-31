@@ -1,0 +1,162 @@
+//@version=6
+// JAS Noise Boundary n1 (31 Oct 2026) - Koshish #37: Zarattini-Aziz-Barbon 2024 "Beat the Market" (sirf dekhne / ginti ke liye).
+// CHART: 30 MINUTE, OANDA:SPX500USD ya OANDA:NAS100USD. Faisla sirf :00 / :30 par (30m candle ka close), 10:00 - 15:30 New York.
+// Noise sigma(j) = pichhle 14 din ka ausat |close(j) / din ka open - 1| (aaj shamil nahi). UB = max(open, kal close) x (1+sigma),
+// LB = min(open, kal close) x (1-sigma). Close > UB = BUY, < LB = SELL. Stop: BUY max(UB, VWAP), SELL min(LB, VWAP) - sirf :00/:30 par.
+// 16:00 sab band (raat ko koi trade nahi). 1R = sigma x entry. Kharcha input se (qaida 0.03%/taraf; asli spread Somwar naapna).
+// Python (tools/noise_boundary_test.py, Dukascopy M1 2021-24): 1808 tr (~38/mahina dono), bina kharcha +0.134R, 0.03% kharche se -0.047R.
+// Repaint nahi: sab faisle band candle par. TV ka nateeja sirf andaza (OANDA data, 30m VWAP).
+indicator("JAS Noise Boundary n1", shorttitle = "JAS NOISE n1", overlay = true)
+
+look    = input.int(14, "Noise ke din (lookback)", minval = 5)
+costPct = input.float(0.03, "Kharcha % har taraf", step = 0.005)
+showL   = input.bool(true, "UB / LB / VWAP lakeerein")
+safaid  = input.bool(true, "Safaid dabba")
+
+NY = "America/New_York"
+hm = hour(time, NY) * 60 + minute(time, NY)
+S0 = 9 * 60 + 30
+inS = hm >= S0 and hm < 16 * 60
+j = inS ? int(math.floor((hm - S0) / 30)) : -1      // 0 = 09:30 candle (close 10:00) ... 12 = 15:30 candle (close 16:00)
+is30 = timeframe.isintraday and timeframe.multiplier == 30
+
+var matrix<float> mv = matrix.new<float>(look, 13, na)
+var array<float> today = array.new<float>(13, na)
+var int ptr = 0
+var int filled = 0
+var float dOpen = na
+var float prevC = na
+var float lastC = na
+var float cPV = 0.0
+var float cV = 0.0
+var int   pos = 0
+var float ep = na
+var float rr = na
+var int   n = 0
+var float sR = 0.0
+var float sR2 = 0.0
+var float sR0 = 0.0
+var int   w = 0
+var int   nB = 0
+var float sB = 0.0
+var int   nS = 0
+var float sS = 0.0
+var int   t0 = na
+var int   t1 = na
+
+sigOf(int jj) =>
+    float s = 0.0
+    int c = 0
+    for r = 0 to look - 1
+        v = mv.get(r, jj)
+        if not na(v)
+            s += v
+            c += 1
+    c >= math.min(10, look) ? s / c : na
+
+float ubP = na
+float lbP = na
+float vwP = na
+bool eB = false
+bool eS = false
+bool ex = false
+float xP = na
+
+if is30 and inS
+    if j == 0
+        dOpen := open
+        prevC := lastC
+        cPV := 0.0
+        cV := 0.0
+        today.fill(na)
+    vol = nz(volume) > 0 ? volume : 1.0
+    cPV += hlc3 * vol
+    cV += vol
+    vw = cPV / cV
+    today.set(j, math.abs(close / dOpen - 1))
+    sg = sigOf(j)
+    if not na(sg) and not na(prevC) and not na(dOpen)
+        ub = math.max(dOpen, prevC) * (1 + sg)
+        lb = math.min(dOpen, prevC) * (1 - sg)
+        ubP := ub
+        lbP := lb
+        vwP := vw
+        if j <= 11
+            if pos > 0 and close < math.max(ub, vw)
+                xP := close
+            else if pos < 0 and close > math.min(lb, vw)
+                xP := close
+            else if pos == 0 and close > ub
+                pos := 1
+                ep := close
+                rr := sg * close
+                eB := true
+            else if pos == 0 and close < lb
+                pos := -1
+                ep := close
+                rr := sg * close
+                eS := true
+    if j == 12
+        if pos != 0
+            xP := close
+        lastC := close
+        for c = 0 to 12
+            mv.set(ptr, c, today.get(c))
+        ptr := (ptr + 1) % look
+        filled := math.min(filled + 1, look)
+
+// band hui trade ka hisaab (global scope mein)
+if not na(xP) and pos != 0
+    r0 = pos * (xP - ep) / rr
+    r = (pos * (xP - ep) - costPct / 100 * (ep + xP)) / rr
+    n += 1
+    sR += r
+    sR2 += r * r
+    sR0 += r0
+    w += r > 0 ? 1 : 0
+    if pos > 0
+        nB += 1
+        sB += r
+    else
+        nS += 1
+        sS += r
+    t0 := na(t0) ? time : t0
+    t1 := time
+    pos := 0
+    ex := true
+
+plot(showL ? ubP : na, "UB", color.new(#26a69a, 0), 1, plot.style_linebr)
+plot(showL ? lbP : na, "LB", color.new(#ef5350, 0), 1, plot.style_linebr)
+plot(showL ? vwP : na, "VWAP", color.new(#ffb300, 0), 1, plot.style_linebr)
+plotshape(eB, "BUY", shape.triangleup, location.belowbar, color.new(#26a69a, 0), size = size.tiny)
+plotshape(eS, "SELL", shape.triangledown, location.abovebar, color.new(#ef5350, 0), size = size.tiny)
+plotshape(ex, "Band", shape.xcross, location.abovebar, color.new(#9e9e9e, 0), size = size.tiny)
+
+bg  = safaid ? color.new(color.white, 0) : color.new(#11141c, 0)
+fg  = safaid ? color.new(#111111, 0) : color.white
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = safaid ? color.new(#1a237e, 0) : color.new(#ffd54f, 0)
+var table tb = table.new(position.top_right, 2, 11, bgcolor = bg, border_color = color.new(#9e9e9e, 0), border_width = 1)
+cell(int r, string a, string b, color cb) =>
+    table.cell(tb, 0, r, a, text_color = fg, text_size = size.small)
+    table.cell(tb, 1, r, b, text_color = cb, text_size = size.small)
+
+if barstate.islast
+    e = n > 0 ? sR / n : 0.0
+    sd = n > 1 ? math.sqrt(math.max((sR2 - n * e * e) / (n - 1), 0.0)) : 0.0
+    se = n > 0 ? sd / math.sqrt(n) : 0.0
+    e0 = n > 0 ? sR0 / n : 0.0
+    mon = na(t0) ? 1.0 : math.max(1.0, (t1 - t0) / 2629800000.0)
+    table.cell(tb, 0, 0, "JAS NOISE BOUNDARY n1  (#37)", text_color = cHd, text_size = size.small)
+    table.merge_cells(tb, 0, 0, 1, 0)
+    cell(1, "Chart", is30 ? syminfo.ticker + "  30m  OK" : "30 MINUTE chart lagayein!", is30 ? cUp : cDn)
+    cell(2, "Trades", str.tostring(n) + "  (~" + str.tostring(n / mon, "#.#") + " / mahina)", fg)
+    cell(3, "Jeet", str.tostring(n > 0 ? 100.0 * w / n : 0.0, "#") + "%", fg)
+    cell(4, "Har trade (kharcha " + str.tostring(costPct) + "%)", str.tostring(e, "+0.000;-0.000") + "R", e > 0 ? cUp : cDn)
+    cell(5, "Exp - 2SE", str.tostring(e - 2 * se, "+0.000;-0.000") + "R", e - 2 * se > 0 ? cUp : cDn)
+    cell(6, "Bina kharcha", str.tostring(e0, "+0.000;-0.000") + "R", e0 > 0 ? cUp : cDn)
+    cell(7, "BUY / SELL", str.tostring(nB) + " tr " + str.tostring(nB > 0 ? sB / nB : 0.0, "+0.00;-0.00") + "R  /  " + str.tostring(nS) + " tr " + str.tostring(nS > 0 ? sS / nS : 0.0, "+0.00;-0.00") + "R", fg)
+    cell(8, "Kul jor", str.tostring(sR, "+0.0;-0.0") + "R", sR > 0 ? cUp : cDn)
+    cell(9, "Data se (TV)", na(t0) ? "-" : str.format_time(t0, "yyyy-MM-dd", NY) + "  ->  " + str.format_time(t1, "yyyy-MM-dd", NY), fg)
+    cell(10, "Python (asal M1)", "2021-24: 1808 tr, bina kharcha +0.134R, 0.03% par -0.047R", fg)
