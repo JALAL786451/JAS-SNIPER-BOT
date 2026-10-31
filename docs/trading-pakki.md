@@ -149,6 +149,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 
 - Chutti se pehle wala din (NYSE calendar) SPX + NDX: #59 ASLI PASS (2019+ jeet 68%) - pehla calendar khandaan jo chala; chhoti TF wali sab fail (1 Nov).
 
+- Akele bare share (Dow 30) par IBS / Tide / Trend: R mein faida dikhta hai magar sab share ki aam tezi (drift) - asli edge nahi (#61-63, 1 Nov). Share ke test mein drift jaanch zaroori.
+
 ## 5. Mere tools
 
 Har file ki ek line `CLAUDE.md` mein, lambi kahani `docs/files-tafseel.md` mein, purani tools

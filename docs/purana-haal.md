@@ -1182,6 +1182,9 @@ Tide ausat +0.08% vs drift +0.33%. **BUY 7723 tr +0.059R, SELL 3237 tr -0.150R.*
 #25 / #26 (s2 / s3) bilkul wahi: Supertrend 10 / 3.0 daily, SIRF BUY, BUY nishan = long agli open, SELL nishan = band agli open, SL nahi, 1R = 3 x ATR10. Share = #61 wale 30.
 Saboot: Wilcox & Crittenden 2005. Kharcha 0.03%/taraf + swap 5%/saal. Drift jaanch + PASS shartein #61 jaisi (kul >= 100, Exp - 2SE > 0, share >= 70% Exp > 0,
 (share x saal) > 50%, Trend % >= 2 x drift). IMTIHAN 2019+ CHHUPA; EK dafa: kul >= 30, Exp - 2SE > 0, Trend % >= 2 x drift = ASLI PASS. Ginti +1.
+**Koshish #63 TALAASH (1 Nov, user TV SS) = FAIL (drift shart)** (IMTIHAN band): 5,237 tr (2000-18 ~8.6/mahina), jeet 40%, **Exp +0.175R, Exp-2SE +0.123**, share 27/30,
+(share x saal) 680/1293 - magar **Trend ausat +2.04% vs aam tezi +2.31%** (trend ka waqt chunna kuch nahi deta, bas share mein rehna). Sabaq (#61-63): akele bare
+share par IBS / Tide / Trend teeno ka faida = share ki aam tezi (survivorship). Share ki line band; index / metal par hi asli faida.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
