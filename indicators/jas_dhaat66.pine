@@ -10,7 +10,8 @@
 //   flip neeche = AGLI open band, SL 6 x ATR10 (4H) = 1R (candle ke andar,
 //   gap = open). Ek market ek position.
 //   Kharcha = har market ka apna (JasSpreadNaap "poora din" spread % x 0.75
-//   har taraf) + swap 3%/saal har raat (calendar din) -> R.
+//   har taraf; naap 1 Nov: XPT 0.249% -> 0.187, XPD 0.551% -> 0.414, XCU
+//   0.056% -> 0.042) + swap 3%/saal har raat (calendar din) -> R.
 //
 //  PEHLE SE LIKHA QAIDA (docs/purana-haal.md, grep "Koshish #66 qaida"):
 //   TALAASH = entry < 2019 (TV 4H data jitna). PASS = kul >= 100 tr AUR
@@ -31,9 +32,9 @@ m2 = input.symbol("OANDA:XPDUSD", "2 Palladium", group = grI)
 m3 = input.symbol("OANDA:XCUUSD", "3 Copper", group = grI)
 
 grQ = "2 · Kharcha (JasSpreadNaap x 0.75, % har taraf) + muddat"
-c1 = input.float(0.03, "Platinum kharcha % har taraf", step = 0.001, group = grQ, display = display.none)
-c2 = input.float(0.03, "Palladium kharcha % har taraf", step = 0.001, group = grQ, display = display.none)
-c3 = input.float(0.03, "Copper kharcha % har taraf", step = 0.001, group = grQ, display = display.none)
+c1 = input.float(0.187, "Platinum kharcha % har taraf", step = 0.001, group = grQ, display = display.none)
+c2 = input.float(0.414, "Palladium kharcha % har taraf", step = 0.001, group = grQ, display = display.none)
+c3 = input.float(0.042, "Copper kharcha % har taraf", step = 0.001, group = grQ, display = display.none)
 swapYr  = input.float(3.0, "Swap (% saal, har raat)", minval = 0, step = 0.5, group = grQ, display = display.none)
 splitYr = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
 showIm  = input.bool(false, "IMTIHAN dikhao (SIRF TALAASH PASS ke baad, EK dafa)", group = grQ, display = display.none)

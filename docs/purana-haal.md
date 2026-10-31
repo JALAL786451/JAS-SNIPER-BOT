@@ -1291,4 +1291,6 @@ OANDA:XCUUSD (copper)**. **Kharcha** = `JasSpreadNaap` (XPTUSDm, XPDUSDm, XCUUSD
 naap se pehle likha; swap 3%/saal. **TALAASH** entry < 2019 (TV 4H data jitna): PASS = kul >= 100 tr, Exp - 2SE > 0, >= 2/3 market Exp > 0, (market x saal) musbat > 50%.
 Maloomat (shart nahi): aam tezi (drift). **IMTIHAN** 2019+ CHHUPA (input) jab tak TALAASH PASS; EK dafa, SAKHT: kul >= 30 tr aur Exp - 2SE > 0. Ginti +1.
 PASS ho to #53 mein jor ka FTMO hisaab alag (qaida pehle; FTMO par XPT / XPD / XCU maujood hain ya nahi - pehle dekhna).
+**#66 kharcha naap (1 Nov, JasSpreadNaap s1, Exness Demo 20 din, "poora din"):** XPTUSDm 4.02 = 0.2489% (qeemat 1720) -> 0.187%/taraf; XPDUSDm 6.05 = 0.5514% (1178) -> 0.414%/taraf;
+XCUUSDm 8.04 = 0.0558% (14418) -> 0.042%/taraf. Platinum / palladium gold se 40-90 guna mehngi. Script `jas_dhaat66.pine` d1 defaults isi naap se (test se pehle).
 
