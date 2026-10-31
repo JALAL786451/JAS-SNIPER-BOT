@@ -38,10 +38,10 @@ Purana naam `TRADING-MERI-KAHANI` = `docs/trading-pakki.md`; `TRADING-ABHI-KAHAN
 | | Number | Kya |
 |---|---|---|
 | LIVE | 253687618 | Exness-MT5Real34, StandardCent, XAUUSDc, USC, swap-free, Hedge, 1:2000. Koi EA nahi |
-| DEMO | 472716649 | Exness-MT5Trial16, USD, Hedge - saare EA demo yahin |
-| **FTMO DEMO** | **474832446** | Exness-MT5Trial15, Standard, USD **$100k**, 1:100 (31 Oct) - #53: JasTrendEA t4 4H 0.75% + JasIbsEA i5 US500+USTEC 1% |
+| DEMO | 472716649 | (31 Oct raat user ne DELETE kiya) |
+| **FTMO DEMO** | **474832446** | Exness-MT5Trial15, Standard, USD **$100k**, 1:100 (31 Oct) - #53: JasTrendEA t5 + JasIbsEA i6 (1 Nov) |
 
-Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kabhi nahi.
+Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nahi.
 
 ## 4. Test ka qaida (13 Oct - badalna mana)
 
@@ -66,21 +66,16 @@ Somwar: pehli trades + TV `JAS FTMO 53 f2` dabba ka SS milao; 1-2 hafte baad VPS
 **Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. SELL band = ~3,690 par khatam (tafseel purana-haal).
 **RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
 
-## 6. RUKA HUA: JasIbsEA i3 (daily candle 17:00 NY) - naqsha `docs/purana-haal.md` ("RUKA HUA ... i3")
+## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
-## 7. Demo (472716649) - 6 EA TRADE CHALU (t3 4H 29 Oct, user SS ✅)
-
-| EA | Chart | Magic | Markets |
+| EA | Chart | Magic | Haal |
 |---|---|---|---|
-| JasTideRadarEA e1 (Kachhua) | XAUUSDm D1 | 20261009 | XAU, XAG, EUR, GBP, AUD, JPY, CHF, US500, BTC (9) |
-| JasTideRadarEA e1 (Commodity) | XPTUSDm D1 | 20261018 | USOIL, UKOIL, XNGUSD, XCUUSD, XPTUSD, XPDUSD (6) |
-| JasRsi2EA c2 | US500m H1 (EA D1 parhta) | 20261012 | US500, USTEC, US30 |
-| JasIbsEA **i3** (F7 0 errors ✅) | US500m H1 (doosra chart) | 20261022 | US500 (faisla 16:55 NY) |
-| **JasTrendEA t2** (28 Oct, 15 din) | XAUUSDm H1 (5wan chart) | 20261028 | XAU, XAG, US500, USTEC - pehra BAND (account par aur EA), GMT +0 ✅, Supertrend line Python se mili |
-| **JasTrendEA t3 4H** (29 Oct, #34) | XAUUSDm H4 (6ta chart) | 20261029 | XAU, XAG, US500, USTEC - SL 6xATR, pehra band, Tester ✅ |
+| **JasTrendEA t5** | XAUUSDm H4 | 20261029 | XAU, XAG, US500, USTEC - 4H, 0.75%, SL 6 ATR, judge replay = Python same |
+| **JasIbsEA i6** | US500m D1 | 20261022 | US500, USTEC - 1%, faisla 16:15 NY |
 
-- Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
-- IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").
+Pehra (dono, poora account): target 110k + din 4% (96k farsh), kul hadd band (user "1"). Purane demo 472716649 / 472540009 (Radar, RSI2, i3, t2, t3)
+user ne 31 Oct raat DELETE kiye - un ki tafseel `docs/purana-haal.md` grep "sec 6-7 se (1 Nov". Exness Demo ki `JasTideRadarEA.mq5` mein ghalti se t5 code
+paste hua (chart par nahi laga) - zaroorat par GitHub wali e1 dobara.
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 31 Oct")
 
