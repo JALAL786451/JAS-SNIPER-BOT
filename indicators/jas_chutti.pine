@@ -1,0 +1,263 @@
+//@version=6
+// ============================================================================
+//  JAS CHUTTI  (build h1, Pine v6)  -  Koshish #59 (1 Nov 2026, user 'D')
+//
+//  Calendar ka khandaan: Amreeki market (NYSE) ki CHUTTI SE PEHLE wala din.
+//  Saboot: Lakonishok & Smidt (1988), Ariel (1990): chutti se pehle ke din
+//  index ka ausat munafa aam din se kai guna. TRADE NAHI - sirf naap.
+//
+//  QAWAID (har index ki apni DAILY candles):
+//   1) Chutti = NYSE ka pehle se maloom calendar (1971+): New Year, MLK
+//      (1998+), Presidents, Good Friday, Memorial, Juneteenth (2022+),
+//      4 July, Labor, Election (1972/76/80), Thanksgiving, Christmas
+//      (Sat -> Fri, Sun -> Mon). Achanak band (9/11, toofan, sog) shamil NAHI.
+//   2) Jis din ka AGLA trading din "chutti se pehle wala din" ho, us din ke
+//      close par BUY; agle din (chutti se pehle wale din) ke close par band.
+//   3) 1R = ATR(14) entry waqt (unit). SL nahi (ek din).
+//   4) Kharcha 0.01% har taraf + swap 3%/saal har raat (calendar din) -> R.
+//
+//  PEHLE SE LIKHA QAIDA (docs/purana-haal.md, grep "Koshish #59 qaida"):
+//   TALAASH = entry saal 1971 - 2018. PASS = kul >= 100 trade AUR kul
+//   Exp - 2SE > 0 AUR dono index Exp > 0 AUR (index x saal) musbat > 50%.
+//   IMTIHAN (2019+) CHHUPA jab tak TALAASH PASS; phir EK dafa: kul >= 30
+//   trade AUR Exp - 2SE > 0 = ASLI PASS. Settings badal kar dobara MANA.
+//
+//  CHART: koi bhi DAILY chart (misaal SP:SPX). SPX + NDX request.security se.
+// ============================================================================
+indicator("JAS Chutti h1 (#59)", shorttitle = "JAS CHUTTI h1", overlay = true, max_bars_back = 300)
+
+BUILD = "h1"
+TZ = "America/New_York"
+DAY = 86400000
+
+grI = "1 · 2 index (pehle se chune - badalna mana)"
+s0 = input.symbol("SP:SPX", "1 S&P 500", group = grI)
+s1 = input.symbol("NASDAQ:NDX", "2 Nasdaq 100", group = grI)
+
+grQ = "2 · Qawaid (mat badlein)"
+atrLen  = input.int(14, "ATR length (1R)", minval = 2, group = grQ, display = display.none)
+costPct = input.float(0.01, "Kharcha (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
+swapYr  = input.float(3.0, "Swap (% saal, har raat)", minval = 0, step = 0.5, group = grQ, display = display.none)
+fromYr  = input.int(1971, "TALAASH is saal se", group = grQ, display = display.none)
+splitYr = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
+showIm  = input.bool(false, "IMTIHAN dikhao (SIRF TALAASH PASS ke baad, EK dafa)", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  NYSE CALENDAR (pehle se maloom)
+// ============================================================================
+f_easter(int y) =>
+    a = y % 19
+    b = math.floor(y / 100)
+    c = y % 100
+    d = math.floor(b / 4)
+    e = b % 4
+    f = math.floor((b + 8) / 25)
+    g = math.floor((b - f + 1) / 3)
+    h = (19 * a + b - d - g + 15) % 30
+    i = math.floor(c / 4)
+    k = c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = math.floor((a + 11 * h + 22 * l) / 451)
+    n = h + l - 7 * m + 114
+    [math.floor(n / 31), n % 31 + 1]
+
+f_isWk(int ts) =>
+    w = dayofweek(ts, TZ)
+    w != dayofweek.saturday and w != dayofweek.sunday
+
+f_isHol(int ts) =>
+    y = year(ts, TZ)
+    m = month(ts, TZ)
+    d = dayofmonth(ts, TZ)
+    w = dayofweek(ts, TZ)
+    wk = w != dayofweek.saturday and w != dayofweek.sunday
+    mon = w == dayofweek.monday
+    fri = w == dayofweek.friday
+    bool h = false
+    if m == 1
+        h := (d == 1 and wk) or (d == 2 and mon) or (y >= 1998 and mon and d >= 15 and d <= 21)
+    else if m == 2
+        h := mon and d >= 15 and d <= 21
+    else if m == 5
+        h := mon and d >= 25
+    else if m == 6
+        h := y >= 2022 and ((d == 19 and wk) or (d == 18 and fri) or (d == 20 and mon))
+    else if m == 7
+        h := (d == 4 and wk) or (d == 3 and fri) or (d == 5 and mon)
+    else if m == 9
+        h := mon and d <= 7
+    else if m == 11
+        h := (w == dayofweek.thursday and d >= 22 and d <= 28) or ((y == 1972 or y == 1976 or y == 1980) and w == dayofweek.tuesday and d >= 2 and d <= 8)
+    else if m == 12
+        h := (d == 25 and wk) or (d == 24 and fri) or (d == 26 and mon)
+    if not h and fri and (m == 3 or m == 4)
+        [em, ed] = f_easter(y)
+        gf = timestamp(TZ, y, em, ed, 12, 0) - 2 * DAY
+        h := month(gf, TZ) == m and dayofmonth(gf, TZ) == d
+    h
+
+// ts (dopahar) ke baad AGLA trading din chutti se pehle wala din hai?
+f_preNext(int ts) =>
+    int p = ts
+    for k = 1 to 10
+        p := ts + k * DAY
+        if f_isWk(p) and not f_isHol(p)
+            break
+    int q = p
+    for k = 1 to 4
+        q := p + k * DAY
+        if f_isWk(q)
+            break
+    f_isHol(q)
+
+// ============================================================================
+//  ENGINE (har index ki apni daily candles par, sirf BAND candle [1])
+// ============================================================================
+f_pre() =>
+    _atrA = ta.atr(atrLen)
+    _c   = close[1]
+    _c2  = close[2]
+    _a   = _atrA[1]
+    _t   = time[1]
+    _yr  = year(_t, TZ)
+    var int   _fy  = na
+    var bool  _in  = false
+    var float _e   = na
+    var float _r   = na
+    var int   _ey  = na
+    var int   _et  = na
+    var int   _nT = 0
+    var int   _wT = 0
+    var float _sT = 0.0
+    var float _qT = 0.0
+    var float _pT = 0.0
+    var int   _yNT = 0
+    var int   _yPT = 0
+    var int   _cyT = na
+    var float _csT = 0.0
+    var int   _aN = 0
+    var float _aS = 0.0
+    var int   _nI = 0
+    var int   _wI = 0
+    var float _sI = 0.0
+    var float _qI = 0.0
+    if not na(_c) and not na(_t)
+        if na(_fy) and _yr >= fromYr
+            _fy := _yr
+        if not na(_c2) and _yr >= fromYr and _yr < splitYr
+            _aN += 1
+            _aS += _c / _c2 - 1
+        if _in
+            _nights = math.round((_t - _et) / 86400000.0)
+            _rr = ((_c - _e) - costPct / 100.0 * (_e + _c) - swapYr / 100.0 / 365.0 * _nights * _e) / _r
+            if _ey < splitYr
+                _nT += 1
+                _sT += _rr
+                _qT += _rr * _rr
+                _pT += _c / _e - 1
+                _wT += _rr > 0 ? 1 : 0
+                if na(_cyT) or _ey != _cyT
+                    if not na(_cyT)
+                        _yNT += 1
+                        _yPT += _csT > 0 ? 1 : 0
+                    _cyT := _ey
+                    _csT := 0.0
+                _csT += _rr
+            else
+                _nI += 1
+                _sI += _rr
+                _qI += _rr * _rr
+                _wI += _rr > 0 ? 1 : 0
+            _in := false
+        _noon = timestamp(TZ, year(_t, TZ), month(_t, TZ), dayofmonth(_t, TZ), 12, 0)
+        if not _in and _yr >= fromYr and not na(_a) and _a > 0 and f_preNext(_noon)
+            _in := true
+            _e  := _c
+            _r  := _a
+            _ey := _yr
+            _et := _t
+    _yN = _yNT + (na(_cyT) ? 0 : 1)
+    _yP = _yPT + (not na(_cyT) and _csT > 0 ? 1 : 0)
+    [_nT, _wT, _sT, _qT, _pT, _yN, _yP, _aN, _aS, _nI, _wI, _sI, _qI, _fy]
+
+f_req(_s) => request.security(_s, "D", f_pre(), barmerge.gaps_off, barmerge.lookahead_off)
+
+[nT0, wT0, sT0, qT0, pT0, yN0, yP0, aN0, aS0, nI0, wI0, sI0, qI0, fy0] = f_req(s0)
+[nT1, wT1, sT1, qT1, pT1, yN1, yP1, aN1, aS1, nI1, wI1, sI1, qI1, fy1] = f_req(s1)
+
+// ============================================================================
+//  TABLE (safaid)
+// ============================================================================
+f_pos(_p) => _p == "Top Left" ? position.top_left : _p == "Bottom Right" ? position.bottom_right : _p == "Bottom Left" ? position.bottom_left : position.top_right
+
+f_exp(_n, _s) => _n > 0 ? _s / _n : 0.0
+f_se(_n, _s, _q) =>
+    _m = _n > 0 ? _s / _n : 0.0
+    _n > 1 ? math.sqrt(math.max((_q - _n * _m * _m) / (_n - 1), 0.0)) / math.sqrt(_n) : 0.0
+
+var table tb = table.new(f_pos(tblPos), 8, 11, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
+fg  = color.new(#111111, 0)
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = color.new(#1a237e, 0)
+
+f_cell(int _c, int _r, string _s, color _col) =>
+    table.cell(tb, _c, _r, _s, text_color = _col, text_size = size.small)
+
+f_row(int _r, string _nm, int _n, int _w, float _s, float _q, string _pct, string _aam, string _yr) =>
+    _e  = f_exp(_n, _s)
+    _se = f_se(_n, _s, _q)
+    f_cell(0, _r, _nm, fg)
+    f_cell(1, _r, str.tostring(_n), fg)
+    f_cell(2, _r, str.tostring(_n > 0 ? 100.0 * _w / _n : 0.0, "#") + "%", fg)
+    f_cell(3, _r, _pct, fg)
+    f_cell(4, _r, _aam, fg)
+    f_cell(5, _r, str.tostring(_e, "+0.000;-0.000"), _e > 0 ? cUp : cDn)
+    f_cell(6, _r, str.tostring(_e - 2 * _se, "+0.000;-0.000"), _e - 2 * _se > 0 ? cUp : cDn)
+    f_cell(7, _r, _yr, fg)
+
+f_p(float _x) => str.tostring(100.0 * _x, "+0.000;-0.000") + "%"
+
+if barstate.islast
+    f_cell(0, 0, "JAS CHUTTI " + BUILD + "  (#59)  -  chutti se pehle wala din (SPX + NDX)", cHd)
+    table.merge_cells(tb, 0, 0, 7, 0)
+    f_cell(0, 1, "TALAASH (" + str.tostring(fromYr) + " - " + str.tostring(splitYr - 1) + ")", cHd)
+    f_cell(1, 1, "Trade", cHd)
+    f_cell(2, 1, "Jeet", cHd)
+    f_cell(3, 1, "Is din ausat", cHd)
+    f_cell(4, 1, "Aam din ausat", cHd)
+    f_cell(5, 1, "Har trade (R)", cHd)
+    f_cell(6, 1, "Exp - 2SE", cHd)
+    f_cell(7, 1, "Saal + / kul", cHd)
+    f_row(2, "S&P 500  (" + str.tostring(fy0) + " se)", nT0, wT0, sT0, qT0, f_p(nT0 > 0 ? pT0 / nT0 : 0.0), f_p(aN0 > 0 ? aS0 / aN0 : 0.0), str.tostring(yP0) + " / " + str.tostring(yN0))
+    f_row(3, "Nasdaq 100  (" + str.tostring(fy1) + " se)", nT1, wT1, sT1, qT1, f_p(nT1 > 0 ? pT1 / nT1 : 0.0), f_p(aN1 > 0 ? aS1 / aN1 : 0.0), str.tostring(yP1) + " / " + str.tostring(yN1))
+    nK = nT0 + nT1
+    sK = sT0 + sT1
+    qK = qT0 + qT1
+    f_row(4, "KUL", nK, wT0 + wT1, sK, qK, f_p(nK > 0 ? (pT0 + pT1) / nK : 0.0), f_p(aN0 + aN1 > 0 ? (aS0 + aS1) / (aN0 + aN1) : 0.0), str.tostring(yP0 + yP1) + " / " + str.tostring(yN0 + yN1))
+    eK  = f_exp(nK, sK)
+    seK = f_se(nK, sK, qK)
+    cells = yN0 + yN1
+    okT = nK >= 100 and eK - 2 * seK > 0 and f_exp(nT0, sT0) > 0 and f_exp(nT1, sT1) > 0 and cells > 0 and (yP0 + yP1) * 2 > cells
+    f_cell(0, 5, okT ? "TALAASH PASS  -> IMTIHAN khol sakte hain" : "TALAASH FAIL  -> IMTIHAN band", okT ? cUp : cDn)
+    table.merge_cells(tb, 0, 5, 7, 5)
+    if showIm
+        f_cell(0, 6, "IMTIHAN (" + str.tostring(splitYr) + " - aaj)", cHd)
+        table.merge_cells(tb, 0, 6, 7, 6)
+        f_row(7, "S&P 500", nI0, wI0, sI0, qI0, "-", "-", "-")
+        f_row(8, "Nasdaq 100", nI1, wI1, sI1, qI1, "-", "-", "-")
+        nIK = nI0 + nI1
+        sIK = sI0 + sI1
+        qIK = qI0 + qI1
+        f_row(9, "KUL", nIK, wI0 + wI1, sIK, qIK, "-", "-", "-")
+        eI  = f_exp(nIK, sIK)
+        seI = f_se(nIK, sIK, qIK)
+        okI = nIK >= 30 and eI - 2 * seI > 0
+        f_cell(0, 10, okI ? "IMTIHAN PASS = ASLI PASS" : "IMTIHAN FAIL = idea band", okI ? cUp : cDn)
+        table.merge_cells(tb, 0, 10, 7, 10)
+    else
+        f_cell(0, 6, "IMTIHAN " + str.tostring(splitYr) + "+ CHHUPA (TALAASH PASS ke baad, EK dafa)", fg)
+        table.merge_cells(tb, 0, 6, 7, 6)

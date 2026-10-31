@@ -1139,6 +1139,12 @@ Maqsad: #53 jab khamosh (mandi) tab trade - PASS ho to FTMO hisaab alag (qaida p
 **Koshish #58 nateeja (1 Nov, user TV SS - chart SP:SPX 1D aur OANDA SPX500USD 1D, dono par bilkul same = script khud SPX/NDX uthata hai) = TALAASH FAIL** (IMTIHAN band):
 SPX (1871 se data) 541 tr, jeet 58%, -0.026R (Exp-2SE -0.064), saal 24/50; NDX (1985 se) 366 tr, jeet 65%, +0.021R (-0.022), saal 18/27; KUL 907 tr, jeet 61%, **-0.007R**,
 Exp-2SE -0.036, (index x saal) 42/77. Sabaq: mandi mein girawat par khareed = sikka; IBS ka faida sirf upar ke rukh (close > SMA200) mein.
+**Koshish #59 qaida (1 Nov, 28vi chat, user "D", test se PEHLE, badalna mana) - CHUTTI SE PEHLE WALA DIN (`indicators/jas_chutti.pine` h1, TV, koi bhi Daily chart):**
+Lakonishok-Smidt 1988, Ariel 1990. NYSE ka pehle se maloom calendar (1971+): New Year, MLK 1998+, Presidents, Good Friday (Easter formula), Memorial, Juneteenth 2022+,
+4 July, Labor, Election 1972/76/80, Thanksgiving, Christmas (Sat -> Fri, Sun -> Mon; 1 Jan Sat = koi chutti nahi); achanak band (9/11, toofan, sog) shamil NAHI.
+Python mein jaancha: 1990, 1999, 2018-2026 sab NYSE chuttiyan bilkul mili. Jis din ka agla trading din "chutti se pehle wala din" ho, us din close par BUY, agle din close par band.
+1R = ATR14 (unit), SL nahi. Kharcha 0.01%/taraf + swap 3%/saal. SP:SPX + NASDAQ:NDX. **TALAASH** entry 1971-2018: kul >= 100 tr, Exp - 2SE > 0, dono index Exp > 0,
+(index x saal) musbat > 50%. **IMTIHAN** 2019+ CHHUPA (input band) jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr aur Exp - 2SE > 0 = ASLI PASS. Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
