@@ -1322,4 +1322,8 @@ time_tradingday UTC sahi (ASX garmi bhi), repaint nahi, PASS / IMTIHAN lock qaid
 **QDM M1 2012-2018 (1 Nov, user ne upload kiya, `data/qdm/M1` USA500IDXUSD / USATECHIDXUSD _M1_2012..2018):** wohi Dukascopy source - **2013-02-23..05-21 soorakh (89 din) QDM
 mein bhi** (asal data hi nahi), 2012 ~395 min/din (sirf cash ke qareeb), 2015-17 ~840 min/din (14 ghante), cash 09:30-16:00 zyada tar poora (363-390 / 390). = data/ftmo jaisa,
 ilaj nahi hua. Tasalli: #53 ka TV tokri (OANDA, alag source) 2012-aaj +108.9% vs Python +91.8% - alag data par bhi wahi nateeja. M1 2012-18 aage ki TALAASH ke kaam aayega.
+**Koshish #67 TALAASH (1 Nov, user TV SS, SP:SPX 1D, k2) = PASS (mazboot)** - IMTIHAN se PEHLE likha: DAX (1971 se) 394 tr 63% +0.464% vs drift +0.063%, +0.108R (-2SE +0.060), 34/48;
+FTSE (1988) 263 tr 65% +0.380%, +0.081R (+0.041), 22/31; CAC (1987) 260 tr 61% +0.352%, +0.065R (+0.023), 19/31; SX5E (1986) 272 tr 64% +0.386%, +0.083R (+0.033), 22/32;
+N225 (1971) 366 tr 55% +0.228%, +0.046R (-0.007), 30/48; XJO (1980) 328 tr 59% +0.255%, +0.063R (+0.017), 29/39; HSI (1986) 257 tr 58% +0.440%, +0.092R (+0.039), 24/32.
+**KUL 2140 tr, jeet 61%, khirki +0.355% vs drift +0.058% (6.1x), +0.077R, Exp - 2x(2.14 SE) +0.037, saal 180/261, index 7/7 musbat.** IMTIHAN aadha dekha (research agent).
 
