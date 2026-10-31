@@ -1,10 +1,13 @@
 //@version=6
 // ============================================================================
-//  JAS VIX  (build v2, Pine v6)  -  Koshish #65 (1 Nov 2026, user 'D')
+//  JAS VIX  (build v3, Pine v6)  -  Koshish #65 (1 Nov 2026, user 'D')
 //  v2: v1 ka hisaab CHART ki candles par tha (Daily = sirf 2003 se, 4H = 2022
 //  se; NDX ki tareekh VIX se na mili = 5 trade) - GHALAT. Ab baqi scripts ki
 //  tarah POORA hisaab har index ke APNE daily data mein (request.security ke
 //  andar), VIX usi ke andar (nested request) = chart / TF ka asar nahi.
+//  v3 (judge 1): VIX TAREEKH se jura (map: VIX ka din -> 3 din stretch), har
+//  index par 'date-miss' ginti dabbe mein; data / VIX kis saal se dikhe; data
+//  1990 se chhota ho to FAIL; IMTIHAN sirf TALAASH PASS par khul sakta hai.
 //
 //  "Darr ka paimana": Connors & Alvarez 2008, "Short Term Trading Strategies
 //  That Work" - VIX Stretches. Index par girawat-khareed ka khandaan (IBS
@@ -28,9 +31,9 @@
 //
 //  CHART: koi bhi DAILY chart (hisaab chart se azad).
 // ============================================================================
-indicator("JAS VIX v2 (#65)", shorttitle = "JAS VIX v2", overlay = true, max_bars_back = 300)
+indicator("JAS VIX v3 (#65)", shorttitle = "JAS VIX v3", overlay = true, max_bars_back = 300)
 
-BUILD = "v2"
+BUILD = "v3"
 TZ = "America/New_York"
 
 grI = "1 · Index + VIX (pehle se chune - badalna mana)"
@@ -57,8 +60,21 @@ k = 1.0 + vixPct / 100.0
 // ============================================================================
 //  ENGINE (har index ki APNI daily candles par, sirf BAND candle [1]; VIX usi index ki candles par jura)
 // ============================================================================
+f_ymd(int _t) => year(_t, "UTC") * 10000 + month(_t, "UTC") * 100 + dayofmonth(_t, "UTC")
+
+// VIX ke APNE din par: [us din ki tareekh, kya aaj tak vixDays din lagatar SMA10 se k guna upar]
+f_vs() =>
+    _sma = ta.sma(close, 10)
+    _u   = not na(_sma) and close >= k * _sma
+    _st  = vixDays == 1 ? _u : vixDays == 2 ? _u and _u[1] : _u and _u[1] and _u[2]
+    [time_tradingday, _st]
+
 f_vix() =>
-    [_vA, _vmA] = request.security(sV, "D", [close, ta.sma(close, 10)], barmerge.gaps_off, barmerge.lookahead_off)
+    [_vdA, _vsA] = request.security(sV, "D", f_vs(), barmerge.gaps_off, barmerge.lookahead_off)
+    var map<int, bool> _vm = map.new<int, bool>()
+    if not na(_vdA)
+        _vm.put(f_ymd(_vdA), _vsA)
+    _idA = time_tradingday
     _smA  = ta.sma(close, 200)
     _rsA  = ta.rsi(close, 2)
     _atA  = ta.atr(14)
@@ -72,12 +88,12 @@ f_vix() =>
     _at  = _atA[1]
     _t   = time[1]
     _yr  = year(time_close[1])
-    _s1  = not na(_vmA[1]) and _vA[1] >= k * _vmA[1]
-    _s2  = not na(_vmA[2]) and _vA[2] >= k * _vmA[2]
-    _s3  = not na(_vmA[3]) and _vA[3] >= k * _vmA[3]
-    _st  = vixDays == 1 ? _s1 : vixDays == 2 ? _s1 and _s2 : _s1 and _s2 and _s3
+    _key = na(_idA[1]) ? na : f_ymd(_idA[1])
+    _has = not na(_key) and _vm.contains(_key)
+    _st  = _has ? _vm.get(_key) : false
     var int   _fy  = na
     var int   _vfy = na
+    var int   _mm  = 0
     var bool  _in  = false
     var float _e   = na
     var float _r   = na
@@ -108,9 +124,11 @@ f_vix() =>
     if not na(_c)
         if na(_fy)
             _fy := _yr
-        if na(_vfy) and not na(_vA[1])
+        if na(_vfy) and _has
             _vfy := _yr
-        if not na(_cp) and _cp > 0 and not na(_vA[1])
+        if not na(_vfy) and not _has
+            _mm += 1
+        if not na(_cp) and _cp > 0 and _has
             if _yr < splitYr
                 _aN += 1
                 _aS += _c / _cp - 1
@@ -163,12 +181,12 @@ f_vix() =>
             _age := 0
     _yN = _yNT + (na(_cyT) ? 0 : 1)
     _yP = _yPT + (not na(_cyT) and _csT > 0 ? 1 : 0)
-    [_nT, _wT, _sT, _qT, _pT, _dT, _aN, _aS, _yN, _yP, _nI, _wI, _sI, _qI, _pI, _dI, _aNI, _aSI, _fy, _vfy]
+    [_nT, _wT, _sT, _qT, _pT, _dT, _aN, _aS, _yN, _yP, _nI, _wI, _sI, _qI, _pI, _dI, _aNI, _aSI, _fy, _vfy, _mm]
 
 f_req(_s) => request.security(_s, "D", f_vix(), barmerge.gaps_off, barmerge.lookahead_off)
 
-[nT0, wT0, sT0, qT0, pT0, dT0, aN0, aS0, yN0, yP0, nI0, wI0, sI0, qI0, pI0, dI0, aNI0, aSI0, fy0, vf0] = f_req(s0)
-[nT1, wT1, sT1, qT1, pT1, dT1, aN1, aS1, yN1, yP1, nI1, wI1, sI1, qI1, pI1, dI1, aNI1, aSI1, fy1, vf1] = f_req(s1)
+[nT0, wT0, sT0, qT0, pT0, dT0, aN0, aS0, yN0, yP0, nI0, wI0, sI0, qI0, pI0, dI0, aNI0, aSI0, fy0, vf0, mm0] = f_req(s0)
+[nT1, wT1, sT1, qT1, pT1, dT1, aN1, aS1, yN1, yP1, nI1, wI1, sI1, qI1, pI1, dI1, aNI1, aSI1, fy1, vf1, mm1] = f_req(s1)
 
 // ============================================================================
 //  TABLE (safaid)
@@ -217,8 +235,8 @@ if barstate.islast
     f_cell(5, 1, "Har trade (R)", cHd)
     f_cell(6, 1, "Exp - 2SE", cHd)
     f_cell(7, 1, "Saal + / kul", cHd)
-    f_row(2, "S&P 500  (VIX ke saath " + str.tostring(vf0) + " se)", nT0, wT0, sT0, qT0, nT0 > 0 ? pT0 / nT0 : 0.0, nT0 > 0 ? dr0 / nT0 : 0.0, str.tostring(yP0) + " / " + str.tostring(yN0))
-    f_row(3, "Nasdaq 100  (VIX ke saath " + str.tostring(vf1) + " se)", nT1, wT1, sT1, qT1, nT1 > 0 ? pT1 / nT1 : 0.0, nT1 > 0 ? dr1 / nT1 : 0.0, str.tostring(yP1) + " / " + str.tostring(yN1))
+    f_row(2, "S&P 500  (data " + str.tostring(fy0) + ", VIX " + str.tostring(vf0) + " se, date-miss " + str.tostring(mm0) + ")", nT0, wT0, sT0, qT0, nT0 > 0 ? pT0 / nT0 : 0.0, nT0 > 0 ? dr0 / nT0 : 0.0, str.tostring(yP0) + " / " + str.tostring(yN0))
+    f_row(3, "Nasdaq 100  (data " + str.tostring(fy1) + ", VIX " + str.tostring(vf1) + " se, date-miss " + str.tostring(mm1) + ")", nT1, wT1, sT1, qT1, nT1 > 0 ? pT1 / nT1 : 0.0, nT1 > 0 ? dr1 / nT1 : 0.0, str.tostring(yP1) + " / " + str.tostring(yN1))
     nK = nT0 + nT1
     sK = sT0 + sT1
     qK = qT0 + qT1
@@ -229,9 +247,10 @@ if barstate.islast
     seK = f_se(nK, sK, qK)
     cells = yN0 + yN1
     okT = nK >= 100 and eK - 2 * seK > 0 and f_exp(nT0, sT0) > 0 and f_exp(nT1, sT1) > 0 and cells > 0 and (yP0 + yP1) * 2 > cells and ipK >= 2 * drK
-    f_cell(0, 5, okT ? "TALAASH PASS  -> IMTIHAN khol sakte hain" : "TALAASH FAIL  -> IMTIHAN band", okT ? cUp : cDn)
+    okData = not na(vf0) and not na(vf1) and vf0 <= 1990 and vf1 <= 1990
+    f_cell(0, 5, not okData ? "DATA CHHOTA (VIX " + str.tostring(vf0) + " / " + str.tostring(vf1) + " se) - qaide wala sample nahi = FAIL" : okT ? "TALAASH PASS  -> IMTIHAN khol sakte hain" : "TALAASH FAIL  -> IMTIHAN band", okData and okT ? cUp : cDn)
     table.merge_cells(tb, 0, 5, 7, 5)
-    if showIm
+    if showIm and okT and okData
         f_cell(0, 6, "IMTIHAN (" + str.tostring(splitYr) + " - aaj)", cHd)
         table.merge_cells(tb, 0, 6, 7, 6)
         di0 = f_dr(aSI0, aNI0, dI0)

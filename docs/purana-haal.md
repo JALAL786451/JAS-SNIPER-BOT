@@ -1212,6 +1212,9 @@ tareeqe se (#58: do alag chart par bilkul same number = saboot); #53 Python (Duk
 **DATA KI KAMZORI (1 Nov, judge 2 ne pakri, Claude ne jaancha):** `data/ftmo` US500 + USTEC: 2012 ~9 H1/din, **2013-02-23..05-21 khali (89 din)**, 2015-17 ~15 H1/din
 (ghante gayab), **2018+ poora (23/din)**. XAU / XAG 2003+ poore. Matlab: #53 ka IMTIHAN 2019+ (83 / 0) SAAF data par; index wale TALAASH / CHUNAO 2012-18 (#34 index hissa,
 #49 / #53 risk chunao, #56, #60) kamzor data par. Ilaj: QDM se USA500IDXUSD + USATECHIDXUSD 2012-2018 dobara (M1 -> H1) aur jaanch.
+**Judge 1 (TV, 1 Nov):** v2 mein VIX-index TAREEKH jaanch nahi thi (NDX khatra, gaps_off par VIX dohraya ja sakta) = BUG; data kitne saal se - dikhana zaroori; IMTIHAN lock code
+mein nahi. chutti / tom / ibs_mandi = CLEAN (repaint nahi). **v3:** VIX ke apne din par 3 din stretch -> map (VIX tareekh -> stretch), index ka din `time_tradingday`
+(UTC) se dhoonda; dabbe mein "data / VIX kis saal se, date-miss"; VIX 1990 se kam = FAIL; IMTIHAN sirf TALAASH PASS par. Qaida (#65) bilkul wahi.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
