@@ -82,3 +82,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | nayi chat (reset) | Hafte ki limit Itwar ko reset - us se pehle nayi chat ka faida nahi, isi chat mein kaam (user 31 Oct). | 31 Oct |
 | strategy badlo | "2-3 strategies par atak gaye" - naye raaste dhoondo (asli kharcha, chhoti TF, naye khandaan), purane par na atko (user 31 Oct). | 31 Oct |
 | ek link | Download / copy ke liye SIRF EK link do (branch wala). "Purani copy dikhe to ye" wala doosra link NAHI - user confuse hota hai (1 Nov). |
+| bank | Pass shuda magar FTMO mein madadgar nahi = EA NAHI banao, `docs/bank.md` mein rakho; jab jor / trade barhane / FTMO pass / real account ki baat ho, user ko KHUD yaad dilao (user 1 Nov: "bohot zaroori"). | 1 Nov |

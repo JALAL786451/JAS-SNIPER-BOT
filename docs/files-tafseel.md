@@ -45,6 +45,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL | `--tf D1` = #48 FAIL.
 | `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
+| `docs/bank.md` | BANK (1 Nov): pass shuda / qareeb strategies jo abhi istemal nahi (#59 chutti, JPN 4H) + kab yaad dilana |
 | `indicators/jas_chutti.pine` | h1 (1 Nov) #59: NYSE chutti se pehle wala din (calendar 1971+), SPX + NDX daily, TV table; IMTIHAN chhupa |
 | `indicators/jas_ibs_mandi.pine` | m1 (1 Nov) #58: IBS jab close < SMA200 (mandi), SPX + NDX daily, TV table; IMTIHAN 2019+ chhupa (input) |
 | `tools/teacher57.py` | #57 (1 Nov): teacher tareeqa 4H trend 24 naye market - 0 SELECT (JPN qareeb) |
