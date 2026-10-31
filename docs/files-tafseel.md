@@ -15,7 +15,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `strategies/jas_trend_pro_test_s3.pine` | Koshish #26 s3 (28 Oct): s2 jyon ka tyon, kharcha 0.03%/taraf, 6 market 1D tokri, dabbe mein "Jor R / Jor R2" (Claude jorta hai) |
 | `strategies/jas_trend_tokri.pine` | Koshish #26 jor k1 (28 Oct): INDICATOR, 6 market ek dabba (har market request.security ke andar s3 jaisi simulation), kul Exp / SE / saal / PASS; gold line s3 se milni chahiye |
 | `JasTrendEA.mq5` **t3** (29 Oct, F7 ✅, Tester ✅ 268 tr +21R, Python se 11/16 mili) | InpTfH 4 = 4H candle (H1 se, NY 17:00 se jura) = #34 4H tokri ASLI PASS; hifazati SL 6xATR(4H); magic 20261029; InpTfH 24 = purana daily (#27: SL 4). F7 baqi |
-| `JasTrendEA.mq5` | t4 (31 Oct): #49 FTMO default (4H, SL 6, 0.75%, lot 20, pehra 100k, trade true). | t2 (28 Oct; t2 = pehra Journal mein + market closed par intezar): #26/#27 ka FTMO EA - Supertrend 10/3 daily (H1 se 17:00 NY, i3 jaisa), sirf BUY, SL 4xATR, 1%, XAU/XAG/US500/USTEC (FTMO: US500.cash,US100.cash), FTMO pehra (target lock, din 4%, kul 8%, GlobalVariable), magic 20261028 |
+| `JasTrendEA.mq5` | **t5** (1 Nov, judge 3 ke baad): faisla band 4H candle par, US500/USTEC 16:15 NY kat (M15), SL entry se, $100k base, restart theek, pehra poore account (din 4% + target, kul band) - judge ki dobara jaanch baqi |
 | `tools/ftmo_test.py` | FTMO test f1 (28 Oct, Koshish #27): asli H1 data (`data/ftmo/`) par har mahine naya FTMO 2-step challenge, JasTrend (#26 sirf BUY, daily 17:00 NY), din 5% khuli trade shamil (CET), `--imtihan`. Nateeja: 1%/4xATR, 2019+ 80 pass / 0 fail, ~32 mahine. `--ibs` (#28, IBS 4 market TALAASH FAIL), `--kachhua` (#29 FAIL), `--jor` (JasTrend + EA2 FTMO jor) |
 | `tools/gold_raat_test.py` | Koshish #30 (28 Oct): gold H1 raat BUY 19->08 NY / din SELL 08->16, SL 1xATR14 daily, kharcha max($0.50, 0.03%) R mein, `--imtihan`. TALAASH FAIL (bina kharcha bhi edge 0) |
 | `tools/gold_h4_pullback.py` | Koshish #31 (28 Oct): gold H4 (NY 17:00 se) RSI(2) pullback daily Supertrend rukh ke saath, SL 2xATR14 H4, kharcha + swap R mein, `--imtihan`. TALAASH FAIL (bina kharcha bhi -0.016R) |
@@ -73,7 +73,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `indicators/jas_aaina.pine` | JAS AAINA a18 (21 Oct): a15 (AGLI record + P/L spread ke baad) + chart khaali (saaya, labels, LGB, S/R, qareebi, ABHI, Record default BAND). a16 khichdi hata di. Test: `strategies/jas_aaina_test.pine` t2 = FAIL |
 | `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
 | `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
-| `JasIbsEA.mq5` | i5 (31 Oct): #53 FTMO default (US500,USTEC, 1%, lot 20, trade true); i4 #49 (US500 2%). | IBS sirf US500 (koshish #15 ASLI PASS), magic 20261022 - demo se pehle i3 (`TRADING.md`) |
+| `JasIbsEA.mq5` | **i6** (1 Nov, judge 3 ke baad): faisla 16:15 NY (din ki candle 16:15 par kati, M15), restart theek, $100k base, pehra poore account - judge ki dobara jaanch baqi |
 
 **Live / kitab ke aalay:**
 | File | Kya |

@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD i5   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD i6   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                     JasIbsEA.mq5 |
@@ -33,9 +33,9 @@
 //|  din-ba-din milane ke liye. Trading ke qaide i1 wale hi.         |
 //|  i3 (27 Oct): daily candle ab EA khud H1 se banata hai, 17:00     |
 //|  New York par band (TV / OANDA jaisi; US DST khud, JasImomEA se). |
-//|  Faisla 17:00 NY se InpPreMin (5) minute pehle - Jumma ko bhi     |
-//|  (Itwar raat ka weekend gap khatam). Chhutti / tick na aaye to    |
-//|  bazaar khulne par mukammal candle se (i2 jaisa). Qaide wahi.     |
+//|  i6: faisla 16:15 NY par (Python ka din ka close, candle 16:15 par |
+//|  kati) - Jumma bhi. Chhutti / tick na aaye to bazaar khulne par   |
+//|  mukammal candle se (i2 jaisa). Pehra poore account par.          |
 //|                                                                  |
 //|  NO grid / NO martingale / NO averaging. Har market ek position. |
 //+------------------------------------------------------------------+
@@ -43,7 +43,14 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "i5"          // har nayi file par ye number barhta hai
+#define EA_BUILD "i6"          // har nayi file par ye number barhta hai
+#define EA_NAME  "JAS IBS"
+// i6 (1 Nov 2026, judge 3 = Python se farq theek): (1) din ki candle 16:15 NY par kati (Python ka
+//     Dukascopy data 16:15-18:00 NY khali) - candle M15 se; faisla 16:15 NY par (16:55 nahi);
+//     (2) restart: nayi trade usi din band nahi hoti (age >= 1), 15 min ke andar late entry;
+//     (3) lot pakke InpStartBal ($100k) par; (4) comment gum ho to din ki ginti theek;
+//     (5) PEHRA POORE account par (JasTrendEA t5 wala code, ek GlobalVariable): din 4% + target,
+//     kul hadd band (user 1 Nov: "1").
 // i5 (31 Oct 2026): FTMO #53 ASLI PASS - IBS ab US500 AUR USTEC, risk 1% (har trade). 2019+ FTMO 83 pass / 0 fail.
 // i4 (31 Oct 2026): FTMO #49 ASLI PASS ki setting DEFAULT - US500, risk 2%, lot hadd 20, TRADE true.
 //     Sirf FTMO demo 474832446 ke liye (JasTrendEA t4 ke saath).
@@ -79,7 +86,15 @@ input int    InpSlippage   = 50;       // Max slippage (points)
 input int    InpMagic      = 20261022; // Magic number
 input datetime InpStatFrom = D'2019.01.01'; // Tester: hisaab is tareekh se khuli trades ka
 input int    InpServerGMT  = 0;        // Broker server ka GMT farq (Exness = 0)
-input int    InpPreMin     = 5;        // 17:00 NY se kitne minute pehle faisla
+input string InpCutSyms    = "US500,USTEC"; // In ki din ki candle InpCutMinNY par kati (Python Dukascopy jaisa)
+input int    InpCutMinNY   = 975;      // Faisla + kat ka waqt NY minute (975 = 16:15); 16:15-17:00 ka data nahi
+
+input group "=== 4 - FTMO pehra (POORE account par, JasTrendEA t5 jaisa) ==="
+input double InpStartBal   = 100000.0; // Challenge ka shuru balance (FTMO 100000) - lot isi par (Python). 0 = pehra band, lot = balance
+input double InpTargetPct  = 10.0;     // Target % (Phase 1 = 10, Phase 2 = 5) - SAB band, dono EA ruk jayein
+input double InpDayStopPct = 4.0;      // Din ka nuksan % (FTMO 5) - SAB band (dono EA), us din nayi nahi
+input double InpMaxDdPct   = 0.0;      // Kul nuksan % par hamesha band - 0 = BAND (user 1 Nov: "1"; FTMO 10)
+input string InpGuardMagics = "20261029,20261022"; // Pehra in magic ki trades band kare (Trend + IBS)
 
 //--------------------------- HAAL (har market ka alag) ---------------
 int      g_n = 0;
@@ -106,6 +121,18 @@ double   g_totR    = 0.0;
 string   g_statsTxt = "EA ki band trades: 0";
 bool     g_statsDirty = true;
 datetime g_lastStats = 0;
+// i6: FTMO pehra (poora account)
+string   g_pg = "";
+long     g_gm[8];
+int      g_gmN = 0;
+datetime g_pehraT = 0;
+int      g_dayId = 0;
+double   g_dayBal = 0.0;
+bool     g_dayStop = false;
+int      g_stop = 0;
+string   g_guardTxt = "";
+int      g_euY = 0;
+datetime g_euA = 0, g_euB = 0;
 
 struct TPos
   {
@@ -183,6 +210,39 @@ datetime NyToServer(datetime ny)
    return(AddSec(utc, (long)InpServerGMT * 3600));
   }
 
+//+------------------------------------------------------------------+
+//|  CET / CEST (FTMO ka din) - JasTrendEA se                         |
+//+------------------------------------------------------------------+
+datetime LastSunday(int year, int mon)
+  {
+   MqlDateTime s;
+   ZeroMemory(s);
+   s.year = year;
+   s.mon  = mon + 1;
+   if(mon == 12) { s.year = year + 1; s.mon = 1; }
+   s.day  = 1;
+   datetime d = AddSec(StructToTime(s), -86400);    // mahine ka aakhri din
+   MqlDateTime w;
+   TimeToStruct(d, w);
+   return(AddSec(d, -(long)w.day_of_week * 86400));
+  }
+
+int CetDay(datetime srv)
+  {
+   datetime utc = AddSec(srv, -(long)InpServerGMT * 3600);
+   MqlDateTime s;
+   TimeToStruct(utc, s);
+   if(s.year != g_euY)
+     {
+      g_euY = s.year;
+      g_euA = AddSec(LastSunday(s.year, 3), 3600);
+      g_euB = AddSec(LastSunday(s.year, 10), 3600);
+     }
+   long off = 3600;
+   if(utc >= g_euA && utc < g_euB) off = 7200;
+   return(YMD(AddSec(utc, off)));
+  }
+
 // NY waqt -> session ka din (00:00). 17:00 NY ke baad = agla din (TV / OANDA daily candle)
 datetime SessDay(datetime ny)
   {
@@ -235,6 +295,7 @@ double LotFor(int dir, double price, double slv, double &riskPct)
    if(!OrderCalcProfit(ot, S, 1.0, price, slv, loss)) return(0.0);
    loss = MathAbs(loss);
    double base = Base();
+   if(InpStartBal > 0.0) base = InpStartBal;     // i6: Python jaisa pakka $100k (balance nahi)
    if(loss <= 0.0 || base <= 0.0) return(0.0);
    double step = SymbolInfoDouble(S, SYMBOL_VOLUME_STEP);
    double mn   = SymbolInfoDouble(S, SYMBOL_VOLUME_MIN);
@@ -369,23 +430,46 @@ bool ClosePos(ulong tk, string why)
 //|  din mein (24/7 symbol BTC/ETH par nahi). withNow = chalti session|
 //|  bhi (close = abhi ki qeemat); false = sirf mukammal sessions.    |
 //+------------------------------------------------------------------+
+// i6: InpCutSyms wala market? (base naam, suffix ke bagair)
+bool IsCutSym()
+  {
+   string p[];
+   int n = StringSplit(InpCutSyms, StringGetCharacter(",", 0), p);
+   for(int k = 0; k < n; k++)
+     {
+      string b = p[k];
+      StringTrimLeft(b);
+      StringTrimRight(b);
+      if(StringLen(b) > 0 && b == g_base[g_i]) return(true);
+     }
+   return(false);
+  }
+
 int LoadBars(datetime &T[], double &H[], double &L[], double &C[], bool withNow)
   {
    MqlRates rt[];
-   int got = CopyRates(S, PERIOD_H1, 0, InpBars * 24 + 48, rt);
+   // i6: M15 se (16:15 NY ka kat H1 mein nahi ho sakta)
+   int got = CopyRates(S, PERIOD_M15, 0, MathMin(InpBars * 96 + 192, 99000), rt);
    if(got <= 0) return(0);
    ArrayResize(T, got);
    ArrayResize(H, got);
    ArrayResize(L, got);
    ArrayResize(C, got);
    bool nonstop = Is247();
+   bool cut = IsCutSym();
    datetime nowDay = SessDay(ServerToNy(TimeCurrent()));
    int  m = 0;
    bool pend = false;
    double pH = 0.0, pL = 0.0;
    for(int k = 0; k < got; k++)
      {
-      datetime d = SessDay(ServerToNy(rt[k].time));
+      datetime nyk = ServerToNy(rt[k].time);
+      if(cut)
+        {
+         long mn = ((long)nyk % 86400) / 60;
+         if(mn >= InpCutMinNY && mn < 17 * 60) continue;   // Python data mein ye waqt nahi
+        }
+      datetime d = SessDay(nyk);
       MqlDateTime st;
       TimeToStruct(d, st);
       bool wkend = (!nonstop) && (st.day_of_week == 0 || st.day_of_week == 6);
@@ -480,7 +564,7 @@ int AgeBars(const datetime &T[], int k, int day, datetime t0)
      {
       bool after = false;
       if(day > 0) after = (YMD(T[j]) > day);
-      else        after = (AddSec(T[j], 86400) > t0);
+      else        after = (SessStart(T[j]) > AddSec(t0, -2 * 3600));   // i6: session t0 ke baad shuru hui
       if(!after) break;
       a++;
      }
@@ -548,6 +632,13 @@ int SymIdx(string sym)
 bool Decide(int i, bool canTrade, bool withNow)
   {
    Use(i);
+   // i6: pehle market (bazaar band = candles parhne ki zaroorat nahi, minute baad dobara)
+   if(!MarketLive()) return(false);
+   // der wala faisla (agli session): tick nayi session ka ho (rozana break se pehle wala nahi)
+   datetime nowNy = ServerToNy(TimeCurrent());
+   MqlTick ft;
+   if(!SymbolInfoTick(S, ft)) return(false);
+   if(!withNow && (datetime)ft.time < SessStart(SessDay(nowNy))) return(false);
    datetime T[];
    double   H[], L[], C[];
    int m = LoadBars(T, H, L, C, withNow);
@@ -567,7 +658,6 @@ bool Decide(int i, bool canTrade, bool withNow)
    g_smaT[i] = SmaAt(C, k, InpTrendLen);
    if(T[k] == g_doneT[i]) return(true);             // ye candle pehle dekh li
    if(g_atr[i] <= 0.0 || g_smaT[i] <= 0.0) return(false);
-   if(!MarketLive()) return(false);                // market khulne par
 
    ulong    tk = 0;
    int      dir = 0, pday = 0;
@@ -582,7 +672,7 @@ bool Decide(int i, bool canTrade, bool withNow)
       g_age[i] = AgeBars(T, k, pday, t0);
       bool hiIbs = (g_ibs[i] > InpIbsHi);
       bool old   = (g_age[i] >= InpMaxDays);
-      if(hiIbs || old)
+      if(g_age[i] >= 1 && (hiIbs || old))            // i6: signal din khud band nahi karta (restart)
         {
          string why = Pick(hiIbs, StringFormat("IBS %.2f > %.2f", g_ibs[i], InpIbsHi),
                            StringFormat("%d din", g_age[i]));
@@ -595,9 +685,16 @@ bool Decide(int i, bool canTrade, bool withNow)
          has = HasPos();
         }
      }
+   // i6: EA lagne ke baad pehla faisla - kat ke 15 min ke andar (16:15-16:30 NY) ho to entry, warna der se nahi
+   bool skipInit = false;
    if(g_initBar[i])
      {
       g_initBar[i] = false;
+      long mnow = ((long)nowNy % 86400) / 60;
+      skipInit = !(withNow && mnow <= InpCutMinNY + 15);
+     }
+   if(skipInit)
+     {
       if(!has) Note(StringFormat("EA laga: %s ki candle par nayi trade nahi (der se entry nahi) - agli band candle se", TimeToString(T[k], TIME_DATE)));
      }
    else if(!has && !closedNow)
@@ -606,7 +703,9 @@ bool Decide(int i, bool canTrade, bool withNow)
         {
          int day = YMD(T[k]);
          datetime since = SessStart(T[k]);            // Monday: Sunday raat wala hissa bhi isi candle ka
-         if(SlHitSince(since))
+         if(g_stop > 0 || g_dayStop)
+            Note(StringFormat("BUY signal %s magar FTMO pehra laga hai - nayi nahi", TimeToString(T[k], TIME_DATE)));
+         else if(SlHitSince(since))
             Note(StringFormat("BUY signal %s magar is candle par SL laga tha - Pine jaisa nayi nahi", TimeToString(T[k], TIME_DATE)));
          else if(!SigUsed(day))
             if(!TryOpen(g_c[i], g_atr[i], day, canTrade)) return(false);
@@ -614,6 +713,139 @@ bool Decide(int i, bool canTrade, bool withNow)
      }
    g_doneT[i] = T[k];
    return(true);
+  }
+
+//+------------------------------------------------------------------+
+//|  FTMO PEHRA - POORE account par (JasTrendEA t5 + JasIbsEA i6 ek   |
+//|  jaisa code, ek hi GlobalVariable "JASPH_<login>_"): target ya    |
+//|  din ki hadd = InpGuardMagics wali SAB trades band (dono EA ki),  |
+//|  aur dono EA nayi nahi kholte. Kul hadd sirf InpMaxDdPct > 0 par.  |
+//+------------------------------------------------------------------+
+bool GuardMagic(long mg)
+  {
+   for(int k = 0; k < g_gmN; k++) if(g_gm[k] == mg) return(true);
+   return(false);
+  }
+
+void PehraCloseAll(string why, bool canTrade)
+  {
+   if(!canTrade) return;
+   for(int k = PositionsTotal() - 1; k >= 0; k--)
+     {
+      ulong t = PositionGetTicket(k);
+      if(t == 0) continue;
+      if(!GuardMagic(PositionGetInteger(POSITION_MAGIC))) continue;
+      string sym = PositionGetString(POSITION_SYMBOL);
+      trade.SetTypeFillingBySymbol(sym);
+      if(trade.PositionClose(t))
+         PrintFormat("%s %s | PEHRA (%s): %s band @ %s", EA_NAME, EA_BUILD, why, sym,
+                     DoubleToString(trade.ResultPrice(), (int)SymbolInfoInteger(sym, SYMBOL_DIGITS)));
+      else
+         PrintFormat("%s %s | PEHRA (%s): %s band nahi hui: %d %s", EA_NAME, EA_BUILD, why, sym,
+                     trade.ResultRetcode(), trade.ResultRetcodeDescription());
+     }
+   g_statsDirty = true;
+  }
+
+void Guard(bool canTrade)
+  {
+   if(InpStartBal <= 0.0)
+     {
+      g_guardTxt = "FTMO pehra: band (shuru balance 0)";
+      return;
+     }
+   double eq  = AccountInfoDouble(ACCOUNT_EQUITY);
+   double bal = AccountInfoDouble(ACCOUNT_BALANCE);
+   int    day = CetDay(TimeCurrent());
+   double gv  = 0.0;
+   if(day != g_dayId)
+     {
+      // naya CET din: aadhi raat ka balance (doosra EA / restart pehle likh chuka ho to wahi)
+      double gd = 0.0, gb = 0.0;
+      if(GlobalVariableGet(g_pg + "D", gd) && (int)gd == day && GlobalVariableGet(g_pg + "B", gb))
+         g_dayBal = gb;
+      else
+        {
+         g_dayBal = bal;
+         GlobalVariableSet(g_pg + "D", day);
+         GlobalVariableSet(g_pg + "B", bal);
+         GlobalVariablesFlush();
+        }
+      g_dayId = day;
+     }
+   // doosre EA ne pehra lagaya ho to yahan bhi (din ki hadd aaj ke din tak, stop hamesha)
+   g_dayStop = (GlobalVariableGet(g_pg + "X", gv) && (int)gv == g_dayId);
+   if(GlobalVariableGet(g_pg + "S", gv) && (int)gv > g_stop) g_stop = (int)gv;
+   double dayFloor = g_dayBal - InpDayStopPct / 100.0 * InpStartBal;
+   double target   = InpStartBal * (1.0 + InpTargetPct / 100.0);
+   double ddFloor  = 0.0;
+   if(InpMaxDdPct > 0.0) ddFloor = InpStartBal * (1.0 - InpMaxDdPct / 100.0);
+   if(g_stop == 0 && eq >= target)
+     {
+      g_stop = 1;
+      GlobalVariableSet(g_pg + "S", 1);
+      GlobalVariablesFlush();
+      PrintFormat("%s %s | TARGET POORA: equity %.2f >= %.2f - SAB band, dono EA ruk gaye", EA_NAME, EA_BUILD, eq, target);
+     }
+   if(g_stop == 0 && InpMaxDdPct > 0.0 && eq <= ddFloor)
+     {
+      g_stop = 2;
+      GlobalVariableSet(g_pg + "S", 2);
+      GlobalVariablesFlush();
+      PrintFormat("%s %s | KUL HADD: equity %.2f <= %.2f - SAB band, dono EA ruk gaye", EA_NAME, EA_BUILD, eq, ddFloor);
+     }
+   if(!g_dayStop && g_stop == 0 && eq <= dayFloor)
+     {
+      g_dayStop = true;
+      GlobalVariableSet(g_pg + "X", g_dayId);
+      GlobalVariablesFlush();
+      PrintFormat("%s %s | DIN KI HADD: equity %.2f <= %.2f - SAB band, aaj (CET %d) nayi nahi", EA_NAME, EA_BUILD, eq, dayFloor, g_dayId);
+     }
+   if((g_stop > 0 || g_dayStop) && TimeCurrent() - g_pehraT >= 30)
+     {
+      g_pehraT = TimeCurrent();
+      PehraCloseAll(Pick(g_stop == 1, "target", Pick(g_stop == 2, "kul hadd", "din ki hadd")), canTrade);
+     }
+   string st = "chalu";
+   if(g_stop == 1)  st = "TARGET POORA - dono EA ruke (FTMO ke 4 din khud check karein)";
+   if(g_stop == 2)  st = "KUL HADD - dono EA ruke";
+   if(g_stop == 0 && g_dayStop) st = "DIN KI HADD - aaj nayi nahi (dono EA)";
+   string kul = "kul hadd band";
+   if(InpMaxDdPct > 0.0) kul = StringFormat("kul farsh %.0f", ddFloor);
+   g_guardTxt = StringFormat("FTMO pehra (poora account): %s | target %.0f | din ka farsh %.0f (CET %d ka balance %.0f) | %s",
+                             st, target, dayFloor, g_dayId, g_dayBal, kul);
+  }
+
+// OnInit: pehra ki magic list + GlobalVariable ka naam + pichhla stop
+void PehraInit()
+  {
+   string mp[];
+   int mc = StringSplit(InpGuardMagics, StringGetCharacter(",", 0), mp);
+   g_gmN = 0;
+   for(int k = 0; k < mc && g_gmN < 8; k++)
+     {
+      string b = mp[k];
+      StringTrimLeft(b);
+      StringTrimRight(b);
+      if(StringLen(b) == 0) continue;
+      g_gm[g_gmN] = StringToInteger(b);
+      g_gmN++;
+     }
+   if(!GuardMagic(InpMagic) && g_gmN < 8) { g_gm[g_gmN] = InpMagic; g_gmN++; }
+   g_pg = StringFormat("JASPH_%I64d_", AccountInfoInteger(ACCOUNT_LOGIN));
+   g_stop = 0;
+   double gs = 0.0;
+   if(InpStartBal > 0.0 && GlobalVariableGet(g_pg + "S", gs)) g_stop = (int)gs;
+   g_dayId   = 0;
+   g_dayStop = false;
+   g_pehraT  = 0;
+   if(InpStartBal > 0.0)
+      PrintFormat("%s %s | FTMO pehra CHALU (poora account, magic %s): shuru %.0f | target %.1f%% = %.0f | din %.1f%% | kul %s",
+                  EA_NAME, EA_BUILD, InpGuardMagics, InpStartBal, InpTargetPct, InpStartBal * (1.0 + InpTargetPct / 100.0), InpDayStopPct,
+                  Pick(InpMaxDdPct > 0.0, StringFormat("%.1f%% = %.0f", InpMaxDdPct, InpStartBal * (1.0 - InpMaxDdPct / 100.0)), "band"));
+   else PrintFormat("%s %s | FTMO pehra BAND (shuru balance %.0f)", EA_NAME, EA_BUILD, InpStartBal);
+   if(g_stop > 0) PrintFormat("%s %s | FTMO pehra pehle se ruka hai (%d). Naye challenge / naye account par GlobalVariable %sS mitayein (F3).",
+                              EA_NAME, EA_BUILD, g_stop, g_pg);
   }
 
 //+------------------------------------------------------------------+
@@ -808,8 +1040,10 @@ void Panel(bool canTrade)
    if(MQLInfoInteger(MQL_TESTER) != 0) mode = "TESTER";
    double base = Base();
    string s = "=== JAS IBS  " + EA_BUILD + "  ===  " + mode + "\n";
-   s += StringFormat("Risk %.2f%% = %.2f har market | lot hadd %.2f | suffix '%s' | %d market | magic %d\n",
-                     InpRiskPct, base * InpRiskPct / 100.0, InpMaxLot, g_suffix, g_n, InpMagic);
+   if(InpStartBal > 0.0) base = InpStartBal;
+   s += StringFormat("Risk %.2f%% = %.2f har market | lot hadd %.2f | suffix '%s' | %d market | magic %d | faisla %02d:%02d NY\n",
+                     InpRiskPct, base * InpRiskPct / 100.0, InpMaxLot, g_suffix, g_n, InpMagic, InpCutMinNY / 60, InpCutMinNY % 60);
+   s += g_guardTxt + "\n";
    for(int i = 0; i < g_n; i++)
      {
       Use(i);
@@ -839,13 +1073,15 @@ void Pass()
    bool tester = (MQLInfoInteger(MQL_TESTER) != 0);
    bool canTrade = tester || (InpTrade && TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) != 0 &&
                               MQLInfoInteger(MQL_TRADE_ALLOWED) != 0);
+   Guard(canTrade);
    datetime ny     = ServerToNy(now);
    datetime nowDay = SessDay(ny);
    MqlDateTime nt, dt;
    TimeToStruct(ny, nt);
    TimeToStruct(nowDay, dt);
    int  mins   = nt.hour * 60 + nt.min;
-   bool preWin = (mins >= 17 * 60 - InpPreMin && mins < 17 * 60 && dt.day_of_week >= 1 && dt.day_of_week <= 5);
+   // i6: 16:15 NY (kat) se 17:00 tak: aaj ki candle mukammal (Python ka close) = faisla
+   bool cutWin = (mins >= InpCutMinNY && mins < 17 * 60 && dt.day_of_week >= 1 && dt.day_of_week <= 5);
    for(int i = 0; i < g_n; i++)
      {
       if(!g_have[i]) continue;
@@ -855,9 +1091,13 @@ void Pass()
       if(nowDay != g_lastD1[i])
         {
          if(Decide(i, canTrade, false)) g_lastD1[i] = nowDay;
+         else if(g_failT[i] < now) g_failT[i] = now;   // bazaar band / data: minute baad dobara
         }
-      // 17:00 NY se InpPreMin minute pehle: chalti candle par faisla (TV close jaisa, Jumma bhi)
-      if(preWin && g_doneT[i] != nowDay) Decide(i, canTrade, true);
+      // i6: 16:15 NY par aaj ki (kati hui) candle par faisla - Python ka din ka close (Jumma bhi)
+      if(cutWin && g_doneT[i] != nowDay)
+        {
+         if(!Decide(i, canTrade, true) && g_failT[i] < now) g_failT[i] = now;
+        }
      }
    if(tester && MQLInfoInteger(MQL_VISUAL_MODE) == 0) return;
 
@@ -918,9 +1158,14 @@ int OnInit()
       Print("ERROR: qawaid ke number ghalat hain.");
       return(INIT_PARAMETERS_INCORRECT);
      }
-   if(InpPreMin < 1 || InpPreMin > 50)
+   if(InpCutMinNY < 9 * 60 + 30 || InpCutMinNY >= 17 * 60)
      {
-      Print("ERROR: InpPreMin 1 se 50 ke darmiyan hona chahiye.");
+      Print("ERROR: InpCutMinNY 570 (09:30) se 1019 (16:59) ke darmiyan hona chahiye.");
+      return(INIT_PARAMETERS_INCORRECT);
+     }
+   if(InpStartBal < 0.0 || InpTargetPct <= 0.0 || InpDayStopPct <= 0.0 || InpMaxDdPct < 0.0)
+     {
+      Print("ERROR: FTMO pehra ke number ghalat hain.");
       return(INIT_PARAMETERS_INCORRECT);
      }
    if(InpRiskPct <= 0.0 || InpRiskPct > 3.0)
@@ -970,6 +1215,7 @@ int OnInit()
       g_barT[i]    = 0;
       g_label     += Pick(i == 0, "", "+") + g_sym[i];
      }
+   PehraInit();
    trade.SetExpertMagicNumber(InpMagic);
    trade.SetDeviationInPoints(InpSlippage);
    trade.LogLevel(LOG_LEVEL_ERRORS);
