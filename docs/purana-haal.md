@@ -1303,4 +1303,6 @@ par data jaanch; jis chart par teeno dhaaton ka sab se purana "se" saal ho (bara
 ~1 tr/mahina. 4) Month-end pension rebalancing (Harvey/Mazzoleni/Melone 2025) 2019+ ghis gaya. 5) Crypto trend (Zarattini/Pagani/Barbon 2025) drift 1.4x < 2x.
 Rad: pre-FOMC (2015 ke baad khatam), FOMC even weeks, opex, commodity reversal, FX fix. Add-on: IBS US30 drift 5.4x (<2019) / 2.2x (2019+) magar US500 IBS ke din hi.
 Sabaq: research agent ko aainda saaf hidayat - 2019+ data NA dekhe (sirf TALAASH < 2019).
+**#66 DATA JAANCH (1 Nov, user TV SS, nateeja chhupa):** 1D chart: XPT / XPD / XCU 2007 se (~1505-1529 candle/saal), galat waqt 0. **1W chart: XPT 2005, XPD 2005, XCU 2003 se**
+(~1419-1515/saal), galat waqt 0 (4H candles 17/21/1/5/9/13 NY). **Qaide se CHUNA (nateeja se PEHLE): OANDA:XAUUSD 1W chart.**
 
