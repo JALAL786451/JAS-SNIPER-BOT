@@ -192,3 +192,4 @@ pehle chahta hai (option banana baqi).
 
 Chat ke aakhir ka qaida `TRADING.md` sec 9 mein. Yahan sirf PAKKI baatein (kam badalti hain);
 naya sabaq sec 4 mein EK line, poore number `docs/sabaq-tafseel.md` mein.
+- **Koshish na rokna (31 Oct, user):** Claude ne "bas, ab ruk jao" kaha; user ne mana kiya aur "teacher" misaal di (ek formula, sab ke liye ek sakht paper, behtareen chuno, phir naya paper) -> #52 USTEC IBS SELECT -> #53 FTMO 83/0 (#49 69/14 se behtar). Sabaq: haar ki ginti nahi, nateeja dekho.
