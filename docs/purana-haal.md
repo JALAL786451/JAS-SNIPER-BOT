@@ -1224,6 +1224,11 @@ mein nahi. chutti / tom / ibs_mandi = CLEAN (repaint nahi). **v3:** VIX ke apne 
 - **JasIbsEA i5:** (I1 HIGH) faisla 16:55 NY Exness data par, Python ka din ka close 16:14 NY (Dukascopy); 5 min pehle faisla = 119 mein 103 same, 1 min pehle = 110.
   (I2) 16:55-17:00 mein restart = nayi trade band. (I3) koi pehra nahi. (I4) lot current balance. (I5) restart pehla faisla. (I6) comment gum ho to din ginti 1 kam. (I7) aadha din.
 Ilaj: JasTrendEA t5 + JasIbsEA i6 (band candle par faisla, IBS cut-off 16:15 NY, restart, SL entry se, $100k base, GMT 0); pehra user se poochh kar.
+**User faisla (1 Nov): pehra "1"** = target + din 4% POORE account par (Trend + IBS), 92k wali hamesha-band hadd HATAO. **JasTrendEA t5 + JasIbsEA i6** bane (`ad25f7e` + judge ke 6 chhote ilaj).
+**Judge 3 dobara jaanch (replay, wohi data):** Trend US500 2021-26 Python 127 / EA 128, **same 127** (1 EA-only = Python data ke baad), XAU 2021-24 **77 / 77 same**, har trade ka farq 0.000R;
+IBS US500 2021-26 **118 / 118 same**, 0.0000R. (Pehle: trend 72/79 + 122/130, IBS 103/119.) Pehra: Python mein din ka -4% kabhi nahi chhua (2012-18 aur 2019+) = koi asar nahi;
+92k hadd 2012-18 mein 28, 2019+ mein 6 challenge chhooti = hatana Python ke qareeb. Baqi farq: Exness feed / session (DST 1 Nov ke baad Specification dobara), EA lagne se pehle
+ki khuli trade nahi, aadha din, lot 0.01 gol. FTMO Phase 2: dono EA mein InpTargetPct 5, GlobalVariable JASPH_<login>_S mitao + dono EA restart; FTMO par InpCutSyms = US500.cash,US100.cash.
 **Koshish #65 nateeja (1 Nov, user TV SS, v2, 4H aur D chart par BILKUL SAME number = chart se azad):** TALAASH 1990-2018 = **PASS (kamzor)**: SPX 180 tr, jeet 75%,
 +0.257% vs drift +0.082%, +0.069R, Exp-2SE +0.001; NDX 186 tr, 76%, +0.604% vs +0.166%, +0.096R, +0.028; KUL 366 tr, 75%, +0.433% vs +0.124%, +0.082R, Exp-2SE +0.035.
 **IMTIHAN 2019+ = FAIL -> idea band:** SPX 71 tr 68% +0.097% vs drift +0.147%, +0.030R (-0.073); NDX 69 tr 71% +0.218% vs +0.225%, +0.065R (-0.053);

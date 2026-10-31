@@ -478,7 +478,8 @@ bool IsCutSym()
 int LoadBars(datetime &T[], double &H[], double &L[], double &C[], bool withNow)
   {
    MqlRates rt[];
-   // t5: M15 se (16:15 NY ka kat H1 mein nahi ho sakta)
+   // t5: M15 se (16:15 NY ka kat H1 mein nahi ho sakta); history poori load na ho to abhi nahi
+   if(!SeriesInfoInteger(S, PERIOD_M15, SERIES_SYNCHRONIZED)) return(0);
    int got = CopyRates(S, PERIOD_M15, 0, MathMin(InpBars * 96 + 192, 99000), rt);
    if(got <= 0) return(0);
    ArrayResize(T, got);
@@ -673,7 +674,7 @@ bool Decide(int i, bool canTrade, bool withNow)
    datetime T[];
    double   H[], L[], C[];
    int m = LoadBars(T, H, L, C, withNow);
-   int need = InpAtrLen * 3 + 5;
+   int need = MathMax(InpAtrLen * 3 + 5, 150);     // t5: Supertrend ko pakka hone ke liye kam az kam 150 candle
    if(m < need)
      {
       g_state[i] = StringFormat("candles kam hain (%d, chahiye %d) - History load ho rahi hai", m, need);
@@ -713,11 +714,10 @@ bool Decide(int i, bool canTrade, bool withNow)
    bool skipInit = false;
    if(g_initBar[i])
      {
-      g_initBar[i] = false;
       MqlRates r1[];
-      datetime first = TimeCurrent();
-      if(CopyRates(S, PERIOD_M1, BarStart(curKey), TimeCurrent(), r1) > 0) first = r1[0].time;
-      skipInit = (TimeCurrent() - first > 900);
+      if(CopyRates(S, PERIOD_M1, BarStart(curKey), TimeCurrent(), r1) <= 0) return(false);   // M1 na mile = dobara
+      g_initBar[i] = false;
+      skipInit = (TimeCurrent() - r1[0].time > 900);
      }
    if(skipInit)
      {
@@ -1059,6 +1059,7 @@ void Panel(bool canTrade)
                       Pick(InpTrade, "TRADE BAND - Algo Trading hara karein", "SIRF DIKHANA (InpTrade false)"));
    if(MQLInfoInteger(MQL_TESTER) != 0) mode = "TESTER";
    double base = Base();
+   if(InpStartBal > 0.0) base = InpStartBal;      // t5: lot isi par banti hai
    string s = "=== JAS TREND  " + EA_BUILD + "  ===  " + mode + "\n";
    s += StringFormat("Candle %s | Risk %.2f%% = %.2f har market | SL %.1f x ATR | lot hadd %.2f | suffix '%s' | %d market | magic %d | GMT %+d\n",
                      Pick(InpTfH >= 24, "D1", "4H"), InpRiskPct, base * InpRiskPct / 100.0, InpSlMult, InpMaxLot, g_suffix, g_n, InpMagic, GmtOff());
@@ -1102,6 +1103,9 @@ void Pass()
       // t5: nayi candle shuru hui = pichhli BAND candle par faisla (Python jaisa), entry abhi (agli open)
       if(nowDay != g_lastD1[i])
         {
+         // is market ka taza tick abhi nayi candle ka nahi aaya = intezar (minute ki rok nahi lagao)
+         MqlTick nt;
+         if(!SymbolInfoTick(S, nt) || (datetime)nt.time < BarStart(nowDay)) continue;
          if(Decide(i, canTrade, false)) g_lastD1[i] = nowDay;
          else if(g_failT[i] < now) g_failT[i] = now;   // data / bazaar band: minute baad dobara (har tick nahi)
         }

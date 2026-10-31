@@ -448,7 +448,8 @@ bool IsCutSym()
 int LoadBars(datetime &T[], double &H[], double &L[], double &C[], bool withNow)
   {
    MqlRates rt[];
-   // i6: M15 se (16:15 NY ka kat H1 mein nahi ho sakta)
+   // i6: M15 se (16:15 NY ka kat H1 mein nahi ho sakta); history poori load na ho to abhi nahi
+   if(!SeriesInfoInteger(S, PERIOD_M15, SERIES_SYNCHRONIZED)) return(0);
    int got = CopyRates(S, PERIOD_M15, 0, MathMin(InpBars * 96 + 192, 99000), rt);
    if(got <= 0) return(0);
    ArrayResize(T, got);
@@ -689,9 +690,10 @@ bool Decide(int i, bool canTrade, bool withNow)
    bool skipInit = false;
    if(g_initBar[i])
      {
-      g_initBar[i] = false;
-      long mnow = ((long)nowNy % 86400) / 60;
-      skipInit = !(withNow && mnow <= InpCutMinNY + 15);
+      long mnow  = ((long)nowNy % 86400) / 60;
+      bool inWin = (mnow >= InpCutMinNY && mnow < 17 * 60);
+      if(withNow) { g_initBar[i] = false; skipInit = (mnow > InpCutMinNY + 15); }
+      else        { skipInit = true; if(!inWin) g_initBar[i] = false; }   // kat ki khirki mein aaj wala faisla baqi
      }
    if(skipInit)
      {
@@ -1094,7 +1096,7 @@ void Pass()
          else if(g_failT[i] < now) g_failT[i] = now;   // bazaar band / data: minute baad dobara
         }
       // i6: 16:15 NY par aaj ki (kati hui) candle par faisla - Python ka din ka close (Jumma bhi)
-      if(cutWin && g_doneT[i] != nowDay)
+      if(cutWin && IsCutSym() && g_doneT[i] != nowDay)
         {
          if(!Decide(i, canTrade, true) && g_failT[i] < now) g_failT[i] = now;
         }
