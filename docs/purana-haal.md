@@ -1151,6 +1151,12 @@ Imaandari: SPX-NDX ek hi din trade = jure hue, asal SE bara; IMTIHAN (~150 tr) m
 **Koshish #59 IMTIHAN 2019+ (EK dafa, 1 Nov, user TV SS, settings default jaanchi) = ASLI PASS:** SPX 73 tr, jeet 68%, +0.163R (Exp-2SE **+0.049**); NDX 73 tr, 68%, +0.147R
 (+0.019); **KUL 146 tr, jeet 68%, +0.155R, Exp-2SE +0.070**. Dono index akele bhi PASS (jure hone ka shak kam). Asar 2019+ mein TALAASH se taqatwar.
 Agla: #60 FTMO hisaab (#53 + chutti, qaida pehle). EA baad mein: NYSE calendar + aadha din (3 Jul, Thanksgiving ke baad Jumma, 24 Dec = 13:00 band) ka khayal.
+**Koshish #60 qaida (1 Nov, 28vi chat, user "D", test se PEHLE, badalna mana) - FTMO: #53 + #59 CHUTTI (`tools/ftmo60.py`):** #53 bilkul wahi (trend 4H 0.75% +
+IBS US500/USTEC 1%) + chutti leg US500 + USTEC (`data/ftmo/` H1): din d ke 16:00 NY H1 open par BUY, chutti se pehle wale din p ke 16:00 NY open par band
+(p = 3 Jul ya 24 Dec = aadha din -> 13:00 NY). Calendar #59 wala (Python `chutti_trades`). 1R = ATR14 daily (pichhla poora 17:00 din), SL nahi, har market apna slot.
+Kharcha ASLI (JasSpreadNaap x 1.5, `ftmo53_asli.run_cost`), swap 3%/saal. **CHUNAO 2012-2018** (har mahine nayi challenge): chutti risk 0.25 / 0.5 / 0.75 / 1.0 vs
+bina chutti (#53): shart P1 fail < 20%, pass > fail, (pass - fail) >= #53 ka; behtareen = zyada (pass - fail), phir kam median mahine, phir kam risk. Koi nahi = FAIL.
+**IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk): PASS = fail 0, pass >= 83 aur median < 11.7 mahine (#53 asli kharche wala). Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
