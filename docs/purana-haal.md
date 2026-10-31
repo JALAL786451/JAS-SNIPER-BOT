@@ -1229,6 +1229,10 @@ Ilaj: JasTrendEA t5 + JasIbsEA i6 (band candle par faisla, IBS cut-off 16:15 NY,
 **IMTIHAN 2019+ = FAIL -> idea band:** SPX 71 tr 68% +0.097% vs drift +0.147%, +0.030R (-0.073); NDX 69 tr 71% +0.218% vs +0.225%, +0.065R (-0.053);
 KUL 140 tr, jeet 69%, +0.157% vs drift +0.186% (drift se KAM), +0.047R, Exp-2SE -0.031. (v2 = v3 ki tareekh jaanch ke bagair; NDX 186 tr = jor theek laga. Python judge
 2012-18: 103 tr, jeet 74-81%, Exp-2SE -0.007 = milta julta.) Sabaq: VIX darr ke baad khareed 2019+ mein aam tezi se behtar nahi.
+**#65 v3 (ASLI hisaab, 1 Nov, user TV SS, D aur 4H bilkul same):** TALAASH 1990-2018: SPX 171 tr (date-miss 30) 75%, +0.371% vs +0.092%, +0.093R (-2SE +0.022); NDX 186 tr
+(date-miss 2) 76%, +0.604% vs +0.165%, +0.096R (+0.028); KUL 357 tr, 76%, +0.094R, Exp-2SE +0.046 = PASS. **IMTIHAN 2019+ (v3, EK dafa) = FAIL (sirf drift shart):**
+SPX 70 tr 74% +0.368% vs drift +0.155%, +0.099R (-0.020); NDX 72 tr 72% +0.290% vs +0.227%, +0.081R (-0.034); **KUL 142 tr, jeet 73%, +0.328% vs drift +0.192% (1.7x < 2x),
++0.090R, Exp-2SE +0.008 (musbat!)**. Qaida ki drift shart (2x) par FAIL - nateeja dekh kar shart nahi badlegi. v2 (+0.047R) se farq = v2 ki tareekh ghalti. BANK "nazar" (sab se qareeb).
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
