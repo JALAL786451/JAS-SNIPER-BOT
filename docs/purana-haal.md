@@ -1196,6 +1196,11 @@ NDX 406 tr, 57%, +0.528% vs +0.237% (2.2x), +0.257R, +0.102, 21/34; **KUL 980 tr
 **Koshish #64 IMTIHAN 2019+ (EK dafa, 1 Nov, user TV SS) = FAIL -> idea band:** SPX 93 tr, 58%, +0.347% vs drift +0.258%, +0.162R (Exp-2SE -0.181); NDX 93 tr, 60%,
 +0.491% vs +0.362%, +0.208R (-0.139); **KUL 186 tr, jeet 59%, +0.419% vs drift +0.310% (1.35x < 2x), +0.185R, Exp-2SE -0.058**. Asar musbat magar 2019+ mein jhatke
 zyada (2020, 2022) aur trade kam = saabit nahi; drift bhi tez tha. BANK mein "nazar" (pass nahi).
+**Koshish #65 qaida (1 Nov, 28vi chat, user "D", test se PEHLE, badalna mana) - VIX STRETCHES (`indicators/jas_vix.pine` v1, TV, chart SP:SPX Daily):** Connors & Alvarez 2008.
+Index (SP:SPX, NASDAQ:NDX) close > SMA200 AUR CBOE:VIX 3 din lagatar SMA10 se >= 5% upar (sab band candle) = index close par BUY. Band: index RSI(2) > 65 (close),
+hifazat SL 3 x ATR14 = 1R (gap = open); band / SL din nayi nahi; sirf BUY, ek index ek position. Kharcha 0.01%/taraf + swap 3%/saal. Drift jaanch: VIX % >= 2 x drift.
+**TALAASH** entry < 2019 (VIX 1990 se): kul >= 100 tr, Exp - 2SE > 0, dono index Exp > 0, (index x saal) > 50%, VIX % >= 2 x drift. **IMTIHAN** 2019+ CHHUPA;
+EK dafa: kul >= 30 tr, Exp - 2SE > 0, VIX % >= 2 x drift = ASLI PASS. Ginti +1.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
