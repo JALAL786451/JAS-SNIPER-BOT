@@ -1329,4 +1329,10 @@ N225 (1971) 366 tr 55% +0.228%, +0.046R (-0.007), 30/48; XJO (1980) 328 tr 59% +
 **Koshish #67 IMTIHAN 2019+ (EK dafa, 1 Nov, user TV SS, 1D aur 4H par bilkul same) = PASS (aadha dekha - research agent):** DAX 73 tr 68% +0.091R (-2SE +0.031); FTSE 73 tr 70%
 +0.117R (+0.058); CAC 73 tr 64% +0.068R (+0.008); SX5E 73 tr 64% +0.081R (+0.022); N225 71 tr 52% +0.035R (-0.048); XJO 73 tr 67% +0.081R (+0.004); HSI 69 tr 58% +0.049R (-0.026).
 **KUL 505 tr, jeet 64%, khirki +0.416% vs drift +0.073% (5.7x), +0.075R, Exp - 2x(2.14 SE) +0.020 = PASS.** Aakhri faisla: #68 FTMO hisaab (#53 ke saath) + demo forward.
+**Koshish #68 qaida (1 Nov, 28vi chat, user "D", test se PEHLE, badalna mana) - FTMO: #53 + #67 KHIRKI (`tools/ftmo68.py`):** #53 bilkul wahi (trend 4H 0.75% + IBS 1%,
+asli kharcha) + khirki 7 Dukascopy CFD (`data/duka/H1/JAS_ZIP`: DEU, GBR, FRA, EUS, JPN, AUS, HKG). Khirki trade: entry = local cash close ke baad pehli H1 candle ki open
+(DEU/FRA/EUS 17:30 Berlin/Paris, GBR 16:30 London, JPN 15:00 Tokyo, AUS 16:00 Sydney, HKG 16:00 HK) us local din E par jis ka agla weekday = P (#67 `f_win`), exit = pehla local din
+>= H (wahi waqt). SL 3 x ATR20 (local din ki daily candles, pichhla din) = 1R, H1 low se (gap = open). Kharcha 0.02%/taraf + swap 3%/saal. Har index apna slot.
+**CHUNAO 2012-2018** (84 challenge): khirki risk har index 0.10 / 0.15 / 0.25% (ek waqia par x7) vs #53 akela; shart #60 wali (P1 fail < 20%, pass > fail, (pass - fail) >= #53
+ka; behtareen = zyada (pass - fail), phir kam median, phir kam risk). **IMTIHAN 2019-01..2026-10 EK dafa:** PASS = fail 0, pass >= 83, median < 11.7 mahine. Ginti +1.
 
