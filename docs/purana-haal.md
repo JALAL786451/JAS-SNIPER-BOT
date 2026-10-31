@@ -1032,3 +1032,12 @@ IMTIHAN 2019-aaj PASS (507 tr, Exp-2SE +0.067). Saal: 2024 +14.1 (Python +18.3),
 **#49 TV tokri t3 DAILY chart par (31 Oct, user SS):** daily chart se request.security "240" = 4H data **2007 se** (4H chart par sirf 2023). 2012-aaj: 1597 tr, jeet 48%,
 **+104.5% ($104,452)**, **DD 15.7%**, saal 11/15 (2015 -10.7, 2022 -6.0, 2018 -1.3, 2014 -0.5); TALAASH 2012-18 746 tr Exp-2SE -0.023 = FAIL (bal baal), IMTIHAN 2019+ 851 tr
 +0.057 = PASS. Python 2012-aaj +80% / DD 15% se mel (TV swap nahi, OANDA data). Sabaq: tokri dabba hamesha D chart par; 2012-18 kamzor daur (Python bhi +7%).
+
+**Koshish #50 qaida (31 Oct, 28vi chat, user ka "gend" idea, test se PEHLE, badalna mana) - TOKRI MEIN TAQAT KA MUQABLA (cross-sectional momentum, long + short) - `tools/taqat50.py`:**
+Wahi 28 market (#47). Daily candle NY 17:00. **Har Juma ke close par** har market ki TAQAT = 60 din ka return / (60 din ke daily return ka SD x sqrt 60) (sirf jin ke >= 61 din hon).
+**Sab se taqatwar 4 = BUY, sab se kamzor 4 = SELL** (sirf relative, koi rukh shart nahi); ek group se ek taraf max 2 (#47 groups). Entry agle din (Somwar session) ki open.
+Agle Juma: jo set se bahar = agle din open par band; jo andar rahe = chalti rahe; nayi wali kholo; BUY->SELL palte to band + nayi. **SL = 3 x ATR20(daily)** entry se;
+SL lage to us hafte dobara nahi (agle Juma set mein ho to nayi). Kharcha 0.03%/taraf + swap 3%/saal (dono taraf). 1R = 3 x ATR20.
+**A. EDGE:** TALAASH entry < 2019: PASS = kul >= 100 tr, Exp(R) - 2SE > 0, saal (kul R) musbat > 50%. -> IMTIHAN 2019+ ek dafa: >= 30 tr, Exp - 2SE > 0. BUY/SELL alag maloomat.
+**B. FTMO** (sirf A TALAASH PASS ho): `ftmo_test.run`, har position risk 0.25 / 0.5 / 0.75% (CHUNAO 2012-18: P1 fail < 20% aur pass > fail, max pass-fail); IMTIHAN 2019+ ek dafa.
++ report card ($100k lagatar). Maloomat: trade/mahina. Ginti +2.
