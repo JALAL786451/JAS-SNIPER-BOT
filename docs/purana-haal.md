@@ -1082,3 +1082,8 @@ Python 2021-24 saal-wise bina kharcha: US500 +0.258 / +0.164 / +0.126 / +0.117, 
 0.03% kharcha = 0.09-0.30R har trade (kam halchal = mehnga). 2026 SPX bina kharcha -0.062R = har TALAASH saal se kharab -> SPX ka imtihan mushkil.
 Faisla (Claude): NAS100 TV par abhi NAHI (2025+ IMTIHAN bachao). #54 raasta: Somwar spread SS -> qaida pehle -> TALAASH Python 2021-24 asli kharche se
 -> pass ho to IMTIHAN = MT5 Strategy Tester (Exness asli ticks + spread, 2025-01..aaj) EK dafa (data na ho to Python QDM 2025+).
+**Koshish #54 kharcha qaida (31 Oct raat, 28vi chat, naap se PEHLE, badalna mana):** asli kharcha = `JasSpreadNaap.mq5` s1 (Exness Demo, pichhle 20 kaam ke din ke
+asli ticks) ki line "faisle ke waqt" (10:00, 10:30 ... 16:00 NY ka pehla minute, waqt ke hisaab se ausat spread %). Test mein aana-jana kharcha = **1.5 x** wo
+(slippage + FTMO / asli farq); yani `COST` har taraf = 0.75 x spread%. US500 = US500m, USTEC = USTECm, alag alag. Naap kam ho ya zyada, wahi number.
+#54 = #37 qaida bilkul wahi (sirf kharcha naya). TALAASH M1 2021-24: PASS = tokri n >= 100, Exp - 2SE > 0, saal musbat >= 3/4.
+IMTIHAN (sirf TALAASH PASS ke baad, EK dafa): MT5 Tester real ticks 2025-01..aaj (ya Python QDM 2025+), Exp - 2SE > 0. Baqi intraday (#41 M1, #42) alag number, qaida pehle.
