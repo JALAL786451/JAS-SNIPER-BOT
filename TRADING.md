@@ -55,7 +55,7 @@ Doosre demo: 472540009, 474651829 Pro. EA wale chart ke saath live par login kab
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
 **28vi chat (30-31 Oct)** - tafseel `docs/purana-haal.md` grep "28vi chat" + "Koshish #43".."#54". Purani 27vi: grep "sec 5 se (31 Oct 28vi".
-DATA: 28 market H1 (`data/duka/H1/JAS_ZIP/` 24 + `data/ftmo/` 4) + M1 US500/USTEC 2021-24 (`data/qdm/M1/`). Baqi (EURUSD, USDJPY, copper, gas, sugar, NLD, ETH, AUDUSD) baad mein QDM.
+DATA: 28 market H1 (`data/duka/H1/JAS_ZIP/` + `data/ftmo/`) + M1 US500/USTEC 2021-aaj (`data/qdm/M1/`). Baqi baad mein QDM.
 #43-#52 FAIL / chhote PASS -> **#53 FTMO mansooba ASLI PASS**. #37 noise boundary FAIL (andaze ka kharcha 0.03%) -> `JasSpreadNaap` s1 ne asli spread naapa
 (US500 0.40, USTEC 1.12, gold 0.24 = andaze se 10-16 guna kam; chandi 0.025 mehngi) -> **#54 TALAASH PASS** (2021-24: +0.113R, ~38 tr/mahina, saal 4/4, jeet 42%).
 **1 Nov:** #54 IMTIHAN 2025+ FAIL (edge 2025-26 mein khatam), #21 ORB TALAASH FAIL (2023-24 kamzor). #53 asli kharche se median 11.7 mahine (83/0/11). #55 trend 1H, #56 IBS 4H, #57, #58 FAIL. **#59 chutti ASLI PASS** -> #60 FTMO (#53 + chutti).
