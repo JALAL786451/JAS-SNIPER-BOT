@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD i4   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD i5   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                     JasIbsEA.mq5 |
@@ -43,7 +43,8 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "i4"          // har nayi file par ye number barhta hai
+#define EA_BUILD "i5"          // har nayi file par ye number barhta hai
+// i5 (31 Oct 2026): FTMO #53 ASLI PASS - IBS ab US500 AUR USTEC, risk 1% (har trade). 2019+ FTMO 83 pass / 0 fail.
 // i4 (31 Oct 2026): FTMO #49 ASLI PASS ki setting DEFAULT - US500, risk 2%, lot hadd 20, TRADE true.
 //     Sirf FTMO demo 474832446 ke liye (JasTrendEA t4 ke saath).
 #define MAXM 10
@@ -55,7 +56,7 @@ string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
 
 //--------------------------- INPUTS -----------------------------------
 input group "=== 0 - Markets ==="
-input string InpSymbols    = "US500";  // Markets (comma se). KHALI = sirf chart ka symbol
+input string InpSymbols    = "US500,USTEC";  // Markets (comma se). KHALI = sirf chart ka symbol. #53: US500,USTEC
 input string InpSuffix     = "auto";   // Suffix (Exness demo m, cent c) - auto = chart ke symbol se
 
 input group "=== 1 - Qawaid (Pine b2 jaise - mat badlein) ==="
@@ -68,7 +69,7 @@ input double InpSlMult     = 3.0;      // SL (x ATR) - hifazat
 
 input group "=== 2 - Risk ==="
 input bool   InpTrade      = true;     // TRADE KARE? false = sirf dikhaye (Tester mein hamesha trade)
-input double InpRiskPct    = 2.0;      // Har trade ka risk (% balance) - #49: 2
+input double InpRiskPct    = 1.0;      // Har trade ka risk (% balance) - #53: 1
 input double InpMaxRiskPct = 2.0;      // Sab se chhoti lot ka risk is % se zyada = trade nahi
 input double InpMaxLot     = 20.0;     // Lot ki hadd (hifazat) - $100k par 20
 

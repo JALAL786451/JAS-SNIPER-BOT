@@ -1069,3 +1069,6 @@ US500 IBS 194 tr +0.039R (-0.020, 5/8) FAIL; JPN 161 tr +0.007 FAIL; ESP -0.007 
 **CHUNAO** 2012-01..2018-12: shart P1 fail < 20% aur pass > fail; max (pass - fail); barabar = kam risk. **2019+** ek dafa (ehtiyat: 2019+ data #49 / #52 mein dekha ja chuka -
 is liye sirf tasdeeq): pass > fail aur P1 fail < 20%, aur #49 (69 pass / 14 fail) se muqabla. Maloomat: trade/mahina + report card. Ginti +1.
 **Koshish #53 CHUNAO (31 Oct, 2019+ se PEHLE likha):** 84 challenge, trend 5.9 + IBS 3.2 tr/mahina. IBS 1.0% = **57 pass / 9 fail (P1 10.7%)**, median 35.6 mahine = CHUNI; 1.5% = 45/24; 2.0% = 22/51 (P1 28.6%). (#49 CHUNAO 0.75+2.0 US500 akela = 52/15.)
+**Koshish #53 2019+ (tasdeeq, 31 Oct) = ASLI PASS (#49 se BEHTAR):** trend 0.75% + IBS 1% US500+USTEC: 94 challenge **83 pass / 0 fail / 11 adhoora, P1 fail 0%**, median 12.7 mahine
+(#49: 69/14). Report card ($100k lagatar): 2019+ 1043 tr (~11/mahina), jeet 54%, **+75.9%, DD 11.2%**; 2012-18 +12.2%, DD 13.4%; **2012-aaj +91.8% (~6.2%/saal), DD 13.4%**,
+saal 12/15 musbat (2012 -3.8, 2015 -5.0, 2022 -7.0). IBS ab 401 tr (jeet 70%) 2019+. IBS risk 1% = purana default (risk kam hua). -> demo par JasIbsEA i5 (US500,USTEC, 1%).

@@ -21,6 +21,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--from', dest='frm', default='2019')
     ap.add_argument('--to', default=None)
+    ap.add_argument('--ibs-syms', nargs='*', default=['US500'])     # #53: US500 USTEC
+    ap.add_argument('--ibs-risk', type=float, default=2.0)          # #53: 1.0
     a = ap.parse_args()
     syms = list(FILES)
     dfs = {s: load(s) for s in syms}
@@ -29,7 +31,7 @@ def main():
     cetday = (cet.year * 10000 + cet.month * 100 + cet.day).values
     mkts = [Mkt(s, dfs[s], grid) for s in syms]
     systems = [('Trend 4H', 0.75, [st4h_trades(dfs[s], 6.0) for s in syms]),
-               ('IBS', 2.0, [ibs_trades(dfs[s]) if s == 'US500' else [] for s in syms])]
+               ('IBS', a.ibs_risk, [ibs_trades(dfs[s]) if s in a.ibs_syms else [] for s in syms])]
     t0 = pd.Timestamp(f'{a.frm}-01-01', tz='UTC').value
     t1 = pd.Timestamp(a.to, tz='UTC').value if a.to else (pd.Timestamp('2019-01-01', tz='UTC').value if a.frm < '2019' else grid[-1] + 1)
     tl = []
@@ -76,7 +78,7 @@ def main():
     c = pd.DataFrame(closed, columns=['s', 'm', 'pl', 'y'])
     years = (grid[i1 - 1] - grid[i0]) / 3.156e16
     print(f'=== #49 REPORT CARD: $100,000 account, {pd.Timestamp(grid[i0], tz="UTC"):%b %Y} - {pd.Timestamp(grid[i1 - 1], tz="UTC"):%b %Y} ({years:.1f} saal) ===')
-    print(f'EA: 2 (Trend 4H 0.75% + IBS 2%)   Market: 4 (Gold, Silver, US500, USTEC)')
+    print(f'EA: 2 (Trend 4H 0.75% + IBS {a.ibs_risk}% {"+".join(a.ibs_syms)})   Market: 4 (Gold, Silver, US500, USTEC)')
     print(f'Kul trade: {len(c)}  (~{len(c) / years / 12:.1f} mahina)   jeet: {100 * (c.pl > 0).mean():.0f}%')
     print(f'Kul faida: ${bal - BAL0:,.0f}  = {100 * (bal - BAL0) / BAL0:.1f}%   (~{100 * (bal - BAL0) / BAL0 / years:.1f}% saal)')
     print(f'Sab se bari girawat (DD): {100 * maxdd:.1f}%   sab se bura din: {100 * worstday:.1f}%')
