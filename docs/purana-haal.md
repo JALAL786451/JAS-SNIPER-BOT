@@ -1191,6 +1191,8 @@ Jis din d ka AGLA trading din mahine ka AAKHRI trading din ho, d ke close par BU
 Kharcha 0.01%/taraf + swap 3%/saal. Python mein 2024 ki tareekhein jaanchi (Good Friday, Thanksgiving, 1 Jan sahi). **Drift jaanch:** TOM % >= 2 x (aam din % x din).
 **TALAASH** 1971-2018: kul >= 100 tr, Exp - 2SE > 0, dono index Exp > 0, (index x saal) > 50%, TOM % >= 2 x drift. **IMTIHAN** 2019+ CHHUPA; EK dafa:
 kul >= 30 tr, Exp - 2SE > 0, TOM % >= 2 x drift = ASLI PASS. Ginti +1.
+**Koshish #64 TALAASH (1 Nov, user TV SS) = PASS (mazboot)** - IMTIHAN se PEHLE likha: SPX 574 tr, jeet 56%, TOM +0.354% vs drift +0.132% (2.7x), +0.210R, Exp-2SE +0.084, 29/48;
+NDX 406 tr, 57%, +0.528% vs +0.237% (2.2x), +0.257R, +0.102, 21/34; **KUL 980 tr, jeet 57%, +0.426% vs drift +0.175% (2.4x), +0.230R, Exp-2SE +0.132**, saal 50/82.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
