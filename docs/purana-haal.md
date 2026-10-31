@@ -1110,6 +1110,9 @@ USTEC (`data/ftmo/`), har market ek position. **Kharcha asli** (JasSpreadNaap x 
 gold par #34 wali kam az kam $0.50 (aana-jana) qaim; swap 3%/saal har raat. **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, >= 3/4 market Exp > 0,
 (market x saal) musbat > 50%. **IMTIHAN** 2019+ EK dafa, SAKHT (gold 1H TALAASH #33 mein dekha, market 4H nateeje se chune): kul >= 30 tr aur Exp - 2SE > 0. Ginti +1.
 Maqsad: #53 ke trend hisse mein ~4 guna trade (FTMO tez) - PASS ho to FTMO hisaab alag (#56, qaida pehle).
+**Koshish #55 nateeja (1 Nov) = TALAASH FAIL** (IMTIHAN nahi khola): kul 2830 tr (~15/mahina), Exp +0.027R, Exp-2SE -0.028, jeet 37%, bina kharcha +0.089R.
+XAU +0.066 (1049 tr), XAG -0.036 (909, chandi ka asli kharcha 0.033%/taraf mehnga), US500 +0.006 (436), USTEC +0.089 (436); market 3/4, (market x saal) 29/46.
+Sabaq: 1H par R chhota (3 x ATR10 H1) = kharcha + swap ab bhi ~0.06R kha jata; trend ka faida 4H / daily par hi pakka.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
