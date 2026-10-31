@@ -1284,3 +1284,11 @@ Faida daily + 4H TOKRI par; akela market chhoti TF par nahi.
 - Har EA ka faisla: kam az kam **6 mahine** (user 17 Oct, ~Apr 2027) + 10-15 band trades, har trade TV se mile. **Mila ✅ (user, pehle):** demo ki khuli trade TV Pine par bhi dikhi.
 - IBS #15 (S&P ASLI PASS) ki tafseel + IBS demo qaida: `docs/purana-haal.md` (grep "IBS demo qaida").
 
+**Koshish #66 qaida (1 Nov, 28vi chat, user: "agli talaash", test se PEHLE, badalna mana) - JAS TREND 4H (#34) x RISHTEDAR DHAATEIN (TV):** #34 qaida bilkul wahi
+(Supertrend 10/3 4H, NY 17:00 se jure blocks, SIRF BUY, flip upar = agli 4H open BUY, flip neeche = agli open band, SL 6 x ATR10 (4H) = 1R) - `jas_ftmo49_tokri.pine`
+ka `simT` engine (request.security "240", har market apne data par). Market (pehle se chune, nateeja dekh kar nahi): **OANDA:XPTUSD (platinum), OANDA:XPDUSD (palladium),
+OANDA:XCUUSD (copper)**. **Kharcha** = `JasSpreadNaap` (XPTUSDm, XPDUSDm, XCUUSDm, 20 din) ka "poora din" ausat spread % x 0.75 har taraf (aana-jana 1.5 x spread) -
+naap se pehle likha; swap 3%/saal. **TALAASH** entry < 2019 (TV 4H data jitna): PASS = kul >= 100 tr, Exp - 2SE > 0, >= 2/3 market Exp > 0, (market x saal) musbat > 50%.
+Maloomat (shart nahi): aam tezi (drift). **IMTIHAN** 2019+ CHHUPA (input) jab tak TALAASH PASS; EK dafa, SAKHT: kul >= 30 tr aur Exp - 2SE > 0. Ginti +1.
+PASS ho to #53 mein jor ka FTMO hisaab alag (qaida pehle; FTMO par XPT / XPD / XCU maujood hain ya nahi - pehle dekhna).
+
