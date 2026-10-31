@@ -1305,4 +1305,7 @@ Rad: pre-FOMC (2015 ke baad khatam), FOMC even weeks, opex, commodity reversal, 
 Sabaq: research agent ko aainda saaf hidayat - 2019+ data NA dekhe (sirf TALAASH < 2019).
 **#66 DATA JAANCH (1 Nov, user TV SS, nateeja chhupa):** 1D chart: XPT / XPD / XCU 2007 se (~1505-1529 candle/saal), galat waqt 0. **1W chart: XPT 2005, XPD 2005, XCU 2003 se**
 (~1419-1515/saal), galat waqt 0 (4H candles 17/21/1/5/9/13 NY). **Qaide se CHUNA (nateeja se PEHLE): OANDA:XAUUSD 1W chart.**
+**Koshish #66 TALAASH (1 Nov, user TV SS, 1W chart) = FAIL** (IMTIHAN band): Platinum 293 tr, jeet 38%, trend +0.38% vs drift +0.05%, -0.009R (-2SE -0.094), saal 8/14;
+Palladium 274 tr, 34%, +0.82% vs +0.51%, -0.039R (-0.130), 5/14; Copper 354 tr, 35%, +0.07% vs +0.27%, +0.010R (-0.100), 9/16; KUL 921 tr, 36%, -0.010R, Exp-2SE -0.068, 22/44.
+Sabaq: platinum ka trend kharche se pehle achha (+0.38% vs 0.05%) magar asli spread (0.25% / 0.55%) ne kha liya; copper par trend = drift se kam. Trend sirf gold/chandi/US index.
 
