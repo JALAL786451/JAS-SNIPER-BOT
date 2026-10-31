@@ -1145,6 +1145,9 @@ Lakonishok-Smidt 1988, Ariel 1990. NYSE ka pehle se maloom calendar (1971+): New
 Python mein jaancha: 1990, 1999, 2018-2026 sab NYSE chuttiyan bilkul mili. Jis din ka agla trading din "chutti se pehle wala din" ho, us din close par BUY, agle din close par band.
 1R = ATR14 (unit), SL nahi. Kharcha 0.01%/taraf + swap 3%/saal. SP:SPX + NASDAQ:NDX. **TALAASH** entry 1971-2018: kul >= 100 tr, Exp - 2SE > 0, dono index Exp > 0,
 (index x saal) musbat > 50%. **IMTIHAN** 2019+ CHHUPA (input band) jab tak TALAASH PASS; phir EK dafa: kul >= 30 tr aur Exp - 2SE > 0 = ASLI PASS. Ginti +1.
+**Koshish #59 TALAASH (1 Nov, user TV SS, OANDA SPX500USD 1D chart) = PASS (bal baal)** - IMTIHAN se PEHLE likha: KUL 688 tr, jeet 57%, **is din +0.116% vs aam din +0.044%**,
+Exp +0.051R, **Exp-2SE +0.005**, saal 50/82. SPX 400 tr +0.140% (aam +0.033%), +0.055R (-2SE -0.003), 31/48; NDX 288 tr +0.082% (aam +0.059%), +0.045R (-0.028), 19/34.
+Imaandari: SPX-NDX ek hi din trade = jure hue, asal SE bara; IMTIHAN (~150 tr) mein Exp - 2SE > 0 ke liye ~+0.16R chahiye (TALAASH +0.051) = mushkil. Qaida wahi.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
