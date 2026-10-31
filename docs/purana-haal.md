@@ -1126,6 +1126,8 @@ Formula / kharcha / data bilkul #47 (`tokri47.py`: 4H Supertrend 10/3, SL 6 x AT
 Ummeedwar = #47 ke 28 mein se **24** (XAU, XAG, US500, USTEC pehle se #53 mein = bahar). **Chunao (sirf TALAASH entry < 2019):** >= 30 tr aur saal (R jor) musbat > 50%,
 **Exp - 2SE** se upar ke **5**. **IMTIHAN 2019+ EK dafa** sirf in 5 par: PASS = >= 15 tr aur **Exp - 2.33 SE > 0** = SELECT. SELECT ho to #53 trend tokri mein jorne ka
 FTMO hisaab alag (#58, qaida pehle). Ginti +1.
+**Koshish #57 CHUNAO (1 Nov, IMTIHAN se PEHLE likha):** 24 mein se shart sirf **2** ne poori: JPN 133 tr +0.058R (Exp-2SE -0.079, saal 4/7), ESP 72 tr -0.034R (-0.167, 5/7).
+Baqi: BTC 34 tr +0.267 (saal 1/2 = shart nahi), USA30 94 tr +0.059 (3/6 = 50%, shart nahi), forex / EU / oil / fasal zyada tar manfi. TOP = JPN, ESP.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
