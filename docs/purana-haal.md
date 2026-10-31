@@ -1201,6 +1201,11 @@ Index (SP:SPX, NASDAQ:NDX) close > SMA200 AUR CBOE:VIX 3 din lagatar SMA10 se >=
 hifazat SL 3 x ATR14 = 1R (gap = open); band / SL din nayi nahi; sirf BUY, ek index ek position. Kharcha 0.01%/taraf + swap 3%/saal. Drift jaanch: VIX % >= 2 x drift.
 **TALAASH** entry < 2019 (VIX 1990 se): kul >= 100 tr, Exp - 2SE > 0, dono index Exp > 0, (index x saal) > 50%, VIX % >= 2 x drift. **IMTIHAN** 2019+ CHHUPA;
 EK dafa: kul >= 30 tr, Exp - 2SE > 0, VIX % >= 2 x drift = ASLI PASS. Ginti +1.
+**#65 v1 GHALAT (1 Nov, user ne pakra: 4H aur 1D par alag nateeje):** v1 ne hisaab CHART ki candles par kiya (baqi sab scripts index ke apne data mein, request.security ke
+andar) -> Daily chart sirf 2003 se, 4H chart 2022 se; NDX ki tareekh VIX se na mili (5 / 1 trade). v1 ke number BEKAAR. User ne v1 mein IMTIHAN bhi khola: SPX 2019+
+70 tr +0.099R (Exp-2SE -0.020) - ye SPX hissa shayad sahi tha = **#65 IMTIHAN "aadha dekha"**, qaida wahi aur sakht. **v2** (`jas_vix.pine` v2): poora hisaab har index
+ke apne daily data mein, VIX nested request se usi index ki candles par = chart / TF se azad. Qawaid / PASS shartein bilkul wahi. Purane scripts (#58-64) sab andar wale
+tareeqe se (#58: do alag chart par bilkul same number = saboot); #53 Python (Dukascopy) = TV se azad.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
