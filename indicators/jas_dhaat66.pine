@@ -1,6 +1,8 @@
 //@version=6
 // ============================================================================
-//  JAS DHAAT 66  (build d1, Pine v6)  -  Koshish #66 (1 Nov 2026)
+//  JAS DHAAT 66  (build d2, Pine v6)  -  Koshish #66 (1 Nov 2026)
+//  d2 (judge): pehle SIRF DATA jaanch (nateeja chhupa) - 1D aur 1W chart; saal UTC
+//  (#34 / Python jaisa); drift ke din theek; har dhaat ki 4H candles ka waqt jaancha.
 //
 //  Trend 4H (#34, #53 mein chal raha) ke "rishtedar" market: PLATINUM,
 //  PALLADIUM, COPPER. Engine = jas_ftmo49_tokri.pine t4 ka simT bilkul wahi
@@ -21,9 +23,9 @@
 //
 //  CHART: koi bhi DAILY chart (misaal OANDA:XAUUSD 1D). "data se" saal dekhein.
 // ============================================================================
-indicator("JAS Dhaat 66 d1 (#66)", shorttitle = "JAS DHAAT66 d1", overlay = true, max_bars_back = 300)
+indicator("JAS Dhaat 66 d2 (#66)", shorttitle = "JAS DHAAT66 d2", overlay = true, max_bars_back = 300)
 
-BUILD = "d1"
+BUILD = "d2"
 TZ = "America/New_York"
 
 grI = "1 · 3 dhaat (pehle se chuni - badalna mana)"
@@ -38,6 +40,7 @@ c3 = input.float(0.042, "Copper kharcha % har taraf", step = 0.001, group = grQ,
 swapYr  = input.float(3.0, "Swap (% saal, har raat)", minval = 0, step = 0.5, group = grQ, display = display.none)
 splitYr = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
 showIm  = input.bool(false, "IMTIHAN dikhao (SIRF TALAASH PASS ke baad, EK dafa)", group = grQ, display = display.none)
+hideRes = input.bool(true, "PEHLE SIRF DATA jaanch (nateeja chhupa) - chart chun kar ye tick hatayein", group = grQ, display = display.none)
 
 grV = "3 · Table"
 tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
@@ -73,18 +76,24 @@ simT(float costPct) =>
     var int   wI = 0
     var float sI = 0.0
     var float qI = 0.0
+    var int   bad = 0
     a = ta.atr(10)
     [st, d] = ta.supertrend(3.0, 10)
     up = d < 0
-    yr = year(time, TZ)
+    yr = year(time, "UTC")
+    hNy = hour(time, TZ)
+    if not (hNy == 17 or hNy == 21 or hNy == 1 or hNy == 5 or hNy == 9 or hNy == 13)
+        bad += 1
     if na(fy)
         fy := yr
     if not na(close[1]) and close[1] > 0 and yr < splitYr
         aN += 1
         aS += close / close[1] - 1
     float xP = na
+    bool  xFl = false
     if pEx and pos == 1
         xP := open
+        xFl := true
     pEx := false
     if pEnt and pos == 0 and na(xP)
         pos := 1
@@ -107,7 +116,7 @@ simT(float costPct) =>
             sT += r
             qT += r * r
             pT += xP / eP - 1
-            dT += age
+            dT += xFl ? age - 1 : age
             wT += r > 0 ? 1 : 0
             if na(cy) or ey != cy
                 if not na(cy)
@@ -129,11 +138,11 @@ simT(float costPct) =>
         pEx := true
     yNo = yN + (na(cy) ? 0 : 1)
     yPo = yP + (not na(cy) and cs > 0 ? 1 : 0)
-    [nT, wT, sT, qT, pT, dT, aN, aS, yNo, yPo, nI, wI, sI, qI, fy]
+    [nT, wT, sT, qT, pT, dT, aN, aS, yNo, yPo, nI, wI, sI, qI, fy, bad]
 
-[nT1, wT1, sT1, qT1, pT1, dT1, aN1, aS1, yN1, yP1, nI1, wI1, sI1, qI1, fy1] = request.security(m1, "240", simT(c1), lookahead = barmerge.lookahead_off)
-[nT2, wT2, sT2, qT2, pT2, dT2, aN2, aS2, yN2, yP2, nI2, wI2, sI2, qI2, fy2] = request.security(m2, "240", simT(c2), lookahead = barmerge.lookahead_off)
-[nT3, wT3, sT3, qT3, pT3, dT3, aN3, aS3, yN3, yP3, nI3, wI3, sI3, qI3, fy3] = request.security(m3, "240", simT(c3), lookahead = barmerge.lookahead_off)
+[nT1, wT1, sT1, qT1, pT1, dT1, aN1, aS1, yN1, yP1, nI1, wI1, sI1, qI1, fy1, bd1] = request.security(m1, "240", simT(c1), lookahead = barmerge.lookahead_off)
+[nT2, wT2, sT2, qT2, pT2, dT2, aN2, aS2, yN2, yP2, nI2, wI2, sI2, qI2, fy2, bd2] = request.security(m2, "240", simT(c2), lookahead = barmerge.lookahead_off)
+[nT3, wT3, sT3, qT3, pT3, dT3, aN3, aS3, yN3, yP3, nI3, wI3, sI3, qI3, fy3, bd3] = request.security(m3, "240", simT(c3), lookahead = barmerge.lookahead_off)
 
 // ============================================================================
 //  TABLE (safaid)
@@ -146,7 +155,7 @@ f_se(_n, _s, _q) =>
     _n > 1 ? math.sqrt(math.max((_q - _n * _m * _m) / (_n - 1), 0.0)) / math.sqrt(_n) : 0.0
 f_dr(float _aS, int _aN, int _d) => _aN > 0 ? _aS / _aN * _d : 0.0
 
-var table tb = table.new(f_pos(tblPos), 8, 12, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
+var table tb = table.new(f_pos(tblPos), 8, 13, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
 fg  = color.new(#111111, 0)
 cUp = color.new(#0a8f5a, 0)
 cDn = color.new(#d32f2f, 0)
@@ -169,7 +178,29 @@ f_row(int _r, string _nm, int _n, int _w, float _s, float _q, string _pct, strin
     f_cell(6, _r, str.tostring(_e - 2 * _se, "+0.000;-0.000"), _e - 2 * _se > 0 ? cUp : cDn)
     f_cell(7, _r, _yr, fg)
 
-if barstate.islast
+f_data(int _r, string _nm, int _fy, int _aN, int _bd) =>
+    _yrs = splitYr - _fy
+    f_cell(0, _r, _nm, fg)
+    f_cell(1, _r, str.tostring(_fy) + " se", fg)
+    f_cell(2, _r, str.tostring(_aN) + " candle (2019 se pehle)", fg)
+    f_cell(3, _r, _yrs > 0 ? "~" + str.tostring(_aN / _yrs, "#") + " / saal" : "-", fg)
+    f_cell(4, _r, "galat waqt: " + str.tostring(_bd), _bd == 0 ? cUp : cDn)
+
+if barstate.islast and hideRes
+    f_cell(0, 0, "JAS DHAAT 66 " + BUILD + "  (#66)  -  SIRF DATA JAANCH (nateeja chhupa)", cHd)
+    table.merge_cells(tb, 0, 0, 7, 0)
+    f_cell(0, 1, "Dhaat", cHd)
+    f_cell(1, 1, "4H data", cHd)
+    f_cell(2, 1, "TALAASH candles", cHd)
+    f_cell(3, 1, "Har saal (~1500 theek)", cHd)
+    f_cell(4, 1, "4H waqt (17/21/1/5/9/13 NY)", cHd)
+    f_data(2, "Platinum", fy1, aN1, bd1)
+    f_data(3, "Palladium", fy2, aN2, bd2)
+    f_data(4, "Copper", fy3, aN3, bd3)
+    f_cell(0, 5, "Chart: " + syminfo.tickerid + " " + timeframe.period + "  |  sab se purana saal wala chart chunein (barabar = 1D), phir Settings mein 'PEHLE SIRF DATA' ka tick hatayein", fg)
+    table.merge_cells(tb, 0, 5, 7, 5)
+
+if barstate.islast and not hideRes
     f_cell(0, 0, "JAS DHAAT 66 " + BUILD + "  (#66)  -  Trend 4H (#34) x Platinum / Palladium / Copper", cHd)
     table.merge_cells(tb, 0, 0, 7, 0)
     f_cell(0, 1, "TALAASH (shuru - " + str.tostring(splitYr - 1) + ")", cHd)

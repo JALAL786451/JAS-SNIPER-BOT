@@ -1293,4 +1293,7 @@ Maloomat (shart nahi): aam tezi (drift). **IMTIHAN** 2019+ CHHUPA (input) jab ta
 PASS ho to #53 mein jor ka FTMO hisaab alag (qaida pehle; FTMO par XPT / XPD / XCU maujood hain ya nahi - pehle dekhna).
 **#66 kharcha naap (1 Nov, JasSpreadNaap s1, Exness Demo 20 din, "poora din"):** XPTUSDm 4.02 = 0.2489% (qeemat 1720) -> 0.187%/taraf; XPDUSDm 6.05 = 0.5514% (1178) -> 0.414%/taraf;
 XCUUSDm 8.04 = 0.0558% (14418) -> 0.042%/taraf. Platinum / palladium gold se 40-90 guna mehngi. Script `jas_dhaat66.pine` d1 defaults isi naap se (test se pehle).
+**#66 judge (1 Nov) = CLEAN** (trade logic `simT` t4 se hubahu, PASS math sahi, repaint nahi). Chhote ilaj -> **d2**: saal UTC (#34 / Python jaisa), drift ke din flip par 1 kam,
+har dhaat ki 4H candle ka NY waqt jaancha ("galat waqt" ginti), aur **pehle SIRF DATA jaanch (nateeja chhupa)**. **Chart ka qaida (nateeja dekhne se PEHLE):** 1D aur 1W dono
+par data jaanch; jis chart par teeno dhaaton ka sab se purana "se" saal ho (barabar = 1D) usi par EK dafa nateeja. Data 2016 ke baad se ho ya TALAASH < 100 tr = data ki kami se FAIL.
 
