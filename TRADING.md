@@ -59,7 +59,7 @@ DATA: 28 market H1 (`data/duka/H1/JAS_ZIP/` + `data/ftmo/`) + M1 US500/USTEC 202
 #43-#52 FAIL / chhote PASS -> **#53 FTMO mansooba ASLI PASS**. #37 noise boundary FAIL (andaze ka kharcha 0.03%) -> `JasSpreadNaap` s1 ne asli spread naapa
 (US500 0.40, USTEC 1.12, gold 0.24 = andaze se 10-16 guna kam; chandi 0.025 mehngi) -> **#54 TALAASH PASS** (2021-24: +0.113R, ~38 tr/mahina, saal 4/4, jeet 42%).
 **1 Nov:** #54 IMTIHAN 2025+ FAIL (edge 2025-26 mein khatam), #21 ORB TALAASH FAIL (2023-24 kamzor). #53 asli kharche se median 11.7 mahine (83/0/11). #55 trend 1H, #56 IBS 4H, #57, #58 FAIL. **#59 chutti ASLI PASS**, magar #60 FTMO (#53 + chutti) FAIL = FTMO #53 hi.
-**AGLA KAAM:** (a) **JasKhirkiEA banana** (#68: 7 index DE/UK/FR/EU50/JP/AUS/HK, 0.15% har index, NYSE calendar, local close) + judge -> FTMO demo; Exness symbol naam pehle.
+**AGLA KAAM:** (a) **JasKhirkiEA k1 bana** (#68, DE30m/UK100m/FR40m/STOXX50m/JP225m/AUS200m/HK50m) - judge jaanch (session reset ke baad) -> FTMO demo. Pehli khirki: Thanksgiving (entry 24 Nov 2026).
 (b) **FTMO DEMO (474832446) = #53** TRADE CHALU: JasTrendEA t4 (XAUUSDm H4, 4 market, 0.75%, pehra 110k/96k/92k) + JasIbsEA i5 (US500m D1, US500+USTEC, 1%).
 Somwar: pehli trades + TV `JAS FTMO 53 f2` dabba ka SS milao; 1-2 hafte baad VPS, phir FTMO challenge.
 (c) Talaash jari (qaida pehle). BTC + Kachhua baqi. **BANK** `docs/bank.md` (#59 chutti): FTMO pass / trade barhana par KHUD yaad dilao.

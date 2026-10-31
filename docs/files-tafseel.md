@@ -61,6 +61,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/ftmo53_asli.py` | #53 FTMO asli spread ke saath (sirf andaza): median 11.7 mahine, 83/0/11 |
 | `tools/noise54.py` | #54 (31 Oct): #37 noise boundary + asli kharcha (JasSpreadNaap); TALAASH 2021-24 PASS +0.113R; `--imtihan` 2025+ |
 | `data/qdm/M1/` | USA500IDXUSD + USATECHIDXUSD M1 2012-2026 (har saal ek zip; 2013 Feb-May Dukascopy mein khali) |
+| `JasKhirkiEA.mq5` | k1 (1 Nov) #68: US chutti ki khirki x 7 index (DE30/UK100/FR40/STOXX50/JP225/AUS200/HK50), 0.15%, NYSE calendar + local waqt (EU/UK/AU DST), pehra poora account (3 magic) - judge baqi |
 | `JasSpreadNaap.mq5` | s1 (31 Oct) script, sirf naap: pichhle 20 din ke asli ticks se spread (NY session, faisle ka waqt, 90%), #54 ka kharcha |
 | `tools/taqat50.py` | #50 (31 Oct): 28 market taqat ka muqabla (har Juma top 4 BUY / bottom 4 SELL, SL 3 ATR) - TALAASH FAIL |
 | `tools/har_market51.py` | #51 (31 Oct): har market x 3 khandaan (trend / IBS / turtle) daily, sakht shart - 0/84 FAIL |
