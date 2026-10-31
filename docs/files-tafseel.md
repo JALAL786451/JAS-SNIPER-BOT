@@ -45,7 +45,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
 | `indicators/jas_ftmo49.pine` | f1 (31 Oct): #49 ka TV dabba - 4 market 4H trend (khuli BUY, entry, SL 6 ATR, abhi R) + IBS US500 daily + Python nateeja; sirf dekhne ke liye |
-| `indicators/jas_ftmo49_tokri.pine` | t1 (31 Oct): #49 TOKRI dabba (k1 jaisa, safaid): har line trades / jeet / faida $ / Exp R, KUL, DD, saal ba saal, TALAASH-IMTIHAN-SAB muddat, PASS/FAIL + Python FTMO |
+| `indicators/jas_ftmo49_tokri.pine` | t2 (31 Oct): teeno muddat ek saath (2012-18 / 2019-aaj / KUL), neeche pane KUL P/L % + DD % (daayein label), TALAASH + IMTIHAN PASS dono. t1: #49 TOKRI dabba (k1 jaisa, safaid): har line trades / jeet / faida $ / Exp R, KUL, DD, saal ba saal, TALAASH-IMTIHAN-SAB muddat, PASS/FAIL + Python FTMO |
 | `data/qdm/XAUUSD_M1_2021_24.zip`, `XAUUSD_M1_2015.zip` | QDM Dukascopy gold M1 UTC (user 28 Oct; 2015 H1 se 100% mila). 2016-20 aur 2025+ abhi nahi |
 | `tools/ftmo_imkaan.py` | FTMO imkaan f2 (27 Oct; f2 = --jaal har system ka alag risk: IBS 2% + Kachhua 0.25% = 36m mein 59% pass, 5% fail; 60m mein 81% / 7%): Monte Carlo FTMO 2-step (P1 10%, P2 5%, din 5%, kul 10%, min 4 din), presets ibs / kachhua / --system, faida SE ke saath. Pehla nateeja: tokri 0.5% = dono pass 47%, ~18 mahine |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
