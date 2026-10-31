@@ -1175,6 +1175,9 @@ Engine = Tide Tokri k1 / Radar r3 ka f_tide bilkul wahi (10 candle naali toot cl
 SL roz 5 candle low/high tak, rukh palte = close par band). Share = #61 wale 30 (Dow 30). Farq: kharcha 0.03%/taraf + swap 5%/saal (BUY + SELL).
 **Drift jaanch:** Tide ausat % (rukh ke saath) >= 2 x drift (share ka aam din % x rukh x din). **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, (>= 10 tr) share
 >= 70% Exp > 0, (share x saal) > 50%, Tide % >= 2 x drift. **IMTIHAN** 2019+ CHHUPA; EK dafa: kul >= 30, Exp - 2SE > 0, Tide % >= 2 x drift = ASLI PASS. Ginti +1.
+**Koshish #62 TALAASH (1 Nov, user TV SS) = FAIL** (IMTIHAN band): 10,960 tr (2000-18 ~21/mahina), jeet 36%, Exp -0.003R, Exp-2SE -0.026, share 14/30, (share x saal) 553/1278,
+Tide ausat +0.08% vs drift +0.33%. **BUY 7723 tr +0.059R, SELL 3237 tr -0.150R.** Sabaq: share par SELL = share ki tezi ke khilaf = bara nuqsaan; BUY ka faida zyada tar drift
+(#61 jaisa). BUY-only nateeja dekh kar chunna = data snooping + drift shart - alag test NAHI (Claude faisla).
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
