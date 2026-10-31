@@ -1224,6 +1224,11 @@ mein nahi. chutti / tom / ibs_mandi = CLEAN (repaint nahi). **v3:** VIX ke apne 
 - **JasIbsEA i5:** (I1 HIGH) faisla 16:55 NY Exness data par, Python ka din ka close 16:14 NY (Dukascopy); 5 min pehle faisla = 119 mein 103 same, 1 min pehle = 110.
   (I2) 16:55-17:00 mein restart = nayi trade band. (I3) koi pehra nahi. (I4) lot current balance. (I5) restart pehla faisla. (I6) comment gum ho to din ginti 1 kam. (I7) aadha din.
 Ilaj: JasTrendEA t5 + JasIbsEA i6 (band candle par faisla, IBS cut-off 16:15 NY, restart, SL entry se, $100k base, GMT 0); pehra user se poochh kar.
+**Koshish #65 nateeja (1 Nov, user TV SS, v2, 4H aur D chart par BILKUL SAME number = chart se azad):** TALAASH 1990-2018 = **PASS (kamzor)**: SPX 180 tr, jeet 75%,
++0.257% vs drift +0.082%, +0.069R, Exp-2SE +0.001; NDX 186 tr, 76%, +0.604% vs +0.166%, +0.096R, +0.028; KUL 366 tr, 75%, +0.433% vs +0.124%, +0.082R, Exp-2SE +0.035.
+**IMTIHAN 2019+ = FAIL -> idea band:** SPX 71 tr 68% +0.097% vs drift +0.147%, +0.030R (-0.073); NDX 69 tr 71% +0.218% vs +0.225%, +0.065R (-0.053);
+KUL 140 tr, jeet 69%, +0.157% vs drift +0.186% (drift se KAM), +0.047R, Exp-2SE -0.031. (v2 = v3 ki tareekh jaanch ke bagair; NDX 186 tr = jor theek laga. Python judge
+2012-18: 103 tr, jeet 74-81%, Exp-2SE -0.007 = milta julta.) Sabaq: VIX darr ke baad khareed 2019+ mein aam tezi se behtar nahi.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
