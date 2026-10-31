@@ -1104,6 +1104,12 @@ Saal 4/4 musbat magar ghat-te: 2021 +48.6, 2022 +42.3, 2023 +9.1, 2024 +9.5R. BU
 Sabaq (#54 + #21): mashhoor paper wali US index intraday strategies 2021-22 mein taqatwar, 2023-24 kamzor, 2025-26 khatam (#54). Kharcha masla nahi, edge ghisa.
 **#53 asli kharche se (1 Nov, `tools/ftmo53_asli.py`, sirf andaza, setting wahi):** 2019-01..2026-10, 94 challenge: 0.03% par 83 pass / 0 fail / 11 adhoora, median 12.7 mahine
 (25% 9.3, 75% 22.7) - asli spread x 1.5 par 83 / 0 / 11, **median 11.7** (25% 8.5, 75% 22.2). Asli kharcha #53 ko thora tez karta hai, bas.
+**Koshish #55 qaida (1 Nov, 28vi chat, test se PEHLE, badalna mana) - #34 TOKRI bilkul wahi, sirf TF = 1H (`tools/st_tokri_1h.py`):** Supertrend 10/3 SIRF BUY
+Dukascopy H1 candles par seedha (jorna nahi), flip upar = agli open BUY, flip neeche = agli open band, SL nahi, 1R = 3 x ATR10, bar > 30; XAUUSD, XAGUSD, US500,
+USTEC (`data/ftmo/`), har market ek position. **Kharcha asli** (JasSpreadNaap x 1.5 aana-jana): har taraf US500 0.0039%, USTEC 0.00285%, XAU 0.0044%, XAG 0.0334%;
+gold par #34 wali kam az kam $0.50 (aana-jana) qaim; swap 3%/saal har raat. **TALAASH** entry < 2019: kul >= 100 tr, Exp - 2SE > 0, >= 3/4 market Exp > 0,
+(market x saal) musbat > 50%. **IMTIHAN** 2019+ EK dafa, SAKHT (gold 1H TALAASH #33 mein dekha, market 4H nateeje se chune): kul >= 30 tr aur Exp - 2SE > 0. Ginti +1.
+Maqsad: #53 ke trend hisse mein ~4 guna trade (FTMO tez) - PASS ho to FTMO hisaab alag (#56, qaida pehle).
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)
