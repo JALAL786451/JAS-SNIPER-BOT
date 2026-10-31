@@ -52,6 +52,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `indicators/jas_trend_shares.pine` | r1 (1 Nov) #63: JAS Trend daily (Supertrend 10/3 sirf BUY, #26) x 30 share, drift jaanch, TV table; IMTIHAN chhupa |
 | `indicators/jas_tide_shares.pine` | t1 (1 Nov) #62: JAS Tide (Kachhua 1D, f_tide) x 30 share (Dow 30), drift jaanch, BUY/SELL, TV table; IMTIHAN chhupa |
 | `indicators/jas_ibs_shares.pine` | s1 (1 Nov) #61: IBS #15 x 30 share (Dow 30), drift jaanch, TV table; IMTIHAN chhupa (input) |
+| `docs/research-team.md` | Research agent -> judge -> chief -> code judges ka tareeqa + prompt dhancha + sakht hadd (1 Nov) |
 | `docs/bank.md` | BANK (1 Nov): pass shuda / qareeb strategies jo abhi istemal nahi (#59 chutti, JPN 4H) + kab yaad dilana |
 | `indicators/jas_chutti.pine` | h1 (1 Nov) #59: NYSE chutti se pehle wala din (calendar 1971+), SPX + NDX daily, TV table; IMTIHAN chhupa |
 | `indicators/jas_ibs_mandi.pine` | m1 (1 Nov) #58: IBS jab close < SMA200 (mandi), SPX + NDX daily, TV table; IMTIHAN 2019+ chhupa (input) |
