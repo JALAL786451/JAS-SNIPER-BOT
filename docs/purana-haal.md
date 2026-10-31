@@ -1148,6 +1148,9 @@ Python mein jaancha: 1990, 1999, 2018-2026 sab NYSE chuttiyan bilkul mili. Jis d
 **Koshish #59 TALAASH (1 Nov, user TV SS, OANDA SPX500USD 1D chart) = PASS (bal baal)** - IMTIHAN se PEHLE likha: KUL 688 tr, jeet 57%, **is din +0.116% vs aam din +0.044%**,
 Exp +0.051R, **Exp-2SE +0.005**, saal 50/82. SPX 400 tr +0.140% (aam +0.033%), +0.055R (-2SE -0.003), 31/48; NDX 288 tr +0.082% (aam +0.059%), +0.045R (-0.028), 19/34.
 Imaandari: SPX-NDX ek hi din trade = jure hue, asal SE bara; IMTIHAN (~150 tr) mein Exp - 2SE > 0 ke liye ~+0.16R chahiye (TALAASH +0.051) = mushkil. Qaida wahi.
+**Koshish #59 IMTIHAN 2019+ (EK dafa, 1 Nov, user TV SS, settings default jaanchi) = ASLI PASS:** SPX 73 tr, jeet 68%, +0.163R (Exp-2SE **+0.049**); NDX 73 tr, 68%, +0.147R
+(+0.019); **KUL 146 tr, jeet 68%, +0.155R, Exp-2SE +0.070**. Dono index akele bhi PASS (jure hone ka shak kam). Asar 2019+ mein TALAASH se taqatwar.
+Agla: #60 FTMO hisaab (#53 + chutti, qaida pehle). EA baad mein: NYSE calendar + aadha din (3 Jul, Thanksgiving ke baad Jumma, 24 Dec = 13:00 band) ka khayal.
 
 
 ## sec 5 se (31 Oct 28vi chat ke aakhir mein hataya)

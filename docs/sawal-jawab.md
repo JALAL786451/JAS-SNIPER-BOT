@@ -111,3 +111,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - TV strategy SPX 2026 par -46%? -> sirf 2026 (IMTIHAN muddat), bina kharcha bhi -0.062R; 0.03% kharcha + 1% risk x 203 tr. "Umeed" wali baat Python 2021-24 (bina kharcha +0.134) ki thi (31 Oct).
 - Asli spread kitna? -> `JasSpreadNaap` s1 (Exness Demo, 20 din ticks): US500 0.40, USTEC 1.12, gold 0.24, chandi 0.025; Python ka 0.03%/taraf 10-16 guna zyada tha (chandi 1.3x) (31 Oct).
 - Noise boundary asli kharche se? -> #54 TALAASH PASS: 2021-24 1808 tr (~38/mahina), +0.113R, saal 4/4, jeet 42%; IMTIHAN QDM M1 2025+ baqi (31 Oct).
+- Chutti se pehle wala din (calendar)? -> #59 ASLI PASS: SPX + NDX, 1971-2018 688 tr (is din +0.116% vs aam +0.044%), 2019+ 146 tr jeet 68% +0.155R; `indicators/jas_chutti.pine` h1 (1 Nov).

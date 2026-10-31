@@ -147,6 +147,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 
 - Asli spread (Exness Demo, 31 Oct, `JasSpreadNaap`): US500 0.40, USTEC 1.12, gold 0.24 = 0.004-0.006% - Python ka 0.03%/taraf 10-16 guna zyada tha; chandi mehngi (0.044%). Chhoti TF ke FAIL dobara (pehle se likh kar).
 
+- Chutti se pehle wala din (NYSE calendar) SPX + NDX: #59 ASLI PASS (2019+ jeet 68%) - pehla calendar khandaan jo chala; chhoti TF wali sab fail (1 Nov).
+
 ## 5. Mere tools
 
 Har file ki ek line `CLAUDE.md` mein, lambi kahani `docs/files-tafseel.md` mein, purani tools
