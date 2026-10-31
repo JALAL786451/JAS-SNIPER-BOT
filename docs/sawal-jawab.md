@@ -101,3 +101,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - #49 ka seedha nateeja? -> report49.py: 2019-aaj $100k = +69% (~8.8%/saal), max DD 14.5%, bura din -2.9%, 836 tr; 2012-18 sirf +7% (gold/silver manfi) (31 Oct).
 - #49 2012 se aaj? -> $100k = +80% (~5.4%/saal), DD 15%, 15 mein 10 saal musbat; TV tokri dabba "SAB 2012-aaj" muddat (TV 4H data kam ho sakta) (31 Oct).
 - FTMO demo kaise chal raha? -> 31 Oct: Exness Demo 474832446 par JasTrendEA t4 + JasIbsEA i4 TRADE CHALU; purani khuli trade (TV par dikhi) naye account par nahi - agle signal se milao (31 Oct).
+- TV par 4H ka purana data? -> tokri dabba DAILY chart par lagao: request.security 240 ka data 2007 se aata hai (4H chart par sirf 2023) (31 Oct).

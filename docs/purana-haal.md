@@ -1029,3 +1029,6 @@ risk barhana user ka faisla (CLAUDE.md). Ek saath max khula risk ~5% (4 trend x 
 **#49 REPORT CARD poora 2012-01..2026-10 (14.8 saal):** 1469 tr (~8.3/mahina), jeet 48%, **+80.0% ($79,989, ~5.4%/saal)**, max DD 15.0%, bura din -3.2%; 15 mein se 10 saal musbat (2015 -5.4, 2022 -7.8 sab se bure).
 **#49 TV tokri t2 (31 Oct, user SS):** TV 4H data sirf 2023 se (IBS 1D 2003 se) -> trend 2012-18 = $0, TALAASH FAIL dikhe (sirf IBS 171 tr) = TV ki kami, asal TALAASH Python PASS.
 IMTIHAN 2019-aaj PASS (507 tr, Exp-2SE +0.067). Saal: 2024 +14.1 (Python +18.3), 2025 +26.4 (+25.7), 2026 +5.6 (+2.3) = mel. t3: "pehle" (chart shuru se pehle ka jor) alag.
+**#49 TV tokri t3 DAILY chart par (31 Oct, user SS):** daily chart se request.security "240" = 4H data **2007 se** (4H chart par sirf 2023). 2012-aaj: 1597 tr, jeet 48%,
+**+104.5% ($104,452)**, **DD 15.7%**, saal 11/15 (2015 -10.7, 2022 -6.0, 2018 -1.3, 2014 -0.5); TALAASH 2012-18 746 tr Exp-2SE -0.023 = FAIL (bal baal), IMTIHAN 2019+ 851 tr
++0.057 = PASS. Python 2012-aaj +80% / DD 15% se mel (TV swap nahi, OANDA data). Sabaq: tokri dabba hamesha D chart par; 2012-18 kamzor daur (Python bhi +7%).
