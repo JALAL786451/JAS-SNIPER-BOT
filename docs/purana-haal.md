@@ -1068,3 +1068,4 @@ US500 IBS 194 tr +0.039R (-0.020, 5/8) FAIL; JPN 161 tr +0.007 FAIL; ESP -0.007 
 #49 jyon ka tyon: trend 4H tokri (XAU, XAG, US500, USTEC) 0.75%, SL 6 ATR + **IBS ab US500 AUR USTEC** (har ek alag slot, wahi #15 qaida). IBS risk **1.0 / 1.5 / 2.0%** (dono par ek jaisa).
 **CHUNAO** 2012-01..2018-12: shart P1 fail < 20% aur pass > fail; max (pass - fail); barabar = kam risk. **2019+** ek dafa (ehtiyat: 2019+ data #49 / #52 mein dekha ja chuka -
 is liye sirf tasdeeq): pass > fail aur P1 fail < 20%, aur #49 (69 pass / 14 fail) se muqabla. Maloomat: trade/mahina + report card. Ginti +1.
+**Koshish #53 CHUNAO (31 Oct, 2019+ se PEHLE likha):** 84 challenge, trend 5.9 + IBS 3.2 tr/mahina. IBS 1.0% = **57 pass / 9 fail (P1 10.7%)**, median 35.6 mahine = CHUNI; 1.5% = 45/24; 2.0% = 22/51 (P1 28.6%). (#49 CHUNAO 0.75+2.0 US500 akela = 52/15.)

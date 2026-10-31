@@ -4,6 +4,7 @@ Qaida (badalna mana): docs/purana-haal.md, grep "Koshish #49 qaida".
 
   python3 tools/ftmo49.py                               # CHUNAO 2012-2018 (9 setting)
   python3 tools/ftmo49.py --imtihan --tr 0.5 --ibs 1.0  # 2019+ EK dafa
+  --ibs-syms US500 USTEC  = Koshish #53 (IBS dono index par), qaida grep "Koshish #53 qaida"
 """
 import argparse
 
@@ -21,6 +22,7 @@ def main():
     ap.add_argument('--imtihan', action='store_true')
     ap.add_argument('--tr', type=float, nargs='*', default=[0.25, 0.5, 0.75])
     ap.add_argument('--ibs', type=float, nargs='*', default=[0.5, 1.0, 2.0])
+    ap.add_argument('--ibs-syms', nargs='*', default=['US500'])
     a = ap.parse_args()
     syms = list(FILES)
     dfs = {s: load(s) for s in syms}
@@ -29,7 +31,7 @@ def main():
     cetday = (cet.year * 10000 + cet.month * 100 + cet.day).values
     mkts = [Mkt(s, dfs[s], grid) for s in syms]
     trend = [st4h_trades(dfs[s], K) for s in syms]
-    ibs = [ibs_trades(dfs[s]) if s == 'US500' else [] for s in syms]
+    ibs = [ibs_trades(dfs[s]) if s in a.ibs_syms else [] for s in syms]
     if a.imtihan:
         starts = pd.date_range('2019-01-01', '2026-10-01', freq='MS', tz='UTC')
         end = grid[-1] + 1
