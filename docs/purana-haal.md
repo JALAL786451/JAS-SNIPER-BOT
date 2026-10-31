@@ -1296,4 +1296,11 @@ XCUUSDm 8.04 = 0.0558% (14418) -> 0.042%/taraf. Platinum / palladium gold se 40-
 **#66 judge (1 Nov) = CLEAN** (trade logic `simT` t4 se hubahu, PASS math sahi, repaint nahi). Chhote ilaj -> **d2**: saal UTC (#34 / Python jaisa), drift ke din flip par 1 kam,
 har dhaat ki 4H candle ka NY waqt jaancha ("galat waqt" ginti), aur **pehle SIRF DATA jaanch (nateeja chhupa)**. **Chart ka qaida (nateeja dekhne se PEHLE):** 1D aur 1W dono
 par data jaanch; jis chart par teeno dhaaton ka sab se purana "se" saal ho (barabar = 1D) usi par EK dafa nateeja. Data 2016 ke baad se ho ya TALAASH < 100 tr = data ki kami se FAIL.
+**Research agent (1 Nov) - 5 naye ummeedwar (agent ne Yahoo data par 2019+ bhi DEKHA = in qawaid ka 2019+ IMTIHAN "dekha hua"; aakhri faisla demo forward se):**
+1) US chutti ki khirki NON-US index (GER40, UK100, FRA40, EU50, JP225, AUS200, HK50 + US30, US2000) - Casado/Muga/Santamaria 2013, Ariel 1990; 2019-26 +31..+49 bp (t 1.8-5),
+2000-18 kamzor +2..+33 bp; ~7 tr/mahina magar ek waqia = ek daao. ~50% imkaan. 2) Global index short-term reversal (Baltussen/van Bekkum/Da 2019 JFE) z = -(4r0+3r1+2r2+r3)/(sd20 sqrt30)
+> 1 + C > SMA200, band z <= 0 ya 5 din; GER40/EU50/FRA40/UK100/JP225/AUS200; drift 1.6x (2x shart par kinare). 3) Mandi mein short (z < -1, C < SMA200) US500/USTEC/US2000,
+~1 tr/mahina. 4) Month-end pension rebalancing (Harvey/Mazzoleni/Melone 2025) 2019+ ghis gaya. 5) Crypto trend (Zarattini/Pagani/Barbon 2025) drift 1.4x < 2x.
+Rad: pre-FOMC (2015 ke baad khatam), FOMC even weeks, opex, commodity reversal, FX fix. Add-on: IBS US30 drift 5.4x (<2019) / 2.2x (2019+) magar US500 IBS ke din hi.
+Sabaq: research agent ko aainda saaf hidayat - 2019+ data NA dekhe (sirf TALAASH < 2019).
 

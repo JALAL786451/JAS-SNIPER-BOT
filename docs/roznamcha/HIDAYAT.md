@@ -84,3 +84,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | ek link | Download / copy ke liye SIRF EK link do (branch wala). "Purani copy dikhe to ye" wala doosra link NAHI - user confuse hota hai (1 Nov). |
 | bank | Pass shuda magar FTMO mein madadgar nahi = EA NAHI banao, `docs/bank.md` mein rakho; jab jor / trade barhane / FTMO pass / real account ki baat ho, user ko KHUD yaad dilao (user 1 Nov: "bohot zaroori"). | 1 Nov |
 | Somwar nahi | Har jawab ke aakhir mein "Somwar ko demo SS" jaisi yaad-dihani NAHI - user ko lagta hai kaam ruk gaya ("sui Somwar par atak gayi", mayoosi). Agla qadam hamesha ABHI ka kaam (test / talaash); demo SS ki baat sirf jab user khud laaye ya Somwar aa jaye. | 1 Nov |
+| research agent | Agent ko hamesha likho: "2019+ (IMTIHAN) data ka nateeja NA dekho / NA chalao, sirf < 2019" - 1 Nov research agent ne 2019+ dekh liya (5 ummeedwar aadhe dekhe hue). | 1 Nov |
