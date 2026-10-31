@@ -106,3 +106,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Ek instrument par apna qaida? -> #51: 3 sabit khandaan x 28 = 84, sakht shart (3.24 SE) -> 0 bache; ek market ka data ittefaq se alag sabit karne ko kaafi nahi = tokri zaroori (31 Oct).
 - Teacher wala tareeqa (behtareen chuno, naya paper do)? -> #52: top 5 (sab IBS) mein se USTEC IBS ASLI PASS (2019+ 207 tr, 71% jeet, 7/8 saal) (31 Oct).
 - FTMO ka naya mansooba? -> #53: JasTrend 4H tokri 0.75% + IBS US500 + USTEC 1%: 2019+ 83 pass / 0 fail, 2012-aaj +92%, DD 13.4%, ~11 tr/mahina (31 Oct).
+- Roz 1-3 trade wali (noise boundary #37)? -> M1 2021-24: ~38 tr/mahina, kharche se pehle +0.134R (asli edge) magar 0.03% kharche ke baad -0.047R = FAIL; asli spread naap kar #54 (31 Oct).

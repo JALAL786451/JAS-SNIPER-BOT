@@ -1073,3 +1073,6 @@ is liye sirf tasdeeq): pass > fail aur P1 fail < 20%, aur #49 (69 pass / 14 fail
 (#49: 69/14). Report card ($100k lagatar): 2019+ 1043 tr (~11/mahina), jeet 54%, **+75.9%, DD 11.2%**; 2012-18 +12.2%, DD 13.4%; **2012-aaj +91.8% (~6.2%/saal), DD 13.4%**,
 saal 12/15 musbat (2012 -3.8, 2015 -5.0, 2022 -7.0). IBS ab 401 tr (jeet 70%) 2019+. IBS risk 1% = purana default (risk kam hua). -> demo par JasIbsEA i5 (US500,USTEC, 1%).
 **#53 TV tokri t4 DAILY (31 Oct, user SS):** 2012-aaj 1969 tr, jeet 52%, **+108.9%, DD 13.5%**, saal 13/15 (2015 -8.6, 2022 -5.8); TALAASH 905 tr Exp-2SE -0.015 (bal baal), IMTIHAN 1064 tr +0.061 PASS. Python +91.8% / DD 13.4% se mel.
+**Koshish #37 nateeja (31 Oct, 28vi chat, M1 2021-24 aa gaya) = TALAASH FAIL** (IMTIHAN band). Tokri 1808 tr (**~38/mahina**), Exp -0.047R, Exp-2SE -0.115, jeet 36%, saal 1/4.
+**MAGAR bina kharcha +0.134R** (US500 +0.163, USTEC +0.105) - edge kharche se pehle saaf; 0.03%/taraf (index par ~2.5 pt round-trip) ne kha liya. USTEC BUY +0.045 (455 tr).
+Sabaq: is strategy ka faisla KHARCHE par hai - agla qadam asli spread naapna (Exness / FTMO US500, US100), phir #54 naye (pehle se likhe) kharche ke saath.
