@@ -1044,3 +1044,11 @@ SL lage to us hafte dobara nahi (agle Juma set mein ho to nayi). Kharcha 0.03%/t
 **Koshish #50 nateeja (31 Oct, 28vi chat) = A TALAASH FAIL** (IMTIHAN / FTMO band). 774 tr (~9.8/mahina), Exp -0.083R, Exp-2SE -0.154, jeet 37%, **bina kharcha -0.005R (sifar)**;
 BUY -0.020R (404), SELL -0.152R (370); saal 2/7 musbat (2015 -23R, 2016 -26R, 2018 -18R). Sabaq: 28 CFD mein 60 din ki relative taqat (long/short) ka koi faida nahi;
 SELL taraf khaas nuqsaan (market ka lamba jhukao upar). Gend wala khayal (ulta chalne wale jore) is shakal mein nahi chala.
+
+**Koshish #51 qaida (31 Oct, 28vi chat, user "D", test se PEHLE, badalna mana) - HAR MARKET KA APNA QAIDA (3 sabit khandaan x 28 market = 84 imtihan) - `tools/har_market51.py`:**
+Daily candle NY 17:00, wahi 28 market (#47). Forex + DOLLARIDX = BUY + SELL (aaina), baqi SIRF BUY. Kharcha 0.03%/taraf + swap 3%/saal. 1R = SL doori.
+**K1 TREND:** Supertrend 10/3 daily flip -> agli open; ulta flip -> agli open band; SL 4 x ATR10 (#27 jaisa). SL ke baad sirf naya flip.
+**K2 GIRAWAT (IBS #15):** close > SMA200 aur IBS < 0.2 -> isi close par BUY; IBS > 0.8 ya 5 din -> close par band; SL 3 x ATR14. (SELL aaina: close < SMA200, IBS > 0.8.)
+**K3 TOOT (Turtle 20/10):** close > pichhle 20 din ka high -> agli open BUY; close < pichhle 10 din ka low -> agli open band; SL 2 x ATR20. (SELL aaina.)
+**TALAASH** entry < 2019 (har jor alag): PASS = >= 30 tr, **Exp - 3.24 x SE > 0** (84 imtihan ki wajah se sakht: 0.05/84 one-sided), saal (R jor) musbat > 50%.
+**IMTIHAN** 2019+ EK dafa sirf bache hue jor: PASS = >= 15 tr aur Exp - 2SE > 0. Dono PASS = tokri ka hissa. Ginti +1 (84 imtihan ek koshish).
