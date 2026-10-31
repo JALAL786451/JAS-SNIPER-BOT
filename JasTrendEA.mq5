@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD t3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD t4   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                   JasTrendEA.mq5 |
@@ -48,7 +48,9 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "t3"          // har nayi file par ye number barhta hai
+#define EA_BUILD "t4"          // har nayi file par ye number barhta hai
+// t4 (31 Oct 2026): FTMO #49 ASLI PASS ki setting DEFAULT - 4H, SL 6 ATR, risk 0.75%, lot hadd 20,
+//     FTMO pehra 100000 (target 10 / din 4 / kul 8), TRADE true. Sirf FTMO demo 474832446 ke liye.
 #define MAXM 10
 
 CTrade trade;
@@ -68,13 +70,13 @@ input int    InpTfH        = 4;        // Candle: 4 = 4H (#34 ASLI PASS), 24 = d
 input double InpSlMult     = 6.0;      // Server SL (x ATR): 4H = 6 (hifazat 2R), daily FTMO #27 = 4
 
 input group "=== 2 - Risk ==="
-input bool   InpTrade      = false;    // TRADE KARE? false = sirf dikhaye (Tester mein hamesha trade)
-input double InpRiskPct    = 1.0;      // Har trade ka risk (% balance)
+input bool   InpTrade      = true;     // TRADE KARE? false = sirf dikhaye (Tester mein hamesha trade)
+input double InpRiskPct    = 0.75;     // Har trade ka risk (% balance) - #49: 0.75
 input double InpMaxRiskPct = 2.0;      // Sab se chhoti lot ka risk is % se zyada = trade nahi
-input double InpMaxLot     = 2.00;     // Lot ki hadd (hifazat)
+input double InpMaxLot     = 20.0;     // Lot ki hadd (hifazat) - $100k par 20
 
 input group "=== 3 - FTMO pehra (shuru balance 0 = band) ==="
-input double InpStartBal   = 0.0;      // Challenge ka shuru balance (FTMO 100000). 0 = pehra band
+input double InpStartBal   = 100000.0; // Challenge ka shuru balance (FTMO 100000). 0 = pehra band
 input double InpTargetPct  = 10.0;     // Target % (Phase 1 = 10, Phase 2 = 5) - pahunche to sab band, EA ruk jaye
 input double InpDayStopPct = 4.0;      // Din ka nuksan % (FTMO 5) - is par sab band, us din nayi nahi
 input double InpMaxDdPct   = 8.0;      // Kul nuksan % (FTMO 10) - is par sab band, EA ruk jaye

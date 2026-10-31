@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD i3   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD i4   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                     JasIbsEA.mq5 |
@@ -43,7 +43,9 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "i3"          // har nayi file par ye number barhta hai
+#define EA_BUILD "i4"          // har nayi file par ye number barhta hai
+// i4 (31 Oct 2026): FTMO #49 ASLI PASS ki setting DEFAULT - US500, risk 2%, lot hadd 20, TRADE true.
+//     Sirf FTMO demo 474832446 ke liye (JasTrendEA t4 ke saath).
 #define MAXM 10
 
 CTrade trade;
@@ -65,10 +67,10 @@ input int    InpAtrLen     = 14;       // ATR length
 input double InpSlMult     = 3.0;      // SL (x ATR) - hifazat
 
 input group "=== 2 - Risk ==="
-input bool   InpTrade      = false;    // TRADE KARE? false = sirf dikhaye (Tester mein hamesha trade)
-input double InpRiskPct    = 1.0;      // Har trade ka risk (% balance)
+input bool   InpTrade      = true;     // TRADE KARE? false = sirf dikhaye (Tester mein hamesha trade)
+input double InpRiskPct    = 2.0;      // Har trade ka risk (% balance) - #49: 2
 input double InpMaxRiskPct = 2.0;      // Sab se chhoti lot ka risk is % se zyada = trade nahi
-input double InpMaxLot     = 2.00;     // Lot ki hadd (hifazat)
+input double InpMaxLot     = 20.0;     // Lot ki hadd (hifazat) - $100k par 20
 
 input group "=== 3 - Amal ==="
 input int    InpBars       = 1200;     // Kitni daily candles parhni
