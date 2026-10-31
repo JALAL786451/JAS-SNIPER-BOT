@@ -1319,4 +1319,7 @@ Kharcha 0.02%/taraf + swap 3%/saal. Tareekh = `time_tradingday` (UTC). **Jure hu
 **#67 judge (1 Nov) = BUG (sirf compile): 7 x 19 = 133 tuple > 127 hadd** -> **k2**: drift ab ausat bheja (17 x 7 = 119). Baqi CLEAN: `f_win` Python mein 1971-2030 ki 516/516
 NYSE chuttiyan sahi (Monday / Good Friday / Thanksgiving / observed / Juneteenth 2022+), exit pehli session >= H (Europe Easter, Christmas, Japan 31 Dec-3 Jan sahi),
 time_tradingday UTC sahi (ASX garmi bhi), repaint nahi, PASS / IMTIHAN lock qaide jaisa. Note: Asia ke index ki khirki US chutti se pehle khatam (qaide jaisa).
+**QDM M1 2012-2018 (1 Nov, user ne upload kiya, `data/qdm/M1` USA500IDXUSD / USATECHIDXUSD _M1_2012..2018):** wohi Dukascopy source - **2013-02-23..05-21 soorakh (89 din) QDM
+mein bhi** (asal data hi nahi), 2012 ~395 min/din (sirf cash ke qareeb), 2015-17 ~840 min/din (14 ghante), cash 09:30-16:00 zyada tar poora (363-390 / 390). = data/ftmo jaisa,
+ilaj nahi hua. Tasalli: #53 ka TV tokri (OANDA, alag source) 2012-aaj +108.9% vs Python +91.8% - alag data par bhi wahi nateeja. M1 2012-18 aage ki TALAASH ke kaam aayega.
 
