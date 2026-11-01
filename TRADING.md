@@ -57,7 +57,7 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 **29vi chat (1 Nov)** - tafseel `docs/purana-haal.md` grep "29vi chat", "Koshish #69", "Koshish #70", "Research team daur 1". Purani 28vi: grep "sec 5 se (1 Nov 29vi".
 Spread naap 2 (oil, forex, BTC, XCU, XNG). **#69** #68 + Tide oil = IMTIHAN FAIL (fail 0 -> 11) -> bank. **Research daur 1** (`docs/research/`): C1 KEEP, baqi REJECT.
 **JasKhirkiEA k2** (judge: Python se 843/843; k2 = 5 fix) FTMO demo par ✅ + t5/i6 pehra +20261101 ✅. FTMO fees / Swing / VPS / discount / gap qaida: `docs/sawal-jawab.md`.
-**#70 C1 = TALAASH FAIL (30vi chat, user TV SS):** 312 tr, -0.007R, Exp-2kSE -0.038, ausat -0.018% < drift, saal 31/58, NI225 -0.010 HSI -0.017 = sab shart fail -> BAND (IMTIHAN nahi). CFD bhi manfi tha.
+**#70 C1 = TALAASH FAIL (30vi chat, user TV SS):** 312 tr, -0.007R, Exp-2kSE -0.038, ausat -0.018% < drift, saal 31/58 (pass), NI225 -0.010 HSI -0.017 = Exp, drift, NI225/HSI fail -> BAND (IMTIHAN nahi). CFD bhi manfi tha.
 **AGLA KAAM:** (b) Demo 3 EA chalu (sec 6-7); Somwar pehli trades dekho. Pehli khirki 24 Nov. (c) **Asli FTMO se PEHLE:** t5/i6 InpServerGMT -2 (k2 jaisa) + FTMO symbol naam
 (GER40.cash ...) + pehra B phir D; FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao; Swing; ftmo.com offer (CLAUDE.md). (d) Research daur 2 (zyada trades,
 mazboot; Gotobi sirf waiver). BTC + Kachhua baqi. BANK (#59, #69) KHUD yaad dilao.
