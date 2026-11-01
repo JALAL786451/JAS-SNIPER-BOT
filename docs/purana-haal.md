@@ -1385,3 +1385,18 @@ band (tareekh >= P wali pehli candle), SL 3 x ATR20 (gap = open) = 1R, sirf BUY.
 **IMTIHAN 2019-01..aaj EK dafa (TALAASH PASS par):** N >= 30, Exp - 2kSE > 0, >= 2x drift. FAIL = idea band. PASS -> FTMO jor #68 + C1 (risk 0.10/0.15/0.25, #68 shart). Ginti +1.
 **#70 CFD jaanch 2012-18 (Dukascopy H1, #68 timing, shart NAHI, TV TALAASH se PEHLE):** DAX 11 tr -0.013R, UKX 12 -0.029, PX1 6 -0.042, SX5E 3 +0.018,
 NI225 59 -0.008, XJO 11 +0.006, HSI 34 -0.036 = KUL 136 tr **-0.017R** (+-0.023 kSE) - CFD par (cash close ke baad wali H1) faida nahi dikha. TV `jas_c1.pine` c1 TALAASH baqi.
+
+## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
+
+**28vi chat (30-31 Oct)** - tafseel `docs/purana-haal.md` grep "28vi chat" + "Koshish #43".."#54". Purani 27vi: grep "sec 5 se (31 Oct 28vi".
+DATA: 28 market H1 (`data/duka/H1/JAS_ZIP/` + `data/ftmo/`) + M1 US500/USTEC 2021-aaj (`data/qdm/M1/`). Baqi baad mein QDM.
+#43-#52 FAIL / chhote PASS -> **#53 FTMO mansooba ASLI PASS**. #37 noise boundary FAIL (andaze ka kharcha 0.03%) -> `JasSpreadNaap` s1 ne asli spread naapa
+(US500 0.40, USTEC 1.12, gold 0.24 = andaze se 10-16 guna kam; chandi 0.025 mehngi) -> **#54 TALAASH PASS** (2021-24: +0.113R, ~38 tr/mahina, saal 4/4, jeet 42%).
+**1 Nov:** #54 IMTIHAN 2025+ FAIL (edge 2025-26 mein khatam), #21 ORB TALAASH FAIL (2023-24 kamzor). #53 asli kharche se median 11.7 mahine (83/0/11). #55 trend 1H, #56 IBS 4H, #57, #58 FAIL. **#59 chutti ASLI PASS**, magar #60 FTMO (#53 + chutti) FAIL = FTMO #53 hi.
+**AGLA KAAM:** (a) **JasKhirkiEA k2** (judge 1 Nov: Python se 843/843 mile; k2 = 5 fix) -> F7 + FTMO demo, t5/i6 InpGuardMagics +20261101. Pehli khirki 24 Nov. **Asli FTMO se PEHLE:** t5/i6 mein bhi InpServerGMT -2 (FTMO GMT+2/+3) + FTMO symbol naam + pehra B phir D.
+(b) **FTMO DEMO (474832446) = #53** TRADE CHALU: JasTrendEA t4 (XAUUSDm H4, 4 market, 0.75%, pehra 110k/96k/92k) + JasIbsEA i5 (US500m D1, US500+USTEC, 1%).
+Somwar: pehli trades + TV `JAS FTMO 53 f2` dabba ka SS milao; 1-2 hafte baad VPS, phir FTMO challenge.
+(c) Talaash = **research team** (`docs/research-team.md`, reset ke baad pehla cycle). BTC + Kachhua baqi. **BANK** `docs/bank.md` (#59 chutti): FTMO pass / trade barhana par KHUD yaad dilao.
+**Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. SELL band = ~3,690 par khatam (tafseel purana-haal).
+**RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
+

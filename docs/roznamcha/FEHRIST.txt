@@ -37,7 +37,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - JAS_ZIP z3: TASHEEH - folder ZIP_UPLOAD, explorer se (z2 khud ko dobara chalati thi)
    - #49 report card 2012-aaj: +80%, DD 15%
 
-2026-10-31  (32 kaam)
+2026-10-31  (97 kaam)
    - Add files via upload
-   - Koshish #53 qaida (FTMO: #49 + IBS USTEC, IBS risk 1/1.5/2) - test se pehle
-   - #54 TALAASH PASS: noise boundary asli spread ke saath +0.113R (2021-24, 1808 tr); spread n
+   - TRADING.md 8 KB ke andar
+   - sawal-jawab: market EAs research, NinjaTrader, FTMO gap/Swing note
+
+2026-11-01  (12 kaam)
+   - Add files via upload
+   - Research daur 1: agent + judge, C1 KEEP, baqi REJECT
+   - TRADING: JasKhirkiEA k2 demo par

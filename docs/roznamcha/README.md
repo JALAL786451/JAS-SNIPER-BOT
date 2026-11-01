@@ -13,4 +13,5 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | 2026-10-28 | 49 | `2026-10-28.md` | Koshish #26 qaida + jas_trend_pro_test_s3.pine (Supertrend s / JAS Trend Pro t3.3: tokri table (4 market + KUL) |
 | 2026-10-29 | 52 | `2026-10-29.md` | JasTrendEA t3: 4H candle (#34 tokri), SL 6xATR, magic 202610 / jas_trend_pro.pine t3.5: moti Supertrend 10/3 lakeer default |
 | 2026-10-30 | 25 | `2026-10-30.md` | Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab pa / #49 report card 2012-aaj: +80%, DD 15% |
-| 2026-10-31 | 32 | `2026-10-31.md` | Add files via upload / #54 TALAASH PASS: noise boundary asli spread ke saath +0.113 |
+| 2026-10-31 | 97 | `2026-10-31.md` | Add files via upload / sawal-jawab: market EAs research, NinjaTrader, FTMO gap/Swin |
+| 2026-11-01 | 12 | `2026-11-01.md` | Add files via upload / TRADING: JasKhirkiEA k2 demo par |

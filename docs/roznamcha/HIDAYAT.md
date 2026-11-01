@@ -87,3 +87,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | research agent | Agent ko hamesha likho: "2019+ (IMTIHAN) data ka nateeja NA dekho / NA chalao, sirf < 2019" - 1 Nov research agent ne 2019+ dekh liya (5 ummeedwar aadhe dekhe hue). | 1 Nov |
 | research team | Talaash ka tareeqa `docs/research-team.md`: Research agent -> Research judge -> Chief (main session, alag agent nahi) -> code judges. Agent 2019+ kabhi na dekhe. Chhoti TF bhi dhoondo magar asli spread + 2020 ke baad saboot + MT5 ticks (user 1 Nov). | 1 Nov |
 | FTMO offer | FTMO khareedne / fees ki baat par aur Nov / Dec ki chat mein ftmo.com ka chalu offer KHUD check karke batao (Claude chat ke bahar website nahi dekh sakta - sirf jab baat ho). | 1 Nov |
+| nayi chat | User (1 Nov): nayi chat ko kuch batana na pare - sec 5 mein agla kaam + qaida ka grep likho; user sirf "TRADING" + SS bhejega. | 1 Nov |
