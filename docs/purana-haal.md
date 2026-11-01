@@ -1441,7 +1441,11 @@ pass > fail, (pass - fail) >= #68; behtareen = zyada (pass - fail), phir kam med
 Ginti +1 (BTC Kachhua ab #74). Maloomat: Pine `indicators/jas_5ea.pine` (5 EA chart) - faisla Python se. Research P: TALAASH 0.50, #68 behtar 0.20.
 **Koshish #73 TALAASH (1 Nov, entry < 2019, kharcha + swap ke BAAD) = FAIL** (CHUNAO / IMTIHAN NAHI chale): S1 trend SELL (+SMA200) XAU 82 tr +0.062R (+-0.085) jeet 37%,
 XAG 96 tr -0.040R, US500 5 tr -0.053R, USTEC 8 tr +0.003R; S2 IBS SELL US500 19 tr -0.004R, USTEC 16 tr -0.121R. **KUL 226 tr, -0.004R (Exp-2SE -0.094), jeet 33%.**
-Sabaq: SELL sirf mandi mein bhi sifar ke aas paas; US index 2012-18 mein SMA200 se neeche kam (13 tr). Gold SELL thora musbat magar shor ke andar. Judge jaanch baqi.
+Sabaq: SELL sirf mandi mein bhi sifar ke aas paas; US index 2012-18 mein SMA200 se neeche kam (13 tr). Gold SELL thora musbat magar shor ke andar.
+**Judge #73 (1 Nov, `docs/research/judge-73.md`) = chhota BUG, FAIL wahi:** `buy_ko_tarjeeh` SELL banne ke BAAD lagta tha - ruki / kati S2 apni asal band tak nayi S2 rokti
+(asli EA agle din dobara dekhta) + S2/B2 index ek bar aage. Theek karke KUL 228 tr -0.0032R (Exp-2SE -0.093) = TALAASH FAIL wahi. Baqi CLEAN: aaina (XAG 384, USTEC 300, IBS USTEC 92
+bhi), SMA200 shart 1,409 / 1,409 (look-ahead nahi), SL ASK par 0 farq, raat ginti ka farq +-0.0001R. Ek trade: gross +0.018R, kharcha 0.006, **swap 0.016 (sab se bara bojh)**.
+Aage SELL EA ho to: S1 entry usi open par hoti jahan B1 BUY band hoti - band hoti BUY ko "khuli" na gine. SELL BAND (#73 FAIL).
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 

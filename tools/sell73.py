@@ -7,6 +7,8 @@ Qaida (badalna mana): docs/purana-haal.md, grep "Koshish #73 qaida". FTMO hisaab
   S2 IBS SELL = tools/ftmo_test.ibs_trades ka aaina (IBS > 0.8 aur close < SMA200 -> din ke close par SELL,
      SL 3 x ATR14 oopar, band = IBS < 0.2 wala din ya 5 din, close par).
   Har trade: (entry H1 idx, exit H1 idx, entry, exit, SL doori, -1).
+Judge #73 (1 Nov): buy_ko_tarjeeh SELL banne ke BAAD lagta hai - ruki/kati S2 apni asal band tak nayi S2 rokti hai
+(asli EA agle din dobara dekhe) + S2/B2 index ek bar aage. Theek karne par 228 tr -0.0032R = FAIL wahi. SELL band.
 """
 import numpy as np
 import pandas as pd
