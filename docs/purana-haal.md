@@ -1447,6 +1447,7 @@ Sabaq: SELL sirf mandi mein bhi sifar ke aas paas; US index 2012-18 mein SMA200 
 bhi), SMA200 shart 1,409 / 1,409 (look-ahead nahi), SL ASK par 0 farq, raat ginti ka farq +-0.0001R. Ek trade: gross +0.018R, kharcha 0.006, **swap 0.016 (sab se bara bojh)**.
 Aage SELL EA ho to: S1 entry usi open par hoti jahan B1 BUY band hoti - band hoti BUY ko "khuli" na gine. SELL BAND (#73 FAIL).
 **Pine `indicators/jas_5ea.pine` p1 (1 Nov, user "5 EA ka chart"):** expert agent ne banaya (11 request, 114/127 tuple), pinecheck saaf, TV compile baqi. SELL 2019+ ab Pine mein DIKHTA hai - #73 FAIL pakka; 2019+ dekh kar SELL wapas lana MANA (hindsight).
+**jas_5ea p4 (1 Nov, user TV SS):** OANDA:SPX500USD + NAS100USD 1D par chal gaya (table, ruki, entry/SL line sahi); OANDA:USTECH par "Runtime error: error in series" (alag symbol - NAS100USD istemal karo). Table mein click se chart kholna TV mein mumkin NAHI -> watchlist `docs/tv_watchlist_jas11.txt`.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
