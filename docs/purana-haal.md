@@ -1354,3 +1354,7 @@ data 2013 se. Kharcha har taraf 0.75 x spread (USOIL 0.01455%, UKOIL 0.01133%), 
 **CHUNAO 2012-2018** (har mahine challenge): Tide risk har market 0.10 / 0.25 / 0.50 vs #68 (isi run, isi grid): shart P1 fail < 20%, pass > fail,
 (pass - fail) >= #68 ka; behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL (Tide bank mein).
 **IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk): PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Aadha dekha: oil Tide 2019+ #6 TV mein dekha tha. Ginti +1.
+**Koshish #69 CHUNAO 2012-2018 (1 Nov, IMTIHAN se PEHLE likha):** Tide 2012-18 (kharche se pehle) USOIL 44 tr +0.175R (+-0.184), UKOIL 40 tr +0.356R (+-0.218).
+84 challenge: #68 (isi run) 64 / 2 / 18, median 36.3 · Tide 0.10%: 67 / 0, 33.2 · 0.25%: 67 / 0, 29.8 · **0.50%: 67 / 0, 24.7 = CHUNI**.
+**Koshish #69 IMTIHAN 2019-01..2026-10 (EK dafa, 1 Nov) = FAIL:** 94 challenge: #68 83 / 0 / 11, median 10.8 -> + Tide 0.5%: **74 pass / 11 fail (3/8)** / 9, median 10.8.
+Fail 0 -> 11 (2020 tel crash ka saal shamil). Kam risk dobara NAHI (nateeja dekh kar chunna = mana). Tide oil -> BANK (#59 jaisa: funded / real account par naya test).
