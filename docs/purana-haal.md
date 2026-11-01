@@ -1419,6 +1419,9 @@ Trade = `tokri47.trades4h` jyon ka tyon (#47 forex: 4H Supertrend 10/3, BUY + SE
 AUDUSD 0.0149%), swap 3%/saal. Har market alag slot. #68 bilkul wahi. **CHUNAO 2012-2018** (84): fx risk har market 0.25 / 0.50 / 0.75 vs #68 (isi run); shart #69 wali
 (P1 fail < 20%, pass > fail, (pass - fail) >= #68; behtareen = zyada (pass - fail), phir kam median, phir kam risk). Koi nahi = FAIL. **IMTIHAN 2019-01..2026-10 EK dafa:**
 PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Maloomat: fx trades TALAASH R. Claude umeed 10-15%. Ginti +1.
+**Koshish #72 CHUNAO 2012-2018 (1 Nov) = FAIL** (IMTIHAN nahi chala): fx 4H trend 2012-18 (kharche se pehle) EURUSD 286 tr +0.008R, USDJPY 283 +0.043, AUDUSD 287 -0.017.
+84 challenge: #68 (isi run, grid bara) 61 / 5 / 18, median 36.5 · fx 0.25%: 46 / 25 (9/16), 25.4 · 0.50%: 38 / 35, 19.1 · 0.75%: 25 / 51, 12.9. Waqt kam hua magar fail bohot barhe.
+Sabaq: forex trend ka faida ~0 (kharche se pehle bhi) -> trades barhne se sirf jua barhta hai. Forex 4H trend (7 currency + DXY) POORA band.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
