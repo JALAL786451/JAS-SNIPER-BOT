@@ -1,5 +1,5 @@
 //@version=6
-// JAS 5 EA  (build p5, Pine v6, 1 Nov 2026; p3 sirf chart ka instrument, p4 judge fix, p5 = user raaye + levels / extra)  -  #73 ke 5 EA. TRADE NAHI, sirf dekhna.
+// JAS 5 EA  (build p6, Pine v6, 1 Nov 2026; p3 sirf chart ka instrument, p4 judge fix, p5 = user raaye + levels / extra, p6 = Abhi R + agli khirki default ON)  -  #73 ke 5 EA. TRADE NAHI, sirf dekhna.
 // ============================================================================
 //  KAISE LAGAYEIN: KOI BHI chart, KOI BHI TF (1m .. 1D). Script chart ka instrument khud pehchanti hai (gold, chandi, US500,
 //   USTEC, 7 index) -> sirf usi ke EA: chhoti table + nishan + lakeer. Na pehchane to setting "Chart ka market".
@@ -13,7 +13,7 @@
 //  LEVELS (default ON, patli, sirf daayein aakhri hissa): Trend 4H = Supertrend(10,3) ki pichhli band 4H candle ki lakeer
 //   (B1 band / S1 entry ka mor); SMA200 = din (17:00 NY) ki SMA200 (S1 shart, B2/S2); IBS (sirf US500/USTEC): AAJ ke high/low
 //   se - close "IBS BUY < x" se neeche = IBS < 0.2, "IBS 0.8 > y" se upar = IBS > 0.8. Aaj ki range ke saath badalte hain.
-//  EXTRA (sab ka ON/OFF; default BAND, sirf warning ON): A) Alert - setting ON karein, phir TV: Alert -> Condition: "JAS 5EA p5"
+//  EXTRA (sab ka ON/OFF; default BAND; ON: B Abhi R, D agli khirki, E warning): A) Alert - setting ON karein, phir TV: Alert -> Condition: "JAS 5EA p6"
 //   -> "JAS 5EA: ..." chunein (band candle par; entry / SL message mein). B) Table "Abhi R" = khuli trade ka abhi ka R.
 //   C) Lot calculator (balance x risk % / (SL doori x 1 lot ki unit)) - broker ki contract size check karein.
 //   D) Agli US chutti + khirki ki tareekh (NYSE calendar). E) Ghalat symbol warning (qeemat 0.5x-2x se bahar ya USTECH).
@@ -37,9 +37,9 @@
 //   Loop: f_win 4 + 4 har din; agli chutti 401 din (sirf aakhri candle, setting ON).
 //  Sahi nateeja Python / MT5 demo se - TV live haal (OANDA / index data, 4H candle) sirf andaza.
 // ============================================================================
-indicator("JAS 5EA p5", shorttitle = "JAS 5EA p5", overlay = true, max_lines_count = 30, max_labels_count = 30, max_bars_back = 300)
+indicator("JAS 5EA p6", shorttitle = "JAS 5EA p6", overlay = true, max_lines_count = 30, max_labels_count = 30, max_bars_back = 300)
 
-BUILD = "p5"
+BUILD = "p6"
 TZ    = "America/New_York"
 DAY   = 86400000
 SWAP  = 0.03 / 365
@@ -86,12 +86,12 @@ lvIbs  = input.bool(true, "IBS aaj: BUY < 0.2 / 0.8 > (US500, USTEC)", group = g
 
 grX = "6 · Extra (sab default BAND, warning ON)"
 alertsOn = input.bool(false, "A) Alert ki shart chalu (phir TV mein alert banayein)", group = grX, display = display.none)
-showR    = input.bool(false, "B) Table: Abhi R (khuli trade)", group = grX, display = display.none)
+showR    = input.bool(true, "B) Table: Abhi R (khuli trade)", group = grX, display = display.none)
 lotOn    = input.bool(false, "C) Lot calculator", group = grX, display = display.none)
 lotBal   = input.float(100000, "C) Balance ($)", minval = 0, group = grX, display = display.none)
 lotRisk  = input.float(0, "C) Risk % (0 = EA ka apna: B1/S1 0.75, B2/S2 1, B3 0.15)", minval = 0, step = 0.05, group = grX, display = display.none)
 lotUnit  = input.float(0, "C) 1 lot = kitne unit (0 = khud: XAU 100, XAG 5000, index 1)", minval = 0, group = grX, display = display.none)
-showKh   = input.bool(false, "D) Agli US chutti + khirki ki tareekh", group = grX, display = display.none)
+showKh   = input.bool(true, "D) Agli US chutti + khirki ki tareekh", group = grX, display = display.none)
 showWarn = input.bool(true, "E) Ghalat symbol ki warning", group = grX, display = display.none)
 
 // 1m..4H chart: lookahead_on (HTF candle ka haal us ke OPEN tak = aage ka data nahi); bara chart: 4H andar ki aakhri candle

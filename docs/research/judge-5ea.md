@@ -28,3 +28,7 @@ B3 number Python CFD ke, live haal cash index ka (likha hua). Gradient backgroun
 ## p1 -> p2 (pehle)
 `f_core` S2/B1 tarjeeh judge #73 jaisi; Python port: B1, S1, B2 100% mile, S2 = judge-73 ka theek kiya hua.
 SELL note "<2019". Repaint saaf ([1] + open, 4H se upar lookahead_off, nishan confirmed).
+
+## p5 -> p6 (1 Nov, 31vi chat): judge agent NAHI chala (user "D" nahi) - Claude ne khud jaancha
+f_nextKh = f_win ka ulta (H chutti, P NYSE din, entry P se pehle weekday) - sahi. Table 9x12, sab se lambi haalat 11 row - theek.
+Abhi R = rukh x (close - entry) / |entry - SL|. p6: sirf B (Abhi R) + D (agli khirki) default ON, build p6. pinecheck: koi masla nahi.
