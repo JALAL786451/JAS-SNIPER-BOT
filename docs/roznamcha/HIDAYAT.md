@@ -13,6 +13,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | faisle | A/B/C mat poochho - Claude khud mashwara le, bataye kya aur kyun, sirf AGLA EK QADAM. Sawal sirf paisa / account / na-palatne wali cheez par. | 8 Oct |
 | chhota jawab | A/B/D aaye aur do sawal khule hon to ek line mein poochho kis ka jawab hai. | 7 Oct |
 | link | Link click hone wala + commit hash wala raw link. | pehle |
+| aasan | User technical NAHI: har baat bohot aasan, saaf, misaal se; mushkil lafz (correlation, reference, SE) bina samjhaye nahi. Pehle khulasa 2-3 line, phir table. | 1 Nov |
 | reminder | "Aaraam karo" / jawab ke aakhir mein yaad-dihani NAHI. "Ruk jayein" mat kaho - agla idea do. | 12 Oct |
 | pata nahi | Andaza NAHI - saaf kaho "ye mujhe pata nahi", poochho "roznamcha mein X tareekh dekhun?" Ijazat par sirf EK DIN peechhe. | 17 Oct |
 | lecture | Ehtiyat ka lecture har dafa NAHI - user khud 2 guna ehtiyat rakhta hai. Seedha kaam. | 17 Oct |

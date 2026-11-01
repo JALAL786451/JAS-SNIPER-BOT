@@ -1413,6 +1413,12 @@ close +-1% (TVC:DXY) -> PASS, phir TALAASH. Na = qaide se FAIL, #71 band.
 **#71 IMTIHAN 2019-01..2026-10 (EK dafa, 1 Nov) = FAIL:** 94 challenge: #68 83 / 0 / 11, median 10.8 -> #68 + G2 83 / 0 / 11, **median 14.4** (dheema, shart < 10.8).
 Maloomat (IMTIHAN ke baad): 2019+ roke gaye trades bhi faide mein - XAU roke 55 tr +0.183R (rakhe 99 tr +0.215), XAG roke 47 tr +0.388R (rakhe 89 tr +0.094).
 Sabaq: gold/chandi ki 2019+ tezi mein dollar bhi kai dafa saath upar gaya (dono "safe haven") - DXY filter achhi trades kaat deta hai. G2 band; #68 jyon ka tyon. Ginti #71 FAIL.
+**Koshish #72 qaida (1 Nov, 30vi chat, user "D", test se PEHLE, badalna mana) - FTMO: #68 + 4H TREND EURUSD / USDJPY / AUDUSD (`tools/ftmo72.py`):**
+User ka sawal: naye instrument nayi trades de kar FTMO waqt kam karein? GBP/NZD/CAD/CHF/DXY par #47 mein forex -0.049R tha; EURUSD/USDJPY/AUDUSD us waqt data nahi (ab QDM).
+Trade = `tokri47.trades4h` jyon ka tyon (#47 forex: 4H Supertrend 10/3, BUY + SELL, SL 6 x ATR10). Kharcha har taraf 0.75 x Exness spread (EURUSD 0.0084%, USDJPY 0.0085%,
+AUDUSD 0.0149%), swap 3%/saal. Har market alag slot. #68 bilkul wahi. **CHUNAO 2012-2018** (84): fx risk har market 0.25 / 0.50 / 0.75 vs #68 (isi run); shart #69 wali
+(P1 fail < 20%, pass > fail, (pass - fail) >= #68; behtareen = zyada (pass - fail), phir kam median, phir kam risk). Koi nahi = FAIL. **IMTIHAN 2019-01..2026-10 EK dafa:**
+PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Maloomat: fx trades TALAASH R. Claude umeed 10-15%. Ginti +1.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
