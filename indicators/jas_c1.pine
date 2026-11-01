@@ -1,0 +1,311 @@
+//@version=6
+// ============================================================================
+//  JAS C1 70  (build c1, Pine v6)  -  Koshish #70 (1 Nov 2026, user 'D')
+//
+//  LOCAL (NON-US) CHUTTI SE PEHLE WALA DIN - 7 index (research team daur 1,
+//  judge KEEP: McGuinness 2005, Yuan-Gupta 2014, Cadsby-Ratner 1992).
+//  Har index ki APNI exchange ki chutti (exchange_calendars 4.13.2, ad-hoc
+//  typhoon wagaira NAHI), NYSE chutti qareeb ho to waqia chhoro (#59/#67 alag).
+//  Waqiat Python `tools/c1_calendar.py --pine` se (sirf calendar, qeemat nahi).
+//
+//  QAWAID (har index ki apni daily candle, band candle [1], tareekh =
+//  time_tradingday UTC): P = bandish se pehle aakhri session.
+//   BUY P-1 ke close par, band P ke close par (pehli candle tareekh >= P).
+//   SL 3 x ATR20 = 1R (daily low, gap = open). Sirf BUY. Kharcha har taraf
+//   Asia 0.03%, Europe 0.02% + swap 3%/saal. SE x k = 1.093 (pehle se, calendar).
+//
+//  PEHLE SE LIKHA QAIDA (docs/purana-haal.md, grep "Koshish #70 qaida"):
+//   TALAASH 2005-2018: N >= 100, Exp - 2kSE > 0, ausat >= 2 x drift,
+//   (index x saal, >= 2 tr) musbat > 50%, NI225 aur HSI Exp > 0.
+//   IMTIHAN 2019+ CHHUPA (sirf TALAASH PASS par, EK dafa).
+//  CHART: koi bhi DAILY chart (misaal TVC:NI225). 7 index request.security se.
+// ============================================================================
+indicator("JAS C1 70 c1 (#70)", shorttitle = "JAS C1 70 c1", overlay = true, max_bars_back = 300)
+
+BUILD = "c1"
+ADJ = 1.093
+
+grI = "1 · 7 index (pehle se chune - badalna mana)"
+s0 = input.symbol("XETR:DAX", "1 DAX (Germany)", group = grI)
+s1 = input.symbol("TVC:UKX", "2 FTSE 100 (UK)", group = grI)
+s2 = input.symbol("EURONEXT:PX1", "3 CAC 40 (France)", group = grI)
+s3 = input.symbol("TVC:SX5E", "4 Euro Stoxx 50", group = grI)
+s4 = input.symbol("TVC:NI225", "5 Nikkei 225 (Japan)", group = grI)
+s5 = input.symbol("ASX:XJO", "6 ASX 200 (Australia)", group = grI)
+s6 = input.symbol("TVC:HSI", "7 Hang Seng (HK)", group = grI)
+
+grQ = "2 · Qawaid (mat badlein)"
+atrLen  = input.int(20, "ATR length", minval = 2, group = grQ, display = display.none)
+slMult  = input.float(3.0, "SL (x ATR) = 1R", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+costEu  = input.float(0.02, "Kharcha Europe (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
+costAs  = input.float(0.03, "Kharcha Asia (% har taraf)", minval = 0, step = 0.005, group = grQ, display = display.none)
+swapYr  = input.float(3.0, "Swap (% saal, har raat)", minval = 0, step = 0.5, group = grQ, display = display.none)
+fromYr  = input.int(2005, "TALAASH is saal se", group = grQ, display = display.none)
+splitYr = input.int(2019, "IMTIHAN is saal se (TALAASH is se pehle)", group = grQ, display = display.none)
+showIm  = input.bool(false, "IMTIHAN dikhao (SIRF TALAASH PASS ke baad, EK dafa)", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  WAQIAT: "entry(P-1)>band(P)," - tools/c1_calendar.py --pine (2005-2026)
+// ============================================================================
+// DAX: 28
+string EV_DAX = "20060427>20060428,20070427>20070430,20080429>20080430,20090429>20090430,20101229>20101230,20120427>20120430,20130429>20130430,20140429>20140430,20141001>20141002,20150429>20150430,20160512>20160513,20160929>20160930,20170427>20170428,20170929>20171002,20171027>20171030,20180427>20180430,20180517>20180518,20181001>20181002,20190429>20190430,20190606>20190607,20191001>20191002,20200429>20200430,20210520>20210521,20211229>20211230,20230427>20230428,20240429>20240430,20250429>20250430,20260429>20260430,"
+// UKX: 48
+string EV_UKX = "20050428>20050429,20050825>20050826,20060427>20060428,20060824>20060825,20070503>20070504,20070823>20070824,20080501>20080502,20080821>20080822,20090430>20090501,20090827>20090828,20100429>20100430,20100826>20100827,20101230>20101231,20110427>20110428,20110825>20110826,20120503>20120504,20120823>20120824,20130502>20130503,20130822>20130823,20140501>20140502,20140821>20140822,20150430>20150501,20150827>20150828,20160428>20160429,20160825>20160826,20170427>20170428,20170824>20170825,20180503>20180504,20180823>20180824,20190502>20190503,20190822>20190823,20200506>20200507,20200827>20200828,20210429>20210430,20210826>20210827,20211230>20211231,20220428>20220429,20220825>20220826,20220915>20220916,20230427>20230428,20230504>20230505,20230824>20230825,20240502>20240503,20240822>20240823,20250501>20250502,20250821>20250822,20260430>20260501,20260827>20260828,"
+// PX1: 16
+string EV_PX1 = "20060427>20060428,20070427>20070430,20080429>20080430,20090429>20090430,20120427>20120430,20130429>20130430,20140429>20140430,20150429>20150430,20170427>20170428,20180427>20180430,20190429>20190430,20200429>20200430,20230427>20230428,20240429>20240430,20250429>20250430,20260429>20260430,"
+// SX5E: 16
+string EV_SX5E = "20060427>20060428,20070427>20070430,20080429>20080430,20090429>20090430,20120427>20120430,20130429>20130430,20140429>20140430,20150429>20150430,20170427>20170428,20180427>20180430,20190429>20190430,20200429>20200430,20230427>20230428,20240429>20240430,20250429>20250430,20260429>20260430,"
+// NI225: 210
+string EV_NI225 = "20050106>20050107,20050209>20050210,20050317>20050318,20050427>20050428,20050428>20050502,20050714>20050715,20050915>20050916,20050921>20050922,20051006>20051007,20051101>20051102,20060317>20060320,20060501>20060502,20060713>20060714,20060914>20060915,20061005>20061006,20061101>20061102,20070208>20070209,20070319>20070320,20070426>20070427,20070501>20070502,20070712>20070713,20070913>20070914,20070920>20070921,20071004>20071005,20080110>20080111,20080207>20080208,20080425>20080428,20080501>20080502,20080717>20080718,20080911>20080912,20080919>20080922,20081009>20081010,20081030>20081031,20081120>20081121,20090108>20090109,20090209>20090210,20090318>20090319,20090427>20090428,20090430>20090501,20090716>20090717,20090917>20090918,20091008>20091009,20091030>20091102,20091119>20091120,20100107>20100108,20100209>20100210,20100318>20100319,20100427>20100428,20100428>20100430,20100715>20100716,20100916>20100917,20100921>20100922,20101007>20101008,20101101>20101102,20101229>20101230,20110106>20110107,20110209>20110210,20110317>20110318,20110427>20110428,20110428>20110502,20110714>20110715,20110915>20110916,20110921>20110922,20111006>20111007,20111101>20111102,20120316>20120319,20120426>20120427,20120501>20120502,20120712>20120713,20120913>20120914,20121004>20121005,20130110>20130111,20130207>20130208,20130318>20130319,20130425>20130426,20130501>20130502,20130711>20130712,20130912>20130913,20130919>20130920,20131010>20131011,20131031>20131101,20140109>20140110,20140207>20140210,20140319>20140320,20140425>20140428,20140501>20140502,20140717>20140718,20140911>20140912,20140919>20140922,20141009>20141010,20141030>20141031,20141120>20141121,20150108>20150109,20150209>20150210,20150427>20150428,20150430>20150501,20150716>20150717,20150917>20150918,20151008>20151009,20151030>20151102,20151119>20151120,20160107>20160108,20160209>20160210,20160317>20160318,20160427>20160428,20160428>20160502,20160714>20160715,20160809>20160810,20160915>20160916,20160920>20160921,20161006>20161007,20161101>20161102,20170316>20170317,20170501>20170502,20170713>20170714,20170809>20170810,20170914>20170915,20171005>20171006,20171101>20171102,20180208>20180209,20180319>20180320,20180426>20180427,20180501>20180502,20180712>20180713,20180913>20180914,20180920>20180921,20181004>20181005,20190110>20190111,20190207>20190208,20190319>20190320,20190425>20190426,20190711>20190712,20190808>20190809,20190912>20190913,20190919>20190920,20191010>20191011,20191018>20191021,20191031>20191101,20200109>20200110,20200207>20200210,20200318>20200319,20200427>20200428,20200430>20200501,20200721>20200722,20200806>20200807,20200917>20200918,20201030>20201102,20201119>20201120,20210107>20210108,20210209>20210210,20210219>20210222,20210427>20210428,20210428>20210430,20210720>20210721,20210805>20210806,20210916>20210917,20210921>20210922,20211101>20211102,20211229>20211230,20220106>20220107,20220209>20220210,20220317>20220318,20220427>20220428,20220428>20220502,20220714>20220715,20220809>20220810,20220915>20220916,20220921>20220922,20221006>20221007,20221101>20221102,20230317>20230320,20230501>20230502,20230713>20230714,20230809>20230810,20230914>20230915,20231005>20231006,20231101>20231102,20240208>20240209,20240318>20240319,20240425>20240426,20240501>20240502,20240711>20240712,20240808>20240809,20240912>20240913,20240919>20240920,20241010>20241011,20241031>20241101,20250109>20250110,20250207>20250210,20250318>20250319,20250425>20250428,20250501>20250502,20250717>20250718,20250807>20250808,20250911>20250912,20250919>20250922,20251009>20251010,20251030>20251031,20251120>20251121,20260108>20260109,20260209>20260210,20260318>20260319,20260427>20260428,20260430>20260501,20260716>20260717,20260807>20260810,20260917>20260918,20261008>20261009,20261030>20261102,20261119>20261120,"
+// XJO: 54
+string EV_XJO = "20050124>20050125,20050421>20050422,20050609>20050610,20060124>20060125,20060421>20060424,20060608>20060609,20070124>20070125,20070423>20070424,20070607>20070608,20080423>20080424,20080605>20080606,20090604>20090605,20100122>20100125,20100422>20100423,20100610>20100611,20101230>20101231,20110124>20110125,20110609>20110610,20120124>20120125,20120423>20120424,20120607>20120608,20130423>20130424,20130606>20130607,20140423>20140424,20140605>20140606,20150604>20150605,20160122>20160125,20160421>20160422,20160609>20160610,20170124>20170125,20170421>20170424,20170608>20170609,20180124>20180125,20180423>20180424,20180607>20180608,20190423>20190424,20190606>20190607,20200604>20200605,20210122>20210125,20210610>20210611,20211230>20211231,20220124>20220125,20220421>20220422,20220609>20220610,20220920>20220921,20230124>20230125,20230421>20230424,20230608>20230609,20240124>20240125,20240423>20240424,20240606>20240607,20250423>20250424,20250605>20250606,20260604>20260605,"
+// HSI: 129
+string EV_HSI = "20050207>20050208,20050401>20050404,20050428>20050429,20050512>20050513,20050915>20050916,20051007>20051010,20060126>20060127,20060403>20060404,20060427>20060428,20060503>20060504,20060928>20060929,20061026>20061027,20070427>20070430,20070522>20070523,20070615>20070618,20070924>20070925,20070927>20070928,20071017>20071018,20080205>20080206,20080402>20080403,20080429>20080430,20080508>20080509,20080605>20080606,20080627>20080630,20080911>20080912,20080929>20080930,20081003>20081006,20090429>20090430,20090929>20090930,20091022>20091023,20100519>20100520,20100614>20100615,20100629>20100630,20100921>20100922,20100929>20100930,20110201>20110202,20110401>20110404,20110428>20110429,20110506>20110509,20110909>20110912,20111003>20111004,20120427>20120430,20120927>20120928,20121019>20121022,20130207>20130208,20130402>20130403,20130429>20130430,20130515>20130516,20130610>20130611,20130627>20130628,20130918>20130919,20130927>20130930,20131010>20131011,20140129>20140130,20140429>20140430,20140502>20140505,20140627>20140630,20140905>20140908,20140929>20140930,20150429>20150430,20150901>20150902,20150924>20150925,20150929>20150930,20151019>20151020,20160204>20160205,20160331>20160401,20160428>20160429,20160607>20160608,20160914>20160915,20161006>20161007,20170126>20170127,20170331>20170403,20170427>20170428,20170428>20170502,20170928>20170929,20171003>20171004,20180403>20180404,20180427>20180430,20180518>20180521,20180614>20180615,20180921>20180924,20180927>20180928,20181015>20181016,20190201>20190204,20190403>20190404,20190429>20190430,20190509>20190510,20190605>20190606,20190627>20190628,20190927>20190930,20191003>20191004,20200428>20200429,20200623>20200624,20200929>20200930,20201022>20201023,20210517>20210518,20210610>20210611,20210629>20210630,20210920>20210921,20210929>20210930,20211012>20211013,20220128>20220131,20220401>20220404,20220428>20220429,20220505>20220506,20220930>20221003,20230427>20230428,20230928>20230929,20231019>20231020,20240208>20240209,20240402>20240403,20240429>20240430,20240513>20240514,20240606>20240607,20240627>20240628,20240916>20240917,20240927>20240930,20241009>20241010,20250127>20250128,20250402>20250403,20250429>20250430,20250430>20250502,20250627>20250630,20250929>20250930,20251003>20251006,20251027>20251028,20260429>20260430,20260929>20260930,20261015>20261016,"
+
+// ============================================================================
+//  ENGINE (har index ki apni daily candles, sirf BAND candle [1])
+// ============================================================================
+f_c1(string _ev, float _cost) =>
+    _atrA = ta.atr(atrLen)
+    _o  = open[1]
+    _l  = low[1]
+    _c  = close[1]
+    _cp = close[2]
+    _a  = _atrA[1]
+    _td = time_tradingday[1]
+    var int   _fy  = na
+    var bool  _in  = false
+    var float _e   = na
+    var float _r   = na
+    var float _sl  = na
+    var int   _xd  = 0
+    var int   _ey  = na
+    var int   _et  = na
+    var int   _age = 0
+    var int   _nT = 0
+    var int   _wT = 0
+    var float _sT = 0.0
+    var float _qT = 0.0
+    var float _pT = 0.0
+    var int   _dT = 0
+    var int   _aN = 0
+    var float _aS = 0.0
+    var int   _yNT = 0
+    var int   _yPT = 0
+    var int   _cyT = na
+    var float _csT = 0.0
+    var int   _ccT = 0
+    var int   _nI = 0
+    var int   _wI = 0
+    var float _sI = 0.0
+    var float _qI = 0.0
+    var float _pI = 0.0
+    var int   _dI = 0
+    var int   _aNI = 0
+    var float _aSI = 0.0
+    if not na(_c) and not na(_td)
+        _y   = year(_td, "UTC")
+        _m   = month(_td, "UTC")
+        _d   = dayofmonth(_td, "UTC")
+        _ymd = _y * 10000 + _m * 100 + _d
+        if na(_fy) and _y >= fromYr
+            _fy := _y
+        if not na(_cp) and _cp > 0 and _y >= fromYr
+            if _y < splitYr
+                _aN += 1
+                _aS += _c / _cp - 1
+            else
+                _aNI += 1
+                _aSI += _c / _cp - 1
+        bool  _cl = false
+        float _px = na
+        if _in
+            _age += 1
+            if _l <= _sl
+                _px := _o < _sl ? _o : _sl
+                _cl := true
+            else if _ymd >= _xd
+                _px := _c
+                _cl := true
+        if _cl
+            _nights = math.round((_td - _et) / 86400000.0)
+            _rr = ((_px - _e) - _cost / 100.0 * (_e + _px) - swapYr / 100.0 / 365.0 * _nights * _e) / _r
+            _pc = _px / _e - 1
+            if _ey < splitYr
+                _nT += 1
+                _sT += _rr
+                _qT += _rr * _rr
+                _pT += _pc
+                _dT += _age
+                _wT += _rr > 0 ? 1 : 0
+                if na(_cyT) or _ey != _cyT
+                    if not na(_cyT) and _ccT >= 2
+                        _yNT += 1
+                        _yPT += _csT > 0 ? 1 : 0
+                    _cyT := _ey
+                    _csT := 0.0
+                    _ccT := 0
+                _csT += _rr
+                _ccT += 1
+            else
+                _nI += 1
+                _sI += _rr
+                _qI += _rr * _rr
+                _pI += _pc
+                _dI += _age
+                _wI += _rr > 0 ? 1 : 0
+            _in := false
+        if not _in and _y >= fromYr and not na(_a) and _a > 0
+            _p = str.pos(_ev, str.tostring(_ymd) + ">")
+            if not na(_p) and _p >= 0
+                _x = str.tonumber(str.substring(_ev, _p + 9, _p + 17))
+                if not na(_x)
+                    _in  := true
+                    _e   := _c
+                    _r   := slMult * _a
+                    _sl  := _c - _r
+                    _xd  := int(_x)
+                    _ey  := _y
+                    _et  := _td
+                    _age := 0
+    _yN = _yNT + (not na(_cyT) and _ccT >= 2 ? 1 : 0)
+    _yP = _yPT + (not na(_cyT) and _ccT >= 2 and _csT > 0 ? 1 : 0)
+    [_nT, _wT, _sT, _qT, _pT, _dT, _aN > 0 ? _aS / _aN : 0.0, _yN, _yP, _nI, _wI, _sI, _qI, _pI, _dI, _aNI > 0 ? _aSI / _aNI : 0.0, _fy]
+
+f_req(_s, string _ev, float _cost) => request.security(_s, "D", f_c1(_ev, _cost), barmerge.gaps_off, barmerge.lookahead_off)
+
+[nT0, wT0, sT0, qT0, pT0, dT0, aM0, yN0, yP0, nI0, wI0, sI0, qI0, pI0, dI0, aMI0, fy0] = f_req(s0, EV_DAX, costEu)
+[nT1, wT1, sT1, qT1, pT1, dT1, aM1, yN1, yP1, nI1, wI1, sI1, qI1, pI1, dI1, aMI1, fy1] = f_req(s1, EV_UKX, costEu)
+[nT2, wT2, sT2, qT2, pT2, dT2, aM2, yN2, yP2, nI2, wI2, sI2, qI2, pI2, dI2, aMI2, fy2] = f_req(s2, EV_PX1, costEu)
+[nT3, wT3, sT3, qT3, pT3, dT3, aM3, yN3, yP3, nI3, wI3, sI3, qI3, pI3, dI3, aMI3, fy3] = f_req(s3, EV_SX5E, costEu)
+[nT4, wT4, sT4, qT4, pT4, dT4, aM4, yN4, yP4, nI4, wI4, sI4, qI4, pI4, dI4, aMI4, fy4] = f_req(s4, EV_NI225, costAs)
+[nT5, wT5, sT5, qT5, pT5, dT5, aM5, yN5, yP5, nI5, wI5, sI5, qI5, pI5, dI5, aMI5, fy5] = f_req(s5, EV_XJO, costAs)
+[nT6, wT6, sT6, qT6, pT6, dT6, aM6, yN6, yP6, nI6, wI6, sI6, qI6, pI6, dI6, aMI6, fy6] = f_req(s6, EV_HSI, costAs)
+
+// ============================================================================
+//  TABLE (safaid)
+// ============================================================================
+f_pos(_p) => _p == "Top Left" ? position.top_left : _p == "Bottom Right" ? position.bottom_right : _p == "Bottom Left" ? position.bottom_left : position.top_right
+
+f_exp(_n, _s) => _n > 0 ? _s / _n : 0.0
+f_se(_n, _s, _q) =>
+    _m = _n > 0 ? _s / _n : 0.0
+    _n > 1 ? math.sqrt(math.max((_q - _n * _m * _m) / (_n - 1), 0.0)) / math.sqrt(_n) : 0.0
+f_dr(float _am, int _d) => _am * _d
+
+var table tb = table.new(f_pos(tblPos), 8, 22, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
+fg  = color.new(#111111, 0)
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = color.new(#1a237e, 0)
+
+f_cell(int _c, int _r, string _s, color _col) =>
+    table.cell(tb, _c, _r, _s, text_color = _col, text_size = size.small)
+
+f_p(float _x) => str.tostring(100.0 * _x, "+0.000;-0.000") + "%"
+
+f_row(int _r, string _nm, int _n, int _w, float _s, float _q, float _ip, float _dr, string _yr, float _adj) =>
+    _e  = f_exp(_n, _s)
+    _se = f_se(_n, _s, _q) * _adj
+    f_cell(0, _r, _nm, fg)
+    f_cell(1, _r, str.tostring(_n), fg)
+    f_cell(2, _r, str.tostring(_n > 0 ? 100.0 * _w / _n : 0.0, "#") + "%", fg)
+    f_cell(3, _r, f_p(_ip), _ip >= 2 * _dr ? cUp : cDn)
+    f_cell(4, _r, f_p(_dr), fg)
+    f_cell(5, _r, str.tostring(_e, "+0.000;-0.000"), _e > 0 ? cUp : cDn)
+    f_cell(6, _r, str.tostring(_e - 2 * _se, "+0.000;-0.000"), _e - 2 * _se > 0 ? cUp : cDn)
+    f_cell(7, _r, _yr, fg)
+    [_e, _se]
+
+if barstate.islast
+    anT = array.from(nT0, nT1, nT2, nT3, nT4, nT5, nT6)
+    awT = array.from(wT0, wT1, wT2, wT3, wT4, wT5, wT6)
+    asT = array.from(sT0, sT1, sT2, sT3, sT4, sT5, sT6)
+    aqT = array.from(qT0, qT1, qT2, qT3, qT4, qT5, qT6)
+    apT = array.from(pT0, pT1, pT2, pT3, pT4, pT5, pT6)
+    adT = array.from(dT0, dT1, dT2, dT3, dT4, dT5, dT6)
+    aaM = array.from(aM0, aM1, aM2, aM3, aM4, aM5, aM6)
+    ayN = array.from(yN0, yN1, yN2, yN3, yN4, yN5, yN6)
+    ayP = array.from(yP0, yP1, yP2, yP3, yP4, yP5, yP6)
+    anI = array.from(nI0, nI1, nI2, nI3, nI4, nI5, nI6)
+    awI = array.from(wI0, wI1, wI2, wI3, wI4, wI5, wI6)
+    asI = array.from(sI0, sI1, sI2, sI3, sI4, sI5, sI6)
+    aqI = array.from(qI0, qI1, qI2, qI3, qI4, qI5, qI6)
+    apI = array.from(pI0, pI1, pI2, pI3, pI4, pI5, pI6)
+    adI = array.from(dI0, dI1, dI2, dI3, dI4, dI5, dI6)
+    aaMI = array.from(aMI0, aMI1, aMI2, aMI3, aMI4, aMI5, aMI6)
+    afy = array.from(fy0, fy1, fy2, fy3, fy4, fy5, fy6)
+    aNm = array.from("DAX (Germany)", "FTSE 100 (UK)", "CAC 40 (France)", "Euro Stoxx 50", "Nikkei 225 (Japan)", "ASX 200 (Australia)", "Hang Seng (HK)")
+    f_cell(0, 0, "JAS C1 70 " + BUILD + "  (#70)  -  local chutti se pehle wala din x 7 index", cHd)
+    table.merge_cells(tb, 0, 0, 7, 0)
+    f_cell(0, 1, "TALAASH (" + str.tostring(fromYr) + " - " + str.tostring(splitYr - 1) + ")", cHd)
+    f_cell(1, 1, "Trade", cHd)
+    f_cell(2, 1, "Jeet", cHd)
+    f_cell(3, 1, "Din ausat", cHd)
+    f_cell(4, 1, "Aam tezi (drift)", cHd)
+    f_cell(5, 1, "Har trade (R)", cHd)
+    f_cell(6, 1, "Exp - 2SE", cHd)
+    f_cell(7, 1, "Saal + / kul (>=2 tr)", cHd)
+    int nK = 0
+    int wK = 0
+    float sK = 0.0
+    float qK = 0.0
+    float pK = 0.0
+    float dK = 0.0
+    int yNK = 0
+    int yPK = 0
+    float eJP = 0.0
+    float eHK = 0.0
+    for i = 0 to 6
+        n = array.get(anT, i)
+        dr = f_dr(array.get(aaM, i), array.get(adT, i))
+        [e_, se_] = f_row(2 + i, array.get(aNm, i) + "  (" + str.tostring(array.get(afy, i)) + " se)", n, array.get(awT, i), array.get(asT, i), array.get(aqT, i), n > 0 ? array.get(apT, i) / n : 0.0, n > 0 ? dr / n : 0.0, str.tostring(array.get(ayP, i)) + " / " + str.tostring(array.get(ayN, i)), 1.0)
+        nK += n
+        wK += array.get(awT, i)
+        sK += array.get(asT, i)
+        qK += array.get(aqT, i)
+        pK += array.get(apT, i)
+        dK += dr
+        yNK += array.get(ayN, i)
+        yPK += array.get(ayP, i)
+        if i == 4
+            eJP := e_
+        if i == 6
+            eHK := e_
+    ipK = nK > 0 ? pK / nK : 0.0
+    drK = nK > 0 ? dK / nK : 0.0
+    [eK, seK] = f_row(9, "KUL (SE x " + str.tostring(ADJ) + ")", nK, wK, sK, qK, ipK, drK, str.tostring(yPK) + " / " + str.tostring(yNK), ADJ)
+    okT = nK >= 100 and eK - 2 * seK > 0 and ipK >= 2 * drK and yNK > 0 and yPK * 2 > yNK and eJP > 0 and eHK > 0
+    f_cell(0, 10, (okT ? "TALAASH PASS  -> IMTIHAN khol sakte hain" : "TALAASH FAIL  -> IMTIHAN band") + "  |  Nikkei " + str.tostring(eJP, "+0.000;-0.000") + "R, Hang Seng " + str.tostring(eHK, "+0.000;-0.000") + "R", okT ? cUp : cDn)
+    table.merge_cells(tb, 0, 10, 7, 10)
+    if showIm and okT
+        f_cell(0, 11, "IMTIHAN (" + str.tostring(splitYr) + " - aaj)  - EK dafa", cHd)
+        table.merge_cells(tb, 0, 11, 7, 11)
+        int nI = 0
+        int wI = 0
+        float sI = 0.0
+        float qI = 0.0
+        float pI = 0.0
+        float dI = 0.0
+        for i = 0 to 6
+            n = array.get(anI, i)
+            dr = f_dr(array.get(aaMI, i), array.get(adI, i))
+            [e2_, se2_] = f_row(12 + i, array.get(aNm, i), n, array.get(awI, i), array.get(asI, i), array.get(aqI, i), n > 0 ? array.get(apI, i) / n : 0.0, n > 0 ? dr / n : 0.0, "-", 1.0)
+            nI += n
+            wI += array.get(awI, i)
+            sI += array.get(asI, i)
+            qI += array.get(aqI, i)
+            pI += array.get(apI, i)
+            dI += dr
+        ipI = nI > 0 ? pI / nI : 0.0
+        drI = nI > 0 ? dI / nI : 0.0
+        [eI, seI] = f_row(19, "KUL (SE x " + str.tostring(ADJ) + ")", nI, wI, sI, qI, ipI, drI, "-", ADJ)
+        okI = nI >= 30 and eI - 2 * seI > 0 and ipI >= 2 * drI
+        f_cell(0, 20, okI ? "IMTIHAN PASS -> FTMO jor test (#68 + C1)" : "IMTIHAN FAIL = idea band", okI ? cUp : cDn)
+        table.merge_cells(tb, 0, 20, 7, 20)
+    else
+        f_cell(0, 11, "IMTIHAN " + str.tostring(splitYr) + "+ CHHUPA (TALAASH PASS ke baad, EK dafa)", fg)
+        table.merge_cells(tb, 0, 11, 7, 11)

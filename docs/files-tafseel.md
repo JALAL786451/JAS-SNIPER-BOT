@@ -204,3 +204,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 | `SAWAL-LIST.md` | The question list he answers by number, in Roman Urdu |
 
 - `docs/research/daur1-agent.md`, `daur1-judge.md` - research team daur 1 (1 Nov): ummeedwar + judge faisla
+- `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)

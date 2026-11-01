@@ -1383,3 +1383,5 @@ band (tareekh >= P wali pehli candle), SL 3 x ATR20 (gap = open) = 1R, sirf BUY.
 (2005-18 calendar). Waqiat 2005-18: DAX 18, UKX 29, PX1 10, SX5E 10, NI225 127, XJO 35, HSI 83 = 312.
 **TALAASH entry 2005-2018** PASS = sab: N >= 100; Exp - 2 x (1.093 SE) > 0; ausat % >= 2 x drift (usi index, usi saal); (index x saal, >= 2 tr) musbat > 50%; NI225 aur HSI Exp > 0.
 **IMTIHAN 2019-01..aaj EK dafa (TALAASH PASS par):** N >= 30, Exp - 2kSE > 0, >= 2x drift. FAIL = idea band. PASS -> FTMO jor #68 + C1 (risk 0.10/0.15/0.25, #68 shart). Ginti +1.
+**#70 CFD jaanch 2012-18 (Dukascopy H1, #68 timing, shart NAHI, TV TALAASH se PEHLE):** DAX 11 tr -0.013R, UKX 12 -0.029, PX1 6 -0.042, SX5E 3 +0.018,
+NI225 59 -0.008, XJO 11 +0.006, HSI 34 -0.036 = KUL 136 tr **-0.017R** (+-0.023 kSE) - CFD par (cash close ke baad wali H1) faida nahi dikha. TV `jas_c1.pine` c1 TALAASH baqi.
