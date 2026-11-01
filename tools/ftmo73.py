@@ -14,13 +14,30 @@ from ftmo53_asli import ASLI, run_cost
 from ftmo60 import summary
 from ftmo68 import KCOST, KH, khirki_trades
 from ftmo_4h import st4h_trades
-from ftmo_test import FILES, SWAP, Mkt, ibs_trades, load
+from ftmo_test import FILES, SWAP, Mkt, ibs_trades, load, session_day
 from sell73 import buy_ko_tarjeeh, ibs_sell_trades, st4h_sell_trades
 from tokri47 import load_any
 
 S1_MKTS = ('XAUUSD', 'XAGUSD', 'US500', 'USTEC')    # qaida: S1 ke market
 S2_MKTS = ('US500', 'USTEC')
 KS = [0.25, 0.5, 1.0]                               # SELL risk = k x BUY risk (S1 0.75%, S2 1.0%)
+
+
+T0 = {'XAUUSD': '2003-01-01', 'XAGUSD': '2003-01-01', 'US500': '2012-01-01', 'USTEC': '2012-01-01'}   # TALAASH shuru (#34)
+
+
+def sma200_gate(df):
+    """S1 shart: signal 4H block ke aakhri H1 (idx L) tak ka aakhri POORA din (17:00 NY): close < SMA200."""
+    sd = session_day(df['t'])
+    g = pd.DataFrame({'i': np.arange(len(df)), 'd': sd.values, 'C': df['Close'].values}).groupby('d', sort=True)
+    la = g['i'].last().values
+    c = g['C'].last().values
+    sma = pd.Series(c).rolling(200).mean().values
+
+    def gate(L):
+        k = np.searchsorted(la, L, side='right') - 1
+        return bool(k >= 0 and not np.isnan(sma[k]) and c[k] < sma[k])
+    return gate
 
 
 def net_r(df, x, cost):
@@ -46,18 +63,19 @@ def main():
     s1, s2 = [], []
     for mi, s in enumerate(syms):
         buys = trend[mi] + ibs[mi]
-        s1.append(buy_ko_tarjeeh(st4h_sell_trades(dfs[s], 6.0), buys) if s in S1_MKTS else [])
+        s1.append(buy_ko_tarjeeh(st4h_sell_trades(dfs[s], 6.0, sma200_gate(dfs[s])), buys) if s in S1_MKTS else [])
         s2.append(buy_ko_tarjeeh(ibs_sell_trades(dfs[s]), buys) if s in S2_MKTS else [])
     cost = [0.75 * ASLI[s] if s in base else KCOST for s in syms]
     t0, t1 = pd.Timestamp('2012-01-01', tz='UTC').value, pd.Timestamp('2019-01-01', tz='UTC').value
-    print('TALAASH 2012-2018 SELL (BUY ko tarjeeh ke baad, kharcha + swap ke BAAD)')
+    print('TALAASH entry < 2019 (XAU/XAG 2003 se, US500/USTEC 2012 se) SELL - tarjeeh ke baad, kharcha + swap ke BAAD')
     allr = []
     for name, leg in (('S1 trend SELL', s1), ('S2 IBS SELL', s2)):
         for mi, s in enumerate(syms):
             if not leg[mi]:
                 continue
             tt = dfs[s]['t'].values.astype('datetime64[ns]').astype(np.int64)
-            r = np.array([net_r(dfs[s], x, cost[mi]) for x in leg[mi] if t0 <= tt[x[0]] < t1])
+            a0 = pd.Timestamp(T0[s], tz='UTC').value
+            r = np.array([net_r(dfs[s], x, cost[mi]) for x in leg[mi] if a0 <= tt[x[0]] < t1])
             allr += list(r)
             if len(r) > 1:
                 print(f'  {name} {s:7s}: {len(r):4d} tr  {r.mean():+.3f}R +-{r.std(ddof=1) / np.sqrt(len(r)):.3f}  jeet {np.mean(r > 0) * 100:.0f}%')

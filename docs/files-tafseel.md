@@ -207,6 +207,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/research/daur2-gold-agent.md` - research daur 2: gold + dollar FTMO candidates G1-G4 (1 Nov)
 - `docs/research/daur3-fx-agent.md` - research daur 3: 28 FX strategy catalog, FTMO F1-F4, personal P1-P4 (1 Nov)
 - `docs/research/daur4-best-agent.md` - research daur 4: best instrument + strategy (1 BTC Kachhua, 2 US2000 IBS, 3 vol cap) (1 Nov)
+- `docs/research/daur5-sell-agent.md` - research daur 5: SELL aaina S1 (+SMA200) / S2, P 0.50 / 0.20 (1 Nov)
 - `KAHANI.txt` - poori kahani 1 Oct se (nayi chat PEHLE ye parhe); har chat khatam par sirf 2-5 line jodo (1 Nov)
 - `tools/ftmo71.py` - Koshish #71: #68 + G2 DXY filter (banaya DXY, data jaanch, TALAASH, CHUNAO, --imtihan) (1 Nov)
 - `tools/ftmo72.py` - Koshish #72: #68 + 4H trend EURUSD/USDJPY/AUDUSD (CHUNAO, --imtihan --risk) (1 Nov)

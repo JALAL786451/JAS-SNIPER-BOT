@@ -1426,6 +1426,19 @@ Sabaq: forex trend ka faida ~0 (kharche se pehle bhi) -> trades barhne se sirf j
 slot / JPY sahi; fx kharche se pehle ~+0.01R vs kharcha + swap ~0.045R. **BUG (faisla nahi badla): swap sirf grid ke din par katta tha, har calendar raat par nahi** (2012-18: 2557 raat,
 grid 1936) -> **theek kiya** (`ftmo_test.raatein`, `ftmo53_asli` + `ftmo_test.run`). Naye baseline: **#68 IMTIHAN 83 / 0, median 11.4 (#53 11.9)** = PASS wahi; #68 CHUNAO 64 / 2, 38.5.
 Pehle ke pass-waqt ~0.5-2 mahine khush-fehmi wale the; muqable (isi run) sahi the. #72 ka 61/5 baseline = yahi swap grid asar. **AUDUSD (QDM) 2020 poora gayab** - 2019+ test se pehle theek.
+**Koshish #73 qaida (1 Nov, 30vi chat, user "5 EA bana do: 3 BUY + 2 SELL, research + judge ke saath", test se PEHLE, badalna mana) - FTMO: #68 + 2 SELL AAINA
+(`tools/sell73.py`, `tools/ftmo73.py`):** Research daur 5 (`docs/research/daur5-sell-agent.md`). #68 bilkul wahi (B1 trend 4H BUY 0.75%, B2 IBS 1%, B3 khirki 0.15%, asli kharcha).
+**S1 trend 4H SELL** = `st4h_trades` ka aaina + EK shart: Supertrend(10,3) 4H NEECHE mude AUR us waqt aakhri POORA din (17:00 NY) ka close < SMA200 (daily) -> agli 4H open par SELL;
+SL = entry + 6 x ATR10(4H); band = Supertrend upar mude to agli 4H open, ya SL (gap = open). XAU, XAG, US500, USTEC. (Shart sirf mud-ne ke waqt; ruki to agla neeche mud-na.)
+**S2 IBS SELL** = `ibs_trades` ka hubahu aaina: IBS > 0.8 aur close < SMA200 -> din ke close par SELL; band = pehla din IBS < 0.2 ya 5 din (close); SL 3 x ATR14 oopar. US500, USTEC.
+**BUY ko tarjeeh (hedge nahi):** us market mein B1/B2 BUY khuli ho to SELL nahi khulti; SELL khuli ho aur BUY khule to SELL usi waqt BUY ki entry qeemat par band. S1 + S2 saath ho sakti (alag EA).
+Kharcha 0.75 x asli spread har taraf (#53), swap 3%/saal har calendar raat DONO rukh (index short dividend ~1.3%/saal se zyada = ehtiyat; asli FTMO swap maloom nahi).
+Code jaanch (nateeje se PEHLE): aaina test (ulti qeemat par BUY code = SELL code) XAU 437/437, US500 trend 288/288, IBS 94/94; tarjeeh ke baad overlap 0.
+**Qadam 1 TALAASH** entry < 2019 (XAU/XAG 2003 se, US500/USTEC 2012 se - #34 jaisa): S1 + S2 mila kar, tarjeeh ke baad, kharcha + swap ke BAAD: PASS = N >= 100 aur Exp > 0. FAIL = band.
+**Qadam 2 CHUNAO 2012-2018** (84 challenge): SELL risk = k x BUY risk (S1 0.75k%, S2 1.0k%), k = 0.25 / 0.5 / 1.0 vs #68 (isi run); shart #69 wali (P1 fail < 20%,
+pass > fail, (pass - fail) >= #68; behtareen = zyada (pass - fail), phir kam median, phir kam k). Koi nahi = FAIL.
+**Qadam 3 IMTIHAN 2019-01..2026-10 EK dafa** (chuna k), judge ki code jaanch ke BAAD: PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). PASS -> 2 SELL EA + judge + demo.
+Ginti +1 (BTC Kachhua ab #74). Maloomat: Pine `indicators/jas_5ea.pine` (5 EA chart) - faisla Python se. Research P: TALAASH 0.50, #68 behtar 0.20.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
