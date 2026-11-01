@@ -203,3 +203,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 | `METHOD.md` | The trader's own Fishing Lots method, captured from him. Read it before touching anything that trades |
 | `SAWAL-LIST.md` | The question list he answers by number, in Roman Urdu |
 
+- `docs/research/daur1-agent.md`, `daur1-judge.md` - research team daur 1 (1 Nov): ummeedwar + judge faisla
