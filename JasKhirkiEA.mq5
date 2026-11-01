@@ -1,5 +1,5 @@
 //====================================================================
-//===  BUILD k1   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
+//===  BUILD k2   <<< PANEL PAR YAHI NUMBER AANA CHAHIYE >>>
 //====================================================================
 //+------------------------------------------------------------------+
 //|                                                  JasKhirkiEA.mq5 |
@@ -27,7 +27,7 @@
 #property version   "1.00"
 
 #include <Trade\Trade.mqh>
-#define EA_BUILD "k1"          // har nayi file par ye number barhta hai
+#define EA_BUILD "k2"          // har nayi file par ye number barhta hai
 #define EA_NAME  "JAS KHIRKI"
 // k1 (1 Nov 2026): pehla build - #68 ASLI PASS ki setting default, sirf FTMO demo 474832446 (t5 + i6 ke saath).
 #define MAXM 10
@@ -52,7 +52,7 @@ input int    InpLateMin   = 60;       // Entry waqt ke baad kitne minute tak ent
 input group "=== 2 - Risk ==="
 input bool   InpTrade      = true;    // TRADE KARE? false = sirf dikhaye
 input double InpRiskPct    = 0.15;    // Har index trade ka risk (% InpStartBal) - #68: 0.15
-input double InpMaxRiskPct = 0.50;    // Sab se chhoti lot ka risk is % se zyada = trade nahi
+input double InpMaxRiskPct = 0.30;    // Sab se chhoti lot ka risk is % se zyada = trade nahi (k2: 0.50 se kam)
 input double InpMaxLot     = 20.0;    // Lot ki hadd (hifazat)
 
 input group "=== 3 - FTMO pehra (POORE account par, JasTrendEA t5 jaisa) ==="
@@ -65,7 +65,7 @@ input string InpGuardMagics = "20261029,20261022,20261101"; // Pehra in magic ki
 input group "=== 4 - Amal ==="
 input int    InpSlippage   = 50;       // Max slippage (points)
 input int    InpMagic      = 20261101; // Magic number
-input int    InpServerGMT  = 0;        // Broker server ka GMT farq (Exness = 0)
+input int    InpServerGMT  = 0;        // Server GMT farq: Exness = 0 | FTMO = -2 (GMT+2, US DST mein +3, khud)
 
 //--------------------------- HAAL -------------------------------------
 int      g_n = 0;
@@ -76,6 +76,7 @@ string   g_zone[MAXM];
 int      g_emin[MAXM];
 bool     g_have[MAXM];
 datetime g_failT[MAXM];
+int      g_doneH[MAXM];          // k2: is waqia (H) par BUY abhi khuli - dobara nahi
 string   g_state[MAXM];
 string   S = "";
 int      g_i = 0;
@@ -138,7 +139,25 @@ datetime FirstSunday(int year, int mon)
    return(AddSec(d1, (long)add * 86400));
   }
 
-datetime ServerToUtc(datetime srv) { return(AddSec(srv, -(long)InpServerGMT * 3600)); }
+// k2: -2 = FTMO server (New York close: GMT+2, US DST mein GMT+3) - har waqt apna farq
+bool UsDstUtc(datetime utc)
+  {
+   MqlDateTime s;
+   TimeToStruct(utc, s);
+   datetime a = AddSec(FirstSunday(s.year, 3), (7 + 7 * 24) * 3600);   // March doosra Itwar 07:00 UTC
+   datetime b = AddSec(FirstSunday(s.year, 11), 6 * 3600);             // Nov pehla Itwar 06:00 UTC
+   return(utc >= a && utc < b);
+  }
+
+datetime ServerToUtc(datetime srv)
+  {
+   if(InpServerGMT == -2)
+     {
+      datetime u = AddSec(srv, -3 * 3600);
+      return(UsDstUtc(u) ? u : AddSec(srv, -2 * 3600));
+     }
+   return(AddSec(srv, -(long)InpServerGMT * 3600));
+  }
 
 // UTC -> market ka local waqt. EU / UK: EU DST (March aakhri Itwar - Oct aakhri Itwar, 01:00 UTC).
 // AU (Sydney): DST Oct pehla Itwar 02:00 AEST (= Hafta 16:00 UTC) se April pehla Itwar 03:00 AEDT (= Hafta 16:00 UTC).
@@ -279,7 +298,7 @@ double LotFor(double price, double slv, double &riskPct)
   {
    riskPct = 0.0;
    double loss = 0.0;
-   if(!OrderCalcProfit(ORDER_TYPE_BUY, S, 1.0, price, slv, loss)) return(0.0);
+   if(!OrderCalcProfit(ORDER_TYPE_BUY, S, 1.0, price, slv, loss)) return(-1.0);   // k2: ghalti = dobara koshish
    loss = MathAbs(loss);
    double base = AccountInfoDouble(ACCOUNT_BALANCE);
    if(InpStartBal > 0.0) base = InpStartBal;      // Python jaisa pakka $100k
@@ -356,8 +375,9 @@ void Note(string s)
 double DailyAtr(string zone, int todayYmd)
   {
    MqlRates r[];
+   if(!SeriesInfoInteger(S, PERIOD_H1, SERIES_SYNCHRONIZED)) return(0.0);   // k2: History poori aaye
    int n = CopyRates(S, PERIOD_H1, 0, 24 * 320, r);
-   if(n < 24 * 40) return(0.0);
+   if(n < 5000) return(0.0);                                                // k2: 960 se 5000 (ATR Python jaisa)
    double H[], L[], C[];
    ArrayResize(H, n);
    ArrayResize(L, n);
@@ -415,6 +435,11 @@ void Work(int i, bool canTrade)
    datetime t0 = 0;
    if(FindPos(tk, hy, t0))
      {
+      // k2: comment badla / kata ho to H entry ke local din se dobara (WinH)
+      datetime le = LocalTime(ServerToUtc(t0), g_zone[i]);
+      int      ey = YMD(le);
+      if(hy < ey || hy > YMD(AddSec(le, 14 * 86400)))
+         hy = WinH(AddSec(le, -((long)le % 86400)));
       // Band: pehla local din >= H, entry wale waqt (Python: wohi H1)
       bool due  = (hy > 0 && today >= hy && lmin >= g_emin[i]);
       bool late = (TimeCurrent() - t0 > 12 * 86400);      // hifazat: 12 din se zyada nahi
@@ -452,7 +477,7 @@ void Work(int i, bool canTrade)
       g_state[i] = "khirki ka waqt magar FTMO pehra laga hai - nayi nahi";
       return;
      }
-   if(SigUsed(h)) return;
+   if(g_doneH[i] == h || SigUsed(h)) return;
    double atr = DailyAtr(g_zone[i], today);
    if(atr <= 0.0)
      {
@@ -471,6 +496,12 @@ void Work(int i, bool canTrade)
      }
    double rp = 0.0;
    double lots = LotFor(t.ask, slv, rp);
+   if(lots < 0.0)
+     {
+      g_state[i] = "lot ka hisaab nahi bana (OrderCalcProfit) - 60 s baad dobara";
+      g_failT[i] = TimeCurrent();
+      return;
+     }
    if(lots <= 0.0)
      {
       Note(StringFormat("BUY CHHOOTI: chhoti lot bhi %.2f%% se zyada risk", InpMaxRiskPct));
@@ -487,6 +518,7 @@ void Work(int i, bool canTrade)
    trade.SetTypeFillingBySymbol(S);
    if(trade.Buy(lots, S, 0.0, slv, 0.0, cmt) && trade.ResultRetcode() == TRADE_RETCODE_DONE)
      {
+      g_doneH[i] = h;
       g_statsDirty = true;
       Note(StringFormat("KHULI BUY %.2f @ %s | SL %s (3 x ATR %s), risk %.2f%% | chutti %d", lots, Px(trade.ResultPrice()), Px(slv), Px(atr), rp, h));
      }
@@ -640,8 +672,8 @@ void Panel(bool canTrade)
    double base = AccountInfoDouble(ACCOUNT_BALANCE);
    if(InpStartBal > 0.0) base = InpStartBal;
    string s = "=== JAS KHIRKI  " + EA_BUILD + "  ===  " + mode + "\n";
-   s += StringFormat("Risk %.2f%% = %.2f har index | lot hadd %.2f | suffix '%s' | %d market | magic %d | GMT %+d\n",
-                     InpRiskPct, base * InpRiskPct / 100.0, InpMaxLot, g_suffix, g_n, InpMagic, InpServerGMT);
+   s += StringFormat("Risk %.2f%% = %.2f har index | lot hadd %.2f | suffix '%s' | %d market | magic %d | GMT %s\n",
+                     InpRiskPct, base * InpRiskPct / 100.0, InpMaxLot, g_suffix, g_n, InpMagic, Pick(InpServerGMT == -2, "FTMO +2/+3", IntegerToString(InpServerGMT)));
    s += g_guardTxt + "\n";
    for(int i = 0; i < g_n; i++)
      {
@@ -730,6 +762,7 @@ int OnInit()
       g_sym[i]   = g_base[i] + g_suffix;
       g_have[i]  = SymbolSelect(g_sym[i], true);
       g_failT[i] = 0;
+      g_doneH[i] = 0;
       g_state[i] = "shuru ho raha hai";
       if(!g_have[i]) PrintFormat("%s %s | %s broker par nahi mila - chhor diya", EA_NAME, EA_BUILD, g_sym[i]);
      }

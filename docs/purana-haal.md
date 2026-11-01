@@ -1358,3 +1358,11 @@ data 2013 se. Kharcha har taraf 0.75 x spread (USOIL 0.01455%, UKOIL 0.01133%), 
 84 challenge: #68 (isi run) 64 / 2 / 18, median 36.3 · Tide 0.10%: 67 / 0, 33.2 · 0.25%: 67 / 0, 29.8 · **0.50%: 67 / 0, 24.7 = CHUNI**.
 **Koshish #69 IMTIHAN 2019-01..2026-10 (EK dafa, 1 Nov) = FAIL:** 94 challenge: #68 83 / 0 / 11, median 10.8 -> + Tide 0.5%: **74 pass / 11 fail (3/8)** / 9, median 10.8.
 Fail 0 -> 11 (2020 tel crash ka saal shamil). Kam risk dobara NAHI (nateeja dekh kar chunna = mana). Tide oil -> BANK (#59 jaisa: funded / real account par naya test).
+
+**JasKhirkiEA judge (1 Nov, 29vi chat):** k1 replay vs Python `khirki_trades`: 2012-18 337/355, 2019+ 506/507 poore mile (entry bar/qeemat, SL, exit), EA-only 0;
+farq = data shuru (ATR history), 2 data gap, Python ki Itwar duplicate (UK100). Calendar 1999-2031 0 farq, LocalTime 2010-30 0 farq. READY Exness (GMT+0).
+**k2 fixes:** InpServerGMT -2 = FTMO (GMT+2 / US DST +3, Python jaanch 166,560 ghante mein 19 farq = sirf DST badalne ke band ghante);
+fixed +2/+3 = aadhi chuttiyon par 1 H1 ghalat (is liye NAHI). Kharid ke baad g_doneH (dobara BUY nahi); ATR ke liye H1 >= 5000 + SERIES_SYNCHRONIZED
+(960 par ATR 12% farq); OrderCalcProfit ghalti = -1 -> 60 s baad dobara (pehle poori khirki chhoot jati); comment kata / badla ho to H = WinH(entry din);
+InpMaxRiskPct 0.50 -> 0.30 (tang). Baqi: t5/i6 InpGuardMagics mein 20261101 (input); asli FTMO se pehle t5/i6 server GMT -2 + symbol naam (GER40.cash waghera)
++ pehra mein B pehle phir D (teeno EA, chhota race).
