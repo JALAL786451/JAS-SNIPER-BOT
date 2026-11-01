@@ -29,7 +29,13 @@ def dxy_synth():
     """ICE DXY (constant chhor kar): sirf woh H1 jab chhe ke chhe hon. O/C formula se, H = max(O, C), L = min(O, C)."""
     m = None
     for s, w in W.items():
-        d = load_any(s)[['t', 'Open', 'Close']]
+        try:
+            d = load_any(s)[['t', 'Open', 'Close']]
+        except FileNotFoundError:
+            if s != 'USDSEK':
+                raise
+            print('USDSEK nahi mila -> baqi 5 se (qaida)')
+            continue
         d = pd.DataFrame({'t': d['t'], 'o' + s: w * np.log(d['Open']), 'c' + s: w * np.log(d['Close'])})
         m = d if m is None else m.merge(d, on='t', how='inner')
     o = np.exp(m[[c for c in m if c.startswith('o')]].sum(axis=1).values) * 50.14348112

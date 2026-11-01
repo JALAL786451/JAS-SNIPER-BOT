@@ -1393,7 +1393,7 @@ Research daur 2 (`docs/research/daur2-gold-agent.md`) G2. #68 bilkul wahi (trend
 **XAU aur XAG trend BUY sirf tab jab DXY ka 4H Supertrend (10 x 3, wahi `supertrend_up`) NEECHE ho** (gold block j ke band hone tak ka aakhri poora DXY 4H block). Exit / SL wahi.
 DXY na mile to trade lo (#68 jaisa). US500/USTEC trend, IBS, khirki ko filter NAHI. Naya number koi nahi.
 **DXY data:** Dukascopy DOLLARIDXUSD sirf Dec 2017 se (2012-18 TALAASH ke liye kaafi nahi) -> **ICE formula se banaya DXY:** ln = -0.576 ln EURUSD + 0.136 ln USDJPY
-- 0.119 ln GBPUSD + 0.091 ln USDCAD + 0.042 ln USDSEK + 0.036 ln USDCHF (Dukascopy H1 bid, sirf woh ghante jab chhe ke chhe hon). H1 O/C formula se; H = max(O, C), L = min(O, C).
+- 0.119 ln GBPUSD + 0.091 ln USDCAD + 0.042 ln USDSEK + 0.036 ln USDCHF (Dukascopy H1 bid, sirf woh ghante jab chhe ke chhe hon). H1 O/C formula se; H = max(O, C), L = min(O, C). USDSEK na mile (QDM) = baqi 5 se, wahi weights (data se PEHLE likha); data jaanch wahi.
 4H block `st4h_trades` jaisa (17:00 NY din, NY+7 / 4). **Data jaanch (sirf 2018, nateeja se PEHLE):** banaya vs DOLLARIDXUSD: daily return correlation >= 0.95 aur 4H Supertrend
 rukh >= 90% same - warna data FAIL (test nahi).
 **Qadam 1 TALAASH 2012-2018 (kharche se pehle):** XAU + XAG trend trades do hisse - rakhe (DXY neeche) vs roke (DXY upar). PASS = rakhe ka Exp > roke ka Exp. FAIL = band.
