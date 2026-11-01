@@ -1446,6 +1446,7 @@ Sabaq: SELL sirf mandi mein bhi sifar ke aas paas; US index 2012-18 mein SMA200 
 (asli EA agle din dobara dekhta) + S2/B2 index ek bar aage. Theek karke KUL 228 tr -0.0032R (Exp-2SE -0.093) = TALAASH FAIL wahi. Baqi CLEAN: aaina (XAG 384, USTEC 300, IBS USTEC 92
 bhi), SMA200 shart 1,409 / 1,409 (look-ahead nahi), SL ASK par 0 farq, raat ginti ka farq +-0.0001R. Ek trade: gross +0.018R, kharcha 0.006, **swap 0.016 (sab se bara bojh)**.
 Aage SELL EA ho to: S1 entry usi open par hoti jahan B1 BUY band hoti - band hoti BUY ko "khuli" na gine. SELL BAND (#73 FAIL).
+**Pine `indicators/jas_5ea.pine` p1 (1 Nov, user "5 EA ka chart"):** expert agent ne banaya (11 request, 114/127 tuple), pinecheck saaf, TV compile baqi. SELL 2019+ ab Pine mein DIKHTA hai - #73 FAIL pakka; 2019+ dekh kar SELL wapas lana MANA (hindsight).
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 

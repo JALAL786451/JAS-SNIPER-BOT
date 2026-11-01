@@ -1,0 +1,671 @@
+//@version=6
+// JAS 5 EA  (build p1, Pine v6, 1 Nov 2026)  -  #73 ke 5 EA ek chart par: 3 BUY (B1 B2 B3) + 2 SELL (S1 S2). TRADE NAHI, sirf dekhna.
+// ============================================================================
+//  KAISE LAGAYEIN
+//   - POORI TABLE (lambi history) = DAILY (1D) chart, koi bhi symbol (misaal OANDA:XAUUSD 1D ya SP:SPX 1D).
+//     1D chart par 4H data ~2007 se aata hai (tokri t3); 4H chart par sirf ~2023 se.
+//   - 1m .. 4H chart = LIVE haal (Abhi) + nishan + lakeer. Wahan table ke number sirf chhoti history ke.
+//   - Chart ka apna market (gold, chandi, SPX, NAS, 7 index) khud pehchanta hai -> sirf usi ke nishan / lakeer.
+//     Na pehchane to setting "Chart ka market" se chunein.
+//  5 EA (qaida #73 / #68 - Python: ftmo_4h.st4h_trades, ftmo_test.ibs_trades, sell73.py, ftmo73.sma200_gate)
+//   B1 TREND 4H BUY   XAU XAG US500 USTEC  0.75%  Supertrend(10,3) 4H upar mude -> agli 4H open BUY, SL 6 x ATR10 (4H),
+//                                                  neeche mude -> agli 4H open band (ya SL, gap = open)
+//   S1 TREND 4H SELL  wahi 4 market        0.75%  B1 ka aaina + shart: aakhri POORA din (17:00 NY) ka close < SMA200
+//   B2 IBS 1D BUY     US500 USTEC          1%     IBS < 0.2 aur close > SMA200 -> din ke close BUY; IBS > 0.8 ya 5 din band; SL 3 x ATR14
+//   S2 IBS 1D SELL    US500 USTEC          1%     B2 ka aaina (IBS > 0.8, close < SMA200; band IBS < 0.2 ya 5 din; SL upar)
+//   B3 KHIRKI 1D BUY  7 non-US index       0.15%  US chutti se pehle ki khirki (jas_khirki67 k2 hubahu, NYSE calendar)
+//   BUY KO TARJEEH: BUY (B1/B2) khuli ho to SELL nahi khulti ("ruki"), agla signal phir dekha jata hai; SELL khuli ho aur
+//   BUY khule to SELL usi waqt BUY ki entry par band. Jo BUY usi open par band ho rahi ho wo "khuli" nahi ginti.
+//   B1 S1 B2 S2 ek market ki EK request mein (4H candles se 17:00 NY din khud banta hai) = waqt ki tarteeb sahi.
+//  TABLE: Abhi = abhi ka haal. Trades / Jeet % / Exp (R har trade, kharcha + swap ke BAAD) / Exp-2SE / PnL % / DD %.
+//   Exp-2SE aasan matlab = "bura andaza": Exp mein se 2 x ghalti ka khana. > 0 (hara) = faida shor se bara; < 0 (laal) = saboot nahi.
+//   PnL % = sab band trades ka jor (R x risk %, $100k par, compound nahi). DD % = us line ki sab se bari girawat (band trades).
+//   KUL DD = sab line ek timeline par (chart ki har candle par jor). "~" = chart ki pehli candle se pehle ka hissa bhi tha = andaza.
+//   KUL ka SE seedha (khirki: ek waqia = 7 trade, gold-chandi jure) - asal SE is se zyada.
+//   Kharcha har taraf 0.75 x asli spread (US500 0.0052%, USTEC 0.0038%, XAU 0.0059%, XAG 0.0445%), index 0.02%; swap 3%/saal har raat.
+//  MUDDAT: KUL / TALAASH (<2019) / IMTIHAN (2019+) / 10 SAAL / LIVE = sirf ENTRY ki tareekh ka filter. LIVE kuch reset NAHI
+//   karta: "Live shuru tareekh" (default 2 Nov 2026) se baad wali entries hi gini jati hain - tareekh aap badal sakte hain.
+//  SELL: test FAIL (#73 TALAASH 2012-18 Python: 228 tr, -0.003R). Sirf dekhne ke liye; "SELL dikhao" se band.
+//  REPAINT NAHI: har request "HTF candle ke OPEN tak" ka haal deti hai (pichhli band candle + open). 1m..4H chart: lookahead_on
+//   (aage ka data nahi aata); 4H se bara chart: lookahead_off (andar ki aakhri 4H candle). Nishan barstate.isconfirmed par.
+//   SL ka BAND nishan agli 4H / din ki candle par. IBS signal din ke close par, dabba agli 4H candle par (Jumma ka Itwaar ko).
+//   Khirki ka haal agle index din. Lakeer qeemat OANDA / index ki (chart ka feed alag ho to thora farq).
+//  HADD (TradingView): request.security 11 (hadd 40). Tuple 12 + 12 + 24 + 24 + 7 x 6 = 114 (hadd 127; trades + jeet + saal
+//   ek number mein). Lakeer <= 4, label <= 4 (ek market mein zyada se zyada 2 khuli; hadd 20). plotshape 10 (hadd 64).
+//   Loop: f_win 4 + 4 har din, table 19 x 2. Table 9 x 26.
+//  Sahi nateeja Python / MT5 demo se - TV (OANDA / index data, 4H candle) sirf andaza.
+// ============================================================================
+indicator("JAS 5 EA p1", shorttitle = "JAS 5EA p1", overlay = true, max_lines_count = 20, max_labels_count = 20, max_bars_back = 300)
+
+BUILD = "p1"
+TZ    = "America/New_York"
+DAY   = 86400000
+SWAP  = 0.03 / 365
+C_XAU = 0.75 * 0.0059 / 100
+C_XAG = 0.75 * 0.0445 / 100
+C_SPX = 0.75 * 0.0052 / 100
+C_NAS = 0.75 * 0.0038 / 100
+C_IDX = 0.02 / 100
+TMIN  = timestamp("1900-01-01T00:00:00+00:00")
+T19   = timestamp("2019-01-01T00:00:00+00:00")
+TMAX  = timestamp("2100-01-01T00:00:00+00:00")
+
+grM = "1 · Markets (#73 - mat badlein)"
+mXAU = input.symbol("OANDA:XAUUSD", "XAU  (B1, S1)", group = grM, display = display.none)
+mXAG = input.symbol("OANDA:XAGUSD", "XAG  (B1, S1)", group = grM, display = display.none)
+mSPX = input.symbol("OANDA:SPX500USD", "US500  (B1, S1, B2, S2)", group = grM, display = display.none)
+mNAS = input.symbol("OANDA:NAS100USD", "USTEC  (B1, S1, B2, S2)", group = grM, display = display.none)
+
+grK = "2 · B3 khirki: 7 index (#67 - mat badlein)"
+ix0 = input.symbol("XETR:DAX", "1 DAX (Germany)", group = grK, display = display.none)
+ix1 = input.symbol("TVC:UKX", "2 FTSE 100 (UK)", group = grK, display = display.none)
+ix2 = input.symbol("EURONEXT:PX1", "3 CAC 40 (France)", group = grK, display = display.none)
+ix3 = input.symbol("TVC:SX5E", "4 Euro Stoxx 50", group = grK, display = display.none)
+ix4 = input.symbol("TVC:NI225", "5 Nikkei 225 (Japan)", group = grK, display = display.none)
+ix5 = input.symbol("ASX:XJO", "6 ASX 200 (Australia)", group = grK, display = display.none)
+ix6 = input.symbol("TVC:HSI", "7 Hang Seng (HK)", group = grK, display = display.none)
+
+grT = "3 · Table"
+mud      = input.string("KUL", "Muddat", options = ["KUL", "TALAASH (<2019)", "IMTIHAN (2019+)", "10 SAAL", "LIVE (lagne se)"], group = grT, display = display.none)
+liveT    = input.time(timestamp("2026-11-02T00:00:00+00:00"), "Live shuru tareekh (LIVE muddat)", group = grT, display = display.none)
+showSell = input.bool(true, "SELL dikhao (S1, S2 = test FAIL #73)", group = grT, display = display.none)
+showTbl  = input.bool(true, "Table dikhao", group = grT, display = display.none)
+tblPos   = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Bottom Right", "Top Left", "Bottom Left"], group = grT, display = display.none)
+showPy   = input.bool(false, "Python nateeja line (#68 / #73)", group = grT, display = display.none)
+
+grC = "4 · Chart (sirf chart ka apna market)"
+chMkt  = input.string("Khud (auto)", "Chart ka market", options = ["Khud (auto)", "XAU", "XAG", "US500", "USTEC", "DAX", "FTSE", "CAC", "SX5E", "N225", "XJO", "HSI", "Koi nahi"], group = grC, display = display.none)
+showMk = input.bool(true, "Nishan: BUY / SELL / BAND", group = grC, display = display.none)
+showLn = input.bool(true, "Khuli trade: entry + SL lakeer", group = grC, display = display.none)
+
+grR = "5 · Risk % (sirf PnL % / DD % ke hisaab ke liye)"
+rTr = input.float(0.75, "B1 / S1 trend risk %", minval = 0, step = 0.05, group = grR, display = display.none)
+rIb = input.float(1.0, "B2 / S2 IBS risk %", minval = 0, step = 0.05, group = grR, display = display.none)
+rKh = input.float(0.15, "B3 khirki risk %", minval = 0, step = 0.05, group = grR, display = display.none)
+
+// Muddat = entry ki tareekh ka khana [tA, tB)
+mudI = mud == "TALAASH (<2019)" ? 1 : mud == "IMTIHAN (2019+)" ? 2 : mud == "10 SAAL" ? 3 : mud == "LIVE (lagne se)" ? 4 : 0
+t10  = timestamp("UTC", year(timenow, "UTC") - 10, month(timenow, "UTC"), dayofmonth(timenow, "UTC"), 0, 0)
+tA   = mudI == 2 ? T19 : mudI == 3 ? t10 : mudI == 4 ? liveT : TMIN
+tB   = mudI == 1 ? T19 : TMAX
+
+// 1m..4H chart: lookahead_on (HTF candle ka haal us ke OPEN tak = aage ka data nahi); bara chart: 4H andar ki aakhri candle
+LA = timeframe.in_seconds() <= 14400 ? barmerge.lookahead_on : barmerge.lookahead_off
+
+// ============================================================================
+//  EK LEG (ek EA x ek market): khuli trade + chuni muddat ki band trades ka hisaab
+// ============================================================================
+type Leg
+    int   dir = 1
+    float e = na
+    float sl = na
+    float sd = na
+    int   et = na
+    int   ec = 0
+    int   n = 0
+    int   w = 0
+    float s = 0.0
+    float q = 0.0
+    float cum = 0.0
+    float pk = 0.0
+    float dd = 0.0
+
+// band: R = (rukh x (exit - entry) - kharcha x (entry + exit) - swap x raatein x entry) / SL doori  (ftmo73.net_r)
+f_close(Leg g, float px, float cst, int fromT, int toT, int xt) =>
+    nights = math.max(0, math.floor(xt / 86400000.0) - math.floor(g.et / 86400000.0))
+    r = (g.dir * (px - g.e) - cst * (g.e + px) - SWAP * nights * g.e) / g.sd
+    if g.et >= fromT and g.et < toT
+        g.n += 1
+        g.w += r > 0 ? 1 : 0
+        g.s += r
+        g.q += r * r
+        g.cum += r
+        g.pk := math.max(g.pk, g.cum)
+        g.dd := math.max(g.dd, g.pk - g.cum)
+    g.e := na
+    g.sl := na
+    r
+
+f_open(Leg g, float px, float sd, int t) =>
+    g.e := px
+    g.sd := sd
+    g.sl := px - g.dir * sd
+    g.et := t
+    g.ec := 0
+    px
+
+// saal x 1e10 + trades x 1e5 + jeet (tuple bachane ke liye ek number)
+f_pack(Leg g, int y0) => nz(y0) * 1e10 + g.n * 1e5 + g.w
+
+// ============================================================================
+//  B1 + S1 (+ B2 + S2) - EK market, 4H candles. Har 4H candle k par tarteeb (Python jaisi):
+//   (1) candle k-1 ke andar SL  (2) k-1 ke close par Supertrend mura?  (3) naya din? -> pichhle din ka IBS / SMA200 /
+//   ATR14 + IBS ki apni band  (4) k ke open par rukh wali band  (5) BUY entry  (6) BUY ko tarjeeh: SELL kato  (7) SELL entry.
+//   Wapas = haal "candle k ke OPEN par" - is mein k ka high / low / close nahi = repaint nahi.
+// ============================================================================
+f_core(bool ibsOn, float cst, int fromT, int toT) =>
+    var Leg b1 = Leg.new(dir = 1)
+    var Leg s1 = Leg.new(dir = -1)
+    var Leg b2 = Leg.new(dir = 1)
+    var Leg s2 = Leg.new(dir = -1)
+    var array<float> cls = array.new<float>()
+    var float cSum = 0.0
+    var float dH = na
+    var float dL = na
+    var float pdC = na
+    var float dSma = na
+    var float dAtr = na
+    var float trSum = 0.0
+    var int   nDay = 0
+    var bool  b2Hit = false
+    var bool  s2Hit = false
+    var int   y0 = na
+    [stv, stDir] = ta.supertrend(3.0, 10)
+    atr4 = ta.atr(10)
+    up = stDir < 0
+    if na(y0)
+        y0 := year(time, "UTC")
+    if bar_index >= 1
+        o1 = open[1]
+        h1 = high[1]
+        l1 = low[1]
+        t1 = time[1]
+        // (1) SL pichhli candle mein (gap = open)
+        if not na(b1.e) and l1 <= b1.sl
+            f_close(b1, math.min(o1, b1.sl), cst, fromT, toT, t1)
+        if not na(s1.e) and h1 >= s1.sl
+            f_close(s1, math.max(o1, s1.sl), cst, fromT, toT, t1)
+        if not na(b2.e) and l1 <= b2.sl
+            f_close(b2, math.min(o1, b2.sl), cst, fromT, toT, t1)
+            b2Hit := true
+        if not na(s2.e) and h1 >= s2.sl
+            f_close(s2, math.max(o1, s2.sl), cst, fromT, toT, t1)
+            s2Hit := true
+        dH := na(dH) ? h1 : math.max(dH, h1)
+        dL := na(dL) ? l1 : math.min(dL, l1)
+        // (2) Supertrend k-1 ke close par mura? (signal candle # > 30, Python jaisa)
+        sig = bar_index - 1 > 30
+        fUp = sig and up[1] and not up[2]
+        fDn = sig and not up[1] and up[2]
+        xb1 = not na(b1.e) and not up[1]
+        xs1 = not na(s1.e) and up[1]
+        pb1 = fUp and na(b1.e)
+        ps1 = fDn and na(s1.e)
+        sdT = 6.0 * atr4[1]
+        // (3) naya din (17:00 NY) shuru = pichhla din band: close, ATR14 (RMA), SMA200, IBS
+        bool  dayEv = false
+        float dc = close[1]
+        float ibs = 0.5
+        if time_tradingday != time_tradingday[1] and not na(dH)
+            tr = na(pdC) ? dH - dL : math.max(dH - dL, math.abs(dH - pdC), math.abs(dL - pdC))
+            nDay += 1
+            if nDay <= 14
+                trSum += tr
+                dAtr := nDay == 14 ? trSum / 14 : na
+            else
+                dAtr := (dAtr * 13 + tr) / 14
+            cls.push(dc)
+            cSum += dc
+            if cls.size() > 200
+                cSum -= cls.shift()
+            dSma := cls.size() >= 200 ? cSum / 200 : na
+            ibs := dH > dL ? (dc - dL) / (dH - dL) : 0.5
+            pdC := dc
+            dH := na
+            dL := na
+            dayEv := true
+            // IBS ki apni band: din ke close par (IBS ulta ya 5 din)
+            if not na(b2.e)
+                b2.ec += 1
+                if ibs > 0.8 or b2.ec >= 5
+                    f_close(b2, dc, cst, fromT, toT, time)
+                    b2Hit := true
+            if not na(s2.e)
+                s2.ec += 1
+                if ibs < 0.2 or s2.ec >= 5
+                    f_close(s2, dc, cst, fromT, toT, time)
+                    s2Hit := true
+        // (4) is 4H open par rukh wali band
+        if xb1
+            f_close(b1, open, cst, fromT, toT, time)
+        if xs1
+            f_close(s1, open, cst, fromT, toT, time)
+        // (5) BUY (band wale din IBS ki nayi nahi)
+        okD = dayEv and not na(dSma) and not na(dAtr) and dAtr > 0
+        bool  buyNow = false
+        float buyPx = na
+        if ibsOn and okD and na(b2.e) and not b2Hit and ibs < 0.2 and dc > dSma
+            f_open(b2, dc, 3.0 * dAtr, time)
+            buyNow := true
+            buyPx := dc
+        if pb1
+            f_open(b1, open, sdT, time)
+            buyPx := buyNow ? buyPx : open
+            buyNow := true
+        // (6) BUY ko tarjeeh: khuli SELL isi waqt BUY ki entry qeemat par band
+        if buyNow and not na(s1.e)
+            f_close(s1, buyPx, cst, fromT, toT, time)
+        if buyNow and not na(s2.e)
+            f_close(s2, buyPx, cst, fromT, toT, time)
+            s2Hit := true
+        // (7) SELL - BUY khuli ho to ruki (khulti nahi, agla signal phir dekha jata hai)
+        buyOpen = not na(b1.e) or not na(b2.e)
+        if ibsOn and okD and na(s2.e) and not s2Hit and not buyOpen and ibs > 0.8 and dc < dSma
+            f_open(s2, dc, 3.0 * dAtr, time)
+        if ps1 and not buyOpen and not na(dSma) and pdC < dSma
+            f_open(s1, open, sdT, time)
+        if dayEv
+            b2Hit := false
+            s2Hit := false
+    [b1.e, b1.sl, f_pack(b1, y0), b1.s, b1.q, b1.dd, s1.e, s1.sl, f_pack(s1, y0), s1.s, s1.q, s1.dd, b2.e, b2.sl, f_pack(b2, y0), b2.s, b2.q, b2.dd, s2.e, s2.sl, f_pack(s2, y0), s2.s, s2.q, s2.dd]
+
+// XAU / XAG: sirf B1 + S1 (12 tuple)
+f_tr2(float cst, int fromT, int toT) =>
+    [a0, a1, a2, a3, a4, a5, c0, c1, c2, c3, c4, c5, u0, u1, u2, u3, u4, u5, v0, v1, v2, v3, v4, v5] = f_core(false, cst, fromT, toT)
+    [a0, a1, a2, a3, a4, a5, c0, c1, c2, c3, c4, c5]
+
+// ============================================================================
+//  B3 KHIRKI - NYSE CALENDAR + ENGINE (jas_khirki67.pine k2 hubahu; sirf wapasi badli)
+// ============================================================================
+f_easter(int y) =>
+    a = y % 19
+    b = math.floor(y / 100)
+    c = y % 100
+    d = math.floor(b / 4)
+    e = b % 4
+    f = math.floor((b + 8) / 25)
+    g = math.floor((b - f + 1) / 3)
+    h = (19 * a + b - d - g + 15) % 30
+    i = math.floor(c / 4)
+    k = c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = math.floor((a + 11 * h + 22 * l) / 451)
+    n = h + l - 7 * m + 114
+    [math.floor(n / 31), n % 31 + 1]
+
+f_isWk(int ts) =>
+    w = dayofweek(ts, TZ)
+    w != dayofweek.saturday and w != dayofweek.sunday
+
+f_isHol(int ts) =>
+    y = year(ts, TZ)
+    m = month(ts, TZ)
+    d = dayofmonth(ts, TZ)
+    w = dayofweek(ts, TZ)
+    wk = w != dayofweek.saturday and w != dayofweek.sunday
+    mon = w == dayofweek.monday
+    fri = w == dayofweek.friday
+    bool h = false
+    if m == 1
+        h := (d == 1 and wk) or (d == 2 and mon) or (y >= 1998 and mon and d >= 15 and d <= 21)
+    else if m == 2
+        h := mon and d >= 15 and d <= 21
+    else if m == 5
+        h := mon and d >= 25
+    else if m == 6
+        h := y >= 2022 and ((d == 19 and wk) or (d == 18 and fri) or (d == 20 and mon))
+    else if m == 7
+        h := (d == 4 and wk) or (d == 3 and fri) or (d == 5 and mon)
+    else if m == 9
+        h := mon and d <= 7
+    else if m == 11
+        h := (w == dayofweek.thursday and d >= 22 and d <= 28) or ((y == 1972 or y == 1976 or y == 1980) and w == dayofweek.tuesday and d >= 2 and d <= 8)
+    else if m == 12
+        h := (d == 25 and wk) or (d == 24 and fri) or (d == 26 and mon)
+    if not h and fri and (m == 3 or m == 4)
+        [em, ed] = f_easter(y)
+        gf = timestamp(TZ, y, em, ed, 12, 0) - 2 * DAY
+        h := month(gf, TZ) == m and dayofmonth(gf, TZ) == d
+    h
+
+// index ki session (y-m-d) ka AGLA weekday P: P NYSE din ho aur P ke baad wala weekday NYSE chutti H = H (yyyymmdd), warna 0
+f_win(int y, int m, int d) =>
+    noon = timestamp(TZ, y, m, d, 12, 0)
+    int p = noon
+    for k = 1 to 4
+        p := noon + k * DAY
+        if f_isWk(p)
+            break
+    int hy = 0
+    if not f_isHol(p)
+        int q = p
+        for k = 1 to 4
+            q := p + k * DAY
+            if f_isWk(q)
+                break
+        if f_isHol(q)
+            hy := year(q, TZ) * 10000 + month(q, TZ) * 100 + dayofmonth(q, TZ)
+    hy
+
+// har index ki apni daily candles, sirf BAND candle [1]: BUY close par, band pehli session >= H ke close par, SL 3 x ATR20
+f_kh(int fromT, int toT) =>
+    _atrA = ta.atr(20)
+    _o  = open[1]
+    _l  = low[1]
+    _c  = close[1]
+    _a  = _atrA[1]
+    _td = time_tradingday[1]
+    var Leg g = Leg.new(dir = 1)
+    var int _fy = na
+    if not na(_c) and not na(_td)
+        _y   = year(_td, "UTC")
+        _m   = month(_td, "UTC")
+        _d   = dayofmonth(_td, "UTC")
+        _ymd = _y * 10000 + _m * 100 + _d
+        if na(_fy)
+            _fy := _y
+        bool _cl = false
+        if not na(g.e)
+            if _l <= g.sl
+                f_close(g, _o < g.sl ? _o : g.sl, C_IDX, fromT, toT, _td)
+                _cl := true
+            else if _ymd >= g.ec
+                f_close(g, _c, C_IDX, fromT, toT, _td)
+                _cl := true
+        if not _cl and na(g.e) and _y >= 1971 and not na(_a) and _a > 0
+            _hy = f_win(_y, _m, _d)
+            if _hy > 0
+                f_open(g, _c, 3.0 * _a, _td)
+                g.ec := _hy
+    [g.e, g.sl, f_pack(g, _fy), g.s, g.q, g.dd]
+
+// ============================================================================
+//  REQUESTS (11). Line number: 0-3 B1 (XAU XAG US500 USTEC), 4-7 S1, 8-9 B2 (US500 USTEC), 10-11 S2, 12-18 B3 (7 index)
+//  Har line: E entry (na = khali), L SL, P (saal, trades, jeet), S jor R, Q jor R^2, D DD (R)
+// ============================================================================
+[E0, L0, P0, S0, Q0, D0, E4, L4, P4, S4, Q4, D4] = request.security(mXAU, "240", f_tr2(C_XAU, tA, tB), lookahead = LA)
+[E1, L1, P1, S1, Q1, D1, E5, L5, P5, S5, Q5, D5] = request.security(mXAG, "240", f_tr2(C_XAG, tA, tB), lookahead = LA)
+[E2, L2, P2, S2, Q2, D2, E6, L6, P6, S6, Q6, D6, E8, L8, P8, S8, Q8, D8, E10, L10, P10, S10, Q10, D10] = request.security(mSPX, "240", f_core(true, C_SPX, tA, tB), lookahead = LA)
+[E3, L3, P3, S3, Q3, D3, E7, L7, P7, S7, Q7, D7, E9, L9, P9, S9, Q9, D9, E11, L11, P11, S11, Q11, D11] = request.security(mNAS, "240", f_core(true, C_NAS, tA, tB), lookahead = LA)
+[E12, L12, P12, S12, Q12, D12] = request.security(ix0, "D", f_kh(tA, tB), lookahead = LA)
+[E13, L13, P13, S13, Q13, D13] = request.security(ix1, "D", f_kh(tA, tB), lookahead = LA)
+[E14, L14, P14, S14, Q14, D14] = request.security(ix2, "D", f_kh(tA, tB), lookahead = LA)
+[E15, L15, P15, S15, Q15, D15] = request.security(ix3, "D", f_kh(tA, tB), lookahead = LA)
+[E16, L16, P16, S16, Q16, D16] = request.security(ix4, "D", f_kh(tA, tB), lookahead = LA)
+[E17, L17, P17, S17, Q17, D17] = request.security(ix5, "D", f_kh(tA, tB), lookahead = LA)
+[E18, L18, P18, S18, Q18, D18] = request.security(ix6, "D", f_kh(tA, tB), lookahead = LA)
+
+// ============================================================================
+//  KUL: sab line ek timeline par (PnL % = jor R x risk %), DD chart ki har candle par
+// ============================================================================
+totB = (nz(S0) + nz(S1) + nz(S2) + nz(S3)) * rTr + (nz(S8) + nz(S9)) * rIb + (nz(S12) + nz(S13) + nz(S14) + nz(S15) + nz(S16) + nz(S17) + nz(S18)) * rKh
+totS = (nz(S4) + nz(S5) + nz(S6) + nz(S7)) * rTr + (nz(S10) + nz(S11)) * rIb
+tot  = totB + (showSell ? totS : 0.0)
+var float kPk = 0.0
+var float kDd = 0.0
+var bool  kLump = false
+if barstate.isfirst
+    kLump := math.abs(tot) > 1e-9
+kPk := math.max(kPk, tot)
+kDd := math.max(kDd, kPk - tot)
+
+// ============================================================================
+//  CHART: sirf chart ke apne market ke nishan + khuli trade ki lakeer
+// ============================================================================
+f_auto() =>
+    t = str.upper(syminfo.ticker)
+    rt = str.upper(syminfo.root)
+    int m = -1
+    if str.contains(t, "XAU") or str.contains(t, "GOLD") or rt == "GC" or rt == "MGC"
+        m := 0
+    else if str.contains(t, "XAG") or str.contains(t, "SILVER") or rt == "SI" or rt == "SIL"
+        m := 1
+    else if str.contains(t, "SPX") or str.contains(t, "US500") or str.contains(t, "SP500") or str.contains(t, "USA500") or rt == "ES" or rt == "MES" or t == "SPY"
+        m := 2
+    else if str.contains(t, "NAS100") or str.contains(t, "NDX") or str.contains(t, "USTEC") or str.contains(t, "US100") or str.contains(t, "USATECH") or rt == "NQ" or rt == "MNQ" or t == "QQQ"
+        m := 3
+    else if str.contains(t, "DAX") or str.contains(t, "DE30") or str.contains(t, "DE40") or str.contains(t, "GER30") or str.contains(t, "GER40") or str.contains(t, "DEU40") or rt == "FDAX"
+        m := 4
+    else if str.contains(t, "UKX") or str.contains(t, "UK100") or str.contains(t, "FTSE100") or str.contains(t, "GBR100")
+        m := 5
+    else if str.contains(t, "PX1") or str.contains(t, "CAC") or str.contains(t, "FR40") or str.contains(t, "FRA40")
+        m := 6
+    else if str.contains(t, "SX5E") or str.contains(t, "EU50") or str.contains(t, "STOXX50") or str.contains(t, "ESTX50") or rt == "FESX"
+        m := 7
+    else if str.contains(t, "NI225") or str.contains(t, "JP225") or str.contains(t, "N225") or str.contains(t, "NKY") or str.contains(t, "JPN225") or str.contains(t, "NIKKEI") or rt == "NKD" or rt == "NIY"
+        m := 8
+    else if str.contains(t, "XJO") or str.contains(t, "AU200") or str.contains(t, "AUS200") or str.contains(t, "ASX200")
+        m := 9
+    else if str.contains(t, "HSI") or str.contains(t, "HK33") or str.contains(t, "HK50") or str.contains(t, "HKG33")
+        m := 10
+    m
+
+cm = switch chMkt
+    "Khud (auto)" => f_auto()
+    "XAU" => 0
+    "XAG" => 1
+    "US500" => 2
+    "USTEC" => 3
+    "DAX" => 4
+    "FTSE" => 5
+    "CAC" => 6
+    "SX5E" => 7
+    "N225" => 8
+    "XJO" => 9
+    "HSI" => 10
+    => -1
+
+f_pick(int c, float a, float b, float d, float f) => c == 0 ? a : c == 1 ? b : c == 2 ? d : c == 3 ? f : na
+f_pick7(int c, float a, float b, float d, float f, float g, float h, float k) => c == 4 ? a : c == 5 ? b : c == 6 ? d : c == 7 ? f : c == 8 ? g : c == 9 ? h : c == 10 ? k : na
+
+cB1e = f_pick(cm, E0, E1, E2, E3)
+cB1l = f_pick(cm, L0, L1, L2, L3)
+cS1e = showSell ? f_pick(cm, E4, E5, E6, E7) : na
+cS1l = f_pick(cm, L4, L5, L6, L7)
+cB2e = cm == 2 ? E8 : cm == 3 ? E9 : na
+cB2l = cm == 2 ? L8 : cm == 3 ? L9 : na
+cS2e = showSell ? (cm == 2 ? E10 : cm == 3 ? E11 : na) : na
+cS2l = cm == 2 ? L10 : cm == 3 ? L11 : na
+cB3e = f_pick7(cm, E12, E13, E14, E15, E16, E17, E18)
+cB3l = f_pick7(cm, L12, L13, L14, L15, L16, L17, L18)
+
+// nayi trade = entry khali se bhari (ya badli); band = bhari se khali (ya badli)
+f_new(float e) =>
+    ep = e[1]
+    bar_index > 0 and not na(e) and (na(ep) or e != ep)
+f_end(float e) =>
+    ep = e[1]
+    bar_index > 0 and not na(ep) and (na(e) or e != ep)
+
+nB1 = f_new(cB1e)
+nS1 = f_new(cS1e)
+nB2 = f_new(cB2e)
+nS2 = f_new(cS2e)
+nB3 = f_new(cB3e)
+xB1 = f_end(cB1e)
+xS1 = f_end(cS1e)
+xB2 = f_end(cB2e)
+xS2 = f_end(cS2e)
+xB3 = f_end(cB3e)
+
+fg  = color.new(#111111, 0)
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = color.new(#1a237e, 0)
+cMu = color.new(#757575, 0)
+cOr = color.new(#ef6c00, 0)
+
+mkOn = showMk and barstate.isconfirmed
+plotshape(mkOn and nB1, "B1 BUY", shape.triangleup, location.belowbar, cUp, text = "B1 BUY", textcolor = cUp, size = size.tiny)
+plotshape(mkOn and nB2, "B2 BUY", shape.triangleup, location.belowbar, cUp, text = "B2 BUY", textcolor = cUp, size = size.tiny)
+plotshape(mkOn and nB3, "B3 BUY", shape.triangleup, location.belowbar, cUp, text = "B3 BUY", textcolor = cUp, size = size.tiny)
+plotshape(mkOn and nS1, "S1 SELL", shape.triangledown, location.abovebar, cDn, text = "S1 SELL", textcolor = cDn, size = size.tiny)
+plotshape(mkOn and nS2, "S2 SELL", shape.triangledown, location.abovebar, cDn, text = "S2 SELL", textcolor = cDn, size = size.tiny)
+plotshape(mkOn and xB1, "B1 BAND", shape.xcross, location.abovebar, cMu, text = "BAND", textcolor = cMu, size = size.tiny)
+plotshape(mkOn and xB2, "B2 BAND", shape.xcross, location.abovebar, cMu, text = "BAND", textcolor = cMu, size = size.tiny)
+plotshape(mkOn and xB3, "B3 BAND", shape.xcross, location.abovebar, cMu, text = "BAND", textcolor = cMu, size = size.tiny)
+plotshape(mkOn and xS1, "S1 BAND", shape.xcross, location.belowbar, cMu, text = "BAND", textcolor = cMu, size = size.tiny)
+plotshape(mkOn and xS2, "S2 BAND", shape.xcross, location.belowbar, cMu, text = "BAND", textcolor = cMu, size = size.tiny)
+
+// khuli trade kab se (lakeer ka shuru)
+var int tFirst = time
+var int tmB1 = na
+var int tmS1 = na
+var int tmB2 = na
+var int tmS2 = na
+var int tmB3 = na
+if nB1
+    tmB1 := time
+if nS1
+    tmS1 := time
+if nB2
+    tmB2 := time
+if nS2
+    tmS2 := time
+if nB3
+    tmB3 := time
+
+f_px(float p) => p >= 1000 ? str.tostring(p, "#.0") : p >= 100 ? str.tostring(p, "#.00") : str.tostring(p, "#.000")
+
+var array<line>  lns = array.new<line>()
+var array<label> lbs = array.new<label>()
+
+f_draw(string nm, float e, float sl, int tm, color c) =>
+    if not na(e) and not na(sl)
+        x1 = na(tm) ? tFirst : tm
+        x2 = time + 3 * timeframe.in_seconds() * 1000
+        lns.push(line.new(x1, e, x2, e, xloc = xloc.bar_time, color = c, width = 1))
+        lns.push(line.new(x1, sl, x2, sl, xloc = xloc.bar_time, color = cOr, width = 1, style = line.style_dashed))
+        lbs.push(label.new(x2, e, nm + " " + f_px(e), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(color.white, 100), textcolor = c, size = size.small))
+        lbs.push(label.new(x2, sl, nm + " SL " + f_px(sl), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(color.white, 100), textcolor = cOr, size = size.small))
+    0
+
+if barstate.islast
+    for ln in lns
+        ln.delete()
+    lns.clear()
+    for lb in lbs
+        lb.delete()
+    lbs.clear()
+    if showLn
+        f_draw("B1", cB1e, cB1l, tmB1, cUp)
+        f_draw("S1", cS1e, cS1l, tmS1, cDn)
+        f_draw("B2", cB2e, cB2l, tmB2, cUp)
+        f_draw("S2", cS2e, cS2l, tmS2, cDn)
+        f_draw("B3", cB3e, cB3l, tmB3, cUp)
+
+// ============================================================================
+//  TABLE (daayein, safaid, chhoti likhai)
+// ============================================================================
+f_pos(string p) => p == "Top Left" ? position.top_left : p == "Bottom Right" ? position.bottom_right : p == "Bottom Left" ? position.bottom_left : position.top_right
+
+var table tb = table.new(f_pos(tblPos), 9, 26, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
+
+f_cell(int c, int r, string s, color col) =>
+    table.cell(tb, c, r, s, text_color = col, text_size = size.small)
+
+f_nm(string s) =>
+    p = str.split(s, ":")
+    p.size() > 0 ? p.get(p.size() - 1) : s
+
+f_n(float p) =>
+    x = nz(p) % 1e10
+    math.round((x - x % 1e5) / 1e5)
+f_w(float p) => math.round(nz(p) % 1e5)
+f_y(float p) =>
+    x = nz(p)
+    math.round((x - x % 1e10) / 1e10)
+f_yr(float p) =>
+    y = f_y(p)
+    y > 0 ? str.tostring(y) : "-"
+
+// [Exp, Exp - 2SE]
+f_edge(int n, float s, float q) =>
+    e = n > 0 ? s / n : 0.0
+    sdv = n > 1 ? math.sqrt(math.max((q - n * e * e) / (n - 1), 0.0)) : 0.0
+    [e, e - 2 * sdv / math.sqrt(math.max(n, 1))]
+
+f_row(int r, string ea, color eaC, string inst, string ab, color abC, int n, int w, float s, float q, float pnl, string ddT) =>
+    [e, e2] = f_edge(n, s, q)
+    f_cell(0, r, ea, eaC)
+    f_cell(1, r, inst, fg)
+    f_cell(2, r, ab, abC)
+    f_cell(3, r, str.tostring(n), fg)
+    f_cell(4, r, n > 0 ? str.tostring(100.0 * w / n, "0") + "%" : "-", fg)
+    f_cell(5, r, n > 0 ? str.tostring(e, "+0.000;-0.000") : "-", n > 0 ? (e > 0 ? cUp : cDn) : cMu)
+    f_cell(6, r, n > 1 ? str.tostring(e2, "+0.000;-0.000") + (e2 > 0 ? "  >0" : "  <0") : "-", n > 1 ? (e2 > 0 ? cUp : cDn) : cMu)
+    f_cell(7, r, n > 0 ? str.tostring(pnl, "+0.0;-0.0") + "%" : "-", n > 0 ? (pnl > 0 ? cUp : pnl < 0 ? cDn : fg) : cMu)
+    f_cell(8, r, n > 0 ? ddT : "-", n > 0 ? fg : cMu)
+
+if barstate.islast and showTbl
+    aE = array.from(E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15, E16, E17, E18)
+    aL = array.from(L0, L1, L2, L3, L4, L5, L6, L7, L8, L9, L10, L11, L12, L13, L14, L15, L16, L17, L18)
+    aP = array.from(P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18)
+    aS = array.from(S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18)
+    aQ = array.from(Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10, Q11, Q12, Q13, Q14, Q15, Q16, Q17, Q18)
+    aD = array.from(D0, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13, D14, D15, D16, D17, D18)
+    aDir = array.from(1, 1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1)
+    aMk = array.from(0, 1, 2, 3, 0, 1, 2, 3, 2, 3, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    aRk = array.from(rTr, rTr, rTr, rTr, rTr, rTr, rTr, rTr, rIb, rIb, rIb, rIb, rKh, rKh, rKh, rKh, rKh, rKh, rKh)
+    aEA = array.from("B1 trend 4H", "B1 trend 4H", "B1 trend 4H", "B1 trend 4H", "S1 trend 4H (FAIL)", "S1 trend 4H (FAIL)", "S1 trend 4H (FAIL)", "S1 trend 4H (FAIL)", "B2 IBS 1D", "B2 IBS 1D", "S2 IBS 1D (FAIL)", "S2 IBS 1D (FAIL)", "B3 khirki 1D", "B3 khirki 1D", "B3 khirki 1D", "B3 khirki 1D", "B3 khirki 1D", "B3 khirki 1D", "B3 khirki 1D")
+    nX = f_nm(mXAU)
+    nG = f_nm(mXAG)
+    nP = f_nm(mSPX)
+    nN = f_nm(mNAS)
+    aIn = array.from(nX, nG, nP, nN, nX, nG, nP, nN, nP, nN, nP, nN, f_nm(ix0), f_nm(ix1), f_nm(ix2), f_nm(ix3), f_nm(ix4), f_nm(ix5), f_nm(ix6))
+    // kis market mein BUY (B1 / B2) khuli hai -> us ki SELL "ruki"
+    bOp = array.new<bool>(11, false)
+    for i = 0 to 18
+        if aDir.get(i) > 0 and not na(aE.get(i))
+            bOp.set(aMk.get(i), true)
+    mTxt = mudI == 1 ? "TALAASH (shuru - 2018-12-31)" : mudI == 2 ? "IMTIHAN (2019-01-01 - aaj)" : mudI == 3 ? "10 SAAL (" + str.format_time(t10, "yyyy-MM-dd", "UTC") + " - aaj)" : mudI == 4 ? "LIVE (" + str.format_time(liveT, "yyyy-MM-dd", "UTC") + " se)" : "KUL (data shuru - aaj)"
+    f_cell(0, 0, "JAS 5 EA " + BUILD + "   |   Muddat: " + mTxt + "   |   B = BUY, S = SELL; R = kharcha + swap ke baad", cHd)
+    table.merge_cells(tb, 0, 0, 8, 0)
+    f_cell(0, 1, "EA", cHd)
+    f_cell(1, 1, "Instrument", cHd)
+    f_cell(2, 1, "Abhi", cHd)
+    f_cell(3, 1, "Trades", cHd)
+    f_cell(4, 1, "Jeet %", cHd)
+    f_cell(5, 1, "Exp (R)", cHd)
+    f_cell(6, 1, "Exp-2SE", cHd)
+    f_cell(7, 1, "PnL %", cHd)
+    f_cell(8, 1, "DD %", cHd)
+    int r = 2
+    int kN = 0
+    int kW = 0
+    float kS = 0.0
+    float kQ = 0.0
+    float kP = 0.0
+    int oB = 0
+    int oS = 0
+    for i = 0 to 18
+        isS = aDir.get(i) < 0
+        if showSell or not isS
+            e = aE.get(i)
+            n = f_n(aP.get(i))
+            w = f_w(aP.get(i))
+            s = nz(aS.get(i))
+            q = nz(aQ.get(i))
+            rk = aRk.get(i)
+            string ab = "khali"
+            color abC = cMu
+            if not na(e)
+                ab := (isS ? "SELL khuli " : "BUY khuli ") + f_px(e) + " | SL " + f_px(aL.get(i))
+                abC := isS ? cDn : cUp
+                oB += isS ? 0 : 1
+                oS += isS ? 1 : 0
+            else if isS and bOp.get(aMk.get(i))
+                ab := "ruki: BUY khuli"
+                abC := cOr
+            f_row(r, aEA.get(i), isS ? cMu : fg, aIn.get(i), ab, abC, n, w, s, q, s * rk, str.tostring(nz(aD.get(i)) * rk, "0.0") + "%")
+            kN += n
+            kW += w
+            kS += s
+            kQ += q
+            kP += s * rk
+            r += 1
+    f_row(r, showSell ? "KUL (5 EA, 19 line)" : "KUL (3 BUY EA, 13 line)", cHd, "sab", "khuli: " + str.tostring(oB) + " BUY, " + str.tostring(oS) + " SELL", fg, kN, kW, kS, kQ, kP, (kLump ? "~" : "") + str.tostring(kDd, "0.0") + "%")
+    r += 1
+    if showSell
+        f_cell(0, r, "SELL: test FAIL (#73) - Python TALAASH 2012-18: 228 tr, -0.003R, Exp-2SE -0.093. Sirf dekhne ke liye, SELL EA nahi.", cDn)
+        table.merge_cells(tb, 0, r, 8, r)
+        r += 1
+    f_cell(0, r, "Data se (TV): " + nX + " " + f_yr(P0) + " · " + nG + " " + f_yr(P1) + " · " + nP + " " + f_yr(P2) + " · " + nN + " " + f_yr(P3) + "  |  " + f_nm(ix0) + " " + f_yr(P12) + " · " + f_nm(ix1) + " " + f_yr(P13) + " · " + f_nm(ix2) + " " + f_yr(P14) + " · " + f_nm(ix3) + " " + f_yr(P15) + " · " + f_nm(ix4) + " " + f_yr(P16) + " · " + f_nm(ix5) + " " + f_yr(P17) + " · " + f_nm(ix6) + " " + f_yr(P18), cMu)
+    table.merge_cells(tb, 0, r, 8, r)
+    r += 1
+    if showPy
+        f_cell(0, r, "Python: #68 (B1 + B2 + B3) 2019+ FTMO 83 pass / 0 fail, median 11.4 mahine  ·  #73 SELL FAIL", cUp)
+        table.merge_cells(tb, 0, r, 8, r)
+        r += 1
+    f_cell(0, r, "TV sirf andaza (OANDA / index data). Sahi nateeja Python / MT5 demo se. KUL DD '~' = chart se pehle ka hissa bhi (andaza).", cMu)
+    table.merge_cells(tb, 0, r, 8, r)
