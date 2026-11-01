@@ -10,3 +10,17 @@ No 2019+ backtest or price computation was run. Sources were read through WebFet
 - C6 FX fix W: REJECT. KMW find net returns negative at full spread, below 5%/yr by 2018-19, and no evidence after 2020. The agent also rejected it.
 
 (details in the handback message)
+
+## Judge ka C1 pre-registration (poora)
+- Universe (#67 jaisa, badalna mana): TVC:NI225, TVC:HSI, ASX:XJO, TVC:UKX, XETR:DAX, EURONEXT:PX1, TVC:SX5E.
+- Calendar: exchange_calendars XTKS/XHKG/XASX/XLON/XETR/XPAR (SX5E = TARGET) ki SCHEDULED chuttiyan; ad-hoc (typhoon, rainstorm, < 5 din pehle elaan) NAHI.
+  P = ek ya zyada weekday bandish se pehle aakhri local session; N = baad ki pehli. Waqia chhoro agar #59 list ki scheduled NYSE chutti [P-4 cal din, N+1] mein ho.
+- Trade: P-1 close BUY, P close SELL (P aadha din = asli close). Sirf BUY, ek index ek position. SL 3 x ATR20 daily = 1R, gap = open.
+- Kharcha: JasSpreadNaap local close ke waqt x 1.5 har taraf; na naapa ho to HK50/JP225/AUS200 0.03%, Europe 0.02% har taraf. Swap 3%/saal.
+- SE x k, k = sqrt(ausat trades fi waqia-tareekh) (sirf calendar se), pehle se.
+- TALAASH 2005-2018 (TV cash daily) PASS = sab: N >= 100; Exp - 2kSE > 0; ausat >= 2 x usi index/saal ka daily drift; (index x saal, >= 2 tr) musbat > 50%;
+  NI225 aur HSI dono Exp > 0. Dukascopy H1 CFD 2012-18 (#68 timing) ka rukh same ho (jaanch, shart nahi).
+- IMTIHAN 2019-01..2026-10 EK dafa: N >= 30, Exp - 2kSE > 0, >= 2x drift. Phir FTMO jor #68 + C1: risk 0.10/0.15/0.25 (2012-18 #60/#68 shart), 2019+ fail 0, pass >= 83, median < 10.8.
+
+## C2 Gotobi (sirf waiver par) - Dukascopy USDJPY M1 bid/ask, 03:00 JST ask entry, 09:55 JST bid exit, SL 1xATR20, TALAASH 2005-18 N>=100, Exp-2SE>0, 8/14 saal,
+Gotobi ausat >= 2 x sab Tue-Fri usi window ka ausat (placebo); IMTIHAN 2019+ + MT5 asli ticks 2021+.
