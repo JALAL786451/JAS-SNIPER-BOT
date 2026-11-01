@@ -1439,6 +1439,9 @@ Code jaanch (nateeje se PEHLE): aaina test (ulti qeemat par BUY code = SELL code
 pass > fail, (pass - fail) >= #68; behtareen = zyada (pass - fail), phir kam median, phir kam k). Koi nahi = FAIL.
 **Qadam 3 IMTIHAN 2019-01..2026-10 EK dafa** (chuna k), judge ki code jaanch ke BAAD: PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). PASS -> 2 SELL EA + judge + demo.
 Ginti +1 (BTC Kachhua ab #74). Maloomat: Pine `indicators/jas_5ea.pine` (5 EA chart) - faisla Python se. Research P: TALAASH 0.50, #68 behtar 0.20.
+**Koshish #73 TALAASH (1 Nov, entry < 2019, kharcha + swap ke BAAD) = FAIL** (CHUNAO / IMTIHAN NAHI chale): S1 trend SELL (+SMA200) XAU 82 tr +0.062R (+-0.085) jeet 37%,
+XAG 96 tr -0.040R, US500 5 tr -0.053R, USTEC 8 tr +0.003R; S2 IBS SELL US500 19 tr -0.004R, USTEC 16 tr -0.121R. **KUL 226 tr, -0.004R (Exp-2SE -0.094), jeet 33%.**
+Sabaq: SELL sirf mandi mein bhi sifar ke aas paas; US index 2012-18 mein SMA200 se neeche kam (13 tr). Gold SELL thora musbat magar shor ke andar. Judge jaanch baqi.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
