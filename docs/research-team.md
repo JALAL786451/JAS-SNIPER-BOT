@@ -15,7 +15,8 @@ Kab: hafte ki limit theek ho (agents mehnge, ~100-300k token har ek). Session li
   US index intraday paper wale (noise boundary, ORB, intraday momentum, VWAP, raat drift) - 2022 ke baad ghise;
   trend / IBS ke chhote TF (1H, 4H IBS); trend EU/Asia index, forex, oil, fasal, platinum/palladium/copper (kharcha);
   28 market taqat; jori / cointegration; akele share (drift); TOM; VIX stretch (drift); IBS mandi; Ichimoku; Williams VB;
-  Holy Grail; RSI2 gold; squeeze/NR7; Fib OTE; SMC/FVG; gold ke waqt / session.
+  Holy Grail; RSI2 gold; squeeze/NR7; Fib OTE; SMC/FVG; gold ke waqt / session. Daur 1 REJECT: Gotobi short, BTC 21-23 UTC,
+  tel US chutti se pehle, FX fix W (Gotobi long sirf waiver par).
 - Chal rahe (pass): trend 4H gold/chandi/US500/USTEC; IBS daily US500/USTEC; US chutti (SPX/NDX bank); US chutti
   ki khirki 7 non-US index (#67/#68).
 - Asli kharcha (Exness, `JasSpreadNaap`): US500 0.40, USTEC 1.12, gold 0.24 (~0.005%), chandi 0.045%, platinum 0.25%,

@@ -1366,3 +1366,11 @@ fixed +2/+3 = aadhi chuttiyon par 1 H1 ghalat (is liye NAHI). Kharid ke baad g_d
 (960 par ATR 12% farq); OrderCalcProfit ghalti = -1 -> 60 s baad dobara (pehle poori khirki chhoot jati); comment kata / badla ho to H = WinH(entry din);
 InpMaxRiskPct 0.50 -> 0.30 (tang). Baqi: t5/i6 InpGuardMagics mein 20261101 (input); asli FTMO se pehle t5/i6 server GMT -2 + symbol naam (GER40.cash waghera)
 + pehra mein B pehle phir D (teeno EA, chhota race).
+
+**Research team daur 1 (1 Nov, 29vi chat):** agent 6 ummeedwar (sirf literature, 2019+ nahi dekha) -> judge (WebFetch) ka faisla:
+C1 local (non-US) chutti se pehle wala din x 7 index = **KEEP #1** (McGuinness 2005, Yuan-Gupta 2014 VERIFIED; Vidal-Garcia 2025 SSRN blocked; ~23 tr/saal, zyada JP/HK).
+C2 Gotobi USDJPY 03:00->09:55 JST = REJECT (Bessho 2023 sirf 2018-20, <=H1 qaida: 2020 ke baad saboot nahi; waiver par hi). C3 Gotobi short REJECT (ek preprint).
+C4 BTC 21-23 UTC REJECT (24 mein se chuna ghanta, FTMO crypto commission 0.065% = edge ka 70-80%). C5 tel US chutti se pehle REJECT (window in-sample, data 2013, Jumma gap).
+C6 FX fix W REJECT (KMW 2024: poore spread par manfi). Judge: C1 se FTMO ~0.3 mahina, C2 ~0.5 - chhote jor. Judge ka C1 pre-registration: scratchpad judge1/JUDGE_REPORT.md
+(TALAASH 2005-18 TV daily, NYSE #59 calendar se door, ad-hoc band din nahi, SE x sqrt(tr/waqia), N >= 100, Exp - 2kSE > 0, 2x drift, NI225 + HSI dono musbat).
+FTMO note (judge): forbidden page "gap trading" Swing / Challenge mein bhi lag sakta - FTMO support se likhwana (IBS Jumma 16:15 NY entry).
