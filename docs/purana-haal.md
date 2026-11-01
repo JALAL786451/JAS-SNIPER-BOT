@@ -1410,6 +1410,9 @@ close +-1% (TVC:DXY) -> PASS, phir TALAASH. Na = qaide se FAIL, #71 band.
 **#71 TALAASH 2012-18 (kharche se pehle) = PASS (kamzor):** XAU rakhe 79 tr +0.070R (+-0.077) jeet 37% vs roke 55 tr -0.064R (+-0.084); XAG rakhe 79 tr -0.052R vs roke 46 tr
 +0.000R (chandi par ulta); KUL rakhe 158 tr +0.009R vs roke 101 tr -0.035R. Farq SE ke andar (shor ho sakta).
 **#71 CHUNAO 2012-18 (IMTIHAN se PEHLE likha) = PASS:** 84 challenge: #68 64 / 2 (0/2) / 18, median 36.3 -> **#68 + G2 66 / 0 / 18, median 38.9** (pass - fail 62 -> 66; median thora dheema).
+**#71 IMTIHAN 2019-01..2026-10 (EK dafa, 1 Nov) = FAIL:** 94 challenge: #68 83 / 0 / 11, median 10.8 -> #68 + G2 83 / 0 / 11, **median 14.4** (dheema, shart < 10.8).
+Maloomat (IMTIHAN ke baad): 2019+ roke gaye trades bhi faide mein - XAU roke 55 tr +0.183R (rakhe 99 tr +0.215), XAG roke 47 tr +0.388R (rakhe 89 tr +0.094).
+Sabaq: gold/chandi ki 2019+ tezi mein dollar bhi kai dafa saath upar gaya (dono "safe haven") - DXY filter achhi trades kaat deta hai. G2 band; #68 jyon ka tyon. Ginti #71 FAIL.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
