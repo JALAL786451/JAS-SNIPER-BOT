@@ -1342,3 +1342,15 @@ JPN 60 +0.044, AUS 42 +0.047, HKG 46 +0.043 (~6-9/saal har index). FTMO 84 chall
 AUS 73 +0.088, HKG 68 +0.062 (~9/saal har index, TV cash nateeje jaisa). FTMO 94 challenge: #53 akela 83 / 0 / 11, median 11.7 -> **#53 + khirki 0.15%: 83 pass / 0 fail / 11, median 10.8**.
 Fail nahi barhe, pass ~1 mahina jaldi = **ASLI PASS** (khirki ka asar aadha dekha tha; FTMO jor ka imtihan naya). Agla: JasKhirkiEA (NYSE calendar + 7 index ke local close) + judge, phir demo.
 
+
+**Spread naap 2 (1 Nov, JasSpreadNaap s1, Exness 20 din, poora din):** USOIL 0.0194% · UKOIL 0.0151% · XNGUSD 0.3013% · XCUUSD 0.0558% ·
+BTCUSD 0.0079% · EURUSD 0.0084% · GBPUSD 0.0095% · USDJPY 0.0085% · USDCHF 0.0183% · AUDUSD 0.0149%.
+
+**Koshish #69 qaida (1 Nov, 29vi chat, user "kaam shuru karein" + Tide sawal, test se PEHLE, badalna mana) - FTMO: #68 + TIDE oil (`tools/ftmo69.py`):**
+Kyun sirf oil: Tide ka ASLI PASS sirf commodity tokri #6 (TV); 9 market Radar MT5 run 2 FAIL (BTC ke baghair -2.7R), #29 XAU/XAG/US500/USTEC FAIL;
+XPT/XPD/XNG kharcha bhaari + data nahi, XCU data nahi; gold/chandi/US500 pehle se #53 mein (ek market). => Tide = `ftmo_test.kachhua_trades` jyon ka tyon
+(daily 17:00 NY, 10 din breakout + EMA50/200 + ATR >= 0.25%, SL 2xATR14 roz sarakta, BUY/SELL) **USOIL (LIGHTCMDUSD) + UKOIL (BRENTCMDUSD)**, alag slot,
+data 2013 se. Kharcha har taraf 0.75 x spread (USOIL 0.01455%, UKOIL 0.01133%), swap 3%/saal. #68 bilkul wahi (trend 0.75 + IBS 1.0 + khirki 0.15, asli kharcha).
+**CHUNAO 2012-2018** (har mahine challenge): Tide risk har market 0.10 / 0.25 / 0.50 vs #68 (isi run, isi grid): shart P1 fail < 20%, pass > fail,
+(pass - fail) >= #68 ka; behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL (Tide bank mein).
+**IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk): PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Aadha dekha: oil Tide 2019+ #6 TV mein dekha tha. Ginti +1.
