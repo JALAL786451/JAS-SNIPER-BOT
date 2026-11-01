@@ -12,6 +12,8 @@ swap andaza 3%/saal, alag market ke H1 low ek waqt maane (sakht), FTMO ke
 news / weekend qaide nahi (Swing account).
 """
 import argparse
+import datetime as dt
+import functools
 import io
 import zipfile
 from pathlib import Path
@@ -30,6 +32,16 @@ BAL0 = 100_000.0
 COST = 0.0003           # har taraf
 SWAP = 0.03 / 365       # har raat, notional par
 ATR_LEN, ST_MULT = 10, 3.0
+
+
+@functools.lru_cache(maxsize=None)
+def _ordinal(d):
+    return dt.date(d // 10000, d // 100 % 100, d % 100).toordinal()
+
+
+def raatein(a, b):
+    """CET din a (YYYYMMDD) se b tak kitni raatein; pehla din = 0."""
+    return 0 if a is None else _ordinal(int(b)) - _ordinal(int(a))
 
 
 def load(sym):
@@ -271,14 +283,17 @@ def run(mkts, systems, start_ns, end_ns, grid, cetday):
     phase, target = 1, 1.10
     bal, open_, ti = BAL0, {}, 0
     day, dstart, days = None, bal, set()
+    day0 = None
     kam_din = False
     for t in range(i0, i_end):
         if cetday[t] != day:
             day = cetday[t]
             dstart = bal
             # swap: har raat har khuli position
+            nr = raatein(day0, day)                  # judge 1 Nov: har calendar raat (sirf grid ke din nahi)
+            day0 = day
             for p in open_.values():
-                bal -= SWAP * p[1] * mkts[p[2][6]].clf[t]
+                bal -= nr * SWAP * p[1] * mkts[p[2][6]].clf[t]
             dstart = bal
         # bandish (SL ya flip) is ghante
         for slot in list(open_):

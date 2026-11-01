@@ -1422,6 +1422,10 @@ PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Maloomat: fx trade
 **Koshish #72 CHUNAO 2012-2018 (1 Nov) = FAIL** (IMTIHAN nahi chala): fx 4H trend 2012-18 (kharche se pehle) EURUSD 286 tr +0.008R, USDJPY 283 +0.043, AUDUSD 287 -0.017.
 84 challenge: #68 (isi run, grid bara) 61 / 5 / 18, median 36.5 · fx 0.25%: 46 / 25 (9/16), 25.4 · 0.50%: 38 / 35, 19.1 · 0.75%: 25 / 51, 12.9. Waqt kam hua magar fail bohot barhe.
 Sabaq: forex trend ka faida ~0 (kharche se pehle bhi) -> trades barhne se sirf jua barhta hai. Forex 4H trend (7 currency + DXY) POORA band.
+**Judge #71 + #72 (1 Nov, `docs/research/judge-71-72.md`) = dono CLEAN, FAIL sahi.** #71: DXY formula sahi, look-ahead nahi (819 trade), baseline = ftmo68 hubahu. #72: SELL / kharcha /
+slot / JPY sahi; fx kharche se pehle ~+0.01R vs kharcha + swap ~0.045R. **BUG (faisla nahi badla): swap sirf grid ke din par katta tha, har calendar raat par nahi** (2012-18: 2557 raat,
+grid 1936) -> **theek kiya** (`ftmo_test.raatein`, `ftmo53_asli` + `ftmo_test.run`). Naye baseline: **#68 IMTIHAN 83 / 0, median 11.4 (#53 11.9)** = PASS wahi; #68 CHUNAO 64 / 2, 38.5.
+Pehle ke pass-waqt ~0.5-2 mahine khush-fehmi wale the; muqable (isi run) sahi the. #72 ka 61/5 baseline = yahi swap grid asar. **AUDUSD (QDM) 2020 poora gayab** - 2019+ test se pehle theek.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 

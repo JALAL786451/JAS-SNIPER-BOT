@@ -9,7 +9,7 @@ import pandas as pd
 
 import ftmo_test
 from ftmo_4h import st4h_trades
-from ftmo_test import FILES, Mkt, ibs_trades, load
+from ftmo_test import raatein, FILES, Mkt, ibs_trades, load
 
 ASLI = {'US500': 0.0052e-2, 'USTEC': 0.0038e-2, 'XAUUSD': 0.0059e-2, 'XAGUSD': 0.0445e-2}
 
@@ -52,11 +52,14 @@ def run_cost(mkts, systems, start_ns, end_ns, grid, cetday, cost):
     phase, target = 1, 1.10
     bal, open_, ti = BAL0, {}, 0
     day, dstart, days = None, bal, set()
+    day0 = None
     for t in range(i0, i_end):
         if cetday[t] != day:
             day = cetday[t]
+            nr = raatein(day0, day)                  # judge 1 Nov: har calendar raat (sirf grid ke din nahi)
+            day0 = day
             for p in open_.values():
-                bal -= SWAP * p[1] * mkts[p[2][6]].clf[t]
+                bal -= nr * SWAP * p[1] * mkts[p[2][6]].clf[t]
             dstart = bal
         for slot in list(open_):
             ge, gx, _, e, x, u, mi, d = open_[slot][2]
