@@ -1388,6 +1388,18 @@ NI225 59 -0.008, XJO 11 +0.006, HSI 34 -0.036 = KUL 136 tr **-0.017R** (+-0.023 
 **#70 TV TALAASH NATEEJA (1 Nov, 30vi chat, user SS) = FAIL -> idea BAND:** waqiat pre-reg se milte (18/29/10/10/127/35/83 = 312). R: DAX -0.022, UKX +0.017, PX1 -0.007,
 SX5E -0.020, NI225 -0.010, XJO +0.023, HSI -0.017; KUL 312 tr jeet 50%, -0.007R, Exp-2kSE -0.038, din ausat -0.018% vs drift +0.025%, saal 31/58 = 53% (ye pass).
 N >= 100 aur saal pass; Exp, drift, NI225/HSI fail. IMTIHAN nahi khola. Ginti #70 FAIL.
+**Koshish #71 qaida (1 Nov, 30vi chat, user "pichli chat ka tareeqa + apni expertise", test se PEHLE, badalna mana) - FTMO: #68 + G2 DOLLAR FILTER (`tools/ftmo71.py`):**
+Research daur 2 (`docs/research/daur2-gold-agent.md`) G2. #68 bilkul wahi (trend 4H 0.75% SL 6 ATR + IBS US500/USTEC 1% + khirki 7 index 0.15%, asli kharcha). Sirf badlaao:
+**XAU aur XAG trend BUY sirf tab jab DXY ka 4H Supertrend (10 x 3, wahi `supertrend_up`) NEECHE ho** (gold block j ke band hone tak ka aakhri poora DXY 4H block). Exit / SL wahi.
+DXY na mile to trade lo (#68 jaisa). US500/USTEC trend, IBS, khirki ko filter NAHI. Naya number koi nahi.
+**DXY data:** Dukascopy DOLLARIDXUSD sirf Dec 2017 se (2012-18 TALAASH ke liye kaafi nahi) -> **ICE formula se banaya DXY:** ln = -0.576 ln EURUSD + 0.136 ln USDJPY
+- 0.119 ln GBPUSD + 0.091 ln USDCAD + 0.042 ln USDSEK + 0.036 ln USDCHF (Dukascopy H1 bid, sirf woh ghante jab chhe ke chhe hon). H1 O/C formula se; H = max(O, C), L = min(O, C).
+4H block `st4h_trades` jaisa (17:00 NY din, NY+7 / 4). **Data jaanch (sirf 2018, nateeja se PEHLE):** banaya vs DOLLARIDXUSD: daily return correlation >= 0.95 aur 4H Supertrend
+rukh >= 90% same - warna data FAIL (test nahi).
+**Qadam 1 TALAASH 2012-2018 (kharche se pehle):** XAU + XAG trend trades do hisse - rakhe (DXY neeche) vs roke (DXY upar). PASS = rakhe ka Exp > roke ka Exp. FAIL = band.
+**Qadam 2 CHUNAO 2012-2018** (84 challenge, har mahine): #68 (isi run) vs #68 + G2. Shart #60/#68/#69 wali: P1 fail < 20%, pass > fail, (pass - fail) >= #68 ka. Risk grid NAHI (filter).
+**Qadam 3 IMTIHAN 2019-01..2026-10 EK dafa:** PASS = fail 0, pass >= #68 (isi run, 83), median < #68 (isi run, 10.8). Imaandari: gold trend 2019+ pehle dekha (#34/#53/#68),
+DXY filter ka 2019+ asar kisi ne nahi dekha (agent ne bhi nahi). PASS -> JasTrendEA mein DXY filter + judge + demo. Ginti +1. G1 (24 mahine) chhoda: 2019+ shayad hi koi trade roke.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
