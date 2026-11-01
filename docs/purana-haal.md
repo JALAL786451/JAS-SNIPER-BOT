@@ -1374,3 +1374,12 @@ C4 BTC 21-23 UTC REJECT (24 mein se chuna ghanta, FTMO crypto commission 0.065% 
 C6 FX fix W REJECT (KMW 2024: poore spread par manfi). Judge: C1 se FTMO ~0.3 mahina, C2 ~0.5 - chhote jor. Judge ka C1 pre-registration: docs/research/daur1-judge.md
 (TALAASH 2005-18 TV daily, NYSE #59 calendar se door, ad-hoc band din nahi, SE x sqrt(tr/waqia), N >= 100, Exp - 2kSE > 0, 2x drift, NI225 + HSI dono musbat).
 FTMO note (judge): forbidden page "gap trading" Swing / Challenge mein bhi lag sakta - FTMO support se likhwana (IBS Jumma 16:15 NY entry).
+
+**Koshish #70 qaida (1 Nov, 29vi chat, user "D", test se PEHLE, badalna mana) - C1 LOCAL chutti se pehle wala din x 7 index (`indicators/jas_c1.pine`, calendar `tools/c1_calendar.py`):**
+Judge daur 1 ka pre-registration (`docs/research/daur1-judge.md`) jyon ka tyon. Calendar exchange_calendars 4.13.2 XETR/XLON/XPAR/XTKS/XASX/XHKG + SX5E = TARGET
+(Jan 1, Good Fri, Easter Mon, May 1, Dec 25-26); ad-hoc NAHI (HK typhoon 11 din 2008-2024, Tokyo system band 2020-10-01 = session samjhe). P = weekday bandish se pehle
+aakhri session, N = baad ki pehli; waqia chhoro agar #59 NYSE chutti [P-4 din, N+1] mein. TV cash daily (DAX, UKX, PX1, SX5E, NI225, XJO, HSI): P-1 close BUY, P close
+band (tareekh >= P wali pehli candle), SL 3 x ATR20 (gap = open) = 1R, sirf BUY. Kharcha har taraf NI225/XJO/HSI 0.03%, Europe 0.02%; swap 3%/saal. k = sqrt(312/261) = 1.093
+(2005-18 calendar). Waqiat 2005-18: DAX 18, UKX 29, PX1 10, SX5E 10, NI225 127, XJO 35, HSI 83 = 312.
+**TALAASH entry 2005-2018** PASS = sab: N >= 100; Exp - 2 x (1.093 SE) > 0; ausat % >= 2 x drift (usi index, usi saal); (index x saal, >= 2 tr) musbat > 50%; NI225 aur HSI Exp > 0.
+**IMTIHAN 2019-01..aaj EK dafa (TALAASH PASS par):** N >= 30, Exp - 2kSE > 0, >= 2x drift. FAIL = idea band. PASS -> FTMO jor #68 + C1 (risk 0.10/0.15/0.25, #68 shart). Ginti +1.
