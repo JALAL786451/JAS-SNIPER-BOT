@@ -1,0 +1,248 @@
+<title>JAS Trade Roznamcha</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ledger page - summary ledger on top, filter strip, then trade list beside one-trade chart (stacks on phone) */
+:root{
+  --bg:#f3f5f7; --panel:#ffffff; --fg:#17202b; --muted:#5b6675; --line:#d9dee5; --accent:#2c4a8f;
+  --buy:#13804f; --sell:#c0392b; --buy-soft:rgba(19,128,79,.12); --sell-soft:rgba(192,57,43,.12); --grid:#e7ebf0;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141a; --panel:#161d26; --fg:#e4e9f0; --muted:#97a3b3; --line:#283240; --accent:#8fa8e8;
+  --buy:#3cc488; --sell:#ef6b5b; --buy-soft:rgba(60,196,136,.14); --sell-soft:rgba(239,107,91,.14); --grid:#1f2833; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --panel:#161d26; --fg:#e4e9f0; --muted:#97a3b3; --line:#283240; --accent:#8fa8e8;
+  --buy:#3cc488; --sell:#ef6b5b; --buy-soft:rgba(60,196,136,.14); --sell-soft:rgba(239,107,91,.14); --grid:#1f2833; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.9rem;letter-spacing:.01em;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;margin:0;color:var(--muted)}
+.lead{color:var(--muted);max-width:68ch;margin:6px 0 0}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{padding:6px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-display);font-weight:600;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+tr.kul td{font-weight:600;border-bottom:none}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.78rem;font-family:var(--f-mono)}
+.pos{color:var(--buy)} .neg{color:var(--sell)}
+.pill.pos{background:var(--buy-soft)} .pill.neg{background:var(--sell-soft)}
+.tag{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;padding:12px 14px}
+.filters label{display:flex;flex-direction:column;gap:3px;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+select{font:inherit;font-size:.9rem;padding:5px 8px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--fg);min-width:7.5rem}
+select:focus-visible,button:focus-visible,tr.row:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.count{margin-left:auto;font-size:.85rem;color:var(--muted)}
+.main{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}.chartbox{order:-1}}
+.list{max-height:640px;overflow:auto}
+.list table th{position:sticky;top:0;background:var(--panel);z-index:1}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--grid)}
+tr.row.sel td{background:var(--buy-soft)}
+tr.row.sel.s td{background:var(--sell-soft)}
+.more{display:block;width:100%;padding:10px;border:0;border-top:1px solid var(--line);background:none;color:var(--accent);font:inherit;font-weight:600;cursor:pointer}
+.chartbox{padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+canvas{width:100%;height:340px;display:block}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px 14px}
+.facts div{display:flex;flex-direction:column}
+.facts span:first-child{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.note{font-size:.82rem;color:var(--muted);max-width:90ch}
+.note b{color:var(--fg)}
+.sellwarn{color:var(--sell);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>JAS Trade Roznamcha</h1>
+    <p class="lead">Hamare 5 EA ki har trade, 2012 se aaj tak, hamare apne data (Dukascopy) par. Kisi trade par click karein, us ka chart, entry, SL aur band qeemat neeche dikhegi. Ek waqt mein ek trade, is liye chart saaf rahega.</p>
+  </header>
+
+  <section class="panel">
+    <div style="padding:12px 14px 4px"><h2 id="sumTitle">Hisaab</h2></div>
+    <div class="scroll"><table id="sum"></table></div>
+    <p class="note" style="padding:8px 14px 12px;margin:0"><b>Exp</b> = har trade ka ausat faida, R mein (1R = SL ka nuqsan), kharcha aur swap nikal kar. <b>Exp-2SE &gt; 0</b> (hara) = faida pakka, qismat nahi. <b>PnL %</b> = $100k account par us EA ke risk se kul faida. <b>DD %</b> = sab se bari girawat. <span class="sellwarn">SELL (S1, S2) test mein FAIL (#73), sirf dekhne ke liye.</span></p>
+  </section>
+
+  <section class="panel filters" aria-label="Chunav">
+    <label for="fEa">EA<select id="fEa"></select></label>
+    <label for="fM">Market<select id="fM"></select></label>
+    <label for="fY">Saal<select id="fY"></select></label>
+    <label for="fR">Nateeja<select id="fR"><option value="">Sab</option><option value="w">Sirf jeet</option><option value="l">Sirf haar</option><option value="sl">SL lagi</option></select></label>
+    <label for="fO">Tarteeb<select id="fO"><option value="new">Nayi pehle</option><option value="old">Purani pehle</option><option value="best">Sab se bari jeet</option><option value="worst">Sab se bari haar</option></select></label>
+    <span class="count num" id="cnt"></span>
+  </section>
+
+  <div class="main">
+    <section class="panel list" aria-label="Trades">
+      <table id="tl"><thead><tr><th class="l">Tareekh (PKT)</th><th class="l">EA</th><th class="l">Market</th><th class="l">Rukh</th><th>Entry</th><th>Band</th><th>R</th><th>Din</th></tr></thead><tbody></tbody></table>
+      <button class="more" id="more" type="button">Aur 100 dikhao</button>
+    </section>
+    <section class="panel chartbox" aria-label="Trade ka chart">
+      <h2 id="cTitle">Trade</h2>
+      <canvas id="cv" aria-label="Chuni hui trade ka 4H chart"></canvas>
+      <div class="facts" id="facts"></div>
+      <p class="note">* = trade abhi khuli hai (data 30 Oct tak), R abhi tak ka. Chart 4H candles ka hai: trade se 30 candle pehle aur 12 baad. Laal patti = entry se SL tak (khatra). Hari/laal doosri patti = entry se band qeemat tak (asal nateeja).</p>
+    </section>
+  </div>
+
+  <p class="note">Data: Dukascopy H1 (bid, UTC), hamare Python test wale qaide (tools/ftmo_4h.py, ftmo_test.py, ftmo68.py, sell73.py). Kharcha 0.75 x asli spread har taraf, swap 3%/saal har raat. TradingView ke nateeje thore alag ho sakte hain (alag data). Bana: <span id="gen" class="num"></span>.</p>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function(){
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const T = D.trades, B = D.bars, N = D.names;
+  const EA = {B1:'Trend BUY',S1:'Trend SELL',B2:'IBS BUY',S2:'IBS SELL',B3:'Khirki BUY'};
+  const EA_ORDER = ['B1','B2','B3','S1','S2'];
+  document.getElementById('gen').textContent = D.gen;
+  const $ = id => document.getElementById(id);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const pkt = m => { const d = new Date((m + 300) * 60000); return d.toISOString().slice(0,16).replace('T',' '); };
+  const yr = m => new Date((m + 300) * 60000).getUTCFullYear();
+  const fx = (v, m) => v.toFixed(B[m].dec);
+  const sgn = v => (v > 0 ? '+' : '') + v.toFixed(3);
+
+  // filters
+  const opt = (sel, list) => { sel.innerHTML = list.map(([v,t]) => `<option value="${v}">${t}</option>`).join(''); };
+  opt($('fEa'), [['', 'Sab EA'], ...EA_ORDER.map(k => [k, `${k} ${EA[k]}`])]);
+  const mk = [...new Set(T.map(t => t.m))];
+  opt($('fM'), [['', 'Sab market'], ...mk.map(m => [m, N[m]])]);
+  const ys = [...new Set(T.map(t => yr(t.te)))].sort((a,b) => b - a);
+  opt($('fY'), [['', 'Sab saal'], ...ys.map(y => [y, y])]);
+
+  function stats(list){
+    const n = list.length; if (!n) return null;
+    const r = list.map(t => t.r), mean = r.reduce((a,b) => a + b, 0) / n;
+    const sd = n > 1 ? Math.sqrt(r.reduce((a,b) => a + (b - mean) ** 2, 0) / (n - 1)) : 0;
+    const w = r.filter(v => v > 0).length;
+    const seq = [...list].sort((a,b) => a.tx - b.tx);
+    let eq = 0, pk = 0, dd = 0;
+    for (const t of seq){ eq += t.r * t.rk; pk = Math.max(pk, eq); dd = Math.max(dd, pk - eq); }
+    return {n, w: 100 * w / n, mean, lo: mean - 2 * sd / Math.sqrt(n), pnl: eq, dd};
+  }
+  function sumTable(list){
+    const rows = EA_ORDER.map(k => [k, stats(list.filter(t => t.ea === k))]).filter(x => x[1]);
+    const all = stats(list);
+    const td = s => `<td class="num">${s.n}</td><td class="num">${s.w.toFixed(0)}%</td><td class="num ${s.mean>0?'pos':'neg'}">${sgn(s.mean)}</td>` +
+      `<td><span class="pill ${s.lo>0?'pos':'neg'}">${s.lo>0?'&gt; 0':'&lt; 0'} ${sgn(s.lo)}</span></td>` +
+      `<td class="num ${s.pnl>0?'pos':'neg'}">${s.pnl>0?'+':''}${s.pnl.toFixed(1)}%</td><td class="num">${s.dd.toFixed(1)}%</td>`;
+    $('sum').innerHTML = `<thead><tr><th>EA</th><th>Trades</th><th>Jeet</th><th>Exp (R)</th><th>Exp-2SE</th><th>PnL %</th><th>DD %</th></tr></thead><tbody>` +
+      rows.map(([k,s]) => `<tr><td>${k} ${EA[k]}${k[0]==='S'?' <span class="tag">FAIL</span>':''}</td>${td(s)}</tr>`).join('') +
+      (all ? `<tr class="kul"><td>KUL</td>${td(all)}</tr>` : '') + '</tbody>';
+  }
+
+  // bars: decode lazily per market
+  const cache = {};
+  function bars(m){
+    if (cache[m]) return cache[m];
+    const map = new Map(), k = Math.pow(10, B[m].dec);
+    for (const s of B[m].segs){
+      let pc = s.c0, pt = s.t0, i = s.i0;
+      for (const p of s.b.split(';')){
+        const [dt,dO,dH,dL,dC] = p.split(',').map(Number);
+        const t = pt + dt; map.set(i, {t, o:(pc+dO)/k, h:(pc+dH)/k, l:(pc+dL)/k, c:(pc+dC)/k});
+        pc = pc + dC; pt = t; i++;
+      }
+    }
+    return cache[m] = map;
+  }
+
+  let view = [], shown = 0, sel = null;
+  function apply(){
+    const e = $('fEa').value, m = $('fM').value, y = $('fY').value, r = $('fR').value, o = $('fO').value;
+    view = T.filter(t => (!e || t.ea === e) && (!m || t.m === m) && (!y || yr(t.te) == y) &&
+      (!r || (r === 'w' ? t.r > 0 : r === 'l' ? t.r <= 0 : t.sl_hit)));
+    const cmp = {new:(a,b)=>b.te-a.te, old:(a,b)=>a.te-b.te, best:(a,b)=>b.r-a.r, worst:(a,b)=>a.r-b.r}[o];
+    view.sort(cmp);
+    $('sumTitle').textContent = 'Hisaab' + (e||m||y||r ? ' (chuni hui trades)' : ' (2012 se aaj tak)');
+    sumTable(view);
+    $('cnt').textContent = `${view.length} trades`;
+    shown = 0; $('tl').tBodies[0].innerHTML = ''; more();
+    if (view.length) pick(view[0]); else { sel = null; draw(); }
+  }
+  function more(){
+    const tb = $('tl').tBodies[0], end = Math.min(view.length, shown + 100), frag = document.createDocumentFragment();
+    for (let i = shown; i < end; i++){
+      const t = view[i], tr = document.createElement('tr');
+      tr.className = 'row' + (t.d < 0 ? ' s' : ''); tr.tabIndex = 0; tr.dataset.i = i;
+      tr.innerHTML = `<td class="l num">${pkt(t.te)}</td><td class="l">${t.ea}</td><td class="l">${N[t.m]}</td>` +
+        `<td class="l ${t.d>0?'pos':'neg'}">${t.d>0?'BUY':'SELL'}</td><td class="num">${fx(t.e,t.m)}</td><td class="num">${fx(t.x,t.m)}</td>` +
+        `<td class="num ${t.r>0?'pos':'neg'}">${sgn(t.r)}${t.op?' *':''}</td><td class="num">${Math.max(0, Math.round((t.tx-t.te)/1440))}</td>`;
+      frag.appendChild(tr);
+    }
+    tb.appendChild(frag); shown = end; $('more').hidden = shown >= view.length;
+    mark();
+  }
+  function mark(){ for (const tr of $('tl').tBodies[0].rows) tr.classList.toggle('sel', view[+tr.dataset.i] === sel); }
+  function pick(t){ sel = t; mark(); draw(); }
+  $('tl').addEventListener('click', ev => { const tr = ev.target.closest('tr.row'); if (tr) pick(view[+tr.dataset.i]); });
+  $('tl').addEventListener('keydown', ev => { if (ev.key === 'Enter'){ const tr = ev.target.closest('tr.row'); if (tr) pick(view[+tr.dataset.i]); } });
+  $('more').addEventListener('click', more);
+  ['fEa','fM','fY','fR','fO'].forEach(id => $(id).addEventListener('change', apply));
+
+  function draw(){
+    const cv = $('cv'), dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; const g = cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+    g.clearRect(0,0,W,H);
+    const fg = css('--fg'), mu = css('--muted'), gr = css('--grid'), buy = css('--buy'), sell = css('--sell'),
+          bs = css('--buy-soft'), ss = css('--sell-soft'), ac = css('--accent');
+    g.font = '11px ' + css('--f-mono');
+    if (!sel){ $('cTitle').textContent = 'Koi trade nahi'; $('facts').innerHTML = ''; return; }
+    const t = sel, mp = bars(t.m), arr = [];
+    for (let i = t.bi - 30; i <= t.bx + 12; i++){ const b = mp.get(i); if (b) arr.push([i, b]); }
+    $('cTitle').textContent = `${t.ea} ${EA[t.ea]} · ${N[t.m]} · ${pkt(t.te)}`;
+    const rr = t.r, dur = Math.max(0, (t.tx - t.te) / 1440);
+    $('facts').innerHTML = [
+      ['Rukh', `<span class="${t.d>0?'pos':'neg'}">${t.d>0?'BUY':'SELL'}</span>`], ['Entry', fx(t.e,t.m)], ['SL', fx(t.sl,t.m)],
+      ['Band', fx(t.x,t.m)], ['Nateeja', `<span class="${rr>0?'pos':'neg'}">${sgn(rr)} R</span>`],
+      ['PnL', `<span class="${rr>0?'pos':'neg'}">${(rr*t.rk>0?'+':'')}${(rr*t.rk).toFixed(2)}%</span>`],
+      ['Band kyun', t.op ? 'abhi KHULI (data 30 Oct tak)' : t.sl_hit ? 'SL lagi' : 'qaide se'], ['Muddat', `${dur.toFixed(1)} din`], ['Band (PKT)', pkt(t.tx)]
+    ].map(([a,b]) => `<div><span>${a}</span><span class="num">${b}</span></div>`).join('');
+    if (!arr.length){ g.fillStyle = mu; g.fillText('Is trade ka chart data nahi', 12, 20); return; }
+    let lo = Math.min(t.sl, t.e, t.x), hi = Math.max(t.sl, t.e, t.x);
+    for (const [,b] of arr){ lo = Math.min(lo, b.l); hi = Math.max(hi, b.h); }
+    const pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad;
+    const L = 8, R = 64, Tp = 8, Bt = 22, w = W - L - R, h = H - Tp - Bt, n = arr.length, cw = w / n;
+    const X = k => L + (k + 0.5) * cw, Y = p => Tp + (hi - p) / (hi - lo) * h;
+    // grid + price labels
+    g.strokeStyle = gr; g.fillStyle = mu; g.lineWidth = 1;
+    for (let q = 0; q <= 4; q++){ const p = lo + (hi - lo) * q / 4, y = Math.round(Y(p)) + .5;
+      g.beginPath(); g.moveTo(L, y); g.lineTo(W - R, y); g.stroke(); g.fillText(p.toFixed(B[t.m].dec), W - R + 6, y + 4); }
+    const ki = arr.findIndex(([i]) => i === t.bi), kx = arr.findIndex(([i]) => i === t.bx);
+    const k0 = ki < 0 ? 0 : ki, k1 = kx < 0 ? n - 1 : kx;
+    // risk box (entry -> SL) and result box (entry -> exit)
+    const x0 = L + k0 * cw, x1 = L + (k1 + 1) * cw;
+    g.fillStyle = ss; g.fillRect(x0, Math.min(Y(t.e), Y(t.sl)), x1 - x0, Math.abs(Y(t.sl) - Y(t.e)));
+    g.fillStyle = rr > 0 ? bs : ss; g.fillRect(x0, Math.min(Y(t.e), Y(t.x)), x1 - x0, Math.abs(Y(t.x) - Y(t.e)));
+    // candles
+    for (let k = 0; k < n; k++){ const b = arr[k][1], up = b.c >= b.o, col = up ? buy : sell, x = X(k);
+      g.strokeStyle = col; g.beginPath(); g.moveTo(Math.round(x) + .5, Y(b.h)); g.lineTo(Math.round(x) + .5, Y(b.l)); g.stroke();
+      const bw = Math.max(1, cw * 0.62), yo = Y(b.o), yc = Y(b.c);
+      g.fillStyle = col; g.fillRect(x - bw / 2, Math.min(yo, yc), bw, Math.max(1, Math.abs(yc - yo))); }
+    // lines
+    const hl = (p, col, lab, dash, off = 0) => { const y = Math.round(Y(p)) + .5; g.setLineDash(dash || []); g.strokeStyle = col; g.lineWidth = 1.4;
+      g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); g.setLineDash([]); g.lineWidth = 1;
+      g.fillStyle = col; g.fillText(lab, x0 + 4 + off, y - 3); };
+    hl(t.e, ac, 'Entry'); hl(t.sl, sell, 'SL', [4,3]); hl(t.x, rr > 0 ? buy : sell, t.op ? 'Abhi' : 'Band', [2,2], 44);
+    // date labels
+    g.fillStyle = mu;
+    const step = Math.max(1, Math.ceil(n / 5));
+    for (let k = 0; k < n; k += step){ const d = new Date((arr[k][1].t * 60 + 300) * 60000).toISOString().slice(5,10);
+      g.fillText(d, Math.max(L, X(k) - 14), H - 6); }
+  }
+  window.addEventListener('resize', () => draw());
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => draw());
+  new MutationObserver(() => draw()).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+  apply();
+})();
+</script>

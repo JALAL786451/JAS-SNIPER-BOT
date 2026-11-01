@@ -216,5 +216,6 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/sell73.py` - Koshish #73: SELL aaina S1 trend 4H + S2 IBS + buy_ko_tarjeeh (aaina test 437/437, 288/288, 94/94) (1 Nov)
 - `tools/ftmo73.py` - Koshish #73: #68 + 2 SELL leg (TALAASH, CHUNAO k 0.25/0.5/1.0, --imtihan --k) (1 Nov)
 - `indicators/jas_5ea.pine` - p2 (judge: S2 pehle, B1 baad - READY) p1 (1 Nov): 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
+- `tools/trade_page/` - Trade Roznamcha page: gen.py + template.html -> roznamcha.html (artifact https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK), 5 EA 3,075 trades 2012-aaj (1 Nov)
 - `tools/JAS_DXY.bat` - laptop ek click: EURUSD, USDJPY, USDSEK H1 Dukascopy se (#71 ke liye) (1 Nov)
 - `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)
