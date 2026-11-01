@@ -57,10 +57,8 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 **29vi chat (1 Nov)** - tafseel `docs/purana-haal.md` grep "29vi chat", "Koshish #69", "Koshish #70", "Research team daur 1". Purani 28vi: grep "sec 5 se (1 Nov 29vi".
 Spread naap 2 (oil, forex, BTC, XCU, XNG). **#69** #68 + Tide oil = IMTIHAN FAIL (fail 0 -> 11) -> bank. **Research daur 1** (`docs/research/`): C1 KEEP, baqi REJECT.
 **JasKhirkiEA k2** (judge: Python se 843/843; k2 = 5 fix) FTMO demo par ✅ + t5/i6 pehra +20261101 ✅. FTMO fees / Swing / VPS / discount / gap qaida: `docs/sawal-jawab.md`.
-**AGLA KAAM:** (a) **#70 C1 TV TALAASH** - user `indicators/jas_c1.pine` c1 (TV 1D, TVC:NI225) ka table SS nayi chat mein bhejega -> faisla qaide se
-(purana-haal grep "Koshish #70 qaida"): N >= 100, Exp - 2kSE > 0 (k 1.093), >= 2x drift, saal > 50% (>= 2 tr), NI225 + HSI Exp > 0. PASS par hi IMTIHAN (input
-"IMTIHAN dikhao") EK dafa, phir FTMO jor. FAIL = band. CFD jaanch 2012-18 -0.017R (manfi, user ko bataya). Sec 8 ginti +1.
-(b) Demo 3 EA chalu (sec 6-7); Somwar pehli trades dekho. Pehli khirki 24 Nov. (c) **Asli FTMO se PEHLE:** t5/i6 InpServerGMT -2 (k2 jaisa) + FTMO symbol naam
+**#70 C1 = TALAASH FAIL (30vi chat, user TV SS):** 312 tr, -0.007R, Exp-2kSE -0.038, ausat -0.018% < drift, saal 31/58, NI225 -0.010 HSI -0.017 = sab shart fail -> BAND (IMTIHAN nahi). CFD bhi manfi tha.
+**AGLA KAAM:** (b) Demo 3 EA chalu (sec 6-7); Somwar pehli trades dekho. Pehli khirki 24 Nov. (c) **Asli FTMO se PEHLE:** t5/i6 InpServerGMT -2 (k2 jaisa) + FTMO symbol naam
 (GER40.cash ...) + pehra B phir D; FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao; Swing; ftmo.com offer (CLAUDE.md). (d) Research daur 2 (zyada trades,
 mazboot; Gotobi sirf waiver). BTC + Kachhua baqi. BANK (#59, #69) KHUD yaad dilao.
 **Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. SELL band = ~3,690 par khatam.
@@ -82,7 +80,7 @@ paste hua (chart par nahi laga) - zaroorat par GitHub wali e1 dobara.
 1-5 FAIL · **6 Kachhua commodity ASLI PASS** · 7-14 FAIL · **15 IBS S&P ASLI PASS** · 16-25 FAIL / sikka (19 SMC DZ/SZ 4H MT5 baqi; 21 ORB USTEC 5m asli kharcha FAIL 1 Nov) ·
 **26 Supertrend tokri ASLI PASS** · **27 JasTrend FTMO PASS** · 28-33 FAIL · **34 JAS Trend 4H TOKRI ASLI PASS** · 35-44 FAIL (37 noise boundary 0.03% kharcha par) ·
 **45 Double 7s ASLI PASS kamzor** · 46-48, 50, 51 FAIL · **49 FTMO trend + IBS S&P ASLI PASS** · **52 teacher: USTEC IBS ASLI PASS** ·
-**53 FTMO #49 + IBS USTEC 1% ASLI PASS (2019+ 83/0, 2012-aaj +92%, DD 13.4%) = FTMO mansooba** · 54 = #37 + asli spread: TALAASH PASS +0.113R, **IMTIHAN 2025+ FAIL** (-0.037R, bina kharcha bhi -) = band. · 55-58 FAIL (trend 1H, IBS 4H, teacher 4H trend, IBS mandi) · **59 CHUTTI se pehle wala din (SPX+NDX) ASLI PASS** (2019+ 146 tr, jeet 68%) · 60 FTMO #53 + chutti FAIL · 61-63 IBS / Tide / Trend x Dow 30 share FAIL (faida = drift). · 64 TOM, 65 VIX: IMTIHAN FAIL · 66 trend 4H dhaat FAIL · **67 khirki x 7 non-US index PASS** · **68 FTMO #53 + khirki 0.15%: 83/0, median 10.8 (11.7 se) = ASLI PASS** -> JasKhirkiEA. · 69 + Tide oil FAIL (fail 0->11, bank) · 70 C1 local chutti: TV TALAASH baqi
+**53 FTMO #49 + IBS USTEC 1% ASLI PASS (2019+ 83/0, 2012-aaj +92%, DD 13.4%) = FTMO mansooba** · 54 = #37 + asli spread: TALAASH PASS +0.113R, **IMTIHAN 2025+ FAIL** (-0.037R, bina kharcha bhi -) = band. · 55-58 FAIL (trend 1H, IBS 4H, teacher 4H trend, IBS mandi) · **59 CHUTTI se pehle wala din (SPX+NDX) ASLI PASS** (2019+ 146 tr, jeet 68%) · 60 FTMO #53 + chutti FAIL · 61-63 IBS / Tide / Trend x Dow 30 share FAIL (faida = drift). · 64 TOM, 65 VIX: IMTIHAN FAIL · 66 trend 4H dhaat FAIL · **67 khirki x 7 non-US index PASS** · **68 FTMO #53 + khirki 0.15%: 83/0, median 10.8 (11.7 se) = ASLI PASS** -> JasKhirkiEA. · 69 + Tide oil FAIL (fail 0->11, bank) · 70 C1 local chutti x 7 index: TV TALAASH FAIL (312 tr, -0.007R, band)
 Faida daily + 4H TOKRI par; chhoti TF ab asli kharche se dobara (har ek pehle se likh kar).
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
