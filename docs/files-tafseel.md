@@ -210,5 +210,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `KAHANI.txt` - poori kahani 1 Oct se (nayi chat PEHLE ye parhe); har chat khatam par sirf 2-5 line jodo (1 Nov)
 - `tools/ftmo71.py` - Koshish #71: #68 + G2 DXY filter (banaya DXY, data jaanch, TALAASH, CHUNAO, --imtihan) (1 Nov)
 - `tools/ftmo72.py` - Koshish #72: #68 + 4H trend EURUSD/USDJPY/AUDUSD (CHUNAO, --imtihan --risk) (1 Nov)
+- `tools/sell73.py` - Koshish #73: SELL aaina S1 trend 4H + S2 IBS + buy_ko_tarjeeh (aaina test 437/437, 288/288, 94/94) (1 Nov)
+- `tools/ftmo73.py` - Koshish #73: #68 + 2 SELL leg (TALAASH, CHUNAO k 0.25/0.5/1.0, --imtihan --k) (1 Nov)
 - `tools/JAS_DXY.bat` - laptop ek click: EURUSD, USDJPY, USDSEK H1 Dukascopy se (#71 ke liye) (1 Nov)
 - `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)
