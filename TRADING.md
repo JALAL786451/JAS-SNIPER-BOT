@@ -59,7 +59,7 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 Judge: swap har calendar raat (bug fix) -> #68 IMTIHAN 83/0 median 11.4. Research daur 2-5 `docs/research/`. Trade page B: https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK
 (`tools/trade_page/`). Pine `indicators/jas_5ea.pine` p4 TV par CHALA (SPX500USD/NAS100USD 1D; USTECH = error, NAS100USD istemal). p5 commit 6adeabd
 (levels, alert, Abhi R, lot, agli khirki, warning) -> p6 judge READY (commit neeche), user ko link diya; TV SS ka intezar.
-**AGLA KAAM:** (a) jas_5ea: agar file p6 hai to pinecheck + commit + user ko raw link (commit hash); warna judge dobara (p5 -> p6: Abhi R + agli khirki default ON).
+**AGLA KAAM:** (a) jas_5ea p6 (commit 22f6c52, judge READY) - user TV SS dekho (error ho to line number); alert aur lot user khud ON kare.
 User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC Kachhua = #74, user "D" baqi (FTMO BTC swap pehle; user ka FTMO trial nahi, Exness demo).
 (d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
 HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.
