@@ -14,7 +14,8 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | chhota jawab | A/B/D aaye aur do sawal khule hon to ek line mein poochho kis ka jawab hai. | 7 Oct |
 | link | Link click hone wala + commit hash wala raw link. | pehle |
 | aasan | User technical NAHI: har baat bohot aasan, saaf, misaal se; mushkil lafz (correlation, reference, SE) bina samjhaye nahi. Pehle khulasa 2-3 line, phir table. | 1 Nov |
-| judge | Har naye test ke baad (FAIL ho ya PASS) judge agent se code / ghalti jaanch karwao; naye idea research agent se (hafte ki limit < 50%). | 1 Nov |
+| judge | Judge / research agent zaroori hain, MAGAR sirf user ke "D" ke baad (baat poori + faisla ho jaye tab). Phir har test ke baad judge jaanch. Hafte ki limit < 50%. | 1 Nov |
+| discussion 2 | User sawal / discussion kare to SIRF jawab aur samjhana - koi kaam, file, test, agent NAHI. Pehle poora jawab, phir poochho; "D" ke baad hi kaam (1 Nov: Claude ne sawal ke beech judge chala diya, user naraz). | 1 Nov |
 | reminder | "Aaraam karo" / jawab ke aakhir mein yaad-dihani NAHI. "Ruk jayein" mat kaho - agla idea do. | 12 Oct |
 | pata nahi | Andaza NAHI - saaf kaho "ye mujhe pata nahi", poochho "roznamcha mein X tareekh dekhun?" Ijazat par sirf EK DIN peechhe. | 17 Oct |
 | lecture | Ehtiyat ka lecture har dafa NAHI - user khud 2 guna ehtiyat rakhta hai. Seedha kaam. | 17 Oct |
