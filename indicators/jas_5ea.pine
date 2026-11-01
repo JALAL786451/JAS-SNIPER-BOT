@@ -1,5 +1,5 @@
 //@version=6
-// JAS 5 EA  (build p1, Pine v6, 1 Nov 2026)  -  #73 ke 5 EA ek chart par: 3 BUY (B1 B2 B3) + 2 SELL (S1 S2). TRADE NAHI, sirf dekhna.
+// JAS 5 EA  (build p2, Pine v6, 1 Nov 2026; p2 = judge fix)  -  #73 ke 5 EA ek chart par: 3 BUY (B1 B2 B3) + 2 SELL (S1 S2). TRADE NAHI, sirf dekhna.
 // ============================================================================
 //  KAISE LAGAYEIN
 //   - POORI TABLE (lambi history) = DAILY (1D) chart, koi bhi symbol (misaal OANDA:XAUUSD 1D ya SP:SPX 1D).
@@ -16,6 +16,7 @@
 //   B3 KHIRKI 1D BUY  7 non-US index       0.15%  US chutti se pehle ki khirki (jas_khirki67 k2 hubahu, NYSE calendar)
 //   BUY KO TARJEEH: BUY (B1/B2) khuli ho to SELL nahi khulti ("ruki"), agla signal phir dekha jata hai; SELL khuli ho aur
 //   BUY khule to SELL usi waqt BUY ki entry par band. Jo BUY usi open par band ho rahi ho wo "khuli" nahi ginti.
+//   p2 (judge #73): din ke close ki S2 + agli 4H open par B1 = S2 khulti hai, phir usi open par band (ruki nahi).
 //   B1 S1 B2 S2 ek market ki EK request mein (4H candles se 17:00 NY din khud banta hai) = waqt ki tarteeb sahi.
 //  TABLE: Abhi = abhi ka haal. Trades / Jeet % / Exp (R har trade, kharcha + swap ke BAAD) / Exp-2SE / PnL % / DD %.
 //   Exp-2SE aasan matlab = "bura andaza": Exp mein se 2 x ghalti ka khana. > 0 (hara) = faida shor se bara; < 0 (laal) = saboot nahi.
@@ -25,7 +26,7 @@
 //   Kharcha har taraf 0.75 x asli spread (US500 0.0052%, USTEC 0.0038%, XAU 0.0059%, XAG 0.0445%), index 0.02%; swap 3%/saal har raat.
 //  MUDDAT: KUL / TALAASH (<2019) / IMTIHAN (2019+) / 10 SAAL / LIVE = sirf ENTRY ki tareekh ka filter. LIVE kuch reset NAHI
 //   karta: "Live shuru tareekh" (default 2 Nov 2026) se baad wali entries hi gini jati hain - tareekh aap badal sakte hain.
-//  SELL: test FAIL (#73 TALAASH 2012-18 Python: 228 tr, -0.003R). Sirf dekhne ke liye; "SELL dikhao" se band.
+//  SELL: test FAIL (#73 TALAASH <2019 Python: 228 tr, -0.003R). Sirf dekhne ke liye; "SELL dikhao" se band.
 //  REPAINT NAHI: har request "HTF candle ke OPEN tak" ka haal deti hai (pichhli band candle + open). 1m..4H chart: lookahead_on
 //   (aage ka data nahi aata); 4H se bara chart: lookahead_off (andar ki aakhri 4H candle). Nishan barstate.isconfirmed par.
 //   SL ka BAND nishan agli 4H / din ki candle par. IBS signal din ke close par, dabba agli 4H candle par (Jumma ka Itwaar ko).
@@ -35,9 +36,9 @@
 //   Loop: f_win 4 + 4 har din, table 19 x 2. Table 9 x 26.
 //  Sahi nateeja Python / MT5 demo se - TV (OANDA / index data, 4H candle) sirf andaza.
 // ============================================================================
-indicator("JAS 5 EA p1", shorttitle = "JAS 5EA p1", overlay = true, max_lines_count = 20, max_labels_count = 20, max_bars_back = 300)
+indicator("JAS 5 EA p2", shorttitle = "JAS 5EA p2", overlay = true, max_lines_count = 20, max_labels_count = 20, max_bars_back = 300)
 
-BUILD = "p1"
+BUILD = "p2"
 TZ    = "America/New_York"
 DAY   = 86400000
 SWAP  = 0.03 / 365
@@ -140,7 +141,7 @@ f_pack(Leg g, int y0) => nz(y0) * 1e10 + g.n * 1e5 + g.w
 // ============================================================================
 //  B1 + S1 (+ B2 + S2) - EK market, 4H candles. Har 4H candle k par tarteeb (Python jaisi):
 //   (1) candle k-1 ke andar SL  (2) k-1 ke close par Supertrend mura?  (3) naya din? -> pichhle din ka IBS / SMA200 /
-//   ATR14 + IBS ki apni band  (4) k ke open par rukh wali band  (5) BUY entry  (6) BUY ko tarjeeh: SELL kato  (7) SELL entry.
+//   ATR14 + IBS ki apni band  (4) k ke open par rukh wali band  (5) din ke close: B2, SELL kato, S2  (6) k ka open: B1, SELL kato, S1.
 //   Wapas = haal "candle k ke OPEN par" - is mein k ka high / low / close nahi = repaint nahi.
 // ============================================================================
 f_core(bool ibsOn, float cst, int fromT, int toT) =>
@@ -230,29 +231,28 @@ f_core(bool ibsOn, float cst, int fromT, int toT) =>
             f_close(b1, open, cst, fromT, toT, time)
         if xs1
             f_close(s1, open, cst, fromT, toT, time)
-        // (5) BUY (band wale din IBS ki nayi nahi)
+        // (5) din ke CLOSE (dc) par: B2 BUY (band wale din nayi nahi) -> khuli SELL usi close par band -> S2 SELL
+        //     (BUY khuli ho to ruki - khulti nahi, agla din phir dekha jata hai)
         okD = dayEv and not na(dSma) and not na(dAtr) and dAtr > 0
-        bool  buyNow = false
-        float buyPx = na
         if ibsOn and okD and na(b2.e) and not b2Hit and ibs < 0.2 and dc > dSma
             f_open(b2, dc, 3.0 * dAtr, time)
-            buyNow := true
-            buyPx := dc
+            if not na(s1.e)
+                f_close(s1, dc, cst, fromT, toT, time)
+            if not na(s2.e)
+                f_close(s2, dc, cst, fromT, toT, time)
+                s2Hit := true
+        if ibsOn and okD and na(s2.e) and not s2Hit and na(b1.e) and na(b2.e) and ibs > 0.8 and dc < dSma
+            f_open(s2, dc, 3.0 * dAtr, time)
+        // (6) 4H OPEN par: B1 BUY -> khuli SELL usi open par band (judge #73: kal ke close wali S2 bhi - pehle khulti,
+        //     phir yahan band; ruki NAHI) -> S1 SELL (BUY khuli ho to ruki)
         if pb1
             f_open(b1, open, sdT, time)
-            buyPx := buyNow ? buyPx : open
-            buyNow := true
-        // (6) BUY ko tarjeeh: khuli SELL isi waqt BUY ki entry qeemat par band
-        if buyNow and not na(s1.e)
-            f_close(s1, buyPx, cst, fromT, toT, time)
-        if buyNow and not na(s2.e)
-            f_close(s2, buyPx, cst, fromT, toT, time)
-            s2Hit := true
-        // (7) SELL - BUY khuli ho to ruki (khulti nahi, agla signal phir dekha jata hai)
-        buyOpen = not na(b1.e) or not na(b2.e)
-        if ibsOn and okD and na(s2.e) and not s2Hit and not buyOpen and ibs > 0.8 and dc < dSma
-            f_open(s2, dc, 3.0 * dAtr, time)
-        if ps1 and not buyOpen and not na(dSma) and pdC < dSma
+            if not na(s1.e)
+                f_close(s1, open, cst, fromT, toT, time)
+            if not na(s2.e)
+                f_close(s2, open, cst, fromT, toT, time)
+                s2Hit := true
+        if ps1 and na(b1.e) and na(b2.e) and not na(dSma) and pdC < dSma
             f_open(s1, open, sdT, time)
         if dayEv
             b2Hit := false
@@ -657,7 +657,7 @@ if barstate.islast and showTbl
     f_row(r, showSell ? "KUL (5 EA, 19 line)" : "KUL (3 BUY EA, 13 line)", cHd, "sab", "khuli: " + str.tostring(oB) + " BUY, " + str.tostring(oS) + " SELL", fg, kN, kW, kS, kQ, kP, (kLump ? "~" : "") + str.tostring(kDd, "0.0") + "%")
     r += 1
     if showSell
-        f_cell(0, r, "SELL: test FAIL (#73) - Python TALAASH 2012-18: 228 tr, -0.003R, Exp-2SE -0.093. Sirf dekhne ke liye, SELL EA nahi.", cDn)
+        f_cell(0, r, "SELL: test FAIL (#73) - Python TALAASH (<2019): 228 tr, -0.003R, Exp-2SE -0.093. Sirf dekhne ke liye, SELL EA nahi.", cDn)
         table.merge_cells(tb, 0, r, 8, r)
         r += 1
     f_cell(0, r, "Data se (TV): " + nX + " " + f_yr(P0) + " · " + nG + " " + f_yr(P1) + " · " + nP + " " + f_yr(P2) + " · " + nN + " " + f_yr(P3) + "  |  " + f_nm(ix0) + " " + f_yr(P12) + " · " + f_nm(ix1) + " " + f_yr(P13) + " · " + f_nm(ix2) + " " + f_yr(P14) + " · " + f_nm(ix3) + " " + f_yr(P15) + " · " + f_nm(ix4) + " " + f_yr(P16) + " · " + f_nm(ix5) + " " + f_yr(P17) + " · " + f_nm(ix6) + " " + f_yr(P18), cMu)

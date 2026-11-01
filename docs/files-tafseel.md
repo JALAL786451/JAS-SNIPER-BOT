@@ -209,11 +209,12 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/research/daur4-best-agent.md` - research daur 4: best instrument + strategy (1 BTC Kachhua, 2 US2000 IBS, 3 vol cap) (1 Nov)
 - `docs/research/daur5-sell-agent.md` - research daur 5: SELL aaina S1 (+SMA200) / S2, P 0.50 / 0.20 (1 Nov)
 - `docs/research/judge-73.md` - judge #73: chhota bug (tarjeeh baad mein), FAIL wahi 228 tr -0.0032R (1 Nov)
+- `docs/research/judge-5ea.md` - judge jas_5ea p2: READY, Python se 100% mel (1 Nov)
 - `KAHANI.txt` - poori kahani 1 Oct se (nayi chat PEHLE ye parhe); har chat khatam par sirf 2-5 line jodo (1 Nov)
 - `tools/ftmo71.py` - Koshish #71: #68 + G2 DXY filter (banaya DXY, data jaanch, TALAASH, CHUNAO, --imtihan) (1 Nov)
 - `tools/ftmo72.py` - Koshish #72: #68 + 4H trend EURUSD/USDJPY/AUDUSD (CHUNAO, --imtihan --risk) (1 Nov)
 - `tools/sell73.py` - Koshish #73: SELL aaina S1 trend 4H + S2 IBS + buy_ko_tarjeeh (aaina test 437/437, 288/288, 94/94) (1 Nov)
 - `tools/ftmo73.py` - Koshish #73: #68 + 2 SELL leg (TALAASH, CHUNAO k 0.25/0.5/1.0, --imtihan --k) (1 Nov)
-- `indicators/jas_5ea.pine` - p1 (1 Nov): 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
+- `indicators/jas_5ea.pine` - p2 (judge: S2 pehle, B1 baad - READY) p1 (1 Nov): 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
 - `tools/JAS_DXY.bat` - laptop ek click: EURUSD, USDJPY, USDSEK H1 Dukascopy se (#71 ke liye) (1 Nov)
 - `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)
