@@ -2,47 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-10-19  (4 kaam)
-   - JAS AAINA a8: nishani band candle ki (mauqe poori candle tak nahi badalte), SAAYA qareebi 
-   - JAS AAINA a10: mauqa na mile to saaya agli band candle par phir koshish (gayab nahi), warn
-   - Chat khatam (16vi): sec 5 (AAINA a10 TV ✅, saaya poora; agla Commodity + Rsi2 demo), sawal
-
-2026-10-20  (18 kaam)
-   - jas_aaina a11: SAAYA RECORD dabba (aakhri saayon ka ✔/✖ jod: sab, lakeerein ek taraf/alag,
-   - jas_aaina a14: header comment sahi - TV 15m par jori hadd ke baad bhi 52% neela raha
-   - jas_aaina_test t2: 'Trade kab se' tareekh (default 2019) - andaza poori history se, trade 
-
-2026-10-21  (3 kaam)
-   - jas_tide_smc s2.10: swing S / R (pakki choti = R, tah = S, qareebi 2 har taraf, default ON
-   - jas_tide_smc s2.11: SMC har TF (1m - 1M), sirf na-tooti S/R + zone, FVG beech wali candle 
-   - jas_tide_smc s2.11: jaanch ki durustiyan - D1 EMA door ho to daayen '↑ door', likhai font 
-
-2026-10-27  (14 kaam)
-   - jas_tide_smc s2.12: runtime error 'historical offset beyond buffer' theek - SMC nishan WAQ
-   - ftmo_imkaan f2: --jaal (har system ka alag risk, risk parity jaal)
-   - Koshish #25 nateeja: TALAASH FAIL (Exp-2SE -0.032R)
-
-2026-10-28  (49 kaam)
-   - Koshish #26 qaida + jas_trend_pro_test_s3.pine (Supertrend sirf BUY, 6 market tokri, 0.03%
-   - TRADING sec 5: FTMO trial restrict, agla SBS pehra Tester + demo
-   - JAS Trend Pro t3.3: tokri table (4 market + KUL)
-
-2026-10-29  (52 kaam)
-   - JasTrendEA t3: 4H candle (#34 tokri), SL 6xATR, magic 20261029
-   - HIDAYAT: nayi 2 line table format mein
-   - jas_trend_pro.pine t3.5: moti Supertrend 10/3 lakeer default band
-
-2026-10-30  (25 kaam)
-   - Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab par SL
-   - JAS_ZIP z3: TASHEEH - folder ZIP_UPLOAD, explorer se (z2 khud ko dobara chalati thi)
-   - #49 report card 2012-aaj: +80%, DD 15%
-
-2026-10-31  (97 kaam)
-   - Add files via upload
-   - TRADING.md 8 KB ke andar
+2026-10-31  (37 kaam)
+   - hidayat: har jawab mein Somwar wali yaad-dihani nahi (user 1 Nov)
+   - #66 kharcha naap darj (XPT 0.249%, XPD 0.551%, XCU 0.056%) + script defaults (0.187 / 0.41
    - sawal-jawab: market EAs research, NinjaTrader, FTMO gap/Swing note
 
-2026-11-01  (12 kaam)
+2026-11-01  (45 kaam)
    - Add files via upload
-   - Research daur 1: agent + judge, C1 KEEP, baqi REJECT
-   - TRADING: JasKhirkiEA k2 demo par
+   - #71 data jaanch 1: reference DOLLARIDXUSD kharab (0.1 gol), banaya DXY sahi - user faisla
+   - jas_5ea.pine p5: purane nishan OFF, strategy levels, alerts, Abhi R, lot calc, agli khirki

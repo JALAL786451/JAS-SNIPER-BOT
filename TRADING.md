@@ -54,14 +54,15 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**29vi chat (1 Nov)** - tafseel `docs/purana-haal.md` grep "29vi chat", "Koshish #69", "Koshish #70", "Research team daur 1". Purani 28vi: grep "sec 5 se (1 Nov 29vi".
-Spread naap 2 (oil, forex, BTC, XCU, XNG). **#69** #68 + Tide oil = IMTIHAN FAIL (fail 0 -> 11) -> bank. **Research daur 1** (`docs/research/`): C1 KEEP, baqi REJECT.
-**JasKhirkiEA k2** (judge: Python se 843/843; k2 = 5 fix) FTMO demo par ✅ + t5/i6 pehra +20261101 ✅. FTMO fees / Swing / VPS / discount / gap qaida: `docs/sawal-jawab.md`.
-**#70 C1 = TALAASH FAIL (30vi chat, user TV SS):** 312 tr, -0.007R, Exp-2kSE -0.038, ausat -0.018% < drift, saal 31/58 (pass), NI225 -0.010 HSI -0.017 = Exp, drift, NI225/HSI fail -> BAND (IMTIHAN nahi). CFD bhi manfi tha.
-**AGLA KAAM:** (b) Demo 3 EA chalu (sec 6-7); Somwar pehli trades dekho. Pehli khirki 24 Nov. (c) **Asli FTMO se PEHLE:** t5/i6 InpServerGMT -2 (k2 jaisa) + FTMO symbol naam
-(GER40.cash ...) + pehra B phir D; FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao; Swing; ftmo.com offer (CLAUDE.md). (d) Research daur 2 (zyada trades,
-mazboot; Gotobi sirf waiver). BTC + Kachhua baqi. BANK (#59, #69) KHUD yaad dilao.
-**Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. SELL band = ~3,690 par khatam.
+**30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
+#70 C1 FAIL, #71 DXY filter FAIL, #72 forex trend FAIL (user: CURRENCY POORI CHHOR DI), #73 2 SELL aaina TALAASH FAIL (228 tr -0.003R, judge CLEAN).
+Judge: swap har calendar raat (bug fix) -> #68 IMTIHAN 83/0 median 11.4. Research daur 2-5 `docs/research/`. Trade page B: https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK
+(`tools/trade_page/`). Pine `indicators/jas_5ea.pine` p4 TV par CHALA (SPX500USD/NAS100USD 1D; USTECH = error, NAS100USD istemal). p5 commit 6adeabd
+(levels, alert, Abhi R, lot, agli khirki, warning) -> judge p6 chal raha tha (session khatam) - judge ka nateeja `docs/research/judge-5ea.md` / file build dekho.
+**AGLA KAAM:** (a) jas_5ea: agar file p6 hai to pinecheck + commit + user ko raw link (commit hash); warna judge dobara (p5 -> p6: Abhi R + agli khirki default ON).
+User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC Kachhua = #74, user "D" baqi (FTMO BTC swap pehle; user ka FTMO trial nahi, Exness demo).
+(d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
+HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

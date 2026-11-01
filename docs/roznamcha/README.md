@@ -6,12 +6,5 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | Din | Commits | File | Pehla / aakhri kaam |
 |---|---|---|---|
 | Sep 2026 tak | 0 | `pehle-2026-09.md` | shuru se 30 Sep tak |
-| 2026-10-19 | 4 | `2026-10-19.md` | JAS AAINA a8: nishani band candle ki (mauqe poori candle tak / Chat khatam (16vi): sec 5 (AAINA a10 TV ✅, saaya poora; agla |
-| 2026-10-20 | 18 | `2026-10-20.md` | jas_aaina a11: SAAYA RECORD dabba (aakhri saayon ka ✔/✖ jod: / jas_aaina_test t2: 'Trade kab se' tareekh (default 2019) - a |
-| 2026-10-21 | 3 | `2026-10-21.md` | jas_tide_smc s2.10: swing S / R (pakki choti = R, tah = S, q / jas_tide_smc s2.11: jaanch ki durustiyan - D1 EMA door ho to |
-| 2026-10-27 | 14 | `2026-10-27.md` | jas_tide_smc s2.12: runtime error 'historical offset beyond  / Koshish #25 nateeja: TALAASH FAIL (Exp-2SE -0.032R) |
-| 2026-10-28 | 49 | `2026-10-28.md` | Koshish #26 qaida + jas_trend_pro_test_s3.pine (Supertrend s / JAS Trend Pro t3.3: tokri table (4 market + KUL) |
-| 2026-10-29 | 52 | `2026-10-29.md` | JasTrendEA t3: 4H candle (#34 tokri), SL 6xATR, magic 202610 / jas_trend_pro.pine t3.5: moti Supertrend 10/3 lakeer default |
-| 2026-10-30 | 25 | `2026-10-30.md` | Demo haal 30 Oct: EA band trades +252, khuli IBS -90, sab pa / #49 report card 2012-aaj: +80%, DD 15% |
-| 2026-10-31 | 97 | `2026-10-31.md` | Add files via upload / sawal-jawab: market EAs research, NinjaTrader, FTMO gap/Swin |
-| 2026-11-01 | 12 | `2026-11-01.md` | Add files via upload / TRADING: JasKhirkiEA k2 demo par |
+| 2026-10-31 | 37 | `2026-10-31.md` | hidayat: har jawab mein Somwar wali yaad-dihani nahi (user 1 / sawal-jawab: market EAs research, NinjaTrader, FTMO gap/Swin |
+| 2026-11-01 | 45 | `2026-11-01.md` | Add files via upload / jas_5ea.pine p5: purane nishan OFF, strategy levels, alerts, |
