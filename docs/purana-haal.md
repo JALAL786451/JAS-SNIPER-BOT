@@ -1406,6 +1406,10 @@ Banaya vs Dukascopy DOLLARIDXUSD 2018: corr 0.877, rukh 70.7%. Jaanch: **DOLLARI
 102.38 / 92.28 / 96.07 (asli ICE DXY ~79.8 / 80.0-80.2 / 90.3 / 98.7 / 102.2-102.4 / 92.1-92.3 / 96.2 = 0.3% andar). Tajweez (user ki haan par): data jaanch 2 = yehi saal-aakhir
 close +-1% (TVC:DXY) -> PASS, phir TALAASH. Na = qaide se FAIL, #71 band.
 **User "D" (1 Nov):** data jaanch 2 = saal-aakhir 2012-18 vs 79.77 / 80.04 / 90.27 / 98.69 / 102.21 / 92.12 / 96.17, har ek +-1% (`ftmo71.py data_check2`). Baqi qaida wahi.
+**#71 DATA JAANCH 2 = PASS** (2012 -0.03%, 2013 +0.22, 2014 +0.01, 2015 0.00, 2016 +0.16, 2017 +0.18, 2018 -0.11%).
+**#71 TALAASH 2012-18 (kharche se pehle) = PASS (kamzor):** XAU rakhe 79 tr +0.070R (+-0.077) jeet 37% vs roke 55 tr -0.064R (+-0.084); XAG rakhe 79 tr -0.052R vs roke 46 tr
++0.000R (chandi par ulta); KUL rakhe 158 tr +0.009R vs roke 101 tr -0.035R. Farq SE ke andar (shor ho sakta).
+**#71 CHUNAO 2012-18 (IMTIHAN se PEHLE likha) = PASS:** 84 challenge: #68 64 / 2 (0/2) / 18, median 36.3 -> **#68 + G2 66 / 0 / 18, median 38.9** (pass - fail 62 -> 66; median thora dheema).
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
