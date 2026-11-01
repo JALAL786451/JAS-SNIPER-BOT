@@ -1405,6 +1405,7 @@ Banaya vs Dukascopy DOLLARIDXUSD 2018: corr 0.877, rukh 70.7%. Jaanch: **DOLLARI
 0.1 = ~0.11%) = ye reference DXY naapne layaq nahi. Banaya DXY sahi: daily corr EURUSD -0.977 (57.6% wazan), saal ke aakhri close 2012-18 = 79.75 / 80.22 / 90.28 / 98.69 /
 102.38 / 92.28 / 96.07 (asli ICE DXY ~79.8 / 80.0-80.2 / 90.3 / 98.7 / 102.2-102.4 / 92.1-92.3 / 96.2 = 0.3% andar). Tajweez (user ki haan par): data jaanch 2 = yehi saal-aakhir
 close +-1% (TVC:DXY) -> PASS, phir TALAASH. Na = qaide se FAIL, #71 band.
+**User "D" (1 Nov):** data jaanch 2 = saal-aakhir 2012-18 vs 79.77 / 80.04 / 90.27 / 98.69 / 102.21 / 92.12 / 96.17, har ek +-1% (`ftmo71.py data_check2`). Baqi qaida wahi.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 

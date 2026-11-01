@@ -80,6 +80,21 @@ def data_check(syn):
     return ok
 
 
+YE = {2012: 79.77, 2013: 80.04, 2014: 90.27, 2015: 98.69, 2016: 102.21, 2017: 92.12, 2018: 96.17}   # ICE DXY saal-aakhir (TVC:DXY)
+
+
+def data_check2(syn):
+    """Data jaanch 2 (user "D" 1 Nov): DOLLARIDXUSD 0.1 par gol = reference kharab. Saal-aakhir close 2012-18 +-1%."""
+    ok = True
+    for y, ref in YE.items():
+        c = syn[syn['t'] < pd.Timestamp(f'{y + 1}-01-01', tz='UTC')]['Close'].iloc[-1]
+        e = (c / ref - 1) * 100
+        ok &= abs(e) <= 1.0
+        print(f'  {y}: banaya {c:.2f} vs DXY {ref:.2f} ({e:+.2f}%)')
+    print(f'DATA JAANCH 2 (saal-aakhir +-1%): {"PASS" if ok else "FAIL (test nahi)"}')
+    return ok
+
+
 def g2_split(df, trades, dx_tl, dx_up):
     """(rakhe, roke): entry signal = gold block j ka aakhri H1 (entry idx - 1); DXY = us waqt tak ka aakhri poora 4H block."""
     t = df['t'].values.astype('datetime64[ns]').astype(np.int64)
@@ -104,7 +119,8 @@ def main():
     a = ap.parse_args()
     syn = dxy_synth()
     print(f'Banaya DXY: {len(syn)} H1, {syn["t"].iloc[0]:%Y-%m-%d} se {syn["t"].iloc[-1]:%Y-%m-%d}')
-    if not data_check(syn):
+    data_check(syn)                          # jaanch 1 (maloomat: reference kharab nikla)
+    if not data_check2(syn):
         return
     _, dx_tl, dx_up, _ = blocks4h(syn)
     base = list(FILES)
