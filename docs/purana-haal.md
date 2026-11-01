@@ -1400,6 +1400,11 @@ rukh >= 90% same - warna data FAIL (test nahi).
 **Qadam 2 CHUNAO 2012-2018** (84 challenge, har mahine): #68 (isi run) vs #68 + G2. Shart #60/#68/#69 wali: P1 fail < 20%, pass > fail, (pass - fail) >= #68 ka. Risk grid NAHI (filter).
 **Qadam 3 IMTIHAN 2019-01..2026-10 EK dafa:** PASS = fail 0, pass >= #68 (isi run, 83), median < #68 (isi run, 10.8). Imaandari: gold trend 2019+ pehle dekha (#34/#53/#68),
 DXY filter ka 2019+ asar kisi ne nahi dekha (agent ne bhi nahi). PASS -> JasTrendEA mein DXY filter + judge + demo. Ginti +1. G1 (24 mahine) chhoda: 2019+ shayad hi koi trade roke.
+**#71 DATA JAANCH 1 (1 Nov, TALAASH se PEHLE, koi nateeja nahi dekha) = FAIL - magar wajah REFERENCE kharab:** user QDM se EURUSD/USDJPY/USDSEK (2003-2026) -> JAS_ZIP.
+Banaya vs Dukascopy DOLLARIDXUSD 2018: corr 0.877, rukh 70.7%. Jaanch: **DOLLARIDXUSD har saal 100% qeemat 0.1 par gol, 39-64% ghante zero harkat** (DXY roz ~0.4% hilta,
+0.1 = ~0.11%) = ye reference DXY naapne layaq nahi. Banaya DXY sahi: daily corr EURUSD -0.977 (57.6% wazan), saal ke aakhri close 2012-18 = 79.75 / 80.22 / 90.28 / 98.69 /
+102.38 / 92.28 / 96.07 (asli ICE DXY ~79.8 / 80.0-80.2 / 90.3 / 98.7 / 102.2-102.4 / 92.1-92.3 / 96.2 = 0.3% andar). Tajweez (user ki haan par): data jaanch 2 = yehi saal-aakhir
+close +-1% (TVC:DXY) -> PASS, phir TALAASH. Na = qaide se FAIL, #71 band.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
