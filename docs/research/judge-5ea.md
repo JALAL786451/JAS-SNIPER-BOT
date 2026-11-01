@@ -1,27 +1,30 @@
-# Judge: jas_5ea.pine p1 -> p2 (1 Nov 2026)
+# Judge: jas_5ea.pine (1 Nov 2026)
 
-**Verdict: READY for TV** (compile risk kam; 1 logic fix + 1 likhai fix). pinecheck saaf.
+## p3 -> p4: verdict READY for TV
+p2 TV par compile hua. p3 = chhoti table (Python number) + saaf chart. pinecheck saaf.
 
-## Fixes (p2)
-1. L234-257 `f_core`: S2 (din ke close) ab B1 entry (agli 4H open) se PEHLE dekhi jati hai; B1 khule to S2 usi open
-   par band (judge #73 fix 2). p1 isay "ruki" ginta tha. Python port: US500 2018-12-26 + 9 trade 2019+ (same-block cut, ~0R).
-2. L29, L660: SELL note "TALAASH 2012-18" -> "<2019" (XAU/XAG 2003 se, index 2012 se).
-3. Build p2: L2, L39, L41 (+ L19 note, L144 comment).
+**Fixes (p4):**
+1. L377-379 `f_auto`: share / DR / crypto = -1. Pehle GERN, CACC, CACI, HSIC, NYSE:GOLD, OSL:NAS ghalat
+   DAX / CAC / HSI / XAU / USTEC ban jate the ("GER", "NAS" p3 mein aur khule hue the).
+2. L388: `startswith("DAX")` (MDAX, TECDAX, SDAX ab DAX nahi). L394: "STOXX" -> "STOXX50" + "STX50"
+   (STOXX600 nahi milta; ESTX50 / EUSTX50 wapas, p2 mein ESTX50 tha).
+3. L494 `f_draw`: entry chart ke close ke 0.5x..2x mein na ho to lakeer nahi. SPY / QQQ / XAUJPY par OANDA
+   qeemat (10-150x) ki lakeer chart ko daba deti thi.
+4. Build p4: L2, L33, L35.
 
-## Logic (f_core ka Python port, Dukascopy 4H blocks, Python truth se)
-B1: XAU 436/436, XAG 383/383, US500 287/287, USTEC 299/299 (entry + exit + qeemat). S1 (SMA200 gate + tarjeeh):
-113/136/32/40 = 100%. B2: 333/333, 337/337. S2 TALAASH = judge-73 ka theek kiya hua (USTEC 2012-12-27, US500 2018-12-26).
-B3 = k2 engine line ba line (sirf muddat filter + wapasi badli). Kharcha, swap, R, PnL %, DD %, muddat: sahi.
+**Jaanch:**
+- Engine p2 se `diff`: sirf `y0` / `_fy` / `f_pack` aur hisaab ki wapasi hati; state ki logic hubahu (S2/B1 fix
+  samet). Tuple 4+4+8+8+14 = 38, request 11. Live E/L ka leg number sahi; "ruki" = us market mein B1/B2 khuli.
+- Python number: 19/19 leg, 6 x 19 number list se bilkul barabar (leg tarteeb 0-18 bhi sahi).
+- Pehchan: 11 default symbol + GER40, DE40, DE30EUR, UK100, FRA40, EU50, STOXX50, JP225, JPN225, AUS200, HK50,
+  HK33HKD, US500, SPX500, US100, NAS100, USTEC, ES / NQ / GC / SI / FDAX / FESX / NKD futures = sahi.
+  XAUUSD/XAGUSD, SPX/SX5E alag. Nahi milte (override se): F40, J225, US30 (hamara nahi).
+- Naye construct: `chart.bg_color` / `fg_color` (input color) var table mein, plotshape `location.absolute`
+  series float ke saath, `display.pane`, `for k in legs` (array<int>), table 8 x 7 (aakhri row 6) + 12 x 1 = sab theek.
 
-## Repaint: saaf
-Wapas haal sirf [1] + is candle ka open / time / time_tradingday -> 1m..4H par lookahead_on safe; 4H se bara chart
-lookahead_off; nishan barstate.isconfirmed. Ginti: tuple 12+12+24+24+42 = 114/127, request 11, lakeer/label <= 10 (hadd 20),
-plotshape 10, table 9 x 26 (aakhri row 25).
+**Baqi khatra (kam):** L74 `lookahead = LA` aur `var array` request ke andar (p2 mein compile ho chuke).
+B3 number Python CFD ke, live haal cash index ka (likha hua). Gradient background par `chart.bg_color` = upar wala rang.
 
-## Baqi khatra (compile par kam)
-- L94 `lookahead = LA` (simple ternary): docs ke mutabiq simple chalta hai.
-- L152 `var array<float>` request.security ke andar (reference scripts mein sirf UDT tha).
-- L50 timestamp 1900 (1970 se pehle); L89 timenow request ke andar (sirf 10 SAAL).
-Error aaye to line number + screenshot bhejein.
-- Data: OANDA din = 17:00 NY maana (time_tradingday). SL 4H candle par (Python H1): gap wali trade mein thora farq.
-  L663 jaisi lambi merged line table ko chaura kar sakti hai. 1m chart = chhoti history.
+## p1 -> p2 (pehle)
+`f_core` S2/B1 tarjeeh judge #73 jaisi; Python port: B1, S1, B2 100% mile, S2 = judge-73 ka theek kiya hua.
+SELL note "<2019". Repaint saaf ([1] + open, 4H se upar lookahead_off, nishan confirmed).

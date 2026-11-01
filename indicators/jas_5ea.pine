@@ -1,5 +1,5 @@
 //@version=6
-// JAS 5 EA  (build p3, Pine v6, 1 Nov 2026; p3 = user ki TV raaye: sirf chart ka instrument, saaf chart)  -  #73 ke 5 EA. TRADE NAHI, sirf dekhna.
+// JAS 5 EA  (build p4, Pine v6, 1 Nov 2026; p3 = user ki TV raaye: sirf chart ka instrument, saaf chart; p4 = judge fix)  -  #73 ke 5 EA. TRADE NAHI, sirf dekhna.
 // ============================================================================
 //  KAISE LAGAYEIN: KOI BHI chart, KOI BHI TF (1m .. 1D). Script chart ka instrument khud pehchanti hai (gold, chandi, US500,
 //   USTEC, 7 index) -> sirf usi ke EA: chhoti table + nishan + khuli trade ki lakeer. Na pehchane to setting "Chart ka market".
@@ -30,9 +30,9 @@
 //   (ek market mein zyada se zyada 2 khuli; hadd 20). plotshape 3 (hadd 64). Table 8 x 7 + 12 x 1. Loop: f_win 4 + 4 har din.
 //  Sahi nateeja Python / MT5 demo se - TV live haal (OANDA / index data, 4H candle) sirf andaza.
 // ============================================================================
-indicator("JAS 5EA p3", shorttitle = "JAS 5EA p3", overlay = true, max_lines_count = 20, max_labels_count = 20, max_bars_back = 300)
+indicator("JAS 5EA p4", shorttitle = "JAS 5EA p4", overlay = true, max_lines_count = 20, max_labels_count = 20, max_bars_back = 300)
 
-BUILD = "p3"
+BUILD = "p4"
 TZ    = "America/New_York"
 DAY   = 86400000
 SWAP  = 0.03 / 365
@@ -374,7 +374,10 @@ f_auto() =>
     t = str.upper(syminfo.ticker)
     rt = str.upper(syminfo.root)
     int m = -1
-    if str.contains(t, "XAU") or str.contains(t, "GOLD") or rt == "GC" or rt == "MGC"
+    // share / crypto kabhi hamara instrument nahi (GERN, CACC, HSIC, NYSE:GOLD, OSL:NAS ghalat milte the)
+    if syminfo.type == "stock" or syminfo.type == "dr" or syminfo.type == "crypto"
+        m := -1
+    else if str.contains(t, "XAU") or str.contains(t, "GOLD") or rt == "GC" or rt == "MGC"
         m := 0
     else if str.contains(t, "XAG") or str.contains(t, "SILVER") or rt == "SI" or rt == "SIL"
         m := 1
@@ -382,13 +385,13 @@ f_auto() =>
         m := 2
     else if str.contains(t, "NAS") or str.contains(t, "NDX") or str.contains(t, "US100") or str.contains(t, "USTEC") or str.contains(t, "USATECH") or rt == "NQ" or rt == "MNQ" or t == "QQQ"
         m := 3
-    else if str.contains(t, "DAX") or str.contains(t, "DE40") or str.contains(t, "DE30") or str.contains(t, "GER") or str.contains(t, "DEU40") or rt == "FDAX"
+    else if str.startswith(t, "DAX") or str.contains(t, "DE40") or str.contains(t, "DE30") or str.contains(t, "GER") or str.contains(t, "DEU40") or rt == "FDAX"
         m := 4
     else if str.contains(t, "UKX") or str.contains(t, "UK100") or (str.contains(t, "FTSE") and not str.contains(t, "MIB"))
         m := 5
     else if str.contains(t, "PX1") or str.contains(t, "CAC") or str.contains(t, "FRA40") or str.contains(t, "FR40")
         m := 6
-    else if str.contains(t, "SX5E") or str.contains(t, "EU50") or str.contains(t, "STOXX") or rt == "FESX"
+    else if str.contains(t, "SX5E") or str.contains(t, "EU50") or str.contains(t, "STOXX50") or str.contains(t, "STX50") or rt == "FESX"
         m := 7
     else if str.contains(t, "NI225") or str.contains(t, "JP225") or str.contains(t, "NIKKEI") or str.contains(t, "N225") or str.contains(t, "NKY") or str.contains(t, "JPN225") or rt == "NKD" or rt == "NIY"
         m := 8
@@ -485,9 +488,10 @@ f_px(float p) => p >= 1000 ? str.tostring(p, "#.0") : p >= 100 ? str.tostring(p,
 var array<line>  lns = array.new<line>()
 var array<label> lbs = array.new<label>()
 
-// sirf KHULI trade: entry + SL lakeer, daayein kinare par chhoti qeemat
+// sirf KHULI trade: entry + SL lakeer, daayein kinare par chhoti qeemat. Qeemat chart ke paimane se bahut door
+// (misaal SPY / QQQ / XAUJPY chart) -> lakeer nahi, warna chart dab jata hai.
 f_draw(float e, float sl, int tm, color c) =>
-    if not na(e) and not na(sl)
+    if not na(e) and not na(sl) and e > 0.5 * close and e < 2.0 * close
         x1 = na(tm) ? tFirst : tm
         x2 = time + 3 * timeframe.in_seconds() * 1000
         lns.push(line.new(x1, e, x2, e, xloc = xloc.bar_time, color = c, width = 1))
