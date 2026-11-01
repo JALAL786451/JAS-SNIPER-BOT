@@ -1386,8 +1386,8 @@ band (tareekh >= P wali pehli candle), SL 3 x ATR20 (gap = open) = 1R, sirf BUY.
 **#70 CFD jaanch 2012-18 (Dukascopy H1, #68 timing, shart NAHI, TV TALAASH se PEHLE):** DAX 11 tr -0.013R, UKX 12 -0.029, PX1 6 -0.042, SX5E 3 +0.018,
 NI225 59 -0.008, XJO 11 +0.006, HSI 34 -0.036 = KUL 136 tr **-0.017R** (+-0.023 kSE) - CFD par (cash close ke baad wali H1) faida nahi dikha. TV `jas_c1.pine` c1 TALAASH baqi.
 **#70 TV TALAASH NATEEJA (1 Nov, 30vi chat, user SS) = FAIL -> idea BAND:** waqiat pre-reg se milte (18/29/10/10/127/35/83 = 312). R: DAX -0.022, UKX +0.017, PX1 -0.007,
-SX5E -0.020, NI225 -0.010, XJO +0.023, HSI -0.017; KUL 312 tr jeet 50%, -0.007R, Exp-2kSE -0.038, din ausat -0.018% vs drift +0.025%, saal 31/58 (53%... >50% magar baqi fail).
-Sirf N >= 100 pass; Exp, drift, NI225/HSI fail. IMTIHAN nahi khola. Ginti #70 FAIL.
+SX5E -0.020, NI225 -0.010, XJO +0.023, HSI -0.017; KUL 312 tr jeet 50%, -0.007R, Exp-2kSE -0.038, din ausat -0.018% vs drift +0.025%, saal 31/58 = 53% (ye pass).
+N >= 100 aur saal pass; Exp, drift, NI225/HSI fail. IMTIHAN nahi khola. Ginti #70 FAIL.
 
 ## sec 5 se (1 Nov 29vi chat ke aakhir mein hataya)
 
