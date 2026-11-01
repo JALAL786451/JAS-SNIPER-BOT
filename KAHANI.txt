@@ -1,0 +1,164 @@
+KAHANI.txt - JAS-SNIPER-BOT ki poori kahani, 1 Oct -> 1 Nov 2026. Har nayi chat ise SAB SE PEHLE parhe.
+KAISE PARHEIN: LEGEND -> Sec 3 TIMELINE ("KYUN" sab se ahem) -> Sec 4 ABHI. "(?)" = pakka nahi. Tareekh = git commit (UTC).
+KHULASA hai - TRADING.md se takraye to TRADING.md sahi.
+
+LEGEND
+tr=trade mkt=market pos=position R=risk ikai (1R=SL nuqsan) Exp=ausat R/trade SE=qismat ki gunjaish Exp-2SE>0=~95% yaqeen
+DD=girawat PF=profit factor P=ihtimal drift=aam tezi (bas khareed rakhna) tokri=kai mkt ek qaide se TF=timeframe
+TALAASH=purana data (TV/Python <2019, MT5 2021-24), jitni koshish  IMTIHAN=chhupa naya data (2019+, MT5 2025+) EK dafa, bina tabdeeli
+CHUNAO=FTMO sim (Python) mein risk chunna 2012-18  ASLI PASS=TALAASH+IMTIHAN dono  PASS/FAIL=pehle se likhe qaide par
+kamzor=bal-bal sikka=ittefaq nazar=qareeb, pass nahi aadha dekha=IMTIHAN data pehle dikh gaya x/y=sim challenge pass/fail
+median=FTMO pass ka beech wala waqt (mahine) bank=pass shuda, abhi nahi BAND=idea khatam #N=koshish (20261xxx)=EA magic
+demo=Exness demo LIVE=asli paisa FTMO=prop firm challenge pehra=EA ka FTMO guard judge=alag agent jaanch peshgoi=user ki prediction
+SS=screenshot F7=compile TV=TradingView D=user ka "aage chalo" SBS=ek qadam QDM/duka=data (Dukascopy) USC=US cent
+XAU=gold XAG=chandi XPT/XPD/XCU/XNG=platinum/palladium/copper/gas US500=SPX=S&P USTEC=NDX=Nasdaq
+Kachhua=Tide=Turtle 1D (10 candle toot, EMA50/200 rukh, SL 2ATR sarakta) Radar=Kachhua kai mkt ek chart se IBS=(C-L)/(H-L)<0.2 dip khareed
+Supertrend=JAS Trend 10/3 sirf BUY khirki=US chutti ki khirki x non-US index (#67) chutti=chutti se pehle din (#59)
+TOM=mahine ka mor VIX=darr index ORB=opening range toot SMC=smart money C1/G2/F1=research ummeedwar
+EA (sab "Jas..."; t/i/k+number=build): TideRadarEA=Kachhua TrendEA IbsEA KhirkiEA Rsi2EA ChakkarEA/FishingEA=user ki method
+  DeskView=sirf parhne wala panel JoriClose=Close By script KitabSaathi=kitab panel SpreadNaap=spread naap
+
+1. KAUN + ACCOUNTS
+Jalal, Pakistan (PKT=UTC+5), gold trader ~1.5 saal, non-technical. Apni method "Fishing Lots" (METHOD.md): 1m EMA20/50, 0.01 lot ~$1 faida,
+ ulta ho to bachao lots -> hedge "freeze" (NET 0, swap-free intezar) -> unwind. Soch: SELL khatam, BUY rakho. Pehle USD $707->$489, phir Cent.
+Maqsad: ghar ka kharcha (11-10) -> FTMO EA se pass (27-10) -> ~100 tr/mahina + ~80% jeet (30-10; Claude: dono saath shayad na milein).
+LIVE 253687618: Exness-MT5Real34, StandardCent, XAUUSDc, USC, swap-free, Hedge, 1:2000. KOI EA NAHI. MT5 "Real A/C".
+ Haath ki jami kitab: 1 Oct 112 lots equity 43,102 -> 16 Oct 183 pos ~43,743 -> 30 Oct 90 BUY 1.85 @3985.28 + 1 SELL 1.65 @3904.33 (dhaal),
+ NET +0.20, kul -15,618 USC, equity ~34,700.
+Purane demo 472716649 (Trial16), 472540009 (110 jami lots), 474651829: 31 Oct raat user ne DELETE kiye.
+FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO trial Gmail par restrict (28-10). MT5 "Exness Demo".
+
+2. USER KE QAIDE (poore: grep -i <lafz> docs/roznamcha/HIDAYAT.md)
+- Roman Urdu, chhota, hamesha "aap"; bohot aasan, misaal + table; R/SE jaise lafz samjha kar.
+- SBS: user "D" ke baad hi kaam. Sawal/discussion = SIRF jawab - file/test/agent nahi (1-11, user naraz hua).
+- Faisle Claude khud kare + KYUN; A/B/C nahi, sirf AGLA EK QADAM. Sawal sirf paisa/account par.
+- TOKEN pehli tarjeeh: grep, poori file nahi, sawal-jawab pehle. Agent sirf user naam le + hafte ki limit <50%;
+  judge "D" ke baad, har test ke baad. Research agent 2019+ data KABHI na dekhe.
+- Backtest -> demo -> live. LIVE sirf 6 mahine demo ke baad; Claude live ka mashwara KABHI na de (17-10).
+- Qaida test se PEHLE, badalna mana, har koshish gino (13-10). "Bas/ruk jao" KABHI nahi (31-10).
+- EA: grid/martingale/hedging/averaging NAHI (jab tak user naam le), ek mkt ek position, risk limit khud kabhi na barhao.
+- Chart saaf (default BAND); SMC = TV LuxAlgo; chalti script usi file mein tweak.
+- Mana: "aaraam karo", lecture, har jawab mein "Somwar" yaad, 2 link, demo VPS mashwara.
+- Pata na ho: andaza nahi - "roznamcha mein X tareekh dekhun?". BANK + FTMO offer KHUD yaad dilao.
+- Chat khatam: TRADING.md sec 9, sawal-jawab, tools/roznamcha.py, commit+push (default branch bhi), FAURAN create_session.
+
+3. TIMELINE   DD-MM ("+" = aage kuch din) | cheez | kya hua | faisla | KYUN
+01-10 | JasDeskView panel + JasJoriClose LIVE | Close By 64/64, +550.70 USC | kitab phir bhi jami | jori se KUL nuqsan nahi badalta
+01-10+| JasTideEA t3/t4 (Kachhua sirf gold) | 2015-26: 132 tr PF 1.23 DD 45.8% | kamzor, 17-10 hataya | 2R par aadhi band
+02-10 | SMC Coach Pro, JAS Pro Box | 15m manfi; 4H +0.48R (29 tr) | sirf dekhna | ginti kam
+02-10+| JasChakkarEA k1-k4 (user ne naam le kar manga) | k1 demo 47 chakkar -6.85 | k4 Close All | user ki method EA mein
+07-10 | Chakkar k5 | bana, WAPAS | - | user ka "A" SMC ke liye tha -> chhota jawab ho to poochho kis ka
+08-10 | KACHHUA gold 1D (TV ~1970-2026) | 459 tr, PF 1.679, har daur musbat (2000 baad kam) | 2R aadhi band OFF | aadhi band = faida aadha
+09-10 | Radar r3 TV 9 mkt (XAU XAG EUR GBP AUD JPY CHF US500 BTC) | 2005+ 1254 tr +147.2R, girawat 14.9R; 2019+ 488 tr +51.9R | demo ke qabil; TideRadarEA e1 | 9 mkt par musbat
+10-10 | Radar EA MT5 2019+ | 414 tr +40.39R, girawat 12.7R = PASS; BTC +44.2R, baqi 7 mkt -3.9R, swap -22.26R | demo | faida asal mein BTC
+10-10 | Fishing f1 -712, Chakkar k4 -5,561 (Tester) | FAIL | demo se hatao, live nahi | user ki method EA mein nahi chali
+11-10 | Radar demo 472716649 (20261009); ETH | ETH sabit nahi | ETH bahar | -
+11-10 | ORB gold, RSI2 gold, SMC Scalp EA (1487 tr -0.037R) FAIL; RSI2 S&P +0.114R | - | JasRsi2EA (20261012) demo | -
+11-10 | usage | 1 din mein hafte ka 28% | agent sirf user naam le | multi-agent 0.6-2.5M token
+12-10 | ginti scripts (swing fail, wick, FVG, numayan...), NZDCAD Kachhua, forex RSI2 | ITTEFAQ / FAIL | BAND | -
+12-10 | Tide 2 (55/20) | TV PASS; MT5 girawat 18.4R > 12.7R, BTC +74.9R baqi 8 -2.7R | FAIL, Tide 1 hi | 51/17 par nateeja aadha
+12-10 | RSI2 index tokri 9/9 + 3 index mili 5.7R | PASS | demo 3 index 1% | MT5 imtihan na-mumkin (Exness index data Sep 2025 se)
+13-10 | NAYA TEST QAIDA (user D) | TALAASH -> IMTIHAN ek dafa | ginti #1 se | settings ghuma kar PASS = qismat
+13-10 | #1-2 Holy Grail #3 Williams VB (4330 tr -0.046R) #4 TSMOM #5 TOM 10 index (sakht 2SE) | FAIL | BAND | -
+13-10 | #6 KACHHUA 9 COMMODITY (TV) | TALAASH 1478 tr +0.160R 8/9; IMTIHAN 567 tr +0.067R 6/9 = ASLI PASS | 2nd demo XPTUSDm D1, 6 mkt (USOIL UKOIL XNG XCU XPT XPD), 20261018 | trend qaida trend mkt par
+13-10 | RSI2 commodity (6/9) | FAIL | RSI2 talaash KHATAM | -
+13-10 | #7-8 Ichimoku #9 Intraday Mom #10-11 jori #12 user 15m $1/$2 (89,203 tr, jeet 59.8%, -18,446 USD) #13 Kachhua 4H #14 IBS 10 index | FAIL | BAND | trend edge bari TF par
+13-10 | #15 IBS S&P | IMTIHAN 190 tr +0.082R, Exp-2SE +0.029 = ASLI PASS | JasIbsEA i1 (20261022); 14-10 i3 ROKA | -
+13-10+| memory | TRADING.md (13), default branch (14), roznamcha + sawal-jawab + chat khatam (17), HIDAYAT.md (18) | - | nayi chat bhoolti thi
+14-10+| #16 order flow (sikka) #17 SELL band/dobara #18 MA 63/91 (MT5 1H PF 0.86) #19 SMC LGB/FVG #20 Kitab Tukda | FAIL | DZ/SZ 4H baqi | TV acha, MT5 par nahi
+16-10 | LIVE JasJoriClose s5 + KitabSaathi | 293 -> 183 pos, equity ~43,743 | 200 order hadd (17-10) | ginti kam, equity wahi
+17-10 | USER: LIVE sirf 6 mahine demo baad | - | demo EA ~Apr 2027 tak | -
+17-10 | TideRadar demo "sirf dikhana" mila | InpTrade false -> TRADE CHALU | - | 11-17 Oct asal trade nahi
+17-10+| #21 ORB USTEC 5m (JasOrb5EA); #22 Fib OTE gold 15m qaida | data QDM se | 28-10 #22 FAIL | Exness USTEC data Sep 2025 se
+19-10+| JAS AAINA a8-a18, Tide+SMC s2.x | 15m sikka; 1D 2019+ PF 0.968 | sirf dekhna, a16 khichdi hatai | -
+(?)   | #23 1D rukh + 15m entry | chala nahi (?) | "user kahe to" | aaina FAIL ke baad kamzor
+27-10 | #24 Supertrend gold 1D, #25 sirf BUY FAIL; ftmo_imkaan.py | IBS 2% + Kachhua 0.25% = 36m 59% pass / 5% fail | maqsad = FTMO | -
+28-10 | #26 Supertrend 6 mkt tokri 1D | TALAASH 931 tr; IMTIHAN 165 tr +0.455R = ASLI PASS | - | ek mkt kinare, tokri PASS
+28-10 | #27 JasTrend FTMO Python (1%, 4ATR, XAU XAG US500 USTEC) | 2019+ 80/0, ~32 mahine | JasTrendEA t1/t2 demo (20261028) | -
+28-10 | #28 IBS 4 mkt; #29 KACHHUA 4 mkt (366 tr, Exp-2SE -0.037) | FAIL | FTMO = JasTrend AKELA | Kachhua sirf XAU acha
+28-10 | Radar FTMO jaanch | 15 mkt ~110 tr/saal, 1% par girawat 14.9% > FTMO 10% | Kachhua FTMO mein NAHI | -
+28-10 | demo jaanch | 20: Commodity EA gold list par; 28: teen EA "SIRF DIKHANA" + IBS/RSI2 ghalat chart | sab TRADE CHALU | demo record kamzor
+28-10 | #30-33 gold H1/H4/15m, #35 4H tokri FTMO CHUNAO | FAIL | - | <=H1 par CFD kharcha edge kha jata
+28-10 | #34 JAS Trend 4H tokri (XAU XAG US500 USTEC) | IMTIHAN 641 tr +0.208R, 4/4 = ASLI PASS | JasTrendEA t3 4H demo (20261029); demo par 6 EA | gold akela FAIL
+29-10 | #36-44, #46 (engulfing, noise qaida, VWAP, Gao, raat drift, J Law, JJ Simon 1m...) | FAIL | - | chhoti TF = kharcha
+29-10 | #45 Double 7s | IMTIHAN 178 tr +0.054R = ASLI PASS kamzor | EA NAHI | 77% entries IBS/RSI2 jaisi = nakal
+30-10 | demo haal | band EA trades +252 (USOIL +372 Kachhua, JPY SL -206), khuli IBS -90 | - | -
+30-10 | #47/#48 bari tokri 28 mkt 4H/daily | -0.021R / -0.058R FAIL | - | trend sirf gold/chandi/US index
+30-10 | #49 FTMO: trend 4H 0.75% + IBS S&P 2% | 2019+ 69/14, median 11 | ASLI PASS = FTMO mansooba | -
+31-10 | USER: "saare faisle aap khud" | FTMO DEMO 474832446, t4+i4 (#49) | baqi EA purane demo se hatao | sirf tested FTMO setting
+31-10 | #50 long/short, #51 har mkt apna qaida 0/84 | FAIL | Claude: "bas" -> USER NE ROKA | haar ki ginti nahi, nateeja
+31-10 | #52 user ka "teacher" tareeqa | USTEC IBS ASLI PASS (2019+ 207 tr, 71%) | - | -
+31-10 | #53 #49 + IBS USTEC, IBS 1% | 2019+ 83/0, 2012-aaj +92%, DD 13.4% = ASLI PASS | JasIbsEA i5 demo | 69/14 se behtar
+31-10 | #37 noise M1 FAIL; JasSpreadNaap | asli spread US500 0.40 USTEC 1.12 gold 0.24 | andaza 10-16x zyada tha | -
+31-10 | #54 = #37 + asli spread; #21 ORB asli kharcha | #54 TALAASH +0.113R magar IMTIHAN -0.037R; #21 FAIL | BAND | edge 2025-26 mein khatam
+31-10 | #55 trend 1H, #56 IBS 4H, #57 teacher 24 mkt (JPN nazar), #58 IBS mandi | FAIL | #53 asli kharche se median 11.7 | -
+31-10 | #59 chutti SPX+NDX | 2019+ 146 tr jeet 68% = ASLI PASS | - | pehla calendar khandaan
+31-10 | #60 #53 + chutti | CHUNAO FAIL | #59 -> BANK (bank.md bana) | FTMO challenge mein fail barhe
+31-10 | #61-63 IBS/Tide/Trend x Dow 30 share | FAIL | share BAND | faida = share ki drift
+31-10 | #64 TOM (186 tr), #65 VIX (v1 ghalat; v3 drift 1.7x<2x) | IMTIHAN FAIL | bank nazar | -
+31-10 | Judge 3: t4/i5 vs Python MISMATCH | t5 + i6 = Python same (XAU 77/77, IBS 118/118) | pehra "1": target + din 4%, 92k hadd HATAI | adhoori candle par faisla tha
+31-10 | PURANE DEMO DELETE (user, raat) | Radar 9 + Commodity 6, RSI2, IBS i3, Trend t2/t3 khatam | sirf FTMO DEMO | 6-mahine ghari 0 se
+31-10 | #66 Trend 4H x XPT XPD XCU | 921 tr -0.010R FAIL | - | XPT/XPD spread gold se 40-90x
+31-10 | #67 khirki x 7 non-US index (TV) | TALAASH 2140 tr 6.1x drift; IMTIHAN 505 tr 64% +0.075R (aadha dekha) | PASS -> #68 | -
+31-10 | #68 #53 + khirki 0.15% | CHUNAO 64/2; IMTIHAN 83/0, median 10.8 (11.7 se) = ASLI PASS | JasKhirkiEA k1 | fail nahi barhe, ~1 mahina jaldi
+01-11 | #69 #68 + Tide oil 0.5% | CHUNAO 67/0; IMTIHAN 74/11 = FAIL | Tide oil -> BANK | 2020 tel crash
+01-11 | JasKhirkiEA k2 (judge 843/843) | FTMO demo (20261101), t5/i6 pehra +20261101 | chalu | -
+01-11 | Research daur 1 -> #70 C1 local chutti x 7 index | 312 tr -0.007R TALAASH FAIL | BAND | drift se kam, NI225/HSI manfi
+01-11 | #71 #68 + DXY filter gold/chandi (daur 2) | CHUNAO 66/0; IMTIHAN median 14.4 > 10.8 | FAIL BAND | -
+01-11 | #72 #68 + 4H trend EURUSD/USDJPY/AUDUSD (daur 3) | CHUNAO fail 5 -> 25+ | forex trend BAND | kharcha+swap ~0.045R > edge ~0.01R
+01-11 | Judge #71/#72 CLEAN; swap BUG theek (sirf grid din par katta tha) | #68 83/0, median 11.4 (#53 11.9) | PASS wahi | purane waqt khush-fehmi
+01-11 | Research daur 4 | #73 = #68 + BTC Kachhua (P 0.25) | user ka faisla baqi | sirf yahi naya asset class
+01-11 | HIDAYAT | discussion = sirf jawab | - | Claude ne sawal ke beech judge chalaya
+01-11 | Research daur 3 (28 FX khandaan) | sab ~0 2008 baad | USER: CURRENCY/FOREX POORI CHHOR DI | swap+kharcha > edge; gold/chandi rahe
+01-11 | KAHANI.txt bani (user) | 9 memory file bikhri thin | ek kahani, har chat 2-5 line jodo, dobara banana mana | nayi chat bhoolti thi, token yaad par lagte
+
+KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
+(17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
+-> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
+
+4. ABHI (1 Nov 2026)
+SIRF FTMO DEMO 474832446 chalu:
+  JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
+  JasIbsEA i6    | US500m D1  | 20261022 | US500 USTEC 1%, faisla 16:15 NY
+  JasKhirkiEA k2 | DE30m D1   | 20261101 | 7 non-US index 0.15%
+  Pehra teeno: target 110k + din 4% (96k farsh), kul hadd band.
+MANSOOBA #68: 2019+ sim 83/0, median 11.4 mahine (swap fix baad). 3 mahine 0%, 12 mahine ~51% (sawal-jawab).
+LIVE: koi EA nahi; 6-mahine qaida -> demo 31-10 se = ~May 2027 se pehle nahi (hisaab).
+AGLE KAAM:
+ - Somwar 2 Nov: FTMO demo ki pehli trades (user SS laaye tab; yaad-dihani NAHI). Pehli khirki trade 24 Nov.
+ - #73 BTC Kachhua: user ka D baqi. Step 0 FTMO BTC swap (long > 40%/saal = stop); BTC D1 2014-18 data; qaida pehle.
+ - Asli FTMO se PEHLE: t5/i6 InpServerGMT -2, FTMO symbol naam (GER40.cash, US500.cash...), pehra B phir D,
+   FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao, Swing account, VPS (~$10-15/mahina).
+ - FTMO offer: Nov (Black Friday) / Dec chat mein ftmo.com KHUD check. Fee 100k ~EUR 540 (3rd party).
+ - BANK yaad dilao (#59, #69) jab FTMO pass / real account / trade barhana / naya jor.
+ - Currency/forex BAND (user 1-11): F1-F4, P1-P4 (daur 3) NAHI. Gotobi bhi nahi.
+ - Peshgoi #3: gold ~3,813 chhoo kar palte ga (30 Nov tak). #1 (3,886.47) HUA 30-10, #2 PASS 16-10.
+ - Data: AUDUSD 2020 gayab; US500/USTEC 2012-17 patla.
+
+5. BANK (rakha) + BAND (khatam)
+BANK #59 chutti | 2019+ 146 tr 68% | #60 challenge mein fail barhe -> funded/real par 0.25% naya test
+BANK #69 Tide oil | CHUNAO 67/0 | IMTIHAN fail 0->11 -> funded/real par chhota risk
+nazar #65 VIX, #64 TOM, #57 JPN 4H | 2019+ saabit nahi -> 2028+ naye data par (qaida pehle)
+rakha: #45 Double 7s (nakal), #19 DZ/SZ 4H (MT5 baqi), #23 (chala nahi), Gotobi (waiver), US2000 IBS (daur 4), KitabSaathi demo
+BAND Radar 9 mkt (FTMO mein nahi; BTC = #73) | Tide 2 | Kachhua 4H/forex/ETH | RSI2 | Chakkar/Fishing EA | gold intraday 15+ idea
+BAND ginti scripts | AAINA | forex POORA (#47/48/51/72 + daur 3, user 1-11) | Dow 30 | #37/#54 | #21 | #66 | #70 | #71 | bazaar ke EA (koi qabil nahi)
+
+6. SABAQ (top 10)
+1. Qaida test se PEHLE, har koshish gino; IMTIHAN dekh kar badalna = talaash. Settings ghumao to qismat se PASS.
+2. Faida sirf 1D/4H + TOKRI par; <=H1 par CFD kharcha edge kha jata. Zyada trades = zyada mkt, chhoti TF nahi.
+3. Har mkt nahi: trend sirf gold/chandi/US index (#47/48, #66); forex par swap+kharcha (#72).
+4. Asli spread naapo (andaza 10-16x zyada tha); asli kharcha bhi IMTIHAN nahi bachata (#54).
+5. Drift jaanch: share/index ka faida aksar aam tezi (#61-63, #65, #70).
+6. TV PASS ko MT5/Python par jaancho; EA ko judge se Python ke saath milao (t4 mismatch -> t5 same).
+7. 9 mkt PASS bhi ek mkt (BTC) par khara ho sakta - har mkt ka hissa dekho.
+8. Jami kitab ka nuqsan "bori": jori se KUL nahi badalta; asal score EQUITY; Close By spread bachata.
+9. Jeet % nahi, size: #12 59.8% jeet -18,446; Chakkar 94% jeet phir bhi nuqsan.
+10. Mashhoor kitab = zamanat nahi; koshish na roko (teacher -> #53). Swap: spec number asal nahi; sim mein har raat gino.
+
+7. TAFSEEL KAHAN (grep -n, poori file nahi)
+"Koshish #N", "Koshish ginti 31 Oct", "29vi chat" -> docs/purana-haal.md | haal -> TRADING.md sec 5-8 | sawal -> docs/sawal-jawab.md
+sabaq -> docs/trading-pakki.md sec 4 (number: docs/sabaq-tafseel.md) | marzi -> docs/roznamcha/HIDAYAT.md | bank -> docs/bank.md
+din -> docs/roznamcha/FEHRIST.txt | file -> docs/files-tafseel.md | research -> docs/research/ | method -> METHOD.md | EA qaide -> CLAUDE.md
+FTMO sim -> tools/ftmo68.py | data -> data/ftmo, data/duka/H1/JAS_ZIP, data/qdm/M1 | live CSV -> data/kitab/
+
+APPEND RULE: is file ko dobara mat banao; har chat ke aakhir mein Section 3 mein 2-5 line aur Section 4 update.
