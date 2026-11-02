@@ -1493,3 +1493,7 @@ BTC kharcha 0.05% har taraf; swap FAISLA par **20%/saal** har calendar raat (baq
 behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL (BTC bank).
 **IMTIHAN 2019-01..aaj EK dafa** (chuni risk, swap 20%, `--imtihan --pakka`): PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Imaandari: BTC Kachhua 2019+ Radar mein dekha hua (aadha dekha).
 Demo se pehle FTMO ka asal BTC swap: > 40%/saal = BAND. Claude umeed ~20-25%. Ginti +1.
+**Koshish #76 CHUNAO (2 Nov, swap 20%) = PASS 0.5%:** #68 akela 64 pass / 2 fail (1/1) / 18 adhoora, median 38.5; BTC 0.10 64/2, 0.25 67/1, **0.50 70/0, median 26.8** (swap 0% / 40% par bhi wahi). Kachhua BTC 2015-18: 21 tr +2.39R gross, jeet 67%.
+**Judge #76 (`docs/research/judge-76.md`) = CLEAN:** data / splice / session_day / slot / swap theek; #68 baseline grid badalne se nahi badla; daily bar ka close pehle dikhne wala chhota soorakh band kar ke bhi 70/0.
+**Koshish #76 IMTIHAN 2019-01..aaj (EK dafa, 0.5%, swap 20%) = PASS (kamzor):** #68 83/0/11 median 11.4 -> +BTC **83/0/11 median 11.1**. Kachhua BTC 2019+: 56 tr (BUY 40, SELL 16) +0.53R gross (+-0.25), jeet 43%.
+Imaandari: faida sirf median 0.3 mahina (pass / fail wahi); 2019+ BTC Kachhua pehle Radar mein dekha tha (aadha dekha). Demo se pehle: FTMO ka asal BTC swap (> 40%/saal = BAND) + BTC lot / contract size.
