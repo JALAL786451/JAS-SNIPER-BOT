@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n4, Pine v6, 2 Nov 2026; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n5, Pine v6, 2 Nov 2026; n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -15,12 +15,14 @@
 //      4H ENTRY WAQT = 4H Supertrend(10,3) upar mude (jas_5ea B1 / #34 ka mor) JAB 1D rukh UPAR -> chart par "4H BUY" nishan.
 //      B1 akela test PASS (#34); 1D filter ke SAATH test NAHI.
 //   7) 4H POSITION dabba (TV jaisa): entry mor wali 4H candle ka open, SL 6 x ATR10 4H (B1), TP 2R (TEST NAHI - B1 mein TP nahi,
-//      0 karein to B1 jaisa sirf mor par band). Laal = SL, hara = TP, band par "+1.2R" label. Sirf 4H ya chhota chart.
+//      0 karein to B1 jaisa sirf mor par band). Laal = SL, hara = TP. Sirf 4H ya chhota chart.
+//      n5: band position chart se hat jati hai (Settings "Purani dikhao" ON = "+1.2R" label ke saath).
+//      AGLI (dotted, andaza): 1D UPAR + 4H Supertrend abhi neeche -> entry ~ 4H Supertrend lakeer, SL / TP isi se. % nahi diya (B1 jeet 37-43%).
 //  IMAANDARI: ye sab TEST NAHI hua (zones / rukh / toot = sirf naqsha). Pakke number sirf jas_5ea ki table mein.
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 10, line <= 4, plot 2, plotshape 1.
 // ============================================================================
-indicator("JAS Naqsha n4", "JAS Naqsha n4", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n5", "JAS Naqsha n5", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -43,7 +45,9 @@ showEn = input.bool(true, "4H entry nishan (1D UPAR + 4H Supertrend upar mura)",
 showPs = input.bool(true, "4H position dabba (TV jaisa SL / TP)", group = grE, display = display.none)
 psSL   = input.float(6.0, "SL = kitne x ATR10 (4H)  [B1 / #34 wala 6]", minval = 0.5, step = 0.5, group = grE, display = display.none)
 psTP   = input.float(2.0, "TP = kitne R (0 = TP nahi, sirf Supertrend mor par band = B1)", minval = 0, step = 0.5, group = grE, display = display.none)
-psKeep = input.int(10, "Kitni purani position dikhayein", minval = 1, maxval = 15, group = grE, display = display.none)
+psOld  = input.bool(false, "Purani (band) positions dikhao", group = grE, display = display.none)
+psKeep = input.int(10, "Purani ON ho to kitni", minval = 1, maxval = 15, group = grE, display = display.none)
+psNext = input.bool(true, "AGLI position ka dotted dabba (andaza: 1D UPAR + 4H abhi neeche)", group = grE, display = display.none)
 
 // ============================================================================
 //  HTF DATA (har TF ek tuple, pichhli band candle)
@@ -57,14 +61,14 @@ f_tf() =>
     ph = ta.pivothigh(high, 5, 5)
     pl = ta.pivotlow(low, 5, 5)
     a10 = ta.atr(10)
-    [close[1], e50[1], e200[1], dr[1], r[1], a[1], ph[1], pl[1], time[6], a10[1]]
+    [close[1], e50[1], e200[1], dr[1], r[1], a[1], ph[1], pl[1], time[6], a10[1], stv[1]]
 
 LA = barmerge.lookahead_on
-[c0, m0, n0, d0, r0, a0, h0, l0, t0, k0] = request.security(syminfo.tickerid, "15", f_tf(), lookahead = LA)
-[c1, m1, n1, d1, r1, a1, h1, l1, t1, k1] = request.security(syminfo.tickerid, "60", f_tf(), lookahead = LA)
-[c2, m2, n2, d2, r2, a2, h2, l2, t2, k2] = request.security(syminfo.tickerid, "240", f_tf(), lookahead = LA)
-[c3, m3, n3, d3, r3, a3, h3, l3, t3, k3] = request.security(syminfo.tickerid, "D", f_tf(), lookahead = LA)
-[c4, m4, n4, d4, r4, a4, h4, l4, t4, k4] = request.security(syminfo.tickerid, "W", f_tf(), lookahead = LA)
+[c0, m0, n0, d0, r0, a0, h0, l0, t0, k0, s0] = request.security(syminfo.tickerid, "15", f_tf(), lookahead = LA)
+[c1, m1, n1, d1, r1, a1, h1, l1, t1, k1, s1] = request.security(syminfo.tickerid, "60", f_tf(), lookahead = LA)
+[c2, m2, n2, d2, r2, a2, h2, l2, t2, k2, s2] = request.security(syminfo.tickerid, "240", f_tf(), lookahead = LA)
+[c3, m3, n3, d3, r3, a3, h3, l3, t3, k3, s3] = request.security(syminfo.tickerid, "D", f_tf(), lookahead = LA)
+[c4, m4, n4, d4, r4, a4, h4, l4, t4, k4, s4] = request.security(syminfo.tickerid, "W", f_tf(), lookahead = LA)
 [pdh, pdl] = request.security(syminfo.tickerid, "D", [high[1], low[1]], lookahead = LA)
 [pwh, pwl] = request.security(syminfo.tickerid, "W", [high[1], low[1]], lookahead = LA)
 
@@ -117,7 +121,12 @@ f_closePos(Pos q, float xp) =>
     box.set_right(q.bS, time)
     if not na(q.bT)
         box.set_right(q.bT, time)
-    q.lb := label.new(time, xp, (q.r >= 0 ? "+" : "") + str.tostring(q.r, "0.0") + "R", xloc = xloc.bar_time, style = q.r >= 0 ? label.style_label_down : label.style_label_up, color = q.r >= 0 ? color.new(#2e7d32, 10) : color.new(#c62828, 10), textcolor = color.white, size = size.tiny)
+    if psOld
+        q.lb := label.new(time, xp, (q.r >= 0 ? "+" : "") + str.tostring(q.r, "0.0") + "R", xloc = xloc.bar_time, style = q.r >= 0 ? label.style_label_down : label.style_label_up, color = q.r >= 0 ? color.new(#2e7d32, 10) : color.new(#c62828, 10), textcolor = color.white, size = size.tiny)
+    else
+        box.delete(q.bS)
+        if not na(q.bT)
+            box.delete(q.bT)
 
 if showPs and ok2
     if not na(cur) and cur.live
@@ -305,6 +314,8 @@ f_nextNews() =>
 // ============================================================================
 var array<box> bx = array.new<box>()
 var array<line> ln = array.new<line>()
+var array<box> bxN = array.new<box>()
+var label lbN = na
 var table tb = na
 
 f_pos(string s) =>
@@ -370,6 +381,20 @@ if barstate.islast
                 if showZ
                     tr = 92 - L.rk * 8
                     bx.push(box.new(L.t, L.p + hz, time, L.p - hz, xloc = xloc.bar_time, extend = extend.right, border_color = color.new(#43a047, 60), bgcolor = color.new(#43a047, tr), text = "S " + f_rkName(L.rk) + " x" + str.tostring(L.n), text_size = size.tiny, text_color = color.new(#43a047, 20), text_halign = text.align_right, text_valign = text.align_center))
+    // AGLI position (andaza): 1D UPAR + 4H Supertrend abhi neeche + koi khuli nahi -> entry ~ 4H Supertrend lakeer
+    while bxN.size() > 0
+        box.delete(bxN.pop())
+    label.delete(lbN)
+    lbN := na
+    if psNext and showPs and ok2 and dRukh > 0 and d2 > 0 and not na(s2) and not na(k2) and k2 > 0 and (na(cur) or not cur.live)
+        eN = s2
+        slN = eN - psSL * k2
+        tpN = psTP > 0 ? eN + psTP * (eN - slN) : na
+        tR = time + 6 * 4 * 3600000
+        bxN.push(box.new(time, eN, tR, slN, xloc = xloc.bar_time, border_color = color.new(#c62828, 30), border_style = line.style_dotted, bgcolor = color.new(#c62828, 92)))
+        if psTP > 0
+            bxN.push(box.new(time, tpN, tR, eN, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 30), border_style = line.style_dotted, bgcolor = color.new(#2e7d32, 92)))
+        lbN := label.new(tR, eN, "AGLI (andaza) - intezar\nentry ~" + str.tostring(eN, format.mintick) + " (4H close is se upar)\nSL ~" + str.tostring(slN, format.mintick) + (psTP > 0 ? " | TP ~" + str.tostring(tpN, format.mintick) : ""), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(#263238, 10), textcolor = color.new(#ffb300, 0), size = size.small)
     if showPD and not na(pdh)
         t0d = time - 20 * chSec * 1000
         ln.push(line.new(t0d, pdh, time, pdh, xloc = xloc.bar_time, extend = extend.right, color = color.new(#90a4ae, 30), style = line.style_dotted, width = 1))
@@ -383,7 +408,7 @@ if barstate.islast
             table.delete(tb)
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n4", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA n5", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -444,7 +469,7 @@ if barstate.islast
         // 4H entry waqt
         fresh = lastFlipDir == 1 and not na(lastFlipT) and time - lastFlipT < 4 * 3600000
         flTx = na(lastFlipT) ? "" : " (mura " + str.format_time(lastFlipT, "dd MMM HH:mm", "Asia/Karachi") + " PKT)"
-        hTx = not ok2 ? "4H ya chhota chart lagayein" : dRukh <= 0 ? "1D rukh UPAR nahi - BUY ka waqt nahi" : (d2 < 0 and fresh) ? "ABHI ENTRY KA WAQT - 4H Supertrend upar mura" + flTx : d2 < 0 ? "4H UPAR chal raha" + flTx + " - nayi entry nahi, agle mor ka intezar" : "intezar: 4H Supertrend upar mude (har 4H candle band par)"
+        hTx = not ok2 ? "4H ya chhota chart lagayein" : dRukh <= 0 ? "1D rukh UPAR nahi - BUY ka waqt nahi" : (d2 < 0 and fresh) ? "ABHI ENTRY KA WAQT - 4H Supertrend upar mura" + flTx : d2 < 0 ? "4H UPAR chal raha" + flTx + " - nayi entry nahi, agle mor ka intezar" : "intezar: 4H close " + (na(s2) ? "Supertrend" : str.tostring(s2, format.mintick)) + " se upar band ho (agli position dotted)"
         hCol = not ok2 or dRukh <= 0 ? color.gray : (d2 < 0 and fresh) ? color.new(#00e676, 0) : color.new(#ffb300, 0)
         table.cell(tb, 0, 13, "4H ENTRY", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 13, hTx, text_color = hCol, text_size = sz)
