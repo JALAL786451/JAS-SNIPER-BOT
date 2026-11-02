@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n1, Pine v6, 2 Nov 2026)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n2, Pine v6, 2 Nov 2026; n2 = table TV logo se upar (Middle Left default), 0.23 jaisa number)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -15,7 +15,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 9, box <= 12, line <= 4.
 // ============================================================================
-indicator("JAS Naqsha n1", "JAS Naqsha n1", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n2", "JAS Naqsha n2", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -26,7 +26,7 @@ showPD = input.bool(false, "Kal (dotted) / pichhle hafte (dashed) ka High-Low", 
 
 grT = "2 · Table"
 showT  = input.bool(true, "Table dikhao", group = grT, display = display.none)
-tPos   = input.string("Bottom Left", "Table ki jagah", options = ["Top Left", "Bottom Left", "Top Right", "Bottom Right"], group = grT, display = display.none)
+tPos   = input.string("Middle Left", "Table ki jagah", options = ["Middle Left", "Top Left", "Bottom Left", "Middle Right", "Top Right", "Bottom Right", "Bottom Center"], group = grT, display = display.none)
 tSize  = input.string("Small", "Likhai", options = ["Tiny", "Small", "Normal"], group = grT, display = display.none)
 
 grN = "3 · News waqt"
@@ -141,7 +141,7 @@ f_rsiCol(float r) =>
     na(r) ? color.gray : r >= 70 ? color.new(#c62828, 0) : r <= 30 ? color.new(#2e7d32, 0) : color.new(#bdbdbd, 0)
 
 f_distTxt(float m, float a) =>
-    na(m) or na(a) or a <= 0 ? "-" : str.tostring((close - m) / a, "+#.0;-#.0") + " ATR"
+    na(m) or na(a) or a <= 0 ? "-" : str.tostring((close - m) / a, "+0.0;-0.0") + " ATR"
 
 dv0 = ok0 ? f_dir(c0, m0, n0, d0) : 0
 dv1 = ok1 ? f_dir(c1, m1, n1, d1) : 0
@@ -223,7 +223,7 @@ var array<line> ln = array.new<line>()
 var table tb = na
 
 f_pos(string s) =>
-    s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Right" ? position.bottom_right : position.bottom_left
+    s == "Middle Left" ? position.middle_left : s == "Top Left" ? position.top_left : s == "Middle Right" ? position.middle_right : s == "Top Right" ? position.top_right : s == "Bottom Right" ? position.bottom_right : s == "Bottom Center" ? position.bottom_center : position.bottom_left
 
 f_sz(string s) =>
     s == "Tiny" ? size.tiny : s == "Normal" ? size.normal : size.small
@@ -298,7 +298,7 @@ if barstate.islast
             table.delete(tb)
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 12, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n1", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA n2", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -332,7 +332,7 @@ if barstate.islast
         tLvl = near and sq ? "UNCHA" : near or sq ? "DARMIYANA" : "KAM"
         tCol = tLvl == "UNCHA" ? color.new(#ff5252, 0) : tLvl == "DARMIYANA" ? color.new(#ffb300, 0) : color.new(#9e9e9e, 0)
         side = na(dMin) ? "" : (not na(dUpA) and dMin == dUpA) ? nearUpTx : nearDnTx
-        tWhy = (na(dMin) ? "zone nahi" : side + " (" + str.tostring(dMin, "#.00") + " ATR-D)") + (sq ? " | squeeze" : "")
+        tWhy = (na(dMin) ? "zone nahi" : side + " (" + str.tostring(dMin, "0.00") + " ATR-D)") + (sq ? " | squeeze" : "")
         table.cell(tb, 0, 8, "TOOT KHATRA", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 8, tLvl + "  " + tWhy, text_color = tCol, text_size = sz)
         table.merge_cells(tb, 1, 8, 3, 8)
