@@ -62,7 +62,8 @@ Judge: swap har calendar raat (bug fix) -> #68 IMTIHAN 83/0 median 11.4. Researc
 **31vi (2 Nov, isi chat mein):** jas_5ea p6 TV par CHALA (XAUUSD 1D, Abhi R sahi). #74 3Commas EMA 21/50 2H x 11 TALAASH FAIL (2409 tr -0.041R, kharche se pehle 0; judge CLEAN).
 #75 = user ka "B" (3Commas + 4H trend) TALAASH FAIL (1729 tr -0.019R, judge CLEAN) = 3Commas poora band.
 #76 BTC Kachhua (FTMO #68 + BTC 0.5%) CHUNAO 70/0, IMTIHAN 83/0 median 11.1 = PASS kamzor (judge CLEAN).
-**AGLA KAAM:** (a) user: FTMO BTC swap batayein (> 40%/saal = band); phir user "D" par demo (JasTideRadarEA BTC ya naya EA) - abhi kuch nahi bana. Alert/lot user khud ON kare.
+User: #76 BANK mein (dekha hua data = saboot kamzor; HIDAYAT "dekha hua").
+**AGLA KAAM:** (a) naya idea user se (83/0 demo chalu); BTC bank `docs/bank.md` #76. Alert/lot user khud ON kare.
 User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC demo: FTMO swap pehle (user ka FTMO trial nahi, Exness demo).
 (d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
 HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.
