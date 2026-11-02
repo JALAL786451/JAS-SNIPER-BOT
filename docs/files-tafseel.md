@@ -225,6 +225,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/k80_asia_bb.py` - #80 gold Asia M5 Bollinger fade (histdata M1 2009-18) FAIL; data `data/histdata/`
 - `tools/k81_ibs_mart.py` - #81 IBS + chhota martingale (1.5x, 3 qadam) $1000 cent: ASLI PASS ($0.19/din at $10 base)
 - `tools/k82_hedge.py` - #82 gold 1m EMA + hedge-freeze vs SL (histdata 2009-18) FAIL
+- `JasIbsCentEA.mq5` c1 - cent $1000: IBS i6 + $10 risk + martingale 1.5x/3 qadam + $800 stop (#81), magic 20261102, judge READY
 - `data/btc/Bitstamp_BTCUSD_d.csv` - BTC daily Bitstamp 2014-11 se (cryptodatadownload), #76 ke liye (2 Nov)
 - `indicators/jas_5ea.pine` - p6 (1 Nov, judge READY: levels, alert, Abhi R, lot, agli khirki, warning). p4: sirf chart wala instrument, Python 2012-aaj number, live haal, saaf nishan. p2: S2/B1 fix. p1: 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
 - `tools/trade_page/` - Trade Roznamcha page: gen.py + template.html -> roznamcha.html (artifact https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK), 5 EA 3,075 trades 2012-aaj (1 Nov)
