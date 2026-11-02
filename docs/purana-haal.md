@@ -1477,4 +1477,11 @@ kharche se PEHLE bhi +0.005R (sifar). Market: XAU B -0.011 / S +0.024, XAG -0.09
 FRA -0.004 / -0.170, EUS -0.084 / +0.042, JPN +0.142 / +0.210, AUS -0.332 / +0.040, HKG +0.015 / +0.016. Band: TP 1147, SL 1139, gap 122. Jaanch: aaina 11/11, look-ahead 44/44, 3 trade haath se.
 Sabaq: EMA cross 2H + 1:1 = sikka (jeet 50%, kharche se pehle 0); kharcha + swap 0.046R/trade. 3Commas BAND.
 **Judge #74 (`docs/research/judge-74.md`) = CLEAN, FAIL wahi:** apna alag code -> wahi 2409 tr; bina kharcha bhi Exp-2SE ~-0.037; index H1 data 2011-17 mein soorakh (sirf metal -0.037R, poore data wale saal +0.001R = FAIL wahi).
-
+**Koshish #75 qaida (2 Nov, 31vi chat, user "B" phir "D"; qaida test se PEHLE `tools/c3st_75.py` docstring mein likha, yahan nateeje ke saath darj) - #74 + hamara 4H trend:**
+#74 signal / SL / TP / band / kharcha jyon ka tyon (11 market). NAYA: BUY sirf jab aakhri BAND 4H candle (17:00 NY din, (NY+7h).hour // 4) par Supertrend(10, 3) UPAR; SELL sirf jab NEECHE; 4H ATR garam na ho = trade nahi.
+TALAASH entry < 2019, PASS = >= 100 tr aur Exp - 2SE > 0; PASS par IMTIHAN, phir FTMO jor (#68 + ye: 83/0 se fail na barhe, median <= 11.4). Ginti +1 (BTC Kachhua ab #76).
+**Koshish #75 TALAASH (2 Nov) = FAIL** (IMTIHAN nahi): KUL 1729 tr (BUY 791 -0.042R, SELL 938 -0.000R), **-0.019R, Exp-2SE -0.069**, jeet 51%; kharche se PEHLE +0.027R (SE 0.025).
+Market: XAU B +0.015 / S +0.090, XAG +0.046 / -0.092, US500 -0.069 / -0.103, USTEC +0.192 / -0.027, DEU -0.033 / +0.022, GBR -0.290 / -0.075, FRA -0.108 / -0.240, EUS -0.233 / +0.246,
+JPN +0.069 / +0.111, AUS -0.338 / +0.121, HKG +0.128 / +0.083. Jaanch: filter bina = #74 trade, aaina 0 farq, look-ahead 44/44.
+Sabaq: 4H filter ne #74 ko -0.041 se -0.019R kiya (trade 2409 -> 1729) magar faida phir bhi shor ke andar; 3Commas + filter BAND.
+**Judge #75 (`docs/research/judge-75.md`) = CLEAN, FAIL wahi:** apna alag 4H + Supertrend -> 1729/1729 trade wahi; bina kharcha bhi Exp-2SE -0.023.

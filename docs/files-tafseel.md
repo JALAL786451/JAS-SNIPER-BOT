@@ -217,6 +217,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/sell73.py` - Koshish #73: SELL aaina S1 trend 4H + S2 IBS + buy_ko_tarjeeh (aaina test 437/437, 288/288, 94/94) (1 Nov)
 - `tools/ftmo73.py` - Koshish #73: #68 + 2 SELL leg (TALAASH, CHUNAO k 0.25/0.5/1.0, --imtihan --k) (1 Nov)
 - `tools/c3_74.py` - Koshish #74: 3Commas EMA 21/50 2H x 11 (TALAASH FAIL -0.041R; --imtihan sirf --pakka ke saath) (2 Nov)
+- `tools/c3st_75.py` - Koshish #75: #74 + 4H Supertrend filter (TALAASH FAIL -0.019R, judge CLEAN) (2 Nov)
 - `indicators/jas_5ea.pine` - p6 (1 Nov, judge READY: levels, alert, Abhi R, lot, agli khirki, warning). p4: sirf chart wala instrument, Python 2012-aaj number, live haal, saaf nishan. p2: S2/B1 fix. p1: 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
 - `tools/trade_page/` - Trade Roznamcha page: gen.py + template.html -> roznamcha.html (artifact https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK), 5 EA 3,075 trades 2012-aaj (1 Nov)
 - `docs/tv_watchlist_jas11.txt` - TradingView watchlist import: 11 OANDA instrument (jas_5ea) (1 Nov)
