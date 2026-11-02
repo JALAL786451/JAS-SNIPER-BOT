@@ -209,6 +209,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/research/daur4-best-agent.md` - research daur 4: best instrument + strategy (1 BTC Kachhua, 2 US2000 IBS, 3 vol cap) (1 Nov)
 - `docs/research/daur5-sell-agent.md` - research daur 5: SELL aaina S1 (+SMA200) / S2, P 0.50 / 0.20 (1 Nov)
 - `docs/research/judge-73.md` - judge #73: chhota bug (tarjeeh baad mein), FAIL wahi 228 tr -0.0032R (1 Nov)
+- `docs/research/judge-74.md` - judge #74: CLEAN, FAIL wahi (2 Nov)
 - `docs/research/judge-5ea.md` - judge jas_5ea p2: READY, Python se 100% mel (1 Nov)
 - `KAHANI.txt` - poori kahani 1 Oct se (nayi chat PEHLE ye parhe); har chat khatam par sirf 2-5 line jodo (1 Nov)
 - `tools/ftmo71.py` - Koshish #71: #68 + G2 DXY filter (banaya DXY, data jaanch, TALAASH, CHUNAO, --imtihan) (1 Nov)
