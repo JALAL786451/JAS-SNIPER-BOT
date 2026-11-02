@@ -1497,3 +1497,9 @@ Demo se pehle FTMO ka asal BTC swap: > 40%/saal = BAND. Claude umeed ~20-25%. Gi
 **Judge #76 (`docs/research/judge-76.md`) = CLEAN:** data / splice / session_day / slot / swap theek; #68 baseline grid badalne se nahi badla; daily bar ka close pehle dikhne wala chhota soorakh band kar ke bhi 70/0.
 **Koshish #76 IMTIHAN 2019-01..aaj (EK dafa, 0.5%, swap 20%) = PASS (kamzor):** #68 83/0/11 median 11.4 -> +BTC **83/0/11 median 11.1**. Kachhua BTC 2019+: 56 tr (BUY 40, SELL 16) +0.53R gross (+-0.25), jeet 43%.
 Imaandari: faida sirf median 0.3 mahina (pass / fail wahi); 2019+ BTC Kachhua pehle Radar mein dekha tha (aadha dekha). Demo se pehle: FTMO ka asal BTC swap (> 40%/saal = BAND) + BTC lot / contract size.
+**Koshish #77 qaida (2 Nov, 31vi chat, user "Phase 2 risk 1.5 guna, D" + shart; research daur 6 idea 1; test se PEHLE, badalna mana) - FTMO #68 + P2 risk 1.5x + pehra-shart (`tools/ftmo77.py`):**
+#68 bilkul wahi (trend 4H 0.75 + IBS 1.0 + khirki 0.15, asli kharcha, swap 3%). **P2:** har trade ka lot 1.5 guna (1.125 / 1.5 / 0.225), P1 wahi.
+**Pehra-shart G (user):** nayi trade se PEHLE: bal - (har khuli trade ka shuru wala risk $) - (nayi trade ka risk $) < max(din shuru - 4% x 100k, 91k) ho to trade NAHI (SL sab lag jayein to din 4% / kul 9% na toote). Swap shamil nahi.
+Chalenge: A = #68 (isi run), B = A + P2 1.5x, C = B + G; maloomat: A + G.
+**CHUNAO 2012-2018** (har mahine challenge): B / C mein se umeedwar = P1 fail < 20%, pass > fail, (pass - fail) >= A ka, median < A ka; behtareen = kam median, phir kam fail, phir C (user ki shart). Koi nahi = FAIL.
+**IMTIHAN 2019-01..aaj EK dafa** (chuna hua, `--imtihan --pakka --pick B|C`): PASS = fail 0, pass >= A (isi run), median < A (isi run). Ginti +1. Claude umeed ~50%. Risk sirf user ki ijazat se (CLAUDE.md).
