@@ -232,3 +232,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/tv_watchlist_jas11.txt` - TradingView watchlist import: 11 OANDA instrument (jas_5ea) (1 Nov)
 - `tools/JAS_DXY.bat` - laptop ek click: EURUSD, USDJPY, USDSEK H1 Dukascopy se (#71 ke liye) (1 Nov)
 - `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)
+- `tools/k83_teen.py` - #83 cent $1000: #81 IBS martingale + Trend 4H $7.5 + Khirki $1.5 = PASS (2019+ 3.8 tr/hafta, +$931, girawat $93)
