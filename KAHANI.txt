@@ -126,6 +126,7 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 02-11 | #82 gold 1m hedge-freeze (user ka tareeqa) | -$8,486, 99.9% waqt phansa | FAIL | hedge = SL der se + kharcha; user ko "sahab" nahi, "Jalal/yar"
 02-11 | #83 cent $1000: IBS mart + Trend 4H $7.5 + Khirki $1.5 (user: roz 1 trade) | 2019+ 3.8 tr/hafta, +$931 (roz $0.46), girawat $93 = PASS | lot fit demo spec se | trades 4x, kamai 2.7x
 02-11 | MT5 login gadbad (FTMO EA 472716649 par) + hooks (SessionStart naqsha, Stop auto-save) + jas_naqsha n1 Pine | 472716649 = Standard USD ~$2000 (cent nahi) | TRADING.md sec 0 MT5 NAQSHA | nayi chat andaze se chalti thi
+02-11 | #84 range bars gold (user: TV free range TF; research daur 8 + judge) | GATE 2009-13 max 54.3% < 54.7%, raasta badalne se 1-2pt farq | BAND | range bar = ghari badli, edge nahi
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
