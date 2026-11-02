@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n3, Pine v6, 2 Nov 2026; n3 = 1D EMA50/200 rukh + 4H entry waqt; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n4, Pine v6, 2 Nov 2026; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -14,11 +14,13 @@
 //   6) 1D EMA50 / EMA200 (pichhla band din) lakeer + rukh: qeemat dono ke upar aur EMA50 > EMA200 = UPAR (sirf BUY socho).
 //      4H ENTRY WAQT = 4H Supertrend(10,3) upar mude (jas_5ea B1 / #34 ka mor) JAB 1D rukh UPAR -> chart par "4H BUY" nishan.
 //      B1 akela test PASS (#34); 1D filter ke SAATH test NAHI.
+//   7) 4H POSITION dabba (TV jaisa): entry mor wali 4H candle ka open, SL 6 x ATR10 4H (B1), TP 2R (TEST NAHI - B1 mein TP nahi,
+//      0 karein to B1 jaisa sirf mor par band). Laal = SL, hara = TP, band par "+1.2R" label. Sirf 4H ya chhota chart.
 //  IMAANDARI: ye sab TEST NAHI hua (zones / rukh / toot = sirf naqsha). Pakke number sirf jas_5ea ki table mein.
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
-//  HADD: request.security 7, tuple 9, box <= 12, line <= 4, plot 2, plotshape 1.
+//  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 10, line <= 4, plot 2, plotshape 1.
 // ============================================================================
-indicator("JAS Naqsha n3", "JAS Naqsha n3", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n4", "JAS Naqsha n4", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -38,6 +40,10 @@ showNB = input.bool(true, "Intraday chart par news waqt ka rang (+-15 min)", gro
 grE = "4 · 1D EMA + 4H entry"
 showE  = input.bool(true, "1D EMA50 / EMA200 lakeer", group = grE, display = display.none)
 showEn = input.bool(true, "4H entry nishan (1D UPAR + 4H Supertrend upar mura)", group = grE, display = display.none)
+showPs = input.bool(true, "4H position dabba (TV jaisa SL / TP)", group = grE, display = display.none)
+psSL   = input.float(6.0, "SL = kitne x ATR10 (4H)  [B1 / #34 wala 6]", minval = 0.5, step = 0.5, group = grE, display = display.none)
+psTP   = input.float(2.0, "TP = kitne R (0 = TP nahi, sirf Supertrend mor par band = B1)", minval = 0, step = 0.5, group = grE, display = display.none)
+psKeep = input.int(10, "Kitni purani position dikhayein", minval = 1, maxval = 15, group = grE, display = display.none)
 
 // ============================================================================
 //  HTF DATA (har TF ek tuple, pichhli band candle)
@@ -50,14 +56,15 @@ f_tf() =>
     a = ta.atr(14)
     ph = ta.pivothigh(high, 5, 5)
     pl = ta.pivotlow(low, 5, 5)
-    [close[1], e50[1], e200[1], dr[1], r[1], a[1], ph[1], pl[1], time[6]]
+    a10 = ta.atr(10)
+    [close[1], e50[1], e200[1], dr[1], r[1], a[1], ph[1], pl[1], time[6], a10[1]]
 
 LA = barmerge.lookahead_on
-[c0, m0, n0, d0, r0, a0, h0, l0, t0] = request.security(syminfo.tickerid, "15", f_tf(), lookahead = LA)
-[c1, m1, n1, d1, r1, a1, h1, l1, t1] = request.security(syminfo.tickerid, "60", f_tf(), lookahead = LA)
-[c2, m2, n2, d2, r2, a2, h2, l2, t2] = request.security(syminfo.tickerid, "240", f_tf(), lookahead = LA)
-[c3, m3, n3, d3, r3, a3, h3, l3, t3] = request.security(syminfo.tickerid, "D", f_tf(), lookahead = LA)
-[c4, m4, n4, d4, r4, a4, h4, l4, t4] = request.security(syminfo.tickerid, "W", f_tf(), lookahead = LA)
+[c0, m0, n0, d0, r0, a0, h0, l0, t0, k0] = request.security(syminfo.tickerid, "15", f_tf(), lookahead = LA)
+[c1, m1, n1, d1, r1, a1, h1, l1, t1, k1] = request.security(syminfo.tickerid, "60", f_tf(), lookahead = LA)
+[c2, m2, n2, d2, r2, a2, h2, l2, t2, k2] = request.security(syminfo.tickerid, "240", f_tf(), lookahead = LA)
+[c3, m3, n3, d3, r3, a3, h3, l3, t3, k3] = request.security(syminfo.tickerid, "D", f_tf(), lookahead = LA)
+[c4, m4, n4, d4, r4, a4, h4, l4, t4, k4] = request.security(syminfo.tickerid, "W", f_tf(), lookahead = LA)
 [pdh, pdl] = request.security(syminfo.tickerid, "D", [high[1], low[1]], lookahead = LA)
 [pwh, pwl] = request.security(syminfo.tickerid, "W", [high[1], low[1]], lookahead = LA)
 
@@ -81,8 +88,64 @@ var int lastFlipDir = 0
 if flipUp or flipDn
     lastFlipT := time
     lastFlipDir := flipUp ? 1 : -1
-entryNow = flipUp and dRukh > 0
+// entry ka faisla candle ke OPEN par (close badalta rehta = repaint nahi)
+dRukhO = na(m3) or na(n3) ? 0 : (open > m3 and open > n3 and m3 > n3) ? 1 : 0
+entryNow = flipUp and dRukhO > 0
 plotshape(showEn and entryNow, "4H BUY waqt", shape.triangleup, location.belowbar, color.new(#00e676, 0), size = size.small, text = "4H BUY", textcolor = color.new(#00e676, 0))
+
+// ============================================================================
+//  4H POSITION (TV jaisa dabba): entry = mor wali 4H candle ka open; SL = psSL x ATR10 (4H) neeche;
+//  band: Supertrend 4H neeche mude (us candle ka open) / SL (gap = open) / TP (psTP R, 0 = nahi). Ek waqt ek position.
+// ============================================================================
+type Pos
+    int t0
+    float e
+    float sl
+    float tp
+    box bT
+    box bS
+    label lb
+    bool live
+    float r
+
+var array<Pos> ps = array.new<Pos>()
+var Pos cur = na
+
+f_closePos(Pos q, float xp) =>
+    q.live := false
+    q.r := (xp - q.e) / (q.e - q.sl)
+    box.set_right(q.bS, time)
+    if not na(q.bT)
+        box.set_right(q.bT, time)
+    q.lb := label.new(time, xp, (q.r >= 0 ? "+" : "") + str.tostring(q.r, "0.0") + "R", xloc = xloc.bar_time, style = q.r >= 0 ? label.style_label_down : label.style_label_up, color = q.r >= 0 ? color.new(#2e7d32, 10) : color.new(#c62828, 10), textcolor = color.white, size = size.tiny)
+
+if showPs and ok2
+    if not na(cur) and cur.live
+        if flipDn
+            f_closePos(cur, open)
+        else if low <= cur.sl
+            f_closePos(cur, math.min(open, cur.sl))
+        else if psTP > 0 and high >= cur.tp
+            f_closePos(cur, math.max(open, cur.tp))
+        else
+            box.set_right(cur.bS, time)
+            if not na(cur.bT)
+                box.set_right(cur.bT, time)
+    if entryNow and not na(k2) and k2 > 0 and (na(cur) or not cur.live)
+        e = open
+        sl = e - psSL * k2
+        tp = psTP > 0 ? e + psTP * (e - sl) : na
+        bS = box.new(time, e, time, sl, xloc = xloc.bar_time, border_color = color.new(#c62828, 40), bgcolor = color.new(#c62828, 80), text = "SL " + str.tostring(sl, format.mintick), text_size = size.tiny, text_color = color.new(#ff8a80, 0), text_halign = text.align_left, text_valign = text.align_bottom)
+        bT = psTP > 0 ? box.new(time, tp, time, e, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 40), bgcolor = color.new(#2e7d32, 80), text = "TP " + str.tostring(tp, format.mintick) + " (" + str.tostring(psTP, "0.0") + "R)", text_size = size.tiny, text_color = color.new(#b9f6ca, 0), text_halign = text.align_left, text_valign = text.align_top) : na
+        cur := Pos.new(time, e, sl, tp, bT, bS, na, true, na)
+        ps.push(cur)
+        if ps.size() > psKeep
+            old = ps.shift()
+            box.delete(old.bS)
+            if not na(old.bT)
+                box.delete(old.bT)
+            if not na(old.lb)
+                label.delete(old.lb)
 
 // ============================================================================
 //  ZONES: pivot -> jor -> array
@@ -319,8 +382,8 @@ if barstate.islast
         if not na(tb)
             table.delete(tb)
         sz = f_sz(tSize)
-        tb := table.new(f_pos(tPos), 4, 14, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n3", text_color = cTx, bgcolor = cHd, text_size = sz)
+        tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
+        table.cell(tb, 0, 0, "JAS NAQSHA n4", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -386,3 +449,9 @@ if barstate.islast
         table.cell(tb, 0, 13, "4H ENTRY", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 13, hTx, text_color = hCol, text_size = sz)
         table.merge_cells(tb, 1, 13, 3, 13)
+        // 4H position
+        pTx = not (showPs and ok2) ? "-" : na(cur) ? "abhi tak koi nahi" : cur.live ? "KHULI BUY " + str.tostring(cur.e, format.mintick) + " | SL " + str.tostring(cur.sl, format.mintick) + (na(cur.tp) ? "" : " | TP " + str.tostring(cur.tp, format.mintick)) + " | abhi " + str.tostring((close - cur.e) / (cur.e - cur.sl), "+0.0;-0.0") + "R" : "band - aakhri " + str.tostring(cur.r, "+0.0;-0.0") + "R (" + str.format_time(cur.t0, "dd MMM", "Asia/Karachi") + ")"
+        pCol = na(cur) or not (showPs and ok2) ? color.gray : cur.live ? color.new(#00e676, 0) : cur.r >= 0 ? color.new(#66bb6a, 0) : color.new(#ef5350, 0)
+        table.cell(tb, 0, 14, "4H POSITION", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 14, pTx, text_color = pCol, text_size = sz)
+        table.merge_cells(tb, 1, 14, 3, 14)
