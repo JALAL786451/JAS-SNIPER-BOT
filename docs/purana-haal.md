@@ -1546,6 +1546,9 @@ Data: histdata XAUUSD M1 2009-2018 (NY waqt). Size 1 oz (= 0.01 lot standard; $1
 **Hedge band:** EMA rukh wapas asli trade ki taraf ho jaye to agli M1 open par hedge band; asli chalti rahe (TP wahi, $3 par phir hedge). Ek M1 mein TP aur hedge dono = hedge pehle.
 **News rok:** Mon-Fri NY 08:30, 10:00, 14:00 ke ±15 minute nayi entry aur hedge-band NAHI (hedge lagna chalu). Kharcha har leg 0.24 round trip; **faisla 2x (0.48)**. Muqabla S = wahi magar $3 par asli band (SL).
 **TALAASH PASS (sab, 2x):** (1) H kul $ > 0; (2) 2009-13 aur 2014-18 dono musbat; (3) max girawat (M1 close par equity) < $200; (4) H kul > S kul. Report roz ka $, bura din. PASS ho to IMTIHAN QDM 2021-24 EK dafa wahi shartein. Claude umeed ~5%. Ginti +1.
+**Koshish #82 TALAASH 2009-2018 (2 Nov) = FAIL (Chief Justice CLEAN):** H (hedge) sirf 41 tokri 10 saal mein, 35,225 hedge (35,197 usi M1 par unhedge -> phir hedge = sirf kharcha), account 99.9% waqt FREEZE.
+H kul -$8,486 (0.24) / -$16,950 (0.48), roz -$2.8 / -$5.6; kharche ke baghair -$21.9 (= hedge nuqsan rokta, mitata nahi). S (SL $3, TP $1) 96,581 tr -$33,299 (roz -$10.9, 1:3 + spread).
+Sabaq: qeemat hedge level se door chali jaye to "trend badle par hedge band" foran dobara hedge = tokri phansi, trade ruk jati (user ki live jami kitab jaisa). Hedge = SL ka nuqsan der se, kharche ke saath.
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
