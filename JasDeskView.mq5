@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS DESK VIEW   -   build v5.5                                  |
+//|  JAS DESK VIEW   -   build v5.6                                  |
 //|                                                                  |
 //|  SIRF DEKHNE KA PANEL. YE TRADE NAHI KARTA.                      |
 //|                                                                  |
@@ -24,7 +24,9 @@
 #property copyright "JAS"
 #property version   "1.00"
 
-#define EA_BUILD "v5.5"
+#define EA_BUILD "v5.6"
+// v5.6 (2 Nov 2026): lambi line 2 column ki chaurai par TOOT kar agli line mein (rang wahi) - font 11 par bhi
+//   do column screen mein aa jayein. Hisaab / ginti mein koi tabdeeli nahi.
 // v5.5 (31 Oct 2026): panel chart se lamba ho to baqi hissa DAAYEN naye column mein (kat-ta nahi).
 // v5.4 (31 Oct 2026): panel BARA aur RANGEEN (apni bitmap tasveer - TextOut + ResourceCreate,
 //   koi include file nahi, koi button nahi). Upar KHULASA: kul P/L, equity, NET ka $1 asar,
@@ -987,24 +989,73 @@ void ShowPanel(string s)
       return;
      }
    Comment("");
-   string lines[];
-   int n = StringSplit(s, '\n', lines);
-   if(n <= 0) return;
+   string raw[];
+   int nr = StringSplit(s, '\n', raw);
+   if(nr <= 0) return;
    TextSetFont(InpFontName, -InpFontSize * 10);
    uint tw = 0, th = 0;
    TextGetSize("Ay", tw, th);
    int lh  = (int)th + 2;
    int pad = 8;
+   int chartH = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS);
+   int chartW = (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS);
+   int maxN   = (chartH - 30 - 2 * pad) / lh;
+   if(maxN < 5) maxN = 5;
+   //--- v5.6: ek column mein na aaye to har line 2 column ki chaurai tak (lambi line toot kar agli line mein)
+   int wrapW = 0;
+   if(nr > maxN) wrapW = (chartW - 20) / 2 - 3 * pad;
+   if(wrapW < 200) wrapW = 0;
+   string lines[];
+   color  lcol[];
+   int n = 0;
+   for(int i = 0; i < nr; i++)
+     {
+      color  c0   = LineColor(raw[i]);
+      string rest = raw[i];
+      string ind  = "";
+      int    sp   = 0;
+      while(sp < StringLen(rest) && StringGetCharacter(rest, sp) == ' ') sp++;
+      bool first = true;
+      while(true)
+        {
+         string cur = Pick(first, rest, ind + rest);
+         TextGetSize(Pick(cur == "", " ", cur), tw, th);
+         if(wrapW == 0 || (int)tw <= wrapW || StringLen(cur) < 12)
+           {
+            ArrayResize(lines, n + 1); ArrayResize(lcol, n + 1);
+            lines[n] = cur; lcol[n] = c0; n++;
+            break;
+           }
+         // sab se lambi shuru jo wrapW mein aaye, aur space par khatam ho
+         int minK = first ? sp + 6 : StringLen(ind) + 2;
+         if(minK < 10) minK = 10;
+         int k = StringLen(cur) - 1;
+         while(k > minK)
+           {
+            TextGetSize(StringSubstr(cur, 0, k), tw, th);
+            if((int)tw <= wrapW && StringGetCharacter(cur, k) == ' ') break;
+            k--;
+           }
+         if(k <= minK)                              // space nahi mili - seedha kaato
+           {
+            k = StringLen(cur) - 1;
+            while(k > minK) { TextGetSize(StringSubstr(cur, 0, k), tw, th); if((int)tw <= wrapW) break; k--; }
+           }
+         ArrayResize(lines, n + 1); ArrayResize(lcol, n + 1);
+         lines[n] = StringSubstr(cur, 0, k); lcol[n] = c0; n++;
+         rest = StringSubstr(cur, k);
+         StringTrimLeft(rest);
+         if(rest == "") break;
+         if(first) ind = StringSubstr("                    ", 0, (int)MathMin(sp + 4, 20));
+         first = false;
+        }
+     }
    int w   = 0;
    for(int i = 0; i < n; i++)
      {
       TextGetSize(Pick(lines[i] == "", " ", lines[i]), tw, th);
       if((int)tw > w) w = (int)tw;
      }
-   int chartH = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS);
-   int chartW = (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS);
-   int maxN   = (chartH - 30 - 2 * pad) / lh;
-   if(maxN < 5) maxN = 5;
    int colW   = w + 3 * pad;
    int cols   = (n + maxN - 1) / maxN;
    int fitC   = (chartW - 20) / colW;
@@ -1024,7 +1075,7 @@ void ShowPanel(string s)
      {
       int c = i / rows, r = i % rows;
       TextOut(lines[i], pad + c * colW, pad + r * lh, TA_LEFT | TA_TOP, buf, W, H,
-              ColorToARGB(LineColor(lines[i]), 255), COLOR_FORMAT_ARGB_NORMALIZE);
+              ColorToARGB(lcol[i], 255), COLOR_FORMAT_ARGB_NORMALIZE);
      }
    if(cut)
       TextOut("... baqi chhup gaya - font chhota karein", pad + (cols - 1) * colW, pad + (rows - 1) * lh,
