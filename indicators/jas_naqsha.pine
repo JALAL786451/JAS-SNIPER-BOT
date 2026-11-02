@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n2, Pine v6, 2 Nov 2026; n2 = table TV logo se upar (Middle Left default), 0.23 jaisa number)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n3, Pine v6, 2 Nov 2026; n3 = 1D EMA50/200 rukh + 4H entry waqt; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -11,11 +11,14 @@
 //   5) NEWS WAQT: US data aam taur par 08:30 + 10:00 NY (har kaam ka din), NFP (mahine ka pehla Jumma 08:30), FOMC 14:00
 //      (2026 tareekhein). Pine mein asli news calendar NAHI - ye "dhyan ka waqt" hai; pakki news ForexFactory se.
 //      Intraday chart par us waqt ke +-15 min halka narangi rang; table mein agli news ka waqt (PKT) + kitni der.
+//   6) 1D EMA50 / EMA200 (pichhla band din) lakeer + rukh: qeemat dono ke upar aur EMA50 > EMA200 = UPAR (sirf BUY socho).
+//      4H ENTRY WAQT = 4H Supertrend(10,3) upar mude (jas_5ea B1 / #34 ka mor) JAB 1D rukh UPAR -> chart par "4H BUY" nishan.
+//      B1 akela test PASS (#34); 1D filter ke SAATH test NAHI.
 //  IMAANDARI: ye sab TEST NAHI hua (zones / rukh / toot = sirf naqsha). Pakke number sirf jas_5ea ki table mein.
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
-//  HADD: request.security 7, tuple 9, box <= 12, line <= 4.
+//  HADD: request.security 7, tuple 9, box <= 12, line <= 4, plot 2, plotshape 1.
 // ============================================================================
-indicator("JAS Naqsha n2", "JAS Naqsha n2", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n3", "JAS Naqsha n3", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -31,6 +34,10 @@ tSize  = input.string("Small", "Likhai", options = ["Tiny", "Small", "Normal"], 
 
 grN = "3 · News waqt"
 showNB = input.bool(true, "Intraday chart par news waqt ka rang (+-15 min)", group = grN, display = display.none)
+
+grE = "4 · 1D EMA + 4H entry"
+showE  = input.bool(true, "1D EMA50 / EMA200 lakeer", group = grE, display = display.none)
+showEn = input.bool(true, "4H entry nishan (1D UPAR + 4H Supertrend upar mura)", group = grE, display = display.none)
 
 // ============================================================================
 //  HTF DATA (har TF ek tuple, pichhli band candle)
@@ -61,6 +68,21 @@ ok2 = timeframe.in_seconds("240") >= chSec
 ok3 = timeframe.in_seconds("D") >= chSec
 ok4 = timeframe.in_seconds("W") >= chSec
 aD = a3
+
+// 1D EMA50/200 rukh (pichhla band din) + 4H Supertrend mor (pichhli band 4H candle)
+dRukh = na(m3) or na(n3) ? 0 : (close > m3 and close > n3 and m3 > n3) ? 1 : (close < m3 and close < n3 and m3 < n3) ? -1 : 0
+plot(showE ? m3 : na, "1D EMA50", color = color.new(#ffb300, 0), linewidth = 2, style = plot.style_stepline)
+plot(showE ? n3 : na, "1D EMA200", color = color.new(#42a5f5, 0), linewidth = 2, style = plot.style_stepline)
+ch2 = ta.change(d2)
+flipUp = ok2 and not na(ch2) and ch2 < 0
+flipDn = ok2 and not na(ch2) and ch2 > 0
+var int lastFlipT = na
+var int lastFlipDir = 0
+if flipUp or flipDn
+    lastFlipT := time
+    lastFlipDir := flipUp ? 1 : -1
+entryNow = flipUp and dRukh > 0
+plotshape(showEn and entryNow, "4H BUY waqt", shape.triangleup, location.belowbar, color.new(#00e676, 0), size = size.small, text = "4H BUY", textcolor = color.new(#00e676, 0))
 
 // ============================================================================
 //  ZONES: pivot -> jor -> array
@@ -297,8 +319,8 @@ if barstate.islast
         if not na(tb)
             table.delete(tb)
         sz = f_sz(tSize)
-        tb := table.new(f_pos(tPos), 4, 12, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n2", text_color = cTx, bgcolor = cHd, text_size = sz)
+        tb := table.new(f_pos(tPos), 4, 14, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
+        table.cell(tb, 0, 0, "JAS NAQSHA n3", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -351,3 +373,16 @@ if barstate.islast
         table.cell(tb, 0, 11, "ZONE", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 11, (nearUpTx == "" ? "R -" : nearUpTx) + "   |   " + (nearDnTx == "" ? "S -" : nearDnTx), text_color = cTx, text_size = sz)
         table.merge_cells(tb, 1, 11, 3, 11)
+        // 1D EMA rukh
+        eTx = na(m3) ? "-" : (dRukh > 0 ? "▲ UPAR - sirf BUY socho" : dRukh < 0 ? "▼ NEECHE - BUY nahi" : "◆ MILA - intezar") + "  (EMA50 " + str.tostring(m3, format.mintick) + " | EMA200 " + str.tostring(n3, format.mintick) + ")"
+        table.cell(tb, 0, 12, "1D EMA50/200", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 12, eTx, text_color = f_dirCol(dRukh), text_size = sz)
+        table.merge_cells(tb, 1, 12, 3, 12)
+        // 4H entry waqt
+        fresh = lastFlipDir == 1 and not na(lastFlipT) and time - lastFlipT < 4 * 3600000
+        flTx = na(lastFlipT) ? "" : " (mura " + str.format_time(lastFlipT, "dd MMM HH:mm", "Asia/Karachi") + " PKT)"
+        hTx = not ok2 ? "4H ya chhota chart lagayein" : dRukh <= 0 ? "1D rukh UPAR nahi - BUY ka waqt nahi" : (d2 < 0 and fresh) ? "ABHI ENTRY KA WAQT - 4H Supertrend upar mura" + flTx : d2 < 0 ? "4H UPAR chal raha" + flTx + " - nayi entry nahi, agle mor ka intezar" : "intezar: 4H Supertrend upar mude (har 4H candle band par)"
+        hCol = not ok2 or dRukh <= 0 ? color.gray : (d2 < 0 and fresh) ? color.new(#00e676, 0) : color.new(#ffb300, 0)
+        table.cell(tb, 0, 13, "4H ENTRY", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 13, hTx, text_color = hCol, text_size = sz)
+        table.merge_cells(tb, 1, 13, 3, 13)

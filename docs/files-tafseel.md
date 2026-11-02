@@ -234,5 +234,5 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)
 - `tools/k83_teen.py` - #83 cent $1000: #81 IBS martingale + Trend 4H $7.5 + Khirki $1.5 = PASS (2019+ 3.8 tr/hafta, +$931, girawat $93)
 - `.claude/settings.json` + `.claude/hooks/naqsha.sh` (SessionStart: MT5 NAQSHA + sec 5 + ABHI khud context mein) + `save.sh` (Stop: har jawab ke baad khud commit+push) - user ijazat 2 Nov
-- `indicators/jas_naqsha.pine` n2 (2 Nov; n1 TV par CHALA, n2 table Middle Left) - jas_5ea ka saathi: MTF zones S/R (1H/4H/1D/1W pivot jor), rukh 5 TF, toot khatra (zone doori + squeeze), RSI OB/OS + EMA50 se ATR, news waqt (08:30/10:00 NY, NFP, FOMC 2026) - sirf naqsha, TEST NAHI; n1 TV ✅
+- `indicators/jas_naqsha.pine` n3 (2 Nov; n1 TV ✅, n2 table Middle Left, n3 1D EMA50/200 rukh + 4H Supertrend entry waqt) - jas_5ea ka saathi: MTF zones S/R (1H/4H/1D/1W pivot jor), rukh 5 TF, toot khatra (zone doori + squeeze), RSI OB/OS + EMA50 se ATR, news waqt (08:30/10:00 NY, NFP, FOMC 2026) - sirf naqsha, TEST NAHI; n1 TV ✅
 - `tools/k84_range.py` - #84 gold range bars GATE (2009-13, $5/$10/$20, k 1-5) = FAIL; research `docs/research/daur8-range-agent.md`
