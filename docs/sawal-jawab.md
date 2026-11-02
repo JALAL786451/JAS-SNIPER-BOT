@@ -130,3 +130,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - FTMO waqt kam karna? -> research daur 6: naye market se kam; P2 1.5x FAIL (#77), pehra-shart akela FAIL (#78); agla #79 sim + 4% pehra (2 Nov).
 - Cent demo nahi (Exness)? -> USD Standard demo $1000 kholo (1:2000), JasIbsCentEA c1 USD par khud $10 = $10 (cent par x100). Teesra MT5 alag folder mein (FTMO demo wala terminal na badlo) (2 Nov).
 - JasIbsEA i6 hi kyun nahi? -> i6 mein martingale / $ risk nahi; c1 alag file + magic 20261102 = i6 (FTMO demo) par koi asar nahi (2 Nov).
+- Cent par $1000 = 100,000 USC - EA $100k samjhega? -> NAHI: ACCOUNT_CURRENCY "USC" dekh kar $10 = 1000 USC, $800 stop = 80,000 USC. USD demo ka balance $1000 set karo (100k par stop kabhi nahi lagta) (2 Nov).
