@@ -1509,3 +1509,21 @@ Sabaq: P2 mein risk barhana = ek bura din kai challenge gira deta; G (pehra-shar
 **Koshish #78 qaida (2 Nov, user "D", test se PEHLE, badalna mana) - FTMO #68 + pehra-shart G akela (risk wahi, P2 wahi):** `tools/ftmo77.py --imtihan --pakka --pick G`.
 CHUNAO dekha hua (#77 maloomat 65/0/19 median 36.5 vs A 64/2/18 38.5). **IMTIHAN 2019-01..aaj EK dafa:** PASS = fail 0, pass >= A (isi run), median < A (isi run). Ginti +1.
 **Koshish #78 IMTIHAN 2019+ (2 Nov, EK dafa) = FAIL:** A 83/0/11 median 11.4 | G 83/0/11 **median 12.1** (> 11.4). 2019+ mein A ka koi fail tha hi nahi - G sirf trades rokta = dheema. G BAND (FTMO challenge ke liye); sabaq: pehra-shart fail wale daur mein madad, warna waqt barhata.
+
+**TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
+**30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
+#70 C1 FAIL, #71 DXY filter FAIL, #72 forex trend FAIL (user: CURRENCY POORI CHHOR DI), #73 2 SELL aaina TALAASH FAIL (228 tr -0.003R, judge CLEAN).
+Judge: swap har calendar raat (bug fix) -> #68 IMTIHAN 83/0 median 11.4. Research daur 2-5 `docs/research/`. Trade page B: https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK
+(`tools/trade_page/`). Pine `indicators/jas_5ea.pine` p4 TV par CHALA (SPX500USD/NAS100USD 1D; USTECH = error, NAS100USD istemal). p5 commit 6adeabd
+(levels, alert, Abhi R, lot, agli khirki, warning) -> p6 judge READY (commit neeche), user ko link diya; TV SS ka intezar.
+**31vi (2 Nov, isi chat mein):** jas_5ea p6 TV par CHALA (XAUUSD 1D, Abhi R sahi). #74 3Commas EMA 21/50 2H x 11 TALAASH FAIL (2409 tr -0.041R, kharche se pehle 0; judge CLEAN).
+#75 = user ka "B" (3Commas + 4H trend) TALAASH FAIL (1729 tr -0.019R, judge CLEAN) = 3Commas poora band.
+#76 BTC Kachhua (FTMO #68 + BTC 0.5%) CHUNAO 70/0, IMTIHAN 83/0 median 11.1 = PASS kamzor (judge CLEAN).
+User: #76 BANK mein (dekha hua data = saboot kamzor; HIDAYAT "dekha hua").
+#77 P2 1.5x CHUNAO FAIL (Aug 2015 crash = 12 P2 fail); G (pehra-shart) akela maloomat behtar. JasDeskView v5.6 user ka chala (2 column). Research daur 6 `docs/research/daur6-agent.md`.
+#78 G akela IMTIHAN FAIL (median 12.1). User sawal: crash / ek din girna ka ilaj (news?) - Claude: news calendar crash nahi pakarta; sim mein EA ka 4% din pehra (sab band) shamil nahi = agla.
+**AGLA KAAM:** (a) user faisla: sim mein EA ka asli 4% din pehra (close-all) dalna (#79 qaida pehle). BTC bank #76. Alert/lot user khud ON kare.
+User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC demo: FTMO swap pehle (user ka FTMO trial nahi, Exness demo).
+(d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
+HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.
+

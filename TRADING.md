@@ -54,21 +54,16 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
-#70 C1 FAIL, #71 DXY filter FAIL, #72 forex trend FAIL (user: CURRENCY POORI CHHOR DI), #73 2 SELL aaina TALAASH FAIL (228 tr -0.003R, judge CLEAN).
-Judge: swap har calendar raat (bug fix) -> #68 IMTIHAN 83/0 median 11.4. Research daur 2-5 `docs/research/`. Trade page B: https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK
-(`tools/trade_page/`). Pine `indicators/jas_5ea.pine` p4 TV par CHALA (SPX500USD/NAS100USD 1D; USTECH = error, NAS100USD istemal). p5 commit 6adeabd
-(levels, alert, Abhi R, lot, agli khirki, warning) -> p6 judge READY (commit neeche), user ko link diya; TV SS ka intezar.
-**31vi (2 Nov, isi chat mein):** jas_5ea p6 TV par CHALA (XAUUSD 1D, Abhi R sahi). #74 3Commas EMA 21/50 2H x 11 TALAASH FAIL (2409 tr -0.041R, kharche se pehle 0; judge CLEAN).
-#75 = user ka "B" (3Commas + 4H trend) TALAASH FAIL (1729 tr -0.019R, judge CLEAN) = 3Commas poora band.
-#76 BTC Kachhua (FTMO #68 + BTC 0.5%) CHUNAO 70/0, IMTIHAN 83/0 median 11.1 = PASS kamzor (judge CLEAN).
-User: #76 BANK mein (dekha hua data = saboot kamzor; HIDAYAT "dekha hua").
-#77 P2 1.5x CHUNAO FAIL (Aug 2015 crash = 12 P2 fail); G (pehra-shart) akela maloomat behtar. JasDeskView v5.6 user ka chala (2 column). Research daur 6 `docs/research/daur6-agent.md`.
-#78 G akela IMTIHAN FAIL (median 12.1). User sawal: crash / ek din girna ka ilaj (news?) - Claude: news calendar crash nahi pakarta; sim mein EA ka 4% din pehra (sab band) shamil nahi = agla.
-**AGLA KAAM:** (a) user faisla: sim mein EA ka asli 4% din pehra (close-all) dalna (#79 qaida pehle). BTC bank #76. Alert/lot user khud ON kare.
-User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC demo: FTMO swap pehle (user ka FTMO trial nahi, Exness demo).
-(d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
-HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.
+**31vi chat (2 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #74".."#78". #74 3Commas + #75 (+4H trend) TALAASH FAIL = band.
+#76 BTC Kachhua FTMO PASS kamzor -> user: BANK (dekha hua; HIDAYAT "dekha hua"). #77 P2 risk 1.5x CHUNAO FAIL (B 18 fail = 2 crash din,
+Aug 2015 + 2018); #78 pehra-shart G akela IMTIHAN FAIL (median 12.1 > 11.4). JasDeskView v5.6 (lambi line toot kar, 2 column) user ka CHALA
+(font 11, Ladder false, PairListMax 5; Claude raaye InpShowSizes false). Research daur 6 `docs/research/daur6-agent.md` (downloads + 5 idea).
+**AGLA KAAM = #79 (user "D" DE CHUKA, seedha shuru):** FTMO sim (`tools/ftmo77.py` copy -> `tools/ftmo79.py`) mein EA ka ASLI din pehra:
+equity (khuli trades samet, `eq`) din shuru (`dstart`) se 4% x 100k neeche = SAB trades usi H1 par band (close qeemat; gap ho to jo mile),
+us din nayi trade NAHI (agle CET din se). Fail shart FTMO wahi (worst < dstart - 5% ya < 90k). Run: A (#68), B (A + P2 1.5x).
+Qaida PEHLE `docs/purana-haal.md` "Koshish #79 qaida": CHUNAO 2012-18 B umeedwar = P1 fail < 20%, pass > fail, (pass-fail) >= A, median < A;
+IMTIHAN 2019+ EK dafa (B chuna ho to): fail 0, pass >= A, median < A. Imaandari: B CHUNAO #77 mein dekha hua. Judge (2019+ mana) phir user ko aasan table.
+Baqi: (b) demo EA ki pehli trades (user SS); phone par MT5 app (status dekhna) user ko bataya. (c) FTMO BTC swap (bank #76 ke liye).
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

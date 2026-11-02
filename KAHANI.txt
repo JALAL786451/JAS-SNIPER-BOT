@@ -116,11 +116,15 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 02-11 | jas_5ea p6 (levels, alert, Abhi R, lot, agli khirki) TV par chala | judge READY | - | -
 02-11 | #74 3Commas Bot EMA 21/50 2H x 11 (user ka Pine) | 2409 tr -0.041R, kharche se pehle 0, jeet 50% | BAND (judge CLEAN) | 2H + 1:1 = sikka
 
+02-11 | #75 3Commas + 4H trend (user "B") | 1729 tr -0.019R | BAND | kharche se pehle bhi shor
+02-11 | #76 FTMO #68 + BTC Kachhua 0.5% | CHUNAO 70/0, IMTIHAN 83/0 median 11.1 | BANK (user) | BTC dekha hua = saboot kamzor; HIDAYAT "dekha hua"
+02-11 | #77 P2 risk 1.5x (+ user pehra-shart G) / #78 G akela | B 18 fail (2 crash din); #78 median 12.1 | FAIL | sim mein EA ka 4% din pehra nahi -> #79
+02-11 | JasDeskView v5.6 (lambi line toot) + research daur 6 | real account panel 2 column | chalu | -
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
 
-4. ABHI (1 Nov 2026)
+4. ABHI (2 Nov 2026)
 SIRF FTMO DEMO 474832446 chalu:
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
   JasIbsEA i6    | US500m D1  | 20261022 | US500 USTEC 1%, faisla 16:15 NY
@@ -130,12 +134,12 @@ MANSOOBA #68: 2019+ sim 83/0, median 11.4 mahine (swap fix baad). 3 mahine 0%, 1
 LIVE: koi EA nahi; 6-mahine qaida -> demo 31-10 se = ~May 2027 se pehle nahi (hisaab).
 AGLE KAAM:
  - Somwar 2 Nov: FTMO demo ki pehli trades (user SS laaye tab; yaad-dihani NAHI). Pehli khirki trade 24 Nov.
- - #73 BTC Kachhua: user ka D baqi. Step 0 FTMO BTC swap (long > 40%/saal = stop); BTC D1 2014-18 data; qaida pehle.
+ - AGLA: #79 = sim mein EA ka asli 4% din pehra (user D) - TRADING sec 5.
  - Asli FTMO se PEHLE: t5/i6 InpServerGMT -2, FTMO symbol naam (GER40.cash, US500.cash...), pehra B phir D,
    FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao, Swing account, VPS (~$10-15/mahina).
  - FTMO offer: Nov (Black Friday) / Dec chat mein ftmo.com KHUD check. Fee 100k ~EUR 540 (3rd party).
- - BANK yaad dilao (#59, #69) jab FTMO pass / real account / trade barhana / naya jor.
- - jas_5ea p6 TV par chal raha. BTC Kachhua = #75 (D baqi, FTMO BTC swap pehle).
+ - BANK yaad dilao (#59, #69, #76) jab FTMO pass / real account / trade barhana / naya jor.
+ - jas_5ea p6 TV par chal raha. BTC Kachhua #76 BANK (FTMO BTC swap pehle).
  - Currency/forex BAND (user 1-11): F1-F4, P1-P4 (daur 3) NAHI. Gotobi bhi nahi.
  - Peshgoi #3: gold ~3,813 chhoo kar palte ga (30 Nov tak). #1 (3,886.47) HUA 30-10, #2 PASS 16-10.
  - Data: AUDUSD 2020 gayab; US500/USTEC 2012-17 patla.

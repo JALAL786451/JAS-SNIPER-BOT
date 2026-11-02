@@ -122,3 +122,9 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - SELL wale EA? -> #73 TALAASH FAIL (228 tr -0.003R, swap kha gaya) - band; Pine mein sirf dekhne ko (1 Nov).
 - OANDA:USTECH par jas_5ea error? -> OANDA:NAS100USD istemal karein (1 Nov).
 - 3Commas Bot (EMA 21/50 cross, swing SL, 1:1) 2H par? -> #74 FAIL: 2409 tr -0.041R, kharche se pehle bhi 0 (2 Nov).
+- TradingView Turtles (20/10 + 55/20, pyramiding 5) 83/0 mein? -> Kachhua hi hai; pyramiding/SL-nahi/SELL/do system = hamare qaide ke khilaf; nayi cheez sirf BTC (#76 bank) (2 Nov).
+- Demo EA ne trade nahi li? -> normal: t5 sirf 4H palat par, i6 16:15 NY IBS < 0.2, k2 sirf US chutti (Thanksgiving 26 Nov); mahine 3-5 trade (2 Nov).
+- Sab EA ka status ek saath? -> phone MT5 app (Exness-MT5Trial15, 474832446) Trade/History tab; PC Toolbox Trade/History/Experts; push notification EA mein nahi (Status EA ka idea) (2 Nov).
+- JasDeskView daayen column nahi / chhupa? -> Navigator band (Ctrl+N); v5.6 lambi line torta; font 11 + InpShowLadder false + InpPairListMax 5 (+ InpShowSizes false) (2 Nov).
+- Crash din ka ilaj news filter? -> NAHI: 2015/2018/2020 crash calendar par nahi the (FOMC filter fail); EA ka 4% din pehra hai magar sim mein shamil nahi -> #79 (2 Nov).
+- FTMO waqt kam karna? -> research daur 6: naye market se kam; P2 1.5x FAIL (#77), pehra-shart akela FAIL (#78); agla #79 sim + 4% pehra (2 Nov).
