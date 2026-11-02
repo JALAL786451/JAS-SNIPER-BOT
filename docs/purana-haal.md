@@ -1472,3 +1472,8 @@ Kharcha 0.75 x asli spread har taraf (#53 ASLI), index CFD 0.02%, swap 3%/saal h
 **TALAASH** entry < 2019 (XAU/XAG 2003 se, baqi data shuru se): PASS = kul >= 100 tr aur kul Exp - 2SE > 0 (BUY + SELL mila kar); BUY / SELL / har market alag MALOOMAT.
 **IMTIHAN** 2019-01..aaj EK dafa (sirf TALAASH PASS par): kul >= 30 tr aur Exp - 2SE > 0 -> phir FTMO jor (#68 + ye) ka alag qaida. FAIL = band. Ginti +1 (BTC Kachhua ab #75).
 Claude umeed ~10% (#18 MA 1H FAIL, 2H + 1:1 par spread, SELL drift).
+**Koshish #74 TALAASH (2 Nov, expert agent, `tools/c3_74.py`) = FAIL** (IMTIHAN nahi): KUL 2409 tr (BUY 1143 -0.068R, SELL 1266 -0.016R), **-0.041R, Exp-2SE -0.083**, jeet 50%;
+kharche se PEHLE bhi +0.005R (sifar). Market: XAU B -0.011 / S +0.024, XAG -0.095 / -0.067, US500 -0.093 / -0.019, USTEC +0.043 / -0.025, DEU -0.007 / -0.058, GBR -0.341 / -0.087,
+FRA -0.004 / -0.170, EUS -0.084 / +0.042, JPN +0.142 / +0.210, AUS -0.332 / +0.040, HKG +0.015 / +0.016. Band: TP 1147, SL 1139, gap 122. Jaanch: aaina 11/11, look-ahead 44/44, 3 trade haath se.
+Sabaq: EMA cross 2H + 1:1 = sikka (jeet 50%, kharche se pehle 0); kharcha + swap 0.046R/trade. 3Commas BAND. Judge jaanch baqi.
+
