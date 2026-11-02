@@ -1485,3 +1485,11 @@ Market: XAU B +0.015 / S +0.090, XAG +0.046 / -0.092, US500 -0.069 / -0.103, UST
 JPN +0.069 / +0.111, AUS -0.338 / +0.121, HKG +0.128 / +0.083. Jaanch: filter bina = #74 trade, aaina 0 farq, look-ahead 44/44.
 Sabaq: 4H filter ne #74 ko -0.041 se -0.019R kiya (trade 2409 -> 1729) magar faida phir bhi shor ke andar; 3Commas + filter BAND.
 **Judge #75 (`docs/research/judge-75.md`) = CLEAN, FAIL wahi:** apna alag 4H + Supertrend -> 1729/1729 trade wahi; bina kharcha bhi Exp-2SE -0.023.
+**Koshish #76 qaida (2 Nov, 31vi chat, user "1" = sirf BTC, naqsha chat mein; test se PEHLE, badalna mana) - FTMO: #68 + Kachhua BTCUSD (`tools/ftmo76.py`):**
+Kachhua = `ftmo_test.kachhua_trades` jyon ka tyon (daily 17:00 NY, Sat/Sun Monday mein - baqi market jaisa; 10 din toot + EMA50/200 + ATR >= 0.25%, SL 2xATR14 roz sarakta, BUY/SELL) sirf BTCUSD, alag slot.
+Data: Bitstamp daily (cryptodatadownload, 2014-11-28 se; har din ek bar 00:00 UTC) 2017-05-08 se pehle + Dukascopy H1 (JAS_ZIP) 2017-05-08 se. #68 bilkul wahi (trend 0.75 + IBS 1.0 + khirki 0.15, asli kharcha).
+BTC kharcha 0.05% har taraf; swap FAISLA par **20%/saal** har calendar raat (baqi 3%); 0% aur 40% sirf MALOOMAT.
+**CHUNAO 2012-2018** (har mahine challenge): BTC risk 0.10 / 0.25 / 0.50 vs #68 (isi run): shart P1 fail < 20%, pass > fail, (pass - fail) > #68 ka (#69 mein >=; yahan user naqsha "zyada");
+behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL (BTC bank).
+**IMTIHAN 2019-01..aaj EK dafa** (chuni risk, swap 20%, `--imtihan --pakka`): PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run). Imaandari: BTC Kachhua 2019+ Radar mein dekha hua (aadha dekha).
+Demo se pehle FTMO ka asal BTC swap: > 40%/saal = BAND. Claude umeed ~20-25%. Ginti +1.
