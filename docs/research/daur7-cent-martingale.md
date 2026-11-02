@@ -101,3 +101,5 @@ Code CLEAN (lookahead nahi, SL pehle, MC sahi). Natija sahi: chhoti TF par sprea
 KEEP: A (pass shuda edge, fixed risk, ~$1-2/din) > C (gold Asia M5 Bollinger fade, sirf bina-martingale TALAASH 2005-18, 2015 chhor kar, kharcha 0.012% par Exp-2SE>0, dono aadhe musbat, >=60% saal) > B (IBS 1.5x 3 qadam, cent par index shayad nahi).
 REJECT: D (gold M5 1:1 chain = #12), E (US500 NY chain), F (roz ek chain).
 Exness Standard Cent: zyada review = sirf forex + metals (index nahi) - user MT5 Market Watch mein dekhe.
+
+**Sahih (2 Nov, user + repo):** Exness Standard Cent PAR INDEX HAIN - live 253687618 Market Watch (11 Oct, `docs/purana-haal.md` line ~200): US500c, USTECc, US30c. Reviews ghalat. A aur B dono cent par mumkin.
