@@ -128,3 +128,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - JasDeskView daayen column nahi / chhupa? -> Navigator band (Ctrl+N); v5.6 lambi line torta; font 11 + InpShowLadder false + InpPairListMax 5 (+ InpShowSizes false) (2 Nov).
 - Crash din ka ilaj news filter? -> NAHI: 2015/2018/2020 crash calendar par nahi the (FOMC filter fail); EA ka 4% din pehra hai magar sim mein shamil nahi -> #79 (2 Nov).
 - FTMO waqt kam karna? -> research daur 6: naye market se kam; P2 1.5x FAIL (#77), pehra-shart akela FAIL (#78); agla #79 sim + 4% pehra (2 Nov).
+- Cent demo nahi (Exness)? -> USD Standard demo $1000 kholo (1:2000), JasIbsCentEA c1 USD par khud $10 = $10 (cent par x100). Teesra MT5 alag folder mein (FTMO demo wala terminal na badlo) (2 Nov).
+- JasIbsEA i6 hi kyun nahi? -> i6 mein martingale / $ risk nahi; c1 alag file + magic 20261102 = i6 (FTMO demo) par koi asar nahi (2 Nov).
