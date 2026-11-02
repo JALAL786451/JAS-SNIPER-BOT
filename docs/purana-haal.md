@@ -1550,6 +1550,18 @@ Data: histdata XAUUSD M1 2009-2018 (NY waqt). Size 1 oz (= 0.01 lot standard; $1
 H kul -$8,486 (0.24) / -$16,950 (0.48), roz -$2.8 / -$5.6; kharche ke baghair -$21.9 (= hedge nuqsan rokta, mitata nahi). S (SL $3, TP $1) 96,581 tr -$33,299 (roz -$10.9, 1:3 + spread).
 Sabaq: qeemat hedge level se door chali jaye to "trend badle par hedge band" foran dobara hedge = tokri phansi, trade ruk jati (user ki live jami kitab jaisa). Hedge = SL ka nuqsan der se, kharche ke saath.
 
+**TRADING.md sec 5 (31vi chat ka, 32vi ne hataya):**
+**31vi chat (2 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #74".."#78". #74 3Commas + #75 (+4H trend) TALAASH FAIL = band.
+#76 BTC Kachhua FTMO PASS kamzor -> user: BANK (dekha hua; HIDAYAT "dekha hua"). #77 P2 risk 1.5x CHUNAO FAIL (B 18 fail = 2 crash din,
+Aug 2015 + 2018); #78 pehra-shart G akela IMTIHAN FAIL (median 12.1 > 11.4). JasDeskView v5.6 (lambi line toot kar, 2 column) user ka CHALA
+(font 11, Ladder false, PairListMax 5; Claude raaye InpShowSizes false). Research daur 6 `docs/research/daur6-agent.md` (downloads + 5 idea).
+**AGLA KAAM = #79 (user "D" DE CHUKA, seedha shuru):** FTMO sim (`tools/ftmo77.py` copy -> `tools/ftmo79.py`) mein EA ka ASLI din pehra:
+equity (khuli trades samet, `eq`) din shuru (`dstart`) se 4% x 100k neeche = SAB trades usi H1 par band (close qeemat; gap ho to jo mile),
+us din nayi trade NAHI (agle CET din se). Fail shart FTMO wahi (worst < dstart - 5% ya < 90k). Run: A (#68), B (A + P2 1.5x).
+Qaida PEHLE `docs/purana-haal.md` "Koshish #79 qaida": CHUNAO 2012-18 B umeedwar = P1 fail < 20%, pass > fail, (pass-fail) >= A, median < A;
+IMTIHAN 2019+ EK dafa (B chuna ho to): fail 0, pass >= A, median < A. Imaandari: B CHUNAO #77 mein dekha hua. Judge (2019+ mana) phir user ko aasan table.
+Baqi: (b) demo EA ki pehli trades (user SS); phone par MT5 app (status dekhna) user ko bataya. (c) FTMO BTC swap (bank #76 ke liye).
+
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
 #70 C1 FAIL, #71 DXY filter FAIL, #72 forex trend FAIL (user: CURRENCY POORI CHHOR DI), #73 2 SELL aaina TALAASH FAIL (228 tr -0.003R, judge CLEAN).
@@ -1567,3 +1579,10 @@ User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC dem
 (d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
 HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.
 
+
+**Koshish ginti 2 Nov (TRADING.md sec 8 se, 32vi chat):**
+1-5 FAIL · **6 Kachhua commodity ASLI PASS** · 7-14 FAIL · **15 IBS S&P ASLI PASS** · 16-25 FAIL / sikka (19 SMC DZ/SZ 4H MT5 baqi; 21 ORB USTEC 5m asli kharcha FAIL 1 Nov) ·
+**26 Supertrend tokri ASLI PASS** · **27 JasTrend FTMO PASS** · 28-33 FAIL · **34 JAS Trend 4H TOKRI ASLI PASS** · 35-44 FAIL (37 noise boundary 0.03% kharcha par) ·
+**45 Double 7s ASLI PASS kamzor** · 46-48, 50, 51 FAIL · **49 FTMO trend + IBS S&P ASLI PASS** · **52 teacher: USTEC IBS ASLI PASS** ·
+**53 FTMO #49 + IBS USTEC 1% ASLI PASS (2019+ 83/0, 2012-aaj +92%, DD 13.4%) = FTMO mansooba** · 54 = #37 + asli spread: TALAASH PASS +0.113R, **IMTIHAN 2025+ FAIL** (-0.037R, bina kharcha bhi -) = band. · 55-58 FAIL (trend 1H, IBS 4H, teacher 4H trend, IBS mandi) · **59 CHUTTI se pehle wala din (SPX+NDX) ASLI PASS** (2019+ 146 tr, jeet 68%) · 60 FTMO #53 + chutti FAIL · 61-63 IBS / Tide / Trend x Dow 30 share FAIL (faida = drift). · 64 TOM, 65 VIX: IMTIHAN FAIL · 66 trend 4H dhaat FAIL · **67 khirki x 7 non-US index PASS** · **68 FTMO #53 + khirki 0.15%: 83/0, median 10.8 (11.7 se) = ASLI PASS** (swap fix 1 Nov: 11.4 vs #53 11.9) -> JasKhirkiEA. · 69 + Tide oil FAIL (fail 0->11, bank) · 70 C1 local chutti x 7 index: TV TALAASH FAIL (312 tr, -0.007R, band) · 71 #68 + G2 DXY filter gold/chandi: CHUNAO 66/0 PASS, IMTIHAN FAIL (83/0 magar median 14.4 > 10.8) = band · 72 #68 + 4H trend EURUSD/USDJPY/AUDUSD: CHUNAO FAIL (fail 5 -> 25+) = forex trend band · 73 #68 + 2 SELL aaina (S1 trend + SMA200, S2 IBS): TALAASH FAIL (226 tr -0.004R) = SELL band · 74 3Commas EMA 21/50 2H x 11: TALAASH FAIL (2409 tr -0.041R, kharche se pehle 0) = band · 75 #74 + 4H Supertrend filter: TALAASH FAIL (1729 tr -0.019R, judge CLEAN) = band · **76 FTMO #68 + Kachhua BTC 0.5%: CHUNAO 70/0 (64/2 se), IMTIHAN 83/0 median 11.1 (11.4 se) = PASS kamzor** (judge CLEAN) -> user: BANK · 77 #68 + P2 risk 1.5x (+ pehra-shart G): CHUNAO FAIL (B 18 fail; C 60/0 pass kam), maloomat G akela 65/0 median 36.5 (A 64/2 38.5) · 78 #68 + G akela: IMTIHAN FAIL (83/0 magar median 12.1 > 11.4) · 79 FTMO sim + EA 4% din pehra: CHUNAO FAIL (pehra fail 2->11; FTMO 83/0 par ruka) · 80 gold Asia M5 BB fade: TALAASH FAIL (4429 tr -0.034R) · **81 IBS + martingale 1.5x/3 qadam $1000 cent: ASLI PASS (2019+ +$382, $0.19/din) -> JasIbsCentEA c1** · 82 gold 1m hedge-freeze: TALAASH FAIL (-$8,486, 99.9% phansa)
+Faida daily + 4H TOKRI par; chhoti TF ab asli kharche se dobara (har ek pehle se likh kar).

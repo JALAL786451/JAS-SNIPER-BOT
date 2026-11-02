@@ -97,6 +97,7 @@ Pehle main **2 mobile** se ek saath SELL aur BUY band karta tha - ab ye kaam
 MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 
 ## 4. Pakke sabaq (ek line har ek - poore number `docs/sabaq-tafseel.md` mein, grep se)
+- Martingale edge nahi banata, sirf nuqsan ko ek din mein jama karta; hedge = SL der se + kharcha (#80-82, 2 Nov). Chhota martingale sirf saabit edge par (#81).
 
 **Kitab / method:**
 - Jami kitab ka nuqsan "bori" hai - kis lot ko kis se band karo, KUL wahi. Nateeja = (ausat SELL - ausat BUY) x lots, qeemat se nahi badalta.

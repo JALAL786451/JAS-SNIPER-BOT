@@ -54,16 +54,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**31vi chat (2 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #74".."#78". #74 3Commas + #75 (+4H trend) TALAASH FAIL = band.
-#76 BTC Kachhua FTMO PASS kamzor -> user: BANK (dekha hua; HIDAYAT "dekha hua"). #77 P2 risk 1.5x CHUNAO FAIL (B 18 fail = 2 crash din,
-Aug 2015 + 2018); #78 pehra-shart G akela IMTIHAN FAIL (median 12.1 > 11.4). JasDeskView v5.6 (lambi line toot kar, 2 column) user ka CHALA
-(font 11, Ladder false, PairListMax 5; Claude raaye InpShowSizes false). Research daur 6 `docs/research/daur6-agent.md` (downloads + 5 idea).
-**AGLA KAAM = #79 (user "D" DE CHUKA, seedha shuru):** FTMO sim (`tools/ftmo77.py` copy -> `tools/ftmo79.py`) mein EA ka ASLI din pehra:
-equity (khuli trades samet, `eq`) din shuru (`dstart`) se 4% x 100k neeche = SAB trades usi H1 par band (close qeemat; gap ho to jo mile),
-us din nayi trade NAHI (agle CET din se). Fail shart FTMO wahi (worst < dstart - 5% ya < 90k). Run: A (#68), B (A + P2 1.5x).
-Qaida PEHLE `docs/purana-haal.md` "Koshish #79 qaida": CHUNAO 2012-18 B umeedwar = P1 fail < 20%, pass > fail, (pass-fail) >= A, median < A;
-IMTIHAN 2019+ EK dafa (B chuna ho to): fail 0, pass >= A, median < A. Imaandari: B CHUNAO #77 mein dekha hua. Judge (2019+ mana) phir user ko aasan table.
-Baqi: (b) demo EA ki pehli trades (user SS); phone par MT5 app (status dekhna) user ko bataya. (c) FTMO BTC swap (bank #76 ke liye).
+**32vi chat (2 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #79".."#82". #79 FTMO sim + EA ka asli 4% din pehra: CHUNAO FAIL
+(A 55/11 vs #68 64/2 - pehra 2016-01-04 par nuqsan pakka kar deta; B 1.5x 49/22). **USER: FTMO 83/0 par ROKO** -> naya maqsad $1000 Standard CENT EA,
+user ne MARTINGALE + HEDGE naam le kar maange (HIDAYAT 2 Nov). Research daur 7 (`docs/research/daur7-cent-martingale.md`): $10-20/din = ~80% saal mein doobna.
+#80 gold Asia M5 BB fade FAIL (histdata M1 2009-18 `data/histdata/`). **#81 IBS + martingale 1.5x/3 qadam ASLI PASS** (2019+ 401 tr, $1000 par +$382 = $0.19/din,
+girawat $37). #82 gold 1m hedge-freeze FAIL (99.9% waqt phansa, 35k hedge churn). **JasIbsCentEA c1** (judge READY) user ke naye demo par CHALU (SS ✅).
+**AGLA KAAM:** (a) c1 demo ki pehli trades (user SS laaye; hafte ~1 trade, faisla ~2:15 PKT). (b) User risk barhana chahe to SIRF user ka number (hisaab: $25 = $0.48/din girawat ~$90).
+(c) FTMO demo t5/i6/k2 chalu (chhorna nahi). Nayi idea par wahi: qaida pehle -> test -> Chief Justice (judge).
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
@@ -77,13 +74,13 @@ Pehra (teeno, poora account): target 110k + din 4% (96k farsh), kul hadd band (u
 user ne 31 Oct raat DELETE kiye - un ki tafseel `docs/purana-haal.md` grep "sec 6-7 se (1 Nov". Exness Demo ki `JasTideRadarEA.mq5` mein ghalti se t5 code
 paste hua (chart par nahi laga) - zaroorat par GitHub wali e1 dobara.
 
-## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 31 Oct")
+**CENT DEMO (2 Nov, teesra MT5 folder "MetaTrader 5 Cent Demo"):** 472716649 Exness-MT5Trial16, USD, balance **$1000** (user ne set kiya). **JasIbsCentEA c1** US500m D1, magic 20261102,
+US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JASIBSC_STOP_`). Panel TRADE CHALU (SS ✅). Real cent par koi EA nahi (6 mahine qaida).
 
-1-5 FAIL · **6 Kachhua commodity ASLI PASS** · 7-14 FAIL · **15 IBS S&P ASLI PASS** · 16-25 FAIL / sikka (19 SMC DZ/SZ 4H MT5 baqi; 21 ORB USTEC 5m asli kharcha FAIL 1 Nov) ·
-**26 Supertrend tokri ASLI PASS** · **27 JasTrend FTMO PASS** · 28-33 FAIL · **34 JAS Trend 4H TOKRI ASLI PASS** · 35-44 FAIL (37 noise boundary 0.03% kharcha par) ·
-**45 Double 7s ASLI PASS kamzor** · 46-48, 50, 51 FAIL · **49 FTMO trend + IBS S&P ASLI PASS** · **52 teacher: USTEC IBS ASLI PASS** ·
-**53 FTMO #49 + IBS USTEC 1% ASLI PASS (2019+ 83/0, 2012-aaj +92%, DD 13.4%) = FTMO mansooba** · 54 = #37 + asli spread: TALAASH PASS +0.113R, **IMTIHAN 2025+ FAIL** (-0.037R, bina kharcha bhi -) = band. · 55-58 FAIL (trend 1H, IBS 4H, teacher 4H trend, IBS mandi) · **59 CHUTTI se pehle wala din (SPX+NDX) ASLI PASS** (2019+ 146 tr, jeet 68%) · 60 FTMO #53 + chutti FAIL · 61-63 IBS / Tide / Trend x Dow 30 share FAIL (faida = drift). · 64 TOM, 65 VIX: IMTIHAN FAIL · 66 trend 4H dhaat FAIL · **67 khirki x 7 non-US index PASS** · **68 FTMO #53 + khirki 0.15%: 83/0, median 10.8 (11.7 se) = ASLI PASS** (swap fix 1 Nov: 11.4 vs #53 11.9) -> JasKhirkiEA. · 69 + Tide oil FAIL (fail 0->11, bank) · 70 C1 local chutti x 7 index: TV TALAASH FAIL (312 tr, -0.007R, band) · 71 #68 + G2 DXY filter gold/chandi: CHUNAO 66/0 PASS, IMTIHAN FAIL (83/0 magar median 14.4 > 10.8) = band · 72 #68 + 4H trend EURUSD/USDJPY/AUDUSD: CHUNAO FAIL (fail 5 -> 25+) = forex trend band · 73 #68 + 2 SELL aaina (S1 trend + SMA200, S2 IBS): TALAASH FAIL (226 tr -0.004R) = SELL band · 74 3Commas EMA 21/50 2H x 11: TALAASH FAIL (2409 tr -0.041R, kharche se pehle 0) = band · 75 #74 + 4H Supertrend filter: TALAASH FAIL (1729 tr -0.019R, judge CLEAN) = band · **76 FTMO #68 + Kachhua BTC 0.5%: CHUNAO 70/0 (64/2 se), IMTIHAN 83/0 median 11.1 (11.4 se) = PASS kamzor** (judge CLEAN) -> user: BANK · 77 #68 + P2 risk 1.5x (+ pehra-shart G): CHUNAO FAIL (B 18 fail; C 60/0 pass kam), maloomat G akela 65/0 median 36.5 (A 64/2 38.5) · 78 #68 + G akela: IMTIHAN FAIL (83/0 magar median 12.1 > 11.4)
-Faida daily + 4H TOKRI par; chhoti TF ab asli kharche se dobara (har ek pehle se likh kar).
+## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
+
+82 koshish. ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)
 0. `KAHANI.txt` Sec 3 mein is chat ki 2-5 line + Sec 4 (ABHI) update (dobara mat banao, user 1 Nov).

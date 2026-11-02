@@ -120,12 +120,17 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 02-11 | #76 FTMO #68 + BTC Kachhua 0.5% | CHUNAO 70/0, IMTIHAN 83/0 median 11.1 | BANK (user) | BTC dekha hua = saboot kamzor; HIDAYAT "dekha hua"
 02-11 | #77 P2 risk 1.5x (+ user pehra-shart G) / #78 G akela | B 18 fail (2 crash din); #78 median 12.1 | FAIL | sim mein EA ka 4% din pehra nahi -> #79
 02-11 | JasDeskView v5.6 (lambi line toot) + research daur 6 | real account panel 2 column | chalu | -
+02-11 | #79 FTMO sim + EA ka 4% din pehra | A 55/11 (#68 64/2), B 49/22 | CHUNAO FAIL; USER: FTMO 83/0 par ROKO | pehra nuqsan pakka karta (2016-01-04)
+02-11 | NAYA MAQSAD $1000 cent EA (user: martingale + hedge NAAM le kar) | research daur 7: $10-20/din = ~80% doobna | #80 gold Asia 5m FAIL | 1m-15m par spread edge kha jata
+02-11 | #81 IBS + martingale 1.5x/3 qadam | 2019+ 401 tr +$382 ($0.19/din), girawat $37 = ASLI PASS | JasIbsCentEA c1 USD demo $1000 CHALU | saabit edge par chhota martingale
+02-11 | #82 gold 1m hedge-freeze (user ka tareeqa) | -$8,486, 99.9% waqt phansa | FAIL | hedge = SL der se + kharcha; user ko "sahab" nahi, "Jalal/yar"
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
 
-4. ABHI (2 Nov 2026)
-SIRF FTMO DEMO 474832446 chalu:
+4. ABHI (2 Nov 2026, 32vi chat ke baad)
+CENT DEMO 472716649 (Trial16, $1000 USD, teesra MT5 folder): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
+FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu:
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
   JasIbsEA i6    | US500m D1  | 20261022 | US500 USTEC 1%, faisla 16:15 NY
   JasKhirkiEA k2 | DE30m D1   | 20261101 | 7 non-US index 0.15%
