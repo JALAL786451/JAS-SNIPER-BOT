@@ -3,7 +3,7 @@
 Qaida (badalna mana): docs/purana-haal.md, grep "Koshish #77 qaida".
 
   python3 tools/ftmo77.py                                # CHUNAO 2012-2018: A, B, C (+ maloomat A+G)
-  python3 tools/ftmo77.py --imtihan --pakka --pick B|C   # 2019+ EK dafa (sirf CHUNAO ke chune par)
+  python3 tools/ftmo77.py --imtihan --pakka --pick B|C|G # 2019+ EK dafa (G = #78: #68 + G akela)
 
 A = #68 jyon ka tyon. B = A + P2 mein har lot 1.5x. C = B + G.
 G: nayi trade se pehle  bal - sum(khuli trades ka shuru risk $) - nayi ka risk $  <  max(din shuru - 4k, 91k)  => trade nahi.
@@ -86,10 +86,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--imtihan', action='store_true')
     ap.add_argument('--pakka', action='store_true')
-    ap.add_argument('--pick', choices=['B', 'C'])
+    ap.add_argument('--pick', choices=['B', 'C', 'G'])
     a = ap.parse_args()
     if a.imtihan and not (a.pakka and a.pick):
-        print('INKAAR: IMTIHAN (2019+) sirf EK dafa, CHUNAO ke baad, --imtihan --pakka --pick B|C se.')
+        print('INKAAR: IMTIHAN (2019+) sirf EK dafa, CHUNAO ke baad, --imtihan --pakka --pick B|C|G se.')
         sys.exit(2)
     base = list(FILES)
     syms = base + list(KH)
@@ -114,11 +114,11 @@ def main():
     print(f'JAANCH A == #68 engine (pehle 12 challenge): {"HAAN" if chk == chk2 else "NAHI"}')
     if chk != chk2:
         sys.exit(1)
-    runs = {'A': (1.0, False), 'B': (1.5, False), 'C': (1.5, True)}
+    runs = {'A': (1.0, False), 'B': (1.5, False), 'C': (1.5, True), 'G': (1.0, True)}   # G = #78
     if a.imtihan:
         runs = {'A': runs['A'], a.pick: runs[a.pick]}
     else:
-        runs['A+G (maloomat)'] = (1.0, True)
+        runs['A+G (maloomat)'] = runs.pop('G')
     print(f"{'IMTIHAN 2019+' if a.imtihan else 'CHUNAO 2012-2018'}: {len(starts)} challenge (kharcha asli)")
     print('run              | pass fail(P1/P2) adhoora | P1fail% | pass mahine median')
     rows = {}

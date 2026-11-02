@@ -1506,3 +1506,5 @@ Chalenge: A = #68 (isi run), B = A + P2 1.5x, C = B + G; maloomat: A + G.
 **Koshish #77 CHUNAO 2012-2018 (2 Nov) = FAIL (IMTIHAN nahi):** A (#68) 64 pass / 2 fail (1/1) / 18, median 38.5 | **B (P2 1.5x) 53 / 18 (1/17) / 13, median 29.9** | **C (B + G) 60 / 0 / 24, median 25.8** (pass - fail 60 < A 62 = shart toot) |
 maloomat A + G: **65 / 0 / 19, median 36.5** (A se har cheez mein behtar). B ke 17 P2 fail asal mein 2 din: Aug 2015 crash (2012-05..2013-10 wale 12 challenge) aur 2018 (2017-06..12 wale 5) - overlap wale challenge ek hi din girte. Engine jaanch: A == #68 (12/12).
 Sabaq: P2 mein risk barhana = ek bura din kai challenge gira deta; G (pehra-shart) fail rokta hai magar C mein adhoora barhe (24). G akela umeedwar (#78, user "D" baqi; CHUNAO ab dekha hua).
+**Koshish #78 qaida (2 Nov, user "D", test se PEHLE, badalna mana) - FTMO #68 + pehra-shart G akela (risk wahi, P2 wahi):** `tools/ftmo77.py --imtihan --pakka --pick G`.
+CHUNAO dekha hua (#77 maloomat 65/0/19 median 36.5 vs A 64/2/18 38.5). **IMTIHAN 2019-01..aaj EK dafa:** PASS = fail 0, pass >= A (isi run), median < A (isi run). Ginti +1.
