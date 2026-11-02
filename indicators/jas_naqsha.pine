@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n5, Pine v6, 2 Nov 2026; n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n5.1, Pine v6, 2 Nov 2026; n5.1 = CE10235 fix; n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -22,7 +22,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 10, line <= 4, plot 2, plotshape 1.
 // ============================================================================
-indicator("JAS Naqsha n5", "JAS Naqsha n5", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n5.1", "JAS Naqsha n5.1", overlay = true, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -127,6 +127,7 @@ f_closePos(Pos q, float xp) =>
         box.delete(q.bS)
         if not na(q.bT)
             box.delete(q.bT)
+    q.r
 
 if showPs and ok2
     if not na(cur) and cur.live
@@ -408,7 +409,7 @@ if barstate.islast
             table.delete(tb)
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n5", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA n5.1", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
