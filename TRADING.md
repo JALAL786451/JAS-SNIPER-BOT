@@ -59,7 +59,8 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 Judge: swap har calendar raat (bug fix) -> #68 IMTIHAN 83/0 median 11.4. Research daur 2-5 `docs/research/`. Trade page B: https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK
 (`tools/trade_page/`). Pine `indicators/jas_5ea.pine` p4 TV par CHALA (SPX500USD/NAS100USD 1D; USTECH = error, NAS100USD istemal). p5 commit 6adeabd
 (levels, alert, Abhi R, lot, agli khirki, warning) -> p6 judge READY (commit neeche), user ko link diya; TV SS ka intezar.
-**AGLA KAAM:** (a) jas_5ea p6 (commit 22f6c52, judge READY) - user TV SS dekho (error ho to line number); alert aur lot user khud ON kare.
+**31vi (2 Nov, isi chat mein):** jas_5ea p6 TV par CHALA (XAUUSD 1D, Abhi R sahi). #74 3Commas EMA 21/50 2H x 11 TALAASH FAIL (2409 tr -0.041R, kharche se pehle 0; judge CLEAN).
+**AGLA KAAM:** (a) user ka faisla: BTC Kachhua #75 (FTMO BTC swap pehle) ya kuch aur; 3Commas + 4H trend (B) NAHI (Claude raaye: faida 0 tha). Alert/lot user khud ON kare.
 User TV SS ka intezar. (b) Somwar demo EA ki pehli trades (user SS). (c) BTC Kachhua = #74, user "D" baqi (FTMO BTC swap pehle; user ka FTMO trial nahi, Exness demo).
 (d) User faisla baqi: paid FTMO challenge bhi "LIVE" (6 mahine demo) gina jaye? (e) Watchlist `docs/tv_watchlist_jas11.txt`; table mein click = TV mein na-mumkin (user ko bataya).
 HIDAYAT naye: discussion = sirf jawab (agent/test sirf "D" ke baad), aasan zabaan, judge har test ke baad, KAHANI dobara banana mana.

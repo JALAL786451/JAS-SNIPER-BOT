@@ -7,7 +7,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - #66 kharcha naap darj (XPT 0.249%, XPD 0.551%, XCU 0.056%) + script defaults (0.187 / 0.41
    - sawal-jawab: market EAs research, NinjaTrader, FTMO gap/Swing note
 
-2026-11-01  (45 kaam)
+2026-11-01  (48 kaam)
    - Add files via upload
-   - #71 data jaanch 1: reference DOLLARIDXUSD kharab (0.1 gol), banaya DXY sahi - user faisla
-   - jas_5ea.pine p5: purane nishan OFF, strategy levels, alerts, Abhi R, lot calc, agli khirki
+   - #71 data jaanch 2 PASS, TALAASH PASS (kamzor), CHUNAO PASS 66/0 - IMTIHAN se pehle
+   - TRADING sec 5: p6 READY
+
+2026-11-02  (3 kaam)
+   - #74 qaida (test se PEHLE): 3Commas Bot EMA 21/50 2H x 11 instrument
+   - #74 TALAASH FAIL (2409 tr -0.041R, gross ~0) - 3Commas band; c3_74.py
+   - judge #74 CLEAN, FAIL wahi

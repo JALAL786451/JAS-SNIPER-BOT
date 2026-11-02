@@ -121,3 +121,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - 2012 se 1m trades TradingView par apne data se? -> NAHI (TV bahar ka data nahi leta, 1m history chhoti); Python page B: https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK (1 Nov).
 - SELL wale EA? -> #73 TALAASH FAIL (228 tr -0.003R, swap kha gaya) - band; Pine mein sirf dekhne ko (1 Nov).
 - OANDA:USTECH par jas_5ea error? -> OANDA:NAS100USD istemal karein (1 Nov).
+- 3Commas Bot (EMA 21/50 cross, swing SL, 1:1) 2H par? -> #74 FAIL: 2409 tr -0.041R, kharche se pehle bhi 0 (2 Nov).
