@@ -1531,6 +1531,12 @@ Is liye saal 2009-2018, aadhe = 2009-13 aur 2014-18 (2015 bahar). Baqi sab wahi.
 PASS ho to IMTIHAN 2019+ EK dafa (wahi rules, 0.012%): Exp - 2SE > 0. Tab hi cent demo par 2x / 4 qadam martingale socha jaye. Claude umeed: ~10% (HOD). Ginti +1.
 **Koshish #80 TALAASH 2009-2018 (2 Nov) = FAIL (Chief Justice CLEAN):** 4429 tr (2015 bahar), ~2 tr/din. 0.012% par jeet 50.3%, Exp -0.034R (Exp-2SE -0.060); 0.006% par -0.010R; kharche se pehle +0.017R.
 Aadhe -0.018 / -0.056, musbat saal 2/9. C BAND hamesha ke liye (martingale bhi nahi). $1000 par 1% risk = ~-$0.7/din.
+**Koshish #81 qaida (2 Nov, 32vi chat, user "D"; research daur 7 candidate B; user ne MARTINGALE naam le kar maanga; test se PEHLE, badalna mana) - IBS daily + chhota martingale, $1000 cent (`tools/k81_ibs_mart.py`):**
+Trades: IBS #15 / JasIbsEA i6 jyon ki tyon (`ftmo_test.ibs_trades`, SL 3 ATR), US500 + USTEC, Dukascopy H1 (`data/ftmo`). TALAASH 2012-2018. Account $1000, har market ka alag chain (ek mkt ek position).
+**A** = har trade $10 risk (1% of $1000, fix). **B** = martingale: usi mkt mein trade haare (R < 0 kharche ke baad) to agli 1.5x ($15), phir 2.25x ($22.5); 3 qadam ke baad ya jeet par wapas $10. Account stop: balance < $800 = trading band.
+Kharcha: har taraf 0.75 x asli spread (FTMO sim jaisa); **faisla 2x kharche par** (cent markup).
+**TALAASH PASS B (sab, 2x kharcha):** (1) A ka Exp - 2SE > 0; (2) B kul $ > A kul $; (3) B max girawat < $200 aur account stop kabhi nahi; (4) bootstrap 10,000 (trades ki tarteeb ulat-pulat, 7 saal) mein account stop < 5%.
+Report: roz ka $ (kul / trading din), bura din, max girawat. PASS ho to IMTIHAN 2019+ EK dafa wahi shartein (aadha dekha: IBS base 2019+ pehle dekha). Claude umeed B ~40%. Ginti +1.
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
