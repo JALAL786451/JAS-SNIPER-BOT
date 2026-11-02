@@ -1537,6 +1537,9 @@ Trades: IBS #15 / JasIbsEA i6 jyon ki tyon (`ftmo_test.ibs_trades`, SL 3 ATR), U
 Kharcha: har taraf 0.75 x asli spread (FTMO sim jaisa); **faisla 2x kharche par** (cent markup).
 **TALAASH PASS B (sab, 2x kharcha):** (1) A ka Exp - 2SE > 0; (2) B kul $ > A kul $; (3) B max girawat < $200 aur account stop kabhi nahi; (4) bootstrap 10,000 (trades ki tarteeb ulat-pulat, 7 saal) mein account stop < 5%.
 Report: roz ka $ (kul / trading din), bura din, max girawat. PASS ho to IMTIHAN 2019+ EK dafa wahi shartein (aadha dekha: IBS base 2019+ pehle dekha). Claude umeed B ~40%. Ginti +1.
+**Koshish #81 = ASLI PASS (2 Nov, Chief Justice CLEAN; IMTIHAN aadha dekha - IBS base 2019+ pehle dekha):** TALAASH 2012-18: 269 tr, 2x kharcha Exp +0.080R (Exp-2SE +0.031), jeet 71%; A $10 fix +$216, **B martingale +$266**, girawat $55, stop/bootstrap 0%.
+IMTIHAN 2019-02..2026-10 EK dafa: 401 tr, Exp +0.074R (Exp-2SE +0.039), jeet 71%; A +$295 ($0.15/din), **B +$382 ($0.19/din)**, girawat $36.6, bura din -$20, stop 0%.
+Matlab: martingale ne ~30% zyada diya, khatra lagbhag wahi (3 qadam hadd). MAGAR $1000 par $10 base = $0.19/din; $10/din ke liye base ~50x = khatarnak. Risk ka faisla sirf user. Thin data (2012-17) caveat (judge).
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
