@@ -222,6 +222,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/ftmo77.py` - Koshish #77: FTMO #68 + P2 risk 1.5x + pehra-shart G; CHUNAO FAIL, G akela maloomat behtar (2 Nov)
 - `tools/ftmo79.py` - #79 FTMO sim + EA ka asli 4% din pehra (A0/A/B)
 - `docs/research/daur7-cent-martingale.md` - cent $1000 + martingale research (A/B/C KEEP, D/E/F REJECT) + HOD faisla; scripts `tools/research_cent/`
+- `tools/k80_asia_bb.py` - #80 gold Asia M5 Bollinger fade (histdata M1 2009-18) FAIL; data `data/histdata/`
 - `data/btc/Bitstamp_BTCUSD_d.csv` - BTC daily Bitstamp 2014-11 se (cryptodatadownload), #76 ke liye (2 Nov)
 - `indicators/jas_5ea.pine` - p6 (1 Nov, judge READY: levels, alert, Abhi R, lot, agli khirki, warning). p4: sirf chart wala instrument, Python 2012-aaj number, live haal, saaf nishan. p2: S2/B1 fix. p1: 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
 - `tools/trade_page/` - Trade Roznamcha page: gen.py + template.html -> roznamcha.html (artifact https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK), 5 EA 3,075 trades 2012-aaj (1 Nov)

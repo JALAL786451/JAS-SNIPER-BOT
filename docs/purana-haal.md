@@ -1529,6 +1529,8 @@ Data: Dukascopy XAUUSD M1 BID (UTC) 2005-01..2018-12 -> asli M5 candle. **Signal
 **Tarmeem (test se PEHLE, koi nateeja nahi dekha):** Dukascopy cloud ko rokta (503, ~20s/file = 23 ghante) -> data histdata.com XAUUSD M1 2009-2018 (New York waqt, DST samet -> UTC; QDM 2015 se milan: farq 0.02-0.03).
 Is liye saal 2009-2018, aadhe = 2009-13 aur 2014-18 (2015 bahar). Baqi sab wahi.
 PASS ho to IMTIHAN 2019+ EK dafa (wahi rules, 0.012%): Exp - 2SE > 0. Tab hi cent demo par 2x / 4 qadam martingale socha jaye. Claude umeed: ~10% (HOD). Ginti +1.
+**Koshish #80 TALAASH 2009-2018 (2 Nov) = FAIL (Chief Justice CLEAN):** 4429 tr (2015 bahar), ~2 tr/din. 0.012% par jeet 50.3%, Exp -0.034R (Exp-2SE -0.060); 0.006% par -0.010R; kharche se pehle +0.017R.
+Aadhe -0.018 / -0.056, musbat saal 2/9. C BAND hamesha ke liye (martingale bhi nahi). $1000 par 1% risk = ~-$0.7/din.
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
