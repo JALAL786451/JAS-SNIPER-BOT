@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n5.4, Pine v6, 2 Nov 2026; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n5.5, Pine v6, 3 Nov 2026; n5.5 = chhoti table default (4 line) + purane 4H BUY tikone band; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -24,7 +24,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 10, line <= 4, plot 2, plotshape 1.
 // ============================================================================
-indicator("JAS Naqsha n5.4", "JAS Naqsha n5.4", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n5.5", "JAS Naqsha n5.5", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -36,6 +36,7 @@ showPD = input.bool(false, "Kal (dotted) / pichhle hafte (dashed) ka High-Low", 
 grT = "2 · Table"
 showT  = input.bool(true, "Table dikhao", group = grT, display = display.none)
 tPos   = input.string("Middle Left", "Table ki jagah", options = ["Middle Left", "Top Left", "Bottom Left", "Middle Right", "Top Right", "Bottom Right", "Bottom Center"], group = grT, display = display.none)
+tFull  = input.bool(false, "Poori table (5 TF, RSI, ATR waghaira) - band = chhoti table", group = grT, display = display.none)
 tSize  = input.string("Small", "Likhai", options = ["Tiny", "Small", "Normal"], group = grT, display = display.none)
 
 grN = "3 · News waqt"
@@ -97,7 +98,7 @@ if flipUp or flipDn
 // entry ka faisla candle ke OPEN par (close badalta rehta = repaint nahi)
 dRukhO = na(m3) or na(n3) ? 0 : (open > m3 and open > n3 and m3 > n3) ? 1 : 0
 entryNow = flipUp and dRukhO > 0
-plotshape(showEn and entryNow, "4H BUY waqt", shape.triangleup, location.belowbar, color.new(#00e676, 0), size = size.small, text = "4H BUY", textcolor = color.new(#00e676, 0))
+plotshape(showEn and entryNow and (psOld or not showPs), "4H BUY waqt", shape.triangleup, location.belowbar, color.new(#00e676, 0), size = size.small, text = "4H BUY", textcolor = color.new(#00e676, 0))
 
 // ============================================================================
 //  4H POSITION (TV jaisa dabba): entry = mor wali 4H candle ka open; SL = psSL x ATR10 (4H) neeche;
@@ -111,6 +112,7 @@ type Pos
     box bT
     box bS
     label lb
+    label lE
     bool live
     float r
 
@@ -129,6 +131,7 @@ f_closePos(Pos q, float xp) =>
         box.delete(q.bS)
         if not na(q.bT)
             box.delete(q.bT)
+        label.delete(q.lE)
         q.lb := na
     q.r
 
@@ -150,7 +153,8 @@ if showPs and ok2
         tp = psTP > 0 ? e + psTP * (e - sl) : na
         bS = box.new(time, e, time, sl, xloc = xloc.bar_time, border_color = color.new(#c62828, 40), bgcolor = color.new(#c62828, 80), text = "SL " + str.tostring(sl, format.mintick), text_size = size.tiny, text_color = color.new(#ff8a80, 0), text_halign = text.align_left, text_valign = text.align_bottom)
         bT = psTP > 0 ? box.new(time, tp, time, e, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 40), bgcolor = color.new(#2e7d32, 80), text = "TP " + str.tostring(tp, format.mintick) + " (" + str.tostring(psTP, "0.0") + "R)", text_size = size.tiny, text_color = color.new(#b9f6ca, 0), text_halign = text.align_left, text_valign = text.align_top) : na
-        cur := Pos.new(time, e, sl, tp, bT, bS, na, true, na)
+        lE = showEn ? label.new(time, low, "4H BUY", xloc = xloc.bar_time, style = label.style_label_up, color = color.new(#00e676, 0), textcolor = color.black, size = size.small) : na
+        cur := Pos.new(time, e, sl, tp, bT, bS, na, lE, true, na)
         ps.push(cur)
         if ps.size() > psKeep
             old = ps.shift()
@@ -159,6 +163,7 @@ if showPs and ok2
                 box.delete(old.bT)
             if not na(old.lb)
                 label.delete(old.lb)
+            label.delete(old.lE)
 
 // ============================================================================
 //  ZONES: pivot -> jor -> array
@@ -407,9 +412,9 @@ if barstate.islast
             ln.push(line.new(t0d, pwh, time, pwh, xloc = xloc.bar_time, extend = extend.right, color = color.new(#90a4ae, 0), style = line.style_dashed, width = 1))
             ln.push(line.new(t0d, pwl, time, pwl, xloc = xloc.bar_time, extend = extend.right, color = color.new(#90a4ae, 0), style = line.style_dashed, width = 1))
 
-    if showT
-        if not na(tb)
-            table.delete(tb)
+    if not na(tb)
+        table.delete(tb)
+    if showT and tFull
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
         table.cell(tb, 0, 0, "JAS NAQSHA n5.3", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -505,3 +510,36 @@ if barstate.islast
         nW = na(nt) ? "" : " · news " + str.format_time(nt, "EEE HH:mm", "Asia/Karachi") + (str.contains(tag, "NFP") ? " NFP" : str.contains(tag, "FOMC") ? " FOMC" : "")
         table.cell(tb, 0, 0, word, text_color = wCol, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, wWhy + " · rukh " + kW + zW + oW + nW + "  (test nahi)", text_color = wCol, bgcolor = cHd, text_size = sz, text_halign = text.align_left)
+
+    // CHHOTI TABLE (default): 4 line
+    if showT and not tFull
+        sz = f_sz(tSize)
+        dUpA = na(nearUp) or na(aD) ? na : (nearUp - close) / aD
+        dDnA = na(nearDn) or na(aD) ? na : (close - nearDn) / aD
+        dMin = na(dUpA) ? dDnA : na(dDnA) ? dUpA : math.min(dUpA, dDnA)
+        sq = not na(bbPct) and bbPct <= 25
+        near = not na(dMin) and dMin <= 0.15
+        tLvl = near and sq ? "UNCHA" : near or sq ? "DARMIYANA" : "KAM"
+        [nt, tag] = f_nextNews()
+        fresh = lastFlipDir == 1 and not na(lastFlipT) and time - lastFlipT < 4 * 3600000
+        live = not na(cur) and cur.live and showPs and ok2
+        float liveR = na
+        if live
+            liveR := (close - cur.e) / (cur.e - cur.sl)
+        word = live ? "CHALU" : dRukh <= 0 ? "RUKO" : not ok2 ? "TAYYAR" : (d2 < 0 and fresh) ? "BUY" : d2 > 0 ? "TAYYAR" : "INTEZAR"
+        wCol = word == "BUY" or word == "CHALU" ? color.new(#00e676, 0) : word == "RUKO" ? color.new(#ff5252, 0) : color.new(#ffb300, 0)
+        wWhy = word == "CHALU" ? "BUY khuli, abhi " + str.tostring(liveR, "+0.0;-0.0") + "R" : word == "RUKO" ? "BUY nahi (1D upar nahi)" : word == "BUY" ? "entry ka waqt" : word == "TAYYAR" ? (ok2 ? "4H close > " + str.tostring(s2, format.mintick) : "4H chart dekhein") : "agle 4H mor ka intezar"
+        kW = nUp > nDn and nUp * 2 > nTf ? "UPAR" : nDn > nUp and nDn * 2 > nTf ? "NEECHE" : "MILA"
+        rTx = "1D " + (dRukh > 0 ? "UPAR" : dRukh < 0 ? "NEECHE" : "MILA") + (ok2 ? " · 4H " + (dv2 > 0 ? "UPAR" : dv2 < 0 ? "NEECHE" : "MILA") : "") + " · kul " + kW
+        zTx = (nearUpTx == "" ? "R -" : "R " + str.tostring(nearUp, format.mintick)) + " · " + (nearDnTx == "" ? "S -" : "S " + str.tostring(nearDn, format.mintick)) + (tLvl == "KAM" ? "" : " · toot " + tLvl)
+        nTx = na(nt) ? "-" : str.format_time(nt, "EEE HH:mm", "Asia/Karachi") + " PKT" + (str.contains(tag, "NFP") ? " NFP" : str.contains(tag, "FOMC") ? " FOMC" : "")
+        tb := table.new(f_pos(tPos), 2, 4, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
+        table.cell(tb, 0, 0, word, text_color = wCol, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 0, wWhy, text_color = wCol, text_size = sz, text_halign = text.align_left)
+        table.cell(tb, 0, 1, "Rukh", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 1, rTx, text_color = f_dirCol(dRukh), text_size = sz, text_halign = text.align_left)
+        table.cell(tb, 0, 2, "Zone", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 2, zTx, text_color = tLvl == "UNCHA" ? color.new(#ff5252, 0) : tLvl == "DARMIYANA" ? color.new(#ffb300, 0) : cTx, text_size = sz, text_halign = text.align_left)
+        table.cell(tb, 0, 3, "News", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 3, nTx, text_color = str.contains(tag, "NFP") or str.contains(tag, "FOMC") ? color.new(#ff9800, 0) : cTx, text_size = sz, text_halign = text.align_left)
+
