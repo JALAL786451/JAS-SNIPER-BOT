@@ -1540,6 +1540,12 @@ Report: roz ka $ (kul / trading din), bura din, max girawat. PASS ho to IMTIHAN 
 **Koshish #81 = ASLI PASS (2 Nov, Chief Justice CLEAN; IMTIHAN aadha dekha - IBS base 2019+ pehle dekha):** TALAASH 2012-18: 269 tr, 2x kharcha Exp +0.080R (Exp-2SE +0.031), jeet 71%; A $10 fix +$216, **B martingale +$266**, girawat $55, stop/bootstrap 0%.
 IMTIHAN 2019-02..2026-10 EK dafa: 401 tr, Exp +0.074R (Exp-2SE +0.039), jeet 71%; A +$295 ($0.15/din), **B +$382 ($0.19/din)**, girawat $36.6, bura din -$20, stop 0%.
 Matlab: martingale ne ~30% zyada diya, khatra lagbhag wahi (3 qadam hadd). MAGAR $1000 par $10 base = $0.19/din; $10/din ke liye base ~50x = khatarnak. Risk ka faisla sirf user. Thin data (2012-17) caveat (judge).
+**Koshish #82 qaida (2 Nov, 32vi chat, user "D"; user ne HEDGE naam le kar maanga: "SL ki zaroorat nahi, SL = hedge, news par rok, trend badle to hedge chhote nuqsan par band, trade chalti rahe"; test se PEHLE, badalna mana) - gold 1m EMA20/50 + hedge-freeze (`tools/k82_hedge.py`):**
+Data: histdata XAUUSD M1 2009-2018 (NY waqt). Size 1 oz (= 0.01 lot standard; $1 qeemat = $1). Ek waqt ek tokri (asli + zyada se zyada 1 hedge). Account $1000.
+**Entry:** flat ho aur news rok na ho to agli M1 open par EMA20 vs EMA50 (M1 close) ke rukh mein. **TP:** asli trade entry se +$1. **Hedge:** qeemat entry se $3 ulti = ulta 1 oz hedge (NET freeze).
+**Hedge band:** EMA rukh wapas asli trade ki taraf ho jaye to agli M1 open par hedge band; asli chalti rahe (TP wahi, $3 par phir hedge). Ek M1 mein TP aur hedge dono = hedge pehle.
+**News rok:** Mon-Fri NY 08:30, 10:00, 14:00 ke ±15 minute nayi entry aur hedge-band NAHI (hedge lagna chalu). Kharcha har leg 0.24 round trip; **faisla 2x (0.48)**. Muqabla S = wahi magar $3 par asli band (SL).
+**TALAASH PASS (sab, 2x):** (1) H kul $ > 0; (2) 2009-13 aur 2014-18 dono musbat; (3) max girawat (M1 close par equity) < $200; (4) H kul > S kul. Report roz ka $, bura din. PASS ho to IMTIHAN QDM 2021-24 EK dafa wahi shartein. Claude umeed ~5%. Ginti +1.
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".

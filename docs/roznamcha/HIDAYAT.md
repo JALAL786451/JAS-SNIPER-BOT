@@ -96,3 +96,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | FTMO ruka | User (2 Nov, 32vi): FTMO talaash #68 = 83/0 par ROKO. Naya kaam = $1000 Standard CENT (100k USC) ka EA, 1m/5m/15m. | 2 Nov |
 | martingale | User ne 2 Nov naam le kar MARTINGALE maanga (cent EA ke liye, FTMO mana qaide bhi chalenge, tez trades). Grid / hedging / averaging NAAM nahi liya = abhi NAHI. Ek mkt ek position wahi. Nateeja roz ka $ mein (kya $10/$20 roz?). | 2 Nov |
 | team naam | User: "Research expert agent, Head of the Department, Chief Justice" = research agent -> research judge -> code/test judge. | 2 Nov |
+| hedge | User ne 2 Nov naam le kar HEDGE maanga (cent EA): SL ki jagah hedge-freeze, news par rok, trend badle to hedge chhote nuqsan par band (#82). | 2 Nov |
