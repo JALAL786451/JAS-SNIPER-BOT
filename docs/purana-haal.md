@@ -1508,3 +1508,4 @@ maloomat A + G: **65 / 0 / 19, median 36.5** (A se har cheez mein behtar). B ke 
 Sabaq: P2 mein risk barhana = ek bura din kai challenge gira deta; G (pehra-shart) fail rokta hai magar C mein adhoora barhe (24). G akela umeedwar (#78, user "D" baqi; CHUNAO ab dekha hua).
 **Koshish #78 qaida (2 Nov, user "D", test se PEHLE, badalna mana) - FTMO #68 + pehra-shart G akela (risk wahi, P2 wahi):** `tools/ftmo77.py --imtihan --pakka --pick G`.
 CHUNAO dekha hua (#77 maloomat 65/0/19 median 36.5 vs A 64/2/18 38.5). **IMTIHAN 2019-01..aaj EK dafa:** PASS = fail 0, pass >= A (isi run), median < A (isi run). Ginti +1.
+**Koshish #78 IMTIHAN 2019+ (2 Nov, EK dafa) = FAIL:** A 83/0/11 median 11.4 | G 83/0/11 **median 12.1** (> 11.4). 2019+ mein A ka koi fail tha hi nahi - G sirf trades rokta = dheema. G BAND (FTMO challenge ke liye); sabaq: pehra-shart fail wale daur mein madad, warna waqt barhata.
