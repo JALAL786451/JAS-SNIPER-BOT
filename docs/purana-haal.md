@@ -1463,3 +1463,12 @@ Somwar: pehli trades + TV `JAS FTMO 53 f2` dabba ka SS milao; 1-2 hafte baad VPS
 **Kitab (30 Oct raat, LIVE, gold 3,874):** 90 BUY 1.85 lot @3985.28 + 1 SELL 1.65 @3904.33 (dhaal), NET +0.20, kul -15,618 USC; equity ~34,700. SELL band = ~3,690 par khatam (tafseel purana-haal).
 **RUKE HUE KAAM (Pine par yaad dilao "sahi nateeja MT5 / Python"):** JasIbsEA i3 Tester US500m 2015-aaj (F7 ✅). Demo 6 EA (sec 7): ~Apr 2027 tak, har trade TV se milao.
 
+**Koshish #74 qaida (2 Nov, 31vi chat, user "A ke liye D", test se PEHLE, badalna mana) - "3Commas Bot" (user ka diya Pine, defaults jyon ke tyon) 2H x 11 instrument (`tools/c3_74.py`):**
+Data Dukascopy H1 (data/ftmo 4 + JAS_ZIP 7 index CFD) -> 2H candle (17:00 NY din, NY+7h // 2). EMA(close) 21 aur 50 (ta.ema), ATR14 (RMA), swing 5 (us candle samet pichhli 5 ka low/high).
+**BUY:** band candle par EMA21 EMA50 ko neeche se oopar kaate -> agli 2H open par BUY; SL = lowest low(5) - 1 x ATR14 (signal candle par); TP = signal close + 1 x (signal close - SL) (RnR 1).
+**SELL:** ulta (crossunder; SL = highest high(5) + ATR; TP = close - 1 x (SL - close)). FLIP band = nayi trade sirf khali hone par (khuli trade ke dauran ulta signal bekaar). Trail / max DD / time filter band.
+Band: SL ya TP (SL pehle agar dono ek candle mein - ehtiyat); gap = open par. Fill qeemat SL ke paar ho (faasla <= 0) = trade nahi. 1R = |entry - SL|.
+Kharcha 0.75 x asli spread har taraf (#53 ASLI), index CFD 0.02%, swap 3%/saal har calendar raat dono rukh (unka 0.05% commission nahi - hamara asli kharcha).
+**TALAASH** entry < 2019 (XAU/XAG 2003 se, baqi data shuru se): PASS = kul >= 100 tr aur kul Exp - 2SE > 0 (BUY + SELL mila kar); BUY / SELL / har market alag MALOOMAT.
+**IMTIHAN** 2019-01..aaj EK dafa (sirf TALAASH PASS par): kul >= 30 tr aur Exp - 2SE > 0 -> phir FTMO jor (#68 + ye) ka alag qaida. FAIL = band. Ginti +1 (BTC Kachhua ab #75).
+Claude umeed ~10% (#18 MA 1H FAIL, 2H + 1:1 par spread, SELL drift).
