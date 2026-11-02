@@ -1522,6 +1522,11 @@ Imaandari: B ka CHUNAO #77 mein dekha hua (bina D 53/18). Claude umeed: B ~35%. 
 **B (+D, P2 1.5x) 49/22 (5/17)/13 median 27.9**. A ke 9 naye fail = ek din 2016-01-04 (China crash): din shuru 94.7k, pichle din ki khuli trades ka floating nuqsan + us din ka = 4% -> D ne sab band kiya
 (90.66k), koi trade wapas aane ko nahi bachi, 10 din baad 90k toota. Bina D trades wapas aa gayin. Sabaq: 4% pehra fail wale din bachata magar balance 90k ke qareeb ho to nuqsan "pakka" kar deta.
 Asli EA mein D chalu hai (t5/i6/k2) = sim #68 number thore khush-fehm (2012-18). 4% ko badalna = risk hadd (sirf user).
+**Koshish #80 qaida (2 Nov, 32vi chat, user "D"; research daur 7 candidate C, HOD ke rules; test se PEHLE, badalna mana) - gold Asia M5 Bollinger fade, BINA martingale (`tools/k80_asia_bb.py`):**
+Data: Dukascopy XAUUSD M1 BID (UTC) 2005-01..2018-12 -> asli M5 candle. **Signal:** M5 close > BB(20,2) upar = SELL, < neeche = BUY, agli M5 ki open par entry; entry candle 00:00-05:55 UTC. Ek waqt ek trade, koi filter nahi.
+**Exit:** TP = SL = entry ka 0.25%; M1 se jaancho, ek M1 mein dono chhooye = SL. 07:00 UTC tak band na ho to 07:00 ki M1 open par band. Kharcha round trip 0.006% (maloomat) aur **0.012% (faisla, cent markup)**.
+**TALAASH PASS (teeno, 0.012% par, 2015 bahar = pehle dekha hua):** Exp - 2SE > 0; dono aadhe (2005-11, 2012-18) musbat; >= 60% saal musbat. Fail = C hamesha ke liye BAND (martingale bhi nahi).
+PASS ho to IMTIHAN 2019+ EK dafa (wahi rules, 0.012%): Exp - 2SE > 0. Tab hi cent demo par 2x / 4 qadam martingale socha jaye. Claude umeed: ~10% (HOD). Ginti +1.
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
