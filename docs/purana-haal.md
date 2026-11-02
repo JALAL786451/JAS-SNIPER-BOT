@@ -1597,3 +1597,13 @@ TALAASH 2012-18, phir 2019+ EK dafa (aadha dekha: teeno 2019+ pehle dekhe). Lot 
 **Koshish #83 = PASS (2 Nov, 33vi chat; judge nahi chala; IMTIHAN aadha dekha - teeno 2019+ pehle dekhe):** TALAASH 2012-18 (2x): 1118 tr = 3.08/hafta, kul +$253 vs #81 B +$234 (Trend 2012-18 ~0: +$10), girawat $110, stop nahi, bootstrap 0.37% = PASS (bal-bal).
 IMTIHAN 2019-01..2026-10 EK dafa (2x): 1550 tr = **3.81/hafta** (IBS 0.99, Trend 1.58, Khirki 1.25), kul **+$931** (roz $0.46, mahina ~$9.6) vs #81 B +$348, girawat **$93**, bura din -$27, stop/bootstrap 0% = PASS.
 Pehli dafa script mein 2003+ gold data gina gaya (din ghalat) -> qaide wala 2012 se theek kiya, phir chalaya. Agla: demo par lot fit (Standard account par gold/chandi/index ki 0.01 lot $7.5 / $1.5 se bohot bari = trade CHHOOTI).
+
+**Koshish #84 qaida (2 Nov, 33vi chat; user ne "research expert agent + judges" naam le kar manga; research daur 8 `docs/research/daur8-range-agent.md`; test se PEHLE, badalna mana) - gold RANGE BARS (`tools/k84_range.py`):**
+Research: range bars ka koi saabit edge NAHI (sirf time ki jagah qeemat ki ghari); TV range strategy = ghair-haqeeqi fill (TV khud warning).
+Range bars histdata M1 se: har minute ka raasta O->L->H->C (close >= open) warna O->H->L->C; bar band jab range = R; ek minute mein kai bar ho sakte.
+**Qadam 0 GATE (kharche ke baghair, 2009-2013 SIRF):** R = $5, $10, $20; k = 1..5 ek rang ke bar ke baad agla bar usi rang ka kitna % (p).
+GATE PASS = kisi (R,k) par |p - 50%| > 2SE + hurdle (hurdle = 0.24/R = $5 4.8pt, $10 2.4pt, $20 1.2pt) AUR raasta ulta (O->H->L->C hamesha ulta) par bhi wahi taraf + 30% se kam girawat.
+GATE FAIL = A aur B dono BAND (test nahi). GATE PASS (p > 50% = A naali breakout $10; p < 50% = B thakan fade $10) -> agla qaida wahi jo agent ne likha, TALAASH 2009-18 2x kharcha.
+Claude umeed GATE PASS ~15%. Ginti +1.
+**Koshish #84 GATE = FAIL (2 Nov):** 2009-13, 1.68M M1. Koi (R,k) hurdle par paar nahi: $10 k=2 aam 50.4% / ulta 52.3%; $20 k=2 52.9% / 54.3% (SE 1.7-1.8%, 2SE+hurdle ~4.7pt). Lambi qatar (k=5) ke baad halka ulta (44-47%) magar SE 2.4-5% = shor.
+Sabaq: M1 ke andar raasta (O-L-H-C vs O-H-L-C) badalne se hi 1-2 point farq = range bar ka "edge" data banane ka tareeqa hai, bazaar nahi. A + B BAND (test nahi). Range bars BAND.
