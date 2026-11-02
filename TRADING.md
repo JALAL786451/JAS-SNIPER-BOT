@@ -1,5 +1,14 @@
 # TRADING — har nayi chat SIRF ye ek file parhe
 
+## 0. MT5 NAQSHA (sirf user ke SS se; har nayi chat ka PEHLA jawab ye table dikhaye, user tasdeeq kare)
+MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
+| Title bar account | Server | Qism | Balance | EA (chart) | Algo | Pakka |
+|---|---|---|---|---|---|---|
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | user hara kar raha | 2 Nov SS |
+| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | hara | 2 Nov SS |
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | ~37k USC | sirf JasDeskView v5.6 (XAUUSDc D1) | laal | 2 Nov SS |
+2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.
+
 **Nayi chat ka message (copy-paste):**
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
 Agar kabhi kaam na kare to lamba: `TRADING — repo JALAL786451/JAS-SNIPER-BOT, branch claude/jas-desk-v3-0110-yu3w2h. Sirf TRADING.md parho aur wahin se shuru karo.`

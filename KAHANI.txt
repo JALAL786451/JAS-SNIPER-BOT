@@ -130,7 +130,7 @@ KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
 
 4. ABHI (2 Nov 2026, 32vi chat ke baad)
-CENT DEMO 472716649 (Trial16, $1000 USD, teesra MT5 folder): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
+DEMO 472716649 (Trial16, STANDARD USD ~$2000 - cent NAHI, SS 2 Nov; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
 FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu:
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
   JasIbsEA i6    | US500m D1  | 20261022 | US500 USTEC 1%, faisla 16:15 NY
