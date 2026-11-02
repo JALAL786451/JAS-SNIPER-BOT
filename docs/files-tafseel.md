@@ -233,3 +233,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/JAS_DXY.bat` - laptop ek click: EURUSD, USDJPY, USDSEK H1 Dukascopy se (#71 ke liye) (1 Nov)
 - `indicators/jas_c1.pine` c1 - #70 local chutti se pehle wala din x 7 index (TV TALAASH/IMTIHAN)
 - `tools/k83_teen.py` - #83 cent $1000: #81 IBS martingale + Trend 4H $7.5 + Khirki $1.5 = PASS (2019+ 3.8 tr/hafta, +$931, girawat $93)
+- `.claude/settings.json` + `.claude/hooks/naqsha.sh` (SessionStart: MT5 NAQSHA + sec 5 + ABHI khud context mein) + `save.sh` (Stop: har jawab ke baad khud commit+push) - user ijazat 2 Nov
