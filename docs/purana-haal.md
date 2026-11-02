@@ -1607,3 +1607,4 @@ GATE FAIL = A aur B dono BAND (test nahi). GATE PASS (p > 50% = A naali breakout
 Claude umeed GATE PASS ~15%. Ginti +1.
 **Koshish #84 GATE = FAIL (2 Nov):** 2009-13, 1.68M M1. Koi (R,k) hurdle par paar nahi: $10 k=2 aam 50.4% / ulta 52.3%; $20 k=2 52.9% / 54.3% (SE 1.7-1.8%, 2SE+hurdle ~4.7pt). Lambi qatar (k=5) ke baad halka ulta (44-47%) magar SE 2.4-5% = shor.
 Sabaq: M1 ke andar raasta (O-L-H-C vs O-H-L-C) badalne se hi 1-2 point farq = range bar ka "edge" data banane ka tareeqa hai, bazaar nahi. A + B BAND (test nahi). Range bars BAND.
+**Judge #84 CLEAN** (`docs/research/judge-84.md`): random walk par builder 49.3-50.3% (bias nahi); hamesha O-H-L-C bhi paar nahi (best $20 k=2 53.5%); "run == k" bhi nahi. GATE FAIL pakka.
