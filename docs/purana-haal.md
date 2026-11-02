@@ -1526,6 +1526,8 @@ Asli EA mein D chalu hai (t5/i6/k2) = sim #68 number thore khush-fehm (2012-18).
 Data: Dukascopy XAUUSD M1 BID (UTC) 2005-01..2018-12 -> asli M5 candle. **Signal:** M5 close > BB(20,2) upar = SELL, < neeche = BUY, agli M5 ki open par entry; entry candle 00:00-05:55 UTC. Ek waqt ek trade, koi filter nahi.
 **Exit:** TP = SL = entry ka 0.25%; M1 se jaancho, ek M1 mein dono chhooye = SL. 07:00 UTC tak band na ho to 07:00 ki M1 open par band. Kharcha round trip 0.006% (maloomat) aur **0.012% (faisla, cent markup)**.
 **TALAASH PASS (teeno, 0.012% par, 2015 bahar = pehle dekha hua):** Exp - 2SE > 0; dono aadhe (2005-11, 2012-18) musbat; >= 60% saal musbat. Fail = C hamesha ke liye BAND (martingale bhi nahi).
+**Tarmeem (test se PEHLE, koi nateeja nahi dekha):** Dukascopy cloud ko rokta (503, ~20s/file = 23 ghante) -> data histdata.com XAUUSD M1 2009-2018 (New York waqt, DST samet -> UTC; QDM 2015 se milan: farq 0.02-0.03).
+Is liye saal 2009-2018, aadhe = 2009-13 aur 2014-18 (2015 bahar). Baqi sab wahi.
 PASS ho to IMTIHAN 2019+ EK dafa (wahi rules, 0.012%): Exp - 2SE > 0. Tab hi cent demo par 2x / 4 qadam martingale socha jaye. Claude umeed: ~10% (HOD). Ginti +1.
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
