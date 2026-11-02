@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n5.3, Pine v6, 2 Nov 2026; n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n5.4, Pine v6, 2 Nov 2026; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -18,11 +18,13 @@
 //      0 karein to B1 jaisa sirf mor par band). Laal = SL, hara = TP. Sirf 4H ya chhota chart.
 //      n5: band position chart se hat jati hai (Settings "Purani dikhao" ON = "+1.2R" label ke saath).
 //      AGLI (dotted, andaza): 1D UPAR + 4H Supertrend abhi neeche -> entry ~ 4H Supertrend lakeer, SL / TP isi se. % nahi diya (B1 jeet 37-43%).
+//   8) KHULASA (table ki pehli line): ek lafz - RUKO (1D neeche) / TAYYAR (1D upar, 4H mor ka intezar) / BUY (entry waqt) /
+//      CHALU (BUY khuli) / INTEZAR (4H pehle se upar) + jumla: rukh, qareeb zone + toot, OB/OS, agli news.
 //  IMAANDARI: ye sab TEST NAHI hua (zones / rukh / toot = sirf naqsha). Pakke number sirf jas_5ea ki table mein.
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 10, line <= 4, plot 2, plotshape 1.
 // ============================================================================
-indicator("JAS Naqsha n5.3", "JAS Naqsha n5.3", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n5.4", "JAS Naqsha n5.4", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -477,8 +479,29 @@ if barstate.islast
         table.cell(tb, 1, 13, hTx, text_color = hCol, text_size = sz)
         table.merge_cells(tb, 1, 13, 3, 13)
         // 4H position
-        pTx = not (showPs and ok2) ? "-" : na(cur) ? "abhi tak koi nahi" : cur.live ? "KHULI BUY " + str.tostring(cur.e, format.mintick) + " | SL " + str.tostring(cur.sl, format.mintick) + (na(cur.tp) ? "" : " | TP " + str.tostring(cur.tp, format.mintick)) + " | abhi " + str.tostring((close - cur.e) / (cur.e - cur.sl), "+0.0;-0.0") + "R" : "band - aakhri " + str.tostring(cur.r, "+0.0;-0.0") + "R (" + str.format_time(cur.t0, "dd MMM", "Asia/Karachi") + ")"
-        pCol = na(cur) or not (showPs and ok2) ? color.gray : cur.live ? color.new(#00e676, 0) : cur.r >= 0 ? color.new(#66bb6a, 0) : color.new(#ef5350, 0)
+        string pTx = not (showPs and ok2) ? "-" : "abhi tak koi nahi"
+        color pCol = color.gray
+        if showPs and ok2 and not na(cur)
+            if cur.live
+                pTx := "KHULI BUY " + str.tostring(cur.e, format.mintick) + " | SL " + str.tostring(cur.sl, format.mintick) + (na(cur.tp) ? "" : " | TP " + str.tostring(cur.tp, format.mintick)) + " | abhi " + str.tostring((close - cur.e) / (cur.e - cur.sl), "+0.0;-0.0") + "R"
+                pCol := color.new(#00e676, 0)
+            else
+                pTx := "band - aakhri " + str.tostring(cur.r, "+0.0;-0.0") + "R (" + str.format_time(cur.t0, "dd MMM", "Asia/Karachi") + ")"
+                pCol := cur.r >= 0 ? color.new(#66bb6a, 0) : color.new(#ef5350, 0)
         table.cell(tb, 0, 14, "4H POSITION", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 14, pTx, text_color = pCol, text_size = sz)
         table.merge_cells(tb, 1, 14, 3, 14)
+        // KHULASA (sab ka nichor, ek line) - table ki pehli line
+        live = not na(cur) and cur.live and showPs and ok2
+        float liveR = na
+        if live
+            liveR := (close - cur.e) / (cur.e - cur.sl)
+        word = live ? "CHALU" : dRukh <= 0 ? "RUKO" : not ok2 ? "TAYYAR" : (d2 < 0 and fresh) ? "BUY" : d2 > 0 ? "TAYYAR" : "INTEZAR"
+        wCol = word == "BUY" or word == "CHALU" ? color.new(#00e676, 0) : word == "RUKO" ? color.new(#ff5252, 0) : color.new(#ffb300, 0)
+        wWhy = word == "CHALU" ? "BUY khuli, abhi " + str.tostring(liveR, "+0.0;-0.0") + "R" : word == "RUKO" ? "1D rukh UPAR nahi - BUY nahi" : word == "BUY" ? "4H mor + 1D UPAR = entry ka waqt" : word == "TAYYAR" ? (ok2 ? "1D UPAR, 4H close " + str.tostring(s2, format.mintick) + " se upar ka intezar" : "1D UPAR - 4H chart par entry dekhein") : "1D UPAR, 4H pehle se upar - agle mor ka intezar"
+        kW = nUp > nDn and nUp * 2 > nTf ? "UPAR" : nDn > nUp and nDn * 2 > nTf ? "NEECHE" : "MILA"
+        zW = side == "" ? "" : " · " + side + (tLvl == "KAM" ? "" : " (toot " + tLvl + ")")
+        oW = na(rsiC) ? "" : rsiC >= 70 ? " · OVERBOUGHT" : rsiC <= 30 ? " · OVERSOLD" : ""
+        nW = na(nt) ? "" : " · news " + str.format_time(nt, "EEE HH:mm", "Asia/Karachi") + (str.contains(tag, "NFP") ? " NFP" : str.contains(tag, "FOMC") ? " FOMC" : "")
+        table.cell(tb, 0, 0, word, text_color = wCol, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 1, 0, wWhy + " · rukh " + kW + zW + oW + nW + "  (test nahi)", text_color = wCol, bgcolor = cHd, text_size = sz, text_halign = text.align_left)
