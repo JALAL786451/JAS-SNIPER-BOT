@@ -93,3 +93,6 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | research team | Talaash ka tareeqa `docs/research-team.md`: Research agent -> Research judge -> Chief (main session, alag agent nahi) -> code judges. Agent 2019+ kabhi na dekhe. Chhoti TF bhi dhoondo magar asli spread + 2020 ke baad saboot + MT5 ticks (user 1 Nov). | 1 Nov |
 | FTMO offer | FTMO khareedne / fees ki baat par aur Nov / Dec ki chat mein ftmo.com ka chalu offer KHUD check karke batao (Claude chat ke bahar website nahi dekh sakta - sirf jab baat ho). | 1 Nov |
 | nayi chat | User (1 Nov): nayi chat ko kuch batana na pare - sec 5 mein agla kaam + qaida ka grep likho; user sirf "TRADING" + SS bhejega. | 1 Nov |
+| FTMO ruka | User (2 Nov, 32vi): FTMO talaash #68 = 83/0 par ROKO. Naya kaam = $1000 Standard CENT (100k USC) ka EA, 1m/5m/15m. | 2 Nov |
+| martingale | User ne 2 Nov naam le kar MARTINGALE maanga (cent EA ke liye, FTMO mana qaide bhi chalenge, tez trades). Grid / hedging / averaging NAAM nahi liya = abhi NAHI. Ek mkt ek position wahi. Nateeja roz ka $ mein (kya $10/$20 roz?). | 2 Nov |
+| team naam | User: "Research expert agent, Head of the Department, Chief Justice" = research agent -> research judge -> code/test judge. | 2 Nov |
