@@ -59,6 +59,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 ## D. MQL5 / Pine kaam ke qaide (sirf EA / Pine likhte waqt grep "MQL5" ya "Pine")
 
 - MQL5 + Pine: har file ki pehli line(on) mein build number, panel / title par bhi wahi.
+- File user ko: sirf EK GitHub blob link (download card NAHI, user 2 Nov).
 - MQL5: `StringFormat("sirf likhai")` error deta hai - kam az kam ek value. String ke liye `cond ? "" : "..."` nahi, `Pick()` helper.
 - MQL5: doori se pehle `SYMBOL_DIGITS` aur `SYMBOL_TRADE_STOPS_LEVEL` (3-digit gold par 300 points = $0.30).
 - MQL5: `OrderCalcProfit` jaisi warning bhi theek karo (0 maan kar ghalat faisla).
@@ -98,3 +99,5 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | team naam | User: "Research expert agent, Head of the Department, Chief Justice" = research agent -> research judge -> code/test judge. | 2 Nov |
 | hedge | User ne 2 Nov naam le kar HEDGE maanga (cent EA): SL ki jagah hedge-freeze, news par rok, trend badle to hedge chhote nuqsan par band (#82). | 2 Nov |
 | naam | User (2 Nov): "sahab" NAHI - sirf "Jalal" ya "yar" kaho. | 2 Nov |
+| file link | User (2 Nov): Pine / EA file DOWNLOAD (SendUserFile) NAHI - sirf EK GitHub link: `https://github.com/JALAL786451/JAS-SNIPER-BOT/blob/claude/jas-desk-v3-0110-yu3w2h/<path>`; user wahan copy button se copy karta hai. | 2 Nov |
+| MT5 naam | User (2 Nov): MT5 ko "pehla/doosra/teesra" NAHI - title bar ka account number (TRADING.md sec 0 MT5 NAQSHA). | 2 Nov |
