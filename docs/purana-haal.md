@@ -1510,6 +1510,15 @@ Sabaq: P2 mein risk barhana = ek bura din kai challenge gira deta; G (pehra-shar
 CHUNAO dekha hua (#77 maloomat 65/0/19 median 36.5 vs A 64/2/18 38.5). **IMTIHAN 2019-01..aaj EK dafa:** PASS = fail 0, pass >= A (isi run), median < A (isi run). Ginti +1.
 **Koshish #78 IMTIHAN 2019+ (2 Nov, EK dafa) = FAIL:** A 83/0/11 median 11.4 | G 83/0/11 **median 12.1** (> 11.4). 2019+ mein A ka koi fail tha hi nahi - G sirf trades rokta = dheema. G BAND (FTMO challenge ke liye); sabaq: pehra-shart fail wale daur mein madad, warna waqt barhata.
 
+**Koshish #79 qaida (2 Nov, 32vi chat, user "D" pichli chat mein; test se PEHLE, badalna mana) - FTMO sim mein EA ka ASLI 4% din pehra (`tools/ftmo79.py`):**
+#68 bilkul wahi (trend 4H 0.75 + IBS 1.0 + khirki 0.15, asli kharcha, swap 3%). **Pehra D:** har H1 par agar worst equity (khuli trades low/high samet) < din shuru (`dstart`) - 4% x 100k
+=> SAB trades isi H1 par band. Band qeemat (EA har tick dekhta): equity = din shuru - 4k par; agar H1 KHULTE hi (open qeemat, gap) equity us se neeche ho to open wali equity (jo mile).
+Band karne ka kharcha (spread) bhi kate. Us CET din nayi trade NAHI (agle CET din se). Fail shart FTMO wahi: band ke baad equity < dstart - 5k ya < 90k = fail (sirf gap se mumkin); warna worst < 5%/90k jaanch pehle jaisi.
+Run: A = #68 + D, B = A + P2 1.5x lot (+ D). Maloomat: A0 = #68 bina D (engine jaanch == #68).
+**CHUNAO 2012-2018:** B umeedwar = P1 fail < 20%, pass > fail, (pass - fail) >= A ka, median < A ka. Na mile = FAIL (A + D akela IMTIHAN tabhi jab A, A0 se behtar: fail kam aur median <= A0; warna D sirf pehra, sim number #68 wale).
+**IMTIHAN 2019-01..aaj EK dafa** (`--imtihan --pakka --pick B|A`): PASS = fail 0, pass >= A0 (isi run), median < A0 (isi run). Ginti +1.
+Imaandari: B ka CHUNAO #77 mein dekha hua (bina D 53/18). Claude umeed: B ~35%. Risk barhana (B) sirf user ki ijazat se asli EA mein.
+
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".
 #70 C1 FAIL, #71 DXY filter FAIL, #72 forex trend FAIL (user: CURRENCY POORI CHHOR DI), #73 2 SELL aaina TALAASH FAIL (228 tr -0.003R, judge CLEAN).
