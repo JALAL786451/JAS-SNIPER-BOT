@@ -1518,6 +1518,10 @@ Run: A = #68 + D, B = A + P2 1.5x lot (+ D). Maloomat: A0 = #68 bina D (engine j
 **CHUNAO 2012-2018:** B umeedwar = P1 fail < 20%, pass > fail, (pass - fail) >= A ka, median < A ka. Na mile = FAIL (A + D akela IMTIHAN tabhi jab A, A0 se behtar: fail kam aur median <= A0; warna D sirf pehra, sim number #68 wale).
 **IMTIHAN 2019-01..aaj EK dafa** (`--imtihan --pakka --pick B|A`): PASS = fail 0, pass >= A0 (isi run), median < A0 (isi run). Ginti +1.
 Imaandari: B ka CHUNAO #77 mein dekha hua (bina D 53/18). Claude umeed: B ~35%. Risk barhana (B) sirf user ki ijazat se asli EA mein.
+**Koshish #79 CHUNAO 2012-2018 (2 Nov) = FAIL (IMTIHAN nahi; judge CLEAN):** A0 (#68) 64/2 (1/1)/18 median 38.5 | **A (+D) 55/11 (5/6)/18 median 34.4**, pehra 48 challenge mein laga |
+**B (+D, P2 1.5x) 49/22 (5/17)/13 median 27.9**. A ke 9 naye fail = ek din 2016-01-04 (China crash): din shuru 94.7k, pichle din ki khuli trades ka floating nuqsan + us din ka = 4% -> D ne sab band kiya
+(90.66k), koi trade wapas aane ko nahi bachi, 10 din baad 90k toota. Bina D trades wapas aa gayin. Sabaq: 4% pehra fail wale din bachata magar balance 90k ke qareeb ho to nuqsan "pakka" kar deta.
+Asli EA mein D chalu hai (t5/i6/k2) = sim #68 number thore khush-fehm (2012-18). 4% ko badalna = risk hadd (sirf user).
 
 **TRADING.md sec 5 (30-31vi chat, 2 Nov se pehle wala):**
 **30vi chat (1 Nov)** - poori kahani `KAHANI.txt` (nayi, pehle parho); tafseel `docs/purana-haal.md` grep "Koshish #7", "jas_5ea".

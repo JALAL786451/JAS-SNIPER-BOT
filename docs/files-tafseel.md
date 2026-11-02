@@ -220,6 +220,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/c3st_75.py` - Koshish #75: #74 + 4H Supertrend filter (TALAASH FAIL -0.019R, judge CLEAN) (2 Nov)
 - `tools/ftmo76.py` - Koshish #76: FTMO #68 + Kachhua BTC (Bitstamp daily 2014-17 + Duka H1); CHUNAO 0.5% PASS (2 Nov)
 - `tools/ftmo77.py` - Koshish #77: FTMO #68 + P2 risk 1.5x + pehra-shart G; CHUNAO FAIL, G akela maloomat behtar (2 Nov)
+- `tools/ftmo79.py` - #79 FTMO sim + EA ka asli 4% din pehra (A0/A/B)
 - `data/btc/Bitstamp_BTCUSD_d.csv` - BTC daily Bitstamp 2014-11 se (cryptodatadownload), #76 ke liye (2 Nov)
 - `indicators/jas_5ea.pine` - p6 (1 Nov, judge READY: levels, alert, Abhi R, lot, agli khirki, warning). p4: sirf chart wala instrument, Python 2012-aaj number, live haal, saaf nishan. p2: S2/B1 fix. p1: 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
 - `tools/trade_page/` - Trade Roznamcha page: gen.py + template.html -> roznamcha.html (artifact https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK), 5 EA 3,075 trades 2012-aaj (1 Nov)
