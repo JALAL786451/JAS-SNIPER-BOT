@@ -137,3 +137,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - BUY tokri ke ulte instrument? -> koi nahi 2012-18 (18 instrument corr +0.03..+0.49, bure din sab girte) - bachao sirf bure daur ki SELL (#85/#86) (3 Nov).
 - Close By / BUY upar se neeche "sarkao" se kul P/L badalta? -> NAHI (NET wahi = hisaab wahi); hifazat sirf NET kam karne se (3 Nov).
 - MT5 trade partial close? -> Trade tab double-click -> Volume mein band karne wali lot -> peela Close button (3 Nov).
+- Recovery EA test "kuch na karo" se kyun? -> S - B = sirf EA ki apni trades ka P/L (basket dono mein same, kat jati); absolute equity mein gold ki tezi/girawat mil jati (#90: +7,382 mein +5,484 gold ka) (3 Nov).
+- Live basket ka recovery EA (trend / hedge ladder / lock + 0.02 / raat / mausam)? -> #88-95 sab FAIL 0/9; behtar = NET +0.33 waise hi (swap-free, stop out ~$1000 door) (3 Nov).
+- 15M ruki candle ka breakout rukh koi EMA batati? -> nahi: 2012-26 H1 839 ruki misaal, 4H rukh ke saath bhi 48/52 = sikka (3 Nov).

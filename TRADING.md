@@ -63,14 +63,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**33vi chat (2-4 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #83".."#86". #83 cent $1000 IBS mart + Trend $7.5 + Khirki $1.5 = PASS (3.8 tr/hafta,
-+$931 2019+) magar 472716649 = STANDARD USD (cent nahi) -> lot fit nahi, naya Standard Cent demo chahiye (user ka faisla). #84 range bars GATE FAIL (judge CLEAN).
-Login gadbad theek (FTMO EA 472716649 par the). Hooks: SessionStart naqsha + Stop auto-save. **jas_naqsha n5.5** (TV ✅; Naqsha chat ne n5.7 SELL jori).
-Research daur 8-10 (range, SELL apni, counter): sab ulte instrument = saath girte (`tools/ulta_jaanch.py`); qaida #85 C2 index bear SELL + #86 K1 copper SELL LIKHE, test NAHI (data 1990+ chahiye).
-LIVE 253687618: **JasMauqa m6** chal raha (status + ladder + YES/NO mauqe, Algo OFF); m7.1 HEDGE LADDER (har $10 0.05 BUY band, SELL se neeche wali phir upar qareeb wali) PENDING.
-User ne khud SELL laga kar NET +0.15 kiya. Scripts: JasSarkao z1. FTMO demo: i6 pehli 2 trades +$108 (Naqsha chat, `docs/demo-haal/2026-11-03.md`).
-**AGLA KAAM:** (a) user ke sawal / SS ka intezar - sawal = SIRF jawab, test sirf "test karo". (b) JasMauqa sudhaar: pehle faida/nuqsan, phir user ke haan par. (c) #85/#86 data (user "test karo" ke baad).
-(d) FTMO demo t5/i6/k2 + c1 chalte rahein. HIDAYAT naye: Algo ON/OFF, aasan English, file sirf GitHub link, ek waqt ek chat + git pull.
+**34vi chat (3 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #88".."#95". LIVE 253687618 recovery EA **JasShahmaat** (naam pasand; user: Python PASS
+ho to LIVE seedha, HIDAYAT). `tools/shahmaat_sim.py` (basket replay vs "kuch na karo", gold H1 2021-24, 178 start x 6 mahine): **recovery 0/9 PASS** -
+#88 4H NET palat, #89 m7.1 hedge ladder (live NAHI lagana), #90 4H charhai-jor (qareeb 54%), #91 D1, #92 raat (+1,934 median, 56%), #93 SMA10,
+#94 Sep+Nov (research agent ke idea), #95 kitab band + 0.02 hedge chaal (apni kamai +198 USC / 6 mahine = ~24 saal). Mashwara: basket NET +0.33 waise hi.
+15M ruki candle: 839 misaal = 50/50 (koi EMA nahi batati). Live SS: equity 33,376, P/L -9,736, gold 3927.9 (NAQSHA).
+**AGLA KAAM:** (a) user ke sawal / SS - sawal = SIRF jawab, test sirf "test karo". (b) Basket: kuch na karo, m6 status (Algo OFF); naya recovery idea sirf
+"test karo" par, isi harness mein (vs kuch-na-karo). (c) #85/#86 data ("test karo" ke baad). (d) FTMO demo t5/i6/k2 + c1 chalte rahein.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
@@ -89,7 +88,7 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
 
-87 koshish (#83-86 + **#87 Naqsha 15M FAIL**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+95 koshish (#83-87 + **#88-95 recovery FAIL 0/9**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

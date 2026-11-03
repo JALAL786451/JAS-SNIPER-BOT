@@ -6,6 +6,5 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | Din | Commits | File | Pehla / aakhri kaam |
 |---|---|---|---|
 | Sep 2026 tak | 0 | `pehle-2026-09.md` | shuru se 30 Sep tak |
-| 2026-11-01 | 18 | `2026-11-01.md` | HIDAYAT: discussion mein sirf jawab; kaam/agent sirf D ke ba / TRADING sec 5: p6 READY |
-| 2026-11-02 | 52 | `2026-11-02.md` | #74 qaida (test se PEHLE): 3Commas Bot EMA 21/50 2H x 11 ins / Research daur 10: BUY tokri ke bure daur + counter K1 copper |
-| 2026-11-03 | 18 | `2026-11-03.md` | Jaanch: BUY tokri ke ulte instrument 2012-18 - koi nahi (sab / HIDAYAT: ek waqt ek chat, kaam se pehle git pull |
+| 2026-11-02 | 31 | `2026-11-02.md` | #80 qaida (test se pehle): gold Asia M5 BB fade bina marting / Research daur 10: BUY tokri ke bure daur + counter K1 copper |
+| 2026-11-03 | 27 | `2026-11-03.md` | Jaanch: BUY tokri ke ulte instrument 2012-18 - koi nahi (sab / MT5 NAQSHA: live 253687618 SS (gold 3927.9, equity 33,376) |

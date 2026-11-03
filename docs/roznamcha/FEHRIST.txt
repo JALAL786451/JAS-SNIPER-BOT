@@ -2,17 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-01  (18 kaam)
-   - HIDAYAT: discussion mein sirf jawab; kaam/agent sirf D ke baad
-   - jas_5ea.pine p2 (judge: S2/B1 tarjeeh fix, READY for TV)
-   - TRADING sec 5: p6 READY
-
-2026-11-02  (52 kaam)
-   - #74 qaida (test se PEHLE): 3Commas Bot EMA 21/50 2H x 11 instrument
-   - #82 qaida (test se pehle): gold 1m EMA + hedge-freeze (user ne hedge naam liya)
+2026-11-02  (31 kaam)
+   - #80 qaida (test se pehle): gold Asia M5 BB fade bina martingale
+   - HIDAYAT: file sirf GitHub link se, MT5 account number se
    - Research daur 10: BUY tokri ke bure daur + counter K1 copper SELL, K2 oil BUY (sirf resear
 
-2026-11-03  (18 kaam)
+2026-11-03  (27 kaam)
    - Jaanch: BUY tokri ke ulte instrument 2012-18 - koi nahi (sab corr musbat)
-   - JasMauqa m4: panel + popup aasan English (ON/OFF, PROFIT/LOSS, PAIR CLOSE, BREAKEVEN)
-   - HIDAYAT: ek waqt ek chat, kaam se pehle git pull
+   - JasMauqa m7: HEDGE LADDER - bari SELL se har $10 neeche 0.05 BUY band (pehle SELL se neech
+   - MT5 NAQSHA: live 253687618 SS (gold 3927.9, equity 33,376)
