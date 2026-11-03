@@ -102,3 +102,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | file link | User (2 Nov): Pine / EA file DOWNLOAD (SendUserFile) NAHI - sirf EK GitHub link: `https://github.com/JALAL786451/JAS-SNIPER-BOT/blob/claude/jas-desk-v3-0110-yu3w2h/<path>`; user wahan copy button se copy karta hai. | 2 Nov |
 | MT5 naam | User (2 Nov): MT5 ko "pehla/doosra/teesra" NAHI - title bar ka account number (TRADING.md sec 0 MT5 NAQSHA). | 2 Nov |
 | poocho = sirf jawab | User (2 Nov, naraz): "expert se poocho / judge se confirm karo" = SIRF research ka JAWAB. Test, script, qaida, judge-test NAHI jab tak user khud "test karo" na likhe. Claude ne #84 bina pooche chalaya - ghalti. | 2 Nov |
+| JasMauqa sudhaar | User (3 Nov): JasMauqa ko khud manually chala kar MT5 seekhega; jo sudhaar chahiye samjhayega -> Claude PEHLE faida + nuqsan samjhaye, user ke kehne par hi jore. | 3 Nov |
