@@ -1608,3 +1608,20 @@ Claude umeed GATE PASS ~15%. Ginti +1.
 **Koshish #84 GATE = FAIL (2 Nov):** 2009-13, 1.68M M1. Koi (R,k) hurdle par paar nahi: $10 k=2 aam 50.4% / ulta 52.3%; $20 k=2 52.9% / 54.3% (SE 1.7-1.8%, 2SE+hurdle ~4.7pt). Lambi qatar (k=5) ke baad halka ulta (44-47%) magar SE 2.4-5% = shor.
 Sabaq: M1 ke andar raasta (O-L-H-C vs O-H-L-C) badalne se hi 1-2 point farq = range bar ka "edge" data banane ka tareeqa hai, bazaar nahi. A + B BAND (test nahi). Range bars BAND.
 **Judge #84 CLEAN** (`docs/research/judge-84.md`): random walk par builder 49.3-50.3% (bias nahi); hamesha O-H-L-C bhi paar nahi (best $20 k=2 53.5%); "run == k" bhi nahi. GATE FAIL pakka.
+
+**Koshish #85 qaida (3 Nov, 33vi chat; user "C2 K1 pehle qaida likh lo"; research daur 9 `docs/research/daur9-sell-agent.md` C2; test se PEHLE, badalna mana; TEST abhi NAHI - user "test karo" ke baad) - C2 INDEX BEAR-STATE SELL:**
+Market 9: SPX/US500, NDX/USTEC, DAX, FTSE, CAC, SX5E, N225, ASX200, HSI. Data: cash index DAILY 1990-2018 (Stooq / TV export; jo mile pehle yahan likho), 2019+ IMTIHAN.
+Faisla sirf MAHINE ke aakhri kaam ke din close par. **SELL** jab 12 mahine return < 0 AUR 1 mahina return < 0 -> agle din open par SELL.
+**Band:** kisi mahine ke aakhir 1m >= 0 YA 12m >= 0 -> agle din open. **SL** entry + 4 x ATR20(1D) (gap = open). TP NAHI. Ek market ek position.
+Kharcha: index 0.75 x asli spread har taraf (ASLI / 0.02% non-US), faisla 2x; SELL swap max(3%/saal, asli) notional (dividend).
+**TALAASH PASS (2x):** 1990-2018 kul Exp - 2SE > 0 (R) AUR >= 6/9 market musbat AUR 1990-2004 + 2005-2018 dono musbat.
+**FTMO PASS (sirf TALAASH PASS ke baad):** #68 + C2 0.25% `ftmo` sim CHUNAO 2012-18: fail <= #68 aur (pass - fail) >= #68; phir IMTIHAN 2019+ EK dafa: fail 0, pass >= 83, median <= 11.4.
+Claude umeed: TALAASH ~25%, sab ~12%. Ginti +1.
+
+**Koshish #86 qaida (3 Nov, 33vi chat; research daur 10 `docs/research/daur10-counter-agent.md` K1; test se PEHLE, badalna mana; TEST abhi NAHI) - K1 "DR. COPPER" SELL:**
+Market: copper (XCU CFD; signal COMEX HG daily) + SPX regime. Data: daily 1990-2018 (Stooq / TV), 2019+ IMTIHAN. Pehle: FTMO par copper hai ya nahi (nahi = sirf Exness).
+Faisla 1D close (17:00 NY), entry agle din open. **SELL** jab SPX close < SMA200 AUR copper close < SMA200 AUR copper close = 20 din ka sab se neecha close.
+**Band:** copper close > 10 din ka sab se uncha close, YA SPX close > SMA200, YA 40 kaam ke din -> agle din open. **SL** entry + 3 x ATR20 (gap = open). TP NAHI. Ek position.
+Kharcha: copper spread (Exness asli naap; na ho to 0.05%) har taraf, faisla 2x; short swap 0 (user SS 3 Nov) magar sim mein 1%/saal rakho.
+**TALAASH PASS (2x):** 1990-2018 Exp - 2SE > 0 AUR trades >= 40 AUR 1990-2004 + 2005-2018 dono musbat.
+**FTMO PASS:** #85 jaisi (#68 + K1 0.25%, CHUNAO phir IMTIHAN EK dafa). Claude umeed TALAASH ~25%, sab ~15%. Ginti +1.
