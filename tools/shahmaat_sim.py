@@ -20,10 +20,12 @@ P_NOW, EQ0, NET0 = 3934.71, 33_600.0, 0.33
 UP_NET, COST_LOT, STOP_GAP = 0.80, 30.0, 40_000.0    # 1 lot x $1 = 100 USC; $400 gap
 
 
-def h4_trend(df):
+def h4_trend(df, daily=False):
     """Har H1 bar ke liye: aakhri BAND 4H candle ka supertrend rukh (+1/-1, 0 = abhi nahi)."""
     day = session_day(df['t'])
     blk = ((df['t'].dt.tz_convert('America/New_York') + pd.Timedelta(hours=7)).dt.hour // 4).values
+    if daily:
+        blk = np.zeros(len(df), dtype=int)
     g = pd.DataFrame({'i': np.arange(len(df)), 'd': day.values, 'b': blk,
                       'H': df['High'].values, 'L': df['Low'].values, 'C': df['Close'].values})
     g = g.groupby(['d', 'b'], sort=True).agg(la=('i', 'last'), H=('H', 'max'), L=('L', 'min'),
@@ -78,9 +80,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--imtihan', action='store_true')
     ap.add_argument('--m71', action='store_true')
+    ap.add_argument('--upar', action='store_true', help='#90-91: DOWN par NET 0.33')
+    ap.add_argument('--d1', action='store_true', help='#91: D1 supertrend')
     a = ap.parse_args()
     df = load('XAUUSD')
-    sig = h4_trend(df)
+    sig = h4_trend(df, daily=a.d1)
     t = df['t']
     lo, hi = ('2025-01-01', '2099-01-01') if a.imtihan else ('2021-01-01', '2025-01-01')
     m = ((t >= lo) & (t < hi)).values
@@ -93,7 +97,7 @@ def main():
     print(f"{'TALAASH' if not a.imtihan else 'IMTIHAN'} {lo}..{t.iloc[last]:%Y-%m-%d}, Somwar starts {len(mondays)}")
     for months in (6, 3):
         print(f"\n== {months} mahine ==")
-        for dn in ((None,) if a.m71 else (0.0, -0.30)):
+        for dn in ((None,) if a.m71 else ((NET0,) if a.upar else (0.0, -0.30))):
             rows = []
             for i0 in mondays:
                 end_t = t.iloc[i0] + pd.DateOffset(months=months)

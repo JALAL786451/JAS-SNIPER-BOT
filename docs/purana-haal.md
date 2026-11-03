@@ -1660,3 +1660,9 @@ Wahi harness/basket/kharcha/start/PASS shart jo #88 (muqabla kuch-na-karo NET +0
 (bari SELL ~ abhi ki qeemat), har $10 girne par 0.05 BUY band (NET -0.05), NET 0 par ruk; upar jane par wapas KUCH nahi (m7.1 mein nahi). 1 setting = 1 koshish.
 **Koshish #89 = FAIL (TALAASH; IMTIHAN nahi):** 6 mahine 178 start: m7.1 median -4,725 USC vs kuch-na-karo, behtar sirf 26%, breakeven 10% (kuch-na-karo se kam); 3 mahine 33%.
 Sabaq: m7.1 girawat par NET 0 kar ke loss "taala" laga deta, wapsi ka faida kho deta. Mashwara: m7.1 live par NAHI; basket NET +0.33 waise hi + m6 sirf status.
+
+**Koshish #90-91 qaida (3 Nov, 34vi chat; user "koi aur recovery idea test karo"; test se PEHLE, badalna mana) - sirf CHARHAI mein jor (`tools/shahmaat_sim.py --upar`):**
+#88 se farq: DOWN trend par NET kabhi 0.33 se kam NAHI (basket jaisi), sirf UP trend par NET +0.80 (t5 jaisa BUY-only, jo ASLI PASS). Baqi sab #88 jaisa.
+#90 = 4H supertrend(3,10). #91 = D1 supertrend(3,10) (17:00 NY din; kam whipsaw). 2 koshish. PASS wali -> IMTIHAN EK dafa.
+**Koshish #90 = FAIL (qareeb):** 4H charhai-jor 6 mahine median +1,426 USC vs kuch-na-karo, behtar 54% (< 60%), be-jor mean +1,575 magar -2SE -9,219; 3 mahine 61% magar -2SE manfi. Saabit nahi.
+**Koshish #91 = FAIL:** D1 charhai-jor median -310, behtar 48%. IMTIHAN kisi ka nahi. Ab tak recovery #88-91 = 0/5 PASS; #90 ko setting ghuma kar PASS karna MANA (sabaq 1).
