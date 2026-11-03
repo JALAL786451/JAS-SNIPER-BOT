@@ -2,11 +2,11 @@
 
 ## 0. MT5 NAQSHA (sirf user ke SS se; har nayi chat ka PEHLA jawab ye table dikhaye, user tasdeeq kare)
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
-| Title bar account | Server | Qism | Balance | EA (chart) | Algo | Pakka |
+| Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | user hara kar raha | 2 Nov SS |
-| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | hara | 2 Nov SS |
-| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | ~35.4k USC equity | JsMouqaEA = JasMauqa m3 (XAUUSDc D1; khud lot nahi, Algo hara par YES/NO); JasDeskView abhi bhi laga? pata nahi | laal | 3 Nov SS |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | user ON kar raha | 2 Nov SS |
+| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | ON | 2 Nov SS |
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | ~35.4k USC equity | JsMouqaEA = JasMauqa m3 (XAUUSDc D1; khud lot nahi, Algo ON par YES/NO); JasDeskView abhi bhi laga? pata nahi | OFF | 3 Nov SS |
 2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.
 
 **Nayi chat ka message (copy-paste):**

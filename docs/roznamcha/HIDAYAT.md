@@ -103,3 +103,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | MT5 naam | User (2 Nov): MT5 ko "pehla/doosra/teesra" NAHI - title bar ka account number (TRADING.md sec 0 MT5 NAQSHA). | 2 Nov |
 | poocho = sirf jawab | User (2 Nov, naraz): "expert se poocho / judge se confirm karo" = SIRF research ka JAWAB. Test, script, qaida, judge-test NAHI jab tak user khud "test karo" na likhe. Claude ne #84 bina pooche chalaya - ghalti. | 2 Nov |
 | JasMauqa sudhaar | User (3 Nov): JasMauqa ko khud manually chala kar MT5 seekhega; jo sudhaar chahiye samjhayega -> Claude PEHLE faida + nuqsan samjhaye, user ke kehne par hi jore. | 3 Nov |
+| Algo lafz | User (3 Nov): "laal / hara" NAHI - sirf **Algo ON** (button hara) / **Algo OFF** (button laal). "Algo ON rakhna hai" / "Algo OFF rakhna hai". | 3 Nov |
