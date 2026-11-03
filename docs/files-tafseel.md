@@ -238,3 +238,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/k84_range.py` - #84 gold range bars GATE (2009-13, $5/$10/$20, k 1-5) = FAIL; research `docs/research/daur8-range-agent.md`
 - `docs/research/daur9-sell-agent.md` - SELL ki APNI strategy (aaina nahi): C1 commodity contango+momentum SELL (oil/gas/copper, maheene ke aakhir), C2 index Bear-state SELL, C3 FOMC odd-week; test NAHI (3 Nov)
 - `docs/research/daur10-counter-agent.md` - BUY tokri ke bure daur (2008, 2011, 2013, 2015-16, 2018Q4, 2020, 2022) + counter: K1 copper SELL (S&P+copper SMA200 neeche), K2 oil BUY backwardation; test NAHI (3 Nov)
+- `tools/ulta_jaanch.py` - jaanch (3 Nov): BUY tokri khuli ho to kaun girta hai, 2012-18: KOI ULTA NAHI (18 instrument sab corr +0.03..+0.49, tokri ke bure din sab girte)
