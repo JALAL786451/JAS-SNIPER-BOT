@@ -1,5 +1,7 @@
 //+------------------------------------------------------------------+
 //|  JAS MAUQA   -   build m3  (3 Nov 2026)                          |
+//|  m5 = PRICE LADDER: gold -25/+25/+50/+100/breakeven par kitni   |
+//|       ticket profit mein + TOTAL (InpLadder, InpStep)           |
 //|  m4 = panel + popup aasan English (ON/OFF, PROFIT/LOSS, PAIR)   |
 //|  m3 = bara font panel (InpFont), rang, faide/nuqsan wali ginti   |
 //|  m2 = DeskView ka zaroori STATUS + mauqa par KHUD YES/NO popup   |
@@ -20,11 +22,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "4.00"
+#property version   "5.00"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m4"
+#define S_BUILD "m5"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -33,6 +35,8 @@ input int    InpBachao   = 180;    // Is se zyada tickets = laal + sirf jori (ti
 input int    InpWaitMin  = 15;     // Popup ke baad agla popup kitne minute baad
 input bool   InpPush     = true;   // Popup ke waqt phone push bhi
 input int    InpFont     = 13;     // Panel ka font (bara = 14-16)
+input bool   InpLadder   = true;   // PRICE LADDER dikhao
+input double InpStep     = 25.0;   // LADDER ka qadam ($): -1, +1, +2, +4 qadam + breakeven
 
 CTrade trade;
 
@@ -164,12 +168,30 @@ void Run()
    Ln(StringFormat("NET %+.2f lot  -  price $1 %s = %s", net, Pick(net >= 0, "down", "up"), M(-MathAbs(perD))), cC);
    Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
    Ln("STOP OUT  " + door, cY);
+   // PRICE LADDER: qeemat P par kitni lots profit mein + TOTAL (NET se seedha hisaab, swap / spread nahi)
+   if(InpLadder && n > 0)
+     {
+      double lv[6];
+      lv[0] = bid - InpStep; lv[1] = bid + InpStep; lv[2] = bid + 2 * InpStep; lv[3] = bid + 4 * InpStep;
+      lv[4] = (MathAbs(perD) > 1e-9) ? bid - kul / perD : 0; lv[5] = 0;
+      for(int q = 0; q < 5; q++)
+        {
+         double P = lv[q];
+         if(P <= 0) continue;
+         int pc = 0;
+         for(int i = 0; i < n; i++)
+            if((a[i].typ == POSITION_TYPE_BUY && a[i].open < P) || (a[i].typ == POSITION_TYPE_SELL && a[i].open > P)) pc++;
+         double tot = kul + perD * (P - bid);
+         string tag = Pick(q == 4, "  <- BREAKEVEN", "");
+         Ln(StringFormat("LADDER  gold %s (%+.0f) -> %d ticket profit, TOTAL %s%s", Px(P), P - bid, pc, M(tot), tag), tot >= 0 ? cG : (q == 0 ? cR : cC));
+        }
+     }
    Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "TOO MANY - only pair close", "OK")), full ? cR : cW);
    Ln(Pick(aS > 0, StringFormat("A) BIG SELL REDUCE  #%I64u + #%I64u  = +%s", aS, aB, M(aV)), "A) Big SELL reduce: none now"), aS > 0 ? cG : cW);
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now")), cT > 0 ? cG : cW);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
-   for(int k = gRow; k < 20; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
+   for(int k = gRow; k < 30; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // ---- POPUP (sirf Algo hara, wait khatam, mauqa ho)
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
