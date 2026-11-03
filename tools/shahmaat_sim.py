@@ -76,6 +76,32 @@ def run_m71(close, i0, i1, step=10.0, lot=0.05):
     return eq, EQ0 + NET0 * 100 * (px[-1] - px[0]), False
 
 
+def run_lock(close, sig, i0, i1, lot=0.02, gap=10.0):
+    """#95: basket lock (NET 0) + 0.02 rukh wali chaal, $10 ulta = hedge, $10 wapas / rukh palta = open."""
+    px = close[i0:i1] * (P_NOW / close[i0])
+    s = sig[i0:i1]
+    eq = EQ0 - NET0 * COST_LOT
+    net, ref, hedged, hdir, flips = 0.0, px[0], False, 0, 0
+    for k in range(1, len(px)):
+        eq += net * 100 * (px[k] - px[k - 1])
+        d = int(s[k])
+        if d == 0:
+            continue
+        want = net
+        if hedged:
+            if d != hdir or (px[k] - ref) * d >= gap:
+                want, ref, hedged = d * lot, px[k], False
+        elif net == 0 or np.sign(net) != d:
+            want, ref = d * lot, px[k]
+        elif (px[k] - ref) * d <= -gap:
+            want, ref, hedged, hdir = 0.0, px[k], True, d
+        if abs(want - net) > 1e-12:
+            eq -= abs(want - net) * COST_LOT
+            net = want
+            flips += 1
+    return eq, EQ0 + NET0 * 100 * (px[-1] - px[0]), eq <= 0
+
+
 def other_sig(df, kind):
     """#92 raat / #93 mahina SMA10 / #94 Sep+Nov: +1 = NET 0.80, -1 = NET 0.33."""
     ny = df['t'].dt.tz_convert('America/New_York')
@@ -96,6 +122,7 @@ def main():
     ap.add_argument('--m71', action='store_true')
     ap.add_argument('--upar', action='store_true', help='#90-91: DOWN par NET 0.33')
     ap.add_argument('--d1', action='store_true', help='#91: D1 supertrend')
+    ap.add_argument('--lock', action='store_true', help='#95 kitab band + 0.02')
     ap.add_argument('--sig', choices=['raat', 'sma10', 'mausam'], help='#92-94')
     a = ap.parse_args()
     df = load('XAUUSD')
@@ -113,14 +140,15 @@ def main():
     print(f"{'TALAASH' if not a.imtihan else 'IMTIHAN'} {lo}..{t.iloc[last]:%Y-%m-%d}, Somwar starts {len(mondays)}")
     for months in (6, 3):
         print(f"\n== {months} mahine ==")
-        for dn in ((None,) if a.m71 else ((NET0,) if a.upar else (0.0, -0.30))):
+        for dn in ((None,) if (a.m71 or a.lock) else ((NET0,) if a.upar else (0.0, -0.30))):
             rows = []
             for i0 in mondays:
                 end_t = t.iloc[i0] + pd.DateOffset(months=months)
                 i1 = int(np.searchsorted(t.values, np.datetime64(end_t.tz_convert(None))))
                 if i1 > last:
                     break
-                eq, base, stop = (run_m71(close, i0, i1 + 1) if a.m71
+                eq, base, stop = (run_lock(close, sig, i0, i1 + 1) if a.lock else
+                                  run_m71(close, i0, i1 + 1) if a.m71
                                   else run(close, sig, i0, i1 + 1, dn))
                 rows.append((t.iloc[i0], eq, base, stop))
             r = pd.DataFrame(rows, columns=['t', 'S', 'B', 'stop'])
@@ -134,7 +162,7 @@ def main():
             dj = d.iloc[pick]
             se = dj.std(ddof=1) / np.sqrt(len(dj)) if len(dj) > 1 else np.nan
             ok = [d.median() > 0, (d > 0).mean() >= 0.60, not r['stop'].any(), dj.mean() - 2 * se > 0]
-            print(f"{'m7.1' if dn is None else f'S={dn:+.2f}'} | starts {len(r)} | median S-B {d.median():+8.0f} USC | S behtar {100*(d>0).mean():4.0f}%"
+            print(f"{('lock' if a.lock else 'm7.1') if dn is None else f'S={dn:+.2f}'} | starts {len(r)} | median S-B {d.median():+8.0f} USC | S behtar {100*(d>0).mean():4.0f}%"
                   f" | stop {int(r['stop'].sum())} | be-jor n={len(dj)} mean {dj.mean():+7.0f} -2SE {dj.mean()-2*se:+7.0f}"
                   f" | S median eq {r['S'].median():7.0f} (B {r['B'].median():7.0f}) | breakeven(>= {EQ0+9512:.0f}) "
                   f"{100*(r['S']>=EQ0+9512).mean():.0f}% | {'PASS' if all(ok) else 'FAIL'} {ok}")

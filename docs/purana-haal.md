@@ -1673,3 +1673,10 @@ Sabaq: m7.1 girawat par NET 0 kar ke loss "taala" laga deta, wapsi ka faida kho 
 #94 mausam (Baur 1980-2010): September + November mein +0.80, baqi +0.33. 3 koshish. PASS wali -> IMTIHAN EK dafa.
 **Koshish #92-94 = FAIL (TALAASH; IMTIHAN nahi):** #92 raat median +1,934 USC, behtar 56%, be-jor mean -2,274 (saabit nahi); #93 SMA10 median -2,014, 44%; #94 Sep+Nov -62, 49%.
 Recovery ab 0/8 PASS (#88 x2, #89-94). Research agent ka bhi andaza: gold ke edge chhote (6 mahine mein kuch sau-hazaar USC), breakeven sirf qeemat (+$288) se.
+
+**Koshish #95 qaida (3 Nov, 34vi chat; user "test karo"; test se PEHLE, badalna mana) - KITAB BAND + 0.02 chaal (`tools/shahmaat_sim.py --lock`):**
+Start par basket LOCK (NET 0, kharcha 0.33 x 30 USC) -> basket equity jam. Upar 0.02 lot: rukh = 4H supertrend(3,10) (BUY / SELL). Entry se $10 ulta
+-> HEDGE (NET 0); WAIT jab tak qeemat hedge point se $10 rukh ki taraf wapas na aaye ya rukh na palte -> OPEN (rukh wali taraf, NET +-0.02). Kharcha 30 USC/lot.
+Muqabla (1) kuch-na-karo NET +0.33 (PASS shart #88 wali), (2) lock + kuch nahi. 1 setting = 1 koshish. PASS -> IMTIHAN EK dafa.
+**Koshish #95 = FAIL (TALAASH; IMTIHAN nahi):** vs kuch-na-karo 6 mahine median -5,575 USC, behtar 28%, breakeven 0% (lock ne +$288 ka mauqa khatam kiya).
+0.02 chaal ki APNI kamai (lock ke upar): median +198 USC / 6 mahine (~$2), 65% musbat, min -981, max +1,566 -> 9,512 wapas = ~24 saal. Recovery 0/9.
