@@ -4,7 +4,7 @@
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | user ON kar raha | 2 Nov SS |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 ki pehli 2 trades** US500+USTEC BUY +$108, t5/k2 0 (`docs/demo-haal/2026-11-03.md`) | 3 Nov SS |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | ON | 2 Nov SS |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | ~34.4k USC equity; BUY 102 tk 2.60 lot, SELL 13 tk 2.45 lot (user ne KHUD haath se SELL lagayi), NET +0.15 | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, PENDING - abhi nahi lagaya) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 4 Nov SS |
 2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.
@@ -88,7 +88,7 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
 
-82 koshish. ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+87 koshish (#83-86 + **#87 Naqsha 15M FAIL**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

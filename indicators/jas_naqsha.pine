@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n5.5, Pine v6, 3 Nov 2026; n5.5 = chhoti table default (4 line) + purane 4H BUY tikone band; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n5.7, Pine v6, 3 Nov 2026; n5.7 = SELL bhi (1D NEECHE + 4H Supertrend neeche mura = BUY ka ulta), BUY / SELL dono ka SL / TP dabba, table mein BUY / SELL / CHALU, SELL ka TEST NAHI; n5.6 = table ka BUY ab chart ki asal entry se jura (pehle 4 ghante BUY, phir CHALU) + 80 zone ki hadd par sab se kamzor zone nikalti hai, purani majboot nahi; n5.5 = chhoti table default (4 line) + purane 4H BUY tikone band; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -14,17 +14,20 @@
 //   6) 1D EMA50 / EMA200 (pichhla band din) lakeer + rukh: qeemat dono ke upar aur EMA50 > EMA200 = UPAR (sirf BUY socho).
 //      4H ENTRY WAQT = 4H Supertrend(10,3) upar mude (jas_5ea B1 / #34 ka mor) JAB 1D rukh UPAR -> chart par "4H BUY" nishan.
 //      B1 akela test PASS (#34); 1D filter ke SAATH test NAHI.
+//      n5.7 SELL = ulta: 4H Supertrend NEECHE mude JAB 1D rukh NEECHE (qeemat dono EMA ke neeche, EMA50 < EMA200) -> "4H SELL" nishan,
+//      SL 6 x ATR10 UPAR, TP 2R NEECHE. SELL ka koi TEST NAHI hua. Settings mein "SELL bhi dikhao" band kar sakte hain.
 //   7) 4H POSITION dabba (TV jaisa): entry mor wali 4H candle ka open, SL 6 x ATR10 4H (B1), TP 2R (TEST NAHI - B1 mein TP nahi,
 //      0 karein to B1 jaisa sirf mor par band). Laal = SL, hara = TP. Sirf 4H ya chhota chart.
 //      n5: band position chart se hat jati hai (Settings "Purani dikhao" ON = "+1.2R" label ke saath).
 //      AGLI (dotted, andaza): 1D UPAR + 4H Supertrend abhi neeche -> entry ~ 4H Supertrend lakeer, SL / TP isi se. % nahi diya (B1 jeet 37-43%).
-//   8) KHULASA (table ki pehli line): ek lafz - RUKO (1D neeche) / TAYYAR (1D upar, 4H mor ka intezar) / BUY (entry waqt) /
-//      CHALU (BUY khuli) / INTEZAR (4H pehle se upar) + jumla: rukh, qareeb zone + toot, OB/OS, agli news.
+//   8) KHULASA (table ki pehli line): ek lafz - RUKO (1D rukh MILA, koi side nahi) / TAYYAR (1D rukh saaf, 4H mor ka intezar) /
+//      BUY ya SELL (chart par asal entry bani, pehle 4 ghante) / CHALU (khuli position, 4 ghante baad) / INTEZAR (4H pehle se usi taraf)
+//      + jumla: rukh, qareeb zone + toot, OB/OS, agli news.
 //  IMAANDARI: ye sab TEST NAHI hua (zones / rukh / toot = sirf naqsha). Pakke number sirf jas_5ea ki table mein.
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
-//  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 10, line <= 4, plot 2, plotshape 1.
+//  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 31, line <= 4, plot 2, plotshape 2.
 // ============================================================================
-indicator("JAS Naqsha n5.5", "JAS Naqsha n5.5", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 20)
+indicator("JAS Naqsha n5.7", "JAS Naqsha n5.7", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 40)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -50,7 +53,8 @@ psSL   = input.float(6.0, "SL = kitne x ATR10 (4H)  [B1 / #34 wala 6]", minval =
 psTP   = input.float(2.0, "TP = kitne R (0 = TP nahi, sirf Supertrend mor par band = B1)", minval = 0, step = 0.5, group = grE, display = display.none)
 psOld  = input.bool(false, "Purani (band) positions dikhao", group = grE, display = display.none)
 psKeep = input.int(10, "Purani ON ho to kitni", minval = 1, maxval = 15, group = grE, display = display.none)
-psNext = input.bool(true, "AGLI position ka dotted dabba (andaza: 1D UPAR + 4H abhi neeche)", group = grE, display = display.none)
+psNext = input.bool(true, "AGLI position ka dotted dabba (andaza: 1D rukh saaf + 4H abhi ulti taraf)", group = grE, display = display.none)
+showSell = input.bool(true, "SELL bhi dikhao (1D NEECHE + 4H Supertrend neeche mura) - TEST NAHI", group = grE, display = display.none)
 
 // ============================================================================
 //  HTF DATA (har TF ek tuple, pichhli band candle)
@@ -95,10 +99,14 @@ var int lastFlipDir = 0
 if flipUp or flipDn
     lastFlipT := time
     lastFlipDir := flipUp ? 1 : -1
+// n5.7: 1D se kaunsi side allowed: UPAR = BUY (1), NEECHE = SELL (-1, agar switch ON), warna 0 (koi side nahi)
+dSide = dRukh > 0 ? 1 : (dRukh < 0 and showSell) ? -1 : 0
 // entry ka faisla candle ke OPEN par (close badalta rehta = repaint nahi)
-dRukhO = na(m3) or na(n3) ? 0 : (open > m3 and open > n3 and m3 > n3) ? 1 : 0
+dRukhO = na(m3) or na(n3) ? 0 : (open > m3 and open > n3 and m3 > n3) ? 1 : (open < m3 and open < n3 and m3 < n3) ? -1 : 0
 entryNow = flipUp and dRukhO > 0
+entryShort = showSell and flipDn and dRukhO < 0
 plotshape(showEn and entryNow and (psOld or not showPs), "4H BUY waqt", shape.triangleup, location.belowbar, color.new(#00e676, 0), size = size.small, text = "4H BUY", textcolor = color.new(#00e676, 0))
+plotshape(showEn and entryShort and (psOld or not showPs), "4H SELL waqt", shape.triangledown, location.abovebar, color.new(#ff5252, 0), size = size.small, text = "4H SELL", textcolor = color.new(#ff5252, 0))
 
 // ============================================================================
 //  4H POSITION (TV jaisa dabba): entry = mor wali 4H candle ka open; SL = psSL x ATR10 (4H) neeche;
@@ -115,6 +123,7 @@ type Pos
     label lE
     bool live
     float r
+    int dir
 
 var array<Pos> ps = array.new<Pos>()
 var Pos cur = na
@@ -137,24 +146,31 @@ f_closePos(Pos q, float xp) =>
 
 if showPs and ok2
     if not na(cur) and cur.live
-        if flipDn
+        pd = cur.dir
+        bool flipOpp = pd > 0 ? flipDn : flipUp
+        bool hitSL = pd > 0 ? low <= cur.sl : high >= cur.sl
+        bool hitTP = psTP > 0 and (pd > 0 ? high >= cur.tp : low <= cur.tp)
+        if flipOpp
             f_closePos(cur, open)
-        else if low <= cur.sl
-            f_closePos(cur, math.min(open, cur.sl))
-        else if psTP > 0 and high >= cur.tp
-            f_closePos(cur, math.max(open, cur.tp))
+        else if hitSL
+            f_closePos(cur, pd > 0 ? math.min(open, cur.sl) : math.max(open, cur.sl))
+        else if hitTP
+            f_closePos(cur, pd > 0 ? math.max(open, cur.tp) : math.min(open, cur.tp))
         else
             box.set_right(cur.bS, time)
             if not na(cur.bT)
                 box.set_right(cur.bT, time)
-    if entryNow and not na(k2) and k2 > 0 and (na(cur) or not cur.live)
+    if (entryNow or entryShort) and not na(k2) and k2 > 0 and (na(cur) or not cur.live)
+        int dn = entryNow ? 1 : -1
         e = open
-        sl = e - psSL * k2
+        sl = e - dn * psSL * k2
         tp = psTP > 0 ? e + psTP * (e - sl) : na
-        bS = box.new(time, e, time, sl, xloc = xloc.bar_time, border_color = color.new(#c62828, 40), bgcolor = color.new(#c62828, 80), text = "SL " + str.tostring(sl, format.mintick), text_size = size.tiny, text_color = color.new(#ff8a80, 0), text_halign = text.align_left, text_valign = text.align_bottom)
-        bT = psTP > 0 ? box.new(time, tp, time, e, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 40), bgcolor = color.new(#2e7d32, 80), text = "TP " + str.tostring(tp, format.mintick) + " (" + str.tostring(psTP, "0.0") + "R)", text_size = size.tiny, text_color = color.new(#b9f6ca, 0), text_halign = text.align_left, text_valign = text.align_top) : na
-        lE = showEn ? label.new(time, low, "4H BUY", xloc = xloc.bar_time, style = label.style_label_up, color = color.new(#00e676, 0), textcolor = color.black, size = size.small) : na
-        cur := Pos.new(time, e, sl, tp, bT, bS, na, lE, true, na)
+        string vaS = dn > 0 ? text.align_bottom : text.align_top
+        string vaT = dn > 0 ? text.align_top : text.align_bottom
+        bS = box.new(time, dn > 0 ? e : sl, time, dn > 0 ? sl : e, xloc = xloc.bar_time, border_color = color.new(#c62828, 40), bgcolor = color.new(#c62828, 80), text = "SL " + str.tostring(sl, format.mintick), text_size = size.tiny, text_color = color.new(#ff8a80, 0), text_halign = text.align_left, text_valign = vaS)
+        bT = psTP > 0 ? box.new(time, dn > 0 ? tp : e, time, dn > 0 ? e : tp, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 40), bgcolor = color.new(#2e7d32, 80), text = "TP " + str.tostring(tp, format.mintick) + " (" + str.tostring(psTP, "0.0") + "R)", text_size = size.tiny, text_color = color.new(#b9f6ca, 0), text_halign = text.align_left, text_valign = vaT) : na
+        lE = showEn ? label.new(time, dn > 0 ? low : high, dn > 0 ? "4H BUY" : "4H SELL", xloc = xloc.bar_time, style = dn > 0 ? label.style_label_up : label.style_label_down, color = dn > 0 ? color.new(#00e676, 0) : color.new(#ff5252, 0), textcolor = dn > 0 ? color.black : color.white, size = size.small) : na
+        cur := Pos.new(time, e, sl, tp, bT, bS, na, lE, true, na, dn)
         ps.push(cur)
         if ps.size() > psKeep
             old = ps.shift()
@@ -164,6 +180,13 @@ if showPs and ok2
             if not na(old.lb)
                 label.delete(old.lb)
             label.delete(old.lE)
+
+// n5.6: asal entry ka waqt - table ka BUY isi se (jo position / nishan chart par bana, wahi). Position ban'ne ke BAAD set hota hai.
+var int lastEntryT = na
+var int lastEntryDir = 0
+if (entryNow or entryShort) and (not showPs or (not na(cur) and cur.live and cur.t0 == time))
+    lastEntryT := time
+    lastEntryDir := entryNow ? 1 : -1
 
 // ============================================================================
 //  ZONES: pivot -> jor -> array
@@ -175,6 +198,23 @@ type Lvl
     int n
 
 var array<Lvl> lv = array.new<Lvl>()
+
+// n5.6: 80 se zyada hon to sab se kamzor zone nikalo: pehle kam rank (1H), phir kam dafa chhui, phir qeemat se sab se door.
+// Naya (aakhri) zone bachaya jata hai. Pehle sab se purani nikalti thi, chahe majboot ho.
+f_evict() =>
+    int w = -1
+    for i = 0 to lv.size() - 2
+        L = lv.get(i)
+        if w < 0
+            w := i
+        else
+            Lw = lv.get(w)
+            bool weaker = L.rk < Lw.rk or (L.rk == Lw.rk and (L.n < Lw.n or (L.n == Lw.n and math.abs(L.p - close) > math.abs(Lw.p - close))))
+            if weaker
+                w := i
+    if w >= 0
+        lv.remove(w)
+    w
 
 f_add(float p, int rk, int t, float tol) =>
     bool merged = false
@@ -191,7 +231,7 @@ f_add(float p, int rk, int t, float tol) =>
     if not merged
         lv.push(Lvl.new(p, rk, t, 1))
         if lv.size() > 80
-            lv.shift()
+            f_evict()
     merged
 
 nw1 = ta.change(t1) != 0
@@ -346,6 +386,20 @@ var string nearUpTx = ""
 var string nearDnTx = ""
 
 if barstate.islast
+    // n5.6: CHALU / BUY ka faisla ek hi jagah (dono table ke liye). BUY = chart par asal entry bani aur 4 ghante se kam guzre.
+    bool live = not na(cur) and cur.live and showPs and ok2
+    float liveR = na
+    int liveD = 0
+    if live
+        liveR := (close - cur.e) / (cur.e - cur.sl)
+        liveD := cur.dir
+    bool entryFresh = not na(lastEntryT) and time - lastEntryT < 4 * 3600000
+    bool freshOk = ok2 and entryFresh
+    bool buyNow = freshOk and lastEntryDir > 0 and (not showPs or liveD > 0)
+    bool sellNow = freshOk and lastEntryDir < 0 and (not showPs or liveD < 0)
+    // KHULASA ka lafz (dono table ke liye ek hi): BUY / SELL = asal entry (pehle 4 ghante), CHALU = khuli position, RUKO = 1D se koi side nahi
+    string word = buyNow ? "BUY" : sellNow ? "SELL" : live ? "CHALU" : dSide == 0 ? "RUKO" : not ok2 ? "TAYYAR" : dSide > 0 ? (d2 > 0 ? "TAYYAR" : "INTEZAR") : (d2 < 0 ? "TAYYAR" : "INTEZAR")
+    color wCol = word == "BUY" ? color.new(#00e676, 0) : word == "SELL" ? color.new(#ff5252, 0) : word == "CHALU" ? (liveD > 0 ? color.new(#00e676, 0) : color.new(#ff5252, 0)) : word == "RUKO" ? color.new(#9e9e9e, 0) : color.new(#ffb300, 0)
     while bx.size() > 0
         box.delete(bx.pop())
     while ln.size() > 0
@@ -395,15 +449,15 @@ if barstate.islast
         box.delete(bxN.pop())
     label.delete(lbN)
     lbN := na
-    if psNext and showPs and ok2 and dRukh > 0 and d2 > 0 and not na(s2) and not na(k2) and k2 > 0 and (na(cur) or not cur.live)
+    if psNext and showPs and ok2 and dSide != 0 and d2 * dSide > 0 and not na(s2) and not na(k2) and k2 > 0 and (na(cur) or not cur.live)
         eN = s2
-        slN = eN - psSL * k2
+        slN = eN - dSide * psSL * k2
         tpN = psTP > 0 ? eN + psTP * (eN - slN) : na
         tR = time + 6 * 4 * 3600000
-        bxN.push(box.new(time, eN, tR, slN, xloc = xloc.bar_time, border_color = color.new(#c62828, 30), border_style = line.style_dotted, bgcolor = color.new(#c62828, 92)))
+        bxN.push(box.new(time, dSide > 0 ? eN : slN, tR, dSide > 0 ? slN : eN, xloc = xloc.bar_time, border_color = color.new(#c62828, 30), border_style = line.style_dotted, bgcolor = color.new(#c62828, 92)))
         if psTP > 0
-            bxN.push(box.new(time, tpN, tR, eN, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 30), border_style = line.style_dotted, bgcolor = color.new(#2e7d32, 92)))
-        lbN := label.new(tR, eN, "AGLI (andaza) - intezar\nentry ~" + str.tostring(eN, format.mintick) + " (4H close is se upar)\nSL ~" + str.tostring(slN, format.mintick) + (psTP > 0 ? " | TP ~" + str.tostring(tpN, format.mintick) : ""), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(#263238, 10), textcolor = color.new(#ffb300, 0), size = size.small)
+            bxN.push(box.new(time, dSide > 0 ? tpN : eN, tR, dSide > 0 ? eN : tpN, xloc = xloc.bar_time, border_color = color.new(#2e7d32, 30), border_style = line.style_dotted, bgcolor = color.new(#2e7d32, 92)))
+        lbN := label.new(tR, eN, "AGLI " + (dSide > 0 ? "BUY" : "SELL") + " (andaza) - intezar\nentry ~" + str.tostring(eN, format.mintick) + (dSide > 0 ? " (4H close is se upar)" : " (4H close is se neeche)") + "\nSL ~" + str.tostring(slN, format.mintick) + (psTP > 0 ? " | TP ~" + str.tostring(tpN, format.mintick) : ""), xloc = xloc.bar_time, style = label.style_label_left, color = color.new(#263238, 10), textcolor = color.new(#ffb300, 0), size = size.small)
     if showPD and not na(pdh)
         t0d = time - 20 * chSec * 1000
         ln.push(line.new(t0d, pdh, time, pdh, xloc = xloc.bar_time, extend = extend.right, color = color.new(#90a4ae, 30), style = line.style_dotted, width = 1))
@@ -417,7 +471,7 @@ if barstate.islast
     if showT and tFull
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n5.3", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA n5.7", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -471,15 +525,15 @@ if barstate.islast
         table.cell(tb, 1, 11, (nearUpTx == "" ? "R -" : nearUpTx) + "   |   " + (nearDnTx == "" ? "S -" : nearDnTx), text_color = cTx, text_size = sz)
         table.merge_cells(tb, 1, 11, 3, 11)
         // 1D EMA rukh
-        eTx = na(m3) ? "-" : (dRukh > 0 ? "▲ UPAR - sirf BUY socho" : dRukh < 0 ? "▼ NEECHE - BUY nahi" : "◆ MILA - intezar") + "  (EMA50 " + str.tostring(m3, format.mintick) + " | EMA200 " + str.tostring(n3, format.mintick) + ")"
+        eTx = na(m3) ? "-" : (dRukh > 0 ? "▲ UPAR - sirf BUY socho" : dRukh < 0 ? (showSell ? "▼ NEECHE - sirf SELL socho" : "▼ NEECHE - BUY nahi") : "◆ MILA - intezar") + "  (EMA50 " + str.tostring(m3, format.mintick) + " | EMA200 " + str.tostring(n3, format.mintick) + ")"
         table.cell(tb, 0, 12, "1D EMA50/200", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 12, eTx, text_color = f_dirCol(dRukh), text_size = sz)
         table.merge_cells(tb, 1, 12, 3, 12)
-        // 4H entry waqt
-        fresh = lastFlipDir == 1 and not na(lastFlipT) and time - lastFlipT < 4 * 3600000
+        // 4H entry waqt (n5.6: buyNow = chart ki asal entry)
         flTx = na(lastFlipT) ? "" : " (mura " + str.format_time(lastFlipT, "dd MMM HH:mm", "Asia/Karachi") + " PKT)"
-        hTx = not ok2 ? "4H ya chhota chart lagayein" : dRukh <= 0 ? "1D rukh UPAR nahi - BUY ka waqt nahi" : (d2 < 0 and fresh) ? "ABHI ENTRY KA WAQT - 4H Supertrend upar mura" + flTx : d2 < 0 ? "4H UPAR chal raha" + flTx + " - nayi entry nahi, agle mor ka intezar" : "intezar: 4H close " + (na(s2) ? "Supertrend" : str.tostring(s2, format.mintick)) + " se upar band ho (agli position dotted)"
-        hCol = not ok2 or dRukh <= 0 ? color.gray : (d2 < 0 and fresh) ? color.new(#00e676, 0) : color.new(#ffb300, 0)
+        string s2Tx = na(s2) ? "Supertrend" : str.tostring(s2, format.mintick)
+        hTx = not ok2 ? "4H ya chhota chart lagayein" : buyNow ? "ABHI BUY KA WAQT - 4H Supertrend upar mura" + flTx : sellNow ? "ABHI SELL KA WAQT - 4H Supertrend neeche mura" + flTx : dSide == 0 ? "1D rukh saaf nahi - koi entry nahi" : dSide > 0 ? (d2 < 0 ? "4H UPAR chal raha" + flTx + " - nayi BUY nahi, agle mor ka intezar" : "intezar: 4H close " + s2Tx + " se upar band ho (agli position dotted)") : (d2 > 0 ? "4H NEECHE chal raha" + flTx + " - nayi SELL nahi, agle mor ka intezar" : "intezar: 4H close " + s2Tx + " se neeche band ho (agli position dotted)")
+        hCol = not ok2 ? color.gray : buyNow ? color.new(#00e676, 0) : sellNow ? color.new(#ff5252, 0) : dSide == 0 ? color.gray : color.new(#ffb300, 0)
         table.cell(tb, 0, 13, "4H ENTRY", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 13, hTx, text_color = hCol, text_size = sz)
         table.merge_cells(tb, 1, 13, 3, 13)
@@ -488,8 +542,8 @@ if barstate.islast
         color pCol = color.gray
         if showPs and ok2 and not na(cur)
             if cur.live
-                pTx := "KHULI BUY " + str.tostring(cur.e, format.mintick) + " | SL " + str.tostring(cur.sl, format.mintick) + (na(cur.tp) ? "" : " | TP " + str.tostring(cur.tp, format.mintick)) + " | abhi " + str.tostring((close - cur.e) / (cur.e - cur.sl), "+0.0;-0.0") + "R"
-                pCol := color.new(#00e676, 0)
+                pTx := "KHULI " + (cur.dir > 0 ? "BUY " : "SELL ") + str.tostring(cur.e, format.mintick) + " | SL " + str.tostring(cur.sl, format.mintick) + (na(cur.tp) ? "" : " | TP " + str.tostring(cur.tp, format.mintick)) + " | abhi " + str.tostring((close - cur.e) / (cur.e - cur.sl), "+0.0;-0.0") + "R"
+                pCol := cur.dir > 0 ? color.new(#00e676, 0) : color.new(#ff5252, 0)
             else
                 pTx := "band - aakhri " + str.tostring(cur.r, "+0.0;-0.0") + "R (" + str.format_time(cur.t0, "dd MMM", "Asia/Karachi") + ")"
                 pCol := cur.r >= 0 ? color.new(#66bb6a, 0) : color.new(#ef5350, 0)
@@ -497,13 +551,8 @@ if barstate.islast
         table.cell(tb, 1, 14, pTx, text_color = pCol, text_size = sz)
         table.merge_cells(tb, 1, 14, 3, 14)
         // KHULASA (sab ka nichor, ek line) - table ki pehli line
-        live = not na(cur) and cur.live and showPs and ok2
-        float liveR = na
-        if live
-            liveR := (close - cur.e) / (cur.e - cur.sl)
-        word = live ? "CHALU" : dRukh <= 0 ? "RUKO" : not ok2 ? "TAYYAR" : (d2 < 0 and fresh) ? "BUY" : d2 > 0 ? "TAYYAR" : "INTEZAR"
-        wCol = word == "BUY" or word == "CHALU" ? color.new(#00e676, 0) : word == "RUKO" ? color.new(#ff5252, 0) : color.new(#ffb300, 0)
-        wWhy = word == "CHALU" ? "BUY khuli, abhi " + str.tostring(liveR, "+0.0;-0.0") + "R" : word == "RUKO" ? "1D rukh UPAR nahi - BUY nahi" : word == "BUY" ? "4H mor + 1D UPAR = entry ka waqt" : word == "TAYYAR" ? (ok2 ? "1D UPAR, 4H close " + str.tostring(s2, format.mintick) + " se upar ka intezar" : "1D UPAR - 4H chart par entry dekhein") : "1D UPAR, 4H pehle se upar - agle mor ka intezar"
+        // lafz (word) aur uska rang (wCol) islast ke shuru mein tay hote hain
+        wWhy = word == "CHALU" ? (liveD > 0 ? "BUY" : "SELL") + " khuli, abhi " + str.tostring(liveR, "+0.0;-0.0") + "R" : word == "RUKO" ? (dRukh < 0 ? "1D NEECHE - BUY nahi (SELL switch band)" : "1D rukh saaf nahi - BUY / SELL dono nahi") : word == "BUY" ? "4H mor + 1D UPAR = BUY ka waqt" : word == "SELL" ? "4H mor + 1D NEECHE = SELL ka waqt (SELL ka test nahi)" : word == "TAYYAR" ? (ok2 ? (dSide > 0 ? "1D UPAR, 4H close " + str.tostring(s2, format.mintick) + " se upar ka intezar" : "1D NEECHE, 4H close " + str.tostring(s2, format.mintick) + " se neeche ka intezar") : (dSide > 0 ? "1D UPAR - 4H chart par entry dekhein" : "1D NEECHE - 4H chart par entry dekhein")) : (dSide > 0 ? "1D UPAR, 4H pehle se upar - agle mor ka intezar" : "1D NEECHE, 4H pehle se neeche - agle mor ka intezar")
         kW = nUp > nDn and nUp * 2 > nTf ? "UPAR" : nDn > nUp and nDn * 2 > nTf ? "NEECHE" : "MILA"
         zW = side == "" ? "" : " · " + side + (tLvl == "KAM" ? "" : " (toot " + tLvl + ")")
         oW = na(rsiC) ? "" : rsiC >= 70 ? " · OVERBOUGHT" : rsiC <= 30 ? " · OVERSOLD" : ""
@@ -521,14 +570,8 @@ if barstate.islast
         near = not na(dMin) and dMin <= 0.15
         tLvl = near and sq ? "UNCHA" : near or sq ? "DARMIYANA" : "KAM"
         [nt, tag] = f_nextNews()
-        fresh = lastFlipDir == 1 and not na(lastFlipT) and time - lastFlipT < 4 * 3600000
-        live = not na(cur) and cur.live and showPs and ok2
-        float liveR = na
-        if live
-            liveR := (close - cur.e) / (cur.e - cur.sl)
-        word = live ? "CHALU" : dRukh <= 0 ? "RUKO" : not ok2 ? "TAYYAR" : (d2 < 0 and fresh) ? "BUY" : d2 > 0 ? "TAYYAR" : "INTEZAR"
-        wCol = word == "BUY" or word == "CHALU" ? color.new(#00e676, 0) : word == "RUKO" ? color.new(#ff5252, 0) : color.new(#ffb300, 0)
-        wWhy = word == "CHALU" ? "BUY khuli, abhi " + str.tostring(liveR, "+0.0;-0.0") + "R" : word == "RUKO" ? "BUY nahi (1D upar nahi)" : word == "BUY" ? "entry ka waqt" : word == "TAYYAR" ? (ok2 ? "4H close > " + str.tostring(s2, format.mintick) : "4H chart dekhein") : "agle 4H mor ka intezar"
+        // lafz (word) aur uska rang (wCol) islast ke shuru mein tay hote hain
+        wWhy = word == "CHALU" ? (liveD > 0 ? "BUY" : "SELL") + " khuli, abhi " + str.tostring(liveR, "+0.0;-0.0") + "R" : word == "RUKO" ? (dRukh < 0 ? "BUY nahi (1D neeche, SELL band)" : "1D saaf nahi - koi side nahi") : word == "BUY" ? "BUY ka waqt" : word == "SELL" ? "SELL ka waqt (test nahi)" : word == "TAYYAR" ? (ok2 ? (dSide > 0 ? "4H close > " : "4H close < ") + str.tostring(s2, format.mintick) : "4H chart dekhein") : "agle 4H mor ka intezar"
         kW = nUp > nDn and nUp * 2 > nTf ? "UPAR" : nDn > nUp and nDn * 2 > nTf ? "NEECHE" : "MILA"
         rTx = "1D " + (dRukh > 0 ? "UPAR" : dRukh < 0 ? "NEECHE" : "MILA") + (ok2 ? " · 4H " + (dv2 > 0 ? "UPAR" : dv2 < 0 ? "NEECHE" : "MILA") : "") + " · kul " + kW
         zTx = (nearUpTx == "" ? "R -" : "R " + str.tostring(nearUp, format.mintick)) + " · " + (nearDnTx == "" ? "S -" : "S " + str.tostring(nearDn, format.mintick)) + (tLvl == "KAM" ? "" : " · toot " + tLvl)
@@ -542,4 +585,3 @@ if barstate.islast
         table.cell(tb, 1, 2, zTx, text_color = tLvl == "UNCHA" ? color.new(#ff5252, 0) : tLvl == "DARMIYANA" ? color.new(#ffb300, 0) : cTx, text_size = sz, text_halign = text.align_left)
         table.cell(tb, 0, 3, "News", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 3, nTx, text_color = str.contains(tag, "NFP") or str.contains(tag, "FOMC") ? color.new(#ff9800, 0) : cTx, text_size = sz, text_halign = text.align_left)
-

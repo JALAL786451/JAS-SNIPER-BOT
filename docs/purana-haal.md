@@ -1625,3 +1625,12 @@ Faisla 1D close (17:00 NY), entry agle din open. **SELL** jab SPX close < SMA200
 Kharcha: copper spread (Exness asli naap; na ho to 0.05%) har taraf, faisla 2x; short swap 0 (user SS 3 Nov) magar sim mein 1%/saal rakho.
 **TALAASH PASS (2x):** 1990-2018 Exp - 2SE > 0 AUR trades >= 40 AUR 1990-2004 + 2005-2018 dono musbat.
 **FTMO PASS:** #85 jaisi (#68 + K1 0.25%, CHUNAO phir IMTIHAN EK dafa). Claude umeed TALAASH ~25%, sab ~15%. Ginti +1.
+
+**Koshish #87 qaida (3 Nov, Naqsha chat; user "D"; test se PEHLE, badalna mana; chat mein ghalti se "#83" naam - repo mein #83-86 pehle se) - JasNaqsha 15M (`tools/k87_naqsha15m.py`):**
+Gold XAUUSD. **BUY** jab pichhli band 1D (17:00 NY) close > EMA50 > EMA200 AUR 4H Supertrend(10,3) upar mura; **SELL** ulta. Entry flip wali 4H band hote hi agli 15M OPEN.
+SL 6 x ATR10(4H) (15M H/L se, gap = open). Exit 4H ulta flip -> agli 15M open; TP nahi. Ek position, grid/mart/hedge nahi. Kharcha 0.03% har taraf + swap 3%/saal (dono rukh).
+Data histdata M1 2009-18 (EMA200 warm-up -> asal 2010-18). SELL sirf jab apna Exp - 2SE > 0. PASS: trades >= 100, Exp - 2SE > 0, >= 6 saal musbat. IMTIHAN 2019+ ek dafa.
+**Durusti (v1 dekhne ke BAAD, v2 se PEHLE):** v1 ne histdata waqt fixed UTC-5 maana (ghalat) - `_NY` = NY local DST samet (k80 loader). Sirf loader badla; qaida nahi. v1 bhi FAIL tha.
+**Koshish #87 = FAIL (v2):** BUY 50 tr, jeet 36%, Exp -0.052R, Exp-2SE -0.246, PF 0.78; SELL 35 tr Exp +0.211R magar Exp-2SE -0.128 (sabit nahi) -> final sirf BUY; musbat saal 2/9.
+Hawala (BUY bina 1D filter) 178 tr Exp +0.008R. 50/50 exit 4H flip, SL kabhi nahi laga -> 15M amal ne kuch nahi joda; 1D filter ne bhi nahi. IMTIHAN nahi khula, EA nahi.
+Sabaq: histdata `_NY` hamesha `tz_localize('America/New_York')`; test ke andar DST jaanch (hafte ki pehli candle: sardi 23 / garmi 22 UTC) fail ho to RUKO. Nateeja `docs/research/k87-natija.txt`.
