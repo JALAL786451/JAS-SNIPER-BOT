@@ -221,7 +221,7 @@ void Run()
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
    Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), "D) Big SELL part close: none now (SELL loss ya hifazat)"), dT > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
-   Ln(StringFormat("HIFAZAT: NET max %.2f | ek kaam se +%.2f | stop out min %s $ door", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
+   Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
    for(int k = gRow; k < 30; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // ---- POPUP (sirf Algo hara, wait khatam, mauqa ho)
