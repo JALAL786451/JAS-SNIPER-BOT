@@ -63,13 +63,14 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**32vi chat (2 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #79".."#82". #79 FTMO sim + EA ka asli 4% din pehra: CHUNAO FAIL
-(A 55/11 vs #68 64/2 - pehra 2016-01-04 par nuqsan pakka kar deta; B 1.5x 49/22). **USER: FTMO 83/0 par ROKO** -> naya maqsad $1000 Standard CENT EA,
-user ne MARTINGALE + HEDGE naam le kar maange (HIDAYAT 2 Nov). Research daur 7 (`docs/research/daur7-cent-martingale.md`): $10-20/din = ~80% saal mein doobna.
-#80 gold Asia M5 BB fade FAIL (histdata M1 2009-18 `data/histdata/`). **#81 IBS + martingale 1.5x/3 qadam ASLI PASS** (2019+ 401 tr, $1000 par +$382 = $0.19/din,
-girawat $37). #82 gold 1m hedge-freeze FAIL (99.9% waqt phansa, 35k hedge churn). **JasIbsCentEA c1** (judge READY) user ke naye demo par CHALU (SS ✅).
-**AGLA KAAM:** (a) c1 demo ki pehli trades (user SS laaye; hafte ~1 trade, faisla ~2:15 PKT). (b) User risk barhana chahe to SIRF user ka number (hisaab: $25 = $0.48/din girawat ~$90).
-(c) FTMO demo t5/i6/k2 chalu (chhorna nahi). Nayi idea par wahi: qaida pehle -> test -> Chief Justice (judge).
+**33vi chat (2-4 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #83".."#86". #83 cent $1000 IBS mart + Trend $7.5 + Khirki $1.5 = PASS (3.8 tr/hafta,
++$931 2019+) magar 472716649 = STANDARD USD (cent nahi) -> lot fit nahi, naya Standard Cent demo chahiye (user ka faisla). #84 range bars GATE FAIL (judge CLEAN).
+Login gadbad theek (FTMO EA 472716649 par the). Hooks: SessionStart naqsha + Stop auto-save. **jas_naqsha n5.5** (TV ✅; Naqsha chat ne n5.7 SELL jori).
+Research daur 8-10 (range, SELL apni, counter): sab ulte instrument = saath girte (`tools/ulta_jaanch.py`); qaida #85 C2 index bear SELL + #86 K1 copper SELL LIKHE, test NAHI (data 1990+ chahiye).
+LIVE 253687618: **JasMauqa m6** chal raha (status + ladder + YES/NO mauqe, Algo OFF); m7.1 HEDGE LADDER (har $10 0.05 BUY band, SELL se neeche wali phir upar qareeb wali) PENDING.
+User ne khud SELL laga kar NET +0.15 kiya. Scripts: JasSarkao z1. FTMO demo: i6 pehli 2 trades +$108 (Naqsha chat, `docs/demo-haal/2026-11-03.md`).
+**AGLA KAAM:** (a) user ke sawal / SS ka intezar - sawal = SIRF jawab, test sirf "test karo". (b) JasMauqa sudhaar: pehle faida/nuqsan, phir user ke haan par. (c) #85/#86 data (user "test karo" ke baad).
+(d) FTMO demo t5/i6/k2 + c1 chalte rahein. HIDAYAT naye: Algo ON/OFF, aasan English, file sirf GitHub link, ek waqt ek chat + git pull.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

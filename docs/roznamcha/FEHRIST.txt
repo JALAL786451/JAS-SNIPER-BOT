@@ -2,12 +2,17 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-01  (34 kaam)
-   - purana-haal #70 line saaf
-   - research daur 3 FX report
+2026-11-01  (18 kaam)
+   - HIDAYAT: discussion mein sirf jawab; kaam/agent sirf D ke baad
+   - jas_5ea.pine p2 (judge: S2/B1 tarjeeh fix, READY for TV)
    - TRADING sec 5: p6 READY
 
-2026-11-02  (31 kaam)
+2026-11-02  (52 kaam)
    - #74 qaida (test se PEHLE): 3Commas Bot EMA 21/50 2H x 11 instrument
-   - chat khatam (31vi): TRADING sec 5 (#79 agla, D diya), KAHANI +4 line, sawal-jawab, roznamc
-   - HIDAYAT: sahab nahi; sawal-jawab: cent USC hisaab
+   - #82 qaida (test se pehle): gold 1m EMA + hedge-freeze (user ne hedge naam liya)
+   - Research daur 10: BUY tokri ke bure daur + counter K1 copper SELL, K2 oil BUY (sirf resear
+
+2026-11-03  (18 kaam)
+   - Jaanch: BUY tokri ke ulte instrument 2012-18 - koi nahi (sab corr musbat)
+   - JasMauqa m4: panel + popup aasan English (ON/OFF, PROFIT/LOSS, PAIR CLOSE, BREAKEVEN)
+   - HIDAYAT: ek waqt ek chat, kaam se pehle git pull

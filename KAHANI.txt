@@ -127,11 +127,14 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 02-11 | #83 cent $1000: IBS mart + Trend 4H $7.5 + Khirki $1.5 (user: roz 1 trade) | 2019+ 3.8 tr/hafta, +$931 (roz $0.46), girawat $93 = PASS | lot fit demo spec se | trades 4x, kamai 2.7x
 02-11 | MT5 login gadbad (FTMO EA 472716649 par) + hooks (SessionStart naqsha, Stop auto-save) + jas_naqsha n1 Pine | 472716649 = Standard USD ~$2000 (cent nahi) | TRADING.md sec 0 MT5 NAQSHA | nayi chat andaze se chalti thi
 02-11 | #84 range bars gold (user: TV free range TF; research daur 8 + judge) | GATE 2009-13 max 54.3% < 54.7%, raasta badalne se 1-2pt farq | BAND | range bar = ghari badli, edge nahi
+03-11 | JasMauqa m1-m7.1 LIVE saathi (status, ladder, YES/NO mauqe, hedge ladder) + JasSarkao | user ne LIVE manga, khud lot nahi | m6 chal raha, m7.1 pending | user khud MT5 seekh raha
+03-11 | Research daur 9-10 SELL apni + counter; ulte instrument jaanch | koi ulta nahi (sab saath girte) | #85 C2, #86 K1 qaida, test nahi | SELL aaina = ghalat idea (user)
+03-11 | Naqsha chat (Sonnet) | i6 pehli 2 trades +$108, #87 FAIL, n5.7 | ek waqt ek chat + git pull | do chat same file badal rahi thin
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
 
-4. ABHI (2 Nov 2026, 32vi chat ke baad)
+4. ABHI (4 Nov 2026, 33vi chat ke baad)  [MT5 ka asli haal = TRADING.md sec 0]
 DEMO 472716649 (Trial16, STANDARD USD ~$2000 - cent NAHI, SS 2 Nov; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
 FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu:
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
@@ -139,7 +142,7 @@ FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu:
   JasKhirkiEA k2 | DE30m D1   | 20261101 | 7 non-US index 0.15%
   Pehra teeno: target 110k + din 4% (96k farsh), kul hadd band.
 MANSOOBA #68: 2019+ sim 83/0, median 11.4 mahine (swap fix baad). 3 mahine 0%, 12 mahine ~51% (sawal-jawab).
-LIVE: koi EA nahi; 6-mahine qaida -> demo 31-10 se = ~May 2027 se pehle nahi (hisaab).
+LIVE: koi trade-EA nahi; sirf JasMauqa m6 (khud lot nahi, Algo OFF); 6-mahine qaida -> demo 31-10 se = ~May 2027 se pehle nahi (hisaab).
 AGLE KAAM:
  - Somwar 2 Nov: FTMO demo ki pehli trades (user SS laaye tab; yaad-dihani NAHI). Pehli khirki trade 24 Nov.
  - AGLA: #79 = sim mein EA ka asli 4% din pehra (user D) - TRADING sec 5.

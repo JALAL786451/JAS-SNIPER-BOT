@@ -1634,3 +1634,13 @@ Data histdata M1 2009-18 (EMA200 warm-up -> asal 2010-18). SELL sirf jab apna Ex
 **Koshish #87 = FAIL (v2):** BUY 50 tr, jeet 36%, Exp -0.052R, Exp-2SE -0.246, PF 0.78; SELL 35 tr Exp +0.211R magar Exp-2SE -0.128 (sabit nahi) -> final sirf BUY; musbat saal 2/9.
 Hawala (BUY bina 1D filter) 178 tr Exp +0.008R. 50/50 exit 4H flip, SL kabhi nahi laga -> 15M amal ne kuch nahi joda; 1D filter ne bhi nahi. IMTIHAN nahi khula, EA nahi.
 Sabaq: histdata `_NY` hamesha `tz_localize('America/New_York')`; test ke andar DST jaanch (hafte ki pehli candle: sardi 23 / garmi 22 UTC) fail ho to RUKO. Nateeja `docs/research/k87-natija.txt`.
+
+**TRADING.md sec 5 (32vi chat ka, 33vi ne hataya):**
+**32vi chat (2 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #79".."#82". #79 FTMO sim + EA ka asli 4% din pehra: CHUNAO FAIL
+(A 55/11 vs #68 64/2 - pehra 2016-01-04 par nuqsan pakka kar deta; B 1.5x 49/22). **USER: FTMO 83/0 par ROKO** -> naya maqsad $1000 Standard CENT EA,
+user ne MARTINGALE + HEDGE naam le kar maange (HIDAYAT 2 Nov). Research daur 7 (`docs/research/daur7-cent-martingale.md`): $10-20/din = ~80% saal mein doobna.
+#80 gold Asia M5 BB fade FAIL (histdata M1 2009-18 `data/histdata/`). **#81 IBS + martingale 1.5x/3 qadam ASLI PASS** (2019+ 401 tr, $1000 par +$382 = $0.19/din,
+girawat $37). #82 gold 1m hedge-freeze FAIL (99.9% waqt phansa, 35k hedge churn). **JasIbsCentEA c1** (judge READY) user ke naye demo par CHALU (SS ✅).
+**AGLA KAAM:** (a) c1 demo ki pehli trades (user SS laaye; hafte ~1 trade, faisla ~2:15 PKT). (b) User risk barhana chahe to SIRF user ka number (hisaab: $25 = $0.48/din girawat ~$90).
+(c) FTMO demo t5/i6/k2 chalu (chhorna nahi). Nayi idea par wahi: qaida pehle -> test -> Chief Justice (judge).
+

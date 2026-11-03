@@ -131,3 +131,9 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Cent demo nahi (Exness)? -> USD Standard demo $1000 kholo (1:2000), JasIbsCentEA c1 USD par khud $10 = $10 (cent par x100). Teesra MT5 alag folder mein (FTMO demo wala terminal na badlo) (2 Nov).
 - JasIbsEA i6 hi kyun nahi? -> i6 mein martingale / $ risk nahi; c1 alag file + magic 20261102 = i6 (FTMO demo) par koi asar nahi (2 Nov).
 - Cent par $1000 = 100,000 USC - EA $100k samjhega? -> NAHI: ACCOUNT_CURRENCY "USC" dekh kar $10 = 1000 USC, $800 stop = 80,000 USC. USD demo ka balance $1000 set karo (100k par stop kabhi nahi lagta) (2 Nov).
+- Range bars (TV 1R/10R/1000R) par koi strategy? -> NAHI: research + #84 GATE FAIL (54.3% < 54.7%), TV khud kehta range strategy ghair-haqeeqi (3 Nov).
+- Sab se pakki EMA + TF? -> 1D EMA200 (+EMA50 > EMA200 = rukh UPAR); entry waqt 4H (Supertrend mor, #34). 15m/1m EMA20/50 FAIL (#12, #82) (3 Nov).
+- Sirf-BUY EA par FTMO aitraz? -> NAHI; qaide sirf nuqsan hadd / target / mana tareeqe; Swing account (3 Nov).
+- BUY tokri ke ulte instrument? -> koi nahi 2012-18 (18 instrument corr +0.03..+0.49, bure din sab girte) - bachao sirf bure daur ki SELL (#85/#86) (3 Nov).
+- Close By / BUY upar se neeche "sarkao" se kul P/L badalta? -> NAHI (NET wahi = hisaab wahi); hifazat sirf NET kam karne se (3 Nov).
+- MT5 trade partial close? -> Trade tab double-click -> Volume mein band karne wali lot -> peela Close button (3 Nov).
