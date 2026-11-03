@@ -1644,3 +1644,13 @@ girawat $37). #82 gold 1m hedge-freeze FAIL (99.9% waqt phansa, 35k hedge churn)
 **AGLA KAAM:** (a) c1 demo ki pehli trades (user SS laaye; hafte ~1 trade, faisla ~2:15 PKT). (b) User risk barhana chahe to SIRF user ka number (hisaab: $25 = $0.48/din girawat ~$90).
 (c) FTMO demo t5/i6/k2 chalu (chhorna nahi). Nayi idea par wahi: qaida pehle -> test -> Chief Justice (judge).
 
+
+**Koshish #88 qaida (3 Nov, 34vi chat; user "D"; test se PEHLE, badalna mana) - JasShahmaat recovery (`tools/shahmaat_sim.py`):**
+Basket = live 253687618 (3 Nov SS): equity 33,600 USC, P/L -9,512, NET +0.33. Gold H1 Dukascopy; har start par qeemat 3934.71 par scale (chaal ka %).
+Rukh = #34 JasTrend 4H supertrend(3,10) (pehle ASLI PASS). 4H band par: UP -> NET +0.80, DOWN -> NET = S (2 setting: S=0.00 / S=-0.30).
+Hifazat: |NET| <= equity/40000 (stop out kam az kam $400 door); kharcha 30 USC har 1 lot badlav (spread 0.24 + gunjaish); swap-free.
+Muqabla: "kuch na karo" (NET +0.33 hamesha). Start = har Somwar, 6 mahine (aur 3 mahine dikhana). TALAASH 2021-01..2024-12 (end bhi isi mein).
+PASS: (1) median(S - kuch na karo) > 0, (2) >= 60% start par S behtar, (3) 0 stop out (equity <= 0), (4) be-jor 6-mahine tukron par mean - 2SE > 0.
+Dono setting gino (2 koshish). Behtar PASS wali -> IMTIHAN 2025-01..aaj EK dafa, bina tabdeeli.
+**Koshish #88 = FAIL (dono setting, TALAASH; IMTIHAN nahi chala):** 6 mahine 178 start: S=0.00 median -3,038 USC vs kuch-na-karo, behtar 44%; S=-0.30 median -2,573, behtar 42%; stop out 0.
+3 mahine bhi FAIL (48% / 45%). Kuch-na-karo median equity 39,084 (gold 2021-24 chadha). Sabaq: 4H supertrend ka whipsaw NET palatne ka faida kha jata.
