@@ -76,15 +76,31 @@ def run_m71(close, i0, i1, step=10.0, lot=0.05):
     return eq, EQ0 + NET0 * 100 * (px[-1] - px[0]), False
 
 
+def other_sig(df, kind):
+    """#92 raat / #93 mahina SMA10 / #94 Sep+Nov: +1 = NET 0.80, -1 = NET 0.33."""
+    ny = df['t'].dt.tz_convert('America/New_York')
+    if kind == 'raat':
+        h = ny.dt.hour.values
+        return np.where((h >= 16) | (h < 9), 1.0, -1.0)
+    if kind == 'mausam':
+        return np.where(ny.dt.month.isin([9, 11]).values, 1.0, -1.0)
+    ym = ny.dt.year.values * 12 + ny.dt.month.values - 1
+    c = pd.Series(df['Close'].values).groupby(ym).last()
+    ok = (c > c.rolling(10).mean()).shift(1)          # pichle mahine ka faisla
+    return np.array([1.0 if ok.get(k) is True else -1.0 for k in ym])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--imtihan', action='store_true')
     ap.add_argument('--m71', action='store_true')
     ap.add_argument('--upar', action='store_true', help='#90-91: DOWN par NET 0.33')
     ap.add_argument('--d1', action='store_true', help='#91: D1 supertrend')
+    ap.add_argument('--sig', choices=['raat', 'sma10', 'mausam'], help='#92-94')
     a = ap.parse_args()
     df = load('XAUUSD')
-    sig = h4_trend(df, daily=a.d1)
+    sig = other_sig(df, a.sig) if a.sig else h4_trend(df, daily=a.d1)
+    a.upar = a.upar or bool(a.sig)
     t = df['t']
     lo, hi = ('2025-01-01', '2099-01-01') if a.imtihan else ('2021-01-01', '2025-01-01')
     m = ((t >= lo) & (t < hi)).values

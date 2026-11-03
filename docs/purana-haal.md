@@ -1666,3 +1666,10 @@ Sabaq: m7.1 girawat par NET 0 kar ke loss "taala" laga deta, wapsi ka faida kho 
 #90 = 4H supertrend(3,10). #91 = D1 supertrend(3,10) (17:00 NY din; kam whipsaw). 2 koshish. PASS wali -> IMTIHAN EK dafa.
 **Koshish #90 = FAIL (qareeb):** 4H charhai-jor 6 mahine median +1,426 USC vs kuch-na-karo, behtar 54% (< 60%), be-jor mean +1,575 magar -2SE -9,219; 3 mahine 61% magar -2SE manfi. Saabit nahi.
 **Koshish #91 = FAIL:** D1 charhai-jor median -310, behtar 48%. IMTIHAN kisi ka nahi. Ab tak recovery #88-91 = 0/5 PASS; #90 ko setting ghuma kar PASS karna MANA (sabaq 1).
+
+**Koshish #92-94 qaida (3 Nov, 34vi chat; research agent ke idea; test se PEHLE, badalna mana) - `tools/shahmaat_sim.py --sig X` (harness/PASS = #88, DOWN = NET 0.33):**
+#92 raat (Blose & Gondhalekar 2014/2018): NY 16:00 se 09:00 tak NET +0.80, din mein +0.33 (roz 0.47 lot aana-jana, kharcha 30 USC/lot).
+#93 mahina SMA10 (Quantpedia SSRN 3202658): mahine ke aakhri close > 10 mahine SMA -> agla poora mahina +0.80, warna +0.33.
+#94 mausam (Baur 1980-2010): September + November mein +0.80, baqi +0.33. 3 koshish. PASS wali -> IMTIHAN EK dafa.
+**Koshish #92-94 = FAIL (TALAASH; IMTIHAN nahi):** #92 raat median +1,934 USC, behtar 56%, be-jor mean -2,274 (saabit nahi); #93 SMA10 median -2,014, 44%; #94 Sep+Nov -62, 49%.
+Recovery ab 0/8 PASS (#88 x2, #89-94). Research agent ka bhi andaza: gold ke edge chhote (6 mahine mein kuch sau-hazaar USC), breakeven sirf qeemat (+$288) se.
