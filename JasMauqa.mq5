@@ -1,5 +1,6 @@
 //+------------------------------------------------------------------+
 //|  JAS MAUQA   -   build m3  (3 Nov 2026)                          |
+//|  m4 = panel + popup aasan English (ON/OFF, PROFIT/LOSS, PAIR)   |
 //|  m3 = bara font panel (InpFont), rang, faide/nuqsan wali ginti   |
 //|  m2 = DeskView ka zaroori STATUS + mauqa par KHUD YES/NO popup   |
 //|       (Algo hara ho to), 15 min wait, tickets 180/200 bachao.    |
@@ -13,17 +14,17 @@
 //|    A) BARI SELL KAM : sab se bari SELL + ek BUY, Close By > hadd |
 //|    B) JORI          : koi SELL + BUY, Close By > hadd            |
 //|    C) FAIDE WALI TICKET band > hadd (tickets 180+ ho to C nahi)  |
-//|  Algo HARA  -> mauqa mile to popup: detail + YES / NO.           |
+//|  Algo ON    -> mauqa mile to popup: detail + YES / NO.           |
 //|              YES = sirf wahi ek kaam. NO = kuch nahi.            |
 //|              Agla popup kam az kam 15 min baad.                  |
-//|  Algo LAAL  -> sirf status, popup nahi.                          |
+//|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "3.00"
+#property version   "4.00"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m3"
+#define S_BUILD "m4"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -92,8 +93,8 @@ bool AlgoOn() { return(TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) && MQLInfoInt
 
 string Desc(ulong t)
   {
-   if(!PositionSelectByTicket(t)) return(StringFormat("#%I64u (band ho chuki)", t));
-   return(StringFormat("#%I64u %s %.2f @ %s  (abhi %s)", t, Pick(PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_SELL, "SELL", "BUY"),
+   if(!PositionSelectByTicket(t)) return(StringFormat("#%I64u (already closed)", t));
+   return(StringFormat("#%I64u %s %.2f @ %s  (now %s)", t, Pick(PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_SELL, "SELL", "BUY"),
                        PositionGetDouble(POSITION_VOLUME), Px(PositionGetDouble(POSITION_PRICE_OPEN)),
                        M(PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP))));
   }
@@ -129,7 +130,7 @@ void Run()
       be = Px(bid - kul / perD);
       double free = eq - mg * soLvl / 100.0;
       double d = free / MathAbs(perD);
-      door = StringFormat("%s door (qeemat %s)", DoubleToString(d, 1), Px(bid - (net > 0 ? 1 : -1) * d));
+      door = StringFormat("%s away (price %s)", DoubleToString(d, 1), Px(bid - (net > 0 ? 1 : -1) * d));
      }
    int tk = PositionsTotal() + OrdersTotal();
    bool full = tk > InpBachao;
@@ -154,45 +155,45 @@ void Run()
    // ---- PANEL (bara font, rang)
    color cG = clrLime, cR = clrTomato, cW = clrWhite, cY = clrGold, cC = clrAqua;
    gRow = 0;
-   Ln(StringFormat("JAS MAUQA %s  -  %s  -  Algo %s", S_BUILD, _Symbol, Pick(AlgoOn(), "HARA (YES/NO)", "LAAL (sirf status)")), AlgoOn() ? cG : cY);
-   Ln(StringFormat("KUL P/L  %s        EQUITY  %s", M(kul), M(eq)), kul >= 0 ? cG : cR);
-   Ln(StringFormat("FAIDE WALI   %d ticket  %.2f lot   +%s", fc, fl, M(fp)), cG);
-   Ln(StringFormat("NUQSAN WALI  %d ticket  %.2f lot   %s", lc, ll, M(lp)), cR);
-   Ln(StringFormat("BUY   %d ticket  %.2f lot  ausat %s   P/L %s", bc, bl, Pick(bl > 0, Px(bl > 0 ? bo / bl : 0), "-"), M(bp)), bp >= 0 ? cG : cR);
-   Ln(StringFormat("SELL  %d ticket  %.2f lot  ausat %s   P/L %s", sc, sl, Pick(sl > 0, Px(sl > 0 ? so / sl : 0), "-"), M(sp)), sp >= 0 ? cG : cR);
-   Ln(StringFormat("NET %+.2f lot  -  qeemat $1 %s = %s", net, Pick(net >= 0, "gire", "chadhe"), M(-MathAbs(perD))), cC);
-   Ln(StringFormat("BARABAR KA PRICE  %s   (abhi %s)", be, Px(bid)), cC);
+   Ln(StringFormat("JAS MAUQA %s  -  %s  -  Algo %s", S_BUILD, _Symbol, Pick(AlgoOn(), "ON (YES/NO popup)", "OFF (only status)")), AlgoOn() ? cG : cY);
+   Ln(StringFormat("TOTAL P/L  %s        EQUITY  %s", M(kul), M(eq)), kul >= 0 ? cG : cR);
+   Ln(StringFormat("PROFIT  %d ticket  %.2f lot   +%s", fc, fl, M(fp)), cG);
+   Ln(StringFormat("LOSS    %d ticket  %.2f lot   %s", lc, ll, M(lp)), cR);
+   Ln(StringFormat("BUY   %d ticket  %.2f lot  avg %s   P/L %s", bc, bl, Pick(bl > 0, Px(bl > 0 ? bo / bl : 0), "-"), M(bp)), bp >= 0 ? cG : cR);
+   Ln(StringFormat("SELL  %d ticket  %.2f lot  avg %s   P/L %s", sc, sl, Pick(sl > 0, Px(sl > 0 ? so / sl : 0), "-"), M(sp)), sp >= 0 ? cG : cR);
+   Ln(StringFormat("NET %+.2f lot  -  price $1 %s = %s", net, Pick(net >= 0, "down", "up"), M(-MathAbs(perD))), cC);
+   Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
    Ln("STOP OUT  " + door, cY);
-   Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "ZYADA - sirf jori", "theek")), full ? cR : cW);
-   Ln(Pick(aS > 0, StringFormat("A) BARI SELL KAM  #%I64u + #%I64u  = +%s", aS, aB, M(aV)), "A) Bari SELL ki musbat jori: abhi nahi"), aS > 0 ? cG : cW);
-   Ln(Pick(jS > 0, StringFormat("B) JORI  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Musbat jori: abhi nahi"), jS > 0 ? cG : cW);
-   Ln(Pick(cT > 0, StringFormat("C) FAIDE WALI TICKET  #%I64u  = +%s", cT, M(cV)), "C) Faide wali ticket: " + Pick(full, "band (tickets zyada)", "abhi nahi")), cT > 0 ? cG : cW);
-   Ln(Pick(wait > 0, StringFormat("Agla popup %d min baad", wait / 60 + 1), "Popup tayyar"), cW);
+   Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "TOO MANY - only pair close", "OK")), full ? cR : cW);
+   Ln(Pick(aS > 0, StringFormat("A) BIG SELL REDUCE  #%I64u + #%I64u  = +%s", aS, aB, M(aV)), "A) Big SELL reduce: none now"), aS > 0 ? cG : cW);
+   Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
+   Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now")), cT > 0 ? cG : cW);
+   Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
    for(int k = gRow; k < 20; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // ---- POPUP (sirf Algo hara, wait khatam, mauqa ho)
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
-   if(aS > 0)      { kind = 1; t1 = aS; t2 = aB; v = aV; nm = "A) BARI SELL KAM"; }
-   else if(jS > 0) { kind = 1; t1 = jS; t2 = jB; v = jV; nm = "B) JORI"; }
-   else if(cT > 0) { kind = 2; t1 = cT; v = cV; nm = "C) FAIDE WALI TICKET"; }
+   if(aS > 0)      { kind = 1; t1 = aS; t2 = aB; v = aV; nm = "A) BIG SELL REDUCE"; }
+   else if(jS > 0) { kind = 1; t1 = jS; t2 = jB; v = jV; nm = "B) PAIR CLOSE"; }
+   else if(cT > 0) { kind = 2; t1 = cT; v = cV; nm = "C) PROFIT TICKET CLOSE"; }
    if(kind == 0) return;
    gNext = TimeCurrent() + InpWaitMin * 60;
    bool demo = AccountInfoInteger(ACCOUNT_TRADE_MODE) == ACCOUNT_TRADE_MODE_DEMO;
    string d = StringFormat("Account %I64d  (%s)\n\n%s\n\n", AccountInfoInteger(ACCOUNT_LOGIN), Pick(demo, "DEMO", "LIVE - ASLI PAISA"), nm);
    if(kind == 1)
-      d += StringFormat("%s\n%s\n\nClose By (spread nahi, nayi lot nahi)\nNateeja: +%s\nKyun: SELL ki qeemat BUY se upar = jori musbat\nTickets: %d -> %d ya %d\n",
+      d += StringFormat("%s\n%s\n\nClose By (no spread, no new lot)\nResult: +%s\nWhy: SELL price above BUY price = profit pair\nTickets: %d -> %d or %d\n",
                         Desc(t1), Desc(t2), M(v), tk, tk - 2, tk - 1);
    else
-      d += StringFormat("%s\n\nBazaar par band\nFaida pakka: +%s\nTickets: %d -> %d\nDhyan: is se NET lot badlega\n", Desc(t1), M(v), tk, tk - 1);
-   if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - MT5 par YES/NO", _Symbol, nm, M(v)));
-   int ans = MessageBox(d + "\nKarna hai?", "JAS MAUQA " + S_BUILD + "  -  " + _Symbol, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
+      d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNote: NET lot will change\n", Desc(t1), M(v), tk, tk - 1);
+   if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
+   int ans = MessageBox(d + "\nDo it?", "JAS MAUQA " + S_BUILD + "  -  " + _Symbol, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
    if(ans != IDYES) { Print("JAS MAUQA ", S_BUILD, ": NO - ", nm); return; }
    if(!AlgoOn() || !PositionSelectByTicket(t1) || (kind == 1 && !PositionSelectByTicket(t2)))
-     { MessageBox("Algo laal ho gaya ya lot badal gayi - kuch nahi kiya.", "JAS MAUQA " + S_BUILD, MB_OK | MB_ICONWARNING); return; }
+     { MessageBox("Algo OFF or ticket changed - nothing done.", "JAS MAUQA " + S_BUILD, MB_OK | MB_ICONWARNING); return; }
    bool ok;
    if(kind == 1) ok = trade.PositionCloseBy(t1, t2);
    else          ok = trade.PositionClose(t1);
-   string r = StringFormat("%s: %s  (%d %s)", nm, Pick(ok, "HO GAYA", "FAIL"), (int)trade.ResultRetcode(), trade.ResultRetcodeDescription());
+   string r = StringFormat("%s: %s  (%d %s)", nm, Pick(ok, "DONE", "FAIL"), (int)trade.ResultRetcode(), trade.ResultRetcodeDescription());
    Print("JAS MAUQA ", S_BUILD, ": ", r);
    MessageBox(r, "JAS MAUQA " + S_BUILD + " - nateeja", MB_OK);
   }
