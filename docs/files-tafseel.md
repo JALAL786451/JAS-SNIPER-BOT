@@ -240,3 +240,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/research/daur10-counter-agent.md` - BUY tokri ke bure daur (2008, 2011, 2013, 2015-16, 2018Q4, 2020, 2022) + counter: K1 copper SELL (S&P+copper SMA200 neeche), K2 oil BUY backwardation; test NAHI (3 Nov)
 - `tools/ulta_jaanch.py` - jaanch (3 Nov): BUY tokri khuli ho to kaun girta hai, 2012-18: KOI ULTA NAHI (18 instrument sab corr +0.03..+0.49, tokri ke bure din sab girte)
 - `JasSarkao.mq5` z1 (3 Nov) - SCRIPT: ek SELL ticket ka hissa band (partial) + wahi lot nayi SELL (0 = abhi, >0 = SELL LIMIT $ upar); user ka "sarkao"; demo pehle, F7 baqi
+- `JasMauqa.mq5` m1 (3 Nov) - EA, khud trade NAHI: faide wali ticket, musbat jori (Close By), bari SELL kam, tickets/200 (hadd-20 warning); button -> detail -> YES/NO; InpDikhana true default; user ne LIVE manga
