@@ -6,7 +6,7 @@ MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user 
 |---|---|---|---|---|---|---|
 | 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 ki pehli 2 trades** US500+USTEC BUY +$108, t5/k2 0 (`docs/demo-haal/2026-11-03.md`) | 3 Nov SS |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | ON | 2 Nov SS |
-| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | ~34.4k USC equity; BUY 102 tk 2.60 lot, SELL 13 tk 2.45 lot (user ne KHUD haath se SELL lagayi), NET +0.15 | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, PENDING - abhi nahi lagaya) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 4 Nov SS |
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | equity 33,600 USC, P/L -9,512; BUY 106 tk 2.64 lot avg 3977.58, SELL 7 tk 2.31 lot avg 3942.77, NET +0.33 (breakeven 4222.95) | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, PENDING - abhi nahi lagaya) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 3 Nov SS (m6 screen) |
 2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.
 
 **Nayi chat ka message (copy-paste):**
