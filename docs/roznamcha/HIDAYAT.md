@@ -105,3 +105,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | JasMauqa sudhaar | User (3 Nov): JasMauqa ko khud manually chala kar MT5 seekhega; jo sudhaar chahiye samjhayega -> Claude PEHLE faida + nuqsan samjhaye, user ke kehne par hi jore. | 3 Nov |
 | Algo lafz | User (3 Nov): "laal / hara" NAHI - sirf **Algo ON** (button hara) / **Algo OFF** (button laal). "Algo ON rakhna hai" / "Algo OFF rakhna hai". | 3 Nov |
 | aasan English | User (3 Nov): script / panel / jawab mein AASAN English lafz (ON/OFF, BUY/SELL, Profit/Loss, Total, Lot, Ticket, Open/Close, Pair, Breakeven, Wait) - Urdu tarjuma nahi. Mushkil lafz ho to user pooch lega. | 3 Nov |
+| ek waqt ek chat | User (4 Nov): doosri chat (misaal Sonnet) bhi isi branch par commit karti hai. Har chat kaam se PEHLE `git pull` kare; do chat ek saath same file (jas_naqsha, TRADING.md, EA) na badlein - takraao ka khatra user ko SHURU mein batao. | 4 Nov |
