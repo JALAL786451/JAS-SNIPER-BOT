@@ -1,5 +1,6 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m2  (3 Nov 2026)                          |
+//|  JAS MAUQA   -   build m3  (3 Nov 2026)                          |
+//|  m3 = bara font panel (InpFont), rang, faide/nuqsan wali ginti   |
 //|  m2 = DeskView ka zaroori STATUS + mauqa par KHUD YES/NO popup   |
 //|       (Algo hara ho to), 15 min wait, tickets 180/200 bachao.    |
 //|  m1 = button wala (InpDikhana) - hataya.                         |
@@ -18,11 +19,11 @@
 //|  Algo LAAL  -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "2.00"
+#property version   "3.00"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m2"
+#define S_BUILD "m3"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -30,12 +31,32 @@ input int    InpHadd     = 200;    // Broker ticket hadd (khuli + pending)
 input int    InpBachao   = 180;    // Is se zyada tickets = laal + sirf jori (ticket ghatane wali)
 input int    InpWaitMin  = 15;     // Popup ke baad agla popup kitne minute baad
 input bool   InpPush     = true;   // Popup ke waqt phone push bhi
+input int    InpFont     = 13;     // Panel ka font (bara = 14-16)
 
 CTrade trade;
 
 struct PInfo { ulong t; long typ; double vol; double open; double pnl; };
 
 datetime gNext = 0;
+int gRow = 0;
+
+void Ln(string tx, color c)
+  {
+   string nm = "JM_L" + IntegerToString(gRow);
+   if(ObjectFind(0, nm) < 0)
+     {
+      ObjectCreate(0, nm, OBJ_LABEL, 0, 0, 0);
+      ObjectSetInteger(0, nm, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+      ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+      ObjectSetString(0, nm, OBJPROP_FONT, "Consolas");
+     }
+   ObjectSetInteger(0, nm, OBJPROP_XDISTANCE, 12);
+   ObjectSetInteger(0, nm, OBJPROP_YDISTANCE, 22 + gRow * (int)(InpFont * 2.0));
+   ObjectSetInteger(0, nm, OBJPROP_FONTSIZE, InpFont);
+   ObjectSetInteger(0, nm, OBJPROP_COLOR, c);
+   ObjectSetString(0, nm, OBJPROP_TEXT, tx);
+   gRow++;
+  }
 
 string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
@@ -84,11 +105,12 @@ void Run()
    double vpp = Vpp();
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    // ---- STATUS
-   double kul = 0, bl = 0, sl = 0, bo = 0, so = 0, bp = 0, sp = 0;
-   int bc = 0, sc = 0, big = -1;
+   double kul = 0, bl = 0, sl = 0, bo = 0, so = 0, bp = 0, sp = 0, fp = 0, lp = 0, fl = 0, ll = 0;
+   int bc = 0, sc = 0, big = -1, fc = 0, lc = 0;
    for(int i = 0; i < n; i++)
      {
       kul += a[i].pnl;
+      if(a[i].pnl >= 0) { fc++; fl += a[i].vol; fp += a[i].pnl; } else { lc++; ll += a[i].vol; lp += a[i].pnl; }
       if(a[i].typ == POSITION_TYPE_BUY) { bc++; bl += a[i].vol; bo += a[i].vol * a[i].open; bp += a[i].pnl; }
       else
         {
@@ -100,25 +122,17 @@ void Run()
    double eq = AccountInfoDouble(ACCOUNT_EQUITY);
    double mg = AccountInfoDouble(ACCOUNT_MARGIN);
    double soLvl = AccountInfoDouble(ACCOUNT_MARGIN_SO_SO);
-   double perD = net * vpp;                       // qeemat $1 upar = itna (manfi = nuqsan)
+   double perD = net * vpp;
    string be = "-", door = "-";
    if(MathAbs(perD) > 1e-9)
      {
       be = Px(bid - kul / perD);
       double free = eq - mg * soLvl / 100.0;
       double d = free / MathAbs(perD);
-      door = StringFormat("~%s door (qeemat ~%s)", DoubleToString(d, 3), Px(bid - (net > 0 ? 1 : -1) * d));
+      door = StringFormat("%s door (qeemat %s)", DoubleToString(d, 1), Px(bid - (net > 0 ? 1 : -1) * d));
      }
    int tk = PositionsTotal() + OrdersTotal();
    bool full = tk > InpBachao;
-   string s = StringFormat("=== JAS MAUQA %s ===  %s  |  Algo %s  |  nayi lot KABHI nahi kholta\n", S_BUILD, _Symbol, Pick(AlgoOn(), "HARA = mauqa par YES/NO", "LAAL = sirf status"));
-   s += StringFormat("KUL P/L %s   EQUITY %s\n", M(kul), M(eq));
-   s += StringFormat("NET %+.2f lot: qeemat $1 %s = %s\n", net, Pick(net >= 0, "gire", "chadhe"), M(MathAbs(perD)));
-   s += StringFormat("STOP OUT: %s\n", door);
-   s += StringFormat("BARABAR KA PRICE: %s   (abhi %s)\n", be, Px(bid));
-   s += StringFormat("BUY  : ginti %d  lots %.2f  ausat %s  P/L %s\n", bc, bl, Pick(bl > 0, Px(bl > 0 ? bo / bl : 0), "-"), M(bp));
-   s += StringFormat("SELL : ginti %d  lots %.2f  ausat %s  P/L %s\n", sc, sl, Pick(sl > 0, Px(sl > 0 ? so / sl : 0), "-"), M(sp));
-   s += StringFormat("TICKETS: %d / %d  (bachao %d)  %s\n\n", tk, InpHadd, InpBachao, Pick(full, "!!! ZYADA - sirf jori (ticket ghatao)", "theek"));
    // ---- MAUQA
    ulong aS = 0, aB = 0, jS = 0, jB = 0, cT = 0;
    double aV = 0, jV = 0, cV = 0;
@@ -136,12 +150,25 @@ void Run()
         }
      }
    if(full) { cT = 0; cV = 0; }
-   s += Pick(aS > 0, StringFormat("A) BARI SELL KAM: SELL #%I64u + BUY #%I64u = +%s", aS, aB, M(aV)), "A) Bari SELL ki musbat jori: abhi nahi") + "\n";
-   s += Pick(jS > 0, StringFormat("B) JORI: SELL #%I64u + BUY #%I64u = +%s", jS, jB, M(jV)), "B) Musbat jori: abhi nahi") + "\n";
-   s += Pick(cT > 0, StringFormat("C) FAIDE WALI TICKET #%I64u = +%s", cT, M(cV)), StringFormat("C) Faide wali ticket (>= %s): %s", M(InpMinFaida), Pick(full, "band (tickets zyada)", "abhi nahi"))) + "\n";
    int wait = (int)(gNext - TimeCurrent());
-   s += Pick(wait > 0, StringFormat("Agla popup %d min baad", wait / 60 + 1), "Popup tayyar");
-   Comment(s);
+   // ---- PANEL (bara font, rang)
+   color cG = clrLime, cR = clrTomato, cW = clrWhite, cY = clrGold, cC = clrAqua;
+   gRow = 0;
+   Ln(StringFormat("JAS MAUQA %s  -  %s  -  Algo %s", S_BUILD, _Symbol, Pick(AlgoOn(), "HARA (YES/NO)", "LAAL (sirf status)")), AlgoOn() ? cG : cY);
+   Ln(StringFormat("KUL P/L  %s        EQUITY  %s", M(kul), M(eq)), kul >= 0 ? cG : cR);
+   Ln(StringFormat("FAIDE WALI   %d ticket  %.2f lot   +%s", fc, fl, M(fp)), cG);
+   Ln(StringFormat("NUQSAN WALI  %d ticket  %.2f lot   %s", lc, ll, M(lp)), cR);
+   Ln(StringFormat("BUY   %d ticket  %.2f lot  ausat %s   P/L %s", bc, bl, Pick(bl > 0, Px(bl > 0 ? bo / bl : 0), "-"), M(bp)), bp >= 0 ? cG : cR);
+   Ln(StringFormat("SELL  %d ticket  %.2f lot  ausat %s   P/L %s", sc, sl, Pick(sl > 0, Px(sl > 0 ? so / sl : 0), "-"), M(sp)), sp >= 0 ? cG : cR);
+   Ln(StringFormat("NET %+.2f lot  -  qeemat $1 %s = %s", net, Pick(net >= 0, "gire", "chadhe"), M(-MathAbs(perD))), cC);
+   Ln(StringFormat("BARABAR KA PRICE  %s   (abhi %s)", be, Px(bid)), cC);
+   Ln("STOP OUT  " + door, cY);
+   Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "ZYADA - sirf jori", "theek")), full ? cR : cW);
+   Ln(Pick(aS > 0, StringFormat("A) BARI SELL KAM  #%I64u + #%I64u  = +%s", aS, aB, M(aV)), "A) Bari SELL ki musbat jori: abhi nahi"), aS > 0 ? cG : cW);
+   Ln(Pick(jS > 0, StringFormat("B) JORI  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Musbat jori: abhi nahi"), jS > 0 ? cG : cW);
+   Ln(Pick(cT > 0, StringFormat("C) FAIDE WALI TICKET  #%I64u  = +%s", cT, M(cV)), "C) Faide wali ticket: " + Pick(full, "band (tickets zyada)", "abhi nahi")), cT > 0 ? cG : cW);
+   Ln(Pick(wait > 0, StringFormat("Agla popup %d min baad", wait / 60 + 1), "Popup tayyar"), cW);
+   for(int k = gRow; k < 20; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // ---- POPUP (sirf Algo hara, wait khatam, mauqa ho)
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
@@ -178,7 +205,7 @@ int OnInit()
    return(INIT_SUCCEEDED);
   }
 
-void OnDeinit(const int reason) { EventKillTimer(); Comment(""); }
+void OnDeinit(const int reason) { EventKillTimer(); ObjectsDeleteAll(0, "JM_L"); Comment(""); }
 void OnTimer() { Run(); }
 void OnTick()  { }
 //+------------------------------------------------------------------+
