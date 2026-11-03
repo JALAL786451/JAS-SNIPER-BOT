@@ -1,5 +1,7 @@
 //+------------------------------------------------------------------+
 //|  JAS MAUQA   -   build m3  (3 Nov 2026)                          |
+//|  m7.1 = H) tarteeb: SELL se neeche wali, phir SELL se UPAR wali      |
+//|         (SELL ke qareeb pehle, sab se upar wali nahi)            |
 //|  m7 = H) HEDGE LADDER (user 3 Nov, HEDGE naam le kar): bari SELL  |
 //|       se har $10 neeche 0.05 BUY BAND (nayi lot nahi), pehle SELL |
 //|       se neeche wali BUY, phir sab se upar wali; NET 0 par ruk.   |
@@ -33,7 +35,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7"
+#define S_BUILD "m7.1"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -123,7 +125,8 @@ string GvKey() { return(StringFormat("JM_HSTEP_%I64d_%s", AccountInfoInteger(ACC
 int    HSteps() { return(GlobalVariableCheck(GvKey()) ? (int)GlobalVariableGet(GvKey()) : 0); }
 void   HSet(int k) { GlobalVariableSet(GvKey(), k); }
 
-// H) BUY band karo (lot tak): pehle bari SELL ki qeemat se NEECHE wali (sab se qareeb pehle), phir sab se UPAR wali
+// H) BUY band karo (lot tak): pehle bari SELL se NEECHE wali (SELL ke sab se qareeb pehle),
+//    phir SELL se UPAR wali - SELL ke sab se QAREEB pehle (sab se upar wali NAHI) - user 3 Nov
 double HClose(double want, double sOpen)
   {
    double done = 0, mnv = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), stp = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
@@ -138,7 +141,8 @@ double HClose(double want, double sOpen)
             if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol || PositionGetInteger(POSITION_TYPE) != POSITION_TYPE_BUY) continue;
             double o = PositionGetDouble(POSITION_PRICE_OPEN);
             if(pass == 0 && o >= sOpen) continue;          // pehla daur: sirf SELL se neeche wali
-            if(best == 0 || o > bo) { best = t; bo = o; bv = PositionGetDouble(POSITION_VOLUME); }
+            bool better = (pass == 0) ? (o > bo) : (o < bo);   // dono daur: SELL ke qareeb wali pehle
+            if(best == 0 || better) { best = t; bo = o; bv = PositionGetDouble(POSITION_VOLUME); }
            }
          if(best == 0) break;
          double x = MathMin(bv, want - done);
@@ -282,7 +286,7 @@ void Run()
         {
          bool go = InpHAuto;
          if(!go)
-            go = MessageBox(StringFormat("HEDGE LADDER qadam %d\n\nGold %s <= %s\nBUY %.2f band (pehle SELL %s se neeche wali, phir sab se upar wali)\nNET %+.2f -> %+.2f\nNayi lot NAHI. Wapsi par wapas NAHI khulegi.\n\nDo it?",
+            go = MessageBox(StringFormat("HEDGE LADDER qadam %d\n\nGold %s <= %s\nBUY %.2f band (pehle SELL %s se neeche wali, phir SELL se upar wali - SELL ke qareeb pehle)\nNET %+.2f -> %+.2f\nNayi lot NAHI. Wapsi par wapas NAHI khulegi.\n\nDo it?",
                                     k + 1, Px(bid), Px(nextP), MathMin(InpHLot, net), Px(a[big].open), net, MathMax(net - InpHLot, 0)),
                             "JAS MAUQA " + S_BUILD + " - HEDGE", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDYES;
          if(go)
