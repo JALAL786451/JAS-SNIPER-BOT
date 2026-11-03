@@ -4,6 +4,7 @@
 Qaida (badalna mana): docs/purana-haal.md, grep "Koshish #88 qaida".
   python3 tools/shahmaat_sim.py              # TALAASH 2021-2024
   python3 tools/shahmaat_sim.py --imtihan    # 2025+ EK dafa
+  python3 tools/shahmaat_sim.py --m71        # #89 m7.1 hedge ladder
 """
 import argparse
 import sys
@@ -58,9 +59,25 @@ def run(close, sig, i0, i1, down_net):
     return eq, base, stop
 
 
+def run_m71(close, i0, i1, step=10.0, lot=0.05):
+    """m7.1: har $10 girawat par 0.05 BUY band, NET 0 tak; wapsi nahi."""
+    px = close[i0:i1] * (P_NOW / close[i0])
+    eq, net, nxt = EQ0, NET0, px[0] - step
+    for k in range(1, len(px)):
+        eq += net * 100 * (px[k] - px[k - 1])
+        if eq <= 0:
+            return eq, EQ0 + NET0 * 100 * (px[-1] - px[0]), True
+        while net > 1e-9 and px[k] <= nxt:
+            d = min(lot, net)
+            net, nxt = net - d, nxt - step
+            eq -= d * COST_LOT
+    return eq, EQ0 + NET0 * 100 * (px[-1] - px[0]), False
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--imtihan', action='store_true')
+    ap.add_argument('--m71', action='store_true')
     a = ap.parse_args()
     df = load('XAUUSD')
     sig = h4_trend(df)
@@ -76,14 +93,15 @@ def main():
     print(f"{'TALAASH' if not a.imtihan else 'IMTIHAN'} {lo}..{t.iloc[last]:%Y-%m-%d}, Somwar starts {len(mondays)}")
     for months in (6, 3):
         print(f"\n== {months} mahine ==")
-        for dn in (0.0, -0.30):
+        for dn in ((None,) if a.m71 else (0.0, -0.30)):
             rows = []
             for i0 in mondays:
                 end_t = t.iloc[i0] + pd.DateOffset(months=months)
                 i1 = int(np.searchsorted(t.values, np.datetime64(end_t.tz_convert(None))))
                 if i1 > last:
                     break
-                eq, base, stop = run(close, sig, i0, i1 + 1, dn)
+                eq, base, stop = (run_m71(close, i0, i1 + 1) if a.m71
+                                  else run(close, sig, i0, i1 + 1, dn))
                 rows.append((t.iloc[i0], eq, base, stop))
             r = pd.DataFrame(rows, columns=['t', 'S', 'B', 'stop'])
             d = r['S'] - r['B']
@@ -96,7 +114,7 @@ def main():
             dj = d.iloc[pick]
             se = dj.std(ddof=1) / np.sqrt(len(dj)) if len(dj) > 1 else np.nan
             ok = [d.median() > 0, (d > 0).mean() >= 0.60, not r['stop'].any(), dj.mean() - 2 * se > 0]
-            print(f"S={dn:+.2f} | starts {len(r)} | median S-B {d.median():+8.0f} USC | S behtar {100*(d>0).mean():4.0f}%"
+            print(f"{'m7.1' if dn is None else f'S={dn:+.2f}'} | starts {len(r)} | median S-B {d.median():+8.0f} USC | S behtar {100*(d>0).mean():4.0f}%"
                   f" | stop {int(r['stop'].sum())} | be-jor n={len(dj)} mean {dj.mean():+7.0f} -2SE {dj.mean()-2*se:+7.0f}"
                   f" | S median eq {r['S'].median():7.0f} (B {r['B'].median():7.0f}) | breakeven(>= {EQ0+9512:.0f}) "
                   f"{100*(r['S']>=EQ0+9512).mean():.0f}% | {'PASS' if all(ok) else 'FAIL'} {ok}")

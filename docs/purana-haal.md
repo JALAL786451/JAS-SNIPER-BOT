@@ -1654,3 +1654,9 @@ PASS: (1) median(S - kuch na karo) > 0, (2) >= 60% start par S behtar, (3) 0 sto
 Dono setting gino (2 koshish). Behtar PASS wali -> IMTIHAN 2025-01..aaj EK dafa, bina tabdeeli.
 **Koshish #88 = FAIL (dono setting, TALAASH; IMTIHAN nahi chala):** 6 mahine 178 start: S=0.00 median -3,038 USC vs kuch-na-karo, behtar 44%; S=-0.30 median -2,573, behtar 42%; stop out 0.
 3 mahine bhi FAIL (48% / 45%). Kuch-na-karo median equity 39,084 (gold 2021-24 chadha). Sabaq: 4H supertrend ka whipsaw NET palatne ka faida kha jata.
+
+**Koshish #89 qaida (3 Nov, 34vi chat; user "D"; test se PEHLE, badalna mana) - JasMauqa m7.1 HEDGE LADDER (`tools/shahmaat_sim.py --m71`):**
+Wahi harness/basket/kharcha/start/PASS shart jo #88 (muqabla kuch-na-karo NET +0.33). Qaida = m7.1 jyon ka tyon: pehla qadam start qeemat - $10
+(bari SELL ~ abhi ki qeemat), har $10 girne par 0.05 BUY band (NET -0.05), NET 0 par ruk; upar jane par wapas KUCH nahi (m7.1 mein nahi). 1 setting = 1 koshish.
+**Koshish #89 = FAIL (TALAASH; IMTIHAN nahi):** 6 mahine 178 start: m7.1 median -4,725 USC vs kuch-na-karo, behtar sirf 26%, breakeven 10% (kuch-na-karo se kam); 3 mahine 33%.
+Sabaq: m7.1 girawat par NET 0 kar ke loss "taala" laga deta, wapsi ka faida kho deta. Mashwara: m7.1 live par NAHI; basket NET +0.33 waise hi + m6 sirf status.
