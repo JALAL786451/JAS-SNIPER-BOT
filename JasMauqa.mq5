@@ -1,5 +1,9 @@
 //+------------------------------------------------------------------+
 //|  JAS MAUQA   -   build m3  (3 Nov 2026)                          |
+//|  m7 = H) HEDGE LADDER (user 3 Nov, HEDGE naam le kar): bari SELL  |
+//|       se har $10 neeche 0.05 BUY BAND (nayi lot nahi), pehle SELL |
+//|       se neeche wali BUY, phir sab se upar wali; NET 0 par ruk.   |
+//|       InpHedge false default; InpHAuto = sote waqt khud.          |
 //|  m6 = HIFAZAT: C mein bari SELL kabhi nahi; C/D sirf jab NET +0.10 |
 //|       se zyada na barhe, NET max 0.80, stop out >= 400 $; naya D =  |
 //|       bari SELL profit mein ho to 0.10 part close                |
@@ -25,11 +29,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "6.00"
+#property version   "7.00"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m6"
+#define S_BUILD "m7"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -40,6 +44,12 @@ input double InpNetMove  = 0.10;   // HIFAZAT: ek kaam se |NET| zyada se zyada i
 input double InpMaxNet   = 0.80;   // HIFAZAT: |NET| is se upar na jaye (abhi zyada ho to barhe nahi)
 input double InpMinDoor  = 400.0;  // HIFAZAT: stop out kam az kam itne $ door rahe
 input double InpPartLot  = 0.10;   // D) Bari SELL profit mein ho to ek dafa kitni lot kam
+input bool   InpHedge    = false;  // H) HEDGE LADDER chalu (BUY band kar ke NET 0 tak). false = sirf plan dikhao
+input bool   InpHAuto    = false;  // H) true = khud band kare (sote waqt); false = har qadam YES/NO
+input double InpHStep    = 10.0;   // H) har kitne $ girne par
+input double InpHLot     = 0.05;   // H) har qadam kitni BUY lot band
+input double InpHStart   = 0.0;    // H) pehla qadam is qeemat par (0 = bari SELL ki qeemat - InpHStep)
+input bool   InpHReset   = false;  // H) true = qadam ginti 0 se (EA lagate waqt ek dafa)
 input bool   InpPush     = true;   // Popup ke waqt phone push bhi
 input int    InpFont     = 13;     // Panel ka font (bara = 14-16)
 input bool   InpLadder   = true;   // PRICE LADDER dikhao
@@ -107,6 +117,40 @@ bool Safe(double n2, double n1, double freeE, double vpp)
    if(MathAbs(n2) > MathMax(InpMaxNet, MathAbs(n1)) + 1e-9) return(false);
    if(MathAbs(n2) * vpp <= 1e-9) return(true);
    return(freeE / (MathAbs(n2) * vpp) >= InpMinDoor);
+  }
+
+string GvKey() { return(StringFormat("JM_HSTEP_%I64d_%s", AccountInfoInteger(ACCOUNT_LOGIN), _Symbol)); }
+int    HSteps() { return(GlobalVariableCheck(GvKey()) ? (int)GlobalVariableGet(GvKey()) : 0); }
+void   HSet(int k) { GlobalVariableSet(GvKey(), k); }
+
+// H) BUY band karo (lot tak): pehle bari SELL ki qeemat se NEECHE wali (sab se qareeb pehle), phir sab se UPAR wali
+double HClose(double want, double sOpen)
+  {
+   double done = 0, mnv = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), stp = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+   for(int pass = 0; pass < 2 && done < want - 1e-9; pass++)
+     {
+      for(int guard = 0; guard < 50 && done < want - 1e-9; guard++)
+        {
+         ulong best = 0; double bo = 0, bv = 0;
+         for(int i = PositionsTotal() - 1; i >= 0; i--)
+           {
+            ulong t = PositionGetTicket(i);
+            if(t == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol || PositionGetInteger(POSITION_TYPE) != POSITION_TYPE_BUY) continue;
+            double o = PositionGetDouble(POSITION_PRICE_OPEN);
+            if(pass == 0 && o >= sOpen) continue;          // pehla daur: sirf SELL se neeche wali
+            if(best == 0 || o > bo) { best = t; bo = o; bv = PositionGetDouble(POSITION_VOLUME); }
+           }
+         if(best == 0) break;
+         double x = MathMin(bv, want - done);
+         x = MathFloor(x / stp + 1e-9) * stp;
+         if(x < mnv) break;
+         bool ok = (x >= bv - 1e-9) ? trade.PositionClose(best) : trade.PositionClosePartial(best, NormalizeDouble(x, 2));
+         Print(StringFormat("JAS MAUQA H: BUY #%I64u %.2f @ %s band %s (%d)", best, x, DoubleToString(bo, _Digits), ok ? "OK" : "FAIL", (int)trade.ResultRetcode()));
+         if(!ok) return(done);
+         done += x;
+        }
+     }
+   return(done);
   }
 
 bool AlgoOn() { return(TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) && MQLInfoInteger(MQL_TRADE_ALLOWED)); }
@@ -178,7 +222,7 @@ void Run()
    if(full) { cT = 0; cV = 0; }
    // D) BARI SELL profit mein: thori lot kam (hifazat ke andar)
    ulong dT = 0; double dLot = 0, dV = 0;
-   if(big >= 0 && a[big].pnl > 0)
+   if(big >= 0 && a[big].pnl > 0 && !InpHedge)
      {
       double stp = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), mnv = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
       double x = MathFloor(MathMin(InpPartLot, a[big].vol - mnv) / stp + 1e-9) * stp;
@@ -224,6 +268,34 @@ void Run()
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
    for(int k = gRow; k < 30; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
+   // ---- H) HEDGE LADDER
+   if(big >= 0)
+     {
+      double hs = InpHStart > 0 ? InpHStart : a[big].open - InpHStep;
+      int k = HSteps();
+      double nextP = hs - k * InpHStep;
+      int left = (int)MathCeil(MathMax(net, 0) / InpHLot - 1e-9);
+      string md = Pick(!InpHedge, "OFF (sirf plan)", Pick(InpHAuto, "ON AUTO", "ON YES/NO"));
+      Ln(StringFormat("HEDGE LADDER %s | next %s (BUY %.2f band) | %d qadam baqi | NET %+.2f -> 0 @ ~%s",
+                      md, Px(nextP), InpHLot, left, net, Px(nextP - (left - 1) * InpHStep)), InpHedge ? cY : cW);
+      if(InpHedge && net > 1e-9 && bid <= nextP && AlgoOn())
+        {
+         bool go = InpHAuto;
+         if(!go)
+            go = MessageBox(StringFormat("HEDGE LADDER qadam %d\n\nGold %s <= %s\nBUY %.2f band (pehle SELL %s se neeche wali, phir sab se upar wali)\nNET %+.2f -> %+.2f\nNayi lot NAHI. Wapsi par wapas NAHI khulegi.\n\nDo it?",
+                                    k + 1, Px(bid), Px(nextP), MathMin(InpHLot, net), Px(a[big].open), net, MathMax(net - InpHLot, 0)),
+                            "JAS MAUQA " + S_BUILD + " - HEDGE", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDYES;
+         if(go)
+           {
+            double d = HClose(MathMin(InpHLot, net), a[big].open);
+            if(d > 0) HSet(k + 1);
+            if(InpPush) SendNotification(StringFormat("JAS MAUQA HEDGE: gold %s, BUY %.2f band, NET ~%+.2f", Px(bid), d, net - d));
+           }
+         else
+            HSet(k + 1);   // NO = ye qadam chhor do, agla $%.0f neeche
+         return;
+        }
+     }
    // ---- POPUP (sirf Algo hara, wait khatam, mauqa ho)
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
@@ -260,6 +332,7 @@ void Run()
 int OnInit()
   {
    gNext = TimeCurrent() + 60;   // lagate hi popup nahi - 1 min baad
+   if(InpHReset) HSet(0);
    EventSetTimer(3);
    Run();
    return(INIT_SUCCEEDED);
