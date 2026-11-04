@@ -162,7 +162,7 @@ AGLE KAAM:
  - Somwar 2 Nov: FTMO demo ki pehli trades (user SS laaye tab; yaad-dihani NAHI). Pehli khirki trade 24 Nov.
  - AGLA: #79 = sim mein EA ka asli 4% din pehra (user D) - TRADING sec 5.
  - Asli FTMO se PEHLE: t5/i6 InpServerGMT -2, FTMO symbol naam (GER40.cash, US500.cash...), pehra B phir D,
-   FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao, Swing account, VPS (~$10-15/mahina).
+   FTMO support se "gap trading" (IBS Jumma 16:15 NY) likhwao, Swing account, swap-free email (trade se pehle, har stage), VPS (~$10-15/mahina).
  - FTMO offer: Nov (Black Friday) / Dec chat mein ftmo.com KHUD check. Fee 100k ~EUR 540 (3rd party).
  - BANK yaad dilao (#59, #69, #76) jab FTMO pass / real account / trade barhana / naya jor.
  - jas_5ea p6 TV par chal raha. BTC Kachhua #76 BANK (FTMO BTC swap pehle).
