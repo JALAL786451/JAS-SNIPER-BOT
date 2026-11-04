@@ -4,7 +4,7 @@
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,000.20 (DIV +0.20), equity 99,827.79 | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; i6 ki 2 khuli (US500 3.79 lot SL 7300.17, USTEC 0.56 SL 26340.67) -$172.41; History mein band trade 0; t5/k2 0 | 4 Nov SS |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,000.20 (DIV +0.20), equity 99,827.79 | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; i6 2 khuli (US500 BUY 7563.12 SL 7300.17 +0.01R, USTEC BUY 28120.01 SL 26340.67 +0.02R, din 1/5); t5 XAU BUY 0.03 @4001.869 SL 3755.378 (4 Nov 06:01, risk 0.74%, +0.08R); k2 0 (khirki din nahi); band trade 0 | 4 Nov SS (panel) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | ON | 2 Nov SS |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | equity 33,396 USC, P/L -10,430 (gold 3929.40); BUY 112 tk 2.94 lot avg 3973.511, SELL 10 tk 2.53 lot avg 3939.677, NET +0.41 (breakeven 4183.80, stop out 814 door = 3114.86) | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, #89 Python FAIL - live NAHI lagana) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 4 Nov SS (m6 screen) |
 
