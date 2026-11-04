@@ -140,6 +140,9 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 04-11 | 37vi: Tide 15 (9+6) dobara? (sirf record) | 15 mein har tukda test/band/data nahi (forex BAND, #29 F, #76/#69 bank, #96 F, XPT/XPD spread) | test NAHI | purana FAIL dobara nahi, G4+G6
 04-11 | 37vi: factor 11 qism record se | koi naya G1-G10 pass nahi; trend/IBS/chutti pehle hi t5/i6/k2 mein | demo hi asli imtihan | Halloween = risk jhukao (user ka faisla)
 04-11 | 37vi: user ka apna EA kyun nahi bana | METHOD.md: palatne ka ishara, bachao vs ulti lot, equity hadd - 3 cheez kabhi likhi nahi | 3 sawal ek ek (user D baqi) + 'pehredaar' idea | f1/k4 ne andaza lagaya = FAIL
+04-11 | 37vi: #99/#100 #68 ulta (SL nahi + TP) | A 63/10, B 11/71 vs 64/2 | FAIL | SL = FTMO hadd ka pehredaar
+04-11 | 37vi: EA ulta (SELL / O-C badal) + 100 instrument family | research agent + judge NAHI | test nahi | ulta = -Exp-2c; share survivorship
+04-11 | 37vi: JasFtmoView v1.1 indicator | FTMO demo par chal raha | bara font panel | EA ko nahi chherta
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.

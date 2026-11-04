@@ -12,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - JasMauqa m7.1: hedge tarteeb - SELL se neeche wali BUY, phir SELL se upar wali (qareeb peh
    - chat khatam (34vi): JasShahmaat recovery #88-95 0/9, TRADING sec 5, KAHANI, sawal-jawab, r
 
-2026-11-04  (20 kaam)
+2026-11-04  (31 kaam)
    - Koshish #96 #68 + Kachhua commodity: CHUNAO PASS 0.25%, IMTIHAN FAIL (81/2); factors-buniy
-   - Koshish #85 C2: TV Pine jas_c2_85 c1 (9 index mandi SELL, TALAASH 1990-2018, kharcha 2x)
-   - MT5 naqsha: 474832446 4 Nov 09:01 SS - equity 100,262.54, 3 khuli
+   - MT5 naqsha: 4 Nov panel SS - t5 pehli gold BUY, i6 2 khuli, k2 intezar
+   - JasFtmoView v1.1: R tick value se (OrderCalcProfit indicator mein nahi), neeche kone mein 
