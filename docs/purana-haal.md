@@ -1618,6 +1618,11 @@ Kharcha: index 0.75 x asli spread har taraf (ASLI / 0.02% non-US), faisla 2x; SE
 **FTMO PASS (sirf TALAASH PASS ke baad):** #68 + C2 0.25% `ftmo` sim CHUNAO 2012-18: fail <= #68 aur (pass - fail) >= #68; phir IMTIHAN 2019+ EK dafa: fail 0, pass >= 83, median <= 11.4.
 Claude umeed: TALAASH ~25%, sab ~12%. Ginti +1.
 
+**Koshish #98 TALAASH 1990-2018 (4 Nov, user TV SS, q1) = FAIL -> band (IMTIHAN nahi):** KUL 1786 tr, jeet 37%, kharcha 2x **+0.005R** (Exp-2SE -0.052), **bina kharcha +0.147R**;
+musbat 5/9 (HSI +0.366 / -2SE +0.121 akela saaf; DAX +0.016, N225 +0.048, ASX +0.024, SX5E 0.000; SPX -0.081, NDX -0.002, FTSE -0.164, CAC -0.100); 1990-2004 886 tr +0.055R, 2005-18 900 tr -0.044R;
+trade ausat +0.34% vs 2x drift +0.63% (drift ~0.32%) = FAIL. Farq #85 se: BUY rukh mein kharche se pehle faida 3x (+0.147 vs +0.051) MAGAR wo faida ~aam tezi (trade % ~= drift):
+Kachhua index par timing nahi deta, sirf drift pakarta hai; 2x kharcha (zyada tar swap, ~1 mahina pakar) ne kha liya. Wajah code K + drift (sabaq 5). Swap 0 / 1x par dobara chalana = setting ghumana (MANA).
+
 **Koshish #85 DATA + amal (4 Nov, 36vi chat, user "test karo"; qaida wahi):** Stooq/Yahoo network par band -> TALAASH 1990-2018 TradingView par: `indicators/jas_c2_85.pine` c1
 (9 symbol: SP:SPX, NASDAQ:NDX, XETR:DAX, TVC:UKX, EURONEXT:PX1, TVC:SX5E, TVC:NI225, ASX:XJO, TVC:HSI; koi bhi 1D chart). Kharcha har taraf SPX 0.0039%, NDX 0.00285% (asli), non-US 0.02%,
 SELL swap 3%/saal, sab 2x (faisla). SE seedha (qaide mein adj nahi). FTMO CHUNAO/IMTIHAN Python (Dukascopy 2012+ H1, 9 index CFD repo mein) sirf TALAASH PASS ke baad.
