@@ -1618,6 +1618,10 @@ Kharcha: index 0.75 x asli spread har taraf (ASLI / 0.02% non-US), faisla 2x; SE
 **FTMO PASS (sirf TALAASH PASS ke baad):** #68 + C2 0.25% `ftmo` sim CHUNAO 2012-18: fail <= #68 aur (pass - fail) >= #68; phir IMTIHAN 2019+ EK dafa: fail 0, pass >= 83, median <= 11.4.
 Claude umeed: TALAASH ~25%, sab ~12%. Ginti +1.
 
+**Koshish #85 DATA + amal (4 Nov, 36vi chat, user "test karo"; qaida wahi):** Stooq/Yahoo network par band -> TALAASH 1990-2018 TradingView par: `indicators/jas_c2_85.pine` c1
+(9 symbol: SP:SPX, NASDAQ:NDX, XETR:DAX, TVC:UKX, EURONEXT:PX1, TVC:SX5E, TVC:NI225, ASX:XJO, TVC:HSI; koi bhi 1D chart). Kharcha har taraf SPX 0.0039%, NDX 0.00285% (asli), non-US 0.02%,
+SELL swap 3%/saal, sab 2x (faisla). SE seedha (qaide mein adj nahi). FTMO CHUNAO/IMTIHAN Python (Dukascopy 2012+ H1, 9 index CFD repo mein) sirf TALAASH PASS ke baad.
+
 **Koshish #86 qaida (3 Nov, 33vi chat; research daur 10 `docs/research/daur10-counter-agent.md` K1; test se PEHLE, badalna mana; TEST abhi NAHI) - K1 "DR. COPPER" SELL:**
 Market: copper (XCU CFD; signal COMEX HG daily) + SPX regime. Data: daily 1990-2018 (Stooq / TV), 2019+ IMTIHAN. Pehle: FTMO par copper hai ya nahi (nahi = sirf Exness).
 Faisla 1D close (17:00 NY), entry agle din open. **SELL** jab SPX close < SMA200 AUR copper close < SMA200 AUR copper close = 20 din ka sab se neecha close.

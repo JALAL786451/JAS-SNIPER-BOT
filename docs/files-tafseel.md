@@ -46,6 +46,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/ftmo49.py` | #49 (31 Oct): FTMO 4H trend tokri + IBS US500 mila kar - ASLI PASS (0.75% + 2%) |
 | `tools/report49.py` | #49 ka seedha REPORT CARD: ek $100k account lagatar - faida, DD, saal ba saal, EA / market |
 | `indicators/jas_khirki67.pine` | k1 (1 Nov) #67: US chutti ki khirki x 7 non-US index (DAX, FTSE, CAC, SX5E, N225, XJO, HSI), SE x 2.14, drift, TV; IMTIHAN chhupa |
+| `indicators/jas_c2_85.pine` | c1 (4 Nov) #85 C2: index mandi SELL x 9 (12m<0 + 1m<0 mahine ke aakhir), SL 4 ATR, kharcha 2x, TV TALAASH 1990-2018; IMTIHAN chhupa |
+| `docs/research/post-mortem-97.md` | (4 Nov) 97 koshish ki FAIL wajah code F/K/I/T/D/A/B + #42/#21 darwaza G1-G10 (dono NAHI) |
 | `indicators/jas_dhaat66.pine` | d2 (1 Nov) #66: trend 4H x platinum/palladium/copper, asli kharcha, pehle data jaanch - TALAASH FAIL |
 | `indicators/jas_vix.pine` | v1 (1 Nov) #65: Connors VIX Stretches, SPX + NDX daily (UDT engine), drift jaanch, TV table; IMTIHAN chhupa |
 | `indicators/jas_tom.pine` | m1 (1 Nov) #64: Turn of the Month (aakhri din + 3), SPX + NDX daily, NYSE calendar, drift jaanch, TV table; IMTIHAN chhupa |
