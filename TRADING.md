@@ -87,7 +87,7 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
 
-97 koshish (#88-95 recovery 0/9; **#96 commodity jor FAIL, #97 Gao pilot FAIL**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+97 koshish (#88-95 recovery 0/9; **#96 commodity jor FAIL, #97 Gao pilot FAIL, #85 C2 TV FAIL 0/9**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

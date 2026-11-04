@@ -1622,6 +1622,11 @@ Claude umeed: TALAASH ~25%, sab ~12%. Ginti +1.
 (9 symbol: SP:SPX, NASDAQ:NDX, XETR:DAX, TVC:UKX, EURONEXT:PX1, TVC:SX5E, TVC:NI225, ASX:XJO, TVC:HSI; koi bhi 1D chart). Kharcha har taraf SPX 0.0039%, NDX 0.00285% (asli), non-US 0.02%,
 SELL swap 3%/saal, sab 2x (faisla). SE seedha (qaide mein adj nahi). FTMO CHUNAO/IMTIHAN Python (Dukascopy 2012+ H1, 9 index CFD repo mein) sirf TALAASH PASS ke baad.
 
+**Koshish #85 TALAASH 1990-2018 (4 Nov, user TV SS, c1) = FAIL -> idea BAND (IMTIHAN nahi khula):** KUL 287 tr, jeet 31%, kharcha 2x **-0.093R** (Exp-2SE -0.226), bina kharcha +0.051R;
+index musbat **0/9** (SPX 19 tr -0.076, NDX 17 -0.036, DAX 33 -0.059, FTSE 35 -0.188, CAC 33 -0.018, SX5E 34 -0.025, N225 54 -0.062, ASX 31 -0.257, HSI 31 -0.107);
+1990-2004 155 tr -0.010R, 2005-18 132 tr -0.190R. Wajah code F (+K): bina kharcha bhi +0.05R (SE ~0.07) saabit nahi; SELL swap (mahino ki pakar) ne baqi kha liya.
+Sabaq: bear-state SELL (12m+1m) index par 1990-2018 mein faida nahi - mandi ke baad V-palat SL kaat deta (jeet 31%). Post-mortem + C2 ke baad koi tayyar ummeedwar NAHI.
+
 **Koshish #86 qaida (3 Nov, 33vi chat; research daur 10 `docs/research/daur10-counter-agent.md` K1; test se PEHLE, badalna mana; TEST abhi NAHI) - K1 "DR. COPPER" SELL:**
 Market: copper (XCU CFD; signal COMEX HG daily) + SPX regime. Data: daily 1990-2018 (Stooq / TV), 2019+ IMTIHAN. Pehle: FTMO par copper hai ya nahi (nahi = sirf Exness).
 Faisla 1D close (17:00 NY), entry agle din open. **SELL** jab SPX close < SMA200 AUR copper close < SMA200 AUR copper close = 20 din ka sab se neecha close.
