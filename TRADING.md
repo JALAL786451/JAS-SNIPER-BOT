@@ -5,7 +5,7 @@ MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user 
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
 | 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,000.20 (DIV +0.20), equity 99,827.79 | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; i6 2 khuli (US500 BUY 7563.12 SL 7300.17 +0.01R, USTEC BUY 28120.01 SL 26340.67 +0.02R, din 1/5); t5 XAU BUY 0.03 @4001.869 SL 3755.378 (4 Nov 06:01, risk 0.74%, +0.08R); k2 0 (khirki din nahi); band trade 0 | 4 Nov SS (panel) |
-| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | ON | 2 Nov SS |
+| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1); XAG SELL 0.05 haath ki NAHI thi (kis ne kholi pata nahi), user ne haath se BAND ki (4 Nov) | ON | 2 Nov SS + user 4 Nov |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | equity 36,758.19 USC, P/L +13,329.60 (gold 4026.63); BUY 118 tk 3.08 lot avg 3975.120 (+15,861.90), SELL 11 tk 3.00 lot avg 4018.426 (-2,532.30), NET +0.08, tickets 129/200 (breakeven 2360.43, stop out 4594.8 door) | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, #89 Python FAIL - live NAHI lagana) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 4 Nov SS (m6 screen, 2nd) |
 
 **Nayi chat ka message (copy-paste):**
