@@ -154,3 +154,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Tide 15 instrument (9+6) FTMO ke liye dobara test? -> NAHI: forex 5 BAND, XAU/XAG/US500 #29 F, BTC #76 bank, tel #69 bank/#96 F, XPT/XPD/XCU/XNG data nahi + spread 40-90x (4 Nov).
 - Mera apna (Fishing) EA kyun nahi bana? -> METHOD.md 'NOT yet defined': palatne ka ishara, bachao vs ulti lot, equity hadd kabhi number mein nahi; f1/k4 ne andaza lagaya = FAIL. Hal: 3 sawal user ki trade se + pehredaar (4 Nov).
 - Naqsha (jas_naqsha n5.7) ki SELL / TP? -> BUY = t5 jaisa (pass); SELL = ulta andaza, TEST NAHI (#73 aaina F) - sirf dekhne ka (4 Nov).
+- EA ka ULTA (SELL, 1D open/close badal, signal ulta, SL nahi + TP)? -> research agent + judge (4 Nov): NOT POSSIBLE, test nahi - ulta = -Exp - 2x kharcha; O/C badalna = wahi data 1 din late (naya ishara nahi); SL nahi = #100 F; saath chalao to hedge (mana). #73 SELL aaina F.
