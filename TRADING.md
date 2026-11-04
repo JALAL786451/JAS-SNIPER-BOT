@@ -4,7 +4,7 @@
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,000.20, equity 100,975.11 (+974.91 khuli) | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; i6: US500 BUY 3.79 @7563.12 SL 7300.17 (+495.77), USTEC BUY 0.56 @28120.01 SL 26340.67 (+303.59); t5: XAU 0.03 @4001.869 SL 3755.378 (+105.06), XAG 0.02 @51.996 SL 45.881 (-12.90), US500 BUY 2.41 @7659.33 SL 7348.92 (4 Nov 14:01, +83.39, TRD 202611043); t5 USTEC intezar; k2 0; band 0 | 4 Nov SS (5 khuli) |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,565.89, equity 101,088.85 (+522.96 khuli) | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 US500 BUY 3.79 @7563.12 BAND 4 Nov 21:16:02 @7712.37 = +565.66 (pehli band trade, +1.97%)**; khuli 4: i6 USTEC BUY 0.56 @28120.01 SL 26340.67 (+186.75), t5 XAU 0.03 @4001.869 (+191.82), XAG 0.02 @51.996 (+33.10), US500 BUY 2.41 @7659.33 SL 7348.92 (+111.29); target baqi 8911, farsh 96566; k2 0; DIV US500 chhote + | 5 Nov SS (JasFtmoView) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0, IBS US500 0.66 / USTEC 0.68 intezar; 2 Nov USTEC BUY CHHOOTI (min lot > 2x risk) = nahi khuli. XAG SELL 0.05 @50.271 khuli 2 Nov 11:35:26 (balance badalne ke 27 sec baad, SL KHALI = hamara EA nahi), user ne 3 Nov 19:28 @49.658 band ki +153.25; purani US500 BUY 1.87 (28 Oct, c1 se pehle) 2 Nov -184.87; Magic/Comment column abhi bhi nahi dikha | ON | 4 Nov SS |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | purani 133 tk basket user ne KHUD close all ki. Ab MANUAL (mobile) 15 tk: BUY 6 tk 0.19 lot avg 4062.933, SELL 9 tk 0.18 lot avg 4058.829 (bari SELL 0.10 @4058.101), NET +0.01 (taala), P/L -81.60, equity 37,492.99, balance 37,568.59. **m6 pehla asli kaam:** 5 Nov 02:56:31 B) PAIR CLOSE DONE (10009) - SELL 0.01 @4065.005 + BUY 0.01, 17->15 tk, user tasdeeq | JsMouqaEA script = JasMauqa m6 (XAUUSDc D1) (m7.1 live NAHI); InpMinJori 5 = 0.01 jori ko $5 farq chahiye (2 karna user ki marzi) | **ON** (YES/NO popup) | 5 Nov SS |
 
@@ -67,7 +67,7 @@ Ab MANUAL (mobile) 15 tk, NET +0.01 (taala - $1 = 1 USC, breakeven 4141). Ajeeb 
 **m6 ka pehla asli kaam:** 5 Nov 02:56:31 B) PAIR CLOSE DONE (10009), 17->15 tk. Close By = equity same, balance barhta (user samjha ✅).
 InpMinJori 5 -> 0.01 jori ko $5 farq; 2 karna = user ki marzi (popup hadd, risk nahi). Purana popup = NO.
 **AGLA KAAM:** (a) user "D" de to 3 sawal ek ek (pehla: equity hadd), sirf qaida. (b) 472716649 XAG SELL kis ne kholi (History Comment).
-(c) FTMO 2 jawab (sawal-jawab): swap-free HAAN; Free Trial band = 3 registration -> 2 faltu account delete karwao (jalalzte rakho). (d) Demo SS jab i6/t5 trade band ho. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
+(c) FTMO 2 jawab (sawal-jawab): swap-free HAAN; Free Trial band = 3 registration -> 2 faltu account delete karwao (jalalzte rakho). (d) i6 pehli band trade +565.66 HUI (naqsha); agli band ka SS. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
