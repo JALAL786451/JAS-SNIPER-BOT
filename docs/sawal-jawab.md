@@ -148,3 +148,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Spread kya? -> Ask - Bid farq (US500 ~0.0052%); test mein 1.5 x (slippage + FTMO farq). Pro/Raw/Zero = spread kam magar commission; test FTMO kharche par, sasta account sirf Exness live ke waqt naap kar (4 Nov).
 - FTMO free trial restricted (kai Gmail)? -> support@ftmo.com ko ek hi email (jalalzte) se likho, naye Gmail NAHI (multi-account flag) (4 Nov).
 - Purani FAIL koshish ghalat tareeqe se? -> #97 pilot: #9 theek karke -0.207R -> -0.014R (bina kharcha ~0) = ghaltiyan nuqsan barhati magar factor na ho to PASS nahi; agla post-mortem sirf record se (4 Nov).
+- Post-mortem 97 koshish ka nateeja? -> ~55 F (factor kamzor), ~8 K; I/T wali theek ho kar PASS bani; koi purana FAIL dobara test ke qabil nahi (#42/#21 G3 NAHI) (`docs/research/post-mortem-97.md`, 4 Nov).
+- Strategy badlo to result badle (setting ghumana)? -> nateeja dekh kar setting badalna = qismat ka PASS (sabaq 1); factor research se NAYA qaida pehle likh kar = jaiz, nayi koshish (4 Nov).
+- Index par SELL / Kachhua BUY? -> #85 SELL 0/9 band; #98 Kachhua BUY bina kharcha +0.147R magar trade % ~= drift + swap = band; index trend t5/i6 mein pehle se (4 Nov).

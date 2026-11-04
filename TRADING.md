@@ -62,13 +62,10 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**35vi chat (4 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #96" / "#97". **#96** #68 + Kachhua commodity (XAG, Brent, WTI) CHUNAO PASS 0.25% magar
-IMTIHAN FAIL (81/2, median 11.5). User ki hidayat: **pehle research, test baad** -> `docs/research/test-se-pehle-shartein.md` (darwaza G1-G10, user tasdeeq). Research agent x2:
-`factors-gehri.md` (t5/i6/k2 = 3 mazboot factor trend/reversal/calendar; ummeedwar C2 = #85, C1d commodity curve-trend), `swap-chunao.md` (swap 0 wali taraf = carry, sirf kharcha hatata;
-Exness Pakistan sab swap-free; FTMO swap-free FAQ mein nahi). User swap SS -> C1d BANK. **#97 pilot** (#9 Gao intraday momentum, ghaltiyan theek, US500+USTEC M1 2012-18):
-TALAASH FAIL -0.014R (purana -0.207R), bina kharcha ~0 = ghaltiyan theek se nuqsan ghata magar factor khud nahi. User ne FTMO ko 2 email: swap-free + free trial restricted.
-**AGLA KAAM:** (a) **POST-MORTEM** (user ki maang, "D" baqi): ~97 koshish ki FAIL wajah code F/K/I/T/D/A/B sirf record se (test NAHI, agent NAHI) -> sirf wo dobara jin ka
-kharche se pehle faida tha. (b) FTMO email jawab (swap-free, trial, BTC swap #76). (c) C2 #85 sirf "test karo" par. (d) Demo t5/i6/k2 + c1 chalte rahein, mahine SS.
+**36vi chat (4 Nov)** - `docs/research/post-mortem-97.md` + `docs/purana-haal.md` grep "Koshish #85 TALAASH" / "#98". **POST-MORTEM** (sirf record): ~55 F, ~8 K, I/T theek ho kar PASS bane,
+#42 raat drift + #21 ORB darwaza G3 NAHI = koi purana FAIL dobara nahi. **#85 C2** (TV `jas_c2_85.pine`, Stooq/Yahoo network band): 287 tr -0.093R, 0/9 = BAND.
+**#98** Kachhua sirf BUY x 9 index (`jas_kc98.pine`, user "strategy change"): 1786 tr +0.005R (2x), bina kharcha +0.147R, 5/9, drift FAIL (trade 0.34% ~ drift) = BAND.
+**AGLA KAAM:** koi tayyar ummeedwar NAHI - naya sirf research (G1-G10) + user "test karo". (a) FTMO email jawab (swap-free, trial). (b) Demo t5/i6/k2 + c1 chalte rahein, mahine SS.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
