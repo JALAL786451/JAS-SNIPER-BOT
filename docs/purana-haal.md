@@ -1743,3 +1743,8 @@ TP gap ke upar khule = us bar ka open. k = 0.25 / 0.5 / 1.0 / 2.0 (ek k teeno EA
 **CHUNAO 2012-2018** (har mahine challenge, FTMO 5% din / 10% kul, khuli trade ka worst H1 low gina): har variant ka behtareen k = shart P1 fail < 20%,
 pass > fail, (pass - fail) >= #68 isi run; phir zyada (pass - fail), kam median. Koi nahi = FAIL (IMTIHAN nahi).
 **IMTIHAN 2019-01..aaj EK dafa** (chuna k): PASS = fail 0, pass >= #68 isi run, median < #68 isi run. Claude umeed: A ~10%, B ~3% (SL nahi = 10% hadd khatra).
+**Koshish #99 / #100 CHUNAO 2012-2018 = dono FAIL -> IMTIHAN nahi, idea band:** #68 isi run 64 pass / 2 fail (1/1) / 18, median 38.5.
+A (TP + qaida exit, SL nahi): k 0.25 0/73 (P1 75%), 0.5 18/55, **1.0 63/10 (5/5)**, 2.0 60/13 - sab ka fail > #68 (2) = pass-fail kam.
+B (sirf TP): k 0.25 0/82, 0.5 0/82, 1.0 6/77 (P1 82%), 2.0 11/71 (P1 70%).
+Sabaq: B mein har trade AAKHIR jeet gayi (2003-18 jeet 100%, Exp ~+1R) magar intezar mein khuli girawat FTMO 5% din / 10% kul tor deti = fail;
+A mein i6 ka bura trade -1R se -3.3R. SL = FTMO ki hadd ka pehredaar; SL hata kar pass nahi.

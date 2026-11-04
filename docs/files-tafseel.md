@@ -223,6 +223,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/c3st_75.py` - Koshish #75: #74 + 4H Supertrend filter (TALAASH FAIL -0.019R, judge CLEAN) (2 Nov)
 - `tools/ftmo76.py` - Koshish #76: FTMO #68 + Kachhua BTC (Bitstamp daily 2014-17 + Duka H1); CHUNAO 0.5% PASS (2 Nov)
 - `tools/ftmo96.py` - Koshish #96: #68 + Kachhua commodity (XAG, Brent, WTI) FTMO sim - IMTIHAN FAIL (4 Nov).
+- `tools/ulta99.py` - Koshish #99/#100: #68 ulta (SL nahi, TP k x R; A = TP + qaida exit, B = sirf TP) FTMO sim - CHUNAO dono FAIL (4 Nov).
 - `docs/research/factors-buniyaad.md` - 9 evergreen factor (trend, reversal, calendar, carry...) vs hamare test; t5/i6/k2 = pehle 3 (4 Nov).
 - `docs/research/test-se-pehle-shartein.md` - user ki 4 Nov hidayat tarteeb se + test ka darwaza G1-G10 (har naye test se pehle).
 - `docs/research/factors-gehri.md` - research agent: factors ka gehra jaiza, 2 ummeedwar (C2 = #85 bear SELL, C1d commodity curve-trend) gate G1-G10 + chances (4 Nov).
