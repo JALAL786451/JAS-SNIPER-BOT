@@ -67,7 +67,7 @@ Ab MANUAL (mobile) 15 tk, NET +0.01 (taala - $1 = 1 USC, breakeven 4141). Ajeeb 
 **m6 ka pehla asli kaam:** 5 Nov 02:56:31 B) PAIR CLOSE DONE (10009), 17->15 tk. Close By = equity same, balance barhta (user samjha ✅).
 InpMinJori 5 -> 0.01 jori ko $5 farq; 2 karna = user ki marzi (popup hadd, risk nahi). Purana popup = NO.
 **AGLA KAAM:** (a) user "D" de to 3 sawal ek ek (pehla: equity hadd), sirf qaida. (b) 472716649 XAG SELL kis ne kholi (History Comment).
-(c) FTMO email jawab AAYA (5 Nov): swap-free HAAN, fee nahi, trade se pehle maango (sawal-jawab). (d) Demo SS jab i6/t5 trade band ho. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
+(c) FTMO 2 jawab (sawal-jawab): swap-free HAAN; Free Trial band = 3 registration -> 2 faltu account delete karwao (jalalzte rakho). (d) Demo SS jab i6/t5 trade band ho. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
