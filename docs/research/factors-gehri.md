@@ -139,3 +139,13 @@ milakar ~15 = ~16%. TALAASH PASS ke baad IMTIHAN: ~7-8 pass / ~5 fail (#54, #57,
 
 Sources (paper naam upar table mein): Baltussen et al JFE 132 (2019) · Levine et al FAJ 74 / nber w22793 · Goulding et al JFE 149 (2023).
 FTMO symbol list (XCUUSD, NATGAS): 3rd-party blog = U, terminal mein dekhna.
+
+## 6. Swap SS ka nateeja (4 Nov, user ke 4 Specification SS, Exness) = C1d G7 FAIL -> BANK
+| Symbol (SS tarteeb) | Swap long | Swap short | Andaza % saal (notional) |
+|---|---|---|---|
+| USOILm (3 digit) | 0 | -70 pt = -$0.07/bbl/din | SHORT ~-19% (WTI ~$95) |
+| UKOILm (3 digit) | 0 | -145.4 pt | SHORT ~-37% (Brent ~$102) |
+| XNGUSDm (4 digit) | -254.6 pt | 0 | LONG ~-100%+ (gas ~$3) |
+| XCUUSDm | -222.3 pt (Budh 3x) | 0 | LONG ~-16% (5 digit maan kar; pakka nahi) |
+Sabaq: broker faide wali taraf ko roll NAHI deta (0), nuqsan wali taraf se bhaari kaat-ta. C1d ka carry (roll) hissa khatam -> sirf trend bachta (= #96, FAIL).
+C1d BANK. Bacha sirf C2 (#85). (#96 mein tel swap 5% maana tha - asal 19-37% SELL par.)

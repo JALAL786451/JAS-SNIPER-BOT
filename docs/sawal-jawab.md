@@ -140,3 +140,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Recovery EA test "kuch na karo" se kyun? -> S - B = sirf EA ki apni trades ka P/L (basket dono mein same, kat jati); absolute equity mein gold ki tezi/girawat mil jati (#90: +7,382 mein +5,484 gold ka) (3 Nov).
 - Live basket ka recovery EA (trend / hedge ladder / lock + 0.02 / raat / mausam)? -> #88-95 sab FAIL 0/9; behtar = NET +0.33 waise hi (swap-free, stop out ~$1000 door) (3 Nov).
 - 15M ruki candle ka breakout rukh koi EMA batati? -> nahi: 2012-26 H1 839 ruki misaal, 4H rukh ke saath bhi 48/52 = sikka (3 Nov).
+- Commodity swap (Exness, 4 Nov SS)? -> USOIL short -70 / UKOIL short -145.4 / XNG long -254.6 / XCU long -222.3 pt, doosri taraf 0 = roll ka faida nahi milta, nuqsan wali taraf ~19-100%+/saal -> C1d BANK, sirf C2 (#85) bacha (4 Nov).
