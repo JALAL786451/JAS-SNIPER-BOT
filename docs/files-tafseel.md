@@ -224,6 +224,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/research/test-se-pehle-shartein.md` - user ki 4 Nov hidayat tarteeb se + test ka darwaza G1-G10 (har naye test se pehle).
 - `docs/research/factors-gehri.md` - research agent: factors ka gehra jaiza, 2 ummeedwar (C2 = #85 bear SELL, C1d commodity curve-trend) gate G1-G10 + chances (4 Nov).
 - `docs/research/swap-chunao.md` - research agent: swap se rukh chunao = carry (sirf kharcha hatata), FTMO swap-free nahi mila, Exness Pakistan sab instrument swap-free (4 Nov).
+- `tools/imom97.py` - Koshish #97 pilot: Gao 2018 intraday momentum US500+USTEC M1 (#9 ki ghaltiyan theek) - TALAASH FAIL, bina kharcha ~0 (4 Nov).
 - `tools/ftmo77.py` - Koshish #77: FTMO #68 + P2 risk 1.5x + pehra-shart G; CHUNAO FAIL, G akela maloomat behtar (2 Nov)
 - `tools/ftmo79.py` - #79 FTMO sim + EA ka asli 4% din pehra (A0/A/B)
 - `docs/research/daur7-cent-martingale.md` - cent $1000 + martingale research (A/B/C KEEP, D/E/F REJECT) + HOD faisla; scripts `tools/research_cent/`

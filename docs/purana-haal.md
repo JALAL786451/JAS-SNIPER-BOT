@@ -1696,3 +1696,17 @@ Theek: XAG swap 3% (#68 wala, dono slot), 5% sirf tel. Run 1 (bug): 0.25% 66/0 m
 Kachhua 2012-18 (kharche se pehle): XAG 57 tr +0.008R, Brent 40 tr +0.356R, WTI 44 tr +0.175R.
 **Koshish #96 IMTIHAN 2019-01..aaj (EK dafa, 0.25%, swap 5%) = FAIL -> idea band:** #68 83/0/11 median 11.4 -> +Kachhua **81 pass / 2 fail (P1) / 11, median 11.5**.
 Kachhua 2019+: XAG 59 tr +0.308R, Brent 67 +0.094R, WTI 67 +0.020R (~2.1 tr/mahina kul). Sabaq: commodity Kachhua trade kam barhata (~2/mahina) aur 2019+ mein 2 fail laya; median nahi ghata.
+
+**Koshish #97 qaida (4 Nov, 35vi chat; user "test karo" + tasdeeq; PILOT = #9 ki ghaltiyan theek; test se PEHLE, badalna mana) - INTRADAY MOMENTUM Gao-Han-Li-Zhou 2018 JFE, ASAL GHAR (`tools/imom97.py`):**
+#9 ki ghaltiyan: (I) 9 ghalat market (gold/forex/crypto), (A) SL 1xATR M30 = R chhota -> spread R mein bara, (K) Tester spread. Ab paper jaisa, US index.
+Market: US500 (QDM USA500IDXUSD M1) + USTEC (USATECHIDXUSD), UTC -> NY. Din: NYSE kaam ka din (`ftmo60.hol`), aadha din (Thanksgiving ke baad, 24 Dec, 3 Jul) aur us ke AGLE din chhoro.
+Qeemat: P10 = 09:55-09:59 NY ka aakhri bar close; Pprev = PICHHLE NYSE din 15:55-15:59 ka aakhri close; r1 = P10/Pprev - 1. Entry = 15:30-15:34 ka pehla bar OPEN, rukh = sign(r1) (0 = nahi).
+Exit = 15:55-15:59 ka aakhri bar close. Koi bar na mile = us din trade nahi. SL: R = 3 x (pichhle 20 istemal-qabil din ka ausat |aakhri aadha ghanta %|) x entry; minute bar par
+SL chhua -> SL par (gap ho to bar open). TP nahi. Kharcha: aana-jana 1.5 x ASLI spread% (US500 0.0052%, USTEC 0.0038%) R mein. Swap 0.
+**TALAASH 2012-01..2018-12 PASS:** kul >= 300 tr, Exp - 2SE > 0 (kul), dono market Exp > 0, saal musbat >= 5/7. Muqabla: #9 -0.207R, 0/9. Maloomat (faisla nahi): bina kharcha, |r1| top tihai.
+**IMTIHAN (sirf TALAASH PASS + user tasdeeq, EK dafa):** 2021-01..aaj (2019-20 file aa jaye to 2019+), PASS = kul >= 300, Exp - 2SE > 0. 2021-24 #54 mein (doosra qaida) istemal = thoda dekha.
+Claude umeed TALAASH ~30%. Ginti +1.
+**Koshish #97 TALAASH 2012-2018 (4 Nov) = FAIL (IMTIHAN nahi):** 3122 tr (~37/mahina), SL 4.8%. US500 1541 tr -0.030R (bina kharcha -0.006), USTEC 1581 tr +0.001R (+0.016);
+KUL -0.014R, Exp-2SE -0.032, **bina kharcha +0.005R (~0)**, jeet 48%, saal 1/7 musbat; |r1| top tihai -0.011R. Pilot sabaq: #9 (-0.207R) ka zyada nuqsan ghaltiyon (ghalat market,
+chhota R, spread) se tha - theek karne par nuqsan ~0 tak aaya (R ka paimana alag, seedha muqabla aadha). MAGAR kharche se pehle bhi faida ~0 = factor khud 2012-18 US index par
+nahi (paper 1993-2013; chhapne ke baad kamzor). Wajah code: #9 = I+A+K, #97 = F. Post-mortem ka faida: galat FAIL saaf hote, magar PASS ki zamanat nahi.
