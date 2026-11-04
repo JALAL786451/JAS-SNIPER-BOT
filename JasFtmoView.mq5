@@ -1,5 +1,7 @@
 //+------------------------------------------------------------------+
-//|  JAS FTMO VIEW   -   build v1.0  (4 Nov 2026)                    |
+//|  JAS FTMO VIEW   -   build v1.1  (4 Nov 2026)                    |
+//|  v1.1: R tick value se (OrderCalcProfit indicator mein nahi chalta)|
+//|        + neeche wale kone mein bhi sar-khi upar (seedhi tarteeb)  |
 //|                                                                  |
 //|  INDICATOR HAI, EA NAHI. SIRF DEKHNE KA PANEL - TRADE NAHI KARTA.|
 //|  Kisi bhi chart par EA ke SAATH lag jata hai (EA ko nahi hatata).|
@@ -7,7 +9,7 @@
 //|  KHUD CHECK KAREIN (MetaEditor mein Ctrl+F):                     |
 //|    "OrderSend" / "ositionClose" / "#include" -> sirf isi comment |
 //|  Sirf parhne wale functions: PositionGet*, AccountInfo*,         |
-//|  SymbolInfo*, OrderCalcProfit (hisaab), GlobalVariableGet.       |
+//|  SymbolInfo*, GlobalVariableGet.       |
 //|                                                                  |
 //|  Dikhata hai (bara font, size aap ka):                           |
 //|   - equity, FTMO target (110k), aaj ka farsh (EA ke pehra wala)  |
@@ -20,7 +22,7 @@
 #property indicator_chart_window
 #property indicator_plots 0
 
-#define V_BUILD "v1.0"
+#define V_BUILD "v1.1"
 #define PFX     "JFV_"
 
 input int    InpFont      = 12;              // Font size (bara = 14, 16)
@@ -59,9 +61,20 @@ string Px(string sym, double v)
    return(DoubleToString(v, (int)SymbolInfoInteger(sym, SYMBOL_DIGITS)));
   }
 
-int g_rows = 0;
+int    g_rows = 0;
+string g_txt[];
+color  g_col[];
+int    g_n = 0;
 
 void Row(int i, string txt, color c)
+  {
+   if(i >= ArraySize(g_txt)) { ArrayResize(g_txt, i + 16); ArrayResize(g_col, i + 16); }
+   g_txt[i] = txt;
+   g_col[i] = c;
+   if(i + 1 > g_n) g_n = i + 1;
+  }
+
+void Put(int i, int total, string txt, color c)
   {
    string nm = PFX + IntegerToString(i);
    if(ObjectFind(0, nm) < 0)
@@ -77,7 +90,7 @@ void Row(int i, string txt, color c)
    ObjectSetInteger(0, nm, OBJPROP_ANCHOR,
                     low ? (rgt ? ANCHOR_RIGHT_LOWER : ANCHOR_LEFT_LOWER) : (rgt ? ANCHOR_RIGHT_UPPER : ANCHOR_LEFT_UPPER));
    ObjectSetInteger(0, nm, OBJPROP_XDISTANCE, InpX);
-   ObjectSetInteger(0, nm, OBJPROP_YDISTANCE, InpY + i * step);
+   ObjectSetInteger(0, nm, OBJPROP_YDISTANCE, InpY + (low ? (total - 1 - i) : i) * step);
    ObjectSetInteger(0, nm, OBJPROP_FONTSIZE, InpFont);
    ObjectSetString(0, nm, OBJPROP_FONT, InpFontName);
    ObjectSetInteger(0, nm, OBJPROP_COLOR, c);
@@ -87,6 +100,7 @@ void Row(int i, string txt, color c)
 void Draw()
   {
    int    r   = 0;
+   g_n = 0;
    long   login = AccountInfoInteger(ACCOUNT_LOGIN);
    double eq  = AccountInfoDouble(ACCOUNT_EQUITY);
    double bal = AccountInfoDouble(ACCOUNT_BALANCE);
@@ -124,12 +138,12 @@ void Draw()
       string rTxt = "SL nahi";
       if(sl > 0.0)
         {
-         double loss = 0.0;
-         ENUM_ORDER_TYPE ot = (typ == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
-         if(OrderCalcProfit(ot, sym, vol, op, sl, loss) && MathAbs(loss) > 0.0)
-            rTxt = StringFormat("%+.2f", pr / MathAbs(loss));
-         else
-            rTxt = "?";
+         double ts = SymbolInfoDouble(sym, SYMBOL_TRADE_TICK_SIZE);
+         double tv = SymbolInfoDouble(sym, SYMBOL_TRADE_TICK_VALUE_LOSS);
+         if(tv <= 0.0) tv = SymbolInfoDouble(sym, SYMBOL_TRADE_TICK_VALUE);
+         double loss = (ts > 0.0) ? MathAbs(op - sl) / ts * tv * vol : 0.0;
+         if(loss > 0.0) rTxt = StringFormat("%+.2f", pr / loss);
+         else           rTxt = "?";
         }
       string line = Pad(ea, 6) + Pad(sym + Pick(typ == POSITION_TYPE_BUY, " B", " S"), 12)
                     + Pad(DoubleToString(vol, 2), 7) + Pad(Px(sym, op), 11)
@@ -142,6 +156,7 @@ void Draw()
    Row(r++, StringFormat("t5 (%d) XAU XAG US500 USTEC | i6 (%d) US500 USTEC", cT, cI), InpColText);
    Row(r++, StringFormat("k2 (%d) DE30 UK100 FR40 STOXX50 JP225 AUS200 HK50 | doosri %d", cK, cO), InpColText);
 
+   for(int k = 0; k < g_n; k++) Put(k, g_n, g_txt[k], g_col[k]);
    for(int j = r; j < g_rows; j++) ObjectDelete(0, PFX + IntegerToString(j));
    g_rows = r;
    ChartRedraw(0);
