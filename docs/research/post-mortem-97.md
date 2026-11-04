@@ -40,3 +40,23 @@ BAHAR (kyun): #37/#54 (dobara ho chuka, IMTIHAN F), #9/#97 (ho chuka), #33/#55 (
 #66 (spread asli hai), #39/#46/#48 (bina kharcha bhi saabit nahi).
 
 Agla qadam: har ek ka qaida G1-G10 (`docs/research/test-se-pehle-shartein.md`) se, test sirf user "test karo" par.
+
+## 4. DARWAZA G1-G10 (4 Nov, user "D"; test NAHI chala)
+**#42 raat drift (agar dobara = #98, asli spread):**
+| G | Haal | Daleel |
+|---|---|---|
+| G1 | AADHA | Cooper-Cliff-Gulen 2008, Lou-Polk-Skouras 2019, kai mulk; ~30 saal, 50 nahi. Chhapne ke baad bhi (#42 2003-18 raat +0.028R vs din +0.006R) |
+| G2 | AADHA | raat band bazaar ka khatra (risk premium) + khareedar/bechne walon ki "tug of war" - pakki wajah nahi |
+| G3 | NAHI | trade 16:00 -> 09:00 NY (H1 data), daily/4H nahi; FTMO 5% hadd theek |
+| G4 | HAAN | US500, USTEC Exness + FTMO |
+| G5 | HAAN | `data/ftmo/` Dukascopy H1 2003-18, #42 mein 2898 tr |
+| G6 | NAHI | har raat US index BUY = i6 + t5 jaisa hi rukh (aam tezi); #96/#28 sabaq: pass ka waqt nahi ghatega |
+| G7 | Exness HAAN / FTMO PATA NAHI | asli spread ~0.007R aana-jana; Exness swap-free 0; FTMO long index swap ~5%/saal = ~0.015R/raat -> baqi +0.005..+0.021R |
+| G8 | HAAN (likh sakte) | #42 qaida jyon ka tyon, sirf kharcha asli + swap 0 aur 5% dono |
+| G9 | KAMZOR | 0.25% risk par ~0.02R x 40 tr/mahina = ~0.2%/mahina; FTMO median par asar ~0 |
+| G10 | | P(TALAASH) ~0.35, P(IMTIHAN / TALAASH) ~0.5, P(FTMO behtar) ~0.03 |
+**Faisla: G3 + G6 NAHI = test NAHI.** BANK nahi, BAND (drift ka hissa, alag factor nahi).
+
+**#21 ORB USTEC 5m:** G3 NAHI (5m; sabaq 2), G6 haan, G5 Dukascopy M1 2012-18 chahiye (`data/qdm/M1` sirf 2021+?). **Faisla: G3 NAHI = test NAHI.**
+
+**Post-mortem ka nateeja:** 97 mein se koi bhi FAIL darwaza paar nahi karta. Abhi ka akela tayyar ummeedwar = C2 #85 (`factors-gehri.md`, P(FTMO behtar) ~0.07) - sirf user "test karo" par.
