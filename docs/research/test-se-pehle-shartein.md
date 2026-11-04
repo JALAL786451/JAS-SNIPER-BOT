@@ -34,5 +34,5 @@
 Koi shart NAHI = test NAHI (pehle research / data). Saari HAAN + user "test karo" = test, EK dafa IMTIHAN.
 
 ## C. Haal (4 Nov)
-- Research agent kaam par: `docs/research/factors-gehri.md` (factors ki gehri research + 3 tak ummeedwar + gate table + chances).
+- Research MUKAMMAL: `docs/research/factors-gehri.md` - 2 ummeedwar (C2 #85, C1d), chances neeche file mein. User tasdeeq baqi.
 - Pehla jaiza: `docs/research/factors-buniyaad.md`.
