@@ -131,18 +131,21 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 03-11 | Research daur 9-10 SELL apni + counter; ulte instrument jaanch | koi ulta nahi (sab saath girte) | #85 C2, #86 K1 qaida, test nahi | SELL aaina = ghalat idea (user)
 03-11 | Naqsha chat (Sonnet) | i6 pehli 2 trades +$108, #87 FAIL, n5.7 | ek waqt ek chat + git pull | do chat same file badal rahi thin
 03-11 | 34vi: recovery EA JasShahmaat (live basket -9.5k) | #88-95 = 0/9 PASS (trend, m7.1, raat, mausam, lock+0.02) + research agent | basket NET +0.33 waise hi; m7.1 live nahi | muqabla 'kuch na karo' se = EA ki apni kamai
+04-11 | 35vi: #96 #68 + Kachhua commodity (XAG Brent WTI) | CHUNAO PASS, IMTIHAN FAIL 81/2 | band | trade sirf +2/mahina, 2019+ 2 fail
+04-11 | User: "pehle research, test baad" | test-se-pehle-shartein G1-G10 + research agent x2 (factors-gehri, swap-chunao) | t5/i6/k2 = 3 mazboot factor; C1d swap SS se BANK; FTMO swap-free nahi mila | ghalat setting par test = jhoota FAIL
+04-11 | #97 pilot: #9 Gao intraday momentum theek karke (US500+USTEC M1 2012-18) | -0.207R -> -0.014R, bina kharcha ~0 = FAIL | agla POST-MORTEM (sirf record) | ghaltiyan nuqsan barhati, magar factor na ho to PASS nahi
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
 
-4. ABHI (4 Nov 2026, 34vi chat ke baad)  [MT5 ka asli haal = TRADING.md sec 0]
+4. ABHI (4 Nov 2026, 35vi chat ke baad)  [MT5 ka asli haal = TRADING.md sec 0]
 DEMO 472716649 (Trial16, STANDARD USD ~$2000 - cent NAHI, SS 2 Nov; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
 FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu:
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
   JasIbsEA i6    | US500m D1  | 20261022 | US500 USTEC 1%, faisla 16:15 NY
   JasKhirkiEA k2 | DE30m D1   | 20261101 | 7 non-US index 0.15%
   Pehra teeno: target 110k + din 4% (96k farsh), kul hadd band.
-MANSOOBA #68: 2019+ sim 83/0, median 11.4 mahine (swap fix baad). 3 mahine 0%, 12 mahine ~51% (sawal-jawab).
+MANSOOBA #68: 2019+ sim 83/0, median 11.4 mahine (swap fix baad). #96 commodity jor + #97 Gao FAIL; agla POST-MORTEM (97 koshish, sirf record). 3 mahine 0%, 12 mahine ~51% (sawal-jawab).
 LIVE: koi trade-EA nahi; sirf JasMauqa m6 (khud lot nahi, Algo OFF); recovery #88-95 0/9 -> basket waise hi, m7.1 NAHI; 6-mahine qaida -> demo 31-10 se = ~May 2027 se pehle nahi (hisaab).
 AGLE KAAM:
  - Somwar 2 Nov: FTMO demo ki pehli trades (user SS laaye tab; yaad-dihani NAHI). Pehli khirki trade 24 Nov.

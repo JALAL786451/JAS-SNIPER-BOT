@@ -4,10 +4,9 @@
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | ~100k | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 ki pehli 2 trades** US500+USTEC BUY +$108, t5/k2 0 (`docs/demo-haal/2026-11-03.md`) | 3 Nov SS |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,000.20 (DIV +0.20), equity 99,827.79 | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; i6 ki 2 khuli (US500 3.79 lot SL 7300.17, USTEC 0.56 SL 26340.67) -$172.41; History mein band trade 0; t5/k2 0 | 4 Nov SS |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | ~2000 | JasIbsCentEA c1 (US500m D1) + haath ki XAG SELL 0.05 | ON | 2 Nov SS |
-| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC) | equity 33,376 USC, P/L -9,736 (gold 3927.9); BUY 106 tk 2.64 lot avg 3977.58, SELL 7 tk 2.31 lot avg 3942.77, NET +0.33 (breakeven 4222.95) | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, #89 Python FAIL - live NAHI lagana) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 3 Nov SS (m6 screen) |
-2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | equity 33,396 USC, P/L -10,430 (gold 3929.40); BUY 112 tk 2.94 lot avg 3973.511, SELL 10 tk 2.53 lot avg 3939.677, NET +0.41 (breakeven 4183.80, stop out 814 door = 3114.86) | JsMouqaEA = JasMauqa m6 (m7.1 GitHub par, #89 Python FAIL - live NAHI lagana) (XAUUSDc D1); JasDeskView? pata nahi | OFF | 4 Nov SS (m6 screen) |
 
 **Nayi chat ka message (copy-paste):**
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
@@ -63,13 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**34vi chat (3 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #88".."#95". LIVE 253687618 recovery EA **JasShahmaat** (naam pasand; user: Python PASS
-ho to LIVE seedha, HIDAYAT). `tools/shahmaat_sim.py` (basket replay vs "kuch na karo", gold H1 2021-24, 178 start x 6 mahine): **recovery 0/9 PASS** -
-#88 4H NET palat, #89 m7.1 hedge ladder (live NAHI lagana), #90 4H charhai-jor (qareeb 54%), #91 D1, #92 raat (+1,934 median, 56%), #93 SMA10,
-#94 Sep+Nov (research agent ke idea), #95 kitab band + 0.02 hedge chaal (apni kamai +198 USC / 6 mahine = ~24 saal). Mashwara: basket NET +0.33 waise hi.
-15M ruki candle: 839 misaal = 50/50 (koi EMA nahi batati). Live SS: equity 33,376, P/L -9,736, gold 3927.9 (NAQSHA).
-**AGLA KAAM:** (a) user ke sawal / SS - sawal = SIRF jawab, test sirf "test karo". (b) Basket: kuch na karo, m6 status (Algo OFF); naya recovery idea sirf
-"test karo" par, isi harness mein (vs kuch-na-karo). (c) #85/#86 data ("test karo" ke baad). (d) FTMO demo t5/i6/k2 + c1 chalte rahein.
+**35vi chat (4 Nov)** - tafseel `docs/purana-haal.md` grep "Koshish #96" / "#97". **#96** #68 + Kachhua commodity (XAG, Brent, WTI) CHUNAO PASS 0.25% magar
+IMTIHAN FAIL (81/2, median 11.5). User ki hidayat: **pehle research, test baad** -> `docs/research/test-se-pehle-shartein.md` (darwaza G1-G10, user tasdeeq). Research agent x2:
+`factors-gehri.md` (t5/i6/k2 = 3 mazboot factor trend/reversal/calendar; ummeedwar C2 = #85, C1d commodity curve-trend), `swap-chunao.md` (swap 0 wali taraf = carry, sirf kharcha hatata;
+Exness Pakistan sab swap-free; FTMO swap-free FAQ mein nahi). User swap SS -> C1d BANK. **#97 pilot** (#9 Gao intraday momentum, ghaltiyan theek, US500+USTEC M1 2012-18):
+TALAASH FAIL -0.014R (purana -0.207R), bina kharcha ~0 = ghaltiyan theek se nuqsan ghata magar factor khud nahi. User ne FTMO ko 2 email: swap-free + free trial restricted.
+**AGLA KAAM:** (a) **POST-MORTEM** (user ki maang, "D" baqi): ~97 koshish ki FAIL wajah code F/K/I/T/D/A/B sirf record se (test NAHI, agent NAHI) -> sirf wo dobara jin ka
+kharche se pehle faida tha. (b) FTMO email jawab (swap-free, trial, BTC swap #76). (c) C2 #85 sirf "test karo" par. (d) Demo t5/i6/k2 + c1 chalte rahein, mahine SS.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
@@ -88,7 +87,7 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
 
-95 koshish (#83-87 + **#88-95 recovery FAIL 0/9**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+97 koshish (#88-95 recovery 0/9; **#96 commodity jor FAIL, #97 Gao pilot FAIL**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

@@ -1710,3 +1710,5 @@ Claude umeed TALAASH ~30%. Ginti +1.
 KUL -0.014R, Exp-2SE -0.032, **bina kharcha +0.005R (~0)**, jeet 48%, saal 1/7 musbat; |r1| top tihai -0.011R. Pilot sabaq: #9 (-0.207R) ka zyada nuqsan ghaltiyon (ghalat market,
 chhota R, spread) se tha - theek karne par nuqsan ~0 tak aaya (R ka paimana alag, seedha muqabla aadha). MAGAR kharche se pehle bhi faida ~0 = factor khud 2012-18 US index par
 nahi (paper 1993-2013; chhapne ke baad kamzor). Wajah code: #9 = I+A+K, #97 = F. Post-mortem ka faida: galat FAIL saaf hote, magar PASS ki zamanat nahi.
+
+(TRADING sec 0 se hataya 4 Nov) 2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.

@@ -2,12 +2,17 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-02  (31 kaam)
-   - #80 qaida (test se pehle): gold Asia M5 BB fade bina martingale
-   - HIDAYAT: file sirf GitHub link se, MT5 account number se
+2026-11-02  (22 kaam)
+   - HIDAYAT: sahab nahi; sawal-jawab: cent USC hisaab
+   - HIDAYAT: poocho = sirf jawab, test sirf user ke kehne par
    - Research daur 10: BUY tokri ke bure daur + counter K1 copper SELL, K2 oil BUY (sirf resear
 
-2026-11-03  (27 kaam)
+2026-11-03  (28 kaam)
    - Jaanch: BUY tokri ke ulte instrument 2012-18 - koi nahi (sab corr musbat)
-   - JasMauqa m7: HEDGE LADDER - bari SELL se har $10 neeche 0.05 BUY band (pehle SELL se neech
-   - MT5 NAQSHA: live 253687618 SS (gold 3927.9, equity 33,376)
+   - JasMauqa m7.1: hedge tarteeb - SELL se neeche wali BUY, phir SELL se upar wali (qareeb peh
+   - chat khatam (34vi): JasShahmaat recovery #88-95 0/9, TRADING sec 5, KAHANI, sawal-jawab, r
+
+2026-11-04  (7 kaam)
+   - Koshish #96 #68 + Kachhua commodity: CHUNAO PASS 0.25%, IMTIHAN FAIL (81/2); factors-buniy
+   - Swap SS: C1d commodity curve-trend G7 FAIL (bank); sirf C2 #85 bacha
+   - Koshish #97 pilot (Gao intraday momentum, #9 theek): TALAASH FAIL -0.014R, bina kharcha ~0

@@ -142,3 +142,9 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - 15M ruki candle ka breakout rukh koi EMA batati? -> nahi: 2012-26 H1 839 ruki misaal, 4H rukh ke saath bhi 48/52 = sikka (3 Nov).
 - Commodity swap (Exness, 4 Nov SS)? -> USOIL short -70 / UKOIL short -145.4 / XNG long -254.6 / XCU long -222.3 pt, doosri taraf 0 = roll ka faida nahi milta, nuqsan wali taraf ~19-100%+/saal -> C1d BANK, sirf C2 (#85) bacha (4 Nov).
 - Swap 0 wali taraf hi trade (user idea)? -> = carry factor; CFD par achhi taraf ko 0 milta (credit nahi) -> sirf kharcha hat-ta, naya faida nahi; tel/gas/copper ki taraf mahino-saalon mein palat-ti; gold/index par sakht qaida BUY rok deta -> swap ko har trade ka kharcha gino. FTMO swap-free: FAQ mein nahi (Swing bhi nahi); Exness Pakistan: sab instrument khud swap-free (4 Nov, `docs/research/swap-chunao.md`).
+- #68 + Kachhua commodity (XAG Brent WTI) se trades barhein? -> #96 CHUNAO PASS 0.25% magar IMTIHAN FAIL 81/2, sirf +2 tr/mahina (4 Nov).
+- Factors kaun se mazboot + hamare EA? -> trend (t5), dip/reversal US index (i6), calendar (k2) = 3 sab se mazboot CFD par; carry/value/VRP is account par nahi (`docs/research/factors-gehri.md`, 4 Nov).
+- Naye factor / market se FTMO jaldi pass? -> NAHI (research): median ~0.5-1 mahina hi; asal lever risk ka size (sirf user ka faisla) ya FTMO swap-free (4 Nov).
+- Spread kya? -> Ask - Bid farq (US500 ~0.0052%); test mein 1.5 x (slippage + FTMO farq). Pro/Raw/Zero = spread kam magar commission; test FTMO kharche par, sasta account sirf Exness live ke waqt naap kar (4 Nov).
+- FTMO free trial restricted (kai Gmail)? -> support@ftmo.com ko ek hi email (jalalzte) se likho, naye Gmail NAHI (multi-account flag) (4 Nov).
+- Purani FAIL koshish ghalat tareeqe se? -> #97 pilot: #9 theek karke -0.207R -> -0.014R (bina kharcha ~0) = ghaltiyan nuqsan barhati magar factor na ho to PASS nahi; agla post-mortem sirf record se (4 Nov).

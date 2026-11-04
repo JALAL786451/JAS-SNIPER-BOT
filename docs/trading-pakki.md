@@ -153,6 +153,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - Akele bare share (Dow 30) par IBS / Tide / Trend: R mein faida dikhta hai magar sab share ki aam tezi (drift) - asli edge nahi (#61-63, 1 Nov). Share ke test mein drift jaanch zaroori.
 
 - `data/ftmo` US500/USTEC 2012-17 patla (2013 Feb-May khali, 2015-17 ~15 H1/din), 2018+ poora; gold/chandi poore. Index TALAASH 2012-18 par kam bharosa (1 Nov).
+- FAIL ki wajah pehle (4 Nov, #97 pilot): ghalat market / chhota R / ghalat kharcha nuqsan bara dikhate (#9 -0.207R -> #97 -0.014R), magar kharche se pehle faida ~0 ho to factor khud nahi. Naya test sirf darwaza G1-G10 + asli swap ke saath.
 
 ## 5. Mere tools
 
