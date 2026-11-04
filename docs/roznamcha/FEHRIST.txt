@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-02  (14 kaam)
-   - auto-save (Stop hook): 2026-11-02 17:18 UTC
+2026-11-02  (7 kaam)
    - jas_naqsha n5.1: f_closePos if/else return type fix (CE10235)
+   - jas_naqsha n5.4: KHULASA pehli line (RUKO/TAYYAR/BUY/CHALU/INTEZAR + jumla); na position p
    - Research daur 10: BUY tokri ke bure daur + counter K1 copper SELL, K2 oil BUY (sirf resear
 
 2026-11-03  (28 kaam)
@@ -12,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - JasMauqa m7.1: hedge tarteeb - SELL se neeche wali BUY, phir SELL se upar wali (qareeb peh
    - chat khatam (34vi): JasShahmaat recovery #88-95 0/9, TRADING sec 5, KAHANI, sawal-jawab, r
 
-2026-11-04  (14 kaam)
+2026-11-04  (20 kaam)
    - Koshish #96 #68 + Kachhua commodity: CHUNAO PASS 0.25%, IMTIHAN FAIL (81/2); factors-buniy
-   - chat khatam (35vi): #96 #97 FAIL, research pehle (G1-G10), factors + swap research, TRADIN
-   - Koshish #98 TALAASH FAIL (1786 tr +0.005R 2x, bina kharcha +0.147R, drift jaanch fail)
+   - Koshish #85 C2: TV Pine jas_c2_85 c1 (9 index mandi SELL, TALAASH 1990-2018, kharcha 2x)
+   - MT5 naqsha: 474832446 4 Nov 09:01 SS - equity 100,262.54, 3 khuli

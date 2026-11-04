@@ -151,3 +151,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Post-mortem 97 koshish ka nateeja? -> ~55 F (factor kamzor), ~8 K; I/T wali theek ho kar PASS bani; koi purana FAIL dobara test ke qabil nahi (#42/#21 G3 NAHI) (`docs/research/post-mortem-97.md`, 4 Nov).
 - Strategy badlo to result badle (setting ghumana)? -> nateeja dekh kar setting badalna = qismat ka PASS (sabaq 1); factor research se NAYA qaida pehle likh kar = jaiz, nayi koshish (4 Nov).
 - Index par SELL / Kachhua BUY? -> #85 SELL 0/9 band; #98 Kachhua BUY bina kharcha +0.147R magar trade % ~= drift + swap = band; index trend t5/i6 mein pehle se (4 Nov).
+- Tide 15 instrument (9+6) FTMO ke liye dobara test? -> NAHI: forex 5 BAND, XAU/XAG/US500 #29 F, BTC #76 bank, tel #69 bank/#96 F, XPT/XPD/XCU/XNG data nahi + spread 40-90x (4 Nov).
+- Mera apna (Fishing) EA kyun nahi bana? -> METHOD.md 'NOT yet defined': palatne ka ishara, bachao vs ulti lot, equity hadd kabhi number mein nahi; f1/k4 ne andaza lagaya = FAIL. Hal: 3 sawal user ki trade se + pehredaar (4 Nov).
+- Naqsha (jas_naqsha n5.7) ki SELL / TP? -> BUY = t5 jaisa (pass); SELL = ulta andaza, TEST NAHI (#73 aaina F) - sirf dekhne ka (4 Nov).

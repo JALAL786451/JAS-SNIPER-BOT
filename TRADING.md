@@ -62,10 +62,11 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**36vi chat (4 Nov)** - `docs/research/post-mortem-97.md` + `docs/purana-haal.md` grep "Koshish #85 TALAASH" / "#98". **POST-MORTEM** (sirf record): ~55 F, ~8 K, I/T theek ho kar PASS bane,
-#42 raat drift + #21 ORB darwaza G3 NAHI = koi purana FAIL dobara nahi. **#85 C2** (TV `jas_c2_85.pine`, Stooq/Yahoo network band): 287 tr -0.093R, 0/9 = BAND.
-**#98** Kachhua sirf BUY x 9 index (`jas_kc98.pine`, user "strategy change"): 1786 tr +0.005R (2x), bina kharcha +0.147R, 5/9, drift FAIL (trade 0.34% ~ drift) = BAND.
-**AGLA KAAM:** koi tayyar ummeedwar NAHI - naya sirf research (G1-G10) + user "test karo". (a) FTMO email jawab (swap-free, trial). (b) Demo t5/i6/k2 + c1 chalte rahein, mahine SS.
+**37vi chat (4 Nov)** - sirf record + SS, koi test NAHI. **Tide 15** dobara: har tukda test/band/data nahi (forex BAND, #29 F, #76/#69 bank, #96 F) = test NAHI.
+**Factor 11 qism** (`docs/research/factors-gehri.md`): koi naya G1-G10 pass nahi; trend/IBS/chutti = t5/i6/k2 mein. **User ka EA:** METHOD.md ki 3 likhi nahi gayi
+cheezein (palatne ka ishara, bachao vs ulti lot, equity hadd) = f1/k4 FAIL ki wajah. Naqsha n5.7 SELL = TEST NAHI (t5 sirf BUY).
+**AGLA KAAM:** (a) user "D" de to 3 sawal ek ek (pehla: equity hadd), sirf qaida - EA nahi; 'pehredaar' (ghalat lot band, NET/equity alert) bhi sirf "D" par.
+(b) 472716649 History SS (Comment + Magic) - XAG SELL 0.05 kis ne kholi. (c) FTMO email jawab. (d) Demo SS jab i6/t5 trade band ho.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
