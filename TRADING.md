@@ -62,12 +62,12 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**37vi chat (4 Nov)** - sirf record + SS, koi test NAHI. **Tide 15** dobara: har tukda test/band/data nahi (forex BAND, #29 F, #76/#69 bank, #96 F) = test NAHI.
-**Factor 11 qism** (`docs/research/factors-gehri.md`): koi naya G1-G10 pass nahi; trend/IBS/chutti = t5/i6/k2 mein. **User ka EA:** METHOD.md ki 3 likhi nahi gayi
-cheezein (palatne ka ishara, bachao vs ulti lot, equity hadd) = f1/k4 FAIL ki wajah. Naqsha n5.7 SELL = TEST NAHI (t5 sirf BUY).
-**Baad mein (37vi jaari):** #99/#100 (SL nahi + TP, `tools/ulta99.py`) CHUNAO FAIL; EA ulta + 100 instrument family = agent/judge NAHI. **JasFtmoView v1.1** (indicator, sirf parhta) FTMO demo DE30m/US500m chart par chal raha ✅. User ki usage 82% (4 Nov) -> Itwaar 2am reset tak kam kaam.
-**AGLA KAAM:** (a) user "D" de to 3 sawal ek ek (pehla: equity hadd), sirf qaida - EA nahi; 'pehredaar' (ghalat lot band, NET/equity alert) bhi sirf "D" par.
-(b) 472716649 History SS (Comment + Magic) - XAG SELL 0.05 kis ne kholi. (c) FTMO email jawab. (d) Demo SS jab i6/t5 trade band ho.
+**38vi chat (4-5 Nov)** - sirf live SS, koi test NAHI. Live 253687618: purani 133 tk basket user ne KHUD close all ki (balance 37,568.59 USC).
+Ab MANUAL (mobile) 15 tk, NET +0.01 (taala - $1 = 1 USC, breakeven 4141). Ajeeb SELL 0.01 @4065.005 = m6 nahi (lot kholta hi nahi) -> wahi
+**m6 ka pehla asli kaam:** 5 Nov 02:56:31 B) PAIR CLOSE DONE (10009), 17->15 tk. Close By = equity same, balance barhta (user samjha ✅).
+InpMinJori 5 -> 0.01 jori ko $5 farq; 2 karna = user ki marzi (popup hadd, risk nahi). Purana popup = NO.
+**AGLA KAAM:** (a) user "D" de to 3 sawal ek ek (pehla: equity hadd), sirf qaida. (b) 472716649 XAG SELL kis ne kholi (History Comment).
+(c) FTMO email jawab. (d) Demo SS jab i6/t5 trade band ho. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

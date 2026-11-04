@@ -2,17 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-02  (7 kaam)
-   - jas_naqsha n5.1: f_closePos if/else return type fix (CE10235)
-   - jas_naqsha n5.4: KHULASA pehli line (RUKO/TAYYAR/BUY/CHALU/INTEZAR + jumla); na position p
-   - Research daur 10: BUY tokri ke bure daur + counter K1 copper SELL, K2 oil BUY (sirf resear
-
-2026-11-03  (28 kaam)
-   - Jaanch: BUY tokri ke ulte instrument 2012-18 - koi nahi (sab corr musbat)
-   - JasMauqa m7.1: hedge tarteeb - SELL se neeche wali BUY, phir SELL se upar wali (qareeb peh
+2026-11-03  (18 kaam)
+   - JasMauqa m5: PRICE LADDER (gold -25/+25/+50/+100/breakeven par profit tickets + TOTAL)
+   - MT5 NAQSHA: live 253687618 naya haal (m6 SS) - NET +0.33, equity 33.6k USC
    - chat khatam (34vi): JasShahmaat recovery #88-95 0/9, TRADING sec 5, KAHANI, sawal-jawab, r
 
-2026-11-04  (31 kaam)
+2026-11-04  (34 kaam)
    - Koshish #96 #68 + Kachhua commodity: CHUNAO PASS 0.25%, IMTIHAN FAIL (81/2); factors-buniy
-   - MT5 naqsha: 4 Nov panel SS - t5 pehli gold BUY, i6 2 khuli, k2 intezar
-   - JasFtmoView v1.1: R tick value se (OrderCalcProfit indicator mein nahi), neeche kone mein 
+   - MT5 naqsha: 472716649 XAG SELL 0.05 haath ki nahi thi, user ne band ki (4 Nov)
+   - MT5 naqsha: live 253687618 - 15 manual tk NET +0.01, m6 B) PAIR CLOSE pehli dafa DONE
