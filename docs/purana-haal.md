@@ -1627,6 +1627,13 @@ index musbat **0/9** (SPX 19 tr -0.076, NDX 17 -0.036, DAX 33 -0.059, FTSE 35 -0
 1990-2004 155 tr -0.010R, 2005-18 132 tr -0.190R. Wajah code F (+K): bina kharcha bhi +0.05R (SE ~0.07) saabit nahi; SELL swap (mahino ki pakar) ne baqi kha liya.
 Sabaq: bear-state SELL (12m+1m) index par 1990-2018 mein faida nahi - mandi ke baad V-palat SL kaat deta (jeet 31%). Post-mortem + C2 ke baad koi tayyar ummeedwar NAHI.
 
+**Koshish #98 qaida (4 Nov, 36vi chat, user "strategy change karein" - #85 FAIL ke baad; test se PEHLE, badalna mana) - KACHHUA SIRF BUY x 9 index (`indicators/jas_kc98.pine` q1):**
+Market #85 wale 9 (SP:SPX, NASDAQ:NDX, XETR:DAX, TVC:UKX, EURONEXT:PX1, TVC:SX5E, TVC:NI225, ASX:XJO, TVC:HSI), TV 1D. Kachhua = Tide 1 (`jas_tide_radar.pine` f_tide) jyon ka tyon, SIRF BUY:
+band candle close > pichhli 10 ka high AUR EMA50 > EMA200 AUR ATR14 >= 0.25% -> close par BUY; SL entry - 2 ATR14 (1R), har candle max(SL, 5 candle low); close <= SL ya EMA50 < EMA200 -> close par band; andar SL (gap = open).
+Kharcha #85 jaisa (SPX 0.0039%, NDX 0.00285%, non-US 0.02% har taraf; BUY swap 3%/saal), faisla 2x. **TALAASH PASS (2x):** 1990-2018 kul Exp - 2SE > 0 AUR >= 6/9 musbat
+AUR 1990-2004 + 2005-18 dono musbat AUR trade ausat % >= 2 x drift (sabaq 5). IMTIHAN 2019+ chhupa; phir FTMO Python. Darwaza: G6 kamzor (t5 US index trend), G1 haan (Kachhua 9 mkt / commodity).
+Claude umeed: TALAASH ~20%, FTMO behtar ~5%. Ginti +1 = 98.
+
 **Koshish #86 qaida (3 Nov, 33vi chat; research daur 10 `docs/research/daur10-counter-agent.md` K1; test se PEHLE, badalna mana; TEST abhi NAHI) - K1 "DR. COPPER" SELL:**
 Market: copper (XCU CFD; signal COMEX HG daily) + SPX regime. Data: daily 1990-2018 (Stooq / TV), 2019+ IMTIHAN. Pehle: FTMO par copper hai ya nahi (nahi = sirf Exness).
 Faisla 1D close (17:00 NY), entry agle din open. **SELL** jab SPX close < SMA200 AUR copper close < SMA200 AUR copper close = 20 din ka sab se neecha close.

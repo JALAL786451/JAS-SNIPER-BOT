@@ -1,0 +1,272 @@
+//@version=6
+// ============================================================================
+//  JAS KC 98  (build q1, Pine v6)  -  Koshish #98 (4 Nov 2026, user "strategy change karein")
+//
+//  KACHHUA (Tide 1) SIRF BUY x 9 index (C2 #85 wale). TRADE NAHI, sirf ginti.
+//
+//  QAIDA (docs/purana-haal.md grep "Koshish #98 qaida" - badalna mana):
+//   Band 1D candle: close > pichhli 10 candle ka high AUR EMA50 > EMA200 AUR ATR14 >= 0.25% -> BUY close par.
+//   SL = entry - 2 x ATR14 (1R); har band candle par SL = max(SL, 5 candle low); close <= SL ya
+//   EMA50 < EMA200 -> close par band; candle ke andar low <= SL -> SL (gap = open). SIRF BUY.
+//   Kharcha har taraf SPX 0.0039%, NDX 0.00285%, non-US 0.02%; BUY swap 3%/saal har raat; FAISLA 2x.
+//   TALAASH PASS (2x): 1990-2018 kul Exp - 2SE > 0 AUR >= 6/9 index musbat AUR 1990-2004 + 2005-2018
+//   dono musbat AUR trade ausat % >= 2 x drift (aam din ausat % x pakar ke din). IMTIHAN 2019+ CHHUPA.
+//
+//  CHART: koi bhi DAILY chart. Tuple 9 x 14 = 126 < 127.
+// ============================================================================
+indicator("JAS KC 98 q1 (#98)", shorttitle = "JAS KC98 q1", overlay = true, max_bars_back = 300)
+
+BUILD = "q1"
+
+grI = "1 · 9 index (pehle se chune - badalna mana)"
+s0 = input.symbol("SP:SPX", "1 S&P 500", group = grI)
+s1 = input.symbol("NASDAQ:NDX", "2 Nasdaq 100", group = grI)
+s2 = input.symbol("XETR:DAX", "3 DAX", group = grI)
+s3 = input.symbol("TVC:UKX", "4 FTSE 100", group = grI)
+s4 = input.symbol("EURONEXT:PX1", "5 CAC 40", group = grI)
+s5 = input.symbol("TVC:SX5E", "6 Euro Stoxx 50", group = grI)
+s6 = input.symbol("TVC:NI225", "7 Nikkei 225", group = grI)
+s7 = input.symbol("ASX:XJO", "8 ASX 200", group = grI)
+s8 = input.symbol("TVC:HSI", "9 Hang Seng", group = grI)
+
+grQ = "2 · Qawaid (mat badlein)"
+entryLen  = input.int(10, "Naali (candle high)", group = grQ, display = display.none)
+exitLen   = input.int(5, "SL sarakna (candle low)", group = grQ, display = display.none)
+atrLen    = input.int(14, "ATR length", group = grQ, display = display.none)
+atrMult   = input.float(2.0, "Shuru SL (x ATR) = 1R", group = grQ, display = display.none)
+emaFLen   = input.int(50, "EMA fast", group = grQ, display = display.none)
+emaSLen   = input.int(200, "EMA slow", group = grQ, display = display.none)
+minAtrPct = input.float(0.25, "Kam az kam ATR %", group = grQ, display = display.none)
+cUS0    = input.float(0.0039, "Kharcha S&P (% har taraf)", group = grQ, display = display.none)
+cUS1    = input.float(0.00285, "Kharcha Nasdaq (% har taraf)", group = grQ, display = display.none)
+cNon    = input.float(0.02, "Kharcha non-US (% har taraf)", group = grQ, display = display.none)
+swapYr  = input.float(3.0, "BUY swap (% saal, har raat)", group = grQ, display = display.none)
+kMult   = input.float(2.0, "Kharcha x (faisla 2x)", group = grQ, display = display.none)
+fromYr  = input.int(1990, "TALAASH is saal se", group = grQ, display = display.none)
+midYr   = input.int(2005, "Doosra hissa is saal se", group = grQ, display = display.none)
+splitYr = input.int(2019, "IMTIHAN is saal se", group = grQ, display = display.none)
+showIm  = input.bool(false, "IMTIHAN dikhao (SIRF TALAASH PASS ke baad, EK dafa)", group = grQ, display = display.none)
+
+grV = "3 · Table"
+tblPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+
+// ============================================================================
+//  ENGINE - Kachhua (jas_tide_radar.pine f_tide jaisa), sirf BUY, BAND candle [1]
+// ============================================================================
+f_kc(float _cPct) =>
+    _atrA = ta.atr(atrLen)
+    _hbA  = ta.highest(high, entryLen)
+    _lxA  = ta.lowest(low, exitLen)
+    _efA  = ta.ema(close, emaFLen)
+    _esA  = ta.ema(close, emaSLen)
+    _o  = open[1]
+    _l  = low[1]
+    _c  = close[1]
+    _cp = close[2]
+    _a  = _atrA[1]
+    _hb = _hbA[2]
+    _lx = _lxA[2]
+    _ef = _efA[2]
+    _es = _esA[2]
+    _t1 = time[1]
+    var int   _fy = na
+    var bool  _in = false
+    var float _e  = na
+    var float _r  = na
+    var float _sl = na
+    var int   _ey = na
+    var int   _et = na
+    var int   _age = 0
+    var int   _nT = 0
+    var int   _wT = 0
+    var float _sT = 0.0
+    var float _qT = 0.0
+    var float _s0 = 0.0
+    var int   _nA = 0
+    var float _sA = 0.0
+    var float _pT = 0.0
+    var int   _dT = 0
+    var int   _aN = 0
+    var float _aS = 0.0
+    var int   _nI = 0
+    var float _sI = 0.0
+    var float _qI = 0.0
+    if not na(_c) and not na(_t1)
+        _y1 = year(_t1, "UTC")
+        if na(_fy) and _y1 >= fromYr
+            _fy := _y1
+        if not na(_cp) and _cp > 0 and _y1 >= fromYr and _y1 < splitYr
+            _aN += 1
+            _aS += _c / _cp - 1
+        bool  _cl  = false
+        float _px  = na
+        if _in
+            _age += 1
+            if _l <= _sl
+                _px := _o < _sl ? _o : _sl
+                _cl := true
+            else if not na(_ef) and not na(_es) and _ef < _es
+                _px := _c
+                _cl := true
+            else
+                _sl := math.max(_sl, nz(_lx, _sl))
+                if _c <= _sl
+                    _px := _c
+                    _cl := true
+        if _cl
+            _nights = math.round((_t1 - _et) / 86400000.0)
+            _gross = (_px - _e) / _r
+            _rr = ((_px - _e) - kMult * _cPct / 100.0 * (_e + _px) - kMult * swapYr / 100.0 / 365.0 * _nights * _e) / _r
+            if _ey < splitYr
+                _nT += 1
+                _sT += _rr
+                _qT += _rr * _rr
+                _s0 += _gross
+                _wT += _rr > 0 ? 1 : 0
+                _pT += _px / _e - 1
+                _dT += _age
+                if _ey < midYr
+                    _nA += 1
+                    _sA += _rr
+            else
+                _nI += 1
+                _sI += _rr
+                _qI += _rr * _rr
+            _in := false
+        if not _in and not _cl and _y1 >= fromYr and not na(_a) and _a > 0 and not na(_hb) and not na(_ef) and not na(_es)
+            if _c > _hb and _ef > _es and _a / _c * 100.0 >= minAtrPct
+                _in  := true
+                _e   := _c
+                _r   := atrMult * _a
+                _sl  := _c - _r
+                _ey  := _y1
+                _et  := _t1
+                _age := 0
+    [_nT, _wT, _sT, _qT, _s0, _nA, _sA, _pT, _dT, _aN > 0 ? _aS / _aN : 0.0, _nI, _sI, _qI, _fy]
+
+f_req(_s, _cp) => request.security(_s, "D", f_kc(_cp), barmerge.gaps_off, barmerge.lookahead_off)
+
+[nT0, wT0, sT0, qT0, z0, nA0, sA0, pT0, dT0, aM0, nI0, sI0, qI0, fy0] = f_req(s0, cUS0)
+[nT1, wT1, sT1, qT1, z1, nA1, sA1, pT1, dT1, aM1, nI1, sI1, qI1, fy1] = f_req(s1, cUS1)
+[nT2, wT2, sT2, qT2, z2, nA2, sA2, pT2, dT2, aM2, nI2, sI2, qI2, fy2] = f_req(s2, cNon)
+[nT3, wT3, sT3, qT3, z3, nA3, sA3, pT3, dT3, aM3, nI3, sI3, qI3, fy3] = f_req(s3, cNon)
+[nT4, wT4, sT4, qT4, z4, nA4, sA4, pT4, dT4, aM4, nI4, sI4, qI4, fy4] = f_req(s4, cNon)
+[nT5, wT5, sT5, qT5, z5, nA5, sA5, pT5, dT5, aM5, nI5, sI5, qI5, fy5] = f_req(s5, cNon)
+[nT6, wT6, sT6, qT6, z6, nA6, sA6, pT6, dT6, aM6, nI6, sI6, qI6, fy6] = f_req(s6, cNon)
+[nT7, wT7, sT7, qT7, z7, nA7, sA7, pT7, dT7, aM7, nI7, sI7, qI7, fy7] = f_req(s7, cNon)
+[nT8, wT8, sT8, qT8, z8, nA8, sA8, pT8, dT8, aM8, nI8, sI8, qI8, fy8] = f_req(s8, cNon)
+
+// ============================================================================
+//  TABLE (safaid)
+// ============================================================================
+f_pos(_p) => _p == "Top Left" ? position.top_left : _p == "Bottom Right" ? position.bottom_right : _p == "Bottom Left" ? position.bottom_left : position.top_right
+
+f_se(int _n, float _s, float _q) =>
+    _m = _n > 0 ? _s / _n : 0.0
+    _n > 1 ? math.sqrt(math.max((_q - _n * _m * _m) / (_n - 1), 0.0)) / math.sqrt(_n) : 0.0
+
+var table tb = table.new(f_pos(tblPos), 7, 27, bgcolor = color.white, border_color = color.new(#9e9e9e, 0), border_width = 1)
+fg  = color.new(#111111, 0)
+cUp = color.new(#0a8f5a, 0)
+cDn = color.new(#d32f2f, 0)
+cHd = color.new(#1a237e, 0)
+
+f_cell(int _c, int _r, string _s, color _col) =>
+    table.cell(tb, _c, _r, _s, text_color = _col, text_size = size.small)
+
+f_num(float _x) => str.tostring(_x, "+0.000;-0.000")
+
+f_row(int _r, string _nm, int _n, int _w, float _s, float _q, float _z, string _extra) =>
+    _e  = _n > 0 ? _s / _n : 0.0
+    _se = f_se(_n, _s, _q)
+    f_cell(0, _r, _nm, fg)
+    f_cell(1, _r, str.tostring(_n), fg)
+    f_cell(2, _r, str.tostring(_n > 0 ? 100.0 * _w / _n : 0.0, "#") + "%", fg)
+    f_cell(3, _r, f_num(_e), _e > 0 ? cUp : cDn)
+    f_cell(4, _r, f_num(_e - 2 * _se), _e - 2 * _se > 0 ? cUp : cDn)
+    f_cell(5, _r, _n > 0 ? f_num(_z / _n) : "-", fg)
+    f_cell(6, _r, _extra, fg)
+    [_e, _se]
+
+if barstate.islast
+    anT = array.from(nT0, nT1, nT2, nT3, nT4, nT5, nT6, nT7, nT8)
+    awT = array.from(wT0, wT1, wT2, wT3, wT4, wT5, wT6, wT7, wT8)
+    asT = array.from(sT0, sT1, sT2, sT3, sT4, sT5, sT6, sT7, sT8)
+    aqT = array.from(qT0, qT1, qT2, qT3, qT4, qT5, qT6, qT7, qT8)
+    az  = array.from(z0, z1, z2, z3, z4, z5, z6, z7, z8)
+    anA = array.from(nA0, nA1, nA2, nA3, nA4, nA5, nA6, nA7, nA8)
+    asA = array.from(sA0, sA1, sA2, sA3, sA4, sA5, sA6, sA7, sA8)
+    anI = array.from(nI0, nI1, nI2, nI3, nI4, nI5, nI6, nI7, nI8)
+    asI = array.from(sI0, sI1, sI2, sI3, sI4, sI5, sI6, sI7, sI8)
+    aqI = array.from(qI0, qI1, qI2, qI3, qI4, qI5, qI6, qI7, qI8)
+    apT = array.from(pT0, pT1, pT2, pT3, pT4, pT5, pT6, pT7, pT8)
+    adT = array.from(dT0, dT1, dT2, dT3, dT4, dT5, dT6, dT7, dT8)
+    aaM = array.from(aM0, aM1, aM2, aM3, aM4, aM5, aM6, aM7, aM8)
+    afy = array.from(fy0, fy1, fy2, fy3, fy4, fy5, fy6, fy7, fy8)
+    aNm = array.from("S&P 500", "Nasdaq 100", "DAX", "FTSE 100", "CAC 40", "Euro Stoxx 50", "Nikkei 225", "ASX 200", "Hang Seng")
+    f_cell(0, 0, "JAS KC 98 " + BUILD + "  (#98)  -  Kachhua sirf BUY x 9 index  |  kharcha " + str.tostring(kMult, "#.#") + "x", cHd)
+    table.merge_cells(tb, 0, 0, 6, 0)
+    f_cell(0, 1, "TALAASH " + str.tostring(fromYr) + "-" + str.tostring(splitYr - 1), cHd)
+    f_cell(1, 1, "Trade", cHd)
+    f_cell(2, 1, "Jeet", cHd)
+    f_cell(3, 1, "Har trade (R)", cHd)
+    f_cell(4, 1, "Exp - 2SE", cHd)
+    f_cell(5, 1, "Bina kharcha", cHd)
+    f_cell(6, 1, "Shuru saal", cHd)
+    int nK = 0
+    int wK = 0
+    float sK = 0.0
+    float qK = 0.0
+    float zK = 0.0
+    int nAK = 0
+    float sAK = 0.0
+    int ps = 0
+    float pK = 0.0
+    float dK = 0.0
+    for i = 0 to 8
+        n = array.get(anT, i)
+        fy = array.get(afy, i)
+        [e_, se_] = f_row(2 + i, array.get(aNm, i), n, array.get(awT, i), array.get(asT, i), array.get(aqT, i), array.get(az, i), na(fy) ? "-" : str.tostring(fy))
+        nK += n
+        wK += array.get(awT, i)
+        sK += array.get(asT, i)
+        qK += array.get(aqT, i)
+        zK += array.get(az, i)
+        nAK += array.get(anA, i)
+        sAK += array.get(asA, i)
+        pK += array.get(apT, i)
+        dK += array.get(aaM, i) * array.get(adT, i)
+        ps += n > 0 and e_ > 0 ? 1 : 0
+    nBK = nK - nAK
+    sBK = sK - sAK
+    eA = nAK > 0 ? sAK / nAK : 0.0
+    eB = nBK > 0 ? sBK / nBK : 0.0
+    [eK, seK] = f_row(11, "KUL", nK, wK, sK, qK, zK, "")
+    f_cell(0, 12, str.tostring(fromYr) + "-" + str.tostring(midYr - 1) + ": " + str.tostring(nAK) + " tr " + f_num(eA) + "R   |   " + str.tostring(midYr) + "-" + str.tostring(splitYr - 1) + ": " + str.tostring(nBK) + " tr " + f_num(eB) + "R", fg)
+    table.merge_cells(tb, 0, 12, 6, 12)
+    ipK = nK > 0 ? pK / nK : 0.0
+    drK = nK > 0 ? dK / nK : 0.0
+    okD = ipK >= 2 * drK
+    f_cell(0, 13, "Trade ausat " + str.tostring(100 * ipK, "+0.00;-0.00") + "%  vs  2 x drift " + str.tostring(200 * drK, "+0.00;-0.00") + "%  " + (okD ? "(PASS)" : "(FAIL)"), okD ? cUp : cDn)
+    table.merge_cells(tb, 0, 13, 6, 13)
+    okT = eK - 2 * seK > 0 and ps >= 6 and eA > 0 and eB > 0 and okD
+    f_cell(0, 14, (okT ? "TALAASH PASS -> FTMO Python (CHUNAO 2012-18)" : "TALAASH FAIL -> IMTIHAN band, idea band") + "  |  index musbat " + str.tostring(ps) + " / 9", okT ? cUp : cDn)
+    table.merge_cells(tb, 0, 14, 6, 14)
+    if showIm and okT
+        f_cell(0, 15, "IMTIHAN " + str.tostring(splitYr) + " - aaj (EK dafa)", cHd)
+        table.merge_cells(tb, 0, 15, 6, 15)
+        int nI = 0
+        float sI = 0.0
+        float qI = 0.0
+        for i = 0 to 8
+            n = array.get(anI, i)
+            [e2_, se2_] = f_row(16 + i, array.get(aNm, i), n, 0, array.get(asI, i), array.get(aqI, i), 0.0, "")
+            nI += n
+            sI += array.get(asI, i)
+            qI += array.get(aqI, i)
+        [eI, seI] = f_row(25, "KUL", nI, 0, sI, qI, 0.0, "")
+        f_cell(0, 26, eI > 0 ? "IMTIHAN musbat (FTMO sim ka faisla Python mein)" : "IMTIHAN manfi = idea band", eI > 0 ? cUp : cDn)
+        table.merge_cells(tb, 0, 26, 6, 26)
+    else
+        f_cell(0, 15, "IMTIHAN " + str.tostring(splitYr) + "+ CHHUPA (TALAASH PASS ke baad, EK dafa)", fg)
+        table.merge_cells(tb, 0, 15, 6, 15)
