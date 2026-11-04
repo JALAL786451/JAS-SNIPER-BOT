@@ -219,6 +219,8 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `tools/c3_74.py` - Koshish #74: 3Commas EMA 21/50 2H x 11 (TALAASH FAIL -0.041R; --imtihan sirf --pakka ke saath) (2 Nov)
 - `tools/c3st_75.py` - Koshish #75: #74 + 4H Supertrend filter (TALAASH FAIL -0.019R, judge CLEAN) (2 Nov)
 - `tools/ftmo76.py` - Koshish #76: FTMO #68 + Kachhua BTC (Bitstamp daily 2014-17 + Duka H1); CHUNAO 0.5% PASS (2 Nov)
+- `tools/ftmo96.py` - Koshish #96: #68 + Kachhua commodity (XAG, Brent, WTI) FTMO sim - IMTIHAN FAIL (4 Nov).
+- `docs/research/factors-buniyaad.md` - 9 evergreen factor (trend, reversal, calendar, carry...) vs hamare test; t5/i6/k2 = pehle 3 (4 Nov).
 - `tools/ftmo77.py` - Koshish #77: FTMO #68 + P2 risk 1.5x + pehra-shart G; CHUNAO FAIL, G akela maloomat behtar (2 Nov)
 - `tools/ftmo79.py` - #79 FTMO sim + EA ka asli 4% din pehra (A0/A/B)
 - `docs/research/daur7-cent-martingale.md` - cent $1000 + martingale research (A/B/C KEEP, D/E/F REJECT) + HOD faisla; scripts `tools/research_cent/`

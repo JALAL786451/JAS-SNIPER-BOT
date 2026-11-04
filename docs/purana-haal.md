@@ -1680,3 +1680,19 @@ Start par basket LOCK (NET 0, kharcha 0.33 x 30 USC) -> basket equity jam. Upar 
 Muqabla (1) kuch-na-karo NET +0.33 (PASS shart #88 wali), (2) lock + kuch nahi. 1 setting = 1 koshish. PASS -> IMTIHAN EK dafa.
 **Koshish #95 = FAIL (TALAASH; IMTIHAN nahi):** vs kuch-na-karo 6 mahine median -5,575 USC, behtar 28%, breakeven 0% (lock ne +$288 ka mauqa khatam kiya).
 0.02 chaal ki APNI kamai (lock ke upar): median +198 USC / 6 mahine (~$2), 65% musbat, min -981, max +1,566 -> 9,512 wapas = ~24 saal. Recovery 0/9.
+
+**Koshish #96 qaida (4 Nov, 35vi chat; user "test karo"; test se PEHLE, badalna mana) - FTMO: #68 + KACHHUA COMMODITY (#6) (`tools/ftmo96.py`):**
+Kachhua = `ftmo_test.kachhua_trades` jyon ka tyon (#76 wala; daily 17:00 NY, 10 din toot + EMA50/200 + ATR >= 0.25%, SL 2xATR14 roz sarakta, BUY/SELL), alag slot har market.
+Market = #6 ki 9 mein se jin ka H1 data cloud mein hai: XAGUSD (ftmo zip), BRENTCMDUSD, LIGHTCMDUSD (Dukascopy JAS_ZIP, 2013-01 se; EMA200 ke baad ~2013-10 se trade).
+XPT, XPD, XNG, XCU, WHEAT, CORN = data nahi (cloud se Dukascopy rokta) -> is test mein NAHI (baad mein data aaye to nayi koshish, ye nahi badlegi).
+Kharcha: XAG 0.75 x ASLI, tel 0.05% har taraf; swap faisla 5%/saal notional (baqi #68 wala 3%); 0% / 10% sirf maloomat. #68 bilkul wahi (trend 0.75 + IBS 1.0 + khirki 0.15).
+**CHUNAO 2012-2018** (har mahine challenge): Kachhua risk har market 0.10 / 0.25 / 0.50 vs #68 (isi run): shart P1 fail < 20%, pass > fail, (pass - fail) > #68 ka;
+behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL.
+**IMTIHAN 2019-01..aaj EK dafa** (chuni risk, swap 5%, `--imtihan --pakka`): PASS = fail 0, pass >= #68 (isi run), median < #68 (isi run).
+Imaandari: Kachhua commodity 2019+ #6 (TV OANDA) mein dekha hua = aadha dekha. Claude umeed ~25%. Ginti +1.
+Durusti (natija dekhne se pehle ka nahi - run 1 ke baad): run 1 mein swap per-MARKET tha, XAG par 5% lagne se #68 ka t5 XAG bhi badla (baseline 63/3 vs #68 64/2) = qaide "#68 bilkul wahi" ki khilaf-warzi (bug).
+Theek: XAG swap 3% (#68 wala, dono slot), 5% sirf tel. Run 1 (bug): 0.25% 66/0 median 31.2 = sirf maloomat; faisla run 2 se.
+**Koshish #96 CHUNAO 2012-2018 (run 2, swap 5%) = PASS 0.25%:** #68 isi run 64 pass / 2 fail / 18 adhoora median 38.5 -> 0.10 63/3, **0.25 66/0 median 30.7**, 0.50 66/1 (swap 0 / 10% par bhi 0.25).
+Kachhua 2012-18 (kharche se pehle): XAG 57 tr +0.008R, Brent 40 tr +0.356R, WTI 44 tr +0.175R.
+**Koshish #96 IMTIHAN 2019-01..aaj (EK dafa, 0.25%, swap 5%) = FAIL -> idea band:** #68 83/0/11 median 11.4 -> +Kachhua **81 pass / 2 fail (P1) / 11, median 11.5**.
+Kachhua 2019+: XAG 59 tr +0.308R, Brent 67 +0.094R, WTI 67 +0.020R (~2.1 tr/mahina kul). Sabaq: commodity Kachhua trade kam barhata (~2/mahina) aur 2019+ mein 2 fail laya; median nahi ghata.
