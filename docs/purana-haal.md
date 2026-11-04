@@ -1733,3 +1733,13 @@ chhota R, spread) se tha - theek karne par nuqsan ~0 tak aaya (R ka paimana alag
 nahi (paper 1993-2013; chhapne ke baad kamzor). Wajah code: #9 = I+A+K, #97 = F. Post-mortem ka faida: galat FAIL saaf hote, magar PASS ki zamanat nahi.
 
 (TRADING sec 0 se hataya 4 Nov) 2 Nov: 474832446 wala MT5 ghalti se 472716649 par login tha (password save nahi) -> theek, 472716649 us ki list se delete. USTECm D1 data us MT5 mein khali tha.
+
+**Koshish #99 / #100 qaida (4 Nov, 37vi chat; user: "same EA, same instruments, bas ulta - SL nahi, TP ho; 6 EA FTMO par try karo, ijazat"; test se PEHLE, badalna mana) - `tools/ulta99.py`:**
+Asal = #68 mansooba (t5 trend 4H 0.75% x XAU XAG US500 USTEC, i6 IBS 1% x US500 USTEC, k2 khirki 0.15% x 7 index), entry bilkul wahi, lot wahi
+(R = purani SL doori: t5 6xATR10 4H, i6 3xATR14, k2 3xATR20 - sirf lot ke liye, server par SL NAHI). Kharcha + swap #68 wala. Ek market ek position (slot).
+**#99 = A (3 EA):** SL HATAYA, TP = k x R, purana qaida exit wahi (t5 Supertrend neeche palte, i6 IBS > 0.8 ya 5 din, k2 khirki khatam) - jo pehle.
+**#100 = B (3 EA):** sirf TP = k x R; na SL, na koi aur exit (TP tak khuli; data khatam = aakhri close).
+TP gap ke upar khule = us bar ka open. k = 0.25 / 0.5 / 1.0 / 2.0 (ek k teeno EA par). Ginti +8.
+**CHUNAO 2012-2018** (har mahine challenge, FTMO 5% din / 10% kul, khuli trade ka worst H1 low gina): har variant ka behtareen k = shart P1 fail < 20%,
+pass > fail, (pass - fail) >= #68 isi run; phir zyada (pass - fail), kam median. Koi nahi = FAIL (IMTIHAN nahi).
+**IMTIHAN 2019-01..aaj EK dafa** (chuna k): PASS = fail 0, pass >= #68 isi run, median < #68 isi run. Claude umeed: A ~10%, B ~3% (SL nahi = 10% hadd khatra).
