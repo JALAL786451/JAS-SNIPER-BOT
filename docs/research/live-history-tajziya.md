@@ -25,3 +25,13 @@ Mahina: Aug -8,824 | Sep -4,052 | Oct +4,883 | Nov -12,802.
 - Q7 kehta dhaal 0.01 -> asal mein dhaal 0.25-4 lot (25-400 guna).
 - Q5/Q6 kehte mood upar ho to SELL nahi -> dono zakhm upar jaate gold mein SELL. (1D/4H mood data se tasdeeq = agla kaam.)
 => EA ka sab se bara faida: dhaal ko CHHOTA rakhna aur upar ke mood mein bari SELL rokna.
+
+## Zakhm par 1D/4H mood (40vi chat, 5 Nov) - `tools/tokri_mood.py`
+Mood = Naqsha Rukh (close > EMA50 > EMA200 + Supertrend 10,3). 28 Oct ke baad candle deals ki qeemat se (andaza).
+| Zakhm | 1D | 4H | Asal | Qaida (Q2/Q5-Q7) kehta |
+|---|---|---|---|---|
+| 18 Aug 20:44-23:51 SELL 0.25 x5 @4331 | MILA (qeemat dono EMA upar, ST upar; sirf EMA50<EMA200) | MILA -> 19 Aug UPAR | gold 4669, -37,630 | 1D neeche NAHI = dhaal NAHI, intezar. Zyada se zyada 0.01 = ~-337 |
+| 25 Aug 20:03 SELL 2 x4 @4665 | MILA | UPAR | -2,823 (8 min) | NAHI |
+| 2-3 Nov SELL 1-10 lot (1.8 @3944 = -12,763) | NEECHE | NEECHE | -26,900 | mood dhaal ki IJAZAT deta, magar gold 30 Oct 3879 se +$66 wapas aa chuka = Q2 teesri shart NAHI; aur size 0.01 |
+| 4 Nov 06:47-16:46 SELL 2-4 lot x10 | NEECHE | 04:00 Supertrend UPAR mura = MILA | -13,350 | Q6 mila-jula = SELL band, intezar |
+=> Dono zakhm (~-80k) qaidon par hote to bari SELL hoti hi nahi; 0.01 dhaal ka nuqsan sau-do sau USC.

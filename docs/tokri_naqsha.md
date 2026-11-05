@@ -29,7 +29,7 @@ Q7. DHAAL SIZE (5 Nov, jawab "d"): size trend + equity ki BARDASHT se. Misaal: e
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
-- [ ] "Bohot neeche se wapas aaya" = kitne $ / kitna waqt?
+- [ ] "Bohot neeche se wapas aaya" = kitne $ / kitna waqt? (2 Nov: 3879 se +$66 wapas = misaal, user se a/b/c)
 - [ ] Equity ki aakhri hadd (jahan nayi lot bilkul band)
 - [ ] Fishing lot (nayi 0.01) kab aur kitne $ par
 - [ ] Jori close: kab (m6 A/B wala hi?)

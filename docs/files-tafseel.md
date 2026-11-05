@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `tools/tokri_mood.py` - live zakhm (18-25 Aug, 2-4 Nov) par gold 1D/4H mood (Naqsha Rukh), 5 Nov
 
 **Demo par chal rahe EA** (demo 472716649):
 | File | Kya |
