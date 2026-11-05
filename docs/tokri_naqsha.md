@@ -51,6 +51,12 @@ TESTER tk1 (5 Nov, user SS, XAUUSDc H1 real ticks 2019.01.01-2026.11.01, 378 USD
     Python sim (TP fix ke baad) usi daur: +13.9%, 1110 trade (ginti barabar!), gross +20,494 / -13,134 USC => nuqsan wala hissa ~2 guna alag.
     Wajah abhi NAHI maloom (swap? hadd? data?) -> user se tester report (XML/Excel) maangi. Jab tak farq samajh na aaye: demo/live NAHI.
 
+TESTER REPORT tajziya (user xlsx, 5 Nov): SWAP -94.61 USD (= -9,461 USC) > kul nuqsan -88.22 => bina swap +6.39 (+1.7%, 7 saal).
+    Live 253687618 history mein swap 0 (6246 tk) = asal account par swap nahi lagta; tester symbol ka swap kaat-ta hai.
+    Aakhri hadd 4 dafa (Jan 2022, Nov 2022, Aug 2024, May 2026; har dafa ~-37 USD = -3,700 USC), Python mein 2 (Jun 2025, Jun 2026) = data/mood ka farq.
+    Lots: FISH B 680, FISH S 54, DHAAL S 222, DHAAL B 152. NATEEJA: bina swap bhi ~0 = tokri EA ka koi asal faida NAHI (f1 + recovery #88-95 jaisa).
+    Sabaq jo kaam ka: dhaal 0.01 rakho, upar ke mood mein bari SELL nahi (live -36% ki wajah) - ye haath ki trading ke liye.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
