@@ -5,6 +5,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
 - `tools/tokri_mood.py` - live zakhm (18-25 Aug, 2-4 Nov) par gold 1D/4H mood (Naqsha Rukh), 5 Nov
 - `tools/tokri_q8q9.py` - Tokri Q8 wapasi hadd (1 ATR) + Q9 4H mur jaye to dhaal band, gold 2005-2026, 5 Nov
+- `tools/tokri_sim.py` - Tokri poora sim (fishing + dhaal Q1-Q13) gold H1 2010-26, bardasht/hadd/fishing chunav, 5 Nov
 
 **Demo par chal rahe EA** (demo 472716649):
 | File | Kya |

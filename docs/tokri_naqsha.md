@@ -34,13 +34,24 @@ Q9. 4H MUR KAR UPAR (dhaal SELL khuli ho): 82 mauqe - SELL rakhna (agle neeche m
     => QAIDA: 4H Supertrend upar mude to dhaal SELL BAND (chhota 0.01 nuqsan le lo), nayi SELL nahi. Pakar (BUY se taala) paise mein
     barabar, magar khuli jori ka jhanjhat - is liye band. (Ulta BUY dhaal ke liye bhi yahi.)
 
+Q10-Q13 (5 Nov, user "haan, Claude khud hisaab kare"; `tools/tokri_sim.py`, gold H1, cent 37,800 USC, 0.01 lot, kharcha $0.30):
+    talaash 2010-18 (486 setting) -> chuna: nayi fishing 0.01 jab qeemat pichhli lot se 1 din-ATR door (aaj ~$60), har lot TP 0.5 ATR (~$30),
+    fishing max 10, BARDASHT = khula nuqsan 5% equity (~1,890 USC) par nayi fishing band, AAKHRI HADD = khula nuqsan 10% (~3,780 USC) = sab band.
+    JORI close alag qaida: koi farq nahi (Q9 dhaal ko pehle hi band kar deta) -> alag qaida NAHI.
+    | daur | tokri | dhaal ke baghair | sirf 0.01 BUY rakhna |
+    | 2010-18 talaash | +14.5%, gehra -3.7% | +4.1% | +0.5% |
+    | 2019-26 imtihan | +10.0%, gehra -8.9%, 2 dafa aakhri hadd | +3.2% | +7.4% |
+    | 18 Aug-1 Nov 2026 | -5.2% (asal live -36%) | -3.3% | - |
+    Aakhri hadd na ho (S=0): 2019-26 +125% magar gehra -20.6% - sirf gold 3 guna hua is liye; KHATRA, nahi chuna.
+    IMAANDARI: H1 sim (MT5 tester nahi); faida chhota; dhaal ne madad ki. Agla = EA likho (user ki saaf ijazat: fishing + dhaal) -> tester -> demo.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
 - [x] "Bohot neeche se wapas aaya" = 1 x din ka ATR, 2 din ki low se (Q8)
-- [ ] Equity ki aakhri hadd (jahan nayi lot bilkul band)
-- [ ] Fishing lot (nayi 0.01) kab aur kitne $ par
-- [ ] Jori close: kab (m6 A/B wala hi?)
+- [x] Bardasht 5% / aakhri hadd 10% (Q10-13)
+- [x] Fishing: 1 ATR door, TP 0.5 ATR, max 10 (Q10-13)
+- [x] Jori: alag qaida nahi (Q9)
 
 ## History (5 Nov) - `docs/research/live-history-tajziya.md`
 BUY +135k USC, SELL -156k (0.01 SELL sirf -3k; bari SELL -152k). Dhaal asal mein 0.25-4 lot thi, qaida 0.01 kehta.
