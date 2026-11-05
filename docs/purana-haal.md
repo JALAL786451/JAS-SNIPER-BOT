@@ -1759,3 +1759,6 @@ XPT/XPD/XNG/XCU data nahi = bahar. **Swap 0** (FTMO swap-free, user ki email). K
 **TALAASH** (entry < 2019): PASS = kul >= 100 tr, kul Exp(R) - 2SE > 0, >= 8/12 market Exp > 0, (market x saal) musbat > 50%. BUY/SELL alag sirf maloomat.
 **IMTIHAN** 2019-01..aaj EK dafa SAKHT (XAU/XAG/US500/USTEC #29, oil #69, BTC #76 swap ke saath pehle dekhe): kul >= 30 tr, Exp - 2SE > 0.
 TALAASH FAIL = IMTIHAN nahi, Kachhua FTMO band (swap 0 bhi). ASLI PASS = agla qadam FTMO challenge sim (#68 + Kachhua), alag qaida. Ginti +1.
+**Koshish #99 TALAASH (5 Nov, entry < 2019, swap 0, IMTIHAN se PEHLE likha) = PASS:** KUL 1082 tr, jeet 40%, **Exp +0.090R (SE 0.033), Exp-2SE +0.024**;
+BUY 636 +0.101R · SELL 446 +0.075R; market Exp > 0 = 11/12 (sirf USDCHF -0.044); (market x saal) musbat 56% (130). XAU +0.261 (122) · XAG +0.044 · US500 +0.057 ·
+USTEC +0.098 · USOIL +0.169 (44) · UKOIL +0.351 (40) · BTC +0.608 (6) · EUR +0.083 · GBP +0.060 · JPY +0.084 · CHF -0.044 · AUD +0.020. (#29 4 market swap 3% + 0.03% kharcha = FAIL tha.)
