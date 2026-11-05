@@ -166,3 +166,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - MT5 history kaise? -> computer MT5, title 253687618, History tab right-click: Positions, All History, Report > Open XML (5 Nov).
 - Tokri EA (fishing + dhaal) chalega? -> JasTokriEA tk1 tester 2019-26: -23% (swap -94.61, live swap-free par nahi lagta); bina swap +1.7% / 7 saal = faida nahi. Kaam ka sabaq: dhaal 0.01, upar mood mein bari SELL nahi (5 Nov).
 - Tester mein USC nahi? -> deposit USD mein 100 se taqseem (37,800 USC = 378 USD), USC wale inputs bhi /100 (dhaal step 200 -> 2) (5 Nov).
+- Tokri EA 1D filter ke saath? -> sim FILT=1: DD aadha (8.8->5.3), nafa wahi; $1000 cent par 2019-26 +5-6% = saal ~1% -> EA BAND, sabaq JasMauqa m7.3 mein (5 Nov).
+- JasMauqa "A) BIG SELL REDUCE" baar baar? -> bari SELL ka chhota hissa + BUY Close By (NET wahi, faida pakka); NO ek dafa = wo jori dobara nahi (m7.3), InpA=false = A band (5 Nov).
+- $1000 Standard USD par tokri? -> NAHI, 0.01 lot bhari (sim DD 91%); cent account ($1000 = 100k USC) theek (5 Nov).

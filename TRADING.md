@@ -62,12 +62,12 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**40vi chat (5 Nov)** - TOKRI: zakhm par mood (Aug MILA/UPAR = SELL nahi; Nov wapasi + 4H mura), Q8 wapasi 1 ATR, Q9 4H mude = dhaal band,
-Q10-13 (fishing 1 ATR / TP 0.5 / max 10, bardasht 5%, hadd 10%) -> `JasTokriEA.mq5` tk1 (user ne fishing + dhaal ijazat di; MT5 naam Jas_GOLD_BASKET_EA).
-TESTER (XAUUSDc H1 2019-26, 378 USD, step 2): -23% FAIL; report: swap -94.61 = poora nuqsan (live swap 0), bina swap +1.7% / 7 saal, hadd 4 dafa.
-**AGLA KAAM:** user ko SEEDHA ye sawal (wahi se continue, user ne kaha): a) EA roko, 2 sabaq (dhaal 0.01, upar mood mein bari SELL nahi)
-JasMauqa popup mein  b) fishing BUY sirf 1D bhi upar ho, tester dobara  c) dono. (mera mashwara a). Phir (b) m7.2 F7, (c) FTMO email.
-**AGENT / test bina poochhe NAHI** - sawal ka jawab do (HIDAYAT 5 Nov). Lehja PYAR se.
+**41vi chat (5 Nov)** - user ka tareeqa: news jhatke par 0.10 ki jagah 10 x 0.01 dhaal (wapsi ko 10 lots se guzarna pade), SL nahi, profit chalne do.
+Tokri sim `FILT=1` (BUY sirf 4H ST + 1D UP): 2019-26 +9.0% DD 5.3 (bina +9.9% DD 8.8); grid $1000 cent (EQ0=100000) 2010-18 chuna, 2019-26 +5-6% = saal ~1%
+-> **Tokri EA BAND** (user "han"). $1000 Standard USD par 0.01 = bhari (DD 91%). **JasMauqa m7.3** LIVE laga, F7 OK: RUKH 1D+4H line + popup,
+NEWS alarm USD HIGH 30/5 min (dhaal = NET/0.01), NO wali jori dobara nahi, InpA. A) BIG SELL REDUCE YES = DONE.
+**AGLA KAAM:** user se m7.3 ka haal pucho (NFP 6 Nov alarm aaya? RUKH popup?); popup panel ko dhakta hai -> chaho to popup daayen (x0) karo.
+Phir FTMO email / demo SS (sec 4). **AGENT / lamba test bina poochhe NAHI.** Lehja PYAR se.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

@@ -2,12 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-04  (37 kaam)
-   - Swap SS: C1d commodity curve-trend G7 FAIL (bank); sirf C2 #85 bacha
-   - Koshish #99/#100 qaida: #68 ulta (SL nahi, TP k x R) A = TP+qaida exit, B = sirf TP - test
+2026-11-04  (30 kaam)
+   - Koshish #85 C2: TV Pine jas_c2_85 c1 (9 index mandi SELL, TALAASH 1990-2018, kharcha 2x)
+   - sawal-jawab: 100 instrument family / 20 saal rishta - research agent NAHI
    - MT5 naqsha: 474832446 - i6 US500 pehli band trade +565.66, 4 khuli +522.96
 
-2026-11-05  (19 kaam)
+2026-11-05  (25 kaam)
    - JAS Naqsha n5.8: SELL default band (#73 FAIL) - 1D neeche par RUKO, ulta AGLI SELL dabba n
-   - Tokri naqsha: dhaal shart pakki (1D + 4H dono neeche) - user haan
-   - Tokri tk1 report: swap -94.61 = poora nuqsan; bina swap +1.7% (7 saal) = faida nahi; hadd 
+   - 39vi chat khatam: FTMO email, n5.9, m7.2, tokri qaide Q1-Q7, live history tajziya - TRADIN
+   - TRADING sec 0: live par JasMauqa m7.3 laga (SS 5 Nov), A DONE
