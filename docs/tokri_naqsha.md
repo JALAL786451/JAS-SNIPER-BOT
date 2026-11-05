@@ -66,6 +66,11 @@ Q14 (5 Nov raat, 43vi chat, user): "koi strategy nahi - basket bana kar profit n
     "4H trend test" ka matlab user bhool gaye; user (43vi): test SIRF 1m / 5m par, 4H ka koi zikr NAHI (Claude ka 4H filter mashwara HATA).
     Baqi sawal: nayi lot KAB (doori?), KIS TARAF (BUY/SELL kaise chune?), pehli lot kaise?
 
+Q15 (43vi, user): tokri DONO taraf lot kholti hai, dekhti hai kaunsi faide mein bani -> wo BAND (fees + 0.5 ke baad);
+    nuqsan wali KHULI rehti hai jab tak faide mein na aaye -> tokri chalti rehti. "Jitni volatility utna faida."
+    Weekend / gold band (raat ~1 ghanta, Hafta-Itwaar) par wahi EA BTC ya ETH par. Test data: gold H1 2005-2026 (data/ftmo) + M1 14 saal jaanch.
+    Baqi: har kitni doori ($) par nayi BUY + SELL jori? max khuli lot? bari hadd? BTC/ETH fees?
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
