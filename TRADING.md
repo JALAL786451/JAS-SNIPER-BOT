@@ -62,14 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**43vi chat (5-6 Nov)** - TV: **JAS Naqsha+5EA j1** (naqsha + 5ea ek script) chal gayi ✅ (atakna TV app ka tha, app band-khol). j2 GitHub par (5EA band = hisaab band), lagani nahi.
-FTMO demo: t5 US500 band ~-662 (SL se pehle). Live 253687618: user ne fishing live dikhayi (aaj 3 lot +5.30 USC; BUY 0.10 @4127 intezar).
-**TOKRI EA = user ka asli tareeqa** (`docs/tokri_naqsha.md` Q14-Q19, data `docs/research/live-history-tajziya.md` 43vi): koi strategy nahi;
-lot SIRF 0.01/0.02 (martingale NAHI); dono taraf lot (~$1.5 doori, 71% nuqsan taraf); har lot faide mein (spread ke baad +0.3..+4) BAND; nuqsan wali
-intezar; bohot door gayi to hedge (user ne naam liya), beech mein fishing; weekend BTC/ETH (baad mein). 4H filter HATA. User ke data mein 0.01/0.02 = +30k USC, >0.10 = -66k.
-**AGLA KAAM (user "han" 6 Nov):** Python sim gold H1 2005-2026 (`data/ftmo/XAU_XAG_H1_dukascopy.zip`), $1000 USD, spread $0.24/0.01, lot 0.01/0.02,
-doori $1/$1.5/$2/$3, TP $0.3/$1/$2/$4; hadd: khula nuqsan $300 par sab band (user ne number nahi diya - batao); phir M1 14 saal (histdata 2009-18, qdm 2015/2021-24) jaanch.
-Nateeja seedha batao (41vi/tk1 ~0 tha). Hedge trigger number user ne nahi diya -> pehle bina hedge + $20/$50 hedge dekho. Agent NAHI.
+**44vi chat (5 Nov, alag session)** - TV tests: SMC (LGB/FVG/DZ) `jas_smc_test` #19 FAIL; Tide+W/M rukh `jas_tide_htf_test` h1 2000-18 bal-bal FAIL;
+tmr0 Turtle u1 (sirf chat mein, nateeja nahi). **FTMO swap-free (user ki email: Muslim mulk) -> swap 0:** **#99** Kachhua 12 market trade-R ASLI PASS
+(patla, IMTIHAN Exp-2SE +0.010, forex 2019+ minus) · **#100** akele: Trend 81/0 med 17.4 > Tide 0.5% 67/0 med 22.1 · **#101 #68 + Kachhua 12 @0.25% = PASS**
+(2019+ 85/0 med 10.2 vs 83/0 10.6; 2012-18 med 27.6 -> 15.5; 0.50% par 8 fail). Tools `ftmo99/100/101.py`, tafseel `docs/purana-haal.md` grep "Koshish #10".
+Pehle (43vi ke baad): tokri tk2 sim gold H1 2005-26 $1000 = 240/240 variant account khatam (commit 1fe546b).
+**AGLA (user faisla):** (1) FTMO email: swap-free fee / sab 12 instrument? (2) Kachhua e1 (`JasTideRadarEA.mq5`, 12 market, 0.25%) FTMO demo 474832446 par
+#68 ke saath - pehra 96k farsh; user haan kahe tab. Naya alag Exness demo ka mashwara bhi diya (user ne "d" kaha, account abhi nahi bana).
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

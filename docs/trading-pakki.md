@@ -156,6 +156,8 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - FAIL ki wajah pehle (4 Nov, #97 pilot): ghalat market / chhota R / ghalat kharcha nuqsan bara dikhate (#9 -0.207R -> #97 -0.014R), magar kharche se pehle faida ~0 ho to factor khud nahi. Naya test sirf darwaza G1-G10 + asli swap ke saath.
 
 - **Live history (5 Nov):** 18-8..5-11 6246 tk -36%: BUY +135k, 0.01 SELL -3k, BARI SELL (0.25-4 lot) -152k upar jaate gold mein. Dhaal chhoti (0.01) = user ka apna qaida Q7.
+- Swap 0 (FTMO swap-free) par Kachhua 12 market ASLI PASS (#99 patla); akele Trend behtar (#100), magar #68 ke saath 0.25% jor fail 0 aur susat daur mein ~1 saal tez (#101). Kharcha/swap faisla badal deta hai - asli shart se naapo.
+
 ## 5. Mere tools
 
 Har file ki ek line `CLAUDE.md` mein, lambi kahani `docs/files-tafseel.md` mein, purani tools
