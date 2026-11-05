@@ -10,6 +10,7 @@ s4=h4s.shift(1).reindex(k4,method='ffill').values; r4=h4r.shift(1).reindex(k4,me
 C=h.c.values; HI=h.h.values; LO=h.l.values; low2=h.l.rolling(48).min().values
 mon=h.index.to_period('M').astype(str).values
 COST=0.30 if 'COST' not in dir() else COST
+import os; FILT=int(os.environ.get('FILT','0'))  # 6 Nov: 1 = fishing BUY sirf jab 4H ST + 1D dono upar (user)
 def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
     bal=eq0; L=[]  # [dir, open, kind] kind 0 fish 1 dhaal
     peak=eq0; mdd=0; stops=0; maxn=0; mpl={}
@@ -43,7 +44,7 @@ def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
         if S and flo<=-S*eq0/100:
             bal=eq; L=[]; stops+=1; flo=0
         # fishing side
-        st=s4[i]; side= 1 if st==1 else (-1 if (st==-1 and D[i]==-1) else 0)
+        st=s4[i]; side= 1 if (st==1 and (not FILT or D[i]==1)) else (-1 if (st==-1 and D[i]==-1) else 0)
         nf=sum(1 for p in L if p[2]==0)
         if side and nf<N and flo>-B*eq0/100:
             mine=[p[1] for p in L if p[2]==0 and p[0]==side]
