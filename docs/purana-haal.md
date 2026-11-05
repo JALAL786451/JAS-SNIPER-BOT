@@ -1772,3 +1772,5 @@ Sim = `ftmo53_asli.run_cost` jyon ka tyon (2-step: P1 +10%, P2 +5%, din 5% / kul
 **A TREND** = JasTrend akela: `st4h_trades(k=6)` 0.75% XAU/XAG/US500/USTEC (FTMO wala setting). **B TIDE** = Kachhua 12 market (#99, `kachhua_trades`), gold+silver ek slot (EA jaisa), USD hadd nahi (sim mein nahi).
 **CHUNAO 2012-01..2018-12 har mahine challenge:** B risk har market 0.25 / 0.50 / 0.75 / 1.0; umeedwar = P1 fail < 20% aur pass > fail; behtareen = zyada (pass - fail), phir kam median, phir kam risk.
 **IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk) A vs B isi run: **TIDE JEETA** = B (pass - fail) > A, ya barabar aur B median < A. Warna TREND jeeta. Koi umeedwar nahi = Tide FTMO FAIL. Ginti +1.
+**Koshish #100 CHUNAO 2012-2018 (5 Nov, swap 0, IMTIHAN se PEHLE likha):** 84 challenge: **A TREND 0.75% 40 / 0 / 44, median 41.7** · B TIDE 0.25% 27 / 0 / 57, 43.8 ·
+**B TIDE 0.50% 35 / 0 / 49, median 18.2** · 0.75% 39 / 35 (6/29) / 10, 13.4 · 1.0% 40 / 35 (13/22) / 9, 8.2 -> **chuni risk 0.50%** (0.75%+ par P2 fail bohat).
