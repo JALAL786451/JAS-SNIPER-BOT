@@ -88,6 +88,12 @@ Q19 (43vi, 6 Nov 00:13 SS - user ne live kar ke dikhaya): "jo jo profit mein aat
     => band ka number pakka nahi: +0.30 se +3.40 (spread ke baad faida > 0). Test mein TP $0.3 / $1 / $2 / $4 sab dekho.
     Bari BUY 0.10 @4127.09 (-217) + 0.01 @4108.182, @4105.457 + SELL 0.01 @4109.047 intezar. Equity 37,865.32.
 
+NATEEJA tk2 (44vi chat, 6 Nov, `tools/tokri_asli.py` + `.c`): gold H1 2005-2026, $1000 USD, spread $0.24/0.01, Q14-Q19 qaide,
+    240 variant (mom/jori/ulta x doori $1/1.5/2/3 x TP $0.3/1/2/4 x lot 0.01/0.02/Q16-mix x hedge 0/$20/$50), hadd -$300 khula = sab band.
+    => 240/240 account KHATAM (2005-2008 ke andar). Fishing kamati hai ($400-8000 tak) magar intezar wali lots gold ki
+    $30-100 ek-taraf chaal mein jama -> -$300 hadd har kuch mahine; stop ka nuqsan > fishing ka faida. Bina hadd bhi -$1000 par khatam.
+    M1 jaanch (histdata 2009-18, 8 variant): wahi - sab 2009-2010 mein khatam. Asal account ka +30k USC (0.01/0.02) = sirf ~$300.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
