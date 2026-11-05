@@ -1783,3 +1783,5 @@ Dono mein fail 0. Tide dheema aur kam pass. Sabaq: akele mein JasTrend behtar; T
 **CHUNAO 2012-2018** (84, har mahine): Tide risk har market 0.10 / 0.25 / 0.50 vs #68 (isi run): shart P1 fail < 20%, pass > fail, (pass - fail) >= #68 ka;
 behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL. **IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk): PASS = fail 0, pass >= #68 (isi run),
 median < #68 (isi run). #69 / #76 wala tareeqa. Ginti +1.
+**Koshish #101 CHUNAO 2012-2018 (5 Nov, swap 0, IMTIHAN se PEHLE likha):** 84 challenge: **#68 68 / 0 / 16, median 27.6** · +Tide 0.10% 68 / 0 / 16, 20.9 ·
+**+Tide 0.25% 69 / 0 / 15, median 15.5** · 0.50% 66 / 8 (2/6) / 10, 12.3 -> **chuni Tide risk 0.25%**.
