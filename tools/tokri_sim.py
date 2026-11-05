@@ -9,7 +9,7 @@ k4=h.index.floor('4h')
 s4=h4s.shift(1).reindex(k4,method='ffill').values; r4=h4r.shift(1).reindex(k4,method='ffill').values
 C=h.c.values; HI=h.h.values; LO=h.l.values; low2=h.l.rolling(48).min().values
 mon=h.index.to_period('M').astype(str).values
-COST=0.30
+COST=0.30 if 'COST' not in dir() else COST
 def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
     bal=eq0; L=[]  # [dir, open, kind] kind 0 fish 1 dhaal
     peak=eq0; mdd=0; stops=0; maxn=0; mpl={}
@@ -20,8 +20,8 @@ def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
         keep=[]
         for p in L:
             if p[2]==0:
-                tp=p[1]+p[0]*T*a
-                if (p[0]==1 and HI[i]>=tp) or (p[0]==-1 and LO[i]<=tp): bal+=T*a*100*0.01*100/100-COST; continue  # 0.01 lot: $1 = 1 USC
+                tp=p[1]+p[0]*p[3]
+                if (p[0]==1 and HI[i]>=tp) or (p[0]==-1 and LO[i]<=tp): bal+=p[3]-COST; continue  # tk1 fix: TP open waqt ki ATR se (pehle chalti ATR = ghalat)
             keep.append(p)
         L=keep
         fl=lambda p:(c-p[1])*p[0]-COST
@@ -47,7 +47,7 @@ def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
         nf=sum(1 for p in L if p[2]==0)
         if side and nf<N and flo>-B*eq0/100:
             mine=[p[1] for p in L if p[2]==0 and p[0]==side]
-            if not mine or min(abs(c-o) for o in mine)>=G*a: L.append([side,c,0])
+            if not mine or min(abs(c-o) for o in mine)>=G*a: L.append([side,c,0,T*a])
         # dhaal (Q2,Q6,Q7,Q8)
         for bs in (1,-1):
             fish=[p for p in L if p[2]==0 and p[0]==bs]
@@ -55,7 +55,7 @@ def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
             lb=sum(fl(p) for p in fish); nd=sum(1 for p in L if p[2]==1 and p[0]==-bs)
             against = (D[i]==-bs and r4[i]==-bs)
             bounce = (c-low2[i]) if bs==1 else (max(HI[max(0,i-48):i+1])-c)
-            if DH and nd<DMAX and against and lb<=-200*(nd+1) and bounce<a: L.append([-bs,c,1])
+            if DH and nd<DMAX and against and lb<=-200*(nd+1) and bounce<a: L.append([-bs,c,1,0])
         maxn=max(maxn,len(L))
         eq=bal+sum(fl(p) for p in L); peak=max(peak,eq); mdd=max(mdd,(peak-eq)/peak)
         mpl[mon[i]]=eq

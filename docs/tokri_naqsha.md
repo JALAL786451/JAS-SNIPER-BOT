@@ -46,6 +46,11 @@ Q10-Q13 (5 Nov, user "haan, Claude khud hisaab kare"; `tools/tokri_sim.py`, gold
     IMAANDARI: H1 sim (MT5 tester nahi); faida chhota; dhaal ne madad ki. Dhaal hadd 10: 2019-26 +14.0% gehra -8.7%.
     EA LIKHA: `JasTokriEA.mq5` tk1 (user ne fishing + dhaal ki saaf ijazat di 5 Nov). Agla = F7 + tester XAUUSDc H1 2019-2026 -> demo.
 
+TESTER tk1 (5 Nov, user SS, XAUUSDc H1 real ticks 2019.01.01-2026.11.01, 378 USD = 37,800 USC, DhaalStep 2): **FAIL**
+    net -88.22 (-23%), equity DD 26.9%, PF 0.68, 1108 trade (long 832 jeet 77%, short 276 jeet 45%), gross +183.83 / -272.05.
+    Python sim (TP fix ke baad) usi daur: +13.9%, 1110 trade (ginti barabar!), gross +20,494 / -13,134 USC => nuqsan wala hissa ~2 guna alag.
+    Wajah abhi NAHI maloom (swap? hadd? data?) -> user se tester report (XML/Excel) maangi. Jab tak farq samajh na aaye: demo/live NAHI.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
