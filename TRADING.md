@@ -66,7 +66,7 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 Ab MANUAL (mobile) 15 tk, NET +0.01 (taala - $1 = 1 USC, breakeven 4141). Ajeeb SELL 0.01 @4065.005 = m6 nahi (lot kholta hi nahi) -> wahi
 **m6 ka pehla asli kaam:** 5 Nov 02:56:31 B) PAIR CLOSE DONE (10009), 17->15 tk. Close By = equity same, balance barhta (user samjha ✅).
 InpMinJori 5 -> 0.01 jori ko $5 farq; 2 karna = user ki marzi (popup hadd, risk nahi). Purana popup = NO.
-**AGLA KAAM:** (a) user "D" de to 3 sawal ek ek (pehla: equity hadd), sirf qaida. (b) 472716649 XAG SELL kis ne kholi (History Comment).
+**AGLA KAAM:** (a) TOKRI EA (user 5 Nov naam le kar maanga: trend se lot, DHAAL/hedge, sahi jori close, mauqe par nayi lot, ulti SL, SELL bhaagte trend ko nuqsan mein na aane de) -> pehle 3 sawal ek ek (pehla: equity hadd poocha 5 Nov), user ka jawab: "upar se SELL neeche ja rahi ho to bachao lot bhi SELL". Naqsha -> backtest -> demo, live NAHI. JasMauqa m7.2 (popup bara/bold, D band) F7 + SS baqi. (b) 472716649 XAG SELL kis ne kholi (History Comment).
 (c) FTMO 2 jawab (sawal-jawab): swap-free HAAN; Free Trial band = 3 registration -> 2 faltu account delete karwao (jalalzte rakho). (d) i6 pehli band trade +565.66 HUI (naqsha); agli band ka SS. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
