@@ -79,6 +79,10 @@ Q16 (43vi, user ka asli tareeqa): 0.01 lot kholo (misaal BUY). Wo $2 NUQSAN mein
 Q17 (43vi, user): lot sirf 0.01 ya 0.02 - lot size BARHTA NAHI (martingale NAHI). HEDGE hai (user ne naam liya): koi lot bohot
     door nuqsan mein chali jaye tab hedge, aur us ke beech wahi FISHING (0.01/0.02 faida uthao). Baqi: "bohot door" = kitne $? hedge lot kitni?
 
+Q18 (43vi, 6 Nov 00:11 SS): har lot ALAG band - sab se neeche wali 0.01 BUY @4101.255 (+0.78 USC) "fees se zyada ho jaye to close".
+    Exness app: Spread 0.24 | Fees ~0.24 USC (0.01) = spread hi fees; screen ka P/L bid par = spread PEHLE se kata hua.
+    => EA: lot ka screen P/L >= +0.5 (tasdeeq baqi: 0.5 ya 0.24 se upar koi bhi?). Equity 37,824.36, khuli 5 = -253.12.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
