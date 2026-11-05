@@ -68,6 +68,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 - Cloud (Linux) mein MT5 / TradingView nahi - compile yahan NAHI; `python3 tools/pinecheck.py <file>`. User F7 / TV par compile kar ke screenshot bhejta hai.
 - Windows: `tools\compile.bat <file>` (0 errors tak), `tools\backtest.bat <EA>` - ek waqt ek input badlo.
 - Live par EA / script se pehle Algo Trading hara, kaam ke baad laal.
+- Naya script / naya version (j2 jaisa) banane se PEHLE user se pucho (user 5 Nov: "dosra script banane se pehle sawal kar lete"). Pehle masla samjho, phir ijazat.
 
 ## E. Sirf zaroorat par parho (bila wajah NAHI - sirf `grep`)
 
