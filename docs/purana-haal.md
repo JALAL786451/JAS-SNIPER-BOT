@@ -1751,3 +1751,11 @@ A mein i6 ka bura trade -1R se -3.3R. SL = FTMO ki hadd ka pehredaar; SL hata ka
 
 ## 472716649 naqsha row (5 Nov se pehle, poori)
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0, IBS US500 0.66 / USTEC 0.68 intezar; 2 Nov USTEC BUY CHHOOTI (min lot > 2x risk) = nahi khuli. XAG SELL 0.05 @50.271 khuli 2 Nov 11:35:26 (balance badalne ke 27 sec baad, SL KHALI = hamara EA nahi), user ne 3 Nov 19:28 @49.658 band ki +153.25; purani US500 BUY 1.87 (28 Oct, c1 se pehle) 2 Nov -184.87; Magic/Comment column abhi bhi nahi dikha | ON | 4 Nov SS |
+
+**Koshish #99 qaida (5 Nov, user "khacha swap ka 0 ker k sab per phir test karo - FTMO Muslim countries mein swap free kerta hy, mere pass email hy", test se PEHLE, badalna mana) - Kachhua 12 market, SWAP 0 (`tools/ftmo99.py`):**
+Tide = `ftmo_test.kachhua_trades` jyon ka tyon (daily 17:00 NY, 10 din toot + EMA50/200 + ATR >= 0.25%, SL 2xATR14 roz sarakta, BUY/SELL).
+12 market (Kachhua 15 mein se jin ka H1 data hai): XAUUSD, XAGUSD, US500, USTEC, USOIL (LIGHTCMD), UKOIL (BRENTCMD), BTCUSD, EURUSD, GBPUSD, USDJPY, USDCHF, AUDUSD.
+XPT/XPD/XNG/XCU data nahi = bahar. **Swap 0** (FTMO swap-free, user ki email). Kharcha har taraf 0.75 x Exness spread (ASLI / naap 2), har market alag trade-R.
+**TALAASH** (entry < 2019): PASS = kul >= 100 tr, kul Exp(R) - 2SE > 0, >= 8/12 market Exp > 0, (market x saal) musbat > 50%. BUY/SELL alag sirf maloomat.
+**IMTIHAN** 2019-01..aaj EK dafa SAKHT (XAU/XAG/US500/USTEC #29, oil #69, BTC #76 swap ke saath pehle dekhe): kul >= 30 tr, Exp - 2SE > 0.
+TALAASH FAIL = IMTIHAN nahi, Kachhua FTMO band (swap 0 bhi). ASLI PASS = agla qadam FTMO challenge sim (#68 + Kachhua), alag qaida. Ginti +1.
