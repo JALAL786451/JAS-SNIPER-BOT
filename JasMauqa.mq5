@@ -1,5 +1,11 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.2  (5 Nov 2026)                        |
+//|  JAS MAUQA   -   build m7.3  (5 Nov 2026)                        |
+//|  m7.3 = RUKH: 1D (EMA50/200 + Supertrend) + 4H Supertrend(10,3) |
+//|         panel par; fishing BUY sirf 1D UP + 4H UP (tokri sim     |
+//|         FILT=1, user 5 Nov); rukh badle to OK popup. NEWS alarm: |
+//|         USD bari khabar se 30 + 5 min pehle popup + push, dhaal  |
+//|         ka hisaab (NET = kitni 0.01). KHUD KOI LOT NAHI.         |
+//|         NO kaha to wahi jori dobara nahi; InpA false = A band.   |
 //|  m7.2 = POPUP chart par BARA + BOLD (InpPopFont), mauqa ka naam  |
 //|         peela mota, YES/NO bare button; D) default BAND         |
 //|         (InpPartD false: bari SELL = dhaal, kaato mat; user 5 Nov)|
@@ -34,11 +40,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "7.20"
+#property version   "7.30"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.2"
+#define S_BUILD "m7.3"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -61,6 +67,12 @@ input bool   InpPush     = true;   // Popup ke waqt phone push bhi
 input int    InpFont     = 13;     // Panel ka font (bara = 14-16)
 input bool   InpLadder   = true;   // PRICE LADDER dikhao
 input double InpStep     = 25.0;   // LADDER ka qadam ($): -1, +1, +2, +4 qadam + breakeven
+input bool   InpA        = true;   // m7.3 A) BARI SELL KAM popup (false = kabhi nahi; bari SELL = dhaal)
+input bool   InpRukh     = true;   // m7.3 RUKH 1D + 4H dikhao, badle to popup
+input bool   InpNews     = true;   // m7.3 NEWS alarm (sirf bari / HIGH khabar)
+input string InpNewsCur  = "USD";  // NEWS: kis currency ki khabar (gold = USD)
+input int    InpNews1    = 30;     // NEWS: pehla alarm kitne minute pehle
+input int    InpNews2    = 5;      // NEWS: doosra alarm kitne minute pehle
 
 CTrade trade;
 
@@ -306,6 +318,80 @@ string Desc(ulong t)
                        M(PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP))));
   }
 
+// ---- m7.3 RUKH: band candles (index 1 se). 1 = UP, -1 = DOWN, 0 = MILA. stDir = Supertrend(10,3)
+// tools/tokri_q8q9.py rukh() jaisa: close > EMA50 > EMA200 + ST up = UP (ulta = DOWN)
+int Rukh(ENUM_TIMEFRAMES tf, int &stDir)
+  {
+   MqlRates r[];
+   ArraySetAsSeries(r, false);
+   int n = CopyRates(_Symbol, tf, 1, 600, r);
+   stDir = 0;
+   if(n < 250) return(0);
+   double a = 0, e50 = r[0].close, e200 = r[0].close, U = 0, D = 0;
+   int d = 1;
+   for(int i = 0; i < n; i++)
+     {
+      double tr = r[i].high - r[i].low;
+      if(i > 0) tr = MathMax(tr, MathMax(MathAbs(r[i].high - r[i - 1].close), MathAbs(r[i].low - r[i - 1].close)));
+      a = (i == 0) ? tr : a + (tr - a) / 10.0;
+      if(i > 0) { e50 += (r[i].close - e50) * 2.0 / 51.0; e200 += (r[i].close - e200) * 2.0 / 201.0; }
+      double hl2 = (r[i].high + r[i].low) / 2.0, up = hl2 - 3.0 * a, dn = hl2 + 3.0 * a;
+      if(i == 0) { U = up; D = dn; continue; }
+      double pU = U, pD = D, pc = r[i - 1].close;
+      U = (pc > pU) ? MathMax(up, pU) : up;
+      D = (pc < pD) ? MathMin(dn, pD) : dn;
+      if(d == -1 && r[i].close > pD) d = 1;
+      else if(d == 1 && r[i].close < pU) d = -1;
+     }
+   stDir = d;
+   double c = r[n - 1].close;
+   if(c > e50 && e50 > e200 && d > 0) return(1);
+   if(c < e50 && e50 < e200 && d < 0) return(-1);
+   return(0);
+  }
+
+string UD(int v) { return(Pick(v > 0, "UP", Pick(v < 0, "DOWN", "MILA"))); }
+
+int      gSigPrev = 99;
+string   gNoPairs = "";   // m7.3: jis jori par NO kaha, wo dobara nahi (EA chalne tak)
+string   gNewsLn = "", gNewsDone = "";
+datetime gNewsT = 0;
+
+// NEWS: har 30 sec calendar dekho; agli bari khabar panel par, 30 / 5 min pehle popup + push
+void NewsCheck(double net)
+  {
+   if(!InpNews) { gNewsLn = "NEWS alarm: band (InpNews)"; return; }
+   if(TimeCurrent() - gNewsT < 30 && gNewsT > 0) return;
+   gNewsT = TimeCurrent();
+   datetime now = TimeTradeServer();
+   MqlCalendarValue v[];
+   int k = CalendarValueHistory(v, now - 60, now + 12 * 3600, NULL, InpNewsCur);
+   datetime best = 0; string bn = "";
+   for(int i = 0; i < k; i++)
+     {
+      MqlCalendarEvent ev;
+      if(!CalendarEventById(v[i].event_id, ev) || ev.importance != CALENDAR_IMPORTANCE_HIGH) continue;
+      if(v[i].time < now) continue;
+      if(best == 0 || v[i].time < best) { best = v[i].time; bn = ev.name; }
+      int mins = (int)((v[i].time - now) / 60);
+      int stg = (mins < InpNews2) ? InpNews2 : ((mins < InpNews1) ? InpNews1 : 0);
+      if(stg == 0) continue;
+      string key = StringFormat("|%I64u_%d|", v[i].id, stg);
+      if(StringFind(gNewsDone, key) >= 0) continue;
+      if(StringLen(gNewsDone) > 3000) gNewsDone = "";
+      gNewsDone += key + StringFormat("|%I64u_%d|", v[i].id, InpNews1);   // 5 min wala aaya to 30 wala dobara nahi
+      int lots = (int)MathRound(MathAbs(net) / 0.01);
+      string body = StringFormat("%s BARI KHABAR: %s\nWaqt %s (server)  -  %d min baqi\n\nDaam seconds mein upar-neeche ho sakta hai, spread khulega.\nNET %+.2f lot  =  %d x 0.01 dhaal se NET 0\nSpread abhi: %s $\n\nEA khud koi lot nahi kholega - faisla aap ka.",
+                                 InpNewsCur, ev.name, TimeToString(v[i].time, TIME_MINUTES), mins, net, lots,
+                                 DoubleToString(SymbolInfoInteger(_Symbol, SYMBOL_SPREAD) * _Point, 2));
+      if(InpPush) SendNotification(StringFormat("JAS MAUQA NEWS: %s %s %d min mein - NET %+.2f", InpNewsCur, ev.name, mins, net));
+      PlaySound("alert2.wav");
+      if(!gPopOn) { gPNm = ""; PopShow(StringFormat("NEWS ALARM  -  %d min", mins), body, false); }
+     }
+   if(best == 0) gNewsLn = StringFormat("NEWS: agle 12 ghante %s ki bari khabar nahi", InpNewsCur);
+   else          gNewsLn = StringFormat("NEWS: %s  %s  (%d min baad)", bn, TimeToString(best, TIME_MINUTES), (int)((best - now) / 60));
+  }
+
 void Run()
   {
    PInfo a[];
@@ -358,8 +444,9 @@ void Run()
          if(a[j].typ != POSITION_TYPE_BUY) continue;
          double r = (a[i].open - a[j].open) * MathMin(a[i].vol, a[j].vol) * vpp;
          if(r < InpMinJori) continue;
+         if(StringFind(gNoPairs, StringFormat("|%I64u_%I64u|", a[i].t, a[j].t)) >= 0) continue;   // m7.3 NO = dobara nahi
          if(r > jV) { jS = a[i].t; jB = a[j].t; jV = r; }
-         if(i == big && r > aV) { aS = a[i].t; aB = a[j].t; aV = r; }
+         if(InpA && i == big && r > aV) { aS = a[i].t; aB = a[j].t; aV = r; }
         }
      }
    if(full) { cT = 0; cV = 0; }
@@ -410,6 +497,24 @@ void Run()
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
+   // ---- m7.3 RUKH + NEWS (sirf dikhana / yaad-dihani - koi trade nahi)
+   if(InpRukh)
+     {
+      int s1, s4; int d1 = Rukh(PERIOD_D1, s1); Rukh(PERIOD_H4, s4);
+      int sig = (d1 > 0 && s4 > 0) ? 1 : ((d1 < 0 && s4 < 0) ? -1 : 0);
+      string sg = Pick(sig > 0, "fishing BUY: OK", Pick(sig < 0, "nayi BUY NAHI (dono DOWN)", "nayi BUY NAHI - intezar"));
+      Ln(StringFormat("RUKH  1D %s | 4H %s  ->  %s", UD(d1), UD(s4), sg), sig > 0 ? cG : (sig < 0 ? cR : cY));
+      if(gSigPrev != 99 && sig != gSigPrev && !gPopOn)
+        {
+         gPNm = "";
+         PopShow("RUKH BADLA  -  " + _Symbol, StringFormat("1D %s  |  4H %s\n\n%s\n\nSabaq (tokri sim): fishing BUY sirf jab 1D UP + 4H UP.\nUpar wale mood mein bari SELL nahi, dhaal 0.01 se.",
+                 UD(d1), UD(s4), Pick(sig > 0, "Ab fishing BUY ki ijazat.", "Ab nayi fishing BUY mat kholo.")), false);
+         if(InpPush) SendNotification(StringFormat("JAS MAUQA RUKH: 1D %s 4H %s - %s", UD(d1), UD(s4), sg));
+        }
+      gSigPrev = sig;
+     }
+   NewsCheck(net);
+   if(InpNews) Ln(gNewsLn, cY);
    for(int k = gRow; k < 30; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // ---- H) HEDGE LADDER
    if(big >= 0)
@@ -474,7 +579,12 @@ void OnChartEvent(const int id, const long &lp, const double &dp, const string &
   {
    if(id != CHARTEVENT_OBJECT_CLICK) return;
    if(sp == "JM_P_YES")     { ObjectSetInteger(0, sp, OBJPROP_STATE, false); DoPend(); }
-   else if(sp == "JM_P_NO") { Print("JAS MAUQA ", S_BUILD, ": NO - ", gPNm); gPend = 0; PopHide(); }
+   else if(sp == "JM_P_NO")
+     {
+      Print("JAS MAUQA ", S_BUILD, ": NO - ", gPNm);
+      if(gPend == 1) { if(StringLen(gNoPairs) > 3000) gNoPairs = ""; gNoPairs += StringFormat("|%I64u_%I64u|", gP1, gP2); }   // m7.3: ye jori dobara nahi
+      gPend = 0; PopHide();
+     }
    else if(sp == "JM_P_OK") { PopHide(); }
   }
 
