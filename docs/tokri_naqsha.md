@@ -14,11 +14,11 @@ Q3. Dhaal SELL nuqsan mein aa jaye (qeemat us se upar) -> ek BUY se use "pakar" 
 Q4. Ulta bhi wahi: trend upar ja kar SELL tokri ko nuqsan de -> sahara BUY lot.
 
 Q5. MOOD = bara trend 1D + 4H (5 Nov). Mood UPAR ho aur qeemat OVERSOLD ke bawajood neeche ja rahi ho
-    = "darana" (dara rahi hai) -> dhaal NAHI, khamosh intezar, equity par nazar. (Matlab: dhaal sirf jab 1D/4H mood
-    khud neeche ho? = user tasdeeq baqi). Mood kis cheez se (EMA / Supertrend / Naqsha Rukh) = ?
+    = "darana" (dara rahi hai) -> dhaal NAHI, khamosh intezar, equity par nazar. (dhaal sirf jab 1D + 4H dono neeche = HAAN, Q6). Mood kis cheez se (EMA / Supertrend / Naqsha Rukh) = ?
 
 Q6. MILA-JULA (5 Nov 15:26 SS, gold 4H ~4124): 1D NEECHE (neeche ka chance 50+) MAGAR 4H par BUY chal rahi
-    (Naqsha n5.9 CHALU BUY +0.5R) -> is soorat mein user ne dhaal NAHI lagayi = intezar (user tasdeeq baqi).
+    (Naqsha n5.9 CHALU BUY +0.5R) -> is soorat mein dhaal NAHI = intezar. **User HAAN (5 Nov).**
+    => DHAAL SHART: 1D NEECHE + 4H bhi neeche mura (dono) + nuqsan ~200 USC + abhi neeche se wapas na aaya. (Ulta BUY ke liye.)
     Mood napna = JAS Naqsha "Rukh" line (Claude ka mashwara, user ko technical nahi poochna).
 
 ## Baqi sawal (ek ek)
