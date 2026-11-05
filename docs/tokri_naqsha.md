@@ -71,6 +71,11 @@ Q15 (43vi, user): tokri DONO taraf lot kholti hai, dekhti hai kaunsi faide mein 
     Weekend / gold band (raat ~1 ghanta, Hafta-Itwaar) par wahi EA BTC ya ETH par. Test data: gold H1 2005-2026 (data/ftmo) + M1 14 saal jaanch.
     Baqi: har kitni doori ($) par nayi BUY + SELL jori? max khuli lot? bari hadd? BTC/ETH fees?
 
+Q16 (43vi, user ka asli tareeqa): 0.01 lot kholo (misaal BUY). Wo $2 NUQSAN mein jaye -> ULTI taraf 0.02 (SELL) kholo,
+    us ka faida (fees + 0.5) utha lo. Chaal usi taraf chalti rahe -> phir ek lot kholo, faida lo, phir doosri. Direction badle -> wahi kaam
+    ulti taraf. Nuqsan wali (pehli BUY) khuli rahe; trend palte aur wo faide mein aaye -> FAURAN band.
+    Baqi: pehli lot BUY ya SELL? chaal ke saath wali agli lot 0.01 ya 0.02? 0.02 bhi $2 nuqsan mein jaye to 0.04 (dugna) ya 0.02?
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
