@@ -1,5 +1,8 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.3  (5 Nov 2026)                        |
+//|  JAS MAUQA   -   build m7.4  (5 Nov 2026)                        |
+//|  m7.4 = POPUP chart ke DAAYEN (right) - panel nahi dhakta        |
+//|         (InpPopRight true; false = purani jagah baayen). Sirf   |
+//|         jagah badli, koi trade qaida nahi badla (user 5 Nov).   |
 //|  m7.3 = RUKH: 1D (EMA50/200 + Supertrend) + 4H Supertrend(10,3) |
 //|         panel par; fishing BUY sirf 1D UP + 4H UP (tokri sim     |
 //|         FILT=1, user 5 Nov); rukh badle to OK popup. NEWS alarm: |
@@ -44,7 +47,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.3"
+#define S_BUILD "m7.4"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -56,6 +59,7 @@ input double InpMaxNet   = 0.80;   // HIFAZAT: |NET| is se upar na jaye (abhi zy
 input double InpMinDoor  = 400.0;  // HIFAZAT: stop out kam az kam itne $ door rahe
 input bool   InpPartD    = false;  // D) Bari SELL part close ka mashwara (false = BAND: bari SELL dhaal hai)
 input int    InpPopFont  = 16;     // POPUP ka font (bara = 16-20)
+input bool   InpPopRight = true;   // m7.4 POPUP chart ke daayen (panel na dhake); false = baayen
 input double InpPartLot  = 0.10;   // D) Bari SELL profit mein ho to ek dafa kitni lot kam
 input bool   InpHedge    = false;  // H) HEDGE LADDER chalu (BUY band kar ke NET 0 tak). false = sirf plan dikhao
 input bool   InpHAuto    = false;  // H) true = khud band kare (sote waqt); false = har qadam YES/NO
@@ -175,7 +179,10 @@ void PopShow(string title, string body, bool ask)
    int w = MathMax(460, (int)(maxc * (fs + 4) * 0.8) + 60);
    int hBody = 0;
    for(int i = 0; i < n; i++) hBody += (StringLen(ln[i]) == 0 ? lh / 2 : lh);
-   int x0 = 30, y0 = 40, h = 30 + lh + 10 + hBody + 20 + lh * 2 + 20;
+   int x0 = 30;
+   if(InpPopRight)   // m7.4: daayen kinare se 70 px andar (qeemat ki patti chhod kar)
+      x0 = MathMax(30, (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS) - w - 70);
+   int y0 = 40, h = 30 + lh + 10 + hBody + 20 + lh * 2 + 20;
    string bg = "JM_P_BG";
    ObjectCreate(0, bg, OBJ_RECTANGLE_LABEL, 0, 0, 0);
    ObjectSetInteger(0, bg, OBJPROP_CORNER, CORNER_LEFT_UPPER);
