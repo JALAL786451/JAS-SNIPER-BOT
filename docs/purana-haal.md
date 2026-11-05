@@ -1776,3 +1776,10 @@ Sim = `ftmo53_asli.run_cost` jyon ka tyon (2-step: P1 +10%, P2 +5%, din 5% / kul
 **B TIDE 0.50% 35 / 0 / 49, median 18.2** · 0.75% 39 / 35 (6/29) / 10, 13.4 · 1.0% 40 / 35 (13/22) / 9, 8.2 -> **chuni risk 0.50%** (0.75%+ par P2 fail bohat).
 **Koshish #100 IMTIHAN 2019-01..2026-10 (EK dafa, 5 Nov, Tide 0.50%) = TREND JEETA:** 94 challenge: **A TREND 0.75% 81 / 0 / 13, median 17.4** vs **B TIDE 0.50% 67 / 0 / 27, median 22.1**.
 Dono mein fail 0. Tide dheema aur kam pass. Sabaq: akele mein JasTrend behtar; Tide (#99 ASLI PASS) ka kaam shayad JOR mein - alag koshish, pehle qaida.
+
+**Koshish #101 qaida (5 Nov, user "jo hamary EA ftmo testing mein hein kia kachuwa us mein kitna faida dey sakta hy", test se PEHLE, badalna mana) - FTMO: #68 + KACHHUA 12, swap 0 (`tools/ftmo101.py`):**
+#68 bilkul wahi (trend 4H 0.75% + IBS 1% + khirki 0.15%, `ftmo69.py` jaisa) + Tide = `kachhua_trades` 12 market (#99 wale), gold+silver ek slot, alag slot har market.
+**Swap 0 sab par** (#68 bhi, FTMO swap-free), kharcha 0.75 x Exness spread (khirki KCOST). Sim `ftmo53_asli.run_cost`.
+**CHUNAO 2012-2018** (84, har mahine): Tide risk har market 0.10 / 0.25 / 0.50 vs #68 (isi run): shart P1 fail < 20%, pass > fail, (pass - fail) >= #68 ka;
+behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL. **IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk): PASS = fail 0, pass >= #68 (isi run),
+median < #68 (isi run). #69 / #76 wala tareeqa. Ginti +1.
