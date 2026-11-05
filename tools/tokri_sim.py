@@ -11,8 +11,9 @@ C=h.c.values; HI=h.h.values; LO=h.l.values; low2=h.l.rolling(48).min().values
 mon=h.index.to_period('M').astype(str).values
 COST=0.30 if 'COST' not in dir() else COST
 import os; FILT=int(os.environ.get('FILT','0'))  # 6 Nov: 1 = fishing BUY sirf jab 4H ST + 1D dono upar (user)
-def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
-    bal=eq0; L=[]  # [dir, open, kind] kind 0 fish 1 dhaal
+EQ0=float(os.environ.get('EQ0','37800'))  # 6 Nov: user test $1000 equity (USD, 0.01 lot = $1/$)
+def run(i0,i1,G,T,N,B,S,J,eq0=None,DH=1,DMAX=99):
+    eq0=eq0 or EQ0; bal=eq0; L=[]  # [dir, open, kind] kind 0 fish 1 dhaal
     peak=eq0; mdd=0; stops=0; maxn=0; mpl={}
     for i in range(i0,i1):
         a=A[i]; c=C[i]
