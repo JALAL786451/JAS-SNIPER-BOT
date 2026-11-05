@@ -26,10 +26,18 @@ Q7. DHAAL SIZE (5 Nov, jawab "d"): size trend + equity ki BARDASHT se. Misaal: e
     to itna ke ek BUY use cover kar le (Q3 pakar). Equity bardasht kare to aur 0.01 BUY bhi theek (fishing).
     => har 200 USC mazeed nuqsan par ek 0.01 dhaal? (user tasdeeq baqi). "Bardasht" ka number = ?
 
+Q8. WAPASI HADD (5 Nov, user: "Claude khud calculate kare"; `tools/tokri_q8q9.py`, gold 4H 2005-2026, 1D+4H neeche wale 2878 mauqe):
+    pichhle 2 din (12 x 4H) ki low se wapasi, din ke ATR14 mein -> SELL ka 4 din aage ausat faida:
+    0-1 ATR: +0.20-0.25 ATR (jeet ~51-54%) | 1-1.5 ATR: +0.02 (faida khatam) | 1.5+ ATR: -0.59 (jeet 27%, bura).
+    => QAIDA: wapasi >= 1 x din ka ATR = "neeche se wapas aaya" = dhaal NAHI. (aaj ATR ~$60; 2 Nov 13:48 wapasi ~$69 = NAHI, hadd par.)
+Q9. 4H MUR KAR UPAR (dhaal SELL khuli ho): 82 mauqe - SELL rakhna (agle neeche mor tak) ausat -0.10 ATR, 24 bar -0.06 = rakhna nuqsan.
+    => QAIDA: 4H Supertrend upar mude to dhaal SELL BAND (chhota 0.01 nuqsan le lo), nayi SELL nahi. Pakar (BUY se taala) paise mein
+    barabar, magar khuli jori ka jhanjhat - is liye band. (Ulta BUY dhaal ke liye bhi yahi.)
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
-- [ ] "Bohot neeche se wapas aaya" = kitne $ / kitna waqt? (2 Nov: 3879 se +$66 wapas = misaal, user se a/b/c)
+- [x] "Bohot neeche se wapas aaya" = 1 x din ka ATR, 2 din ki low se (Q8)
 - [ ] Equity ki aakhri hadd (jahan nayi lot bilkul band)
 - [ ] Fishing lot (nayi 0.01) kab aur kitne $ par
 - [ ] Jori close: kab (m6 A/B wala hi?)
