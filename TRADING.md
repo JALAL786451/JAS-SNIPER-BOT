@@ -88,7 +88,7 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
 
-100 koshish (**#100 FTMO Trend vs Tide swap 0 = TREND JEETA** (2019+ 81/0 med 17.4 vs Tide 0.5% 67/0 med 22.1); **#99 Kachhua 12 market SWAP 0 = ASLI PASS patla** (TALAASH Exp-2SE +0.024, IMTIHAN +0.010, forex 2019+ minus; `tools/ftmo99.py`); #88-95 recovery 0/9; **#96 commodity jor FAIL, #97 Gao pilot FAIL, #85 C2 TV FAIL 0/9, #98 Kachhua BUY x 9 index FAIL (drift)**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+101 koshish (**#101 FTMO #68 + Kachhua 12 @0.25% swap 0 = PASS** (2019+ 85/0 med 10.2 vs #68 83/0 med 10.6; 2012-18 med 27.6 -> 15.5); **#100 FTMO Trend vs Tide swap 0 = TREND JEETA** (2019+ 81/0 med 17.4 vs Tide 0.5% 67/0 med 22.1); **#99 Kachhua 12 market SWAP 0 = ASLI PASS patla** (TALAASH Exp-2SE +0.024, IMTIHAN +0.010, forex 2019+ minus; `tools/ftmo99.py`); #88-95 recovery 0/9; **#96 commodity jor FAIL, #97 Gao pilot FAIL, #85 C2 TV FAIL 0/9, #98 Kachhua BUY x 9 index FAIL (drift)**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

@@ -1785,3 +1785,5 @@ behtareen = zyada (pass - fail), phir kam median, phir kam risk. Koi nahi = FAIL
 median < #68 (isi run). #69 / #76 wala tareeqa. Ginti +1.
 **Koshish #101 CHUNAO 2012-2018 (5 Nov, swap 0, IMTIHAN se PEHLE likha):** 84 challenge: **#68 68 / 0 / 16, median 27.6** · +Tide 0.10% 68 / 0 / 16, 20.9 ·
 **+Tide 0.25% 69 / 0 / 15, median 15.5** · 0.50% 66 / 8 (2/6) / 10, 12.3 -> **chuni Tide risk 0.25%**.
+**Koshish #101 IMTIHAN 2019-01..2026-10 (EK dafa, 5 Nov, Tide 0.25%) = PASS (chhota faida):** 94 challenge: #68 83 / 0 / 11, median 10.6 -> **#68 + Kachhua 12 @0.25%: 85 / 0 / 9, median 10.2**.
+Fail 0 wahi, +2 pass, ~0.4 mahina jaldi. CHUNAO mein faida bara tha (median 27.6 -> 15.5) - 2019+ tezi mein #68 khud tez. FTMO jor ke qabil (bank mein, user faisla).
