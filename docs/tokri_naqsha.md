@@ -57,6 +57,12 @@ TESTER REPORT tajziya (user xlsx, 5 Nov): SWAP -94.61 USD (= -9,461 USC) > kul n
     Lots: FISH B 680, FISH S 54, DHAAL S 222, DHAAL B 152. NATEEJA: bina swap bhi ~0 = tokri EA ka koi asal faida NAHI (f1 + recovery #88-95 jaisa).
     Sabaq jo kaam ka: dhaal 0.01 rakho, upar ke mood mein bari SELL nahi (live -36% ki wajah) - ye haath ki trading ke liye.
 
+Q14 (5 Nov raat, 43vi chat, user): "koi strategy nahi - basket bana kar profit nikalna". BASKET BAND = jab poori tokri ka NET
+    (fees/commission ke BAAD) +0.5 ho -> sab band. (0.5 = MT5 screen ke 0.5 USC ya asli $0.5 = 50 USC? = ?)
+    User ka apna sabaq: "direction sahi add karne ka pata na hone se loss mein rehta tha" (CSV 4 bari haar din yahi dikhate: ulti taraf ki ladder).
+    User: EA banana ZAROOR hai; test 1m / 5m par, gold data QDM se (repo mein M1: 2009-18 histdata, 2015 + 2021-24 qdm; 2019, 2020, 2025, 2026 BAQI).
+    "4H trend test" ka matlab user bhool gaye (5 Nov) - Claude ka mashwara: add sirf 4H trend ki taraf vs bina filter, dono ek hi basket qaide par.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
