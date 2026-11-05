@@ -169,3 +169,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Tokri EA 1D filter ke saath? -> sim FILT=1: DD aadha (8.8->5.3), nafa wahi; $1000 cent par 2019-26 +5-6% = saal ~1% -> EA BAND, sabaq JasMauqa m7.3 mein (5 Nov).
 - JasMauqa "A) BIG SELL REDUCE" baar baar? -> bari SELL ka chhota hissa + BUY Close By (NET wahi, faida pakka); NO ek dafa = wo jori dobara nahi (m7.3), InpA=false = A band (5 Nov).
 - $1000 Standard USD par tokri? -> NAHI, 0.01 lot bhari (sim DD 91%); cent account ($1000 = 100k USC) theek (5 Nov).
+- Poori MT5 History Report paste karun? -> NAHI, 6.6 MB = chat bhar kar compact; sirf Open Positions + Balance SS. Poori history chahiye to file - ab `data/live_253687618_deals_20261105.csv` mein hai (5 Nov).
+- Live manual basket asli nateeja 18 Aug-5 Nov? -> 66 din, 49 jeet / 16 haar, gold -20,672 USC (-35%); 4 bari haar din (24-8, 22-10, 29-9, 4-11) sab kha gaye (5 Nov).

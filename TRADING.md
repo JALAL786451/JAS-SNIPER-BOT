@@ -62,12 +62,14 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**41vi chat (5 Nov)** - user ka tareeqa: news jhatke par 0.10 ki jagah 10 x 0.01 dhaal (wapsi ko 10 lots se guzarna pade), SL nahi, profit chalne do.
-Tokri sim `FILT=1` (BUY sirf 4H ST + 1D UP): 2019-26 +9.0% DD 5.3 (bina +9.9% DD 8.8); grid $1000 cent (EQ0=100000) 2010-18 chuna, 2019-26 +5-6% = saal ~1%
--> **Tokri EA BAND** (user "han"). $1000 Standard USD par 0.01 = bhari (DD 91%). **JasMauqa m7.3** LIVE laga, F7 OK: RUKH 1D+4H line + popup,
-NEWS alarm USD HIGH 30/5 min (dhaal = NET/0.01), NO wali jori dobara nahi, InpA. A) BIG SELL REDUCE YES = DONE.
-**AGLA KAAM:** user se m7.3 ka haal pucho (NFP 6 Nov alarm aaya? RUKH popup?); popup panel ko dhakta hai -> chaho to popup daayen (x0) karo.
-Phir FTMO email / demo SS (sec 4). **AGENT / lamba test bina poochhe NAHI.** Lehja PYAR se.
+**42vi chat (5 Nov)** - JasMauqa **m7.4** (popup chart ke daayen, InpPopRight; trade qaida same) - F7 user ne abhi nahi bataya.
+Live 253687618: aaj basket POORA band (din ki 2ri win), balance 38,074.99 (+475.30 USC din); khuli 1 BUY 0.10 SL khali. User ki poori
+History Report (6.6 MB paste = compact aaya; agli baar sirf Open Positions SS) -> `data/live_253687618_deals_20261105.csv`
+(12,374 gold deal 18 Aug-5 Nov: 66 din, 49 jeet / 16 haar; bari haar 24-8 -36,237, 22-10 -10,590, 29-9 -9,849, 4-11 -6,227; kul gold -20,672 = -35%).
+User: Tokri/gold basket EA abhi PENDING (41vi ka BAND user ke liye khatam nahi) - **"trend par 4H test baqi hai"** (41vi mein FILT=1 = 4H ST + 1D UP hua tha; user shayad sirf 4H chahte - pehle PUCHO).
+**AGLA KAAM:** pehle DISCUSS, phir test: (1) user se pucho "4H trend test" se kya muraad (sirf 4H filter? 4H par entry?); (2) CSV se 4 bari haar din
+dekho kyun aaye (39vi: bari SELL asal zakhm) - chhota python, agent NAHI; (3) dono se basket EA ki hadd tay karo, user "han" ke baad sim.
+Phir m7.4 F7 + NFP alarm ka haal. **AGENT / lamba test bina poochhe NAHI.** Lehja PYAR se.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
