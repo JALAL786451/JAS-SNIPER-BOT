@@ -43,7 +43,8 @@ Q10-Q13 (5 Nov, user "haan, Claude khud hisaab kare"; `tools/tokri_sim.py`, gold
     | 2019-26 imtihan | +10.0%, gehra -8.9%, 2 dafa aakhri hadd | +3.2% | +7.4% |
     | 18 Aug-1 Nov 2026 | -5.2% (asal live -36%) | -3.3% | - |
     Aakhri hadd na ho (S=0): 2019-26 +125% magar gehra -20.6% - sirf gold 3 guna hua is liye; KHATRA, nahi chuna.
-    IMAANDARI: H1 sim (MT5 tester nahi); faida chhota; dhaal ne madad ki. Agla = EA likho (user ki saaf ijazat: fishing + dhaal) -> tester -> demo.
+    IMAANDARI: H1 sim (MT5 tester nahi); faida chhota; dhaal ne madad ki. Dhaal hadd 10: 2019-26 +14.0% gehra -8.7%.
+    EA LIKHA: `JasTokriEA.mq5` tk1 (user ne fishing + dhaal ki saaf ijazat di 5 Nov). Agla = F7 + tester XAUUSDc H1 2019-2026 -> demo.
 
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?

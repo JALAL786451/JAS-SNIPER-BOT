@@ -10,7 +10,7 @@ s4=h4s.shift(1).reindex(k4,method='ffill').values; r4=h4r.shift(1).reindex(k4,me
 C=h.c.values; HI=h.h.values; LO=h.l.values; low2=h.l.rolling(48).min().values
 mon=h.index.to_period('M').astype(str).values
 COST=0.30
-def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1):
+def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1,DMAX=99):
     bal=eq0; L=[]  # [dir, open, kind] kind 0 fish 1 dhaal
     peak=eq0; mdd=0; stops=0; maxn=0; mpl={}
     for i in range(i0,i1):
@@ -55,7 +55,7 @@ def run(i0,i1,G,T,N,B,S,J,eq0=37800.0,DH=1):
             lb=sum(fl(p) for p in fish); nd=sum(1 for p in L if p[2]==1 and p[0]==-bs)
             against = (D[i]==-bs and r4[i]==-bs)
             bounce = (c-low2[i]) if bs==1 else (max(HI[max(0,i-48):i+1])-c)
-            if DH and against and lb<=-200*(nd+1) and bounce<a: L.append([-bs,c,1])
+            if DH and nd<DMAX and against and lb<=-200*(nd+1) and bounce<a: L.append([-bs,c,1])
         maxn=max(maxn,len(L))
         eq=bal+sum(fl(p) for p in L); peak=max(peak,eq); mdd=max(mdd,(peak-eq)/peak)
         mpl[mon[i]]=eq
@@ -70,6 +70,6 @@ if part=='grid':
         r=run(i0,i1,G,T,N,B,S,J); r.update(G=G,T=T,N=N,B=B,S=S,J=J); out.append(r); print(r,flush=True)
     pickle.dump(out,open('grid.pkl','wb'))
 else:
-    v=list(map(float,part.split(",")))+[1]; G,T,N,B,S,J,DH=v[:7]
+    v=list(map(float,part.split(",")))+[1]; G,T,N,B,S,J,DH=v[:7]; DM=int(v[7]) if len(v)>8 else 99
     for a,b in (('2010-01-01','2019-01-01'),('2019-01-01','2026-11-01'),('2026-08-18','2026-11-01')):
-        print(a,b,run(idx(a),idx(b),G,T,int(N),B,S,int(J),DH=int(DH)))
+        print(a,b,run(idx(a),idx(b),G,T,int(N),B,S,int(J),DH=int(DH),DMAX=DM))
