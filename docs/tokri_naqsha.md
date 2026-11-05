@@ -63,7 +63,8 @@ Q14 (5 Nov raat, 43vi chat, user): "koi strategy nahi - basket bana kar profit n
     => BAND shart: tokri ka faida - (0.24 x kul 0.01 lot) >= +$0.5 (fees se barhe bina band NAHI, warna drawdown).
     User ka apna sabaq: "direction sahi add karne ka pata na hone se loss mein rehta tha" (CSV 4 bari haar din yahi dikhate: ulti taraf ki ladder).
     User: EA banana ZAROOR hai; test 1m / 5m par, gold data QDM se (repo mein M1: 2009-18 histdata, 2015 + 2021-24 qdm; 2019, 2020, 2025, 2026 BAQI).
-    "4H trend test" ka matlab user bhool gaye (5 Nov) - Claude ka mashwara: add sirf 4H trend ki taraf vs bina filter, dono ek hi basket qaide par.
+    "4H trend test" ka matlab user bhool gaye; user (43vi): test SIRF 1m / 5m par, 4H ka koi zikr NAHI (Claude ka 4H filter mashwara HATA).
+    Baqi sawal: nayi lot KAB (doori?), KIS TARAF (BUY/SELL kaise chune?), pehli lot kaise?
 
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
