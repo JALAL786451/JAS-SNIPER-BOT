@@ -1762,3 +1762,7 @@ TALAASH FAIL = IMTIHAN nahi, Kachhua FTMO band (swap 0 bhi). ASLI PASS = agla qa
 **Koshish #99 TALAASH (5 Nov, entry < 2019, swap 0, IMTIHAN se PEHLE likha) = PASS:** KUL 1082 tr, jeet 40%, **Exp +0.090R (SE 0.033), Exp-2SE +0.024**;
 BUY 636 +0.101R · SELL 446 +0.075R; market Exp > 0 = 11/12 (sirf USDCHF -0.044); (market x saal) musbat 56% (130). XAU +0.261 (122) · XAG +0.044 · US500 +0.057 ·
 USTEC +0.098 · USOIL +0.169 (44) · UKOIL +0.351 (40) · BTC +0.608 (6) · EUR +0.083 · GBP +0.060 · JPY +0.084 · CHF -0.044 · AUD +0.020. (#29 4 market swap 3% + 0.03% kharcha = FAIL tha.)
+**Koshish #99 IMTIHAN 2019-01..aaj (EK dafa, 5 Nov) = PASS (patla) -> ASLI PASS:** KUL 771 tr, jeet 39%, **Exp +0.101R (SE 0.045), Exp-2SE +0.010**; BUY 481 +0.223R · SELL 290 -0.101R;
+market Exp > 0 = 7/12, (market x saal) musbat 52%. XAU +0.316 · XAG +0.295 · US500 +0.121 · USTEC +0.175 · USOIL +0.015 · UKOIL +0.090 · BTC +0.528 ·
+**forex paanchon minus 2019+** (EUR -0.024, GBP -0.091, JPY -0.004, CHF -0.044, AUD -0.120). Hadd: faida 2019+ BUY (metal/index/BTC tezi) se; patla (+0.010).
+Forex ab NAHI nikala (IMTIHAN dekh kar chunna mana). Agla: FTMO challenge sim (#68 + Kachhua 12, swap 0) - alag qaida test se PEHLE.
