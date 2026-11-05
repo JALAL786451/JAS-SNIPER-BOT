@@ -35,3 +35,15 @@ Mood = Naqsha Rukh (close > EMA50 > EMA200 + Supertrend 10,3). 28 Oct ke baad ca
 | 2-3 Nov SELL 1-10 lot (1.8 @3944 = -12,763) | NEECHE | NEECHE | -26,900 | mood dhaal ki IJAZAT deta, magar gold 30 Oct 3879 se +$66 wapas aa chuka = Q2 teesri shart NAHI; aur size 0.01 |
 | 4 Nov 06:47-16:46 SELL 2-4 lot x10 | NEECHE | 04:00 Supertrend UPAR mura = MILA | -13,350 | Q6 mila-jula = SELL band, intezar |
 => Dono zakhm (~-80k) qaidon par hote to bari SELL hoti hi nahi; 0.01 dhaal ka nuqsan sau-do sau USC.
+
+## 43vi chat (5-6 Nov): user "mera data dekhein, sab samajh usi mein" - positions.csv.gz se fishing ke number
+| Lot | position | USC |
+|---|---|---|
+| 0.01 | 4261 | **+25,031** (jeet 78%) |
+| 0.02 | 280 | +5,381 |
+| 0.03-0.10 | 1315 | +14,760 |
+| >0.10 | 158 | **-65,968** |
+0.01 jeet: chaal median $3.76 (25% $1.33, 75% $11), 80 min. 0.01 haar: median -$15, bura 10% -$152, ~6 ghante.
+Agli lot ki doori (1 ghante andar): median $1.44 (25% $0.87, 75% $2.69). Rukh: 71% nuqsan ki taraf (averaging), 29% chaal ki taraf.
+Ek saath band (>=3 position, tokri band): 159 dafa, net median +4.7 USC, 70% faide mein.
+=> User ka 0.01/0.02 tareeqa (Q17) apne data mein +30k USC; poora nuqsan >0.10 lot se. (Sirf 2.5 mahine, gold ki tezi - 20 saal test baqi.)
