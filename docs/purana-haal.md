@@ -1766,3 +1766,9 @@ USTEC +0.098 · USOIL +0.169 (44) · UKOIL +0.351 (40) · BTC +0.608 (6) · EUR 
 market Exp > 0 = 7/12, (market x saal) musbat 52%. XAU +0.316 · XAG +0.295 · US500 +0.121 · USTEC +0.175 · USOIL +0.015 · UKOIL +0.090 · BTC +0.528 ·
 **forex paanchon minus 2019+** (EUR -0.024, GBP -0.091, JPY -0.004, CHF -0.044, AUD -0.120). Hadd: faida 2019+ BUY (metal/index/BTC tezi) se; patla (+0.010).
 Forex ab NAHI nikala (IMTIHAN dekh kar chunna mana). Agla: FTMO challenge sim (#68 + Kachhua 12, swap 0) - alag qaida test se PEHLE.
+
+**Koshish #100 qaida (5 Nov, user "jis tarha jastrend ka result hy un basis per test ker k trend vs tide", test se PEHLE, badalna mana) - FTMO challenge: TREND vs TIDE, swap 0 (`tools/ftmo100.py`):**
+Sim = `ftmo53_asli.run_cost` jyon ka tyon (2-step: P1 +10%, P2 +5%, din 5% / kul 10% low par, $100k), **swap 0** (FTMO swap-free), kharcha 0.75 x Exness spread.
+**A TREND** = JasTrend akela: `st4h_trades(k=6)` 0.75% XAU/XAG/US500/USTEC (FTMO wala setting). **B TIDE** = Kachhua 12 market (#99, `kachhua_trades`), gold+silver ek slot (EA jaisa), USD hadd nahi (sim mein nahi).
+**CHUNAO 2012-01..2018-12 har mahine challenge:** B risk har market 0.25 / 0.50 / 0.75 / 1.0; umeedwar = P1 fail < 20% aur pass > fail; behtareen = zyada (pass - fail), phir kam median, phir kam risk.
+**IMTIHAN 2019-01..2026-10 EK dafa** (chuni risk) A vs B isi run: **TIDE JEETA** = B (pass - fail) > A, ya barabar aur B median < A. Warna TREND jeeta. Koi umeedwar nahi = Tide FTMO FAIL. Ginti +1.
