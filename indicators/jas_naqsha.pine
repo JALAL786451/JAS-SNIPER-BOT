@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA  (build n5.7, Pine v6, 3 Nov 2026; n5.7 = SELL bhi (1D NEECHE + 4H Supertrend neeche mura = BUY ka ulta), BUY / SELL dono ka SL / TP dabba, table mein BUY / SELL / CHALU, SELL ka TEST NAHI; n5.6 = table ka BUY ab chart ki asal entry se jura (pehle 4 ghante BUY, phir CHALU) + 80 zone ki hadd par sab se kamzor zone nikalti hai, purani majboot nahi; n5.5 = chhoti table default (4 line) + purane 4H BUY tikone band; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
+// JAS NAQSHA  (build n5.8, Pine v6, 5 Nov 2026; n5.8 = SELL default BAND (#73 FAIL; 1D NEECHE = RUKO, ulta dabba nahi), switch se ON ho sakta; n5.7 = SELL bhi (1D NEECHE + 4H Supertrend neeche mura = BUY ka ulta), BUY / SELL dono ka SL / TP dabba, table mein BUY / SELL / CHALU, SELL ka TEST NAHI; n5.6 = table ka BUY ab chart ki asal entry se jura (pehle 4 ghante BUY, phir CHALU) + 80 zone ki hadd par sab se kamzor zone nikalti hai, purani majboot nahi; n5.5 = chhoti table default (4 line) + purane 4H BUY tikone band; n5.4 = KHULASA pehli line (ek lafz + jumla); n5.3 = qeemat ke scale par pakka (scale.right); n5.2 = CE10235 pakka fix (dono shakh label); n5 = purani position band (default), AGLI position dotted andaza; n4 = 4H position dabba SL/TP; n3 = 1D EMA50/200 + 4H entry; n2 = table Middle Left)  -  jas_5ea p6 ka SAATHI (dono ek chart par). TRADE NAHI, sirf dikhana.
 // ============================================================================
 //  KYA DIKHATA HAI (har TF par, khud):
 //   1) ZONES S/R: 1H / 4H / 1D / 1W ke swing high/low (pivot 5/5, band candle) -> qareeb wale aapas mein jor
@@ -27,7 +27,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 31, line <= 4, plot 2, plotshape 2.
 // ============================================================================
-indicator("JAS Naqsha n5.7", "JAS Naqsha n5.7", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 40)
+indicator("JAS Naqsha n5.8", "JAS Naqsha n5.8", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 20, max_labels_count = 40)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -54,7 +54,7 @@ psTP   = input.float(2.0, "TP = kitne R (0 = TP nahi, sirf Supertrend mor par ba
 psOld  = input.bool(false, "Purani (band) positions dikhao", group = grE, display = display.none)
 psKeep = input.int(10, "Purani ON ho to kitni", minval = 1, maxval = 15, group = grE, display = display.none)
 psNext = input.bool(true, "AGLI position ka dotted dabba (andaza: 1D rukh saaf + 4H abhi ulti taraf)", group = grE, display = display.none)
-showSell = input.bool(true, "SELL bhi dikhao (1D NEECHE + 4H Supertrend neeche mura) - TEST NAHI", group = grE, display = display.none)
+showSell = input.bool(false, "SELL bhi dikhao (1D NEECHE + 4H Supertrend neeche mura) - #73 FAIL, default band", group = grE, display = display.none)
 
 // ============================================================================
 //  HTF DATA (har TF ek tuple, pichhli band candle)
@@ -471,7 +471,7 @@ if barstate.islast
     if showT and tFull
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA n5.7", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA n5.8", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
