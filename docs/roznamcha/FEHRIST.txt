@@ -2,17 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-03  (15 kaam)
-   - JasMauqa m7: HEDGE LADDER - bari SELL se har $10 neeche 0.05 BUY band (pehle SELL se neech
-   - HIDAYAT: JasShahmaat - Python PASS ke baad live seedha (user 3 Nov)
-   - chat khatam (34vi): JasShahmaat recovery #88-95 0/9, TRADING sec 5, KAHANI, sawal-jawab, r
-
-2026-11-04  (40 kaam)
-   - Koshish #96 #68 + Kachhua commodity: CHUNAO PASS 0.25%, IMTIHAN FAIL (81/2); factors-buniy
-   - chat khatam (37vi): Tide 15 record = test nahi, factor 11 qism, user EA ki 3 kami, TRADING
+2026-11-04  (37 kaam)
+   - Swap SS: C1d commodity curve-trend G7 FAIL (bank); sirf C2 #85 bacha
+   - Koshish #99/#100 qaida: #68 ulta (SL nahi, TP k x R) A = TP+qaida exit, B = sirf TP - test
    - MT5 naqsha: 474832446 - i6 US500 pehli band trade +565.66, 4 khuli +522.96
 
-2026-11-05  (12 kaam)
+2026-11-05  (19 kaam)
    - JAS Naqsha n5.8: SELL default band (#73 FAIL) - 1D neeche par RUKO, ulta AGLI SELL dabba n
-   - Tokri EA naqsha: user ke qaide Q1-Q4 (dhaal ~200 USC + trend, pakar, ulta); live 11 tk NET
-   - Live 253687618 history tajziya: BUY +135k, bari SELL -152k; data csv.gz
+   - Tokri naqsha: dhaal shart pakki (1D + 4H dono neeche) - user haan
+   - Tokri tk1 report: swap -94.61 = poora nuqsan; bina swap +1.7% (7 saal) = faida nahi; hadd 

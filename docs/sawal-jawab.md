@@ -164,3 +164,5 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - m6 D) BIG SELL PART CLOSE popup (bari SELL ka 0.09 kaato) theek? -> NAHI jab wo SELL kisi bari BUY ki DHAAL ho: NET +0.07->+0.16, gold $4 gire to faida wapas; 'faida pakka' asal mein dhaal bechna. NO dabao (5 Nov).
 - Meri tokri ka nuqsan kahan se? -> history 18-8..5-11: BUY +135k, 0.01 SELL ~0, BARI SELL -152k (dar mein 0.25-4 lot, upar jaate gold mein). Dhaal 0.01 rakho, mood upar par SELL nahi (5 Nov).
 - MT5 history kaise? -> computer MT5, title 253687618, History tab right-click: Positions, All History, Report > Open XML (5 Nov).
+- Tokri EA (fishing + dhaal) chalega? -> JasTokriEA tk1 tester 2019-26: -23% (swap -94.61, live swap-free par nahi lagta); bina swap +1.7% / 7 saal = faida nahi. Kaam ka sabaq: dhaal 0.01, upar mood mein bari SELL nahi (5 Nov).
+- Tester mein USC nahi? -> deposit USD mein 100 se taqseem (37,800 USC = 378 USD), USC wale inputs bhi /100 (dhaal step 200 -> 2) (5 Nov).

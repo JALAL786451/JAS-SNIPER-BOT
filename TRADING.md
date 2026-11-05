@@ -6,7 +6,7 @@ MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user 
 |---|---|---|---|---|---|---|
 | 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,565.89, equity 101,088.85 (+522.96 khuli) | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 US500 BUY 3.79 @7563.12 BAND 4 Nov 21:16:02 @7712.37 = +565.66 (pehli band trade, +1.97%)**; khuli 4: i6 USTEC BUY 0.56 @28120.01 SL 26340.67 (+186.75), t5 XAU 0.03 @4001.869 (+191.82), XAG 0.02 @51.996 (+33.10), US500 BUY 2.41 @7659.33 SL 7348.92 (+111.29); target baqi 8911, farsh 96566; k2 0; DIV US500 chhote + | 5 Nov SS (JasFtmoView) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0; XAG SELL 0.05 (2 Nov, SL khali = hamara EA nahi) user ne 3 Nov band +153.25; Magic/Comment SS baqi (purana: `docs/purana-haal.md`) | ON | 4 Nov SS |
-| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **5 Nov 15:03 PKT mobile SS: 11 tk, P/L -185.64**: BUY 0.01 x9 (4124.926, 4125.341, 4130.955, 4132.548, 4133.348, 4133.365, 4133.802, 4134.302, 4134.448), BUY 0.10 @4146.317 (-216.38), SELL 0.10 @4134.023 (+91.04) = DHAAL; BUY 0.19 / SELL 0.10 = **NET +0.09**; gold ~4124.7. (14:29: equity 37,802.84, 9 tk) | JasMauqa m6 (XAUUSDc D1) chal raha; **m7.2 (popup bara/bold, D band) F7 + lagana baqi** | **ON** (YES/NO popup) | 5 Nov SS |
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **5 Nov ~17:30 PC SS (JasMauqa m6): 19 tk, P/L -175.50, equity ~37,775**: BUY 14 tk 0.23 lot avg 4138.078, SELL 5 tk 0.14 avg 4133.611, NET +0.09, breakeven 4145.421, gold ~4125.9, stop out 4197 door | JasMauqa m6 (XAUUSDc D1) chal raha; **m7.2 (popup bara/bold, D band) F7 + lagana baqi** | **ON** (YES/NO popup) | 5 Nov SS |
 
 **Nayi chat ka message (copy-paste):**
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
@@ -62,13 +62,12 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**39vi chat (5 Nov)** - FTMO 2 email (swap-free HAAN; Free Trial = 3 registration, 2 delete karwao), i6 pehli band +565.66,
-Naqsha n5.9 (BUY dabba B1 jaisa, TV ✅), JasMauqa m7.2 (popup bara/bold, D) band - F7 baqi). TOKRI EA qaide Q1-Q7 `docs/tokri_naqsha.md`.
-Live history (6246 tk, `docs/research/live-history-tajziya.md`): -36%; BUY +135k, BARI SELL -152k = asal zakhm; qaida Q7 dhaal 0.01.
-**AGLA KAAM:** (a) TOKRI: history ke har zakhm (18-25 Aug, 2-4 Nov) par gold 1D/4H mood (Naqsha Rukh) nikalo, user ko aasan "yahan ye
-hona chahiye tha"; phir baqi sawal (bardasht number, jori kab) SIRF haan/na ya a/b/c (technical NAHI). Phir backtest -> demo, live NAHI.
-(b) m7.2 F7 + SS. (c) FTMO: 2 account delete email, swap-free Swing likhwao, Black Friday offer. (d) 472716649 XAG SELL kis ne.
-Lehja: PYAR se (HIDAYAT 5 Nov).
+**40vi chat (5 Nov)** - TOKRI: zakhm par mood (Aug MILA/UPAR = SELL nahi; Nov wapasi + 4H mura), Q8 wapasi 1 ATR, Q9 4H mude = dhaal band,
+Q10-13 (fishing 1 ATR / TP 0.5 / max 10, bardasht 5%, hadd 10%) -> `JasTokriEA.mq5` tk1 (user ne fishing + dhaal ijazat di; MT5 naam Jas_GOLD_BASKET_EA).
+TESTER (XAUUSDc H1 2019-26, 378 USD, step 2): -23% FAIL; report: swap -94.61 = poora nuqsan (live swap 0), bina swap +1.7% / 7 saal, hadd 4 dafa.
+**AGLA KAAM:** user ko SEEDHA ye sawal (wahi se continue, user ne kaha): a) EA roko, 2 sabaq (dhaal 0.01, upar mood mein bari SELL nahi)
+JasMauqa popup mein  b) fishing BUY sirf 1D bhi upar ho, tester dobara  c) dono. (mera mashwara a). Phir (b) m7.2 F7, (c) FTMO email.
+**AGENT / test bina poochhe NAHI** - sawal ka jawab do (HIDAYAT 5 Nov). Lehja PYAR se.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
