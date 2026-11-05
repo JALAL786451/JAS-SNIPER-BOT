@@ -13,8 +13,12 @@ Q3. Dhaal SELL nuqsan mein aa jaye (qeemat us se upar) -> ek BUY se use "pakar" 
     taake neeche jaye to bhi sahara rahe; phir intezar ke nuqsan cover ho.
 Q4. Ulta bhi wahi: trend upar ja kar SELL tokri ko nuqsan de -> sahara BUY lot.
 
+Q5. MOOD = bara trend 1D + 4H (5 Nov). Mood UPAR ho aur qeemat OVERSOLD ke bawajood neeche ja rahi ho
+    = "darana" (dara rahi hai) -> dhaal NAHI, khamosh intezar, equity par nazar. (Matlab: dhaal sirf jab 1D/4H mood
+    khud neeche ho? = user tasdeeq baqi). Mood kis cheez se (EMA / Supertrend / Naqsha Rukh) = ?
+
 ## Baqi sawal (ek ek)
-- [ ] Trend palatne / "neeche ke chances" ka ishara: kya dekhte hain? (TF, cheez)
+- [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [ ] Dhaal lot ka size (abhi: BUY 0.19 vs SELL 0.10)
 - [ ] "Bohot neeche se wapas aaya" = kitne $ / kitna waqt?
 - [ ] Equity ki aakhri hadd (jahan nayi lot bilkul band)
