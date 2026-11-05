@@ -2,12 +2,17 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-03  (18 kaam)
-   - JasMauqa m5: PRICE LADDER (gold -25/+25/+50/+100/breakeven par profit tickets + TOTAL)
-   - MT5 NAQSHA: live 253687618 naya haal (m6 SS) - NET +0.33, equity 33.6k USC
+2026-11-03  (15 kaam)
+   - JasMauqa m7: HEDGE LADDER - bari SELL se har $10 neeche 0.05 BUY band (pehle SELL se neech
+   - HIDAYAT: JasShahmaat - Python PASS ke baad live seedha (user 3 Nov)
    - chat khatam (34vi): JasShahmaat recovery #88-95 0/9, TRADING sec 5, KAHANI, sawal-jawab, r
 
-2026-11-04  (34 kaam)
+2026-11-04  (40 kaam)
    - Koshish #96 #68 + Kachhua commodity: CHUNAO PASS 0.25%, IMTIHAN FAIL (81/2); factors-buniy
-   - MT5 naqsha: 472716649 XAG SELL 0.05 haath ki nahi thi, user ne band ki (4 Nov)
-   - MT5 naqsha: live 253687618 - 15 manual tk NET +0.01, m6 B) PAIR CLOSE pehli dafa DONE
+   - chat khatam (37vi): Tide 15 record = test nahi, factor 11 qism, user EA ki 3 kami, TRADING
+   - MT5 naqsha: 474832446 - i6 US500 pehli band trade +565.66, 4 khuli +522.96
+
+2026-11-05  (12 kaam)
+   - JAS Naqsha n5.8: SELL default band (#73 FAIL) - 1D neeche par RUKO, ulta AGLI SELL dabba n
+   - Tokri EA naqsha: user ke qaide Q1-Q4 (dhaal ~200 USC + trend, pakar, ulta); live 11 tk NET
+   - Live 253687618 history tajziya: BUY +135k, bari SELL -152k; data csv.gz

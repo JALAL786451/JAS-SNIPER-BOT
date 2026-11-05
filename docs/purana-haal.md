@@ -1748,3 +1748,6 @@ A (TP + qaida exit, SL nahi): k 0.25 0/73 (P1 75%), 0.5 18/55, **1.0 63/10 (5/5)
 B (sirf TP): k 0.25 0/82, 0.5 0/82, 1.0 6/77 (P1 82%), 2.0 11/71 (P1 70%).
 Sabaq: B mein har trade AAKHIR jeet gayi (2003-18 jeet 100%, Exp ~+1R) magar intezar mein khuli girawat FTMO 5% din / 10% kul tor deti = fail;
 A mein i6 ka bura trade -1R se -3.3R. SL = FTMO ki hadd ka pehredaar; SL hata kar pass nahi.
+
+## 472716649 naqsha row (5 Nov se pehle, poori)
+| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0, IBS US500 0.66 / USTEC 0.68 intezar; 2 Nov USTEC BUY CHHOOTI (min lot > 2x risk) = nahi khuli. XAG SELL 0.05 @50.271 khuli 2 Nov 11:35:26 (balance badalne ke 27 sec baad, SL KHALI = hamara EA nahi), user ne 3 Nov 19:28 @49.658 band ki +153.25; purani US500 BUY 1.87 (28 Oct, c1 se pehle) 2 Nov -184.87; Magic/Comment column abhi bhi nahi dikha | ON | 4 Nov SS |

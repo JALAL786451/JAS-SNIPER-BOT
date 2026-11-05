@@ -5,7 +5,7 @@ MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user 
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
 | 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | balance 100,565.89, equity 101,088.85 (+522.96 khuli) | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 US500 BUY 3.79 @7563.12 BAND 4 Nov 21:16:02 @7712.37 = +565.66 (pehli band trade, +1.97%)**; khuli 4: i6 USTEC BUY 0.56 @28120.01 SL 26340.67 (+186.75), t5 XAU 0.03 @4001.869 (+191.82), XAG 0.02 @51.996 (+33.10), US500 BUY 2.41 @7659.33 SL 7348.92 (+111.29); target baqi 8911, farsh 96566; k2 0; DIV US500 chhote + | 5 Nov SS (JasFtmoView) |
-| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0, IBS US500 0.66 / USTEC 0.68 intezar; 2 Nov USTEC BUY CHHOOTI (min lot > 2x risk) = nahi khuli. XAG SELL 0.05 @50.271 khuli 2 Nov 11:35:26 (balance badalne ke 27 sec baad, SL KHALI = hamara EA nahi), user ne 3 Nov 19:28 @49.658 band ki +153.25; purani US500 BUY 1.87 (28 Oct, c1 se pehle) 2 Nov -184.87; Magic/Comment column abhi bhi nahi dikha | ON | 4 Nov SS |
+| 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0; XAG SELL 0.05 (2 Nov, SL khali = hamara EA nahi) user ne 3 Nov band +153.25; Magic/Comment SS baqi (purana: `docs/purana-haal.md`) | ON | 4 Nov SS |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **5 Nov 15:03 PKT mobile SS: 11 tk, P/L -185.64**: BUY 0.01 x9 (4124.926, 4125.341, 4130.955, 4132.548, 4133.348, 4133.365, 4133.802, 4134.302, 4134.448), BUY 0.10 @4146.317 (-216.38), SELL 0.10 @4134.023 (+91.04) = DHAAL; BUY 0.19 / SELL 0.10 = **NET +0.09**; gold ~4124.7. (14:29: equity 37,802.84, 9 tk) | JasMauqa m6 (XAUUSDc D1) chal raha; **m7.2 (popup bara/bold, D band) F7 + lagana baqi** | **ON** (YES/NO popup) | 5 Nov SS |
 
 **Nayi chat ka message (copy-paste):**
@@ -62,12 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**38vi chat (4-5 Nov)** - sirf live SS, koi test NAHI. Live 253687618: purani 133 tk basket user ne KHUD close all ki (balance 37,568.59 USC).
-Ab MANUAL (mobile) 15 tk, NET +0.01 (taala - $1 = 1 USC, breakeven 4141). Ajeeb SELL 0.01 @4065.005 = m6 nahi (lot kholta hi nahi) -> wahi
-**m6 ka pehla asli kaam:** 5 Nov 02:56:31 B) PAIR CLOSE DONE (10009), 17->15 tk. Close By = equity same, balance barhta (user samjha ✅).
-InpMinJori 5 -> 0.01 jori ko $5 farq; 2 karna = user ki marzi (popup hadd, risk nahi). Purana popup = NO.
-**AGLA KAAM:** (a) TOKRI EA (user 5 Nov naam le kar maanga: trend se lot, DHAAL/hedge, sahi jori close, mauqe par nayi lot, ulti SL, SELL bhaagte trend ko nuqsan mein na aane de) -> qaide `docs/tokri_naqsha.md` (Q1-Q4 likhe, agla sawal: trend ishara), user ka jawab: "upar se SELL neeche ja rahi ho to bachao lot bhi SELL". Naqsha -> backtest -> demo, live NAHI. JasMauqa m7.2 (popup bara/bold, D band) F7 + SS baqi. (b) 472716649 XAG SELL kis ne kholi (History Comment).
-(c) FTMO 2 jawab (sawal-jawab): swap-free HAAN; Free Trial band = 3 registration -> 2 faltu account delete karwao (jalalzte rakho). (d) i6 pehli band trade +565.66 HUI (naqsha); agli band ka SS. (e) Live m6 popup / DONE ka SS aaye to naqsha update.
+**39vi chat (5 Nov)** - FTMO 2 email (swap-free HAAN; Free Trial = 3 registration, 2 delete karwao), i6 pehli band +565.66,
+Naqsha n5.9 (BUY dabba B1 jaisa, TV ✅), JasMauqa m7.2 (popup bara/bold, D) band - F7 baqi). TOKRI EA qaide Q1-Q7 `docs/tokri_naqsha.md`.
+Live history (6246 tk, `docs/research/live-history-tajziya.md`): -36%; BUY +135k, BARI SELL -152k = asal zakhm; qaida Q7 dhaal 0.01.
+**AGLA KAAM:** (a) TOKRI: history ke har zakhm (18-25 Aug, 2-4 Nov) par gold 1D/4H mood (Naqsha Rukh) nikalo, user ko aasan "yahan ye
+hona chahiye tha"; phir baqi sawal (bardasht number, jori kab) SIRF haan/na ya a/b/c (technical NAHI). Phir backtest -> demo, live NAHI.
+(b) m7.2 F7 + SS. (c) FTMO: 2 account delete email, swap-free Swing likhwao, Black Friday offer. (d) 472716649 XAG SELL kis ne.
+Lehja: PYAR se (HIDAYAT 5 Nov).
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

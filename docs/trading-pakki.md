@@ -155,6 +155,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 - `data/ftmo` US500/USTEC 2012-17 patla (2013 Feb-May khali, 2015-17 ~15 H1/din), 2018+ poora; gold/chandi poore. Index TALAASH 2012-18 par kam bharosa (1 Nov).
 - FAIL ki wajah pehle (4 Nov, #97 pilot): ghalat market / chhota R / ghalat kharcha nuqsan bara dikhate (#9 -0.207R -> #97 -0.014R), magar kharche se pehle faida ~0 ho to factor khud nahi. Naya test sirf darwaza G1-G10 + asli swap ke saath.
 
+- **Live history (5 Nov):** 18-8..5-11 6246 tk -36%: BUY +135k, 0.01 SELL -3k, BARI SELL (0.25-4 lot) -152k upar jaate gold mein. Dhaal chhoti (0.01) = user ka apna qaida Q7.
 ## 5. Mere tools
 
 Har file ki ek line `CLAUDE.md` mein, lambi kahani `docs/files-tafseel.md` mein, purani tools
