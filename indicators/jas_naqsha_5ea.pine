@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA + 5EA  (build j1, Pine v6, 5 Nov 2026)  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
+// JAS NAQSHA + 5EA  (build j2, Pine v6, 5 Nov 2026; j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
 //  j1: Naqsha hissa n5.9 jyon ka tyon. 5EA hissa p6 wala hisaab, magar SIRF chart ke instrument ka: request.security 11 -> 2
 //   (bhaari 4 x 4H + 7 x 1D poori history = loading / timeout ki wajah). Neeche 11 instrument ki line default BAND (ab sirf chart
 //   wale ka haal hota hai). 5EA ka poora hissa setting "6 · 5EA" se ON/OFF. Python ke pakke number wahi (table). TRADE NAHI, sirf dikhana.
@@ -33,7 +33,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 31, line <= 4, plot 2, plotshape 2.
 // ============================================================================
-indicator("JAS Naqsha+5EA j1", "JAS Naqsha+5EA j1", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 50, max_labels_count = 70, max_bars_back = 300)
+indicator("JAS Naqsha+5EA j2", "JAS Naqsha+5EA j2", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 50, max_labels_count = 70, max_bars_back = 300)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -478,7 +478,7 @@ if barstate.islast
     if showT and tFull
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA+5EA j1", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA+5EA j2", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -598,7 +598,7 @@ if barstate.islast
 //  ===== 5EA HISSA (jas_5ea p6; naam badle: LA->eLA, cTx->eTx, cBg->eBg, tb->tb5, showSell->showSell5, f_pos->f_pos5, f_isWk->f_isWk5) =====
 // ============================================================================
 
-BUILD = "j1"
+BUILD = "j2"
 TZ    = "America/New_York"
 DAY   = 86400000
 SWAP  = 0.03 / 365
@@ -706,7 +706,7 @@ f_open(Leg g, float px, float sd, int t) =>
 //   ATR14 + IBS ki apni band  (4) k ke open par rukh wali band  (5) din ke close: B2, SELL kato, S2  (6) k ka open: B1, SELL kato, S1.
 //   Wapas = haal "candle k ke OPEN par" - is mein k ka high / low / close nahi = repaint nahi.
 // ============================================================================
-f_core(bool ibsOn, float cst, int fromT, int toT) =>
+f_core(bool act, bool ibsOn, float cst, int fromT, int toT) =>
     var Leg b1 = Leg.new(dir = 1)
     var Leg s1 = Leg.new(dir = -1)
     var Leg b2 = Leg.new(dir = 1)
@@ -725,7 +725,7 @@ f_core(bool ibsOn, float cst, int fromT, int toT) =>
     [stv, stDir] = ta.supertrend(3.0, 10)
     atr4 = ta.atr(10)
     up = stDir < 0
-    if bar_index >= 1
+    if act and bar_index >= 1
         qo1 = open[1]
         qh1 = high[1]
         ql1 = low[1]
@@ -824,7 +824,7 @@ f_core(bool ibsOn, float cst, int fromT, int toT) =>
 
 // XAU / XAG: sirf B1 + S1 + Supertrend / SMA200 / close (8 tuple)
 f_tr2(float cst, int fromT, int toT) =>
-    [qa0, qa1, qc0, qc1, u0, u1, v0, v1, w0, w1, w2, w3, w4, w5] = f_core(false, cst, fromT, toT)
+    [qa0, qa1, qc0, qc1, u0, u1, v0, v1, w0, w1, w2, w3, w4, w5] = f_core(true, false, cst, fromT, toT)
     [qa0, qa1, qc0, qc1, w0, w1, w2, w5]
 
 // ============================================================================
@@ -901,7 +901,7 @@ f_win(int y, int m, int d) =>
     hy
 
 // har index ki apni daily candles, sirf BAND candle [1]: BUY close par, band pehli session >= H ke close par, SL 3 x ATR20
-f_kh(int fromT, int toT) =>
+f_kh(bool act, int fromT, int toT) =>
     _atrA = ta.atr(20)
     _o  = open[1]
     _l  = low[1]
@@ -909,7 +909,7 @@ f_kh(int fromT, int toT) =>
     _a  = _atrA[1]
     _td = time_tradingday[1]
     var Leg g = Leg.new(dir = 1)
-    if not na(_c) and not na(_td)
+    if act and not na(_c) and not na(_td)
         _y   = year(_td, "UTC")
         _m   = month(_td, "UTC")
         _d   = dayofmonth(_td, "UTC")
@@ -1003,8 +1003,8 @@ isKh   = on5 and cm >= 4 and cm <= 10
 symC = not isCore ? syminfo.tickerid : cm == 0 ? mXAU : cm == 1 ? mXAG : cm == 2 ? mSPX : mNAS
 symK = not isKh ? syminfo.tickerid : cm == 4 ? ix0 : cm == 5 ? ix1 : cm == 6 ? ix2 : cm == 7 ? ix3 : cm == 8 ? ix4 : cm == 9 ? ix5 : ix6
 cstC = cm == 0 ? C_XAU : cm == 1 ? C_XAG : cm == 2 ? C_SPX : C_NAS
-[xB1e, xB1l, xS1e, xS1l, xB2e, xB2l, xS2e, xS2l, xST, xSU, xSM, xTH, xTL, xCL] = request.security(symC, "240", f_core(cm == 2 or cm == 3, cstC, TMIN, TMAX), lookahead = eLA)
-[xKe, xKl, xKc] = request.security(symK, "D", f_kh(TMIN, TMAX), lookahead = eLA)
+[xB1e, xB1l, xS1e, xS1l, xB2e, xB2l, xS2e, xS2l, xST, xSU, xSM, xTH, xTL, xCL] = request.security(symC, "240", f_core(isCore, cm == 2 or cm == 3, cstC, TMIN, TMAX), lookahead = eLA)
+[xKe, xKl, xKc] = request.security(symK, "D", f_kh(isKh, TMIN, TMAX), lookahead = eLA)
 f_c(int k, float v) => isCore and cm == k ? v : na
 f_k(int k, float v) => isKh and cm == k ? v : na
 E0 = f_c(0, xB1e)

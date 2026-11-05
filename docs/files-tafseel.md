@@ -244,7 +244,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `JasIbsCentEA.mq5` c1 - cent $1000: IBS i6 + $10 risk + martingale 1.5x/3 qadam + $800 stop (#81), magic 20261102, judge READY
 - `data/btc/Bitstamp_BTCUSD_d.csv` - BTC daily Bitstamp 2014-11 se (cryptodatadownload), #76 ke liye (2 Nov)
 - `indicators/jas_5ea.pine` - p6 (1 Nov, judge READY: levels, alert, Abhi R, lot, agli khirki, warning). p4: sirf chart wala instrument, Python 2012-aaj number, live haal, saaf nishan. p2: S2/B1 fix. p1: 5 EA (B1 trend, B2 IBS, B3 khirki BUY + S1/S2 SELL test FAIL) table 19 row + PnL/DD + Muddat 5 option, live entry/SL line; table 1D chart par
-- `indicators/jas_naqsha_5ea.pine` - j1 (5 Nov): jas_naqsha n5.9 + jas_5ea p6 EK script; 5EA sirf chart ka instrument (request 18 -> 9), setting '6 · 5EA' ON/OFF; TV compile baqi
+- `indicators/jas_naqsha_5ea.pine` - j2 (5 Nov; j2 = 5EA band ho to hisaab bhi band; j1 TV par loading par atki): jas_naqsha n5.9 + jas_5ea p6 EK script; 5EA sirf chart ka instrument (request 18 -> 9), setting '6 · 5EA' ON/OFF; TV compile baqi
 - `tools/trade_page/` - Trade Roznamcha page: gen.py + template.html -> roznamcha.html (artifact https://claude.ai/artifact/8mv4nJR8T9rHUXGJvBHrMK), 5 EA 3,075 trades 2012-aaj (1 Nov)
 - `docs/tv_watchlist_jas11.txt` - TradingView watchlist import: 11 OANDA instrument (jas_5ea) (1 Nov)
 - `tools/JAS_DXY.bat` - laptop ek click: EURUSD, USDJPY, USDSEK H1 Dukascopy se (#71 ke liye) (1 Nov)
