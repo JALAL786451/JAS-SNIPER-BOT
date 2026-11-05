@@ -17,6 +17,10 @@ Q5. MOOD = bara trend 1D + 4H (5 Nov). Mood UPAR ho aur qeemat OVERSOLD ke bawaj
     = "darana" (dara rahi hai) -> dhaal NAHI, khamosh intezar, equity par nazar. (Matlab: dhaal sirf jab 1D/4H mood
     khud neeche ho? = user tasdeeq baqi). Mood kis cheez se (EMA / Supertrend / Naqsha Rukh) = ?
 
+Q6. MILA-JULA (5 Nov 15:26 SS, gold 4H ~4124): 1D NEECHE (neeche ka chance 50+) MAGAR 4H par BUY chal rahi
+    (Naqsha n5.9 CHALU BUY +0.5R) -> is soorat mein user ne dhaal NAHI lagayi = intezar (user tasdeeq baqi).
+    Mood napna = JAS Naqsha "Rukh" line (Claude ka mashwara, user ko technical nahi poochna).
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [ ] Dhaal lot ka size (abhi: BUY 0.19 vs SELL 0.10)
