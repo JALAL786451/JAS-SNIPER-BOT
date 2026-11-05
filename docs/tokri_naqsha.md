@@ -59,6 +59,8 @@ TESTER REPORT tajziya (user xlsx, 5 Nov): SWAP -94.61 USD (= -9,461 USC) > kul n
 
 Q14 (5 Nov raat, 43vi chat, user): "koi strategy nahi - basket bana kar profit nikalna". BASKET BAND = jab poori tokri ka NET
     (fees/commission ke BAAD) +0.5 ho -> sab band. (0.5 = MT5 screen ke 0.5 USC ya asli $0.5 = 50 USC? = ?)
+    User (43vi): hisaab USD mein, test $1000 USD account. FEES $0.24 har 0.01 lot (BUY ho ya SELL).
+    => BAND shart: tokri ka faida - (0.24 x kul 0.01 lot) >= +$0.5 (fees se barhe bina band NAHI, warna drawdown).
     User ka apna sabaq: "direction sahi add karne ka pata na hone se loss mein rehta tha" (CSV 4 bari haar din yahi dikhate: ulti taraf ki ladder).
     User: EA banana ZAROOR hai; test 1m / 5m par, gold data QDM se (repo mein M1: 2009-18 histdata, 2015 + 2021-24 qdm; 2019, 2020, 2025, 2026 BAQI).
     "4H trend test" ka matlab user bhool gaye (5 Nov) - Claude ka mashwara: add sirf 4H trend ki taraf vs bina filter, dono ek hi basket qaide par.
