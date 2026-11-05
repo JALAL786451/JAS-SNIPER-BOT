@@ -21,9 +21,14 @@ Q6. MILA-JULA (5 Nov 15:26 SS, gold 4H ~4124): 1D NEECHE (neeche ka chance 50+) 
     => DHAAL SHART: 1D NEECHE + 4H bhi neeche mura (dono) + nuqsan ~200 USC + abhi neeche se wapas na aaya. (Ulta BUY ke liye.)
     Mood napna = JAS Naqsha "Rukh" line (Claude ka mashwara, user ko technical nahi poochna).
 
+Q7. DHAAL SIZE (5 Nov, jawab "d"): size trend + equity ki BARDASHT se. Misaal: equity mazboot, gold pehle hi bohot gir
+    chuka, phir bhi MAZEED 200 USC nuqsan -> EK 0.01 SELL (chhoti!) jo neeche ko rok le; palte aur SELL nuqsan mein jaye
+    to itna ke ek BUY use cover kar le (Q3 pakar). Equity bardasht kare to aur 0.01 BUY bhi theek (fishing).
+    => har 200 USC mazeed nuqsan par ek 0.01 dhaal? (user tasdeeq baqi). "Bardasht" ka number = ?
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
-- [ ] Dhaal lot ka size (abhi: BUY 0.19 vs SELL 0.10)
+- [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
 - [ ] "Bohot neeche se wapas aaya" = kitne $ / kitna waqt?
 - [ ] Equity ki aakhri hadd (jahan nayi lot bilkul band)
 - [ ] Fishing lot (nayi 0.01) kab aur kitne $ par
