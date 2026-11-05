@@ -62,14 +62,14 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**42vi chat (5 Nov)** - JasMauqa **m7.4** (popup chart ke daayen, InpPopRight; trade qaida same) - F7 user ne abhi nahi bataya.
-Live 253687618: aaj basket POORA band (din ki 2ri win), balance 38,074.99 (+475.30 USC din); khuli 1 BUY 0.10 SL khali. User ki poori
-History Report (6.6 MB paste = compact aaya; agli baar sirf Open Positions SS) -> `data/live_253687618_deals_20261105.csv`
-(12,374 gold deal 18 Aug-5 Nov: 66 din, 49 jeet / 16 haar; bari haar 24-8 -36,237, 22-10 -10,590, 29-9 -9,849, 4-11 -6,227; kul gold -20,672 = -35%).
-User: Tokri/gold basket EA abhi PENDING (41vi ka BAND user ke liye khatam nahi) - **"trend par 4H test baqi hai"** (41vi mein FILT=1 = 4H ST + 1D UP hua tha; user shayad sirf 4H chahte - pehle PUCHO).
-**AGLA KAAM:** pehle DISCUSS, phir test: (1) user se pucho "4H trend test" se kya muraad (sirf 4H filter? 4H par entry?); (2) CSV se 4 bari haar din
-dekho kyun aaye (39vi: bari SELL asal zakhm) - chhota python, agent NAHI; (3) dono se basket EA ki hadd tay karo, user "han" ke baad sim.
-Phir m7.4 F7 + NFP alarm ka haal. **AGENT / lamba test bina poochhe NAHI.** Lehja PYAR se.
+**43vi chat (5-6 Nov)** - TV: **JAS Naqsha+5EA j1** (naqsha + 5ea ek script) chal gayi ✅ (atakna TV app ka tha, app band-khol). j2 GitHub par (5EA band = hisaab band), lagani nahi.
+FTMO demo: t5 US500 band ~-662 (SL se pehle). Live 253687618: user ne fishing live dikhayi (aaj 3 lot +5.30 USC; BUY 0.10 @4127 intezar).
+**TOKRI EA = user ka asli tareeqa** (`docs/tokri_naqsha.md` Q14-Q19, data `docs/research/live-history-tajziya.md` 43vi): koi strategy nahi;
+lot SIRF 0.01/0.02 (martingale NAHI); dono taraf lot (~$1.5 doori, 71% nuqsan taraf); har lot faide mein (spread ke baad +0.3..+4) BAND; nuqsan wali
+intezar; bohot door gayi to hedge (user ne naam liya), beech mein fishing; weekend BTC/ETH (baad mein). 4H filter HATA. User ke data mein 0.01/0.02 = +30k USC, >0.10 = -66k.
+**AGLA KAAM (user "han" 6 Nov):** Python sim gold H1 2005-2026 (`data/ftmo/XAU_XAG_H1_dukascopy.zip`), $1000 USD, spread $0.24/0.01, lot 0.01/0.02,
+doori $1/$1.5/$2/$3, TP $0.3/$1/$2/$4; hadd: khula nuqsan $300 par sab band (user ne number nahi diya - batao); phir M1 14 saal (histdata 2009-18, qdm 2015/2021-24) jaanch.
+Nateeja seedha batao (41vi/tk1 ~0 tha). Hedge trigger number user ne nahi diya -> pehle bina hedge + $20/$50 hedge dekho. Agent NAHI.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

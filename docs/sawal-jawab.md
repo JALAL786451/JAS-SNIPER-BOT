@@ -171,3 +171,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - $1000 Standard USD par tokri? -> NAHI, 0.01 lot bhari (sim DD 91%); cent account ($1000 = 100k USC) theek (5 Nov).
 - Poori MT5 History Report paste karun? -> NAHI, 6.6 MB = chat bhar kar compact; sirf Open Positions + Balance SS. Poori history chahiye to file - ab `data/live_253687618_deals_20261105.csv` mein hai (5 Nov).
 - Live manual basket asli nateeja 18 Aug-5 Nov? -> 66 din, 49 jeet / 16 haar, gold -20,672 USC (-35%); 4 bari haar din (24-8, 22-10, 29-9, 4-11) sab kha gaye (5 Nov).
+- TV script loading par atki, error nahi? -> TV desktop app band kar ke dobara kholo (j1 aise hi chali, 5 Nov).
+- Gold 1m data kitna? -> 2009-18 (histdata), 2015 + 2021-24 (qdm); 2019, 2020, 2025, 2026 NAHI. H1 2005-2026 poora (data/ftmo) (5 Nov).
+- User ki tokri kaise chalti? -> 0.01/0.02 dono taraf, har faide wali band (+0.3..+4), nuqsan wali intezar; data: 0.01/0.02 +30k, >0.10 -66k (6 Nov).

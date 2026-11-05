@@ -2,12 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-04  (24 kaam)
-   - MT5 naqsha: live 253687618 m6 SS (4 Nov) - P/L +13,329.60 USC, NET +0.08
-   - JasFtmoView v1.0: sirf dekhne ka indicator - bara font, har trade EA naam, R, target/farsh
+2026-11-04  (19 kaam)
+   - Koshish #99/#100 qaida: #68 ulta (SL nahi, TP k x R) A = TP+qaida exit, B = sirf TP - test
+   - JasFtmoView v1.1: R tick value se (OrderCalcProfit indicator mein nahi), neeche kone mein 
    - MT5 naqsha: 474832446 - i6 US500 pehli band trade +565.66, 4 khuli +522.96
 
-2026-11-05  (30 kaam)
+2026-11-05  (46 kaam)
    - JAS Naqsha n5.8: SELL default band (#73 FAIL) - 1D neeche par RUKO, ulta AGLI SELL dabba n
-   - Tokri Q10-13: fishing 1 ATR / TP 0.5 ATR / max 10, bardasht 5%, aakhri hadd 10%, jori alag
-   - data: live 253687618 asli deals 18 Aug-5 Nov (basket EA ke liye)
+   - files-tafseel: JasMauqa m7.3
+   - tokri Q19: user ne live dikhaya - faide wali har lot band (+0.30..+3.40), din +5.30 USC
