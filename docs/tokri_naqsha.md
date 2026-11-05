@@ -76,6 +76,9 @@ Q16 (43vi, user ka asli tareeqa): 0.01 lot kholo (misaal BUY). Wo $2 NUQSAN mein
     ulti taraf. Nuqsan wali (pehli BUY) khuli rahe; trend palte aur wo faide mein aaye -> FAURAN band.
     Baqi: pehli lot BUY ya SELL? chaal ke saath wali agli lot 0.01 ya 0.02? 0.02 bhi $2 nuqsan mein jaye to 0.04 (dugna) ya 0.02?
 
+Q17 (43vi, user): lot sirf 0.01 ya 0.02 - lot size BARHTA NAHI (martingale NAHI). HEDGE hai (user ne naam liya): koi lot bohot
+    door nuqsan mein chali jaye tab hedge, aur us ke beech wahi FISHING (0.01/0.02 faida uthao). Baqi: "bohot door" = kitne $? hedge lot kitni?
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
