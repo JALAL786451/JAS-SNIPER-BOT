@@ -1,5 +1,8 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m3  (3 Nov 2026)                          |
+//|  JAS MAUQA   -   build m7.2  (5 Nov 2026)                        |
+//|  m7.2 = POPUP chart par BARA + BOLD (InpPopFont), mauqa ka naam  |
+//|         peela mota, YES/NO bare button; D) default BAND         |
+//|         (InpPartD false: bari SELL = dhaal, kaato mat; user 5 Nov)|
 //|  m7.1 = H) tarteeb: SELL se neeche wali, phir SELL se UPAR wali      |
 //|         (SELL ke qareeb pehle, sab se upar wali nahi)            |
 //|  m7 = H) HEDGE LADDER (user 3 Nov, HEDGE naam le kar): bari SELL  |
@@ -31,11 +34,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "7.00"
+#property version   "7.20"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.1"
+#define S_BUILD "m7.2"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -45,6 +48,8 @@ input int    InpWaitMin  = 15;     // Popup ke baad agla popup kitne minute baad
 input double InpNetMove  = 0.10;   // HIFAZAT: ek kaam se |NET| zyada se zyada itna barhe
 input double InpMaxNet   = 0.80;   // HIFAZAT: |NET| is se upar na jaye (abhi zyada ho to barhe nahi)
 input double InpMinDoor  = 400.0;  // HIFAZAT: stop out kam az kam itne $ door rahe
+input bool   InpPartD    = false;  // D) Bari SELL part close ka mashwara (false = BAND: bari SELL dhaal hai)
+input int    InpPopFont  = 16;     // POPUP ka font (bara = 16-20)
 input double InpPartLot  = 0.10;   // D) Bari SELL profit mein ho to ek dafa kitni lot kam
 input bool   InpHedge    = false;  // H) HEDGE LADDER chalu (BUY band kar ke NET 0 tak). false = sirf plan dikhao
 input bool   InpHAuto    = false;  // H) true = khud band kare (sote waqt); false = har qadam YES/NO
@@ -62,6 +67,13 @@ CTrade trade;
 struct PInfo { ulong t; long typ; double vol; double open; double pnl; };
 
 datetime gNext = 0;
+// m7.2 chart POPUP (MessageBox ka font nahi badalta - is liye apna dabba)
+int      gPend = 0;        // 0 = kuch nahi, 1 = Close By, 2 = close, 3 = part close
+ulong    gP1 = 0, gP2 = 0;
+double   gPLot = 0;
+string   gPNm = "";
+bool     gPopOn = false;
+datetime gPopT = 0;
 int gRow = 0;
 
 void Ln(string tx, color c)
@@ -83,6 +95,133 @@ void Ln(string tx, color c)
   }
 
 string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
+
+void PopHide() { ObjectsDeleteAll(0, "JM_P"); gPopOn = false; ChartRedraw(); }
+
+void PopTx(string nm, int x, int y, string tx, string font, int fs, color c)
+  {
+   ObjectCreate(0, nm, OBJ_LABEL, 0, 0, 0);
+   ObjectSetInteger(0, nm, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, nm, OBJPROP_XDISTANCE, x);
+   ObjectSetInteger(0, nm, OBJPROP_YDISTANCE, y);
+   ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, nm, OBJPROP_BACK, false);
+   ObjectSetInteger(0, nm, OBJPROP_ZORDER, 101);
+   ObjectSetString(0, nm, OBJPROP_FONT, font);
+   ObjectSetInteger(0, nm, OBJPROP_FONTSIZE, fs);
+   ObjectSetInteger(0, nm, OBJPROP_COLOR, c);
+   ObjectSetString(0, nm, OBJPROP_TEXT, tx);
+  }
+
+void PopBtn(string nm, int x, int y, int w, int h, string tx, color bg)
+  {
+   ObjectCreate(0, nm, OBJ_BUTTON, 0, 0, 0);
+   ObjectSetInteger(0, nm, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, nm, OBJPROP_XDISTANCE, x);
+   ObjectSetInteger(0, nm, OBJPROP_YDISTANCE, y);
+   ObjectSetInteger(0, nm, OBJPROP_XSIZE, w);
+   ObjectSetInteger(0, nm, OBJPROP_YSIZE, h);
+   ObjectSetInteger(0, nm, OBJPROP_BGCOLOR, bg);
+   ObjectSetInteger(0, nm, OBJPROP_COLOR, clrWhite);
+   ObjectSetInteger(0, nm, OBJPROP_BORDER_COLOR, clrWhite);
+   ObjectSetString(0, nm, OBJPROP_FONT, "Arial Black");
+   ObjectSetInteger(0, nm, OBJPROP_FONTSIZE, InpPopFont + 2);
+   ObjectSetString(0, nm, OBJPROP_TEXT, tx);
+   ObjectSetInteger(0, nm, OBJPROP_STATE, false);
+   ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, nm, OBJPROP_ZORDER, 102);
+  }
+
+// body ki har line alag label; mauqa ka naam / Profit / LIVE = mota rangeen
+void PopShow(string title, string body, bool ask)
+  {
+   PopHide();
+   // OBJ_LABEL ki likhai 63 harf tak - lambi line ko lafzon par tod do (58)
+   string raw[], ln[];
+   int nr = StringSplit(body, '\n', raw), n = 0;
+   for(int i = 0; i < nr; i++)
+     {
+      string rest = raw[i];
+      do
+        {
+         string part = rest;
+         if(StringLen(rest) > 58)
+           {
+            int cut = 58;
+            while(cut > 20 && StringGetCharacter(rest, cut) != ' ') cut--;
+            if(cut <= 20) { part = StringSubstr(rest, 0, 58); rest = StringSubstr(rest, 58); }
+            else          { part = StringSubstr(rest, 0, cut); rest = StringSubstr(rest, cut + 1); }
+           }
+         else rest = "";
+         ArrayResize(ln, n + 1); ln[n++] = part;
+        }
+      while(StringLen(rest) > 0);
+     }
+   int fs = MathMax(10, InpPopFont), lh = (int)(fs * 2.1);
+   int maxc = StringLen(title);
+   for(int i = 0; i < n; i++) maxc = MathMax(maxc, StringLen(ln[i]));
+   int w = MathMax(460, (int)(maxc * (fs + 4) * 0.8) + 60);
+   int hBody = 0;
+   for(int i = 0; i < n; i++) hBody += (StringLen(ln[i]) == 0 ? lh / 2 : lh);
+   int x0 = 30, y0 = 40, h = 30 + lh + 10 + hBody + 20 + lh * 2 + 20;
+   string bg = "JM_P_BG";
+   ObjectCreate(0, bg, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+   ObjectSetInteger(0, bg, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, bg, OBJPROP_XDISTANCE, x0);
+   ObjectSetInteger(0, bg, OBJPROP_YDISTANCE, y0);
+   ObjectSetInteger(0, bg, OBJPROP_XSIZE, w);
+   ObjectSetInteger(0, bg, OBJPROP_YSIZE, h);
+   ObjectSetInteger(0, bg, OBJPROP_BGCOLOR, C'18,22,30');
+   ObjectSetInteger(0, bg, OBJPROP_BORDER_TYPE, BORDER_FLAT);
+   ObjectSetInteger(0, bg, OBJPROP_COLOR, clrGold);
+   ObjectSetInteger(0, bg, OBJPROP_WIDTH, 3);
+   ObjectSetInteger(0, bg, OBJPROP_BACK, false);
+   ObjectSetInteger(0, bg, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, bg, OBJPROP_ZORDER, 100);
+   int y = y0 + 15;
+   PopTx("JM_P_T", x0 + 20, y, title, "Arial Black", fs + 2, clrGold);
+   y += lh + 10;
+   for(int i = 0; i < n; i++)
+     {
+      if(StringLen(ln[i]) == 0) { y += lh / 2; continue; }
+      string f = "Arial Bold"; int z = fs; color c = clrWhite;
+      if(gPNm != "" && StringFind(ln[i], gPNm) >= 0)                          { f = "Arial Black"; z = fs + 4; c = clrYellow; }
+      else if(StringFind(ln[i], "LIVE") >= 0)                                 { f = "Arial Black"; c = clrTomato; }
+      else if(StringFind(ln[i], "Profit") == 0 || StringFind(ln[i], "Result") == 0 || StringFind(ln[i], "DONE") >= 0) { f = "Arial Black"; z = fs + 2; c = clrLime; }
+      else if(StringFind(ln[i], "FAIL") >= 0 || StringFind(ln[i], "OFF") >= 0) { f = "Arial Black"; c = clrTomato; }
+      else if(StringFind(ln[i], "NET") == 0 || StringFind(ln[i], "Tickets") == 0) c = clrAqua;
+      PopTx("JM_P_L" + IntegerToString(i), x0 + 20, y, ln[i], f, z, c);
+      y += lh;
+     }
+   y += 20;
+   int bw = 170, bh = (int)(lh * 1.6);
+   if(ask)
+     {
+      PopBtn("JM_P_YES", x0 + 20, y, bw, bh, "YES", C'0,130,60');
+      PopBtn("JM_P_NO", x0 + 40 + bw, y, bw, bh, "NO", C'180,30,30');
+     }
+   else
+      PopBtn("JM_P_OK", x0 + 20, y, bw, bh, "OK", C'40,90,160');
+   gPopOn = true;
+   gPopT = TimeCurrent();
+   ChartRedraw();
+  }
+
+void DoPend()
+  {
+   int kind = gPend; ulong t1 = gP1, t2 = gP2; string nm = gPNm;
+   gPend = 0;
+   if(kind == 0) { PopHide(); return; }
+   if(!AlgoOn() || !PositionSelectByTicket(t1) || (kind == 1 && !PositionSelectByTicket(t2)))
+     { PopShow("JAS MAUQA " + S_BUILD, "Algo OFF or ticket changed\nnothing done.", false); return; }
+   bool ok;
+   if(kind == 1) ok = trade.PositionCloseBy(t1, t2);
+   else if(kind == 3) ok = trade.PositionClosePartial(t1, gPLot);
+   else          ok = trade.PositionClose(t1);
+   string r = StringFormat("%s: %s  (%d %s)", nm, Pick(ok, "DONE", "FAIL"), (int)trade.ResultRetcode(), trade.ResultRetcodeDescription());
+   Print("JAS MAUQA ", S_BUILD, ": ", r);
+   PopShow("JAS MAUQA " + S_BUILD + " - NATEEJA", nm + "\n" + Pick(ok, "DONE", "FAIL") + StringFormat("  (%d %s)", (int)trade.ResultRetcode(), trade.ResultRetcodeDescription()), false);
+  }
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
 string M(double v)  { return(DoubleToString(v, 2)); }
 
@@ -226,7 +365,7 @@ void Run()
    if(full) { cT = 0; cV = 0; }
    // D) BARI SELL profit mein: thori lot kam (hifazat ke andar)
    ulong dT = 0; double dLot = 0, dV = 0;
-   if(big >= 0 && a[big].pnl > 0 && !InpHedge)
+   if(InpPartD && big >= 0 && a[big].pnl > 0 && !InpHedge)
      {
       double stp = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), mnv = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
       double x = MathFloor(MathMin(InpPartLot, a[big].vol - mnv) / stp + 1e-9) * stp;
@@ -267,7 +406,7 @@ void Run()
    Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "TOO MANY - only pair close", "OK")), full ? cR : cW);
    Ln(Pick(aS > 0, StringFormat("A) BIG SELL REDUCE  #%I64u + #%I64u  = +%s", aS, aB, M(aV)), "A) Big SELL reduce: none now"), aS > 0 ? cG : cW);
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
-   Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), "D) Big SELL part close: none now (SELL loss ya hifazat)"), dT > 0 ? cG : cW);
+   Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), Pick(InpPartD, "D) Big SELL part close: none now (SELL loss ya hifazat)", "D) Big SELL part close: BAND (dhaal nahi kaatni)")), dT > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
@@ -301,6 +440,12 @@ void Run()
         }
      }
    // ---- POPUP (sirf Algo hara, wait khatam, mauqa ho)
+   // m7.2: popup khula ho to naya nahi; der tak jawab na aaye (InpWaitMin) to khud band = NO
+   if(gPopOn)
+     {
+      if(TimeCurrent() - gPopT > InpWaitMin * 60) { if(gPend != 0) Print("JAS MAUQA ", S_BUILD, ": jawab nahi = NO - ", gPNm); gPend = 0; PopHide(); }
+      return;
+     }
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
    if(aS > 0)      { kind = 1; t1 = aS; t2 = aB; v = aV; nm = "A) BIG SELL REDUCE"; }
@@ -320,17 +465,17 @@ void Run()
    else
       d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNET change hifazat ke andar\n", Desc(t1), M(v), tk, tk - 1);
    if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
-   int ans = MessageBox(d + "\nDo it?", "JAS MAUQA " + S_BUILD + "  -  " + _Symbol, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
-   if(ans != IDYES) { Print("JAS MAUQA ", S_BUILD, ": NO - ", nm); return; }
-   if(!AlgoOn() || !PositionSelectByTicket(t1) || (kind == 1 && !PositionSelectByTicket(t2)))
-     { MessageBox("Algo OFF or ticket changed - nothing done.", "JAS MAUQA " + S_BUILD, MB_OK | MB_ICONWARNING); return; }
-   bool ok;
-   if(kind == 1) ok = trade.PositionCloseBy(t1, t2);
-   else if(kind == 3) ok = trade.PositionClosePartial(t1, dLot);
-   else          ok = trade.PositionClose(t1);
-   string r = StringFormat("%s: %s  (%d %s)", nm, Pick(ok, "DONE", "FAIL"), (int)trade.ResultRetcode(), trade.ResultRetcodeDescription());
-   Print("JAS MAUQA ", S_BUILD, ": ", r);
-   MessageBox(r, "JAS MAUQA " + S_BUILD + " - nateeja", MB_OK);
+   gPend = kind; gP1 = t1; gP2 = t2; gPLot = dLot; gPNm = nm;
+   PlaySound("alert.wav");
+   PopShow("JAS MAUQA " + S_BUILD + "  -  " + _Symbol, d + "\nDo it?", true);
+  }
+
+void OnChartEvent(const int id, const long &lp, const double &dp, const string &sp)
+  {
+   if(id != CHARTEVENT_OBJECT_CLICK) return;
+   if(sp == "JM_P_YES")     { ObjectSetInteger(0, sp, OBJPROP_STATE, false); DoPend(); }
+   else if(sp == "JM_P_NO") { Print("JAS MAUQA ", S_BUILD, ": NO - ", gPNm); gPend = 0; PopHide(); }
+   else if(sp == "JM_P_OK") { PopHide(); }
   }
 
 int OnInit()
@@ -342,7 +487,7 @@ int OnInit()
    return(INIT_SUCCEEDED);
   }
 
-void OnDeinit(const int reason) { EventKillTimer(); ObjectsDeleteAll(0, "JM_L"); Comment(""); }
+void OnDeinit(const int reason) { EventKillTimer(); ObjectsDeleteAll(0, "JM_L"); ObjectsDeleteAll(0, "JM_P"); Comment(""); }
 void OnTimer() { Run(); }
 void OnTick()  { }
 //+------------------------------------------------------------------+
