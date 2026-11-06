@@ -97,6 +97,10 @@ NATEEJA tk2 (44vi chat, 6 Nov, `tools/tokri_asli.py` + `.c`): gold H1 2005-2026,
 Q20 (44vi+ chat, 6 Nov, user): "confirm profit = HIGH / LOW par lot set karo aur wait karo; win/loss ki buniyad = high par SELL, low par BUY control".
     User is se amount recover kar raha hai (Alhamdulillah). Baqi: "high/low" kis cheez ka (kal ka H/L? H1 swing? din ka range?) -> yahi test ho sakta hai.
     Claude: tk2 + live 18 Aug-5 Nov (-35%, 4 bari haar din) = "wait" wala hissa khatra jab gold ek taraf $30-100 chale. Test sirf discuss ke baad.
+Q21 (6 Nov, user): basket mein SL/TP/strategy NAHI - sirf BUY/SELL lot. Gold halka high/low karta rehta hai, phir achanak ek taraf bhaagta.
+    Dhiyan sirf itna: overall kis taraf bhaagega -> us taraf ki lots (nuqsan mein bhi) thori BHARI rakho; bhaagne par CLOSE ALL faide mein.
+    Claude: poora nateeja = rukh ka andaza sahi/ghalat. Pehle mood (1D+4H) wala jhukav tk1 = bina swap ~0. Agla (discuss ke baad): rukh = JasTrend 4H
+    (asli PASS), bhari taraf 0.02 / doosri 0.01, close all net +X. User se: rukh aap kaise pehchante hain?
 
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
