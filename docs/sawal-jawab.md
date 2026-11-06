@@ -178,3 +178,6 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Data kahan se (gold M1 2019/20/25/26 etc)? -> Dukascopy via QDM/Tickstory (BID+ASK, UTC); daily purana Yahoo/Stooq; macro FRED; `docs/pdf/JAS_FTMO_Plan_Monday.pdf` (6 Nov).
 - Hamare idea research mein sahi? -> Trend mazboot; IBS/Khirki/Kachhua darmiyana; chutti kamzor; `docs/research/agent-6nov-factors-data.md` (6 Nov).
 - PDF kaise kholein? -> Edge/Chrome (right-click Open with) ya SumatraPDF free; Notepad ke liye .txt saath (6 Nov).
+- JasMauqa YES dabane se HISAAB wala kaam bhi hoga? -> NAHI; YES = sirf popup ka upar wala kaam (A/B/C/D), HISAAB sirf parhne ke liye (6 Nov, m7.6).
+- 0.80 hadd (InpMaxNet) kya? -> |BUY-SELL| lot 0.80 se upar na jaye; 0.80 = gold $1 par ~80 USC, $50 ulta = ~4000 USC (~10%) (6 Nov).
+- NAYI kholo / PURANI close? -> NAYI = naya order lagao; PURANI = khuli trade close karo (JasMauqa m7.6, 6 Nov).
