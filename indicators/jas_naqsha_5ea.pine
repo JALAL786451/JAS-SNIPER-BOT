@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA + 5EA  (build j3, Pine v6, 6 Nov 2026; j3 = aakhri candle ke saath BOLD chalti price label (setting "7 · Price label"); j2 = j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
+// JAS NAQSHA + 5EA  (build j3, Pine v6, 6 Nov 2026; j3.1 = label transparent + likhai candle ke rang, dotted line poore chart par; j3 = aakhri candle ke saath BOLD chalti price label (setting "7 · Price label"); j2 = j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
 //  j1: Naqsha hissa n5.9 jyon ka tyon. 5EA hissa p6 wala hisaab, magar SIRF chart ke instrument ka: request.security 11 -> 2
 //   (bhaari 4 x 4H + 7 x 1D poori history = loading / timeout ki wajah). Neeche 11 instrument ki line default BAND (ab sirf chart
 //   wale ka haal hota hai). 5EA ka poora hissa setting "6 · 5EA" se ON/OFF. Python ke pakke number wahi (table). TRADE NAHI, sirf dikhana.
@@ -1398,7 +1398,7 @@ grP = "7 · Price label (aakhri candle)"
 showPL = input.bool(true, "Bold price label dikhao", group = grP, display = display.none)
 plSize = input.string("Normal", "Size", options = ["Small", "Normal", "Large"], group = grP, display = display.none)
 plGap  = input.int(2, "Candle se doori (bars)", minval = 1, maxval = 20, group = grP, display = display.none)
-plLine = input.bool(true, "Candle se label tak dotted line", group = grP, display = display.none)
+plLine = input.bool(true, "Dotted price line poore chart par (candle ke rang)", group = grP, display = display.none)
 plChg  = input.bool(true, "Saath mein aaj ka badlao % (din ke open se)", group = grP, display = display.none)
 
 dOpenPL = request.security(syminfo.tickerid, "D", open, lookahead = barmerge.lookahead_off)
@@ -1415,6 +1415,6 @@ if barstate.islast
         string plTx  = str.tostring(close, format.mintick)
         if plChg and not na(chgP)
             plTx := plTx + "  " + (chgP >= 0 ? "▲ +" : "▼ ") + str.tostring(chgP, "0.00") + "%"
-        plLbl := label.new(bar_index + plGap, close, plTx, xloc = xloc.bar_index, style = label.style_label_left, color = plBg, textcolor = color.white, size = plSz, text_formatting = text.format_bold, tooltip = syminfo.ticker + "  abhi ki price (har tick)")
+        plLbl := label.new(bar_index + plGap, close, plTx, xloc = xloc.bar_index, style = label.style_label_left, color = color.new(color.black, 100), textcolor = plBg, size = plSz, text_formatting = text.format_bold, tooltip = syminfo.ticker + "  abhi ki price (har tick)")
         if plLine
-            plLn := line.new(bar_index, close, bar_index + plGap, close, xloc = xloc.bar_index, color = color.new(plBg, 30), style = line.style_dotted, width = 1)
+            plLn := line.new(bar_index - 1, close, bar_index, close, xloc = xloc.bar_index, extend = extend.both, color = color.new(plBg, 20), style = line.style_dotted, width = 1)
