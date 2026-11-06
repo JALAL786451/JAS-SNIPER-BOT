@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.6  (6 Nov 2026)                        |
+//|  JAS MAUQA   -   build m7.6  (6 Nov 2026; likhai saaf: NAYI kholo / PURANI close)|
 //|  m7.6 = PROFIT split BUY/SELL + "profit utha lo to NET kya" +    |
 //|         hedge kitna (panel + popup). SIRF HISAAB, khud lot nahi. |
 //|  m7.5 = NET ka poora hisaab (BUY - SELL = NET, barabar kaise) +  |
@@ -494,18 +494,18 @@ void Run()
    // m7.5: poora hisaab + barabar karne ke liye kitna (sirf likhai, EA khud lot nahi kholta)
    double gap = MathAbs(NormalizeDouble(net, 2));
    Ln(StringFormat("NET = BUY %.2f - SELL %.2f = %+.2f  ->  %s", bl, sl, net,
-      Pick(gap < 0.005, "barabar (0)", StringFormat("%s %.2f zyada | barabar: %s %.2f kholo ya %s %.2f band", Pick(net > 0, "BUY", "SELL"), gap, Pick(net > 0, "SELL", "BUY"), gap, Pick(net > 0, "BUY", "SELL"), gap))), clrYellow);
+      Pick(gap < 0.005, "barabar (0)", StringFormat("%s %.2f zyada | barabar: NAYI %s %.2f kholo ya PURANI %s %.2f close", Pick(net > 0, "BUY", "SELL"), gap, Pick(net > 0, "SELL", "BUY"), gap, Pick(net > 0, "BUY", "SELL"), gap))), clrYellow);
    // m7.6: profit utha lo to kya bachega + hedge kitna (SIRF HISAAB, EA khud lot nahi kholta)
    double rB = bl - fbl, rS = sl - fsl, rN = NormalizeDouble(rB - rS, 2), rG = MathAbs(rN);
    bool rBad = rG > InpMaxNet + 1e-9;
    string hz = Pick(rG < 0.005, "barabar (0) - hedge ki zaroorat nahi",
-               StringFormat("%s %.2f kholo -> NET 0   (ya %s %.2f band)", Pick(rN > 0, "SELL", "BUY"), rG, Pick(rN > 0, "BUY", "SELL"), rG));
+               StringFormat("NAYI %s %.2f lot kholo -> NET 0   (ya PURANI %s %.2f lot close karo)", Pick(rN > 0, "SELL", "BUY"), rG, Pick(rN > 0, "BUY", "SELL"), rG));
    Ln(StringFormat("PROFIT split:  BUY %.2f lot (+%s)  |  SELL %.2f lot (+%s)", fbl, M(fbp), fsl, M(fsp)), cG);
-   Ln(StringFormat("PROFIT UTHAO -> baqi BUY %.2f / SELL %.2f  =  NET %+.2f%s", rB, rS, rN,
+   Ln(StringFormat("AGAR SARE PROFIT TICKET CLOSE -> baqi BUY %.2f / SELL %.2f  =  NET %+.2f%s", rB, rS, rN,
       Pick(rG < 0.005, "", Pick(rN > 0, " (BUY zyada)", " (SELL zyada)"))), rBad ? cR : clrYellow);
-   Ln("HEDGE: " + hz + Pick(rBad, StringFormat("   !! NET %.2f > %.2f: PEHLE HEDGE, PHIR PROFIT", rG, InpMaxNet), ""), rBad ? cR : clrYellow);
-   gHis = StringFormat("--- HISAAB (sirf likhai, faisla aap ka) ---\nNET abhi %+.2f  (BUY %.2f - SELL %.2f)\nSara profit uthao: baqi BUY %.2f / SELL %.2f = NET %+.2f\nHedge: %s%s\n",
-                       net, bl, sl, rB, rS, rN, hz, Pick(rBad, StringFormat("\n!! NET %.2f hadd %.2f se upar - PEHLE HEDGE, PHIR PROFIT", rG, InpMaxNet), ""));
+   Ln("HEDGE: " + hz + Pick(rBad, StringFormat("   !! NET %.2f > %.2f: PEHLE HEDGE, PHIR PROFIT CLOSE", rG, InpMaxNet), ""), rBad ? cR : clrYellow);
+   gHis = StringFormat("--- HISAAB (sirf likhai, faisla aap ka) ---\nNET abhi %+.2f  (BUY %.2f - SELL %.2f)\nAgar sare profit ticket close: baqi BUY %.2f / SELL %.2f = NET %+.2f\nHedge: %s%s\n",
+                       net, bl, sl, rB, rS, rN, hz, Pick(rBad, StringFormat("\n!! NET %.2f hadd %.2f se upar - PEHLE HEDGE, PHIR PROFIT CLOSE", rG, InpMaxNet), ""));
    Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
    Ln("STOP OUT  " + door, cY);
    // PRICE LADDER: qeemat P par kitni lots profit mein + TOTAL (NET se seedha hisaab, swap / spread nahi)
