@@ -7,7 +7,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - tokri Q14: USD $1000 test, fees $0.24 / 0.01 lot, band = faida - fees >= +$0.5
    - 44vi chat khatam: swap 0 par Kachhua #99 ASLI PASS, #100 Trend jeeta, #101 #68+Kachhua 0.2
 
-2026-11-06  (15 kaam)
+2026-11-06  (22 kaam)
    - TRADING sec 0: FTMO demo 474832446 SS 6 Nov - USTEC SL -994 (-1R), i6 nayi US500 BUY 2.81,
-   - 45vi chat khatam: tokri tk2 FAIL, research agent, PDF plan Monday; agla: data jaanch + use
-   - JasMauqa m7.6: likhai saaf - NAYI kholo / PURANI close / AGAR SARE PROFIT TICKET CLOSE (us
+   - JasMauqa m7.5: NET hisaab line (BUY - SELL = NET, barabar kaise) + popup chhota neeche daa
+   - Kachhua swap 0 PASS yaad + user haan: e1 0.25% FTMO demo (7 Nov)
