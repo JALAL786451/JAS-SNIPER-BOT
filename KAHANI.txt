@@ -159,6 +159,8 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
+  6 Nov (46vi): TV Naqsha+5EA j3.1 bold chalti price label. JasMauqa m7.6 LIVE: NET = BUY-SELL, profit split,
+    'agar sare profit close' -> NET + hedge (sirf hisaab; YES = sirf popup ka kaam). Lot 0.88 -> 5.13 barhi (BANK yaad).
 
 4. ABHI (6 Nov 2026, 43vi chat ke baad)  [MT5 ka asli haal = TRADING.md sec 0]
 DEMO 472716649 (Trial16, STANDARD USD $2153.25, 0 khuli, SS 4 Nov; XAG SELL kis ne kholi = History Comment/Magic SS baqi; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
