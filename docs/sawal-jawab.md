@@ -181,3 +181,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - JasMauqa YES dabane se HISAAB wala kaam bhi hoga? -> NAHI; YES = sirf popup ka upar wala kaam (A/B/C/D), HISAAB sirf parhne ke liye (6 Nov, m7.6).
 - 0.80 hadd (InpMaxNet) kya? -> |BUY-SELL| lot 0.80 se upar na jaye; 0.80 = gold $1 par ~80 USC, $50 ulta = ~4000 USC (~10%) (6 Nov).
 - NAYI kholo / PURANI close? -> NAYI = naya order lagao; PURANI = khuli trade close karo (JasMauqa m7.6, 6 Nov).
+- FTMO swap-free mila? -> HAAN, user ko FTMO email aayi: Muslim country ki wajah se swap nahi (6 Nov). Email ka SS baqi: kis account / har stage / sab instrument / koi fee? (asli FTMO par phir bhi tasdeeq).

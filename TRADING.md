@@ -64,6 +64,7 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 **46vi chat (6 Nov, chhoti)** - TV `JAS Naqsha+5EA` j3.1: aakhri candle ke saath BOLD chalti price (transparent, candle rang) + dotted line poore chart (TV ✅ j3; bhaari script = aakhri 1-3 digit der se).
 JasMauqa **m7.6 LIVE ✅** (F7 user): NET = BUY - SELL line, PROFIT split BUY/SELL, "agar sare profit ticket close" -> NET + hedge (NAYI kholo / PURANI close), NET > 0.80 laal; popup chhota neeche daayen. YES = sirf popup ka upar wala kaam, HISAAB sirf likhai (user samajh gaya).
+FTMO email (user 6 Nov): swap-free MILA (Muslim country) - SS baqi (account, stage, instrument, shart).
 Live SS: 60 ticket, BUY 5.13 = SELL 5.13 (NET 0), P/L ~-7600, equity ~38,692 - lot bahut barhi (0.88 -> 5.13), BANK yaad dilaya.
 **45vi chat (6 Nov)** - Tokri tk2 sim (`tools/tokri_asli.py/.c`): gold H1 2005-26 $1000, 240 variant + M1 2009-18 = SAB account khatam.
 FTMO demo 474832446 SS: USTEC SL -994 (-1R), i6 US500 BUY 2.81, balance 98,909 (sec 0). Research agent (`docs/research/agent-6nov-factors-data.md`):
