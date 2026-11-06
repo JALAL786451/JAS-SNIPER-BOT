@@ -1,5 +1,7 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.5  (6 Nov 2026)                        |
+//|  JAS MAUQA   -   build m7.6  (6 Nov 2026)                        |
+//|  m7.6 = PROFIT split BUY/SELL + "profit utha lo to NET kya" +    |
+//|         hedge kitna (panel + popup). SIRF HISAAB, khud lot nahi. |
 //|  m7.5 = NET ka poora hisaab (BUY - SELL = NET, barabar kaise) +  |
 //|         POPUP chhota, neeche daayen kone mein (InpPopPos)        |
 //|  m7.4 = POPUP chart ke DAAYEN (right) - panel nahi dhakta        |
@@ -49,7 +51,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.5"
+#define S_BUILD "m7.6"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -93,6 +95,7 @@ double   gPLot = 0;
 string   gPNm = "";
 bool     gPopOn = false;
 datetime gPopT = 0;
+string gHis = "";   // m7.6 popup ke liye hisaab
 int gRow = 0;
 
 void Ln(string tx, color c)
@@ -412,11 +415,17 @@ void Run()
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    // ---- STATUS
    double kul = 0, bl = 0, sl = 0, bo = 0, so = 0, bp = 0, sp = 0, fp = 0, lp = 0, fl = 0, ll = 0;
+   double fbl = 0, fsl = 0, fbp = 0, fsp = 0;   // m7.6 profit wali BUY / SELL lot + faida
    int bc = 0, sc = 0, big = -1, fc = 0, lc = 0;
    for(int i = 0; i < n; i++)
      {
       kul += a[i].pnl;
-      if(a[i].pnl >= 0) { fc++; fl += a[i].vol; fp += a[i].pnl; } else { lc++; ll += a[i].vol; lp += a[i].pnl; }
+      if(a[i].pnl >= 0)
+        {
+         fc++; fl += a[i].vol; fp += a[i].pnl;
+         if(a[i].typ == POSITION_TYPE_BUY) { fbl += a[i].vol; fbp += a[i].pnl; } else { fsl += a[i].vol; fsp += a[i].pnl; }
+        }
+      else { lc++; ll += a[i].vol; lp += a[i].pnl; }
       if(a[i].typ == POSITION_TYPE_BUY) { bc++; bl += a[i].vol; bo += a[i].vol * a[i].open; bp += a[i].pnl; }
       else
         {
@@ -486,6 +495,17 @@ void Run()
    double gap = MathAbs(NormalizeDouble(net, 2));
    Ln(StringFormat("NET = BUY %.2f - SELL %.2f = %+.2f  ->  %s", bl, sl, net,
       Pick(gap < 0.005, "barabar (0)", StringFormat("%s %.2f zyada | barabar: %s %.2f kholo ya %s %.2f band", Pick(net > 0, "BUY", "SELL"), gap, Pick(net > 0, "SELL", "BUY"), gap, Pick(net > 0, "BUY", "SELL"), gap))), clrYellow);
+   // m7.6: profit utha lo to kya bachega + hedge kitna (SIRF HISAAB, EA khud lot nahi kholta)
+   double rB = bl - fbl, rS = sl - fsl, rN = NormalizeDouble(rB - rS, 2), rG = MathAbs(rN);
+   bool rBad = rG > InpMaxNet + 1e-9;
+   string hz = Pick(rG < 0.005, "barabar (0) - hedge ki zaroorat nahi",
+               StringFormat("%s %.2f kholo -> NET 0   (ya %s %.2f band)", Pick(rN > 0, "SELL", "BUY"), rG, Pick(rN > 0, "BUY", "SELL"), rG));
+   Ln(StringFormat("PROFIT split:  BUY %.2f lot (+%s)  |  SELL %.2f lot (+%s)", fbl, M(fbp), fsl, M(fsp)), cG);
+   Ln(StringFormat("PROFIT UTHAO -> baqi BUY %.2f / SELL %.2f  =  NET %+.2f%s", rB, rS, rN,
+      Pick(rG < 0.005, "", Pick(rN > 0, " (BUY zyada)", " (SELL zyada)"))), rBad ? cR : clrYellow);
+   Ln("HEDGE: " + hz + Pick(rBad, StringFormat("   !! NET %.2f > %.2f: PEHLE HEDGE, PHIR PROFIT", rG, InpMaxNet), ""), rBad ? cR : clrYellow);
+   gHis = StringFormat("--- HISAAB (sirf likhai, faisla aap ka) ---\nNET abhi %+.2f  (BUY %.2f - SELL %.2f)\nSara profit uthao: baqi BUY %.2f / SELL %.2f = NET %+.2f\nHedge: %s%s\n",
+                       net, bl, sl, rB, rS, rN, hz, Pick(rBad, StringFormat("\n!! NET %.2f hadd %.2f se upar - PEHLE HEDGE, PHIR PROFIT", rG, InpMaxNet), ""));
    Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
    Ln("STOP OUT  " + door, cY);
    // PRICE LADDER: qeemat P par kitni lots profit mein + TOTAL (NET se seedha hisaab, swap / spread nahi)
@@ -588,7 +608,7 @@ void Run()
    if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
    gPend = kind; gP1 = t1; gP2 = t2; gPLot = dLot; gPNm = nm;
    PlaySound("alert.wav");
-   PopShow("JAS MAUQA " + S_BUILD + "  -  " + _Symbol, d + "\nDo it?", true);
+   PopShow("JAS MAUQA " + S_BUILD + "  -  " + _Symbol, d + "\n" + gHis + "\nDo it?", true);
   }
 
 void OnChartEvent(const int id, const long &lp, const double &dp, const string &sp)
