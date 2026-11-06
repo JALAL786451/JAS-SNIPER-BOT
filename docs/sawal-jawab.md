@@ -174,3 +174,7 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - TV script loading par atki, error nahi? -> TV desktop app band kar ke dobara kholo (j1 aise hi chali, 5 Nov).
 - Gold 1m data kitna? -> 2009-18 (histdata), 2015 + 2021-24 (qdm); 2019, 2020, 2025, 2026 NAHI. H1 2005-2026 poora (data/ftmo) (5 Nov).
 - User ki tokri kaise chalti? -> 0.01/0.02 dono taraf, har faide wali band (+0.3..+4), nuqsan wali intezar; data: 0.01/0.02 +30k, >0.10 -66k (6 Nov).
+- Tokri asli tareeqa (Q14-19) 20 saal sim? -> tk2: 240/240 variant $1000 khatam (H1 2005-26 + M1 2009-18); "wait" wali lots trend mein -$300 (6 Nov).
+- Data kahan se (gold M1 2019/20/25/26 etc)? -> Dukascopy via QDM/Tickstory (BID+ASK, UTC); daily purana Yahoo/Stooq; macro FRED; `docs/pdf/JAS_FTMO_Plan_Monday.pdf` (6 Nov).
+- Hamare idea research mein sahi? -> Trend mazboot; IBS/Khirki/Kachhua darmiyana; chutti kamzor; `docs/research/agent-6nov-factors-data.md` (6 Nov).
+- PDF kaise kholein? -> Edge/Chrome (right-click Open with) ya SumatraPDF free; Notepad ke liye .txt saath (6 Nov).

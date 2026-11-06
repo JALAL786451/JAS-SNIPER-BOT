@@ -62,13 +62,15 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**44vi chat (5 Nov, alag session)** - TV tests: SMC (LGB/FVG/DZ) `jas_smc_test` #19 FAIL; Tide+W/M rukh `jas_tide_htf_test` h1 2000-18 bal-bal FAIL;
-tmr0 Turtle u1 (sirf chat mein, nateeja nahi). **FTMO swap-free (user ki email: Muslim mulk) -> swap 0:** **#99** Kachhua 12 market trade-R ASLI PASS
-(patla, IMTIHAN Exp-2SE +0.010, forex 2019+ minus) · **#100** akele: Trend 81/0 med 17.4 > Tide 0.5% 67/0 med 22.1 · **#101 #68 + Kachhua 12 @0.25% = PASS**
-(2019+ 85/0 med 10.2 vs 83/0 10.6; 2012-18 med 27.6 -> 15.5; 0.50% par 8 fail). Tools `ftmo99/100/101.py`, tafseel `docs/purana-haal.md` grep "Koshish #10".
-Pehle (43vi ke baad): tokri tk2 sim gold H1 2005-26 $1000 = 240/240 variant account khatam (commit 1fe546b).
-**AGLA (user faisla):** (1) FTMO email: swap-free fee / sab 12 instrument? (2) Kachhua e1 (`JasTideRadarEA.mq5`, 12 market, 0.25%) FTMO demo 474832446 par
-#68 ke saath - pehra 96k farsh; user haan kahe tab. Naya alag Exness demo ka mashwara bhi diya (user ne "d" kaha, account abhi nahi bana).
+**45vi chat (6 Nov)** - Tokri tk2 sim (`tools/tokri_asli.py/.c`): gold H1 2005-26 $1000, 240 variant + M1 2009-18 = SAB account khatam.
+FTMO demo 474832446 SS: USTEC SL -994 (-1R), i6 US500 BUY 2.81, balance 98,909 (sec 0). Research agent (`docs/research/agent-6nov-factors-data.md`):
+Trend MAZBOOT, IBS/Khirki/Kachhua darmiyana, chutti kamzor; nayi B1 Pre-FOMC, B2 chutti non-US, B3 mahina-aakhir, B4 BTC trend...; data = Dukascopy (QDM) behtareen.
+User ko PDF diya: `docs/pdf/JAS_FTMO_Plan_Monday.pdf` (+ .txt) = data guide + FTMO plan hafta 1-4 + checklist. FTMO Nov 2026 offer pakka nahi mila (2025 BF ~20%, 26-29 Nov) -> ~26-30 Nov ftmo.com checkout dekho.
+Tokri Q20-Q23 (user): high/low par lot + wait; SL/TP/strategy NAHI; bhari taraf = chart se rukh, ulta bhaage to bhari taraf badlo; swing/trend hi kamyab.
+Hafte ki limit ~4% bachi -> nayi chat Monday reset ke baad (user khud "TRADING").
+**AGLA (Monday 9 Nov, PDF sec 5 hafta 1):** (1) user data push karega (gold M1 2019/20/25/26, US500/USTEC M1 2019-20, Yahoo/Stooq daily, FRED) -> Claude SIRF jaanch
+(gap, timezone, BID/ASK), naya test NAHI. (2) user se: rukh chart par kaise (2-3 purane din dikhaye), kitne $ ulta par bhari taraf badle, purani lots ka kya (Q22).
+(3) faisle: Kachhua e1 0.25% demo? B1 ya B2 pehle? (4) har test: discuss -> qaida pehle -> test -> judge (user naam le) -> faisla user.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

@@ -2,12 +2,17 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-04  (19 kaam)
-   - Koshish #99/#100 qaida: #68 ulta (SL nahi, TP k x R) A = TP+qaida exit, B = sirf TP - test
-   - JasFtmoView v1.1: R tick value se (OrderCalcProfit indicator mein nahi), neeche kone mein 
+2026-11-04  (3 kaam)
+   - sawal-jawab: FTMO swap-free pakka karna, Free Trial kab, discount
+   - sawal-jawab: FTMO payment tareeqe
    - MT5 naqsha: 474832446 - i6 US500 pehli band trade +565.66, 4 khuli +522.96
 
-2026-11-05  (46 kaam)
+2026-11-05  (58 kaam)
    - JAS Naqsha n5.8: SELL default band (#73 FAIL) - 1D neeche par RUKO, ulta AGLI SELL dabba n
-   - files-tafseel: JasMauqa m7.3
-   - tokri Q19: user ne live dikhaya - faide wali har lot band (+0.30..+3.40), din +5.30 USC
+   - data: live 253687618 asli deals 18 Aug-5 Nov (basket EA ke liye)
+   - 44vi chat khatam: swap 0 par Kachhua #99 ASLI PASS, #100 Trend jeeta, #101 #68+Kachhua 0.2
+
+2026-11-06  (7 kaam)
+   - TRADING sec 0: FTMO demo 474832446 SS 6 Nov - USTEC SL -994 (-1R), i6 nayi US500 BUY 2.81,
+   - tokri Q20: user - high/low par lot + wait (6 Nov)
+   - tokri Q23: user - swing/trend hi kamyab, market kisi ko dekh kar nahi (6 Nov)
