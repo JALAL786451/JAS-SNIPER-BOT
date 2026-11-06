@@ -94,6 +94,10 @@ NATEEJA tk2 (44vi chat, 6 Nov, `tools/tokri_asli.py` + `.c`): gold H1 2005-2026,
     $30-100 ek-taraf chaal mein jama -> -$300 hadd har kuch mahine; stop ka nuqsan > fishing ka faida. Bina hadd bhi -$1000 par khatam.
     M1 jaanch (histdata 2009-18, 8 variant): wahi - sab 2009-2010 mein khatam. Asal account ka +30k USC (0.01/0.02) = sirf ~$300.
 
+Q20 (44vi+ chat, 6 Nov, user): "confirm profit = HIGH / LOW par lot set karo aur wait karo; win/loss ki buniyad = high par SELL, low par BUY control".
+    User is se amount recover kar raha hai (Alhamdulillah). Baqi: "high/low" kis cheez ka (kal ka H/L? H1 swing? din ka range?) -> yahi test ho sakta hai.
+    Claude: tk2 + live 18 Aug-5 Nov (-35%, 4 bari haar din) = "wait" wala hissa khatra jab gold ek taraf $30-100 chale. Test sirf discuss ke baad.
+
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
 - [~] Dhaal size: 0.01 se (Q7); har 200 USC par ek aur? + bardasht number = ?
