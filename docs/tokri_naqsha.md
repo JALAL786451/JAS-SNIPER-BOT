@@ -101,6 +101,8 @@ Q21 (6 Nov, user): basket mein SL/TP/strategy NAHI - sirf BUY/SELL lot. Gold hal
     Dhiyan sirf itna: overall kis taraf bhaagega -> us taraf ki lots (nuqsan mein bhi) thori BHARI rakho; bhaagne par CLOSE ALL faide mein.
     Claude: poora nateeja = rukh ka andaza sahi/ghalat. Pehle mood (1D+4H) wala jhukav tk1 = bina swap ~0. Agla (discuss ke baad): rukh = JasTrend 4H
     (asli PASS), bhari taraf 0.02 / doosri 0.01, close all net +X. User se: rukh aap kaise pehchante hain?
+Q22 (6 Nov, user): rukh = CHART dekh kar. Agar phir bhi andaza ke KHILAF bhaage -> us chaal ke liye bhi lots tayyar (bhari taraf badal do).
+    Baqi (Monday): kitne $ ulta jaye to bhari taraf badle? badalne par purani bhari lots ka kya (khuli / close)? Khatra: chop mein bar bar badalna.
 
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
