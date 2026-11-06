@@ -7,6 +7,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 - `tools/tokri_mood.py` - live zakhm (18-25 Aug, 2-4 Nov) par gold 1D/4H mood (Naqsha Rukh), 5 Nov
 - `tools/tokri_q8q9.py` - Tokri Q8 wapasi hadd (1 ATR) + Q9 4H mur jaye to dhaal band, gold 2005-2026, 5 Nov
 - `tools/tokri_sim.py` - Tokri poora sim (fishing + dhaal Q1-Q13) gold H1 2010-26, bardasht/hadd/fishing chunav, 5 Nov
+- `docs/pdf/JAS_FTMO_Plan_Monday.pdf` (+ .txt) - user ke liye PDF: haal, data hai/gayab + sites, research, B1-B7, FTMO plan Monday se (tools/mk_plan_pdf.py), 6 Nov
 - `docs/research/agent-6nov-factors-data.md` - research agent 6 Nov: 5 faide tasdeeq (Trend mazboot, IBS/Khirki/Kachhua darmiyana, chutti kamzor), nayi B1-B7 (pre-FOMC pehle), data sites (Dukascopy behtareen)
 - `tools/tokri_asli.py` + `tools/tokri_asli.c` - Tokri ASLI tareeqa (Q14-19: har lot faide par band, 0.01/0.02) tez C sim gold H1 2005-26 $1000, 240 variant sab khatam, 6 Nov
 - `JasTokriEA.mq5` tk1 - user ki TOKRI (fishing 0.01 + dhaal 0.01, Q1-Q13), H1 par faisla, tester baqi, LIVE NAHI, 5 Nov
