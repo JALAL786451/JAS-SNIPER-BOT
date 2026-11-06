@@ -103,6 +103,8 @@ Q21 (6 Nov, user): basket mein SL/TP/strategy NAHI - sirf BUY/SELL lot. Gold hal
     (asli PASS), bhari taraf 0.02 / doosri 0.01, close all net +X. User se: rukh aap kaise pehchante hain?
 Q22 (6 Nov, user): rukh = CHART dekh kar. Agar phir bhi andaza ke KHILAF bhaage -> us chaal ke liye bhi lots tayyar (bhari taraf badal do).
     Baqi (Monday): kitne $ ulta jaye to bhari taraf badle? badalne par purani bhari lots ka kya (khuli / close)? Khatra: chop mein bar bar badalna.
+Q23 (6 Nov, user ki samajh): market kisi ko dekh kar nahi chalta; ~90% haarte, bare khiladi trend/swing par bari chaal rakhte hain;
+    hamare 3 EA bhi swing par hi kamyab. Claude: data bhi yahi kehta hai (intraday/1m-15m sab FAIL, 4H/daily PASS) -> basket ko swing rukh ke saath jorna = agla test idea.
 
 ## Baqi sawal (ek ek)
 - [~] Trend ishara: 1D + 4H mood (Q5); mood ki pehchan kis cheez se = ?
