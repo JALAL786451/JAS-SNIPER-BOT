@@ -1,5 +1,7 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.4  (5 Nov 2026)                        |
+//|  JAS MAUQA   -   build m7.5  (6 Nov 2026)                        |
+//|  m7.5 = NET ka poora hisaab (BUY - SELL = NET, barabar kaise) +  |
+//|         POPUP chhota, neeche daayen kone mein (InpPopPos)        |
 //|  m7.4 = POPUP chart ke DAAYEN (right) - panel nahi dhakta        |
 //|         (InpPopRight true; false = purani jagah baayen). Sirf   |
 //|         jagah badli, koi trade qaida nahi badla (user 5 Nov).   |
@@ -47,7 +49,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.4"
+#define S_BUILD "m7.5"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -58,8 +60,9 @@ input double InpNetMove  = 0.10;   // HIFAZAT: ek kaam se |NET| zyada se zyada i
 input double InpMaxNet   = 0.80;   // HIFAZAT: |NET| is se upar na jaye (abhi zyada ho to barhe nahi)
 input double InpMinDoor  = 400.0;  // HIFAZAT: stop out kam az kam itne $ door rahe
 input bool   InpPartD    = false;  // D) Bari SELL part close ka mashwara (false = BAND: bari SELL dhaal hai)
-input int    InpPopFont  = 16;     // POPUP ka font (bara = 16-20)
+input int    InpPopFont  = 12;     // POPUP ka font (m7.5: 12 = chhota; bara = 16-20)
 input bool   InpPopRight = true;   // m7.4 POPUP chart ke daayen (panel na dhake); false = baayen
+input bool   InpPopLow   = true;   // m7.5 POPUP neeche kone mein (chart ka beech khula); false = upar
 input double InpPartLot  = 0.10;   // D) Bari SELL profit mein ho to ek dafa kitni lot kam
 input bool   InpHedge    = false;  // H) HEDGE LADDER chalu (BUY band kar ke NET 0 tak). false = sirf plan dikhao
 input bool   InpHAuto    = false;  // H) true = khud band kare (sote waqt); false = har qadam YES/NO
@@ -176,13 +179,15 @@ void PopShow(string title, string body, bool ask)
    int fs = MathMax(10, InpPopFont), lh = (int)(fs * 2.1);
    int maxc = StringLen(title);
    for(int i = 0; i < n; i++) maxc = MathMax(maxc, StringLen(ln[i]));
-   int w = MathMax(460, (int)(maxc * (fs + 4) * 0.8) + 60);
+   int w = MathMax(400, (int)(maxc * fs * 0.85) + 50);   // m7.5 chhota
    int hBody = 0;
    for(int i = 0; i < n; i++) hBody += (StringLen(ln[i]) == 0 ? lh / 2 : lh);
    int x0 = 30;
    if(InpPopRight)   // m7.4: daayen kinare se 70 px andar (qeemat ki patti chhod kar)
       x0 = MathMax(30, (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS) - w - 70);
    int y0 = 40, h = 30 + lh + 10 + hBody + 20 + lh * 2 + 20;
+   if(InpPopLow)   // m7.5: neeche kone mein, waqt ki patti se 30 px upar
+      y0 = MathMax(40, (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS) - h - 30);
    string bg = "JM_P_BG";
    ObjectCreate(0, bg, OBJ_RECTANGLE_LABEL, 0, 0, 0);
    ObjectSetInteger(0, bg, OBJPROP_CORNER, CORNER_LEFT_UPPER);
@@ -477,6 +482,10 @@ void Run()
    Ln(StringFormat("BUY   %d ticket  %.2f lot  avg %s   P/L %s", bc, bl, Pick(bl > 0, Px(bl > 0 ? bo / bl : 0), "-"), M(bp)), bp >= 0 ? cG : cR);
    Ln(StringFormat("SELL  %d ticket  %.2f lot  avg %s   P/L %s", sc, sl, Pick(sl > 0, Px(sl > 0 ? so / sl : 0), "-"), M(sp)), sp >= 0 ? cG : cR);
    Ln(StringFormat("NET %+.2f lot  -  price $1 %s = %s", net, Pick(net >= 0, "down", "up"), M(-MathAbs(perD))), cC);
+   // m7.5: poora hisaab + barabar karne ke liye kitna (sirf likhai, EA khud lot nahi kholta)
+   double gap = MathAbs(NormalizeDouble(net, 2));
+   Ln(StringFormat("NET = BUY %.2f - SELL %.2f = %+.2f  ->  %s", bl, sl, net,
+      Pick(gap < 0.005, "barabar (0)", StringFormat("%s %.2f zyada | barabar: %s %.2f kholo ya %s %.2f band", Pick(net > 0, "BUY", "SELL"), gap, Pick(net > 0, "SELL", "BUY"), gap, Pick(net > 0, "BUY", "SELL"), gap))), clrYellow);
    Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
    Ln("STOP OUT  " + door, cY);
    // PRICE LADDER: qeemat P par kitni lots profit mein + TOTAL (NET se seedha hisaab, swap / spread nahi)
