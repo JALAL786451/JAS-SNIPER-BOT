@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA + 5EA  (build j2, Pine v6, 5 Nov 2026; j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
+// JAS NAQSHA + 5EA  (build j3, Pine v6, 6 Nov 2026; j3 = aakhri candle ke saath BOLD chalti price label (setting "7 · Price label"); j2 = j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
 //  j1: Naqsha hissa n5.9 jyon ka tyon. 5EA hissa p6 wala hisaab, magar SIRF chart ke instrument ka: request.security 11 -> 2
 //   (bhaari 4 x 4H + 7 x 1D poori history = loading / timeout ki wajah). Neeche 11 instrument ki line default BAND (ab sirf chart
 //   wale ka haal hota hai). 5EA ka poora hissa setting "6 · 5EA" se ON/OFF. Python ke pakke number wahi (table). TRADE NAHI, sirf dikhana.
@@ -33,7 +33,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 31, line <= 4, plot 2, plotshape 2.
 // ============================================================================
-indicator("JAS Naqsha+5EA j2", "JAS Naqsha+5EA j2", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 50, max_labels_count = 70, max_bars_back = 300)
+indicator("JAS Naqsha+5EA j3", "JAS Naqsha+5EA j3", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 50, max_labels_count = 70, max_bars_back = 300)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -478,7 +478,7 @@ if barstate.islast
     if showT and tFull
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA+5EA j2", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA+5EA j3", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -598,7 +598,7 @@ if barstate.islast
 //  ===== 5EA HISSA (jas_5ea p6; naam badle: LA->eLA, cTx->eTx, cBg->eBg, tb->tb5, showSell->showSell5, f_pos->f_pos5, f_isWk->f_isWk5) =====
 // ============================================================================
 
-BUILD = "j2"
+BUILD = "j3"
 TZ    = "America/New_York"
 DAY   = 86400000
 SWAP  = 0.03 / 365
@@ -1389,3 +1389,32 @@ if barstate.islast
         for j = 0 to 10
             isOp = opB.get(j) or (showSell5 and opS.get(j))
             table.cell(tn, j + 1, 0, aSh.get(j) + (isOp ? " •" : ""), text_color = isOp ? cUp : j == cm ? eTx : cMu, text_size = size.small, bgcolor = j == cm ? cHi : color.new(color.white, 100))
+
+// ============================================================================
+// 7 · PRICE LABEL (j3, user 6 Nov): aakhri candle ke daayen BOLD price, har tick ke saath chalti hai.
+//  Sirf dikhana - koi hisaab / trade nahi. Har tick purana label + line delete, naya banta hai (label hadd par asar nahi).
+// ============================================================================
+grP = "7 · Price label (aakhri candle)"
+showPL = input.bool(true, "Bold price label dikhao", group = grP, display = display.none)
+plSize = input.string("Normal", "Size", options = ["Small", "Normal", "Large"], group = grP, display = display.none)
+plGap  = input.int(2, "Candle se doori (bars)", minval = 1, maxval = 20, group = grP, display = display.none)
+plLine = input.bool(true, "Candle se label tak dotted line", group = grP, display = display.none)
+plChg  = input.bool(true, "Saath mein aaj ka badlao % (din ke open se)", group = grP, display = display.none)
+
+dOpenPL = request.security(syminfo.tickerid, "D", open, lookahead = barmerge.lookahead_off)
+var label plLbl = na
+var line  plLn  = na
+if barstate.islast
+    label.delete(plLbl)
+    line.delete(plLn)
+    if showPL
+        bool   plUp  = close >= open
+        color  plBg  = plUp ? color.new(#089981, 0) : color.new(#F23645, 0)
+        string plSz  = plSize == "Small" ? size.small : plSize == "Large" ? size.large : size.normal
+        float  chgP  = dOpenPL != 0 ? (close - dOpenPL) / dOpenPL * 100 : na
+        string plTx  = str.tostring(close, format.mintick)
+        if plChg and not na(chgP)
+            plTx := plTx + "  " + (chgP >= 0 ? "▲ +" : "▼ ") + str.tostring(chgP, "0.00") + "%"
+        plLbl := label.new(bar_index + plGap, close, plTx, xloc = xloc.bar_index, style = label.style_label_left, color = plBg, textcolor = color.white, size = plSz, text_formatting = text.format_bold, tooltip = syminfo.ticker + "  abhi ki price (har tick)")
+        if plLine
+            plLn := line.new(bar_index, close, bar_index + plGap, close, xloc = xloc.bar_index, color = color.new(plBg, 30), style = line.style_dotted, width = 1)
