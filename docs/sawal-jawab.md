@@ -187,3 +187,8 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 NAHI. `JasTokriEA.mq5` tk1 = sirf dhancha (Q1-Q13). tk2 sim (gold 2005-26, 240 variant) = 240/240 account khatam: chhoti fishing kamati, magar
 intezar wali lots gold ki $30-100 ek-taraf chaal mein jama -> account khatam. LIVE report bhi yahi: lot 0.01-0.05 +62k, bari lot + ulti SELL -68k / 43 ticket -150k.
 Q20-Q23 (high/low wait, chart rukh, bhari taraf badlo) abhi test NAHI. Live par Tokri EA NAHI; demo bhi pehle sim pass ho tab.
+
+### MT5 demo account nahi mil raha (7 Nov)
+Hafta/Itwaar market BAND = MT5 "closed" (account theek). Gum demo: (1) MT5 Navigator (Ctrl+N) > Accounts > har number double-click;
+(2) my.exness.com > My Accounts > Demo tab (+ Archived) - number/server, "Change trading password"; (3) Gmail mein "Exness" / "MT5 account" email;
+(4) Windows Start mein "MetaTrader 5" - doosri copy (alag folder) ho sakti; (5) na mile = naya demo 2 min. Record: 472540009 + 474651829 (31 Oct delete kiye).
