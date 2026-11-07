@@ -193,3 +193,8 @@ Hafta/Itwaar market BAND = MT5 "closed" (account theek). Gum demo: (1) MT5 Navig
 (2) my.exness.com > My Accounts > Demo tab (+ Archived) - number/server, "Change trading password"; (3) Gmail mein "Exness" / "MT5 account" email;
 (4) Windows Start mein "MetaTrader 5" - doosri copy (alag folder) ho sakti; (5) na mile = naya demo 2 min. Record: 472540009 + 474651829 (31 Oct delete kiye).
 (7 Nov SS) Har MT5 copy ke Navigator mein sirf USI copy ke account. Live wali copy mein sirf 253687618 = demo doosri copy mein the. Isi copy mein demo login = live disconnect (JasMauqa demo par chala jayega) - is liye demo ALAG MT5 copy mein (Exness MT5 setup, Settings > alag folder).
+
+### SIGNUM portfolio nateeja (user SS, 7 Nov)
+10 crypto combo (ADA, BTC, SOL, NEAR, CRO, ETH, SHIB, TRX, UNI, AVAX), 1D/4h, 2018+. Trades 10-49 (hamara qaida 100+) = qismat se farq nahi pehchana jata;
+Max DD 21-41% (FTMO hadd 10% = fail); 7 strategy mein se best chuni = overfitting. 2024+ mein BTC (+30 vs +76) aur TRX (+62 vs +232) B&H se HAARE.
+Faisla: FTMO / MT5 ke liye kaam ka NAHI; sirf dekhne ki cheez. BTC trend wala hamara Kachhua #76 BANK mein (FTMO BTC swap pehle).
