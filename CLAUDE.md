@@ -25,6 +25,7 @@ jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; 
 - Agent / workflow sirf jab user naam le kar maange; hafte ki limit 50%+ ho to bilkul nahi.
 - **BANK yaad dilao (user 1 Nov):** `docs/bank.md` - FTMO pass, real account, trade barhana ya naya jor ki baat par user ko KHUD batao.
 - **FTMO offer yaad dilao (user 1 Nov):** jab bhi FTMO khareedne / challenge / fees ki baat ho, aur har November (Black Friday) / December (New Year) wali chat mein, ftmo.com par chalu offer KHUD check karke batao. Paise sirf ftmo.com checkout par; code se qeemat waqai kam ho tab.
+- **Nayi maloomat KHUD (user 7 Nov):** har chat mein 1-3 line nayi kaam ki cheez (tool, MCP, data, Claude/FTMO nayi baat) khud batao; detail sirf poochhne par. Bata chuke = `docs/nayi-maloomat.md`.
 - User ki marzi / hidayat ka pata na ho (yahan + `TRADING.md` mein nahi) -> `grep -i <lafz> docs/roznamcha/HIDAYAT.md`. Poori file nahi.
 
 ## Hard rules for these EAs
