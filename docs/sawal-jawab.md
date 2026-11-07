@@ -181,3 +181,4 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - JasMauqa YES dabane se HISAAB wala kaam bhi hoga? -> NAHI; YES = sirf popup ka upar wala kaam (A/B/C/D), HISAAB sirf parhne ke liye (6 Nov, m7.6).
 - 0.80 hadd (InpMaxNet) kya? -> |BUY-SELL| lot 0.80 se upar na jaye; 0.80 = gold $1 par ~80 USC, $50 ulta = ~4000 USC (~10%) (6 Nov).
 - NAYI kholo / PURANI close? -> NAYI = naya order lagao; PURANI = khuli trade close karo (JasMauqa m7.6, 6 Nov).
+- M1 data GitHub par kaise (25 MB error)? -> bari CSV wale folder mein `tools/JAS_M1ZIP.bat` (JAS_ZIP NAHI = woh H1) double-click -> M1_UPLOAD folder ki saal-wari zip (gold ~5 MB/saal) GitHub page (data/qdm/M1) par khencho -> Commit. Bari CSV khud kabhi nahi (7 Nov).
