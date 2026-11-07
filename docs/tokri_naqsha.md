@@ -120,3 +120,9 @@ BUY +135k USC, SELL -156k (0.01 SELL sirf -3k; bari SELL -152k). Dhaal asal mein
 ## Misaal (5 Nov 15:03 PKT, live 253687618)
 11 tk: BUY 0.01 x9 (4124.926 .. 4134.448), BUY 0.10 @4146.317, SELL 0.10 @4134.023 (dhaal). NET +0.09, P/L ~-186, gold ~4124.7.
 User: abhi nayi SELL NAHI - gold abhi neeche se wapas aaya, equity kaafi.
+
+## EA tk2 (47vi chat, 7 Nov) - user: "test karo nahi, EA HER SOORAT CHAHIYE"
+`JasTokriEA.mq5` tk2 = Q14-Q22: rukh AUTO (4H Supertrend) ya button BUY/SELL; rukh taraf 0.02, doosri 0.01 (max 0.02, martingale NAHI);
+aakhri lot se $2 (InpStep) chaal par nayi lot (MOM = chaal ki taraf Q16 / ULTA = Q20); har lot TP $1 (InpTp); NET >= +0.5 = CLOSE ALL;
+bardasht 5% = nayi lot nahi; AAKHRI HADD 10% = sab band + STOP. Buttons: RUKH AUTO/BUY/SELL, CLOSE ALL, STOP/START. Sirf hedge account.
+TEST NAHI hua (user marzi). Claude ki salah: pehle DEMO 472716649 (USD) par, LIVE NAHI. F7 baqi.
