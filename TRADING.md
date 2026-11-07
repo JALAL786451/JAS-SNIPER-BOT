@@ -75,6 +75,7 @@ Trend MAZBOOT, IBS/Khirki/Kachhua darmiyana, chutti kamzor; nayi B1 Pre-FOMC, B2
 User ko PDF diya: `docs/pdf/JAS_FTMO_Plan_Monday.pdf` (+ .txt) = data guide + FTMO plan hafta 1-4 + checklist. FTMO Nov 2026 offer pakka nahi mila (2025 BF ~20%, 26-29 Nov) -> ~26-30 Nov ftmo.com checkout dekho.
 Tokri Q20-Q23 (user): high/low par lot + wait; SL/TP/strategy NAHI; bhari taraf = chart se rukh, ulta bhaage to bhari taraf badlo; swing/trend hi kamyab.
 Hafte ki limit ~4% bachi -> nayi chat Monday reset ke baad (user khud "TRADING").
+**DATA (7 Nov):** gold M1 2019/20/25/26 repo `data/qdm/M1` (UTC, ek price, 2026 = 4 Nov tak). Baqi saal user ke QDM mein - jo chahiye Monday ko Claude KHUD maange (upload link sawal-jawab).
 **AGLA (Monday 9 Nov, PDF sec 5 hafta 1):** (0) user "haan" 7 Nov: LIVE report (`docs/live/ReportHistory-253687618-2026-11-07.zip`, 6701 trade) se user ka ASLI tareeqa nikaalo (kab kholta, kitni lot, kab band, Close By; achhe din 28-29 Oct / 5 Nov vs bure 2 / 4 Nov) = naqsha, TEST NAHI; user dekh kar haan/nahi. (1) user data push karega (gold M1 2019/20/25/26, US500/USTEC M1 2019-20, Yahoo/Stooq daily, FRED) -> Claude SIRF jaanch
 (gap, timezone, BID/ASK), naya test NAHI. (2) user se: rukh chart par kaise (2-3 purane din dikhaye), kitne $ ulta par bhari taraf badle, purani lots ka kya (Q22).
 (3) faisle: Kachhua e1 0.25% demo? B1 ya B2 pehle? (4) har test: discuss -> qaida pehle -> test -> judge (user naam le) -> faisla user.
