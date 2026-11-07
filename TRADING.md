@@ -67,6 +67,7 @@ JasMauqa **m7.6 LIVE ✅** (F7 user): NET = BUY - SELL line, PROFIT split BUY/SE
 FTMO swap-free = pakka (5 Nov support email, sawal-jawab "FTMO swap-free (Islamic)"): trade se PEHLE har stage email.
 Kachhua swap 0 = #99 ASLI PASS + #101 (#68 + Kachhua 12 @0.25%) PASS (5 Nov) - bank se bahar; user "haan" (7 Nov) -> Kachhua e1 0.25% FTMO demo par (Monday tasdeeq + EA). Tide HTF (W+M) alag, FAIL.
 Tide HTF h1 (XAUUSD, user SS 7 Nov): 2000-18 88 tr Exp +0.26 (±0.27), 2019+ 51 tr +0.43 (±0.48) = apne qaide par FAIL (trades <100, Exp-2SE <0). TF baqi.
+LIVE report 7 Nov 04:53 (user zip): jama 58,746 USC (18 Aug) -> balance 42,311.89, equity 38,272.49 (-35%); 6701 trade, jeet 72-85% magar PF 0.94 (kul -16,434). Lot 0.01 -> 10.00 (2 Nov -5,867), 4.00 (4 Nov -5,958), 5.00 (6 Nov +4,167; 19:59 server SELL 5 + 9 haari SELL Close = -3,778). Khuli 39: BUY 4.16 avg 4073.09 / SELL 4.16 avg 4063.62, NET 0, -4,039.
 Live SS: 60 ticket, BUY 5.13 = SELL 5.13 (NET 0), P/L ~-7600, equity ~38,692 - lot bahut barhi (0.88 -> 5.13), BANK yaad dilaya.
 **45vi chat (6 Nov)** - Tokri tk2 sim (`tools/tokri_asli.py/.c`): gold H1 2005-26 $1000, 240 variant + M1 2009-18 = SAB account khatam.
 FTMO demo 474832446 SS: USTEC SL -994 (-1R), i6 US500 BUY 2.81, balance 98,909 (sec 0). Research agent (`docs/research/agent-6nov-factors-data.md`):
