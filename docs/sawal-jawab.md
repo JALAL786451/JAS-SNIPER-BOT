@@ -182,3 +182,8 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - 0.80 hadd (InpMaxNet) kya? -> |BUY-SELL| lot 0.80 se upar na jaye; 0.80 = gold $1 par ~80 USC, $50 ulta = ~4000 USC (~10%) (6 Nov).
 - NAYI kholo / PURANI close? -> NAYI = naya order lagao; PURANI = khuli trade close karo (JasMauqa m7.6, 6 Nov).
 - M1 data GitHub par kaise (25 MB error)? -> upload page SEEDHA: github.com/JALAL786451/JAS-SNIPER-BOT/upload/claude/jas-desk-v3-0110-yu3w2h/data/qdm/M1 (4-4 zip, har dafa link dobara). bari CSV wale folder mein `tools/JAS_M1ZIP.bat` (JAS_ZIP NAHI = woh H1) double-click -> M1_UPLOAD folder ki saal-wari zip (gold ~5 MB/saal) GitHub page (data/qdm/M1) par khencho -> Commit. Bari CSV khud kabhi nahi (7 Nov).
+
+### Gold basket (Tokri) EA tayyar hai? (7 Nov)
+NAHI. `JasTokriEA.mq5` tk1 = sirf dhancha (Q1-Q13). tk2 sim (gold 2005-26, 240 variant) = 240/240 account khatam: chhoti fishing kamati, magar
+intezar wali lots gold ki $30-100 ek-taraf chaal mein jama -> account khatam. LIVE report bhi yahi: lot 0.01-0.05 +62k, bari lot + ulti SELL -68k / 43 ticket -150k.
+Q20-Q23 (high/low wait, chart rukh, bhari taraf badlo) abhi test NAHI. Live par Tokri EA NAHI; demo bhi pehle sim pass ho tab.
