@@ -209,3 +209,7 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
   Code jaancha (8 Nov, commit c05b8f5, 28 Jul 2026): 52 file, sirf 2 dependency (MCP sdk, chrome-remote-interface); sirf 127.0.0.1 TV se baat
   + api.github.com update check; broker order NAHI (sirf TV Replay buy/sell = kaghazi). Khatra: `tv_update` khud git pull + npm ci -> mat chalao
   bina Claude jaanch. User PC par node nahi tha -> `winget install OpenJS.NodeJS.LTS` + `winget install Git.Git`.
+  User PC setup (9 Nov 03:30 PKT): bridge `C:\Users\Sharf\tradingview-mcp` (c05b8f5, npm ci; 11 vuln = web-server/eslint hisse, stdio bridge par
+  nahi chalte; `npm audit fix` MAT). TV = Store MSIX `31178TradingViewInc.TradingView` 3.5.0 (bridge script nahi dhoondhti; seedha exe = port band)
+  -> robocopy copy `%LOCALAPPDATA%\tradingview-mcp\TradingView\TradingView.exe --remote-debugging-port=9222` = port KHULA ✅ (login wahi).
+  Baqi: PC par Claude Code + `claude mcp add`, "TV Bridge" shortcut. TV update ho to copy dobara (robocopy).
