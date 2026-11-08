@@ -203,3 +203,6 @@ Faisla: FTMO / MT5 ke liye kaam ka NAHI; sirf dekhne ki cheez. BTC trend wala ha
 gap sirf US chutti). US500/USTEC 2012-18 + 2021-26: OHLC saaf, asli jhatke (Brexit 2016, Trump 2016, 24 Aug 2015, 2 Apr 2025) theek;
 MAGAR 23 Feb - 21 May 2013 = 3 mahine GAYAB (dono index), 2012 Jan aadha; 2026 = 30 Oct tak. BAQI: US500/USTEC 2019-20, gold 2021-24 nahi aaya.
 Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1.12, gold 0.24). Script: test nahi, sirf jaanch.
+- TradingView MCP Bridge (YouTube)? -> community (TV ka nahi, MIT) github tradesdontlie/tradingview-mcp: Claude Code <-> MCP <-> TV Desktop (port 9222).
+  Chart symbol/TF/OHLC + indicator values parhe, Pine daale/compile error dekhe. Sirf user ke PC par (cloud chat nahi); Node 18+, TV desktop app debug port.
+  Khatra: port khula = PC ka koi program TV chala sake; code pehle parho. Faida bara: Pine copy-paste/SS kam. Agla qadam user: `node -v` (8 Nov).
