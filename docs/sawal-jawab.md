@@ -213,3 +213,7 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
   nahi chalte; `npm audit fix` MAT). TV = Store MSIX `31178TradingViewInc.TradingView` 3.5.0 (bridge script nahi dhoondhti; seedha exe = port band)
   -> robocopy copy `%LOCALAPPDATA%\tradingview-mcp\TradingView\TradingView.exe --remote-debugging-port=9222` = port KHULA ✅ (login wahi).
   Baqi: PC par Claude Code + `claude mcp add`, "TV Bridge" shortcut. TV update ho to copy dobara (robocopy).
+  ✅ CHAL GAYA (9 Nov 04:06 PKT): PC Claude Code 2.1.319 (`npm.cmd i -g --allow-scripts=@anthropic-ai/claude-code @anthropic-ai/claude-code`;
+  PowerShell mein npm/claude ki jagah npm.cmd/claude.cmd), `claude.cmd mcp add -s user tradingview node C:\Users\Sharf\tradingview-mcp\src\server.js`
+  = Connected; folder `C:\JAS_CLAUDE`; tv_health_check: OANDA:XAUUSD 4H. PC Claude ko hamare qaide nahi pata (repo/CLAUDE.md nahi) - live mashwara nahi.
+  Shortcut "TV Bridge" target: "%LOCALAPPDATA%\tradingview-mcp\TradingView\TradingView.exe" --remote-debugging-port=9222
