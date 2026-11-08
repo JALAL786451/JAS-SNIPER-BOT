@@ -198,3 +198,8 @@ Hafta/Itwaar market BAND = MT5 "closed" (account theek). Gum demo: (1) MT5 Navig
 10 crypto combo (ADA, BTC, SOL, NEAR, CRO, ETH, SHIB, TRX, UNI, AVAX), 1D/4h, 2018+. Trades 10-49 (hamara qaida 100+) = qismat se farq nahi pehchana jata;
 Max DD 21-41% (FTMO hadd 10% = fail); 7 strategy mein se best chuni = overfitting. 2024+ mein BTC (+30 vs +76) aur TRX (+62 vs +232) B&H se HAARE.
 Faisla: FTMO / MT5 ke liye kaam ka NAHI; sirf dekhne ki cheez. BTC trend wala hamara Kachhua #76 BANK mein (FTMO BTC swap pehle).
+
+**M1 data jaanch (48vi, 8 Nov)** - `data/qdm/M1`: gold 2019/20/25/26 SAAF (dup 0, OHLC ghalat 0, spike 0; UTC, hafta Itwaar 22/23:00 khulta,
+gap sirf US chutti). US500/USTEC 2012-18 + 2021-26: OHLC saaf, asli jhatke (Brexit 2016, Trump 2016, 24 Aug 2015, 2 Apr 2025) theek;
+MAGAR 23 Feb - 21 May 2013 = 3 mahine GAYAB (dono index), 2012 Jan aadha; 2026 = 30 Oct tak. BAQI: US500/USTEC 2019-20, gold 2021-24 nahi aaya.
+Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1.12, gold 0.24). Script: test nahi, sirf jaanch.
