@@ -5,3 +5,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 |---|---|---|
 | 7 Nov | SIGNUM MCP (3rd-party backtest connector; 25 chart x 7 strategy = overfitting khatra) - user ne khud SS dikhaya | jaan liya |
 | 7 Nov | MT5 report (xlsx/zip) Claude seedha parh leta hai - SS ki jagah report do = poora hisaab (6517 ticket) | - |
+| 8 Nov | Remote Control: Claude desktop app mein PC ka folder share karein to cloud chat MT5 report/log seedha parh sakti (SS nahi; sab account par abhi nahi) + FTMO Nov 2026 offer abhi elaan nahi (2025 BF 20%, 26-29 Nov) | - |
