@@ -156,13 +156,15 @@ FTMO DEMO 474832446: Exness-MT5Trial15, USD $100k, 1:100 (31-10); asli FTMO tria
 05-11 | 41vi: JasMauqa m7.3 (RUKH 1D+4H, NEWS 30/5 min, NO jori dobara nahi) | LIVE F7 OK, A DONE | madadgar, khud lot nahi | user ka haath + yaad-dihani
 05-11 | 42vi: JasMauqa m7.4 popup daayen + live basket poora band (+475 USC din) + poori history CSV (12,374 deal, gold -35%) | user: gold basket EA PENDING, "4H trend test baqi" | agli chat discuss phir test | asli data se bari haar ke din samjho
 06-11 | 43vi: Naqsha+5EA j1 TV ✅ + user ne tokri ka asli tareeqa samjhaya (live dikha kar) + live data: 0.01/0.02 +30k, >0.10 -66k | lot sirf 0.01/0.02, har faida band, hedge door par | user "han" -> agli chat sim H1 2005-26 $1000 | "mera data dekhein" = asal samajh data mein
+08-11 | 48vi: M1 data jaanch (gold 19/20/25/26, US500/USTEC 2012-26) | saaf; 2013 Feb-May 3 mahine gayab; index 2019-20 baqi | sirf jaanch | ek price = spread khud jodo
+09-11 | 48vi: TradingView MCP Bridge (user ne YouTube dekha) PC par SBS | Node/Git, bridge c05b8f5 jaancha, TV Store copy port 9222, Claude Code + mcp Connected, XAUUSD 4H parha | 'TV Bridge' shortcut; PC Claude ko qaide nahi | Pine/chart ab SS ke bina
 KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-10) -> MT5 PASS magar faida BTC ka (10-10) -> demo 11-10
 (17-10 tak sirf dikhana) -> #6 commodity ASLI PASS + 2nd demo (13-10) -> #13 4H FAIL -> FTMO: #29 4 mkt FAIL + 1% girawat 14.9% > 10% (28-10)
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
   6 Nov (46vi): TV Naqsha+5EA j3.1 bold chalti price label. JasMauqa m7.6 LIVE: NET = BUY-SELL, profit split,
     'agar sare profit close' -> NET + hedge (sirf hisaab; YES = sirf popup ka kaam). Lot 0.88 -> 5.13 barhi (BANK yaad).
 
-4. ABHI (6 Nov 2026, 43vi chat ke baad)  [MT5 ka asli haal = TRADING.md sec 0]
+4. ABHI (9 Nov 2026, 48vi chat ke baad; TV MCP bridge user PC par chalu - TRADING sec 5)  [MT5 ka asli haal = TRADING.md sec 0]
 DEMO 472716649 (Trial16, STANDARD USD $2153.25, 0 khuli, SS 4 Nov; XAG SELL kis ne kholi = History Comment/Magic SS baqi; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
 FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu (4 Nov 09:01: i6 2 BUY + t5 gold BUY, kul +$262):
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR

@@ -1787,3 +1787,16 @@ median < #68 (isi run). #69 / #76 wala tareeqa. Ginti +1.
 **+Tide 0.25% 69 / 0 / 15, median 15.5** · 0.50% 66 / 8 (2/6) / 10, 12.3 -> **chuni Tide risk 0.25%**.
 **Koshish #101 IMTIHAN 2019-01..2026-10 (EK dafa, 5 Nov, Tide 0.25%) = PASS (chhota faida):** 94 challenge: #68 83 / 0 / 11, median 10.6 -> **#68 + Kachhua 12 @0.25%: 85 / 0 / 9, median 10.2**.
 Fail 0 wahi, +2 pass, ~0.4 mahina jaldi. CHUNAO mein faida bara tha (median 27.6 -> 15.5) - 2019+ tezi mein #68 khud tez. FTMO jor ke qabil (bank mein, user faisla).
+
+
+## TRADING sec 5 se hataya (48vi chat, 9 Nov)
+**45vi chat (6 Nov)** - Tokri tk2 sim (`tools/tokri_asli.py/.c`): gold H1 2005-26 $1000, 240 variant + M1 2009-18 = SAB account khatam.
+FTMO demo 474832446 SS: USTEC SL -994 (-1R), i6 US500 BUY 2.81, balance 98,909 (sec 0). Research agent (`docs/research/agent-6nov-factors-data.md`):
+Trend MAZBOOT, IBS/Khirki/Kachhua darmiyana, chutti kamzor; nayi B1 Pre-FOMC, B2 chutti non-US, B3 mahina-aakhir, B4 BTC trend...; data = Dukascopy (QDM) behtareen.
+User ko PDF diya: `docs/pdf/JAS_FTMO_Plan_Monday.pdf` (+ .txt) = data guide + FTMO plan hafta 1-4 + checklist. FTMO Nov 2026 offer pakka nahi mila (2025 BF ~20%, 26-29 Nov) -> ~26-30 Nov ftmo.com checkout dekho.
+Tokri Q20-Q23 (user): high/low par lot + wait; SL/TP/strategy NAHI; bhari taraf = chart se rukh, ulta bhaage to bhari taraf badlo; swing/trend hi kamyab.
+Hafte ki limit ~4% bachi -> nayi chat Monday reset ke baad (user khud "TRADING").
+**DATA (7 Nov):** gold M1 2019/20/25/26 repo `data/qdm/M1` (UTC, ek price, 2026 = 4 Nov tak). Baqi saal user ke QDM mein - jo chahiye Monday ko Claude KHUD maange (upload link sawal-jawab).
+**AGLA (Monday 9 Nov, PDF sec 5 hafta 1):** (0) user "haan" 7 Nov: LIVE report (`docs/live/ReportHistory-253687618-2026-11-07.zip`, 6701 trade) se user ka ASLI tareeqa nikaalo (kab kholta, kitni lot, kab band, Close By; achhe din 28-29 Oct / 5 Nov vs bure 2 / 4 Nov) = naqsha, TEST NAHI; user dekh kar haan/nahi. (1) user data push karega (gold M1 2019/20/25/26, US500/USTEC M1 2019-20, Yahoo/Stooq daily, FRED) -> Claude SIRF jaanch
+(gap, timezone, BID/ASK), naya test NAHI. (2) user se: rukh chart par kaise (2-3 purane din dikhaye), kitne $ ulta par bhari taraf badle, purani lots ka kya (Q22).
+(3) faisle: Kachhua e1 0.25% demo? B1 ya B2 pehle? (4) har test: discuss -> qaida pehle -> test -> judge (user naam le) -> faisla user.
