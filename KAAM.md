@@ -18,6 +18,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 
 - FundingPips email (8 Nov, Sarim): trade kholne/badalne/band karne wala EA MANA (account band); VPN/VPS MANA; Evaluation mein weekend hold OK, Master par overnight/weekend NAHI (Swing add-on se OK); Swap-free add-on +10% qeemat, SIRF forex + metals (index/energy/crypto par swap), khareed ke waqt hi. => hamare EA (t5/i6/k2) wahan NAHI chal sakte; EA plan sirf FTMO.
 
+- 9 Nov SS: LIVE 253687618 par JasMauqa **m7.6 BTCUSDc H4** (equity 37,976.56, P/L -2315.63, 147 ticket, NET +0.15). Popup A: Close By SELL 2.43@74872.15 + BUY 2.20@74389.22 = +1062.45, NET wahi. Ladder label "gold" likha (BTC par) = chhota label bug.
 - 9 Nov shaam: user ghar ke kaam mein, kaam ruka. Wapas aayein to K1 (D:\JAS_DRIVE.bat SS) se, phir K3.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
