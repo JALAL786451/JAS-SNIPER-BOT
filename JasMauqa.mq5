@@ -1,5 +1,8 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.7  (9 Nov 2026)                         |
+//|  JAS MAUQA   -   build m7.8  (9 Nov 2026)                         |
+//|  m7.8 = BREAKEVEN: NET < InpBeNet (0.05) ho to number NAHI, likho |
+//|         "nuqsan TALA-BAND" (NET ~0 par breakeven bematlab hota). |
+//|         Ladder ki breakeven line bhi tab chhupi. Trade qaida wahi.|
 //|  m7.7 = (a) MT5 ki "autotrade #" lakeerein khud mitao (InpClean) |
 //|         (b) DOOSRE symbol ka NET + account MARGIN LEVEL panel par|
 //|             (BTC + gold ek account; stop out = baqi na hilein to)|
@@ -53,11 +56,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "7.30"
+#property version   "7.40"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.7"
+#define S_BUILD "m7.8"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -90,6 +93,7 @@ input int    InpNews1    = 30;     // NEWS: pehla alarm kitne minute pehle
 input int    InpNews2    = 5;      // NEWS: doosra alarm kitne minute pehle
 input bool   InpClean    = true;   // m7.7 MT5 ki "autotrade #..." lakeerein chart se khud mitao
 input double InpBigLot   = 0.10;   // m7.7 is se bari lot = laal WARNING (sirf likhai, kuch band nahi)
+input double InpBeNet    = 0.05;   // m7.8 NET is se kam = breakeven number nahi, "TALA-BAND" likho
 
 CTrade trade;
 
@@ -544,7 +548,9 @@ void Run()
    Ln("HEDGE: " + hz + Pick(rBad, StringFormat("   !! NET %.2f > %.2f: PEHLE HEDGE, PHIR PROFIT CLOSE", rG, InpMaxNet), ""), rBad ? cR : clrYellow);
    gHis = StringFormat("--- HISAAB (sirf likhai, faisla aap ka) ---\nNET abhi %+.2f  (BUY %.2f - SELL %.2f)\nAgar sare profit ticket close: baqi BUY %.2f / SELL %.2f = NET %+.2f\nHedge: %s%s\n",
                        net, bl, sl, rB, rS, rN, hz, Pick(rBad, StringFormat("\n!! NET %.2f hadd %.2f se upar - PEHLE HEDGE, PHIR PROFIT CLOSE", rG, InpMaxNet), ""));
-   Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
+   bool tala = MathAbs(net) < InpBeNet - 1e-9;   // m7.8
+   if(tala) Ln(StringFormat("BREAKEVEN: NET %+.2f ~0 -> nuqsan %s TALA-BAND (qeemat se nahi badlega)", net, M(kul)), cY);
+   else     Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)  = yahan sab ka TOTAL 0", be, Px(bid)), cC);
    Ln("STOP OUT  " + door + Pick(othTx == "", "", " *"), cY);
    Ln(Pick(mg > 0, StringFormat("MARGIN LEVEL %s %% (poora account; stop out %s %%)", DoubleToString(mlv, 0), DoubleToString(soLvl, 0)), "MARGIN LEVEL - (margin 0)"), (mg > 0 && mlv < 3 * soLvl) ? cR : cW);
    if(othTx != "")
@@ -563,7 +569,7 @@ void Run()
       for(int q = 0; q < 5; q++)
         {
          double P = lv[q];
-         if(P <= 0) continue;
+         if(P <= 0 || (q == 4 && tala)) continue;
          int pc = 0;
          for(int i = 0; i < n; i++)
             if((a[i].typ == POSITION_TYPE_BUY && a[i].open < P) || (a[i].typ == POSITION_TYPE_SELL && a[i].open > P)) pc++;
