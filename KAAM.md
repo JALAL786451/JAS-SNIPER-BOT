@@ -37,5 +37,6 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 
 ## Hue (aakhri 5)
+- 9 Nov (52vi): FTMO demo SS #2: equity 100,088.60, 3 khuli +1179.33 (sab plus), target baqi 9911.
 - 9 Nov: Naqsha+5EA j3.2 TV par (0 error, user paste). FTMO demo SS (equity 99,559).
 - 9 Nov: US500/USTEC M1 2019-20 jaanch saaf (49vi).
