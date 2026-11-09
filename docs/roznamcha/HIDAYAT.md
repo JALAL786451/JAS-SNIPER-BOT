@@ -56,6 +56,8 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 | parhna | Bari file poori NAHI - `grep`. Sawal purana lage to pehle `docs/sawal-jawab.md`. | 14 Oct |
 | hidayat file | Ye file sirf zaroorat par; jo cheez bila wajah parhi jaye wo neeche "Sirf zaroorat par" list mein. | 18 Oct |
 
+- "Chat lambi / chat khatam" ka mashwara sirf jab USER ke ~15 message ho jayein (user 9 Nov, 51vi: 3 message par kaha = ghalat, "slogan khatam karein"). Pehle gino, phir kaho.
+
 ## D. MQL5 / Pine kaam ke qaide (sirf EA / Pine likhte waqt grep "MQL5" ya "Pine")
 
 - MQL5 + Pine: har file ki pehli line(on) mein build number, panel / title par bhi wahi.

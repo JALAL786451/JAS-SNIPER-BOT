@@ -224,3 +224,6 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - PC Claude se bari Pine TV mein compile? (9 Nov, 50vi) -> chal gaya (j3 0 error). Code type karwana ~25k token = mehnga: user khud Pine Editor mein
   Ctrl+A/Ctrl+V, PC Claude se sirf "errors batao" (pine_get_errors). "Add to chart" bridge se na mile to user khud ▷. Do price patti = right-click
   script -> Pin to scale -> candles wali scale. Ijazat: Get/Find/Health/Read/Screenshot = 2; Set/Click/New/Compile = 1; Ui Evaluate = pehle SS Claude ko.
+- TV Bridge se token kaise bachte hain? (9 Nov, 51vi) -> bridge khud token nahi bachata; PC Claude bhi usi plan ki limit khata hai. Bachat tab: TV ki
+  cheez (Pine errors, chart ki value) PC Claude TEXT mein parhe = SS (tasveer ~1-2k token) + cloud chat ke chakkar kam, ghalti andaze se nahi.
+  Mehnga: pehli install, poora code bridge se type karwana (~25k). Qaida: code user khud paste, bridge se sirf chhota sawal ("errors batao").
