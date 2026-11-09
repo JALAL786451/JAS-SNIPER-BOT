@@ -1,5 +1,11 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.6  (6 Nov 2026; likhai saaf: NAYI kholo / PURANI close)|
+//|  JAS MAUQA   -   build m7.7  (9 Nov 2026)                         |
+//|  m7.7 = (a) MT5 ki "autotrade #" lakeerein khud mitao (InpClean) |
+//|         (b) DOOSRE symbol ka NET + account MARGIN LEVEL panel par|
+//|             (BTC + gold ek account; stop out = baqi na hilein to)|
+//|         (c) ladder / hedge popup par chart ka symbol ("gold" nahi)|
+//|         (d) bari lot (> InpBigLot) par sirf WARNING, rokna nahi  |
+//|         Koi trade qaida / hadd NAHI badla (user 9 Nov "haan m7.7")|
 //|  m7.6 = PROFIT split BUY/SELL + "profit utha lo to NET kya" +    |
 //|         hedge kitna (panel + popup). SIRF HISAAB, khud lot nahi. |
 //|  m7.5 = NET ka poora hisaab (BUY - SELL = NET, barabar kaise) +  |
@@ -51,7 +57,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.6"
+#define S_BUILD "m7.7"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -82,6 +88,8 @@ input bool   InpNews     = true;   // m7.3 NEWS alarm (sirf bari / HIGH khabar)
 input string InpNewsCur  = "USD";  // NEWS: kis currency ki khabar (gold = USD)
 input int    InpNews1    = 30;     // NEWS: pehla alarm kitne minute pehle
 input int    InpNews2    = 5;      // NEWS: doosra alarm kitne minute pehle
+input bool   InpClean    = true;   // m7.7 MT5 ki "autotrade #..." lakeerein chart se khud mitao
+input double InpBigLot   = 0.10;   // m7.7 is se bari lot = laal WARNING (sirf likhai, kuch band nahi)
 
 CTrade trade;
 
@@ -409,6 +417,7 @@ void NewsCheck(double net)
 
 void Run()
   {
+   if(InpClean && ObjectsTotal(0, -1, -1) > 0) ObjectsDeleteAll(0, "autotrade");
    PInfo a[];
    int n = Gather(a);
    double vpp = Vpp();
@@ -446,6 +455,34 @@ void Run()
       double d = free / MathAbs(perD);
       door = StringFormat("%s away (price %s)", DoubleToString(d, 1), Px(bid - (net > 0 ? 1 : -1) * d));
      }
+   // m7.7: DOOSRE symbol (isi account par) ka NET + har $1 ka asar
+   string oth = ""; double bigV = 0; int bigN = 0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong t = PositionGetTicket(i);
+      if(t == 0) continue;
+      string sy = PositionGetString(POSITION_SYMBOL);
+      if(sy == _Symbol || StringFind(oth, "|" + sy + "|") >= 0) continue;
+      oth += "|" + sy + "|";
+     }
+   string othTx = "";
+   string parts[]; int np = StringSplit(oth, '|', parts);
+   for(int k = 0; k < np; k++)
+     {
+      if(parts[k] == "") continue;
+      double ob = 0, os = 0;
+      for(int i = PositionsTotal() - 1; i >= 0; i--)
+        {
+         ulong t = PositionGetTicket(i);
+         if(t == 0 || PositionGetString(POSITION_SYMBOL) != parts[k]) continue;
+         if(PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY) ob += PositionGetDouble(POSITION_VOLUME); else os += PositionGetDouble(POSITION_VOLUME);
+        }
+      double ots = SymbolInfoDouble(parts[k], SYMBOL_TRADE_TICK_SIZE);
+      double ov = (ots > 0) ? SymbolInfoDouble(parts[k], SYMBOL_TRADE_TICK_VALUE) / ots : 0;
+      othTx += StringFormat("|DOOSRA %s NET %+.2f  ($1 = %s)", parts[k], ob - os, M(MathAbs(ob - os) * ov));
+     }
+   for(int i = 0; i < n; i++) if(a[i].vol > InpBigLot + 1e-9) { bigN++; bigV = MathMax(bigV, a[i].vol); }
+   double mlv = AccountInfoDouble(ACCOUNT_MARGIN_LEVEL);
    int tk = PositionsTotal() + OrdersTotal();
    bool full = tk > InpBachao;
    double freeE = eq - mg * soLvl / 100.0;
@@ -503,11 +540,20 @@ void Run()
    Ln(StringFormat("PROFIT split:  BUY %.2f lot (+%s)  |  SELL %.2f lot (+%s)", fbl, M(fbp), fsl, M(fsp)), cG);
    Ln(StringFormat("AGAR SARE PROFIT TICKET CLOSE -> baqi BUY %.2f / SELL %.2f  =  NET %+.2f%s", rB, rS, rN,
       Pick(rG < 0.005, "", Pick(rN > 0, " (BUY zyada)", " (SELL zyada)"))), rBad ? cR : clrYellow);
+   if(rG > InpBigLot + 1e-9) hz = "[BARI LOT - MAT] " + hz;
    Ln("HEDGE: " + hz + Pick(rBad, StringFormat("   !! NET %.2f > %.2f: PEHLE HEDGE, PHIR PROFIT CLOSE", rG, InpMaxNet), ""), rBad ? cR : clrYellow);
    gHis = StringFormat("--- HISAAB (sirf likhai, faisla aap ka) ---\nNET abhi %+.2f  (BUY %.2f - SELL %.2f)\nAgar sare profit ticket close: baqi BUY %.2f / SELL %.2f = NET %+.2f\nHedge: %s%s\n",
                        net, bl, sl, rB, rS, rN, hz, Pick(rBad, StringFormat("\n!! NET %.2f hadd %.2f se upar - PEHLE HEDGE, PHIR PROFIT CLOSE", rG, InpMaxNet), ""));
    Ln(StringFormat("BREAKEVEN PRICE  %s   (now %s)", be, Px(bid)), cC);
-   Ln("STOP OUT  " + door, cY);
+   Ln("STOP OUT  " + door + Pick(othTx == "", "", " *"), cY);
+   Ln(Pick(mg > 0, StringFormat("MARGIN LEVEL %s %% (poora account; stop out %s %%)", DoubleToString(mlv, 0), DoubleToString(soLvl, 0)), "MARGIN LEVEL - (margin 0)"), (mg > 0 && mlv < 3 * soLvl) ? cR : cW);
+   if(othTx != "")
+     {
+      string ol[]; int no = StringSplit(othTx, '|', ol);
+      for(int k = 0; k < no; k++) if(ol[k] != "") Ln(ol[k], cC);
+      Ln("* stop out = doosra symbol na hile to. Asli = MARGIN LEVEL", cW);
+     }
+   if(bigN > 0) Ln(StringFormat("!! BARI LOT %d tk > %.2f (max %.2f): nuqsan mein mat kaato", bigN, InpBigLot, bigV), cR);
    // PRICE LADDER: qeemat P par kitni lots profit mein + TOTAL (NET se seedha hisaab, swap / spread nahi)
    if(InpLadder && n > 0)
      {
@@ -523,7 +569,7 @@ void Run()
             if((a[i].typ == POSITION_TYPE_BUY && a[i].open < P) || (a[i].typ == POSITION_TYPE_SELL && a[i].open > P)) pc++;
          double tot = kul + perD * (P - bid);
          string tag = Pick(q == 4, "  <- BREAKEVEN", "");
-         Ln(StringFormat("LADDER  gold %s (%+.0f) -> %d ticket profit, TOTAL %s%s", Px(P), P - bid, pc, M(tot), tag), tot >= 0 ? cG : (q == 0 ? cR : cC));
+         Ln(StringFormat("LADDER  " + _Symbol + " %s (%+.0f) -> %d ticket profit, TOTAL %s%s", Px(P), P - bid, pc, M(tot), tag), tot >= 0 ? cG : (q == 0 ? cR : cC));
         }
      }
    Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "TOO MANY - only pair close", "OK")), full ? cR : cW);
@@ -551,7 +597,7 @@ void Run()
      }
    NewsCheck(net);
    if(InpNews) Ln(gNewsLn, cY);
-   for(int k = gRow; k < 30; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
+   for(int k = gRow; k < 45; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // ---- H) HEDGE LADDER
    if(big >= 0)
      {
@@ -566,14 +612,14 @@ void Run()
         {
          bool go = InpHAuto;
          if(!go)
-            go = MessageBox(StringFormat("HEDGE LADDER qadam %d\n\nGold %s <= %s\nBUY %.2f band (pehle SELL %s se neeche wali, phir SELL se upar wali - SELL ke qareeb pehle)\nNET %+.2f -> %+.2f\nNayi lot NAHI. Wapsi par wapas NAHI khulegi.\n\nDo it?",
+            go = MessageBox(StringFormat("HEDGE LADDER qadam %d\n\n" + _Symbol + " %s <= %s\nBUY %.2f band (pehle SELL %s se neeche wali, phir SELL se upar wali - SELL ke qareeb pehle)\nNET %+.2f -> %+.2f\nNayi lot NAHI. Wapsi par wapas NAHI khulegi.\n\nDo it?",
                                     k + 1, Px(bid), Px(nextP), MathMin(InpHLot, net), Px(a[big].open), net, MathMax(net - InpHLot, 0)),
                             "JAS MAUQA " + S_BUILD + " - HEDGE", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDYES;
          if(go)
            {
             double d = HClose(MathMin(InpHLot, net), a[big].open);
             if(d > 0) HSet(k + 1);
-            if(InpPush) SendNotification(StringFormat("JAS MAUQA HEDGE: gold %s, BUY %.2f band, NET ~%+.2f", Px(bid), d, net - d));
+            if(InpPush) SendNotification(StringFormat("JAS MAUQA HEDGE: " + _Symbol + " %s, BUY %.2f band, NET ~%+.2f", Px(bid), d, net - d));
            }
          else
             HSet(k + 1);   // NO = ye qadam chhor do, agla $%.0f neeche
