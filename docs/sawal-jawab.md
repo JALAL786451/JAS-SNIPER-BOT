@@ -229,3 +229,6 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
   Mehnga: pehli install, poora code bridge se type karwana (~25k). Qaida: code user khud paste, bridge se sirf chhota sawal ("errors batao").
 - FundingPips par hamare EA? (9 Nov, 51vi, support email 8 Nov) -> NAHI: trade kholne/band karne wala EA mana, VPS mana. Swing add-on se overnight;
   swap-free +10% sirf forex/metals (index par swap). Sirf haath ki trading ke liye. EA plan = FTMO.
+- Profit wali lots ek saath band karke unki jagah ek bari balanced lot? (9 Nov, 51vi) -> NAHI: equity wahi rehti (sirf balance upar, floating neeche),
+  nayi lot ka spread lagta, aur bari lot = wahi jis se 31 Oct-9 Nov ka sara nuqsan (bari SELL nuqsan mein kaati). Behtar: Close By (faide wali + nuqsan
+  wali ulti taraf) = spread 0, nayi lot 0, NET wahi, ticket kam. BTC aur gold ek doosre ki dhaal nahi (alag market).
