@@ -113,6 +113,7 @@ Q23 (6 Nov, user ki samajh): market kisi ko dekh kar nahi chalta; ~90% haarte, b
 - [x] Bardasht 5% / aakhri hadd 10% (Q10-13)
 - [x] Fishing: 1 ATR door, TP 0.5 ATR, max 10 (Q10-13)
 - [x] Jori: alag qaida nahi (Q9)
+- [ ] (9 Nov, user) Tokri + Turtle 55/20 rukh test - PDF Monday list #6; qaida pehle likho, phir test
 
 ## History (5 Nov) - `docs/research/live-history-tajziya.md`
 BUY +135k USC, SELL -156k (0.01 SELL sirf -3k; bari SELL -152k). Dhaal asal mein 0.25-4 lot thi, qaida 0.01 kehta.

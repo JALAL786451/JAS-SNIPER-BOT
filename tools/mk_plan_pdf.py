@@ -27,7 +27,7 @@ def tb(rows,w=None):
     for r in rows: txt.append(' | '.join(clean(c) for c in r))
 
 story.append(Paragraph('JAS SNIPER - FTMO Plan + Data Guide',ParagraphStyle('T',parent=ss['Title'],textColor=colors.HexColor('#0b3d6b'))))
-p('Jalal ke liye | 6 Nov 2026 | Monday (9 Nov) se milkar kaam. Hamesha: backtest -> demo -> live.',S)
+p('Jalal ke liye | 6 Nov 2026 (9 Nov: Monday list + Tokri 55/20 add) | Monday (9 Nov) se milkar kaam. Hamesha: backtest -> demo -> live.',S)
 txt.insert(0,'JAS SNIPER - FTMO Plan + Data Guide\n6 Nov 2026')
 
 h1('1. Abhi ka haal (6 Nov)')
@@ -102,6 +102,16 @@ bl(['<b>Mon:</b> aap data push karein -> Claude sirf jaanch kare (gap, timezone,
     '<b>Mon:</b> FTMO demo 474832446 ka SS (sec 0 update). Hafte mein 2 SS kaafi (Mon + Jumma).',
     '<b>Discuss (aap faisla):</b> (a) Kachhua e1 0.25% demo par #68 ke saath? (b) B1 aur B2 mein se kaun pehle? (c) FTMO swap-free email bheji / jawab?',
     '<b>Qaida pehle:</b> jo strategy chuni, us ka qaida TEST SE PEHLE likha jaye (TALAASH 2012-18 / IMTIHAN 2019+ ek dafa, PASS shart pehle se).'])
+h2('Monday 9 Nov - kaam ki list (haal 9 Nov)')
+tb([['#','Kaam','Haal'],
+    ['1','Data jaanch: US500 + USTEC M1 2019-20 (QDM)','HUA - saaf (49vi chat)'],
+    ['2','Data jaanch: gold M1 2019/20/25/26 (data/qdm/M1)','repo mein hai - jaanch baqi'],
+    ['3','FTMO demo 474832446 SS','HUA - equity 99,559, 3 khuli +649.90'],
+    ['4','PC Claude + TV Bridge (izafi kaam): JAS Naqsha+5EA j3.2 TV par','HUA - 0 error, chart par'],
+    ['5','Tokri EA tk2 "perfect": F7 (0 error) -> demo 472716649 (USD) par chalao, LIVE NAHI; Q22 sawal tay (kitne $ ulta par bhari taraf badle)','baqi'],
+    ['6','NAYA: Tokri + Turtle 55/20 test - rukh = 55 din ki high toot BUY / low toot SELL; 20 din ki ulti toot = rukh khatam. Rukh taraf 0.02, doosri 0.01, baqi tk2 qaide. Gold H1/M1, $1000, kharche ke saath','baqi - qaida pehle likha jaye, phir test'],
+    ['7','LIVE report se aap ka ASLI tareeqa nikaalna (naqsha, test nahi)','baqi'],
+    ['8','Discuss (a)(b)(c) upar wale','baqi']],[0.8*cm,11.5*cm,4.7*cm])
 h2('Hafta 2 (16-20 Nov): ek strategy ka test + judge')
 bl(['Chuni strategy: TALAASH -> PASS ho to IMTIHAN ek dafa.',
     '<b>Judge agent</b> (aap ki ijazat se): alag code se wahi nateeja dobara - CLEAN ho tab hi maana jaye.',
