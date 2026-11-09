@@ -2,14 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-05  (4 kaam)
-   - Koshish #101 qaida (test se PEHLE): FTMO #68 + Kachhua 12, swap 0
-   - Koshish #101 IMTIHAN PASS: #68 + Kachhua 12 @0.25% (85/0 med 10.2 vs 83/0 med 10.6)
-   - 44vi chat khatam: swap 0 par Kachhua #99 ASLI PASS, #100 Trend jeeta, #101 #68+Kachhua 0.2
-
-2026-11-06  (23 kaam)
-   - TRADING sec 0: FTMO demo 474832446 SS 6 Nov - USTEC SL -994 (-1R), i6 nayi US500 BUY 2.81,
-   - JasMauqa m7.5: NET hisaab line (BUY - SELL = NET, barabar kaise) + popup chhota neeche daa
+2026-11-06  (21 kaam)
+   - PDF: FTMO plan + data guide (Monday 9 Nov se)
+   - files-tafseel: JasMauqa m7.5
    - roznamcha update (46vi chat aakhir)
 
 2026-11-07  (16 kaam)
@@ -22,6 +17,6 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - sawal-jawab: TV MCP bridge code jaanch + node install
    - Chat khatam 48vi: M1 jaanch + TV MCP bridge PC par chalu; agla = PC Claude CLAUDE.md + Pin
 
-2026-11-09  (5 kaam)
+2026-11-09  (6 kaam)
    - Add files via upload
-   - USTEC M1 2012-18 purani sahi zip wapas; 2019-20 hataye (QDM tick format, price 0.0)
+   - Chat khatam 49vi: US500/USTEC M1 2019-20 saaf (2012-26 poora); PC Claude CLAUDE.md + manua

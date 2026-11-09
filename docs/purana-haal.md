@@ -1810,3 +1810,16 @@ Kachhua swap 0 = #99 ASLI PASS + #101 (#68 + Kachhua 12 @0.25%) PASS (5 Nov) - b
 Tide HTF h1 (XAUUSD, user SS 7 Nov): 2000-18 88 tr Exp +0.26 (±0.27), 2019+ 51 tr +0.43 (±0.48) = apne qaide par FAIL (trades <100, Exp-2SE <0). TF baqi.
 LIVE report 7 Nov 04:53 (user zip): jama 58,746 USC (18 Aug) -> balance 42,311.89, equity 38,272.49 (-35%); 6701 trade, jeet 72-85% magar PF 0.94 (kul -16,434). Lot 0.01 -> 10.00 (2 Nov -5,867), 4.00 (4 Nov -5,958), 5.00 (6 Nov +4,167; 19:59 server SELL 5 + 9 haari SELL Close = -3,778). Khuli 39: BUY 4.16 avg 4073.09 / SELL 4.16 avg 4063.62, NET 0, -4,039.
 Live SS: 60 ticket, BUY 5.13 = SELL 5.13 (NET 0), P/L ~-7600, equity ~38,692 - lot bahut barhi (0.88 -> 5.13), BANK yaad dilaya.
+
+**48vi chat (8-9 Nov)** - (chat naam: pichli "46vi chat" naam wali asal 47vi thi; ye 48vi.) M1 jaanch (`docs/sawal-jawab.md` "M1 data jaanch"):
+gold 2019/20/25/26 SAAF; US500/USTEC 2012-18 + 2021-26 saaf MAGAR 23 Feb-21 May 2013 GAYAB; ek price = spread khud jodo. US500/USTEC M1 2019-20
+user QDM se utaar raha (QDM naam USA500.IDX/USD, USATECH.IDX/USD; JAS_DATA_BG M1 sirf 2021 se utaarta tha).
+**TV MCP BRIDGE CHAL GAYA ✅ (9 Nov 04:06 PKT)** - user PC: bridge `C:\Users\Sharf\tradingview-mcp` (c05b8f5, Claude ne code jaancha), TV Store
+copy + port 9222 = desktop "TV Bridge" shortcut, Claude Code 2.1.319 (`cd C:\JAS_CLAUDE` -> `claude.cmd`), mcp tradingview Connected, chart XAUUSD 4H parha.
+Tafseel + khatre: sawal-jawab "TradingView MCP Bridge". PC Claude ko hamare qaide NAHI pata; usi Pro limit se chalta.
+**AGLA (49vi, user: "new chat mein mazeed guide karein") SBS, ek qadam ek message:** (1) PC Claude ke liye `C:\JAS_CLAUDE\CLAUDE.md`
+(chhota: Roman Urdu, live mashwara/trade NAHI, sirf chart parhna + Pine error, TV mein kuch badle to pehle poochhe, hard rules) - Claude likhe, user Notepad
+mein save kare; (2) JAS Naqsha+5EA Pine ko bridge se TV mein compile/error dekhna (pinecheck/SS ki jagah); (3) TV Store update = robocopy copy dobara.
+(B) US500/USTEC M1 2019-20 zip aaye -> SIRF jaanch. (C) purana baqi: asli-tareeqa haan/nahi, tokri tk2 F7 + demo 472716649, Kachhua e1 0.25% FTMO demo, B1/B2.
+
+**47vi chat (7 Nov):** (0) HUA = `docs/live/asli-tareeqa-7nov.md` (lot 0.01-0.05 +62k, lot 0.25+ -68k, SELL -153k, 43 ticket -150k) - user haan/nahi baqi. Tokri EA tk2 LIKHA (user: test nahi, EA har soorat) - F7 + demo 472716649 baqi. User 7 Nov: LIVE MT5 BAND rakha (khuli 39 tk BUY 4.16 = SELL 4.16 server par baqi); demo usi MT5 mein login theek. Nayi hidayat: nayi maloomat KHUD roz (`docs/nayi-maloomat.md`).

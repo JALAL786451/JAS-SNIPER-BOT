@@ -62,6 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**50vi chat (9 Nov)** - (2) HUA ✅: PC Claude (Sonnet 5.5, manual) ne TV Bridge se `jas_naqsha_5ea.pine` **j3** (user ne GitHub se Downloads mein
+utari) naye Pine page mein daali: **0 error, 4 warning** (L36 shorttitle >10 harf; L711/713 s1/s2 + L1203 ln naam takrao = hisaab par asar nahi);
+"Add to chart" bridge se nahi mila (PC Claude andaze se click karne laga -> user ne roka, khud ▷ dabaya) -> **j3 TV ✅ XAUUSD 4H** (B1 BUY 3997.7 SL 3752.4
+TP 4488.2 +0.5R). n5.4 chart se HATAI. Do price patti = j3 alag scale A -> right-click "Pin to scale B" = theek. Code type karwana ~25k token ->
+AGLI DAFA user khud Ctrl+A/Ctrl+V, PC Claude se sirf "errors batao". Ijazat: Get/Find/Health/Read/Screenshot = 2; Set/Click/New/Compile = 1; Ui Evaluate = SS Claude ko.
+**AGLA (51vi):** j3 warnings saaf (j3.2: shorttitle chhota, s1/s2/ln naam badlo) -> user khud paste + PC Claude "errors batao"; (3) TV Store update ho to robocopy
+dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.
 **49vi chat (9 Nov)** - (B) M1 jaanch MUKAMMAL: US500 + USTEC 2019-20 SAAF (din 260, gap 0, OHLC ghalat 0, Covid/Fed jhatke asli) -> dono index
 M1 2012-26 GitHub `data/qdm/M1` (sirf 2013 Feb-May gayab). Ghalti: QDM USTEC pehli dafa TICK format (Bid/Ask 0.0) + 2012-18 sahi zip par likh di ->
 Claude ne git se wapas lagayi (f1db634); user ne "Generic bar format" se dobara daali. (1) PC Claude `C:\JAS_CLAUDE\CLAUDE.md` ✅ (copy `docs/pc-claude-CLAUDE.md`;
@@ -69,17 +76,8 @@ user ne Notepad SBS, naam CJAS_CLAUDE.txt -> rename), PC Claude ne 3 line qaide 
 **AGLA (50vi) SBS:** (2) JAS Naqsha+5EA Pine bridge se TV mein compile/error (TV Bridge shortcut -> PowerShell `cd C:\JAS_CLAUDE` -> `claude.cmd`; PC Claude
 se: "chart par JAS Naqsha ka Pine compile karke errors batao"); (3) TV Store update = robocopy dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.
 User ko ABC ki tarah samjhao (misaal: dukaan/munshi/naukar/darwaza), English kam, har qadam bohot chhota.
-**48vi chat (8-9 Nov)** - (chat naam: pichli "46vi chat" naam wali asal 47vi thi; ye 48vi.) M1 jaanch (`docs/sawal-jawab.md` "M1 data jaanch"):
-gold 2019/20/25/26 SAAF; US500/USTEC 2012-18 + 2021-26 saaf MAGAR 23 Feb-21 May 2013 GAYAB; ek price = spread khud jodo. US500/USTEC M1 2019-20
-user QDM se utaar raha (QDM naam USA500.IDX/USD, USATECH.IDX/USD; JAS_DATA_BG M1 sirf 2021 se utaarta tha).
-**TV MCP BRIDGE CHAL GAYA ✅ (9 Nov 04:06 PKT)** - user PC: bridge `C:\Users\Sharf\tradingview-mcp` (c05b8f5, Claude ne code jaancha), TV Store
-copy + port 9222 = desktop "TV Bridge" shortcut, Claude Code 2.1.319 (`cd C:\JAS_CLAUDE` -> `claude.cmd`), mcp tradingview Connected, chart XAUUSD 4H parha.
-Tafseel + khatre: sawal-jawab "TradingView MCP Bridge". PC Claude ko hamare qaide NAHI pata; usi Pro limit se chalta.
-**AGLA (49vi, user: "new chat mein mazeed guide karein") SBS, ek qadam ek message:** (1) PC Claude ke liye `C:\JAS_CLAUDE\CLAUDE.md`
-(chhota: Roman Urdu, live mashwara/trade NAHI, sirf chart parhna + Pine error, TV mein kuch badle to pehle poochhe, hard rules) - Claude likhe, user Notepad
-mein save kare; (2) JAS Naqsha+5EA Pine ko bridge se TV mein compile/error dekhna (pinecheck/SS ki jagah); (3) TV Store update = robocopy copy dobara.
-(B) US500/USTEC M1 2019-20 zip aaye -> SIRF jaanch. (C) purana baqi: asli-tareeqa haan/nahi, tokri tk2 F7 + demo 472716649, Kachhua e1 0.25% FTMO demo, B1/B2.
-**47vi chat (7 Nov):** (0) HUA = `docs/live/asli-tareeqa-7nov.md` (lot 0.01-0.05 +62k, lot 0.25+ -68k, SELL -153k, 43 ticket -150k) - user haan/nahi baqi. Tokri EA tk2 LIKHA (user: test nahi, EA har soorat) - F7 + demo 472716649 baqi. User 7 Nov: LIVE MT5 BAND rakha (khuli 39 tk BUY 4.16 = SELL 4.16 server par baqi); demo usi MT5 mein login theek. Nayi hidayat: nayi maloomat KHUD roz (`docs/nayi-maloomat.md`).
+**48vi chat** -> `docs/purana-haal.md` (grep "48vi").
+**47vi chat** -> `docs/purana-haal.md` (grep "47vi").
 **46vi chat** -> `docs/purana-haal.md` (grep "46vi").
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)

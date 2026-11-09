@@ -221,3 +221,6 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
   PowerShell mein npm/claude ki jagah npm.cmd/claude.cmd), `claude.cmd mcp add -s user tradingview node C:\Users\Sharf\tradingview-mcp\src\server.js`
   = Connected; folder `C:\JAS_CLAUDE`; tv_health_check: OANDA:XAUUSD 4H. PC Claude ko hamare qaide nahi pata (repo/CLAUDE.md nahi) - live mashwara nahi.
   Shortcut "TV Bridge" target: "%LOCALAPPDATA%\tradingview-mcp\TradingView\TradingView.exe" --remote-debugging-port=9222
+- PC Claude se bari Pine TV mein compile? (9 Nov, 50vi) -> chal gaya (j3 0 error). Code type karwana ~25k token = mehnga: user khud Pine Editor mein
+  Ctrl+A/Ctrl+V, PC Claude se sirf "errors batao" (pine_get_errors). "Add to chart" bridge se na mile to user khud ▷. Do price patti = right-click
+  script -> Pin to scale -> candles wali scale. Ijazat: Get/Find/Health/Read/Screenshot = 2; Set/Click/New/Compile = 1; Ui Evaluate = pehle SS Claude ko.
