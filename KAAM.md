@@ -33,7 +33,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |
 | K7 | Faisle: Kachhua e1 0.25% FTMO demo? B1 ya B2 pehle? | PDF hafta 1 | user se poochna |
-| K9 | JasMauqa m7.7: (a) "autotrade #" trendline (MT5 khud har trade par banata, switch nahi; BTC chart par 1311 objects) har minute mitao; (b) LIVE par BTC + XAU dono ki lots (user 9 Nov). EA sirf chart ka symbol ginta (L269) magar equity poore account ki -> STOP OUT door (L445-447) sirf BTC NET se = GHALAT jab dono khule. + ladder label "gold" BTC par. Naya version (m7.7) user ki ijazat se | user 9 Nov | ijazat baqi |
+| K9 | JasMauqa m7.7: (a) "autotrade #" trendline (MT5 khud har trade par banata, switch nahi; BTC chart par 1311 objects) har minute mitao; (b) LIVE par BTC + XAU dono ki lots (user 9 Nov). EA sirf chart ka symbol ginta (L269) magar equity poore account ki -> STOP OUT door (L445-447) sirf BTC NET se = GHALAT jab dono khule. + ladder label "gold" BTC par. (c) salah: 0.10 se bari lot par sirf WARNING (rokna nahi). Code jaancha 9 Nov: A/B Close By hisaab SAHI (r=(S-B)*minLot, NET wahi), equity nahi barhti. Naya version (m7.7) user ki ijazat se | user 9 Nov | ijazat baqi |
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 
 ## Hue (aakhri 5)
