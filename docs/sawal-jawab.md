@@ -227,3 +227,5 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - TV Bridge se token kaise bachte hain? (9 Nov, 51vi) -> bridge khud token nahi bachata; PC Claude bhi usi plan ki limit khata hai. Bachat tab: TV ki
   cheez (Pine errors, chart ki value) PC Claude TEXT mein parhe = SS (tasveer ~1-2k token) + cloud chat ke chakkar kam, ghalti andaze se nahi.
   Mehnga: pehli install, poora code bridge se type karwana (~25k). Qaida: code user khud paste, bridge se sirf chhota sawal ("errors batao").
+- FundingPips par hamare EA? (9 Nov, 51vi, support email 8 Nov) -> NAHI: trade kholne/band karne wala EA mana, VPS mana. Swing add-on se overnight;
+  swap-free +10% sirf forex/metals (index par swap). Sirf haath ki trading ke liye. EA plan = FTMO.

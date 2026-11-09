@@ -16,7 +16,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - Plan: `docs/pdf/JAS_FTMO_Plan_Monday.pdf` sec 5 (Monday list). Tokri qaide: `docs/tokri_naqsha.md`.
 - Risk hadd khud se NAHI barhana. Backtest -> demo -> live.
 
-- TradingPips se bhi Swing + Muslim countries (swap-free) ka sawal poocha (user 9 Nov) - jawab SS aana baqi.
+- FundingPips email (8 Nov, Sarim): trade kholne/badalne/band karne wala EA MANA (account band); VPN/VPS MANA; Evaluation mein weekend hold OK, Master par overnight/weekend NAHI (Swing add-on se OK); Swap-free add-on +10% qeemat, SIRF forex + metals (index/energy/crypto par swap), khareed ke waqt hi. => hamare EA (t5/i6/k2) wahan NAHI chal sakte; EA plan sirf FTMO.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
