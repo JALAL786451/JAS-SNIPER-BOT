@@ -1800,3 +1800,13 @@ Hafte ki limit ~4% bachi -> nayi chat Monday reset ke baad (user khud "TRADING")
 **AGLA (Monday 9 Nov, PDF sec 5 hafta 1):** (0) user "haan" 7 Nov: LIVE report (`docs/live/ReportHistory-253687618-2026-11-07.zip`, 6701 trade) se user ka ASLI tareeqa nikaalo (kab kholta, kitni lot, kab band, Close By; achhe din 28-29 Oct / 5 Nov vs bure 2 / 4 Nov) = naqsha, TEST NAHI; user dekh kar haan/nahi. (1) user data push karega (gold M1 2019/20/25/26, US500/USTEC M1 2019-20, Yahoo/Stooq daily, FRED) -> Claude SIRF jaanch
 (gap, timezone, BID/ASK), naya test NAHI. (2) user se: rukh chart par kaise (2-3 purane din dikhaye), kitne $ ulta par bhari taraf badle, purani lots ka kya (Q22).
 (3) faisle: Kachhua e1 0.25% demo? B1 ya B2 pehle? (4) har test: discuss -> qaida pehle -> test -> judge (user naam le) -> faisla user.
+
+
+## TRADING sec 5 se hataya (9 Nov, 49vi chat)
+**46vi chat (6 Nov, chhoti)** - TV `JAS Naqsha+5EA` j3.1: aakhri candle ke saath BOLD chalti price (transparent, candle rang) + dotted line poore chart (TV ✅ j3; bhaari script = aakhri 1-3 digit der se).
+JasMauqa **m7.6 LIVE ✅** (F7 user): NET = BUY - SELL line, PROFIT split BUY/SELL, "agar sare profit ticket close" -> NET + hedge (NAYI kholo / PURANI close), NET > 0.80 laal; popup chhota neeche daayen. YES = sirf popup ka upar wala kaam, HISAAB sirf likhai (user samajh gaya).
+FTMO swap-free = pakka (5 Nov support email, sawal-jawab "FTMO swap-free (Islamic)"): trade se PEHLE har stage email.
+Kachhua swap 0 = #99 ASLI PASS + #101 (#68 + Kachhua 12 @0.25%) PASS (5 Nov) - bank se bahar; user "haan" (7 Nov) -> Kachhua e1 0.25% FTMO demo par (Monday tasdeeq + EA). Tide HTF (W+M) alag, FAIL.
+Tide HTF h1 (XAUUSD, user SS 7 Nov): 2000-18 88 tr Exp +0.26 (±0.27), 2019+ 51 tr +0.43 (±0.48) = apne qaide par FAIL (trades <100, Exp-2SE <0). TF baqi.
+LIVE report 7 Nov 04:53 (user zip): jama 58,746 USC (18 Aug) -> balance 42,311.89, equity 38,272.49 (-35%); 6701 trade, jeet 72-85% magar PF 0.94 (kul -16,434). Lot 0.01 -> 10.00 (2 Nov -5,867), 4.00 (4 Nov -5,958), 5.00 (6 Nov +4,167; 19:59 server SELL 5 + 9 haari SELL Close = -3,778). Khuli 39: BUY 4.16 avg 4073.09 / SELL 4.16 avg 4063.62, NET 0, -4,039.
+Live SS: 60 ticket, BUY 5.13 = SELL 5.13 (NET 0), P/L ~-7600, equity ~38,692 - lot bahut barhi (0.88 -> 5.13), BANK yaad dilaya.

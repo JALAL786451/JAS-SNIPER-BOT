@@ -203,6 +203,10 @@ Faisla: FTMO / MT5 ke liye kaam ka NAHI; sirf dekhne ki cheez. BTC trend wala ha
 gap sirf US chutti). US500/USTEC 2012-18 + 2021-26: OHLC saaf, asli jhatke (Brexit 2016, Trump 2016, 24 Aug 2015, 2 Apr 2025) theek;
 MAGAR 23 Feb - 21 May 2013 = 3 mahine GAYAB (dono index), 2012 Jan aadha; 2026 = 30 Oct tak. BAQI: US500/USTEC 2019-20, gold 2021-24 nahi aaya.
 Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1.12, gold 0.24). Script: test nahi, sirf jaanch.
+  9 Nov (49vi): US500 + USTEC 2019-20 bhi SAAF (260 din, gap 0) -> dono index M1 2012-26 poora (sirf 2013 Feb-May gayab).
+- QDM export mein header `DateTime,Bid,Ask` + price 0.0? -> ghalat (tick) format. Export to CSV -> "Generic bar format (comma delimited)"; pehli line `Date,Time,Open,High,Low,Close,Volume` honi chahiye. GitHub par sirf nayi saal ki zip daalo - purani sahi zip par likh dena = nuqsan (9 Nov).
+- GitHub upload "file is too large" jab zip 4 MB? -> poora folder/CSV saath chala gaya; poora link (branch + data/qdm/M1) kholo, ek ek zip daalo (9 Nov).
+- PC Claude ko hamare qaide kaise? -> `C:\JAS_CLAUDE\CLAUDE.md` (copy `docs/pc-claude-CLAUDE.md`), Notepad Save As: All files + naam CLAUDE.md (C:\ naam ke dabbe mein NAHI); Win11: View > Show > File name extensions, F2 rename. Phir Shift+Tab = manual mode, `/model` Sonnet 5.5 (Opus limit jaldi khata) (9 Nov).
 - TradingView MCP Bridge (YouTube)? -> community (TV ka nahi, MIT) github tradesdontlie/tradingview-mcp: Claude Code <-> MCP <-> TV Desktop (port 9222).
   Chart symbol/TF/OHLC + indicator values parhe, Pine daale/compile error dekhe. Sirf user ke PC par (cloud chat nahi); Node 18+, TV desktop app debug port.
   Khatra: port khula = PC ka koi program TV chala sake; code pehle parho. Faida bara: Pine copy-paste/SS kam. Agla qadam user: `node -v` (8 Nov).

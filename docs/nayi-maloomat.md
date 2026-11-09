@@ -7,3 +7,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 7 Nov | MT5 report (xlsx/zip) Claude seedha parh leta hai - SS ki jagah report do = poora hisaab (6517 ticket) | - |
 | 8 Nov | TradingView MCP Bridge (user ne YouTube par dekha, poochha) - sawal-jawab mein |  - |
 | 8 Nov | Remote Control: Claude desktop app mein PC ka folder share karein to cloud chat MT5 report/log seedha parh sakti (SS nahi; sab account par abhi nahi) + FTMO Nov 2026 offer abhi elaan nahi (2025 BF 20%, 26-29 Nov) | - |
+| 9 Nov | PC Claude mein `/mcp` = bridge Connected dekho; Opus 5.5 Pro limit jaldi khata -> PC Claude Sonnet 5.5 | Sonnet chuna |

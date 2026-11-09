@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-05  (11 kaam)
-   - tokri tk2 sim: asli tareeqa Q14-19 gold H1 2005-26 $1000 - 240/240 variant account khatam 
-   - Koshish #100 CHUNAO: Tide 0.50% chuna (IMTIHAN se pehle likha)
+2026-11-05  (4 kaam)
+   - Koshish #101 qaida (test se PEHLE): FTMO #68 + Kachhua 12, swap 0
+   - Koshish #101 IMTIHAN PASS: #68 + Kachhua 12 @0.25% (85/0 med 10.2 vs 83/0 med 10.6)
    - 44vi chat khatam: swap 0 par Kachhua #99 ASLI PASS, #100 Trend jeeta, #101 #68+Kachhua 0.2
 
 2026-11-06  (23 kaam)
@@ -17,7 +17,11 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - nayi-maloomat: MT5 report seedha parhna
    - Add GitHub Actions workflow for Python package with Conda
 
-2026-11-08  (6 kaam)
+2026-11-08  (7 kaam)
    - nayi-maloomat: 8 Nov (Remote Control, FTMO offer)
    - sawal-jawab: TV MCP bridge code jaanch + node install
-   - sawal-jawab: TV bridge PC par chal gaya (9 Nov)
+   - Chat khatam 48vi: M1 jaanch + TV MCP bridge PC par chalu; agla = PC Claude CLAUDE.md + Pin
+
+2026-11-09  (5 kaam)
+   - Add files via upload
+   - USTEC M1 2012-18 purani sahi zip wapas; 2019-20 hataye (QDM tick format, price 0.0)
