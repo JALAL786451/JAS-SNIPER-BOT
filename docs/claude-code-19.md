@@ -21,6 +21,6 @@
 | 16 | Subagents (scoped tools) | ❌ | qaida: sirf user naam le (limit bachao) |
 | 17 | Agent Teams | ❌ | nahi |
 | 18 | Worktrees + parallel cloud sessions | ⚠ | har chat khatam par agli cloud chat khud kholna ✅; worktree / parallel nahi |
-| 19 | Scaling (Modal, GitHub Actions) | ❌ | `.github/workflows/python-package-conda.yml` sirf GitHub ka namoona, istemal nahi |
+| 19 | Scaling (Modal webhooks, GitHub Actions, Claude Code on the web) | ⚠ | **Claude Code on the web ✅ = yahi cloud chats (har TRADING chat, nayi chat khud kholna)**; Modal ❌; GitHub Actions ❌ (`python-package-conda.yml` sirf namoona) |
 
-Kul: 5 ✅, 7 ⚠, 7 ❌. Hamare kaam ke liye agla faidemand: #11 Skill (jaise "chat khatam" ek skill) - user chahe to.
+Kul: 5 ✅, 8 ⚠, 6 ❌. Hamare kaam ke liye agla faidemand: #11 Skill (jaise "chat khatam" ek skill) - user chahe to.
