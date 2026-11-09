@@ -100,11 +100,11 @@ p('Maqsad: asli FTMO challenge sirf tab jab demo + sim dono saaf hon. Koi risk h
 h2('Hafta 1 (9-13 Nov): data + faisle - koi faltu test nahi')
 bl(['<b>Mon:</b> aap data push karein -> Claude sirf jaanch kare (gap, timezone, BID/ASK). Koi naya test nahi.',
     '<b>Mon:</b> FTMO demo 474832446 ka SS (sec 0 update). Hafte mein 2 SS kaafi (Mon + Jumma).',
-    '<b>Discuss (aap faisla):</b> (a) Kachhua e1 0.25% demo par #68 ke saath? (b) B1 aur B2 mein se kaun pehle? (c) FTMO swap-free email bheji / jawab?',
+    '<b>Discuss (aap faisla):</b> (a) Kachhua e1 0.25% demo par #68 ke saath? (b) B1 aur B2 mein se kaun pehle? (c) FTMO swap-free: jawab aa chuka (5 Nov)',
     '<b>Qaida pehle:</b> jo strategy chuni, us ka qaida TEST SE PEHLE likha jaye (TALAASH 2012-18 / IMTIHAN 2019+ ek dafa, PASS shart pehle se).'])
 h2('Monday 9 Nov - kaam ki list (haal 9 Nov)')
 tb([['#','Kaam','Haal'],
-    ['1','Data jaanch: US500 + USTEC M1 2019-20 (QDM)','HUA - saaf (49vi chat)'],
+    ['1','Data jaanch: US500 + USTEC M1 2012-26 (QDM) - Tide ko FTMO mein shamil karne ke liye','HUA - saaf (49vi); Tide test baqi'],
     ['2','Data jaanch: gold M1 2019/20/25/26 (data/qdm/M1)','repo mein hai - jaanch baqi'],
     ['3','FTMO demo 474832446 SS','HUA - equity 99,559, 3 khuli +649.90'],
     ['4','PC Claude + TV Bridge (izafi kaam): JAS Naqsha+5EA j3.2 TV par','HUA - 0 error, chart par'],
@@ -127,7 +127,7 @@ tb([['#','Kaam','Haal'],
  ['2','FTMO symbol naam (US500.cash, GER40.cash, XAUUSD...) EA inputs mein','baqi'],
  ['3','FTMO support se likhwana: weekend/gap holding (IBS Jumma 16:15 NY) jaiz?','baqi'],
  ['4','Swing account chunna (weekend hold)','baqi'],
- ['5','Swap-free email (har stage par, trade se pehle)','aap ne bheji - jawab?'],
+ ['5','Swap-free email (har stage par, trade se pehle)','JAWAB AA GAYA 5 Nov: Islamic ko milta, fee nahi; khareed se pehle Swing 2-Step 100k likhwana'],
  ['6','VPS (~$10-15/mahina) - MT5 24 ghante','baqi'],
  ['7','Pehra: target 110k, din 4% farsh, kul hadd band','EA mein hai'],
  ['8','Demo par kam se kam kuch hafte bina ghalti','chal raha']],[0.8*cm,12*cm,4.2*cm])

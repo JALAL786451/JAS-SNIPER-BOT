@@ -3,7 +3,7 @@
 MetaTrader 5 EAs aur TradingView Pine scripts (gold, index, commodity) - user Jalal ke liye.
 
 **Har nayi chat (user likhe "TRADING"):** ye branch ab GitHub ki default hai - fetch/checkout NAHI,
-PEHLE `KAHANI.txt` (poori kahani, ~16 KB) phir `TRADING.md`, sec 5 = agla kaam. KAHANI dobara BANANA MANA - har chat khatam par sirf Sec 3 mein 2-5 line + Sec 4 update. Kaam isi branch par commit + push (user, qaide, pichli chat, agla kaam) - baqi `grep` se.
+PEHLE `KAAM.md` (hook dikhata; user ki har nayi baat USI waqt yahan), phir `KAHANI.txt` (poori kahani, ~16 KB) phir `TRADING.md`, sec 5 = agla kaam. KAHANI dobara BANANA MANA - har chat khatam par sirf Sec 3 mein 2-5 line + Sec 4 update. Kaam isi branch par commit + push (user, qaide, pichli chat, agla kaam) - baqi `grep` se.
 Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
 **Token bachao (reply se PEHLE):** sawal purana lage to pehle `grep -i <lafz> docs/sawal-jawab.md` - mile to wahi
 jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; pata na ho to kaho aur ijazat lo (ek din).
