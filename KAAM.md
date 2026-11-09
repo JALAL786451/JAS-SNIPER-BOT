@@ -16,10 +16,12 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - Plan: `docs/pdf/JAS_FTMO_Plan_Monday.pdf` sec 5 (Monday list). Tokri qaide: `docs/tokri_naqsha.md`.
 - Risk hadd khud se NAHI barhana. Backtest -> demo -> live.
 
+- TradingPips se bhi Swing + Muslim countries (swap-free) ka sawal poocha (user 9 Nov) - jawab SS aana baqi.
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
-| K1 | Plan / haal PDF ki jagah: PC drive ka folder, roz khud update (token bachao) | user 9 Nov: "PDF nahi, drive mein daily" | user se: kaunsi drive (D:\ ya Google Drive)? |
+| K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
 | K3 | Gold M1 2019/20/25/26 jaanch (gap, timezone) | Tokri/Turtle test ka data | baqi |
 | K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | user "haan" qaide par baqi |

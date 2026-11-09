@@ -274,3 +274,4 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 - `docs/tokri_naqsha.md` - user ke tokri EA ke qaide (Q1-Q4, 5 Nov) + baqi sawal; TEST NAHI
 | `tools/shahmaat_sim.py` | #88 (3 Nov): JasShahmaat recovery - live basket NET 4H trend se vs kuch-na-karo - TALAASH FAIL; --m71 = #89 m7.1 bhi FAIL; --upar (#90 4H) / --upar --d1 (#91) charhai-jor FAIL; --sig raat/sma10/mausam (#92-94) FAIL; --lock (#95 kitab band + 0.02) FAIL |
 - docs/live/ReportHistory-253687618-2026-11-07.zip - LIVE cent ki poori history (18 Aug - 7 Nov, 6701 trade), user 7 Nov; agla: is se user ka asli tareeqa (naqsha).
+- `tools/JAS_DRIVE.bat` - D:\JAS = GitHub copy (clone/pull, 0 token), Task Scheduler roz (9 Nov, K1)
