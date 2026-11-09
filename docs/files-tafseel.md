@@ -6,6 +6,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 - `data/live_253687618_deals_20261105.csv` - LIVE cent ki asli deals 18 Aug-5 Nov 2026 (12,374 gold + BTC), user ki report se; Tokri/basket EA ke qaide nikalne ke liye
 - `docs/live/asli-tareeqa-7nov.md` - LIVE report se user ka asli tareeqa (lot / rukh / din ka naqsha), 7 Nov.
 - `docs/pc-claude-CLAUDE.md` - user PC wale Claude (TV bridge) ki qaide parchi, copy of C:\JAS_CLAUDE\CLAUDE.md, 9 Nov.
+- `docs/claude-code-19.md` - Claude Code course ki 19 cheezein: hum ne kya kiya (✅/⚠/❌), 9 Nov 52vi.
 - `docs/nayi-maloomat.md` - jo nayi maloomat user ko bata chuke (dobara nahi), 7 Nov.
 - `tools/tokri_mood.py` - live zakhm (18-25 Aug, 2-4 Nov) par gold 1D/4H mood (Naqsha Rukh), 5 Nov
 - `tools/tokri_q8q9.py` - Tokri Q8 wapasi hadd (1 ATR) + Q9 4H mur jaye to dhaal band, gold 2005-2026, 5 Nov
