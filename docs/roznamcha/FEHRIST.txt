@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-06  (21 kaam)
-   - PDF: FTMO plan + data guide (Monday 9 Nov se)
-   - files-tafseel: JasMauqa m7.5
+2026-11-06  (20 kaam)
+   - tokri Q20: user - high/low par lot + wait (6 Nov)
+   - JasMauqa m7.6: PROFIT split BUY/SELL + profit uthao to NET + hedge kitna (panel + popup, s
    - roznamcha update (46vi chat aakhir)
 
 2026-11-07  (16 kaam)
@@ -17,6 +17,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - sawal-jawab: TV MCP bridge code jaanch + node install
    - Chat khatam 48vi: M1 jaanch + TV MCP bridge PC par chalu; agla = PC Claude CLAUDE.md + Pin
 
-2026-11-09  (6 kaam)
+2026-11-09  (25 kaam)
    - Add files via upload
-   - Chat khatam 49vi: US500/USTEC M1 2019-20 saaf (2012-26 poora); PC Claude CLAUDE.md + manua
+   - Yaad ka masla: KAAM.md (ek register, hook har chat ko dikhaye); PDF: FTMO email jawab aa c
+   - KAAM K9: m7.7 dono chart par chal raha

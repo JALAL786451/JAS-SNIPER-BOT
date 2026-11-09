@@ -1823,3 +1823,11 @@ mein save kare; (2) JAS Naqsha+5EA Pine ko bridge se TV mein compile/error dekhn
 (B) US500/USTEC M1 2019-20 zip aaye -> SIRF jaanch. (C) purana baqi: asli-tareeqa haan/nahi, tokri tk2 F7 + demo 472716649, Kachhua e1 0.25% FTMO demo, B1/B2.
 
 **47vi chat (7 Nov):** (0) HUA = `docs/live/asli-tareeqa-7nov.md` (lot 0.01-0.05 +62k, lot 0.25+ -68k, SELL -153k, 43 ticket -150k) - user haan/nahi baqi. Tokri EA tk2 LIKHA (user: test nahi, EA har soorat) - F7 + demo 472716649 baqi. User 7 Nov: LIVE MT5 BAND rakha (khuli 39 tk BUY 4.16 = SELL 4.16 server par baqi); demo usi MT5 mein login theek. Nayi hidayat: nayi maloomat KHUD roz (`docs/nayi-maloomat.md`).
+
+**49vi chat (9 Nov)** - (B) M1 jaanch MUKAMMAL: US500 + USTEC 2019-20 SAAF (din 260, gap 0, OHLC ghalat 0, Covid/Fed jhatke asli) -> dono index
+M1 2012-26 GitHub `data/qdm/M1` (sirf 2013 Feb-May gayab). Ghalti: QDM USTEC pehli dafa TICK format (Bid/Ask 0.0) + 2012-18 sahi zip par likh di ->
+Claude ne git se wapas lagayi (f1db634); user ne "Generic bar format" se dobara daali. (1) PC Claude `C:\JAS_CLAUDE\CLAUDE.md` ✅ (copy `docs/pc-claude-CLAUDE.md`;
+user ne Notepad SBS, naam CJAS_CLAUDE.txt -> rename), PC Claude ne 3 line qaide sahi bataye; **manual mode** (Shift+Tab) + `/model` **Sonnet 5.5** ✅.
+**AGLA (50vi) SBS:** (2) JAS Naqsha+5EA Pine bridge se TV mein compile/error (TV Bridge shortcut -> PowerShell `cd C:\JAS_CLAUDE` -> `claude.cmd`; PC Claude
+se: "chart par JAS Naqsha ka Pine compile karke errors batao"); (3) TV Store update = robocopy dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.
+User ko ABC ki tarah samjhao (misaal: dukaan/munshi/naukar/darwaza), English kam, har qadam bohot chhota.
