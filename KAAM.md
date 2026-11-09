@@ -28,7 +28,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 |---|---|---|---|
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
-| K3 | Gold M1 2019/20/25/26 jaanch (gap, timezone) | Tokri/Turtle test ka data | baqi |
+| K3 | Gold M1 2019/20/25/26 jaanch (gap, timezone) | Tokri/Turtle test ka data | HUA ✅ 9 Nov (52vi) `tools/gold_m1_jaanch.py`: saaf - 0 ghalat bar, UTC (Sunday 22:00 garmi / 23:00 sardi), gap sirf US chhutti; 2026 = 4 Nov tak; 2021_24 se mel |
 | K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | user "haan" qaide par baqi |
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |

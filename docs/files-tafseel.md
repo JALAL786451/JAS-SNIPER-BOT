@@ -129,7 +129,7 @@ method - trade wali cheez chhoone se pehle parho), `EA-LAWS.md`, `EA-QAWAID.md`,
 `EA-CHECKLIST.md` (nayi file lagane ke 23 qadam), `docs/*_naqsha.md`, `docs/*rehnuma.html`
 (artifact guides - file badle to wohi file publish = wohi URL).
 
-**tools/:** `pinecheck.py` (Pine ki jaanch, compile nahi), `tide_ea_check.py`, `trend_check.py`,
+**tools/:** `pinecheck.py` (Pine ki jaanch, compile nahi), `tide_ea_check.py`, `gold_m1_jaanch.py` (QDM gold M1 zip: gap/UTC/ghalat bar, 52vi), `trend_check.py`,
 `numayan_check.py`, `fishing_sim.py`, `simulate.py`, `test_logic.py`, `make_btc.py`,
 `compile.bat/.ps1`, `backtest.bat/.ps1` (Windows + MT5).
 

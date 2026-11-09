@@ -10,3 +10,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 9 Nov | PC Claude mein `/mcp` = bridge Connected dekho; Opus 5.5 Pro limit jaldi khata -> PC Claude Sonnet 5.5 | Sonnet chuna |
 | 9 Nov (50vi) | Bari Pine: khud paste karo, PC Claude se sirf errors parhwao (~25k token bachte) | bataya |
 | 9 Nov (51vi) | Claude Docs: Claude ab seedha live document bana sakta (phone par khule, comment ho, Word/PDF export) - PDF plan ki jagah | - |
+| 9 Nov (52vi) | Windows `schtasks` ek command se roz ka kaam (Task Scheduler ki khirkiyan click nahi) - K1 ke liye | - |
