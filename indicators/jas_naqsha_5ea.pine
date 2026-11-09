@@ -1,5 +1,5 @@
 //@version=6
-// JAS NAQSHA + 5EA  (build j3, Pine v6, 6 Nov 2026; j3.1 = label transparent + likhai candle ke rang, dotted line poore chart par; j3 = aakhri candle ke saath BOLD chalti price label (setting "7 · Price label"); j2 = j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
+// JAS NAQSHA + 5EA  (build j3.2, Pine v6, 9 Nov 2026; j3.2 = sirf 4 Pine warning saaf (shorttitle chhota, s1/s2/ln naam badle), hisaab wahi; j3.1 = label transparent + likhai candle ke rang, dotted line poore chart par; j3 = aakhri candle ke saath BOLD chalti price label (setting "7 · Price label"); j2 = j2 = 5EA band / doosra engine ho to us ka hisaab bilkul nahi chalta (halka))  -  jas_naqsha n5.9 + jas_5ea p6 EK script mein (user: 2 script saath, 5EA chart par kuch nahi dikhata tha).
 //  j1: Naqsha hissa n5.9 jyon ka tyon. 5EA hissa p6 wala hisaab, magar SIRF chart ke instrument ka: request.security 11 -> 2
 //   (bhaari 4 x 4H + 7 x 1D poori history = loading / timeout ki wajah). Neeche 11 instrument ki line default BAND (ab sirf chart
 //   wale ka haal hota hai). 5EA ka poora hissa setting "6 · 5EA" se ON/OFF. Python ke pakke number wahi (table). TRADE NAHI, sirf dikhana.
@@ -33,7 +33,7 @@
 //  REPAINT NAHI: HTF ka data pichhli BAND candle ([1] + lookahead_on); zones / table sirf aakhri candle par banti hain.
 //  HADD: request.security 7, tuple 10, box <= 12 + 2 x 10 (position), label <= 31, line <= 4, plot 2, plotshape 2.
 // ============================================================================
-indicator("JAS Naqsha+5EA j3", "JAS Naqsha+5EA j3", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 50, max_labels_count = 70, max_bars_back = 300)
+indicator("JAS Naqsha+5EA j3.2", "JAS j3.2", overlay = true, scale = scale.right, max_boxes_count = 50, max_lines_count = 50, max_labels_count = 70, max_bars_back = 300)
 
 grZ = "1 · Zones S/R"
 showZ  = input.bool(true, "Zones dikhao", group = grZ, display = display.none)
@@ -478,7 +478,7 @@ if barstate.islast
     if showT and tFull
         sz = f_sz(tSize)
         tb := table.new(f_pos(tPos), 4, 15, bgcolor = cBg, border_width = 1, border_color = color.new(#37474f, 0), frame_width = 1, frame_color = color.new(#37474f, 0))
-        table.cell(tb, 0, 0, "JAS NAQSHA+5EA j3", text_color = cTx, bgcolor = cHd, text_size = sz)
+        table.cell(tb, 0, 0, "JAS NAQSHA+5EA j3.2", text_color = cTx, bgcolor = cHd, text_size = sz)
         table.cell(tb, 1, 0, "sirf naqsha - TEST NAHI", text_color = color.new(#ffb300, 0), bgcolor = cHd, text_size = sz)
         table.merge_cells(tb, 1, 0, 3, 0)
         table.cell(tb, 0, 1, "TF", text_color = cTx, bgcolor = cHd, text_size = sz)
@@ -598,7 +598,7 @@ if barstate.islast
 //  ===== 5EA HISSA (jas_5ea p6; naam badle: LA->eLA, cTx->eTx, cBg->eBg, tb->tb5, showSell->showSell5, f_pos->f_pos5, f_isWk->f_isWk5) =====
 // ============================================================================
 
-BUILD = "j3"
+BUILD = "j3.2"
 TZ    = "America/New_York"
 DAY   = 86400000
 SWAP  = 0.03 / 365
@@ -708,9 +708,9 @@ f_open(Leg g, float px, float sd, int t) =>
 // ============================================================================
 f_core(bool act, bool ibsOn, float cst, int fromT, int toT) =>
     var Leg b1 = Leg.new(dir = 1)
-    var Leg s1 = Leg.new(dir = -1)
+    var Leg sel1 = Leg.new(dir = -1)
     var Leg b2 = Leg.new(dir = 1)
-    var Leg s2 = Leg.new(dir = -1)
+    var Leg sel2 = Leg.new(dir = -1)
     var array<float> cls = array.new<float>()
     var float cSum = 0.0
     var float dH = na
@@ -733,13 +733,13 @@ f_core(bool act, bool ibsOn, float cst, int fromT, int toT) =>
         // (1) SL pichhli candle mein (gap = open)
         if not na(b1.e) and ql1 <= b1.sl
             f_close(b1, math.min(qo1, b1.sl), cst, fromT, toT, qt1)
-        if not na(s1.e) and qh1 >= s1.sl
-            f_close(s1, math.max(qo1, s1.sl), cst, fromT, toT, qt1)
+        if not na(sel1.e) and qh1 >= sel1.sl
+            f_close(sel1, math.max(qo1, sel1.sl), cst, fromT, toT, qt1)
         if not na(b2.e) and ql1 <= b2.sl
             f_close(b2, math.min(qo1, b2.sl), cst, fromT, toT, qt1)
             b2Hit := true
-        if not na(s2.e) and qh1 >= s2.sl
-            f_close(s2, math.max(qo1, s2.sl), cst, fromT, toT, qt1)
+        if not na(sel2.e) and qh1 >= sel2.sl
+            f_close(sel2, math.max(qo1, sel2.sl), cst, fromT, toT, qt1)
             s2Hit := true
         dH := na(dH) ? qh1 : math.max(dH, qh1)
         dL := na(dL) ? ql1 : math.min(dL, ql1)
@@ -748,9 +748,9 @@ f_core(bool act, bool ibsOn, float cst, int fromT, int toT) =>
         fUp = sig and up[1] and not up[2]
         fDn = sig and not up[1] and up[2]
         xb1 = not na(b1.e) and not up[1]
-        xs1 = not na(s1.e) and up[1]
+        xs1 = not na(sel1.e) and up[1]
         pb1 = fUp and na(b1.e)
-        ps1 = fDn and na(s1.e)
+        ps1 = fDn and na(sel1.e)
         sdT = 6.0 * atr4[1]
         // (3) naya din (17:00 NY) shuru = pichhla din band: close, ATR14 (RMA), SMA200, IBS
         bool  dayEv = false
@@ -780,39 +780,39 @@ f_core(bool act, bool ibsOn, float cst, int fromT, int toT) =>
                 if ibs > 0.8 or b2.ec >= 5
                     f_close(b2, dc, cst, fromT, toT, time)
                     b2Hit := true
-            if not na(s2.e)
-                s2.ec += 1
-                if ibs < 0.2 or s2.ec >= 5
-                    f_close(s2, dc, cst, fromT, toT, time)
+            if not na(sel2.e)
+                sel2.ec += 1
+                if ibs < 0.2 or sel2.ec >= 5
+                    f_close(sel2, dc, cst, fromT, toT, time)
                     s2Hit := true
         // (4) is 4H open par rukh wali band
         if xb1
             f_close(b1, open, cst, fromT, toT, time)
         if xs1
-            f_close(s1, open, cst, fromT, toT, time)
+            f_close(sel1, open, cst, fromT, toT, time)
         // (5) din ke CLOSE (dc) par: B2 BUY (band wale din nayi nahi) -> khuli SELL usi close par band -> S2 SELL
         //     (BUY khuli ho to ruki - khulti nahi, agla din phir dekha jata hai)
         okD = dayEv and not na(dSma) and not na(dAtr) and dAtr > 0
         if ibsOn and okD and na(b2.e) and not b2Hit and ibs < 0.2 and dc > dSma
             f_open(b2, dc, 3.0 * dAtr, time)
-            if not na(s1.e)
-                f_close(s1, dc, cst, fromT, toT, time)
-            if not na(s2.e)
-                f_close(s2, dc, cst, fromT, toT, time)
+            if not na(sel1.e)
+                f_close(sel1, dc, cst, fromT, toT, time)
+            if not na(sel2.e)
+                f_close(sel2, dc, cst, fromT, toT, time)
                 s2Hit := true
-        if ibsOn and okD and na(s2.e) and not s2Hit and na(b1.e) and na(b2.e) and ibs > 0.8 and dc < dSma
-            f_open(s2, dc, 3.0 * dAtr, time)
+        if ibsOn and okD and na(sel2.e) and not s2Hit and na(b1.e) and na(b2.e) and ibs > 0.8 and dc < dSma
+            f_open(sel2, dc, 3.0 * dAtr, time)
         // (6) 4H OPEN par: B1 BUY -> khuli SELL usi open par band (judge #73: kal ke close wali S2 bhi - pehle khulti,
         //     phir yahan band; ruki NAHI) -> S1 SELL (BUY khuli ho to ruki)
         if pb1
             f_open(b1, open, sdT, time)
-            if not na(s1.e)
-                f_close(s1, open, cst, fromT, toT, time)
-            if not na(s2.e)
-                f_close(s2, open, cst, fromT, toT, time)
+            if not na(sel1.e)
+                f_close(sel1, open, cst, fromT, toT, time)
+            if not na(sel2.e)
+                f_close(sel2, open, cst, fromT, toT, time)
                 s2Hit := true
         if ps1 and na(b1.e) and na(b2.e) and not na(dSma) and pdC < dSma
-            f_open(s1, open, sdT, time)
+            f_open(sel1, open, sdT, time)
         if dayEv
             b2Hit := false
             s2Hit := false
@@ -820,7 +820,7 @@ f_core(bool act, bool ibsOn, float cst, int fromT, int toT) =>
     // aaj ka high / low abhi tak (pichhli candles + is candle), close. Sirf aakhri candle par istemal = history par asar nahi.
     tH = na(dH) ? high : math.max(dH, high)
     tL = na(dL) ? low : math.min(dL, low)
-    [b1.e, b1.sl, s1.e, s1.sl, b2.e, b2.sl, s2.e, s2.sl, stv[1], up[1] ? 1.0 : -1.0, dSma, tH, tL, close]
+    [b1.e, b1.sl, sel1.e, sel1.sl, b2.e, b2.sl, sel2.e, sel2.sl, stv[1], up[1] ? 1.0 : -1.0, dSma, tH, tL, close]
 
 // XAU / XAG: sirf B1 + S1 + Supertrend / SMA200 / close (8 tuple)
 f_tr2(float cst, int fromT, int toT) =>
@@ -1200,8 +1200,8 @@ f_lv(float p, int x1, string txt, color c) =>
     0
 
 if barstate.islast
-    for ln in lns
-        ln.delete()
+    for oneLn in lns
+        oneLn.delete()
     lns.clear()
     for lb in lbs
         lb.delete()
