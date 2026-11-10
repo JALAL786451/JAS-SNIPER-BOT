@@ -15,6 +15,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - Gold M1 2019/20/25/26 bhi QDM se user ne diya (7 Nov) - Tokri / Turtle test ke liye.
 - Plan: `docs/pdf/JAS_FTMO_Plan_Monday.pdf` sec 5 (Monday list). Tokri qaide: `docs/tokri_naqsha.md`.
 - Risk hadd khud se NAHI barhana. Backtest -> demo -> live.
+- EA ka naya version banane se PEHLE: user se ijazat + ABHI ka haal (gold/BTC SS) poochho (user 10 Nov: "haal poocha nahi aur file bana di").
 
 - FundingPips email (8 Nov, Sarim): trade kholne/badalne/band karne wala EA MANA (account band); VPN/VPS MANA; Evaluation mein weekend hold OK, Master par overnight/weekend NAHI (Swing add-on se OK); Swap-free add-on +10% qeemat, SIRF forex + metals (index/energy/crypto par swap), khareed ke waqt hi. => hamare EA (t5/i6/k2) wahan NAHI chal sakte; EA plan sirf FTMO.
 
