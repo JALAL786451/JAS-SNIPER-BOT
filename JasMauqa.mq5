@@ -1,5 +1,8 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m8.1  (10 Nov 2026)                        |
+//|  JAS MAUQA   -   build m8.2  (10 Nov 2026)                        |
+//|  m8.2 = (user 10 Nov "haan m8.2"): A) SIRF NUQSAN wali bari lot |
+//|         (faide wali bari lot = dhaal, A kabhi nahi). Popup mein |
+//|         A ya B jo ZYADA nafa de wo pehle. Label "AUTO: NAHI".   |
 //|  m8.1 = LOG FILE (user 10 Nov "haan m8.1"): MQL5\Files mein     |
 //|         JasMauqa_<symbol>.txt = panel + HAR khuli ticket qeemat |
 //|         tarteeb se (har InpLogMin + har popup / jawab par naya); |
@@ -74,7 +77,7 @@
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m8.1"
+#define S_BUILD "m8.2"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -99,7 +102,7 @@ input bool   InpPush     = true;   // Popup ke waqt phone push bhi
 input int    InpFont     = 13;     // Panel ka font (bara = 14-16)
 input bool   InpLadder   = true;   // PRICE LADDER dikhao
 input double InpStep     = 25.0;   // LADDER ka qadam ($): -1, +1, +2, +4 qadam + breakeven
-input bool   InpA        = true;   // m7.3 A) BARI SELL KAM popup (false = kabhi nahi; bari SELL = dhaal)
+input bool   InpA        = true;   // m8.2 A) NUQSAN wali bari lot kam popup (faide wali dhaal kabhi nahi; false = A band)
 input bool   InpRukh     = true;   // m7.3 RUKH 1D + 4H dikhao, badle to popup
 input bool   InpNews     = true;   // m7.3 NEWS alarm (sirf bari / HIGH khabar)
 input string InpNewsCur  = "USD";  // NEWS: kis currency ki khabar (gold = USD)
@@ -582,8 +585,8 @@ void Run()
          if(r < InpMinJori) continue;
          if(StringFind(gNoPairs, StringFormat("|%I64u_%I64u|", a[i].t, a[j].t)) >= 0) continue;   // m7.3 NO = dobara nahi
          if(r > jV) { jS = a[i].t; jB = a[j].t; jV = r; }
-         // m8.0: A = bari SELL YA bari BUY (sirf bari lot > InpBigLot) - Close By, NET wahi
-         bool bS = (i == big && a[i].vol > InpBigLot + 1e-9), bB = (j == bigB && a[j].vol > InpBigLot + 1e-9);
+         // m8.2: A = bari lot (> InpBigLot) jo NUQSAN mein ho - Close By, NET wahi; faide wali bari lot = dhaal
+         bool bS = (a[i].vol > InpBigLot + 1e-9 && a[i].pnl < 0), bB = (a[j].vol > InpBigLot + 1e-9 && a[j].pnl < 0);
          if(InpA && (bS || bB) && r > aV) { aS = a[i].t; aB = a[j].t; aV = r; aNm = Pick(bB && !bS, "A) BARI BUY KAM", "A) BARI SELL KAM"); }
         }
      }
@@ -655,11 +658,11 @@ void Run()
         }
      }
    Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "TOO MANY - only pair close", "OK")), full ? cR : cW);
-   Ln(Pick(aS > 0, StringFormat("%s  #%I64u + #%I64u  = +%s", aNm, aS, aB, M(aV)), "A) Bari lot kam: abhi nahi (SELL qeemat > bari BUY chahiye)"), aS > 0 ? cG : cW);
+   Ln(Pick(aS > 0, StringFormat("%s  #%I64u + #%I64u  = +%s", aNm, aS, aB, M(aV)), "A) Bari lot kam: abhi nahi (nuqsan wali bari lot + nafe ki jori chahiye)"), aS > 0 ? cG : cW);
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
    Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), Pick(InpPartD, "D) Big SELL part close: none now (SELL loss ya hifazat)", "D) Big SELL part close: BAND (dhaal nahi kaatni)")), dT > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
-   Ln("AUTO: NAHI (m8.0) - har mauqa YES/NO, faisla aap ka", cW);
+   Ln("AUTO: NAHI - har mauqa YES/NO, faisla aap ka (" + S_BUILD + ")", cW);
    // m8.0 WASOOLI: popup se pakka nafa vs khula nuqsan (sirf hisaab)
    double wz = Wasool();
    Ln(StringFormat("WASOOLI ~+%s | khula %s | bari lot %s", M(wz), M(kul), M(bigP)), wz > 0 ? cG : cW);
@@ -725,7 +728,7 @@ void Run()
      }
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
-   if(aS > 0)      { kind = 1; t1 = aS; t2 = aB; v = aV; nm = aNm; }
+   if(aS > 0 && aV >= jV) { kind = 1; t1 = aS; t2 = aB; v = aV; nm = aNm; }   // m8.2 A/B mein bara pehle
    else if(jS > 0) { kind = 1; t1 = jS; t2 = jB; v = jV; nm = "B) PAIR CLOSE"; }
    else if(dT > 0) { kind = 3; t1 = dT; v = dV; nm = "D) BIG SELL PART CLOSE"; }
    else if(cT > 0) { kind = 2; t1 = cT; v = cV; nm = "C) PROFIT TICKET CLOSE"; }
