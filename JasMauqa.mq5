@@ -1,5 +1,14 @@
 //+------------------------------------------------------------------+
 //|  JAS MAUQA   -   build m8.2  (10 Nov 2026)                        |
+//|  m8.3 = (user 10 Nov): DHAAL (sab se bari SELL > InpBigLot) ko   |
+//|         A / B / N kabhi nahi chhoote (nuqsan mein ho tab bhi).   |
+//|         N) NET WAHI JORI: chhoti SELL + nuqsan wali BUY Close By |
+//|         (thora nuqsan, InpNMaxLoss har 0.01 tak). E) BARABAR     |
+//|         KAAT: bari BUY + dhaal se barabar lot market par band,   |
+//|         dhaal InpShieldMin se kam nahi. N / E sirf jab WASOOLI   |
+//|         us nuqsan se zyada ho (wasooli se ghat-ta hai). N / E    |
+//|         hamesha A / B ke baad. NET >= InpNetCap = laal chetawni. |
+//|         Nayi lot NAHI.                                           |
 //|  m8.2 = (user 10 Nov "haan m8.2"): A) SIRF NUQSAN wali bari lot |
 //|         (faide wali bari lot = dhaal, A kabhi nahi). Popup mein |
 //|         A ya B jo ZYADA nafa de wo pehle. Label "AUTO: NAHI".   |
@@ -73,11 +82,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "8.10"
+#property version   "8.30"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m8.2"
+#define S_BUILD "m8.3"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -114,6 +123,13 @@ input double InpBeNet    = 0.05;   // m7.8 NET is se kam = breakeven number nahi
 input bool   InpLog      = true;   // m8.1 LOG file likho (MQL5\Files)
 input int    InpLogMin   = 15;     // m8.1 snapshot har kitne minute
 input bool   InpWReset   = false;  // m8.0 WASOOLI ginti 0 se (EA lagate waqt ek dafa true)
+input bool   InpN        = true;   // m8.3 N) NET WAHI jori popup (chhoti SELL + nuqsan wali BUY, Close By)
+input double InpNMaxLoss = 10.0;   // m8.3 N) har 0.01 lot par zyada se zyada nuqsan (USC)
+input double InpNetCap   = 0.20;   // m8.3 NET is par / upar = laal chetawni "nayi BUY mat kholo" (popup tarteeb nahi badalti)
+input bool   InpE        = true;   // m8.3 E) BARABAR KAAT popup (bari BUY + dhaal, barabar lot)
+input double InpELot     = 0.05;   // m8.3 E) ek dafa kitni lot dono se
+input double InpShieldMin = 0.89;  // m8.3 DHAAL (bari SELL) ka kam se kam baqi lot
+input int    InpEWaitMin = 60;     // m8.3 E) NO ke baad dobara kitne minute baad
 
 CTrade trade;
 
@@ -124,6 +140,8 @@ datetime gNext = 0;
 int      gPend = 0;        // 0 = kuch nahi, 1 = Close By, 2 = close, 3 = part close
 ulong    gP1 = 0, gP2 = 0;
 double   gPLot = 0, gPV = 0;   // m8.0 gPV = popup ka nateeja (wasooli ke liye)
+double   gPVb = 0;             // m8.3 E) sirf BUY hisse ka nateeja
+datetime gENext = 0;           // m8.3 E) NO ke baad agla waqt
 string   gPNm = "";
 bool     gPopOn = false;
 datetime gPopT = 0;
@@ -152,6 +170,16 @@ void Ln(string tx, color c)
   }
 
 string Pick(bool c, string a, string b) { if(c) return(a); return(b); }
+string Sg(double v) { return(Pick(v >= 0, "+", "") + DoubleToString(v, 2)); }   // m8.3 nishan ke saath
+
+// m8.3 ticket se lot kam (poori ho to poori band)
+bool ClosePart(ulong t, double lot)
+  {
+   if(!PositionSelectByTicket(t)) return(false);
+   double v = PositionGetDouble(POSITION_VOLUME);
+   if(lot >= v - 1e-9) return(trade.PositionClose(t));
+   return(trade.PositionClosePartial(t, NormalizeDouble(lot, 2)));
+  }
 
 void PopHide() { ObjectsDeleteAll(0, "JM_P"); gPopOn = false; ChartRedraw(); }
 
@@ -274,18 +302,24 @@ void DoPend()
    int kind = gPend; ulong t1 = gP1, t2 = gP2; string nm = gPNm;
    gPend = 0;
    if(kind == 0) { PopHide(); return; }
-   if(!AlgoOn() || !PositionSelectByTicket(t1) || (kind == 1 && !PositionSelectByTicket(t2)))
+   if(!AlgoOn() || !PositionSelectByTicket(t1) || ((kind == 1 || kind == 4) && !PositionSelectByTicket(t2)))
      { PopShow("JAS MAUQA " + S_BUILD, "Algo OFF or ticket changed\nnothing done.", false); return; }
-   bool ok;
+   bool ok; double got = gPV; string ex = "";
    if(kind == 1) ok = trade.PositionCloseBy(t1, t2);
    else if(kind == 3) ok = trade.PositionClosePartial(t1, gPLot);
+   else if(kind == 4)   // m8.3 E) pehle BUY, phir dhaal SELL
+     {
+      ok = ClosePart(t1, gPLot);
+      if(ok && !ClosePart(t2, gPLot)) { got = gPVb; ex = StringFormat("LIVE: BUY %.2f kat gayi, SELL nahi kati - NET %.2f kam, khud dekhein", gPLot, gPLot); }
+     }
    else          ok = trade.PositionClose(t1);
    string r = StringFormat("%s: %s  (%d %s)", nm, Pick(ok, "DONE", "FAIL"), (int)trade.ResultRetcode(), trade.ResultRetcodeDescription());
    Print("JAS MAUQA ", S_BUILD, ": ", r);
-   LogEv("YES -> " + r + "  nateeja ~" + M(gPV));   // m8.1
+   LogEv("YES -> " + r + "  nateeja ~" + M(got));   // m8.1
+   if(ex != "") LogEv(ex);
    gLogT = 0;
-   if(ok) GlobalVariableSet(WKey(), Wasool() + gPV);   // m8.0 WASOOLI
-   PopShow("JAS MAUQA " + S_BUILD + " - NATEEJA", nm + "\n" + Pick(ok, "DONE", "FAIL") + StringFormat("  (%d %s)", (int)trade.ResultRetcode(), trade.ResultRetcodeDescription()), false);
+   if(ok) GlobalVariableSet(WKey(), Wasool() + got);   // m8.0 WASOOLI (m8.3: N / E ka nuqsan ghat-ta hai)
+   PopShow("JAS MAUQA " + S_BUILD + " - NATEEJA", nm + "\n" + Pick(ok, "DONE", "FAIL") + StringFormat("  (%d %s)", (int)trade.ResultRetcode(), trade.ResultRetcodeDescription()) + Pick(ex == "", "", "\n" + ex), false);
   }
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
 string M(double v)  { return(DoubleToString(v, 2)); }
@@ -414,6 +448,7 @@ void NoMark()
   {
    if(gPend == 1) { if(StringLen(gNoPairs) > 3000) gNoPairs = ""; gNoPairs += StringFormat("|%I64u_%I64u|", gP1, gP2); }
    if(gPend == 2) { if(StringLen(gNoTk) > 3000) gNoTk = ""; gNoTk += StringFormat("|%I64u|", gP1); }
+   if(gPend == 4) gENext = TimeCurrent() + InpEWaitMin * 60;   // m8.3
   }
 
 string   gNewsLn = "", gNewsDone = "";
@@ -570,6 +605,10 @@ void Run()
    // ---- MAUQA
    ulong aS = 0, aB = 0, jS = 0, jB = 0, cT = 0;
    double aV = 0, jV = 0, cV = 0; string aNm = "";
+   // m8.3: dhaal = sab se bari SELL (> InpBigLot); N jori; wasooli = N / E ka budget
+   ulong nS = 0, nB = 0; double nV = 0, nD = 0;
+   double wBud = Wasool(), lot1 = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+   bool dhOn = (big >= 0 && a[big].vol > InpBigLot + 1e-9);
    for(int i = 0; i < n; i++)
      {
       if(i != big && i != bigB && a[i].pnl >= InpMinFaida && a[i].pnl > cV && StringFind(gNoTk, StringFormat("|%I64u|", a[i].t)) < 0)
@@ -578,11 +617,19 @@ void Run()
          if(Safe(na_, net, freeE, vpp)) { cT = a[i].t; cV = a[i].pnl; }
         }
       if(a[i].typ != POSITION_TYPE_SELL) continue;
+      if(dhOn && i == big) continue;   // m8.3 dhaal ko A / B / N kabhi nahi
       for(int j = 0; j < n; j++)
         {
          if(a[j].typ != POSITION_TYPE_BUY) continue;
          double r = (a[i].open - a[j].open) * MathMin(a[i].vol, a[j].vol) * vpp;
-         if(r < InpMinJori) continue;
+         if(r < InpMinJori)
+           {
+            // m8.3 N) NET wahi: nuqsan wali BUY, farq chhota (sab se chhota farq pehle), wasooli ke andar
+            double dd = a[j].open - a[i].open;
+            if(InpN && a[j].pnl < 0 && dd * lot1 * vpp <= InpNMaxLoss + 1e-9 && wBud + r >= -1e-9 && (nS == 0 || dd < nD))
+              { nS = a[i].t; nB = a[j].t; nV = r; nD = dd; }
+            continue;
+           }
          if(StringFind(gNoPairs, StringFormat("|%I64u_%I64u|", a[i].t, a[j].t)) >= 0) continue;   // m7.3 NO = dobara nahi
          if(r > jV) { jS = a[i].t; jB = a[j].t; jV = r; }
          // m8.2: A = bari lot (> InpBigLot) jo NUQSAN mein ho - Close By, NET wahi; faide wali bari lot = dhaal
@@ -600,6 +647,21 @@ void Run()
       double pv = a[big].pnl * x / a[big].vol;
       if(x >= mnv && pv >= InpMinJori && Safe(net + x, net, freeE, vpp)) { dT = a[big].t; dLot = NormalizeDouble(x, 2); dV = pv; }
      }
+   // m8.3 E) BARABAR KAAT: sab se bari nuqsan wali BUY + dhaal, dono se barabar lot (market), NET wahi
+   ulong eB = 0, eS = 0; double eLot = 0, eV = 0, eVb = 0;
+   if(InpE && dhOn && bigB >= 0 && a[bigB].vol > InpBigLot + 1e-9 && a[bigB].pnl < 0 && a[bigB].open > a[big].open && TimeCurrent() >= gENext)
+     {
+      double est = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+      double ex_ = MathMin(InpELot, MathMin(a[bigB].vol, a[big].vol - InpShieldMin));
+      if(est > 0) ex_ = MathFloor(ex_ / est + 1e-9) * est;
+      if(ex_ >= lot1 - 1e-9 && lot1 > 0)
+        {
+         eVb = a[bigB].pnl * ex_ / a[bigB].vol;
+         double ev_ = eVb + a[big].pnl * ex_ / a[big].vol;
+         if(wBud + ev_ >= -1e-9) { eB = a[bigB].t; eS = a[big].t; eLot = NormalizeDouble(ex_, 2); eV = ev_; }
+        }
+     }
+   bool capHit = NormalizeDouble(net, 2) >= InpNetCap - 1e-9;   // m8.3
    int wait = (int)(gNext - TimeCurrent());
    // ---- PANEL (bara font, rang)
    color cG = clrLime, cR = clrTomato, cW = clrWhite, cY = clrGold, cC = clrAqua;
@@ -660,13 +722,16 @@ void Run()
    Ln(StringFormat("TICKETS  %d / %d   (bachao %d)  %s", tk, InpHadd, InpBachao, Pick(full, "TOO MANY - only pair close", "OK")), full ? cR : cW);
    Ln(Pick(aS > 0, StringFormat("%s  #%I64u + #%I64u  = +%s", aNm, aS, aB, M(aV)), "A) Bari lot kam: abhi nahi (nuqsan wali bari lot + nafe ki jori chahiye)"), aS > 0 ? cG : cW);
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
+   Ln(Pick(nS > 0, StringFormat("N) NET WAHI JORI  #%I64u + #%I64u  = %s", nS, nB, Sg(nV)), Pick(InpN, StringFormat("N) NET wahi jori: abhi nahi (hadd %s har 0.01 / wasooli)", M(InpNMaxLoss)), "N) NET wahi jori: BAND")), nS > 0 ? cG : cW);
+   Ln(Pick(eB > 0, StringFormat("E) BARABAR KAAT  BUY #%I64u + dhaal #%I64u  %.2f lot  = %s", eB, eS, eLot, Sg(eV)), Pick(InpE, StringFormat("E) Barabar kaat: abhi nahi (wasooli kam / dhaal %.2f se kam nahi)", InpShieldMin), "E) Barabar kaat: BAND")), eB > 0 ? cG : cW);
    Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), Pick(InpPartD, "D) Big SELL part close: none now (SELL loss ya hifazat)", "D) Big SELL part close: BAND (dhaal nahi kaatni)")), dT > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
    Ln("AUTO: NAHI - har mauqa YES/NO, faisla aap ka (" + S_BUILD + ")", cW);
    // m8.0 WASOOLI: popup se pakka nafa vs khula nuqsan (sirf hisaab)
    double wz = Wasool();
    Ln(StringFormat("WASOOLI ~+%s | khula %s | bari lot %s", M(wz), M(kul), M(bigP)), wz > 0 ? cG : cW);
-   Ln("RASTA: jori B + bari lot tukre A + 0.01 fishing, bari lot NAHI", cY);
+   Ln("RASTA: N jori (NET wahi) + E barabar kaat + 0.01 fishing, bari lot NAHI", cY);
+   Ln(StringFormat("NET ROK %.2f: %s", InpNetCap, Pick(capHit, "NET hadd par - nayi BUY mat kholo", "theek")), capHit ? cR : cW);
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
    Ln(Pick(InpLog, "LOG: MQL5\\Files\\JasMauqa_" + _Symbol + ".txt", "LOG: band"), cW);   // m8.1
@@ -728,8 +793,12 @@ void Run()
      }
    if(!AlgoOn() || TimeCurrent() < gNext) return;
    int kind = 0; ulong t1 = 0, t2 = 0; double v = 0; string nm = "";
+   // m8.3 (Claude jaanch): N / E hamesha A / B ke BAAD - N / E NET kam nahi karte, aur pehle aayein to
+   // wahi SELL tukra kha jate jo B mein bara nafa deta (10 Nov: N +3.17 vs B +87.55). capHit = sirf chetawni.
    if(aS > 0 && aV >= jV) { kind = 1; t1 = aS; t2 = aB; v = aV; nm = aNm; }   // m8.2 A/B mein bara pehle
    else if(jS > 0) { kind = 1; t1 = jS; t2 = jB; v = jV; nm = "B) PAIR CLOSE"; }
+   else if(nS > 0) { kind = 1; t1 = nS; t2 = nB; v = nV; nm = "N) NET WAHI JORI"; }
+   else if(eB > 0) { kind = 4; t1 = eB; t2 = eS; v = eV; nm = "E) BARABAR KAAT"; }
    else if(dT > 0) { kind = 3; t1 = dT; v = dV; nm = "D) BIG SELL PART CLOSE"; }
    else if(cT > 0) { kind = 2; t1 = cT; v = cV; nm = "C) PROFIT TICKET CLOSE"; }
    if(kind == 0) return;
@@ -737,16 +806,19 @@ void Run()
    bool demo = AccountInfoInteger(ACCOUNT_TRADE_MODE) == ACCOUNT_TRADE_MODE_DEMO;
    string d = StringFormat("Account %I64d  (%s)\n\n%s\n\n", AccountInfoInteger(ACCOUNT_LOGIN), Pick(demo, "DEMO", "LIVE - ASLI PAISA"), nm);
    if(kind == 1)
-      d += StringFormat("%s\n%s\n\nClose By (no spread, no new lot)\nResult: +%s\nWhy: SELL price above BUY price = profit pair\nTickets: %d -> %d or %d\n",
-                        Desc(t1), Desc(t2), M(v), tk, tk - 2, tk - 1);
+      d += StringFormat("%s\n%s\n\nClose By (no spread, no new lot)\nResult: %s\nWhy: %s\nTickets: %d -> %d or %d\n",
+                        Desc(t1), Desc(t2), Sg(v), Pick(v >= InpMinJori, "SELL price above BUY price = profit pair", "NET wahi, nuqsan wali BUY kam (ye nuqsan balance mein pakka)"), tk, tk - 2, tk - 1);
+   else if(kind == 4)   // m8.3
+      d += StringFormat("%s\n%s\n\nDono se %.2f lot market par band (pehle BUY, phir SELL)\nResult: %s\nNET wahi %+.2f | dhaal baqi %.2f (hadd %.2f)\nWasooli %s -> %s\n",
+                        Desc(t1), Desc(t2), eLot, Sg(v), net, a[big].vol - eLot, InpShieldMin, M(wBud), M(wBud + v));
    else if(kind == 3)
       d += StringFormat("%s\n\nPart close %.2f lot at market (baqi %s wahin)\nProfit lock: +%s\nNET %+.2f -> %+.2f (hifazat ke andar)\nNote: equity foran nahi barhti - floating profit balance mein pakka hota hai\n",
                         Desc(t1), dLot, "SELL", M(v), net, net + dLot);
    else
       d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNET change hifazat ke andar\n", Desc(t1), M(v), tk, tk - 1);
-   if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
-   gPend = kind; gP1 = t1; gP2 = t2; gPLot = dLot; gPNm = nm; gPV = v;
-   LogEv(StringFormat("POPUP %s  #%I64u + #%I64u  = +%s  (NET %+.2f)", nm, t1, t2, M(v), net));   // m8.1
+   if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s %s - YES/NO on MT5", _Symbol, nm, Sg(v)));
+   gPend = kind; gP1 = t1; gP2 = t2; gPLot = (kind == 4) ? eLot : dLot; gPNm = nm; gPV = v; gPVb = eVb;
+   LogEv(StringFormat("POPUP %s  #%I64u + #%I64u  = %s  (NET %+.2f)", nm, t1, t2, Sg(v), net));   // m8.1
    PlaySound("alert.wav");
    PopShow("JAS MAUQA " + S_BUILD + "  -  " + _Symbol, d + "\n" + gHis + "\nDo it?", true);
   }
