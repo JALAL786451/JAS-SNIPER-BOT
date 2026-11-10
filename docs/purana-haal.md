@@ -1831,3 +1831,12 @@ user ne Notepad SBS, naam CJAS_CLAUDE.txt -> rename), PC Claude ne 3 line qaide 
 **AGLA (50vi) SBS:** (2) JAS Naqsha+5EA Pine bridge se TV mein compile/error (TV Bridge shortcut -> PowerShell `cd C:\JAS_CLAUDE` -> `claude.cmd`; PC Claude
 se: "chart par JAS Naqsha ka Pine compile karke errors batao"); (3) TV Store update = robocopy dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.
 User ko ABC ki tarah samjhao (misaal: dukaan/munshi/naukar/darwaza), English kam, har qadam bohot chhota.
+
+## TRADING sec 5 se hataya (10 Nov, 52vi chat)
+**50vi chat (9 Nov)** - (2) HUA ✅: PC Claude (Sonnet 5.5, manual) ne TV Bridge se `jas_naqsha_5ea.pine` **j3** (user ne GitHub se Downloads mein
+utari) naye Pine page mein daali: **0 error, 4 warning** (L36 shorttitle >10 harf; L711/713 s1/s2 + L1203 ln naam takrao = hisaab par asar nahi);
+"Add to chart" bridge se nahi mila (PC Claude andaze se click karne laga -> user ne roka, khud ▷ dabaya) -> **j3 TV ✅ XAUUSD 4H** (B1 BUY 3997.7 SL 3752.4
+TP 4488.2 +0.5R). n5.4 chart se HATAI. Do price patti = j3 alag scale A -> right-click "Pin to scale B" = theek. Code type karwana ~25k token ->
+AGLI DAFA user khud Ctrl+A/Ctrl+V, PC Claude se sirf "errors batao". Ijazat: Get/Find/Health/Read/Screenshot = 2; Set/Click/New/Compile = 1; Ui Evaluate = SS Claude ko.
+**AGLA (51vi):** j3 warnings saaf (j3.2: shorttitle chhota, s1/s2/ln naam badlo) -> user khud paste + PC Claude "errors batao"; (3) TV Store update ho to robocopy
+dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.

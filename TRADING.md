@@ -62,18 +62,18 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**52vi chat (9-10 Nov)** - K3 HUA (gold M1 2019/20/25/26 saaf, `tools/gold_m1_jaanch.py`). JasMauqa **m7.8** (NET < 0.05 = "TALA-BAND", breakeven
+number nahi) + **m7.9** (InpAuto true = SIRF B) PAIR CLOSE khud YES; A/C/D popup; jawab na aaye = NO + dobara nahi) F7 ✅ dono chart, AUTO ON dono;
+pehli AUTO jori gold +59.00 (01:07 server). Gold + BTC NET ~0 (tala-band), equity ~39,0k, balance 52,644. FTMO demo: i6 US500 +584.73 qaide se band.
+Sawal-jawab: breakeven, t5 TP/SL, PC Claude band/khol, push (user ke phone par sirf Exness app), Claude Code course 19 (`docs/claude-code-19.md`).
+User 10 Nov: naya EA version se PEHLE haal (SS) + ijazat poochho. GitHub red ❌ = `.github/workflows/python-package-conda.yml` (namoona, environment.yml
+nahi) - delete ki ijazat user se BAQI. **AGLA (53vi):** K1 (D:\JAS_DRIVE.bat + schtasks SS) -> raat ki AUTO joriyan History se -> K4 qaide user "haan".
 **51vi chat (9 Nov)** - j3.2 (4 warning saaf) TV ✅ user paste. **Yaad ka hal: `KAAM.md`** (ek register: pakki baatein + khule kaam K1-K9; hook har chat
 ko dikhata; user ki nayi baat USI jawab mein likho). FTMO email jawab aa chuka (correction); FundingPips email: EA/VPS MANA -> EA plan sirf FTMO.
 PDF Monday list + Tokri Turtle 55/20 (K4). LIVE report 31 Oct-9 Nov: fishing BUY +33,350, bari SELL (1-4 lot) -41,790 = sara nuqsan.
 JasMauqa **m7.7** (autotrade lakeerein mitao, DOOSRA symbol NET, MARGIN LEVEL, bari lot warning) LIVE BTC + gold dono chart ✅; A/B Close By hisaab sahi.
 **AGLA (52vi):** KAAM.md K1 (D:\JAS_DRIVE.bat SBS) -> K3 gold M1 jaanch -> K4/K2 user chune.
-**50vi chat (9 Nov)** - (2) HUA ✅: PC Claude (Sonnet 5.5, manual) ne TV Bridge se `jas_naqsha_5ea.pine` **j3** (user ne GitHub se Downloads mein
-utari) naye Pine page mein daali: **0 error, 4 warning** (L36 shorttitle >10 harf; L711/713 s1/s2 + L1203 ln naam takrao = hisaab par asar nahi);
-"Add to chart" bridge se nahi mila (PC Claude andaze se click karne laga -> user ne roka, khud ▷ dabaya) -> **j3 TV ✅ XAUUSD 4H** (B1 BUY 3997.7 SL 3752.4
-TP 4488.2 +0.5R). n5.4 chart se HATAI. Do price patti = j3 alag scale A -> right-click "Pin to scale B" = theek. Code type karwana ~25k token ->
-AGLI DAFA user khud Ctrl+A/Ctrl+V, PC Claude se sirf "errors batao". Ijazat: Get/Find/Health/Read/Screenshot = 2; Set/Click/New/Compile = 1; Ui Evaluate = SS Claude ko.
-**AGLA (51vi):** j3 warnings saaf (j3.2: shorttitle chhota, s1/s2/ln naam badlo) -> user khud paste + PC Claude "errors batao"; (3) TV Store update ho to robocopy
-dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.
+**50vi chat** -> `docs/purana-haal.md` (grep "50vi").
 **49vi chat** -> `docs/purana-haal.md` (grep "49vi").
 **48vi chat** -> `docs/purana-haal.md` (grep "48vi").
 **47vi chat** -> `docs/purana-haal.md` (grep "47vi").
