@@ -1,6 +1,6 @@
 # Fable se mashwara: gold ka bojh (SELL 3.31 + BUY 2.50) kaise kam ho
 
-(Jalal ki taraf se. Jawab Roman Urdu mein, chhota aur saaf. Saath 4 file: JasMauqa_XAUUSDc.txt,
+(Jalal ki taraf se. Jawab Roman Urdu mein, chhota aur saaf. Saath 4 file (10 Nov 17:27-17:31 server = 22:27-22:31 PKT): JasMauqa_XAUUSDc.txt,
 JasMauqa_XAUUSDc_waqiat.txt, JasMauqa_BTCUSDc.txt, JasMauqa_BTCUSDc_waqiat.txt = EA ka panel + har khuli ticket + popup log.)
 
 ## Account
@@ -17,7 +17,8 @@ JasMauqa_XAUUSDc_waqiat.txt, JasMauqa_BTCUSDc.txt, JasMauqa_BTCUSDc_waqiat.txt =
 ## Mera tareeqa (badalna nahi)
 - Main khud haath se 0.01 lot "fishing" karta hoon (laddered, hedged basket - meri apni method).
 - EA "JasMauqa m8.2" khud koi trade NAHI kholta. Sirf popup deta hai, YES/NO mera:
-  - B) jori: nafe wali SELL ka tukra + nuqsan wali BUY ka tukra **Close By** (nateeja hamesha +, NET wahi). 10 Nov: 13 YES = ~+1,250.
+  - B) jori: nafe wali SELL ka tukra + nuqsan wali BUY ka tukra **Close By** (nateeja hamesha +). 10 Nov: gold 13 YES = +1,137.85, BTC 6 YES = +65.80.
+    Jori ki BUY aksar MERI nayi 0.01 (~4022) hoti hai: kholte waqt NET +0.01, jori ke baad bhi +0.01 rehta -> **har aisi jori NET +0.01 barhati** (10 Nov NET +0.09 -> +0.20 isi se).
   - A) bari lot kam: nuqsan wali bari lot ko nafe wali chhoti ticket se jorna (sirf jab nateeja +).
   - C) akeli profit ticket band - main NO karta (NET badalta).
 - Qaide: nayi bari lot (>0.10) NAHI, NET hadd 0.80, SELL 3.31 ko EA kabhi nahi chhoota.
@@ -27,16 +28,18 @@ Close By nateeja = (SELL open - BUY open) x lot x 100, abhi ke daam se azad.
 - SELL 3.31 + BUY 2.50 = **-13,461.25** (equity wahi, sirf balance mein pakka).
 - SELL 3.31 + 4063.571 se UPAR wali koi bhi BUY = nuqsan (0.05@4108.705 = -225.67; poori 3.31 = -18,077).
 - SELL 3.31 + 4063.571 se NEECHE wali 0.01 BUY (~4022) = +~40 har jori.
-- Lekin wahi 0.01 BUY purani SELL @4108-4110 ke saath = +~88 (behtar). Wo SELL tukre ~0.22 lot baqi.
+- Lekin wahi 0.01 BUY purani SELL @4108-4110 ke saath = +~86-88 (behtar). Wo SELL tukre 0.22 lot baqi (5 ticket).
+- **Dhyan:** nayi 0.01 BUY khol kar SELL se jorna = har dafa NET +0.01. NET 0.20 -> hadd 0.80 = sirf ~60 jori (~0.60 lot) ki gunjaish.
+  NET wapas laane ke liye upar wali nuqsan ki 0.01 BUY (~4123, ~-103) band karo to har chakkar ~-60 = nuqsan.
 
 ## Claude ka khayal (m8.3, abhi bana nahi)
 1. Pehle SELL @4108-4110 ke tukre B joriyan mein khatam hon (+88 har).
-2. Phir SELL 3.31 ko 0.01 tukron mein: gold 4063 se neeche khuli nayi 0.01 BUY + 0.01 SELL 3.31 = Close By (+~40). NET wahi.
+2. Phir SELL 3.31 ko 0.01 tukron mein: gold 4063 se neeche khuli nayi 0.01 BUY + 0.01 SELL 3.31 = Close By (+~43 @4020). Lekin NET har dafa +0.01 -> sirf NET hadd tak, ya gold upar jaye to meri 0.01 SELL fishing se NET wapas.
 3. BUY 2.50 ke liye A: jab gold 4117 se upar ho aur wahan SELL khule.
 
 ## Mere sawal
 1. Upar ka hisaab sahi hai? Koi galti?
-2. SELL 3.31 ko 0.01 tukron mein kaatna (kadam 2) samajhdari hai ya dhaal kamzor karna khatra hai? Kis hadd tak (masalan kam se kam kitni SELL rehni chahiye)?
+2. SELL 3.31 ko 0.01 tukron mein kaatna (kadam 2) - NET barhne ke saath - samajhdari hai ya dhaal kamzor karna khatra hai? Kis hadd tak (masalan kam se kam kitni SELL rehni chahiye)?
 3. BUY 2.50 @4117 ka bojh kam karne ka koi aur behtar, mehfooz raasta (bina nayi bari lot, bina NET barhaye)?
 4. Kya "sab Close By kar ke saaf karna" (equity wahi) aur nayi shuru karna behtar hai, ya basket rakh kar B wasooli?
 5. Gold ~4020, 1D rukh neeche, 4H mila-jula. Kya ye kisi faisle ko badalta hai?
