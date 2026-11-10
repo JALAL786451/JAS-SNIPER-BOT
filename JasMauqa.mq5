@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m8.2  (10 Nov 2026)                        |
+//|  JAS MAUQA   -   build m8.3  (10 Nov 2026)                        |
 //|  m8.3 = (user 10 Nov): DHAAL (sab se bari SELL > InpBigLot) ko   |
 //|         A / B / N kabhi nahi chhoote (nuqsan mein ho tab bhi).   |
 //|         N) NET WAHI JORI: chhoti SELL + nuqsan wali BUY Close By |
@@ -622,6 +622,7 @@ void Run()
         {
          if(a[j].typ != POSITION_TYPE_BUY) continue;
          double r = (a[i].open - a[j].open) * MathMin(a[i].vol, a[j].vol) * vpp;
+         if(StringFind(gNoPairs, StringFormat("|%I64u_%I64u|", a[i].t, a[j].t)) >= 0) continue;   // m7.3 NO = dobara nahi
          if(r < InpMinJori)
            {
             // m8.3 N) NET wahi: nuqsan wali BUY, farq chhota (sab se chhota farq pehle), wasooli ke andar
@@ -630,7 +631,6 @@ void Run()
               { nS = a[i].t; nB = a[j].t; nV = r; nD = dd; }
             continue;
            }
-         if(StringFind(gNoPairs, StringFormat("|%I64u_%I64u|", a[i].t, a[j].t)) >= 0) continue;   // m7.3 NO = dobara nahi
          if(r > jV) { jS = a[i].t; jB = a[j].t; jV = r; }
          // m8.2: A = bari lot (> InpBigLot) jo NUQSAN mein ho - Close By, NET wahi; faide wali bari lot = dhaal
          bool bS = (a[i].vol > InpBigLot + 1e-9 && a[i].pnl < 0), bB = (a[j].vol > InpBigLot + 1e-9 && a[j].pnl < 0);
@@ -753,7 +753,7 @@ void Run()
      }
    NewsCheck(net);
    if(InpNews) Ln(gNewsLn, cY);
-   for(int k = gRow; k < 45; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
+   for(int k = gRow; k < 50; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
    // m8.1 LOG snapshot (har InpLogMin, YES ke baad foran)
    if(InpLog && TimeCurrent() - gLogT >= InpLogMin * 60) LogSnap(a, n);
    // ---- H) HEDGE LADDER
