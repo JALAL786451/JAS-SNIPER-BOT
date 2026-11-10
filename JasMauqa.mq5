@@ -1,5 +1,10 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m8.0  (10 Nov 2026)                        |
+//|  JAS MAUQA   -   build m8.1  (10 Nov 2026)                        |
+//|  m8.1 = LOG FILE (user 10 Nov "haan m8.1"): MQL5\Files mein     |
+//|         JasMauqa_<symbol>.txt = panel + HAR khuli ticket qeemat |
+//|         tarteeb se (har InpLogMin + har popup / jawab par naya); |
+//|         JasMauqa_<symbol>_waqiat.txt = har popup, YES / NO /     |
+//|         jawab nahi, nateeja (jorta jata). Trade qaida WAHI.      |
 //|  m8.0 = (user 10 Nov "haan m8.0"): AUTO HATA DIYA - har mauqa   |
 //|         YES/NO popup. A) ab BARI BUY ko bhi Close By se kam     |
 //|         kare (bari lot + nafe wali ulti ticket, jori nafe mein, |
@@ -65,11 +70,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "8.00"
+#property version   "8.10"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m8.0"
+#define S_BUILD "m8.1"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -103,6 +108,8 @@ input int    InpNews2    = 5;      // NEWS: doosra alarm kitne minute pehle
 input bool   InpClean    = true;   // m7.7 MT5 ki "autotrade #..." lakeerein chart se khud mitao
 input double InpBigLot   = 0.10;   // m7.7 is se bari lot = laal WARNING (sirf likhai, kuch band nahi)
 input double InpBeNet    = 0.05;   // m7.8 NET is se kam = breakeven number nahi, "TALA-BAND" likho
+input bool   InpLog      = true;   // m8.1 LOG file likho (MQL5\Files)
+input int    InpLogMin   = 15;     // m8.1 snapshot har kitne minute
 input bool   InpWReset   = false;  // m8.0 WASOOLI ginti 0 se (EA lagate waqt ek dafa true)
 
 CTrade trade;
@@ -119,9 +126,12 @@ bool     gPopOn = false;
 datetime gPopT = 0;
 string gHis = "";   // m7.6 popup ke liye hisaab
 int gRow = 0;
+string gPTx = "";   // m8.1 panel ki likhai (log ke liye)
+datetime gLogT = 0;
 
 void Ln(string tx, color c)
   {
+   gPTx += tx + "\r\n";   // m8.1
    string nm = "JM_L" + IntegerToString(gRow);
    if(ObjectFind(0, nm) < 0)
      {
@@ -269,6 +279,8 @@ void DoPend()
    else          ok = trade.PositionClose(t1);
    string r = StringFormat("%s: %s  (%d %s)", nm, Pick(ok, "DONE", "FAIL"), (int)trade.ResultRetcode(), trade.ResultRetcodeDescription());
    Print("JAS MAUQA ", S_BUILD, ": ", r);
+   LogEv("YES -> " + r + "  nateeja ~" + M(gPV));   // m8.1
+   gLogT = 0;
    if(ok) GlobalVariableSet(WKey(), Wasool() + gPV);   // m8.0 WASOOLI
    PopShow("JAS MAUQA " + S_BUILD + " - NATEEJA", nm + "\n" + Pick(ok, "DONE", "FAIL") + StringFormat("  (%d %s)", (int)trade.ResultRetcode(), trade.ResultRetcodeDescription()), false);
   }
@@ -439,6 +451,43 @@ void NewsCheck(double net)
    else          gNewsLn = StringFormat("NEWS: %s  %s  (%d min baad)", bn, TimeToString(best, TIME_MINUTES), (int)((best - now) / 60));
   }
 
+// m8.1 LOG: waqiat (jorta) + snapshot (har dafa naya)
+void LogEv(string tx)
+  {
+   if(!InpLog) return;
+   int h = FileOpen("JasMauqa_" + _Symbol + "_waqiat.txt", FILE_READ | FILE_WRITE | FILE_TXT | FILE_ANSI);
+   if(h == INVALID_HANDLE) return;
+   FileSeek(h, 0, SEEK_END);
+   FileWriteString(h, TimeToString(TimeCurrent(), TIME_DATE | TIME_SECONDS) + "  " + tx + "\r\n");
+   FileClose(h);
+  }
+
+void LogSnap(PInfo &a[], int n)
+  {
+   if(!InpLog) return;
+   int h = FileOpen("JasMauqa_" + _Symbol + ".txt", FILE_WRITE | FILE_TXT | FILE_ANSI);
+   if(h == INVALID_HANDLE) return;
+   FileWriteString(h, StringFormat("JAS MAUQA %s LOG  %s  server %s  account %I64d\r\n", S_BUILD, _Symbol,
+                   TimeToString(TimeCurrent(), TIME_DATE | TIME_SECONDS), AccountInfoInteger(ACCOUNT_LOGIN)));
+   FileWriteString(h, StringFormat("bid %s  balance %s  equity %s  wasooli %s\r\n\r\n--- PANEL ---\r\n",
+                   Px(SymbolInfoDouble(_Symbol, SYMBOL_BID)), M(AccountInfoDouble(ACCOUNT_BALANCE)), M(AccountInfoDouble(ACCOUNT_EQUITY)), M(Wasool())));
+   FileWriteString(h, gPTx);
+   FileWriteString(h, StringFormat("\r\n--- KHULI TICKETS (%d) qeemat upar se neeche ---\r\nticket  type  lot  open  P/L  open_time\r\n", n));
+   int ix[]; ArrayResize(ix, n);
+   for(int i = 0; i < n; i++) ix[i] = i;
+   for(int i = 1; i < n; i++)   // insertion sort: open price DESC
+     { int k = ix[i], j = i - 1; while(j >= 0 && a[ix[j]].open < a[k].open) { ix[j + 1] = ix[j]; j--; } ix[j + 1] = k; }
+   for(int q = 0; q < n; q++)
+     {
+      int i = ix[q];
+      string ot = "-";
+      if(PositionSelectByTicket(a[i].t)) ot = TimeToString((datetime)PositionGetInteger(POSITION_TIME), TIME_DATE | TIME_SECONDS);
+      FileWriteString(h, StringFormat("%I64u  %s  %.2f  %s  %s  %s\r\n", a[i].t, Pick(a[i].typ == POSITION_TYPE_BUY, "BUY ", "SELL"), a[i].vol, Px(a[i].open), M(a[i].pnl), ot));
+     }
+   FileClose(h);
+   gLogT = TimeCurrent();
+  }
+
 void Run()
   {
    if(InpClean && ObjectsTotal(0, -1, -1) > 0) ObjectsDeleteAll(0, "autotrade");
@@ -551,7 +600,7 @@ void Run()
    int wait = (int)(gNext - TimeCurrent());
    // ---- PANEL (bara font, rang)
    color cG = clrLime, cR = clrTomato, cW = clrWhite, cY = clrGold, cC = clrAqua;
-   gRow = 0;
+   gRow = 0; gPTx = "";
    Ln(StringFormat("JAS MAUQA %s  -  %s  -  Algo %s", S_BUILD, _Symbol, Pick(AlgoOn(), "ON (YES/NO popup)", "OFF (only status)")), AlgoOn() ? cG : cY);
    Ln(StringFormat("TOTAL P/L  %s        EQUITY  %s", M(kul), M(eq)), kul >= 0 ? cG : cR);
    Ln(StringFormat("PROFIT  %d ticket  %.2f lot   +%s", fc, fl, M(fp)), cG);
@@ -617,6 +666,7 @@ void Run()
    Ln("RASTA: jori B + bari lot tukre A + 0.01 fishing, bari lot NAHI", cY);
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
+   Ln(Pick(InpLog, "LOG: MQL5\\Files\\JasMauqa_" + _Symbol + ".txt", "LOG: band"), cW);   // m8.1
    // ---- m7.3 RUKH + NEWS (sirf dikhana / yaad-dihani - koi trade nahi)
    if(InpRukh)
      {
@@ -636,6 +686,8 @@ void Run()
    NewsCheck(net);
    if(InpNews) Ln(gNewsLn, cY);
    for(int k = gRow; k < 45; k++) ObjectDelete(0, "JM_L" + IntegerToString(k));
+   // m8.1 LOG snapshot (har InpLogMin, YES ke baad foran)
+   if(InpLog && TimeCurrent() - gLogT >= InpLogMin * 60) LogSnap(a, n);
    // ---- H) HEDGE LADDER
    if(big >= 0)
      {
@@ -668,7 +720,7 @@ void Run()
    // m7.2: popup khula ho to naya nahi; der tak jawab na aaye (InpWaitMin) to khud band = NO
    if(gPopOn)
      {
-      if(TimeCurrent() - gPopT > InpWaitMin * 60) { if(gPend != 0) { Print("JAS MAUQA ", S_BUILD, ": jawab nahi = NO - ", gPNm); NoMark(); } gPend = 0; PopHide(); }
+      if(TimeCurrent() - gPopT > InpWaitMin * 60) { if(gPend != 0) { Print("JAS MAUQA ", S_BUILD, ": jawab nahi = NO - ", gPNm); LogEv("JAWAB NAHI = NO - " + gPNm); NoMark(); } gPend = 0; PopHide(); }
       return;
      }
    if(!AlgoOn() || TimeCurrent() < gNext) return;
@@ -691,6 +743,7 @@ void Run()
       d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNET change hifazat ke andar\n", Desc(t1), M(v), tk, tk - 1);
    if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
    gPend = kind; gP1 = t1; gP2 = t2; gPLot = dLot; gPNm = nm; gPV = v;
+   LogEv(StringFormat("POPUP %s  #%I64u + #%I64u  = +%s  (NET %+.2f)", nm, t1, t2, M(v), net));   // m8.1
    PlaySound("alert.wav");
    PopShow("JAS MAUQA " + S_BUILD + "  -  " + _Symbol, d + "\n" + gHis + "\nDo it?", true);
   }
@@ -702,6 +755,7 @@ void OnChartEvent(const int id, const long &lp, const double &dp, const string &
    else if(sp == "JM_P_NO")
      {
       Print("JAS MAUQA ", S_BUILD, ": NO - ", gPNm);
+      LogEv("NO - " + gPNm);   // m8.1
       NoMark();   // m7.3 / m7.9: ye jori / ticket dobara nahi
       gPend = 0; PopHide();
      }
