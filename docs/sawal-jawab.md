@@ -251,3 +251,9 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - C popup band kaise? (10 Nov, 54vi) -> input 1 "C) Ticket ka faida kam az kam" 20 -> 999999 (sirf C par asar).
 - Margin / stop out khatra? (10 Nov, 54vi) -> margin level 90,263%, stop out ~1928$ door; NET chhota (+0.20) = mehfooz. Khatra sirf NET bara ho to.
 - 10-Year Note Auction kab? -> 13:00 New York = 18:00 server = 11 PM PKT (sardi mein).
+- Fable reset abhi dabaun? (10 Nov, 55vi) -> NAHI: 5-ghante 90% baqi tha; ek hi muft reset, tab dabao jab bara kaam (K4/K5) mein limit khatam ho; muddat 17 Nov 12:59 PM PKT. Model switch purani lambi chat mein = poori chat dobara parhta (mehenga) -> nayi aam claude.ai chat.
+- BUY 2.50 + SELL 3.31 ka bojh jori se? (10 Nov, 55vi) -> Close By nateeja = (SELL open - BUY open) x lot x 100, daam se azad; 2.50 = -13,461.25; koi jori EQUITY nahi badalti (sirf balance/khula nuqsan ki ginti). m8.3 E = 0.05 tukre (~-269), N = chhota farq. Asli nafa/nuqsan = NET x daam.
+- B jori se NET kyun barha? (10 Nov, 55vi) -> nayi 0.01 BUY kholi (NET +0.01) phir purani SELL se jori = NET +0.01 hi rehta; 10 Nov 0.09 -> 0.21. m8.3 NET ROK 0.20 = nayi BUY mat kholo.
+- Exness HMR periods kya? (10 Nov, 55vi) -> khabar ke aas paas leverage kam (High Margin Requirement); waqt SERVER (UTC), PKT = +5. 17:30-18:31 = 10-Year auction 11 PM PKT. Margin level 90k% par asar nahi.
+- MT5 alarm vs TV "News Wed 18:30"? (10 Nov, 55vi) -> MT5 = asli calendar (sahi); TV j3.2 = andaza (har din 8:30 NY = 6:30 PM PKT), asli calendar nahi.
+- Exness "Close all" khirki? (10 Nov, 55vi) -> CANCEL; profitable/Sell band = BUY 3.91 nangi (gold -$100 = -39,100), Buy/losing band = SELL nangi; aadha band sab se khatarnak.

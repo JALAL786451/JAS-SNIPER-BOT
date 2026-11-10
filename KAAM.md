@@ -47,7 +47,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
-| K0 | Subah: gold+BTC `_waqiat.txt` + snapshot (raat ke popup) -> hisaab; Fable 5.2 usage samjhao | user 10 Nov | 55vi: 17:00 files ka hisaab HUA; auction baad wali files baqi |
+| K0 | Subah: gold+BTC 4 file (zip) -> raat/subah ke popup hisaab (m8.3 N/E pehli dafa) | user 10 Nov | 56vi: subah 4 file zip -> m8.3 popup (B/N/E) hisaab; Algo ON karna user ka faisla | 
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
 | K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | user "haan" qaide par baqi |
