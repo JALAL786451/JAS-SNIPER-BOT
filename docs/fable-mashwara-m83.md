@@ -41,3 +41,12 @@ Close By nateeja = (SELL open - BUY open) x lot x 100, abhi ke daam se azad.
 4. Kya "sab Close By kar ke saaf karna" (equity wahi) aur nayi shuru karna behtar hai, ya basket rakh kar B wasooli?
 5. Gold ~4020, 1D rukh neeche, 4H mila-jula. Kya ye kisi faisle ko badalta hai?
 Jawab: har sawal 2-4 line, number ke saath. Andaza ho to "andaza" likhein.
+
+---
+## DOOSRA MESSAGE (sirf jab mashwara "haan" ho) - JasMauqa.mq5 (m8.2) attach karke
+Is mashware ke mutabiq m8.3 bana do. Qaide:
+- **Poori file NAHI** - sirf badle / naye functions + kahan lagane hain (function ka naam). Token bachao.
+- EA khud koi nayi trade NAHI kholta; sirf popup YES/NO + Close By. Grid / martingale / averaging NAHI.
+- Pehli line + panel par build "m8.3". StringFormat mein kam az kam ek value; string ke liye `cond ? "" : "..."` nahi, Pick() helper.
+- Naya input: dhaal SELL ke tukre ka kam se kam baqi lot (default jo aap salah dein), dhaal ki jori sirf jab nateeja + aur pehle 4108-4110 wale SELL tukre khatam.
+- MT5 build par F7 0 error hona chahiye (main compile karunga, Claude repo mein jaanchega).
