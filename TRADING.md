@@ -71,7 +71,7 @@ User: jawab CHHOTA. **AGLA (54vi):** popup jaanch (B YES, C NO) + log file se ha
 number nahi) + **m7.9** (InpAuto true = SIRF B) PAIR CLOSE khud YES; A/C/D popup; jawab na aaye = NO + dobara nahi) F7 ✅ dono chart, AUTO ON dono;
 pehli AUTO jori gold +59.00 (01:07 server). Gold + BTC NET ~0 (tala-band), equity ~39,0k, balance 52,644. FTMO demo: i6 US500 +584.73 qaide se band.
 Sawal-jawab: breakeven, t5 TP/SL, PC Claude band/khol, push (user ke phone par sirf Exness app), Claude Code course 19 (`docs/claude-code-19.md`).
-User 10 Nov: naya EA version se PEHLE haal (SS) + ijazat poochho. GitHub red ❌ = `.github/workflows/python-package-conda.yml` (namoona, environment.yml
+User 10 Nov: naya EA version se PEHLE haal (SS) + ijazat poochho. GitHub red ❌ (python-package-conda.yml) 10 Nov DELETE HUA - (namoona, environment.yml
 nahi) - delete ki ijazat user se BAQI. **AGLA (53vi):** K1 (D:\JAS_DRIVE.bat + schtasks SS) -> raat ki AUTO joriyan History se -> K4 qaide user "haan".
 **51vi chat** -> `docs/purana-haal.md` (grep "51vi").
 **50vi chat** -> `docs/purana-haal.md` (grep "50vi").
