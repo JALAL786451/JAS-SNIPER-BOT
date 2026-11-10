@@ -1,6 +1,6 @@
 # KAAM - Jalal ka EK register (har nayi chat ko hook KHUD dikhata hai)
 
-Qaida (user 9 Nov, 51vi): user kuch bhi bataye (faisla, khabar, "ye kaam kyun") -> USI jawab mein yahan likho, chat khatam ka intezar NAHI.
+JAWAB CHHOTA (user 10 Nov). Qaida (user 9 Nov, 51vi): user kuch bhi bataye (faisla, khabar, "ye kaam kyun") -> USI jawab mein yahan likho, chat khatam ka intezar NAHI.
 Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho (~3 KB). Tafseel doosri files mein, yahan ek line.
 
 ## Pehle jawab mein KHUD (user ko yaad na dilana pare)

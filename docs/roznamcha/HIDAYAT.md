@@ -115,3 +115,4 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 - Lehja (user 5 Nov): jawab PYAR / narmi se, rukha nahi - 'Jalal bhai', hosla, shukriya; seedha magar garm.
 - Agent / lamba test (user 5 Nov): ek chat ne har sawal par 3 dafa agent test chalaye, hafte ke aadhe token gaye. Sawal ka SEEDHA jawab do; agent / bara test sirf jab user naam le kar maange.
 - **Nayi maloomat KHUD batao (user 7 Nov, bohot ahem):** AI / trading ki nayi kaam ki cheezen (naye tool, MCP connector jaise SIGNUM, platform, data source, Claude ki nayi khoobi, FTMO / broker ki nayi baat) user ko KHUD, roz, har chat ke shuru ya aakhir mein 1-3 line mein batao - user ko kahin aur se pata na chale. Detail SIRF jab user poochhe. Pehle `docs/nayi-maloomat.md` dekho (jo bata chuke dobara nahi), naya wahan ek line likho.
+- 10 Nov (53vi): jawab CHHOTA rakho - baat saaf, jaldi parhne wali (user).
