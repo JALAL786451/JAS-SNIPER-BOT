@@ -30,13 +30,14 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 
 - 54vi (10 Nov): **m8.2 dono chart ✅** (InpA true, BTC InpStep 1000), workflow DELETE HUA, WASOOLI 1237.35, ML 90k% khatra nahi. Poora hafta: `docs/hafta-4-10-nov.md`. User: Fable 5.2 16 Nov tak 50% - nayi chat user ko SAMJHAYE (hafta sec 5).
 - 55vi (10 Nov): Usage par "Use your reset?" (ek hi muft reset, 5-ghante 90% baqi, hafta 15 Nov 2 AM reset, reset ki muddat 17 Nov 12:59 PM PKT). Salah: ABHI Cancel; tab dabao jab bare kaam (K4/K5) mein limit khatam ho; 17 Nov subah tak.
+- 55vi files (17:00 server = 10 PM PKT, auction se PEHLE): gold B YES 11 = +961.96, NO: B 20.90 + A 109.88; WASOOLI gold 1325.35 + BTC 65.80 (B YES 6) = **1391.15**. Gold P/L -22,299 NET +0.20 tk 42; BTC -3,570 NET +0.04 tk 79; balance 64,430.79 equity ~38,555, ML 90k%. Gold 17:12 B +87.97 jawab baqi (salah YES). User ne Fable reset Cancel kiya. Agli files = auction (11 PM PKT) ke baad.
 
 - 10 Nov PDF (31 Oct-10 Nov, LIVE): band kul +12,967 (gold +10,226, BTC +2,741). GOLD chhoti lot (<=0.10) BUY +26,417 + SELL +6,270 = +32,687; bari SELL -36,932, bari BUY +14,471. Khuli gold -20,882: BUY 2.50@4117.416 akeli -10,893, BUY 0.35/0.20x3 @4124-4143 -5,913, SELL 3.31@4063.571 -3,480 (dhaal). Sab se oonchi SELL 4110.845 < bari BUY -> A abhi nahi. `tools/exness_pdf.py`.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
-| K0 | Subah: gold+BTC `_waqiat.txt` + snapshot (raat ke popup) -> hisaab; Fable 5.2 usage samjhao | user 10 Nov | 55vi: usage samjhaya, files MAANGI (intezar) |
+| K0 | Subah: gold+BTC `_waqiat.txt` + snapshot (raat ke popup) -> hisaab; Fable 5.2 usage samjhao | user 10 Nov | 55vi: 17:00 files ka hisaab HUA; auction baad wali files baqi |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
 | K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | user "haan" qaide par baqi |
