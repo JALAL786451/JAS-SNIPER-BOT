@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `docs/hafta-4-10-nov.md` - hafta 4-10 Nov khulasa (LIVE m8.2, FTMO demo, PC Claude, Fable 5.2 usage) - nayi chat pehle parhe.
 - `tools/exness_pdf.py` - Exness statement PDF ka hisaab (band chhoti/bari lot, khuli tickets qeemat tarteeb) - 10 Nov 53vi
 - `data/live_253687618_deals_20261105.csv` - LIVE cent ki asli deals 18 Aug-5 Nov 2026 (12,374 gold + BTC), user ki report se; Tokri/basket EA ke qaide nikalne ke liye
 - `docs/live/asli-tareeqa-7nov.md` - LIVE report se user ka asli tareeqa (lot / rukh / din ka naqsha), 7 Nov.

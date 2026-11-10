@@ -2,17 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-08  (4 kaam)
-   - sawal-jawab: TV MCP bridge code jaanch + node install
-   - sawal-jawab: TV bridge PC par chal gaya (9 Nov)
-   - Chat khatam 48vi: M1 jaanch + TV MCP bridge PC par chalu; agla = PC Claude CLAUDE.md + Pin
-
-2026-11-09  (37 kaam)
-   - Add files via upload
-   - auto-save (Stop hook): 2026-11-09 14:49 UTC
+2026-11-09  (21 kaam)
+   - KAAM: live m7.6 BTCUSDc popup SS 9 Nov
+   - K3 HUA: gold M1 2019/20/25/26 jaanch saaf (tools/gold_m1_jaanch.py)
    - claude-code-19: #19 Claude Code on the web = haan (cloud chats)
 
-2026-11-10  (28 kaam)
+2026-11-10  (40 kaam)
    - JasMauqa m7.9: sote waqt AUTO (A/B Close By khud), jawab na aaye = NO dobara nahi
-   - KAAM: m8.0 chart par, pehla A popup +116.50
-   - KAAM: wasooli 871.90
+   - KAAM: m8.1 log files chal rahi
+   - 54vi: margin check

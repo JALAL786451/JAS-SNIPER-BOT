@@ -246,3 +246,8 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 **S (10 Nov, 53vi): PC Claude se kuch nahi ho sakta?** J: ho sakta - PC files seedha: compile.bat (F7 errors), MQL5\Logs (jori hisaab), D:\JAS git pull. Limit wahi account ki -> PC par Sonnet 5.5. EA version / LIVE faisle cloud chat (KAAM.md). User effort Medium kiya (token bachao).
 
 **S (10 Nov, 53vi): Exness phone app "Close XAU/USD positions" menu kya hai?** J: status NAHI - band karne ka menu; "Close all" par tick = Confirm se 51 tk band, -20,903 PAKKA. Har line ya nuqsan pakka ya dhaal todti -> hamesha CANCEL; sirf JasMauqa YES/NO (Close By).
+- GitHub laal ❌ kya tha? (10 Nov, 54vi) -> namoona workflow `python-package-conda.yml` (environment.yml nahi tha), EA se koi taaluq nahi; DELETE HUA. Purane commit par ❌ rehta, naye par nahi.
+- InpA kaunsi line? (10 Nov, 54vi) -> m8.2 mein 24vi (kul 35), naam "m8.2 A) NUQSAN wali bari lot" = TRUE dono chart.
+- C popup band kaise? (10 Nov, 54vi) -> input 1 "C) Ticket ka faida kam az kam" 20 -> 999999 (sirf C par asar).
+- Margin / stop out khatra? (10 Nov, 54vi) -> margin level 90,263%, stop out ~1928$ door; NET chhota (+0.20) = mehfooz. Khatra sirf NET bara ho to.
+- 10-Year Note Auction kab? -> 13:00 New York = 18:00 server = 11 PM PKT (sardi mein).
