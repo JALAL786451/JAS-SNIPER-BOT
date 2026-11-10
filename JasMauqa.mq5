@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|  JAS MAUQA   -   build m7.9  (10 Nov 2026)                        |
-//|  m7.9 = SOTE WAQT (user 10 Nov): InpAuto true = A/B (Close By,   |
-//|         faida pakka, NET wahi, nayi lot nahi) KHUD YES. C khud   |
-//|         sirf InpAutoC (NET badalta - default false). Jawab na    |
-//|         aaye to popup ghayab = NO, wahi jori / ticket dobara nahi.|
+//|  m7.9 = SOTE WAQT (user 10 Nov): InpAuto true = SIRF B) PAIR     |
+//|         CLOSE (jori, Close By) KHUD YES. A / C / D wahi popup.  |
+//|         Jawab na aaye to popup ghayab = NO, wahi jori / ticket   |
+//|         dobara nahi.                                             |
 //|  m7.8 = BREAKEVEN: NET < InpBeNet (0.05) ho to number NAHI, likho |
 //|         "nuqsan TALA-BAND" (NET ~0 par breakeven bematlab hota). |
 //|         Ladder ki breakeven line bhi tab chhupi. Trade qaida wahi.|
@@ -98,8 +98,7 @@ input int    InpNews2    = 5;      // NEWS: doosra alarm kitne minute pehle
 input bool   InpClean    = true;   // m7.7 MT5 ki "autotrade #..." lakeerein chart se khud mitao
 input double InpBigLot   = 0.10;   // m7.7 is se bari lot = laal WARNING (sirf likhai, kuch band nahi)
 input double InpBeNet    = 0.05;   // m7.8 NET is se kam = breakeven number nahi, "TALA-BAND" likho
-input bool   InpAuto     = false;  // m7.9 SOTE WAQT: true = A/B (Close By, faida pakka, NET wahi) KHUD YES
-input bool   InpAutoC    = false;  // m7.9 C (akeli profit ticket) bhi khud? NET badalta - false behtar
+input bool   InpAuto     = false;  // m7.9 SOTE WAQT: true = SIRF B) PAIR CLOSE khud YES (A/C/D wahi popup)
 
 CTrade trade;
 
@@ -596,7 +595,7 @@ void Run()
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
    Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), Pick(InpPartD, "D) Big SELL part close: none now (SELL loss ya hifazat)", "D) Big SELL part close: BAND (dhaal nahi kaatni)")), dT > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
-   Ln(Pick(InpAuto, Pick(InpAutoC, "AUTO: ON - A/B + C khud YES (sote waqt)", "AUTO: ON - sirf A/B Close By khud YES (C/D popup)"), "AUTO: OFF - har mauqa YES/NO popup"), InpAuto ? cG : cW);
+   Ln(Pick(InpAuto, "AUTO: ON - sirf B) PAIR CLOSE khud YES (A/C/D popup)", "AUTO: OFF - har mauqa YES/NO popup"), InpAuto ? cG : cW);
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
    // ---- m7.3 RUKH + NEWS (sirf dikhana / yaad-dihani - koi trade nahi)
@@ -671,10 +670,11 @@ void Run()
                         Desc(t1), dLot, "SELL", M(v), net, net + dLot);
    else
       d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNET change hifazat ke andar\n", Desc(t1), M(v), tk, tk - 1);
-   if(InpPush && !(InpAuto && (kind == 1 || (kind == 2 && InpAutoC)))) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
+   bool autoB = InpAuto && kind == 1 && t1 == jS && t2 == jB && aS == 0;   // m7.9: sirf B) PAIR CLOSE
+   if(InpPush && !autoB) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
    gPend = kind; gP1 = t1; gP2 = t2; gPLot = dLot; gPNm = nm;
-   // m7.9: SOTE WAQT - Close By (A/B) khud; C sirf InpAutoC; D kabhi khud nahi
-   if(InpAuto && (kind == 1 || (kind == 2 && InpAutoC)))
+   // m7.9: SOTE WAQT - sirf B) PAIR CLOSE khud; A / C / D wahi popup
+   if(autoB)
      {
       Print("JAS MAUQA ", S_BUILD, ": AUTO YES - ", nm, " +", M(v));
       if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: AUTO %s +%s", _Symbol, nm, M(v)));

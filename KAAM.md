@@ -37,10 +37,11 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K7 | Faisle: Kachhua e1 0.25% FTMO demo? B1 ya B2 pehle? | PDF hafta 1 | user se poochna |
 | K9 | JasMauqa m7.7 BANA (9 Nov, user "haan"): F7 ✅ DONO chart par chal raha (9 Nov SS: margin level 236960%, Exness stop out 0%, DOOSRA line sahi, BARI LOT gold 4 tk max 3.53). Test: autotrade 27 objects = settings se ruki; m7.7 phir bhi mitata. (a) "autotrade #" trendline (MT5 khud har trade par banata, switch nahi; BTC chart par 1311 objects) har minute mitao; (b) LIVE par BTC + XAU dono ki lots (user 9 Nov). EA sirf chart ka symbol ginta (L269) magar equity poore account ki -> STOP OUT door (L445-447) sirf BTC NET se = GHALAT jab dono khule. + ladder label "gold" BTC par. (c) salah: 0.10 se bari lot par sirf WARNING (rokna nahi). Code jaancha 9 Nov: A/B Close By hisaab SAHI (r=(S-B)*minLot, NET wahi), equity nahi barhti. | user 9 Nov | HUA ✅ |
 | K10 | JasMauqa m7.8: NET < 0.05 par BREAKEVEN number nahi -> "TALA-BAND" (user 9 Nov "bana dein"; breakeven samjhaya, sawal-jawab mein) | user 9 Nov | HUA ✅ 9 Nov: F7 0 error, BTC chart SS par TALA-BAND line sahi |
-| K11 | JasMauqa m7.9 SOTE WAQT: InpAuto (A/B Close By khud YES, NET wahi), InpAutoC (C khud, default false), D kabhi khud nahi; jawab na aaye = NO + dobara nahi (user 10 Nov) | user 10 Nov | BANA - user F7 + pehli AUTO jaagte hue dekhe |
+| K11 | JasMauqa m7.9: InpAuto true = SIRF B) PAIR CLOSE khud YES; A/C/D wahi popup (user 10 Nov: "bas jori auto, baqi same"); jawab na aaye = NO + dobara nahi | user 10 Nov | BANA - user F7 + pehli AUTO jaagte hue dekhe |
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 
 ## Hue (aakhri 5)
+- 10 Nov (52vi) LIVE SS: equity 39,012; gold P/L -10,060 NET +0.02 (BUY 33 tk 3.52 avg 4093.375 / SELL 9 tk 3.50 avg 4064.680), B +70.98, C +226.30; BTC -3,442 NET +0.01; tickets 119. Balance ~52,514 (+1,539 band), equity wahi.
 - 9 Nov (52vi): FTMO demo i6 US500 BUY 2.81 qaide se band (IBS 0.90) +584.73; balance 99,494, equity 100,053.90.
 - 9 Nov (52vi): LIVE SS: equity 38,995.64 (report 37,398 se +1,598), gold -8540 NET +0.01 tala-band, BTC -3439 NET BUY 0.31; khula nuqsan kul ~-11,980.
 - 9 Nov (52vi): FTMO demo SS #2: equity 100,088.60, 3 khuli +1179.33 (sab plus), target baqi 9911.
