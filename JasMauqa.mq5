@@ -1,5 +1,9 @@
 //+------------------------------------------------------------------+
-//|  JAS MAUQA   -   build m7.8  (9 Nov 2026)                         |
+//|  JAS MAUQA   -   build m7.9  (10 Nov 2026)                        |
+//|  m7.9 = SOTE WAQT (user 10 Nov): InpAuto true = A/B (Close By,   |
+//|         faida pakka, NET wahi, nayi lot nahi) KHUD YES. C khud   |
+//|         sirf InpAutoC (NET badalta - default false). Jawab na    |
+//|         aaye to popup ghayab = NO, wahi jori / ticket dobara nahi.|
 //|  m7.8 = BREAKEVEN: NET < InpBeNet (0.05) ho to number NAHI, likho |
 //|         "nuqsan TALA-BAND" (NET ~0 par breakeven bematlab hota). |
 //|         Ladder ki breakeven line bhi tab chhupi. Trade qaida wahi.|
@@ -56,11 +60,11 @@
 //|  Algo OFF   -> sirf status, popup nahi.                          |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "7.40"
+#property version   "7.50"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "m7.8"
+#define S_BUILD "m7.9"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -94,6 +98,8 @@ input int    InpNews2    = 5;      // NEWS: doosra alarm kitne minute pehle
 input bool   InpClean    = true;   // m7.7 MT5 ki "autotrade #..." lakeerein chart se khud mitao
 input double InpBigLot   = 0.10;   // m7.7 is se bari lot = laal WARNING (sirf likhai, kuch band nahi)
 input double InpBeNet    = 0.05;   // m7.8 NET is se kam = breakeven number nahi, "TALA-BAND" likho
+input bool   InpAuto     = false;  // m7.9 SOTE WAQT: true = A/B (Close By, faida pakka, NET wahi) KHUD YES
+input bool   InpAutoC    = false;  // m7.9 C (akeli profit ticket) bhi khud? NET badalta - false behtar
 
 CTrade trade;
 
@@ -381,6 +387,13 @@ string UD(int v) { return(Pick(v > 0, "UP", Pick(v < 0, "DOWN", "MILA"))); }
 
 int      gSigPrev = 99;
 string   gNoPairs = "";   // m7.3: jis jori par NO kaha, wo dobara nahi (EA chalne tak)
+string   gNoTk = "";      // m7.9: jis C ticket par NO / jawab nahi, wo dobara nahi
+void NoMark()
+  {
+   if(gPend == 1) { if(StringLen(gNoPairs) > 3000) gNoPairs = ""; gNoPairs += StringFormat("|%I64u_%I64u|", gP1, gP2); }
+   if(gPend == 2) { if(StringLen(gNoTk) > 3000) gNoTk = ""; gNoTk += StringFormat("|%I64u|", gP1); }
+  }
+
 string   gNewsLn = "", gNewsDone = "";
 datetime gNewsT = 0;
 
@@ -495,7 +508,7 @@ void Run()
    double aV = 0, jV = 0, cV = 0;
    for(int i = 0; i < n; i++)
      {
-      if(i != big && a[i].pnl >= InpMinFaida && a[i].pnl > cV)
+      if(i != big && a[i].pnl >= InpMinFaida && a[i].pnl > cV && StringFind(gNoTk, StringFormat("|%I64u|", a[i].t)) < 0)
         {
          double na_ = (a[i].typ == POSITION_TYPE_BUY) ? net - a[i].vol : net + a[i].vol;
          if(Safe(na_, net, freeE, vpp)) { cT = a[i].t; cV = a[i].pnl; }
@@ -583,6 +596,7 @@ void Run()
    Ln(Pick(jS > 0, StringFormat("B) PAIR CLOSE  #%I64u + #%I64u  = +%s", jS, jB, M(jV)), "B) Pair close: none now"), jS > 0 ? cG : cW);
    Ln(Pick(dT > 0, StringFormat("D) BIG SELL PART CLOSE  #%I64u  %.2f lot  = +%s  (NET %+.2f -> %+.2f)", dT, dLot, M(dV), net, net + dLot), Pick(InpPartD, "D) Big SELL part close: none now (SELL loss ya hifazat)", "D) Big SELL part close: BAND (dhaal nahi kaatni)")), dT > 0 ? cG : cW);
    Ln(Pick(cT > 0, StringFormat("C) PROFIT TICKET CLOSE  #%I64u  = +%s", cT, M(cV)), "C) Profit ticket close: " + Pick(full, "OFF (too many tickets)", "none now (big SELL kabhi nahi)")), cT > 0 ? cG : cW);
+   Ln(Pick(InpAuto, Pick(InpAutoC, "AUTO: ON - A/B + C khud YES (sote waqt)", "AUTO: ON - sirf A/B Close By khud YES (C/D popup)"), "AUTO: OFF - har mauqa YES/NO popup"), InpAuto ? cG : cW);
    Ln(StringFormat("SAFETY: NET max %.2f | +%.2f per step | stop out >= %s", InpMaxNet, InpNetMove, DoubleToString(InpMinDoor, 0)), cY);
    Ln(Pick(wait > 0, StringFormat("Next popup in %d min", wait / 60 + 1), "Popup READY"), cW);
    // ---- m7.3 RUKH + NEWS (sirf dikhana / yaad-dihani - koi trade nahi)
@@ -636,7 +650,7 @@ void Run()
    // m7.2: popup khula ho to naya nahi; der tak jawab na aaye (InpWaitMin) to khud band = NO
    if(gPopOn)
      {
-      if(TimeCurrent() - gPopT > InpWaitMin * 60) { if(gPend != 0) Print("JAS MAUQA ", S_BUILD, ": jawab nahi = NO - ", gPNm); gPend = 0; PopHide(); }
+      if(TimeCurrent() - gPopT > InpWaitMin * 60) { if(gPend != 0) { Print("JAS MAUQA ", S_BUILD, ": jawab nahi = NO - ", gPNm); NoMark(); } gPend = 0; PopHide(); }
       return;
      }
    if(!AlgoOn() || TimeCurrent() < gNext) return;
@@ -657,8 +671,16 @@ void Run()
                         Desc(t1), dLot, "SELL", M(v), net, net + dLot);
    else
       d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNET change hifazat ke andar\n", Desc(t1), M(v), tk, tk - 1);
-   if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
+   if(InpPush && !(InpAuto && (kind == 1 || (kind == 2 && InpAutoC)))) SendNotification(StringFormat("JAS MAUQA %s: %s +%s - YES/NO on MT5", _Symbol, nm, M(v)));
    gPend = kind; gP1 = t1; gP2 = t2; gPLot = dLot; gPNm = nm;
+   // m7.9: SOTE WAQT - Close By (A/B) khud; C sirf InpAutoC; D kabhi khud nahi
+   if(InpAuto && (kind == 1 || (kind == 2 && InpAutoC)))
+     {
+      Print("JAS MAUQA ", S_BUILD, ": AUTO YES - ", nm, " +", M(v));
+      if(InpPush) SendNotification(StringFormat("JAS MAUQA %s: AUTO %s +%s", _Symbol, nm, M(v)));
+      DoPend();
+      return;
+     }
    PlaySound("alert.wav");
    PopShow("JAS MAUQA " + S_BUILD + "  -  " + _Symbol, d + "\n" + gHis + "\nDo it?", true);
   }
@@ -670,7 +692,7 @@ void OnChartEvent(const int id, const long &lp, const double &dp, const string &
    else if(sp == "JM_P_NO")
      {
       Print("JAS MAUQA ", S_BUILD, ": NO - ", gPNm);
-      if(gPend == 1) { if(StringLen(gNoPairs) > 3000) gNoPairs = ""; gNoPairs += StringFormat("|%I64u_%I64u|", gP1, gP2); }   // m7.3: ye jori dobara nahi
+      NoMark();   // m7.3 / m7.9: ye jori / ticket dobara nahi
       gPend = 0; PopHide();
      }
    else if(sp == "JM_P_OK") { PopHide(); }
