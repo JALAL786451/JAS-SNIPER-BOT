@@ -240,3 +240,5 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - Phone par push kya? (10 Nov, 52vi) -> MT5 ka phone par chhota paigham (WhatsApp jaisa), EA `SendNotification` se (InpPush true). Sirf tab aata jab: phone MT5 app > Settings / Messages mein MetaQuotes ID (8 harf) -> PC MT5 Tools > Options > Notifications: "Enable Push Notifications" tick + ID + Test. Set na ho to kuch nahi hota (nuqsan nahi). Zaroori NAHI, sirf khabar. User ke phone par SIRF Exness app (MT5 laptop par) -> Exness app push NAHI leti; chahiye to Play Store se "MetaTrader 5" (MetaQuotes) muft, sirf ID ke liye (login zaroori nahi). Warna chhor do (10 Nov).
 
 **S (10 Nov, 53vi): m7.9 NATEEJA popup "B) PAIR CLOSE DONE (10009)" khud band hoga?** J: haan - 15 min (InpWaitMin) baad khud gayab; 10009 = jori kamyab band. Khula rahe tab bhi agla AUTO 15 min baad hi (waise bhi gNext 15 min). OK dabana zaroori nahi.
+
+**S (10 Nov, 53vi): C) PROFIT TICKET CLOSE popup (BUY 0.10 +20.80) kya hai?** J: C AUTO nahi - YES/NO aap ka. 15 min jawab na = NO, wo ticket dobara nahi poochega. Is waqt NET +0.17 -> +0.07 (tala-band ke qareeb) = YES theek; nafa chhota (+20.80 USC).
