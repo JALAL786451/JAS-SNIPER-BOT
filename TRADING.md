@@ -6,7 +6,7 @@ MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user 
 |---|---|---|---|---|---|---|
 | 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | **balance 99,494.00, equity 100,053.90 (+559.90 khuli)** | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 US500 BUY 2.81 BAND 9 Nov 21:16 @7557.57 (IBS 0.90 > 0.80) = +584.73 (~+0.59R)**; i6 band 3, jeet 2, kul +0.15R; intezar IBS < 0.2. khuli 2: t5 XAU 0.03 @4001.869 SL 3755.378 (+417.90, +0.57R), XAG 0.02 @51.996 SL 45.881 (+142.00, +0.23R); target baqi 9946, aaj farsh 94909; k2 0; margin level 58150% | 9 Nov SS #3 (FTMO VIEW v1.1) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0; XAG SELL 0.05 (2 Nov, SL khali = hamara EA nahi) user ne 3 Nov band +153.25; Magic/Comment SS baqi (purana: `docs/purana-haal.md`) | ON | 4 Nov SS |
-| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **9 Nov SS (52vi): equity 38,995.64; balance ~50,975 (equity + khula nuqsan)**; GOLD P/L -8540.80: BUY 35 tk 3.75 lot avg 4091.183 / SELL 17 tk 3.74 avg 4068.458, NET +0.01 (nuqsan TALA-BAND, price se nahi badalta), gold 4139; BARI LOT 6 tk (max 3.31); popup B pair +210.61, C +349. BTC P/L -3438.86: BUY 75 tk 2.81 avg 75660.29 / SELL 7 tk 2.50 avg 74401.88, NET BUY +0.31, BTC 74767, breakeven 85860 | JasMauqa **m7.8** (F7 0 error, 9 Nov; m7.9 AUTO-B F7 ✅ 10 Nov dono chart par, AUTO OFF); 10 Nov SS: equity 39,012.07, gold P/L -10,060 NET +0.02, BTC -3,442 NET +0.01, tk 119; XAUUSDc H4 + BTCUSDc H4; BTC SS #2: equity 39,049.70, BTC P/L -3441.69, BUY 65 tk 3.13 / SELL 12 tk 3.12 = NET +0.01 (ab BTC bhi TALA-BAND), bari lot 5 tk max 2.40, gold NET -0.01, margin level 655196%; RUKH: gold 4H UP, BTC 4H DOWN, dono 'nayi BUY nahi - intezar'; tickets 134/200; margin level 282987% | **ON** (YES/NO popup) | 9 Nov SS (52vi) |
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **9 Nov SS (52vi): equity 38,995.64; balance ~50,975 (equity + khula nuqsan)**; GOLD P/L -8540.80: BUY 35 tk 3.75 lot avg 4091.183 / SELL 17 tk 3.74 avg 4068.458, NET +0.01 (nuqsan TALA-BAND, price se nahi badalta), gold 4139; BARI LOT 6 tk (max 3.31); popup B pair +210.61, C +349. BTC P/L -3438.86: BUY 75 tk 2.81 avg 75660.29 / SELL 7 tk 2.50 avg 74401.88, NET BUY +0.31, BTC 74767, breakeven 85860 | JasMauqa **m8.1** (10 Nov 15:21 server SS: equity 39,194, balance 64,394, gold BUY 3.98 avg 4121.3 / SELL 3.79 avg 4067.8 NET +0.19, BTC NET +0.04, tk 133, WASOOLI 871.90, gold InpA=false); purana: m7.8 (F7 0 error, 9 Nov; m7.9 AUTO-B F7 ✅ 10 Nov dono chart par, AUTO OFF); 10 Nov SS: equity 39,012.07, gold P/L -10,060 NET +0.02, BTC -3,442 NET +0.01, tk 119; XAUUSDc H4 + BTCUSDc H4; BTC SS #2: equity 39,049.70, BTC P/L -3441.69, BUY 65 tk 3.13 / SELL 12 tk 3.12 = NET +0.01 (ab BTC bhi TALA-BAND), bari lot 5 tk max 2.40, gold NET -0.01, margin level 655196%; RUKH: gold 4H UP, BTC 4H DOWN, dono 'nayi BUY nahi - intezar'; tickets 134/200; margin level 282987% | **ON** (YES/NO popup) | 9 Nov SS (52vi) |
 
 **Nayi chat ka message (copy-paste):**
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
@@ -62,17 +62,18 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**53vi chat (10 Nov)** - LIVE gold: subah BUY 2.50@4117.416 (user) = aadha nuqsan; m7.9 ko user ne "ajeeb" kaha -> **m8.0** (AUTO HATA, A = bari BUY/SELL
+Close By, WASOOLI panel) + **m8.1** (LOG `MQL5\Files\JasMauqa_<sym>.txt` + `_waqiat.txt`; user file chat mein upload karta) F7 ✅ dono chart (file naam
+`JsMouqaEA script.mq5`). Joriyan YES: A +116.50 (2.50 jori), B ... -> **WASOOLI 871.90**, balance 64,394. CPI: Algo OFF, dhaal NET +0.09 -> gold -38 = sirf ~-485.
+Gold chart **InpA=false** (A dhaal 3.31 kaat raha tha; gold 4117+ par true). Exness PDF -> `tools/exness_pdf.py`: chhoti lot +32,687, bari SELL -36,932.
+User: jawab CHHOTA. **AGLA (54vi):** popup jaanch (B YES, C NO) + log file se haal; m8.2 ijazat (A sirf nuqsan wali bari lot / bara nateeja pehle, label m8.0 fix); phir K1/K4.
 **52vi chat (9-10 Nov)** - K3 HUA (gold M1 2019/20/25/26 saaf, `tools/gold_m1_jaanch.py`). JasMauqa **m7.8** (NET < 0.05 = "TALA-BAND", breakeven
 number nahi) + **m7.9** (InpAuto true = SIRF B) PAIR CLOSE khud YES; A/C/D popup; jawab na aaye = NO + dobara nahi) F7 ✅ dono chart, AUTO ON dono;
 pehli AUTO jori gold +59.00 (01:07 server). Gold + BTC NET ~0 (tala-band), equity ~39,0k, balance 52,644. FTMO demo: i6 US500 +584.73 qaide se band.
 Sawal-jawab: breakeven, t5 TP/SL, PC Claude band/khol, push (user ke phone par sirf Exness app), Claude Code course 19 (`docs/claude-code-19.md`).
 User 10 Nov: naya EA version se PEHLE haal (SS) + ijazat poochho. GitHub red ❌ = `.github/workflows/python-package-conda.yml` (namoona, environment.yml
 nahi) - delete ki ijazat user se BAQI. **AGLA (53vi):** K1 (D:\JAS_DRIVE.bat + schtasks SS) -> raat ki AUTO joriyan History se -> K4 qaide user "haan".
-**51vi chat (9 Nov)** - j3.2 (4 warning saaf) TV ✅ user paste. **Yaad ka hal: `KAAM.md`** (ek register: pakki baatein + khule kaam K1-K9; hook har chat
-ko dikhata; user ki nayi baat USI jawab mein likho). FTMO email jawab aa chuka (correction); FundingPips email: EA/VPS MANA -> EA plan sirf FTMO.
-PDF Monday list + Tokri Turtle 55/20 (K4). LIVE report 31 Oct-9 Nov: fishing BUY +33,350, bari SELL (1-4 lot) -41,790 = sara nuqsan.
-JasMauqa **m7.7** (autotrade lakeerein mitao, DOOSRA symbol NET, MARGIN LEVEL, bari lot warning) LIVE BTC + gold dono chart ✅; A/B Close By hisaab sahi.
-**AGLA (52vi):** KAAM.md K1 (D:\JAS_DRIVE.bat SBS) -> K3 gold M1 jaanch -> K4/K2 user chune.
+**51vi chat** -> `docs/purana-haal.md` (grep "51vi").
 **50vi chat** -> `docs/purana-haal.md` (grep "50vi").
 **49vi chat** -> `docs/purana-haal.md` (grep "49vi").
 **48vi chat** -> `docs/purana-haal.md` (grep "48vi").

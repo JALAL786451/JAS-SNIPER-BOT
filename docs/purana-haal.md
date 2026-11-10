@@ -1840,3 +1840,9 @@ TP 4488.2 +0.5R). n5.4 chart se HATAI. Do price patti = j3 alag scale A -> right
 AGLI DAFA user khud Ctrl+A/Ctrl+V, PC Claude se sirf "errors batao". Ijazat: Get/Find/Health/Read/Screenshot = 2; Set/Click/New/Compile = 1; Ui Evaluate = SS Claude ko.
 **AGLA (51vi):** j3 warnings saaf (j3.2: shorttitle chhota, s1/s2/ln naam badlo) -> user khud paste + PC Claude "errors batao"; (3) TV Store update ho to robocopy
 dobara. (C) purana baqi: asli-tareeqa haan/nahi, tk2 F7 + demo, Kachhua e1 0.25% FTMO demo.
+
+**51vi chat (9 Nov)** - j3.2 (4 warning saaf) TV ✅ user paste. **Yaad ka hal: `KAAM.md`** (ek register: pakki baatein + khule kaam K1-K9; hook har chat
+ko dikhata; user ki nayi baat USI jawab mein likho). FTMO email jawab aa chuka (correction); FundingPips email: EA/VPS MANA -> EA plan sirf FTMO.
+PDF Monday list + Tokri Turtle 55/20 (K4). LIVE report 31 Oct-9 Nov: fishing BUY +33,350, bari SELL (1-4 lot) -41,790 = sara nuqsan.
+JasMauqa **m7.7** (autotrade lakeerein mitao, DOOSRA symbol NET, MARGIN LEVEL, bari lot warning) LIVE BTC + gold dono chart ✅; A/B Close By hisaab sahi.
+**AGLA (52vi):** KAAM.md K1 (D:\JAS_DRIVE.bat SBS) -> K3 gold M1 jaanch -> K4/K2 user chune.
