@@ -244,3 +244,5 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 **S (10 Nov, 53vi): C) PROFIT TICKET CLOSE popup (BUY 0.10 +20.80) kya hai?** J: C AUTO nahi - YES/NO aap ka. 15 min jawab na = NO, wo ticket dobara nahi poochega. Is waqt NET +0.17 -> +0.07 (tala-band ke qareeb) = YES theek; nafa chhota (+20.80 USC).
 
 **S (10 Nov, 53vi): PC Claude se kuch nahi ho sakta?** J: ho sakta - PC files seedha: compile.bat (F7 errors), MQL5\Logs (jori hisaab), D:\JAS git pull. Limit wahi account ki -> PC par Sonnet 5.5. EA version / LIVE faisle cloud chat (KAAM.md). User effort Medium kiya (token bachao).
+
+**S (10 Nov, 53vi): Exness phone app "Close XAU/USD positions" menu kya hai?** J: status NAHI - band karne ka menu; "Close all" par tick = Confirm se 51 tk band, -20,903 PAKKA. Har line ya nuqsan pakka ya dhaal todti -> hamesha CANCEL; sirf JasMauqa YES/NO (Close By).
