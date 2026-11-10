@@ -25,6 +25,8 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 9 Nov raat: user ne Claude Code course ki 19 cheezon ka SS diya, kal poochega "kya ye kiye?" -> jawab `docs/claude-code-19.md` (5 ✅ 8 ⚠ 6 ❌).
 - 10 Nov (52vi khatam): JasMauqa m7.9 LIVE dono chart AUTO ON (sirf B jori khud). Subah: raat ki AUTO joriyan History/Experts se dekho, phir K1. GitHub ❌ = namoona workflow, delete ijazat BAQI.
 
+- 10 Nov (53vi) LIVE SS 10:05: balance 63,483, equity 39,402.71; gold BUY 36 tk 6.63 avg 4119.721 (-24,269.70) / SELL 18 tk 6.55 avg 4088.908 (+3,637.30), NET BUY +0.08, gold 4083, P/L -20,632 TALA-BAND; BARI LOT 9 tk (max 3.31) - user: is dafa BUY 2.5 lot 2 dafa lag gaye (gold upar gaya phir neeche). Panel 'Algo OFF' = AUTO B nahi chalega. Salah: bari BUY nuqsan mein mat kaato, nayi bari lot nahi, Algo ON. m8.0 (A = bari BUY bhi Close By se kam) user ijazat BAQI.
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
