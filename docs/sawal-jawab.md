@@ -242,3 +242,5 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 **S (10 Nov, 53vi): m7.9 NATEEJA popup "B) PAIR CLOSE DONE (10009)" khud band hoga?** J: haan - 15 min (InpWaitMin) baad khud gayab; 10009 = jori kamyab band. Khula rahe tab bhi agla AUTO 15 min baad hi (waise bhi gNext 15 min). OK dabana zaroori nahi.
 
 **S (10 Nov, 53vi): C) PROFIT TICKET CLOSE popup (BUY 0.10 +20.80) kya hai?** J: C AUTO nahi - YES/NO aap ka. 15 min jawab na = NO, wo ticket dobara nahi poochega. Is waqt NET +0.17 -> +0.07 (tala-band ke qareeb) = YES theek; nafa chhota (+20.80 USC).
+
+**S (10 Nov, 53vi): PC Claude se kuch nahi ho sakta?** J: ho sakta - PC files seedha: compile.bat (F7 errors), MQL5\Logs (jori hisaab), D:\JAS git pull. Limit wahi account ki -> PC par Sonnet 5.5. EA version / LIVE faisle cloud chat (KAAM.md). User effort Medium kiya (token bachao).
