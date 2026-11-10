@@ -42,6 +42,8 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 55vi: user ne Fable ki m8.3 FILE di - repo jaisi, 3 Fable sahi (title, NO-check N se pehle, panel 50) repo mein liye; repo = Fable + capHit sudhar. F7 repo wali par.
 - 55vi: m8.3 F7 ✅ (title 8.30), DONO chart par lagi (BTC LADDER 1000, gold 25), Algo OFF (user ne khud kiya). Gold panel: 4032, P/L -22,495.80, equity 38,821, NET +0.21, WASOOLI 1760.23; popup tayyar: B +81.81 (YES), N +1.59 (YES theek), E 0.05 (~-269, marzi), C +381.90 (NO). BTC: equity 38,748, N +1.34 (SELL 0.10 + BUY 0.45 -> 0.35), WASOOLI 65.80.
 
+- 56vi: gold popup N SELL 0.03@4110.051 + BUY 0.05@4108.705 = +4.04, NET +0.21 wahi -> salah YES. Popup ki "NAYI SELL 3.86 hedge" line = MAT (sirf likhai).
+
 - 10 Nov PDF (31 Oct-10 Nov, LIVE): band kul +12,967 (gold +10,226, BTC +2,741). GOLD chhoti lot (<=0.10) BUY +26,417 + SELL +6,270 = +32,687; bari SELL -36,932, bari BUY +14,471. Khuli gold -20,882: BUY 2.50@4117.416 akeli -10,893, BUY 0.35/0.20x3 @4124-4143 -5,913, SELL 3.31@4063.571 -3,480 (dhaal). Sab se oonchi SELL 4110.845 < bari BUY -> A abhi nahi. `tools/exness_pdf.py`.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
