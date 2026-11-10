@@ -14,3 +14,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 10 Nov (53vi) | MT5 Experts log = file `MQL5\Logs\20261110.log` (File > Open Data Folder) - SS ki jagah ye file chat mein do = AUTO joriyan ka poora hisaab | - |
 | 10 Nov (53vi) | Fable 5.2 Pro mein 16 Nov tak (limit ka 50%), phir credits - bara kaam (K4/K5) us se pehle; phone par Haiku + Extra effort ulta jor -> Sonnet+Medium | user ne khud SS dikhaya |
 | 10 Nov (54vi) | MQL5\Files ki 4 file select > right-click > Send to > Compressed (zip) = ek attach; Claude zip khud kholta. FTMO BF 2026 abhi elaan nahi (10 Nov check) | - |
+| 10 Nov (55vi) | MT5 Toolbox (Ctrl+T) > Calendar tab = news MT5 ke andar (sirf 3-bail/high filter), website ki zaroorat nahi; khabar se pehle Algo/popup faisla | - |
