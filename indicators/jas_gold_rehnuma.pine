@@ -1,0 +1,330 @@
+//@version=6
+// ============================================================================
+//  JAS GOLD REHNUMA  (build r1, Pine v6, 11 Nov 2026)
+//  User (11 Nov, u3 ke screenshot par): "chart naqsha ban gaya - purani trades ke nishan, bare label, baayan dabba
+//  candles chhupa raha. Trade sirf wahi kaam ki jo AANE wali ho. Dabba chhota ho aur trade ki detail likhi ho."
+//
+//  Ye ROZ ke istemal ki HALKI script hai (indicator): sirf (1) chhota dabba - abhi kya karna hai,
+//  (2) chart ke daayen sirf AGLI ya KHULI trade (entry, SL), (3) Supertrend lakeer. Purani trades NAHI dikhti.
+//  JAANCH / poora hisaab / strategy tester ke liye: strategies/jas_gold_universal.pine (u3) - qaida WAHI hai.
+//
+//  QAIDA (JasTrendEA t5 / Python / u3 jaisa): Supertrend(10, 3.0), SIRF BUY, engine 4H (chart 1m..4H) ya 1D (bara chart).
+//    - Engine candle Supertrend ke UPAR band hui (rukh palta)  -> agli candle ki open par BUY.
+//    - Engine candle Supertrend ke NEECHE band hui             -> agli candle ki open par BAND.
+//    - SL = entry - 6 x ATR(10). TP NAHI (test: TP 0.5R-2R se kamai +31.6R se +15..25R reh gayi).
+//  Python naap (gold M1 2010-26, kharcha + swap): 331 trades, jeet 41%, +0.095R har trade, kul +31.6R, girawat 8.5R.
+//  Sirf BUY: gold charhe to kamata, na charhe to taqreeban barabar. Aage ki guarantee NAHI.
+//
+//  REPAINT NAHI: faisla sirf BAND candle par; engine ka data block ki aakhri chart candle par (lookahead_off, sirf
+//  jab waqt engine candle se mile) warna pichhli BAND engine candle ([1] + lookahead_on). Signal aam candles se.
+//  Chart ka paimana kharab nahi hota: entry / SL lakeer DRAWING hain (plot nahi) - door ka SL candles ko nahi dabata.
+// ============================================================================
+indicator("JAS Gold Rehnuma r1", shorttitle = "JAS REHNUMA r1", overlay = true, max_lines_count = 50, max_boxes_count = 20, max_labels_count = 50)
+
+grQ = "1 · Qaida (EA / Python jaisa - mat badlein)"
+atrLen  = input.int(10, "Supertrend ATR length", minval = 2, group = grQ, display = display.none)
+atrMult = input.float(3.0, "Supertrend multiplier", minval = 0.5, step = 0.1, group = grQ, display = display.none)
+slMult  = input.float(6.0, "SL = kitne x ATR", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+useD    = input.bool(false, "Filter: 1D Supertrend UPAR ho tab hi BUY (band = EA t5 jaisa)", group = grQ, display = display.none)
+
+grA = "2 · Aap ka account (lot ke liye)"
+myBal   = input.float(38900, "Mera balance (cent account = USC, dollar account = $)", minval = 1, group = grA, display = display.none)
+myRisk  = input.float(0.75, "Meri hadd: ek trade par zyada se zyada kitna % balance", minval = 0.05, step = 0.05, group = grA, display = display.none)
+lateMin = input.int(15, "Ishare ke baad kitne minute tak 'ABHI'", minval = 1, maxval = 240, group = grA, display = display.none)
+myTZ    = input.string("Asia/Karachi", "Waqt kis jagah ka (PKT = Asia/Karachi)", group = grA, display = display.none)
+
+grV = "3 · Dikhawa"
+showLn   = input.bool(true, "Supertrend lakeer", group = grV, display = display.none)
+showNext = input.bool(true, "Chart par AGLI / KHULI trade (entry, SL)", group = grV, display = display.none)
+showOld  = input.bool(false, "Purani trades ke chhote nishan (default band)", group = grV, display = display.none)
+showWhy  = input.bool(true, "Dabbe mein 'Kyun' ki qatar (seekhne ke liye)", group = grV, display = display.none)
+tPos     = input.string("Middle Left", "Dabbe ki jagah", options = ["Middle Left", "Top Left", "Bottom Left", "Top Right", "Middle Right", "Bottom Right"], group = grV, display = display.none)
+tSize    = input.string("Small", "Dabbe ki likhai", options = ["Tiny", "Small", "Normal"], group = grV, display = display.none)
+alertOn  = input.bool(true, "Alert bhejo (BUY / BAND) - TV mein 'Any alert() function call' chunein", group = grV, display = display.none)
+
+// ============================================================================
+//  ENGINE (u3 jaisa): chart 1m..4H -> 4H ; 4H se bara..1D -> 1D
+// ============================================================================
+chSec  = timeframe.in_seconds()
+engTF  = chSec <= 14400 ? "240" : "D"
+engSec = timeframe.in_seconds(engTF)
+engNm  = engTF == "D" ? "1D" : "4H"
+okTF   = chSec <= 86400
+okCh   = chart.is_standard
+stdTk  = ticker.standard(syminfo.tickerid)
+useDf  = useD and engTF == "240"
+
+f_cur() =>
+    [s, d] = ta.supertrend(atrMult, atrLen)
+    a = ta.atr(atrLen)
+    [s, d, a, time]
+
+f_prv() =>
+    [s, d] = ta.supertrend(atrMult, atrLen)
+    a = ta.atr(atrLen)
+    [s[1], d[1], a[1], time[1]]
+
+f_dcur() =>
+    [s, d] = ta.supertrend(atrMult, atrLen)
+    [d, time]
+
+f_dprv() =>
+    [s, d] = ta.supertrend(atrMult, atrLen)
+    [d[1], time[1]]
+
+[stC, drC, atC, tC] = request.security(stdTk, engTF, f_cur(), lookahead = barmerge.lookahead_off)
+[stP, drP, atP, tP] = request.security(stdTk, engTF, f_prv(), lookahead = barmerge.lookahead_on)
+[ddC, tdC] = request.security(stdTk, "D", f_dcur(), lookahead = barmerge.lookahead_off)
+[ddP, tdP] = request.security(stdTk, "D", f_dprv(), lookahead = barmerge.lookahead_on)
+
+int  engOpen  = time(engTF)
+int  dayOpen  = time("D")
+int  engClose = time_close(engTF)
+bool lastEng  = time_close == engClose
+bool lastDay  = time_close == time_close("D")
+bool dPrevUp  = not na(ddP) and ddP < 0
+
+// ============================================================================
+//  HAAL: faisla band candle par, bhar agli candle ki open par (strategy u3 jaisi tarteeb)
+// ============================================================================
+var int   eDir     = 0       // aakhri dekhi hui band engine candle ka rukh
+var int   procT    = na
+var bool  inPos    = false
+var bool  pendBuy  = false
+var bool  pendExit = false
+var float pendRd   = na
+var float enPx     = na
+var float slPx     = na
+var float rdPx     = na
+var float buyRef   = na
+var int   buyT     = na      // BUY ka ishara kis lamhe
+var int   entT     = na      // trade kab khuli
+var int   exitT    = na      // BAND ka ishara / band kab hui
+var int   slT      = na      // SL kab laga
+
+// (1) pichhli candle ka faisla -> is candle ki open par
+bool opened  = false
+bool closedX = false
+if pendExit and inPos
+    inPos   := false
+    exitT   := time
+    closedX := true
+pendExit := false
+if pendBuy and not inPos
+    enPx   := open
+    rdPx   := pendRd
+    slPx   := open - pendRd
+    inPos  := true
+    entT   := time
+    opened := true
+pendBuy := false
+
+// (2) candle ke andar SL
+if inPos and low <= slPx
+    inPos   := false
+    slT     := time
+    closedX := true
+
+// (3) candle band = agla faisla
+bool  sigBuy  = false
+bool  sigExit = false
+float sigAtr  = na
+bool  sigD    = true
+if barstate.isconfirmed and okTF and okCh
+    for stp = 0 to 1
+        bool  has  = false
+        int   nDir = 0
+        float nAtr = na
+        int   nT   = na
+        bool  nD   = true
+        if stp == 0
+            if not na(tP) and not na(drP) and not na(atP) and (na(procT) or tP > procT)
+                has  := true
+                nDir := drP < 0 ? 1 : -1
+                nAtr := atP
+                nT   := tP
+                nD   := dPrevUp
+        else
+            if lastEng and not na(tC) and tC == engOpen and not na(drC) and not na(atC) and (na(procT) or tC > procT)
+                has  := true
+                nDir := drC < 0 ? 1 : -1
+                nAtr := atC
+                nT   := tC
+                nD   := (lastDay and not na(tdC) and tdC == dayOpen and not na(ddC)) ? ddC < 0 : dPrevUp
+        if has
+            if eDir != 0
+                if nDir > 0 and eDir < 0
+                    sigBuy  := true
+                    sigExit := false
+                    sigAtr  := nAtr
+                    sigD    := nD
+                if nDir < 0 and eDir > 0
+                    sigExit := true
+                    sigBuy  := false
+            eDir  := nDir
+            procT := nT
+    if sigBuy and not inPos and (not useDf or sigD) and not na(sigAtr) and sigAtr > 0
+        pendBuy := true
+        pendRd  := slMult * sigAtr
+        buyT    := time_close
+        buyRef  := close
+        if alertOn
+            alert("JAS Gold Rehnuma r1 " + syminfo.ticker + ": ABHI BUY (Supertrend " + engNm + " UPAR palta) | qeemat ~" + str.tostring(close, format.mintick) + " | SL ~" + str.tostring(close - pendRd, format.mintick) + " | TP nahi", alert.freq_once_per_bar_close)
+    if sigExit and inPos
+        pendExit := true
+        exitT    := time_close
+        if alertOn
+            alert("JAS Gold Rehnuma r1 " + syminfo.ticker + ": ABHI BAND (Supertrend " + engNm + " NEECHE palta) | qeemat ~" + str.tostring(close, format.mintick), alert.freq_once_per_bar_close)
+
+// ============================================================================
+//  DIKHAWA: lakeer + (ikhtiyari) purane nishan
+// ============================================================================
+cUp = color.new(#26a69a, 0)
+cDn = color.new(#ef5350, 0)
+cOr = color.new(#ff9800, 0)
+cMu = color.new(#787b86, 0)
+cBl = color.new(#2962ff, 0)
+bool engUp = not na(drP) and drP < 0
+
+plot(showLn and okTF ? stP : na, "Supertrend (band engine candle)", color = engUp ? cUp : cDn, linewidth = 2, style = plot.style_stepline)
+plotshape(showOld and opened, "BUY (purani)", style = shape.triangleup, location = location.belowbar, color = cUp, size = size.tiny, display = display.pane)
+plotshape(showOld and closedX, "BAND (purani)", style = shape.xcross, location = location.abovebar, color = cMu, size = size.tiny, display = display.pane)
+
+// ============================================================================
+//  AAKHRI CANDLE: chhota dabba + sirf agli / khuli trade
+// ============================================================================
+f_pos(string p) => p == "Top Left" ? position.top_left : p == "Bottom Left" ? position.bottom_left : p == "Top Right" ? position.top_right : p == "Middle Right" ? position.middle_right : p == "Bottom Right" ? position.bottom_right : position.middle_left
+f_sz(string z) => z == "Tiny" ? size.tiny : z == "Normal" ? size.normal : size.small
+
+// lot: 1.00 lot = 100 oz -> $1 hile to 100 ikai (cent account USC, dollar account $)
+f_lot(float rd) =>
+    float raw  = myBal * myRisk / 100.0 / (rd * 100.0)
+    float lots = math.floor(raw / 0.01 + 1e-9) * 0.01
+    float use  = math.max(lots, 0.01)
+    float pct  = use * 100.0 * rd / myBal * 100.0
+    string t = str.tostring(use, "0.00") + " lot (SL = -" + str.tostring(use * 100.0 * rd, "0") + ", " + str.tostring(pct, "0.0#") + "%" + (lots >= 0.01 ? ")" : pct <= 2.0 * myRisk ? ", hadd se upar)" : ", BOHOT zyada - sirf demo)")
+    t
+
+var table tb = table.new(f_pos(tPos), 2, 4, bgcolor = color.new(chart.bg_color, 10), frame_color = color.new(#787b86, 50), frame_width = 1, border_color = color.new(#787b86, 70), border_width = 1)
+var array<line>  lns = array.new<line>()
+var array<box>   bxs = array.new<box>()
+var array<label> lbs = array.new<label>()
+
+if barstate.islast
+    for oneL in lns
+        oneL.delete()
+    lns.clear()
+    for oneB in bxs
+        oneB.delete()
+    bxs.clear()
+    for oneT in lbs
+        oneT.delete()
+    lbs.clear()
+
+    color  fg   = chart.fg_color
+    string sz   = f_sz(tSize)
+    int    nowT = timenow
+    string lvTx = str.tostring(stP, format.mintick)
+    float  rdEst = not na(atP) ? slMult * atP : na
+    bool stBuy  = pendBuy or (inPos and not na(entT) and nowT - entT <= lateMin * 60000)
+    bool stExit = pendExit or (not inPos and not na(exitT) and nowT - exitT <= lateMin * 60000 and (na(slT) or exitT >= slT))
+    bool stSl   = not inPos and not pendBuy and not na(slT) and nowT - slT <= engSec * 1000 and (na(exitT) or slT > exitT)
+    // khuli / abhi banti trade ke number
+    float e0 = inPos ? enPx : buyRef
+    float r0 = inPos ? rdPx : pendRd
+    float s0 = e0 - r0
+    // agla dekhne ka waqt
+    int nx = engClose
+    if nowT >= nx
+        nx += engSec * 1000
+    int leftMs = math.max(0, nx - nowT)
+    string nxTx = str.format_time(nx, "EEE HH:mm", myTZ) + "  (" + str.tostring(math.floor(leftMs / 3600000.0)) + "h " + str.tostring(math.floor((leftMs % 3600000) / 60000.0)) + "m)"
+    // chart ki jaanch
+    string tu = str.upper(syminfo.ticker)
+    bool isGold = str.contains(tu, "XAU") or str.contains(tu, "GOLD")
+    bool nyOk   = engTF != "240" or hour(engOpen, "America/New_York") % 4 == 1
+
+    string wd = "RUKEIN"
+    color  wC = cMu
+    string l1 = "-"
+    string l2 = "-"
+    string l3 = "-"
+    if not okTF or not okCh
+        wd := "CHART"
+        wC := cOr
+        l1 := not okTF ? "1D ya chhota chart lagayein" : "aam candle chart lagayein"
+        l2 := "is chart par qaida nahi chalta"
+        l3 := "Heikin Ashi / Renko / haftawar chart par naap nahi hua."
+    else if stBuy and not na(r0) and r0 > 0
+        wd := "ABHI BUY"
+        wC := cUp
+        l1 := "Market par BUY - " + str.format_time(pendBuy ? buyT : entT, "HH:mm", myTZ) + " se " + str.tostring(lateMin) + " min tak"
+        l2 := f_lot(r0) + "\nSL " + str.tostring(s0, format.mintick) + " ($" + str.tostring(r0, "0") + " neeche) | TP nahi"
+        l3 := engNm + " candle lakeer ke upar band = rukh palta.\nDer ho jaye to chhor dein, peechha nahi."
+    else if pendExit
+        wd := "ABHI BAND"
+        wC := cDn
+        l1 := "BUY ko market par band karein - abhi"
+        l2 := "nateeja jo bhi ho"
+        l3 := engNm + " candle lakeer ke neeche band = rukh palat gaya."
+    else if inPos and not na(r0) and r0 > 0
+        wd := "CHALNE DEIN"
+        wC := cUp
+        l1 := "BUY " + str.tostring(e0, format.mintick) + " | abhi " + str.tostring((close - e0) / r0, "+0.00;-0.00") + "R"
+        l2 := "SL " + str.tostring(s0, format.mintick) + " (na chherein) | TP nahi\nband: " + engNm + " close < " + lvTx
+        l3 := "Kamai chand bari trades se aati hai -\njaldi band na karein. Aam haar -0.4R."
+    else if stExit
+        wd := "ABHI BAND"
+        wC := cDn
+        l1 := "BUY khuli hai to market par band karein"
+        l2 := "ishara " + str.format_time(exitT, "EEE HH:mm", myTZ)
+        l3 := engNm + " candle lakeer ke neeche band = rukh palat gaya."
+    else if stSl
+        wd := "SL LAGA"
+        wC := cOr
+        l1 := "Trade khatam - kuch na karein"
+        l2 := "nayi BUY sirf agle palte par"
+        l3 := "Tay shuda nuqsan. Badle ki trade nahi."
+    else if eDir < 0
+        l1 := "BUY tab: " + engNm + " close > " + lvTx + (useDf and not dPrevUp ? " + 1D upar" : "")
+        l2 := na(rdEst) or rdEst <= 0 ? "-" : "bane to: " + f_lot(rdEst) + "\nSL ~$" + str.tostring(rdEst, "0") + " neeche | TP nahi"
+        l3 := "Rukh neeche. SELL nahi (test fail)."
+    else if eDir > 0
+        l1 := "Rukh upar, palta ho chuka"
+        l2 := "der se BUY nahi - agle palte ka intezar"
+        l3 := "Entry sirf palte par (test wahi)."
+    else
+        wd := "INTEZAR"
+        l1 := "data load ho raha hai"
+    if okTF and okCh and (not isGold or not nyOk)
+        l3 := not isGold ? "DHYAN: ye gold nahi - naap sirf gold ka hai." : "DHYAN: 4H candle NY 17:00 se nahi - OANDA:XAUUSD behtar."
+
+    string tip = "JAS Gold Rehnuma r1 | engine " + engNm + (useDf ? " + 1D filter" : "") + " | sirf BUY | repaint nahi\nPython 2010-26 (gold M1, kharcha + swap): 331 trades, jeet 41%, +0.095R har trade, kul +31.6R, girawat 8.5R.\nTP nahi: TP 0.5R-2R se kamai kam hui. Aam haar -0.4R, SL tak 17 saal mein sirf 2 trades.\nJaanch / poora hisaab: strategy 'JAS Gold Universal'."
+    table.clear(tb, 0, 0, 1, 3)
+    table.cell(tb, 0, 0, wd, text_color = color.white, bgcolor = wC, text_size = sz, text_halign = text.align_center, tooltip = tip)
+    table.cell(tb, 1, 0, l1, text_color = fg, text_size = sz, text_halign = text.align_left, tooltip = tip)
+    table.cell(tb, 0, 1, "Trade", text_color = cMu, text_size = sz, text_halign = text.align_left)
+    table.cell(tb, 1, 1, l2, text_color = wd == "ABHI BUY" or wd == "CHALNE DEIN" ? cOr : fg, text_size = sz, text_halign = text.align_left)
+    table.cell(tb, 0, 2, "Agla", text_color = cMu, text_size = sz, text_halign = text.align_left)
+    table.cell(tb, 1, 2, nxTx, text_color = fg, text_size = sz, text_halign = text.align_left)
+    if showWhy
+        table.cell(tb, 0, 3, "Kyun", text_color = cMu, text_size = sz, text_halign = text.align_left)
+        table.cell(tb, 1, 3, l3, text_color = cMu, text_size = sz, text_halign = text.align_left)
+
+    // ---- chart par sirf agli / khuli trade (drawing = paimana nahi bigarta)
+    if showNext and okTF and okCh
+        int xL = time + 2 * chSec * 1000
+        int xR = time + 14 * chSec * 1000
+        if (inPos or pendBuy) and not na(e0) and not na(r0) and r0 > 0
+            int x0 = inPos and not na(entT) ? entT : time
+            lns.push(line.new(x0, e0, xR, e0, xloc = xloc.bar_time, color = cBl, width = 2))
+            lns.push(line.new(x0, s0, xR, s0, xloc = xloc.bar_time, color = cOr, width = 1, style = line.style_dashed))
+            lbs.push(label.new(xR, e0, (stBuy ? "ABHI BUY " : "BUY khuli ") + str.tostring(e0, format.mintick) + "\nSL " + str.tostring(s0, format.mintick) + " | abhi " + str.tostring((close - e0) / r0, "+0.00;-0.00") + "R", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(#1b2a3a, 10), textcolor = stBuy ? cUp : color.new(#90caf9, 0), size = size.small))
+            if inPos and not na(entT)
+                lbs.push(label.new(entT, e0, "", xloc = xloc.bar_time, yloc = yloc.belowbar, style = label.style_triangleup, color = cUp, size = size.tiny))
+        else if pendExit or stExit
+            lbs.push(label.new(time, high, "ABHI BAND", xloc = xloc.bar_time, yloc = yloc.abovebar, style = label.style_label_down, color = cDn, textcolor = color.white, size = size.small))
+        else if eDir < 0 and not na(stP) and not na(rdEst) and rdEst > 0 and not stSl
+            bxs.push(box.new(xL, stP, xR, stP - rdEst, xloc = xloc.bar_time, border_color = color.new(#c62828, 40), border_style = line.style_dotted, bgcolor = color.new(#c62828, 90)))
+            lns.push(line.new(xL, stP, xR, stP, xloc = xloc.bar_time, color = cUp, width = 2, style = line.style_dotted))
+            lbs.push(label.new(xR, stP, "AGLI BUY (andaza) - intezar\n" + engNm + " close > " + lvTx + "\nSL ~" + str.tostring(stP - rdEst, format.mintick) + " | TP nahi", xloc = xloc.bar_time, style = label.style_label_left, color = color.new(#1b2a3a, 10), textcolor = color.new(#ffb300, 0), size = size.small))
