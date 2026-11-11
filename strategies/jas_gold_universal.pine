@@ -1,6 +1,15 @@
 //@version=6
 // ============================================================================
-//  JAS GOLD UNIVERSAL  (build u1, Pine v6, 11 Nov 2026)
+//  JAS GOLD UNIVERSAL  (build u2, Pine v6, 11 Nov 2026)
+//  u2 (11 Nov, user: "anari ke liye rehnuma - kab chalna, kab rukna, SL / TP qeemat ke saath, wajah bhi"):
+//    REHNUMA dabba: RUKEIN / ABHI BUY / CHALNE DEIN / ABHI BAND / SL LAG GAYA + kya karein, lot (apna account),
+//    SL kahan se kahan tak, TP (nahi - wajah ke saath), +1R / +2R nishan, kyun, agla dekhne ka waqt (PKT).
+//    Qaida aur trades pichhle build (u-1) wali hi - sirf rehnumai barhi. Dono dabbe ab chart kholte hi dikhte hain
+//    (pehle strategy mein pehli candle band hone tak nahi dikhte the: barstate.islast -> + islastconfirmedhistory).
+//    TP ka test (4H, 2010-26): TP nahi +31.6R | 0.5R +15.1R | 1R +17.8R | 1.5R +20.5R | 2R +25.4R | 3R +36.0R
+//    (3R sirf chand trades ki wajah se - pakka nahi). Is liye TP NAHI.
+//    Jeet ka darmiyana +0.49R, 4 mein se 1 jeet +1.17R se upar, sab se bari +4.85R; haar ka darmiyana -0.40R,
+//    SL (-1R) tak sirf 2 trades (195 haar mein se) - zyada tar haar palte par chhoti nikalti hai.
 //  User (11 Nov): "ek universal script jo gold ko 1m se 1D tak le kar chale, repaint nahi, strategy
 //  test mein koi nuqs nahi, apne result se poora insaaf kare."
 //
@@ -34,7 +43,7 @@
 //  hota - is liye DABBE ka R hamara apna hisaab hai (kharcha + swap), tester ka paisa swap ke baghair.
 //  1m / 5m chart par TV thori history deta hai = trades kam; poora hisaab 4H chart par dekhein.
 // ============================================================================
-strategy("JAS Gold Universal u1", shorttitle = "JAS GOLD u1", overlay = true, initial_capital = 100000, currency = currency.USD, pyramiding = 0, default_qty_type = strategy.fixed, default_qty_value = 1, commission_type = strategy.commission.cash_per_contract, commission_value = 0.25, slippage = 0, process_orders_on_close = false, calc_on_every_tick = false, calc_on_order_fills = false, fill_orders_on_standard_ohlc = true, margin_long = 0, margin_short = 0, max_labels_count = 500)
+strategy("JAS Gold Universal u2", shorttitle = "JAS GOLD u2", overlay = true, initial_capital = 100000, currency = currency.USD, pyramiding = 0, default_qty_type = strategy.fixed, default_qty_value = 1, commission_type = strategy.commission.cash_per_contract, commission_value = 0.25, slippage = 0, process_orders_on_close = false, calc_on_every_tick = false, calc_on_order_fills = false, fill_orders_on_standard_ohlc = true, margin_long = 0, margin_short = 0, max_labels_count = 500)
 
 COST = 0.25   // har taraf, har unit - upar commission_value ke barabar (badlein to dono jagah)
 
@@ -58,6 +67,15 @@ showMk  = input.bool(true, "BUY / BAND nishan", group = grV, display = display.n
 showTbl = input.bool(true, "Dabba dikhao", group = grV, display = display.none)
 tblPos  = input.string("Top Right", "Dabbe ki jagah", options = ["Top Right", "Bottom Right", "Top Left", "Bottom Left"], group = grV, display = display.none)
 alertOn = input.bool(true, "Alert bhejo (BUY / BAND) - TV mein 'Any alert() function call' chunein", group = grV, display = display.none)
+
+grG = "4 · Rehnuma (aap ka apna account)"
+showGd  = input.bool(true, "Rehnuma dabba dikhao (kya karna hai)", group = grG, display = display.none)
+gdPos   = input.string("Middle Left", "Rehnuma ki jagah", options = ["Middle Left", "Bottom Left", "Top Left", "Middle Right", "Bottom Right", "Bottom Center"], group = grG, display = display.none)
+gdSize  = input.string("Small", "Rehnuma ki likhai", options = ["Small", "Normal"], group = grG, display = display.none)
+myBal   = input.float(38900, "Mera balance (account ki ikai mein: cent account = USC, dollar account = $)", minval = 1, group = grG, display = display.none)
+myRisk  = input.float(0.75, "Meri hadd: ek trade par zyada se zyada kitna % balance", minval = 0.05, step = 0.05, group = grG, display = display.none)
+lateMin = input.int(15, "BUY / BAND ishare ke baad kitne minute tak 'ABHI'", minval = 1, maxval = 240, group = grG, display = display.none)
+myTZ    = input.string("Asia/Karachi", "Waqt kis jagah ka (PKT = Asia/Karachi)", group = grG, display = display.none)
 
 // ============================================================================
 //  ENGINE: chart 1m..4H -> 4H ; 4H se bara..1D -> 1D ; 1D se bara -> kuch nahi
@@ -96,7 +114,8 @@ f_dprv() =>
 
 int  engOpen = time(engTF)
 int  dayOpen = time("D")
-bool lastEng = time_close == time_close(engTF)
+int  engClose = time_close(engTF)
+bool lastEng = time_close == engClose
 bool lastDay = time_close == time_close("D")
 bool dPrevUp = not na(ddP) and ddP < 0
 
@@ -109,6 +128,14 @@ var float pendRisk = na      // aakhri BUY order ka SL faasla (6 x ATR)
 var bool  qtyZero  = false
 var int   lateN    = 0       // kitni dafa faisla ek chart candle der se hua (raasta b)
 var int   firstT   = time    // is chart ki pehli candle (dabbe mein "data kab se")
+// u2 rehnuma ke liye (sirf dikhana - trades par koi asar nahi)
+var int   buyT     = na      // BUY ka ishara kis lamhe (us candle ka band hona = agli ki open)
+var float buyRef   = na      // us lamhe ki qeemat (entry ka andaza)
+var float buyRd    = na      // us BUY ka SL faasla
+var int   entT     = na      // trade asal mein kab khuli
+var int   exitT    = na      // BAND ka ishara kis lamhe
+var int   slT      = na      // SL kab laga
+var bool  exitPend = false   // BAND ka order laga hua hai
 
 bool  sigBuy  = false
 bool  sigExit = false
@@ -160,6 +187,7 @@ var array<float> risks = array.new<float>()     // har trade ka SL faasla, khuln
 var float enPx = na
 var float slPx = na
 
+bool buyNow = false
 if sigBuy and strategy.position_size == 0 and inRange and (not useDf or sigD) and not na(sigAtr) and sigAtr > 0
     float rd   = slMult * sigAtr
     float base = fixBase ? baseBal : strategy.equity
@@ -168,10 +196,14 @@ if sigBuy and strategy.position_size == 0 and inRange and (not useDf or sigD) an
     if q > 0
         pendRisk := rd
         qtyZero  := false
+        buyNow   := true
+        buyT     := time_close
+        buyRef   := close
+        buyRd    := rd
         strategy.entry("BUY", strategy.long, qty = q, comment = "BUY")
         strategy.exit("SL", from_entry = "BUY", stop = close - rd, comment_loss = "SL")
         if alertOn
-            alert("JAS Gold Universal u1 " + syminfo.ticker + ": BUY (Supertrend " + engTF + " UPAR palta) | qeemat ~" + str.tostring(close, format.mintick) + " | SL ~" + str.tostring(close - rd, format.mintick), alert.freq_once_per_bar_close)
+            alert("JAS Gold Universal u2 " + syminfo.ticker + ": BUY (Supertrend " + engTF + " UPAR palta) | qeemat ~" + str.tostring(close, format.mintick) + " | SL ~" + str.tostring(close - rd, format.mintick), alert.freq_once_per_bar_close)
     else
         qtyZero := true
 
@@ -187,13 +219,20 @@ if strategy.position_size > 0
     if opened and risks.size() > 0
         enPx := strategy.position_avg_price
         slPx := enPx - risks.last()
+        entT := time
     if not na(slPx)
         strategy.exit("SL", from_entry = "BUY", stop = slPx, comment_loss = "SL")
     if sigExit
         strategy.close("BUY", comment = "BAND")
+        exitT    := time_close
+        exitPend := true
         if alertOn
-            alert("JAS Gold Universal u1 " + syminfo.ticker + ": BAND (Supertrend " + engTF + " NEECHE palta) | qeemat ~" + str.tostring(close, format.mintick), alert.freq_once_per_bar_close)
+            alert("JAS Gold Universal u2 " + syminfo.ticker + ": BAND (Supertrend " + engTF + " NEECHE palta) | qeemat ~" + str.tostring(close, format.mintick), alert.freq_once_per_bar_close)
 else
+    if closed
+        if not exitPend
+            slT := time_close      // BAND ka order nahi tha = SL se band hui
+        exitPend := false
     enPx := na
     slPx := na
 
@@ -209,6 +248,8 @@ bool engUp = not na(drP) and drP < 0
 plot(showLn and okTF ? stP : na, "Supertrend (band engine candle)", color = engUp ? cUp : cDn, linewidth = 2, style = plot.style_stepline)
 plot(showPos ? enPx : na, "Entry", color = color.new(#2962ff, 0), linewidth = 1, style = plot.style_linebr)
 plot(showPos ? slPx : na, "SL (6 x ATR)", color = cOr, linewidth = 1, style = plot.style_linebr)
+plot(showPos and not na(enPx) and not na(slPx) ? enPx + (enPx - slPx) : na, "+1R (nishan, TP nahi)", color = color.new(#26a69a, 60), linewidth = 1, style = plot.style_linebr)
+plot(showPos and not na(enPx) and not na(slPx) ? enPx + 2.0 * (enPx - slPx) : na, "+2R (nishan, TP nahi)", color = color.new(#26a69a, 75), linewidth = 1, style = plot.style_linebr)
 plotshape(showMk and opened, "BUY", style = shape.labelup, location = location.belowbar, color = cUp, textcolor = color.white, text = "BUY", size = size.small)
 plotshape(showMk and closed, "BAND", style = shape.labeldown, location = location.abovebar, color = cMu, textcolor = color.white, text = "BAND", size = size.small)
 
@@ -223,7 +264,7 @@ f_row(int r, string a, string b, color c) =>
     table.cell(tb, 0, r, a, text_color = cMu, text_size = size.small, text_halign = text.align_left)
     table.cell(tb, 1, r, b, text_color = c, text_size = size.small, text_halign = text.align_left)
 
-if showTbl and barstate.islast
+if showTbl and (barstate.islast or barstate.islastconfirmedhistory)
     color fg = chart.fg_color
     // ---- is chart ki band trades ka R (kharcha + swap ke baad)
     int   n   = 0
@@ -284,7 +325,7 @@ if showTbl and barstate.islast
     color vdC = n < 30 ? cMu : ex - se2 > 0 ? cUp : ex > 0 ? cOr : cDn
     string py = engTF == "D" ? "62 trades | jeet 46% | +0.177R | kul +11.0R | girawat 3.0R" : useDf ? "134 trades | jeet 47% | +0.199R | kul +26.6R | girawat 4.7R" : "331 trades | jeet 41% | +0.095R | kul +31.6R | girawat 8.5R"
     string py2 = engTF == "D" ? "2010-18 +3.8R | 2019-26 +7.1R" : useDf ? "2010-18 +6.8R | 2019-26 +19.9R" : "2010-18 +5.6R | 2019-26 +25.9R"
-    table.cell(tb, 0, 0, "JAS GOLD UNIVERSAL u1", text_color = fg, text_size = size.small, text_halign = text.align_left)
+    table.cell(tb, 0, 0, "JAS GOLD UNIVERSAL u2", text_color = fg, text_size = size.small, text_halign = text.align_left)
     table.cell(tb, 1, 0, "engine " + (engTF == "D" ? "1D" : "4H") + (useDf ? " + 1D filter" : "") + " | sirf BUY | repaint nahi", text_color = fg, text_size = size.small, text_halign = text.align_left)
     f_row(1, "Chart", chk, chkC)
     f_row(2, "Rukh (" + (engTF == "D" ? "1D" : "4H") + ")", eDir > 0 ? "UPAR" : eDir < 0 ? "NEECHE" : "-", eDir > 0 ? cUp : eDir < 0 ? cDn : cMu)
@@ -298,3 +339,112 @@ if showTbl and barstate.islast
     f_row(10, "Do hisse", py2 + " (sirf BUY: gold charhe to kamata)", cMu)
     f_row(11, "Chhote TF ka sach", "1H +0.03R kamzor | 15m -0.03R FAIL | 5m -0.11R FAIL  ->  is liye engine bara", cMu)
     f_row(12, "Note", "R = kharcha $0.50 + swap " + str.tostring(swapPct, "0.#") + "% ke baad. TV tester mein swap nahi." + (qtyZero ? " | LOT 0: balance / risk barhayein" : "") + (lateN > 2 ? " | der se faisle: " + str.tostring(lateN - 1) : ""), qtyZero ? cOr : cMu)
+
+// ============================================================================
+//  u2 REHNUMA (sirf aakhri candle par): seedhi zubaan mein - abhi kya karna hai, lot, SL, TP, kyun, agla dekhna.
+//  Sirf dikhana - trades / hisaab par koi asar nahi. Lot AAP ke account ka (grG), tester ka nahi.
+//  Lot ka hisaab: 1.00 lot = 100 oz -> qeemat $1 hile to 100 ikai (cent account par USC, dollar account par $).
+// ============================================================================
+f_gpos(string p) => p == "Bottom Left" ? position.bottom_left : p == "Top Left" ? position.top_left : p == "Middle Right" ? position.middle_right : p == "Bottom Right" ? position.bottom_right : p == "Bottom Center" ? position.bottom_center : position.middle_left
+
+f_lot(float rd) =>
+    float raw  = myBal * myRisk / 100.0 / (rd * 100.0)
+    float lots = math.floor(raw / 0.01 + 1e-9) * 0.01
+    float use  = math.max(lots, 0.01)
+    float pct  = use * 100.0 * rd / myBal * 100.0
+    string t = lots >= 0.01 ? str.tostring(use, "0.00") + " lot  (SL lage to -" + str.tostring(use * 100.0 * rd, "0") + " = balance ka " + str.tostring(pct, "0.00") + "%)" : "0.01 lot bhi " + str.tostring(pct, "0.00") + "% risk hai (aap ki hadd " + str.tostring(myRisk, "0.##") + "%)\n" + (pct <= 2.0 * myRisk ? "chahein to 0.01 - lekin risk hadd se upar" : "ye trade real par NA lein - sirf demo")
+    t
+
+var table tg = table.new(f_gpos(gdPos), 2, 8, bgcolor = color.new(chart.bg_color, 5), frame_color = color.new(#787b86, 40), frame_width = 2, border_color = color.new(#787b86, 70), border_width = 1)
+
+f_grow(int r, string a, string b, color c, string z) =>
+    table.cell(tg, 0, r, a, text_color = cMu, text_size = z, text_halign = text.align_left, text_valign = text.align_top)
+    table.cell(tg, 1, r, b, text_color = c, text_size = z, text_halign = text.align_left, text_valign = text.align_top)
+
+if showGd and (barstate.islast or barstate.islastconfirmedhistory)
+    color  fg2   = chart.fg_color
+    string gz    = gdSize == "Normal" ? size.normal : size.small
+    string engNm = engTF == "D" ? "1D" : "4H"
+    int    nowT  = timenow
+    bool   posOn = strategy.position_size > 0
+    bool   stBuy  = buyNow or (posOn and not na(entT) and nowT - entT <= lateMin * 60000)
+    bool   stExit = (posOn and sigExit) or (not posOn and not buyNow and not na(exitT) and nowT - exitT <= lateMin * 60000)
+    bool   stSl   = not posOn and not buyNow and not na(slT) and nowT - slT <= engSec * 1000 and (na(exitT) or slT > exitT)
+    // BUY / khuli trade ke number
+    float rdG  = buyNow ? buyRd : (posOn and not na(enPx) and not na(slPx) ? enPx - slPx : na)
+    float refE = buyNow ? buyRef : enPx
+    float slG  = buyNow ? buyRef - buyRd : slPx
+    float rdEst = not na(atP) ? slMult * atP : na
+    // agla dekhne ka waqt = chalti engine candle ka band hona
+    int nx = engClose
+    if nowT >= nx
+        nx += engSec * 1000
+    int leftMs = math.max(0, nx - nowT)
+    string nxTx = str.format_time(nx, "EEE HH:mm", myTZ) + "  (" + str.tostring(math.floor(leftMs / 3600000.0)) + "h " + str.tostring(math.floor((leftMs % 3600000) / 60000.0)) + "m baad, bazaar khula ho to)\nIs se pehle chart dekhne ki zaroorat nahi."
+    string gWord = "RUKEIN"
+    color  wC   = cMu
+    string t1 = "-"
+    string t2 = "-"
+    string t3 = "-"
+    string t4 = "-"
+    string t5 = "-"
+    string t6 = "-"
+    if not okTF or not okCh
+        gWord := "CHART BADLEIN"
+        wC   := cOr
+        t1   := not okTF ? "1D ya chhota chart lagayein." : "Aam candle chart lagayein (Heikin Ashi / Renko nahi)."
+        t6   := "Is chart par qaida nahi chal sakta."
+    else if stBuy and not na(rdG) and rdG > 0
+        gWord := "ABHI BUY"
+        wC   := cUp
+        t1   := "Market par BUY karein - abhi. Ishara: " + str.format_time(buyNow ? buyT : entT, "EEE HH:mm", myTZ) + ", us ke " + str.tostring(lateMin) + " min ke andar.\nDer ho gayi to ye trade chhor dein - peechha nahi karna."
+        t2   := f_lot(rdG)
+        t3   := "Entry se $" + str.tostring(rdG, "0.00") + " neeche.\nIs chart par: entry ~" + str.tostring(refE, format.mintick) + "  ->  SL " + str.tostring(slG, format.mintick) + "\nApne broker par: apni entry - " + str.tostring(rdG, "0.00")
+        t4   := "NAHI lagana. Band sirf 'BAND' ishare par.\n(Test: TP 0.5R-2R lagane se kamai +31.6R se +15..25R reh gayi)"
+        t5   := "+1R = " + str.tostring(refE + rdG, format.mintick) + "  |  +2R = " + str.tostring(refE + 2.0 * rdG, format.mintick) + "   (sirf nishan, TP nahi)"
+        t6   := engNm + " candle Supertrend lakeer ke UPAR band hui = rukh NEECHE se UPAR palta.\nSL 6 x ATR door = aam hilchal se trade nahi nikalti (17 saal mein SL sirf 2 dafa laga)."
+    else if posOn and sigExit
+        gWord := "ABHI BAND"
+        wC   := cDn
+        t1   := "BUY ko market par BAND kar dein - abhi. Nateeja jo bhi ho."
+        t6   := engNm + " candle Supertrend lakeer ke NEECHE band hui = rukh palat gaya.\nQaida: palte par nikal jao. Ruk kar umeed karna = bara nuqsan."
+    else if posOn and not na(rdG) and rdG > 0
+        gWord := "CHALNE DEIN"
+        wC   := cUp
+        t1   := "Kuch na karein. SL na chherein, pehle band na karein.\nNayi BUY nahi - entry ka waqt guzar gaya."
+        t2   := "nayi lot nahi"
+        t3   := "SL " + str.tostring(slG, format.mintick) + "  (entry " + str.tostring(refE, format.mintick) + " se $" + str.tostring(rdG, "0.00") + " neeche) - wahin rahega"
+        t4   := "nahi. Band tab: " + engNm + " candle " + str.tostring(stP, format.mintick) + " ke NEECHE band ho ('BAND' ishara)"
+        t5   := "abhi " + str.tostring((close - refE) / rdG, "+0.00;-0.00") + "R  |  +1R = " + str.tostring(refE + rdG, format.mintick) + "  |  +2R = " + str.tostring(refE + 2.0 * rdG, format.mintick)
+        t6   := "Rukh abhi UPAR. Kamai chand bari trades se aati hai (4 mein se 1 jeet +1.2R se upar),\nis liye jaldi band karne se nateeja kharab hota hai. Aam haar -0.4R hoti hai."
+    else if stExit
+        gWord := "ABHI BAND"
+        wC   := cDn
+        t1   := "BUY abhi tak khuli hai to market par BAND kar dein. Ishara: " + str.format_time(exitT, "EEE HH:mm", myTZ)
+        t6   := engNm + " candle Supertrend lakeer ke NEECHE band hui = rukh palat gaya."
+    else if stSl
+        gWord := "SL LAG GAYA"
+        wC   := cOr
+        t1   := "Trade SL par khatam. Ab kuch na karein.\nNayi BUY sirf agle palte par - badle ki trade nahi."
+        t6   := "Qeemat SL tak gayi (bohot kam hota hai). Ye ek trade ka tay shuda nuqsan tha."
+    else if eDir < 0
+        t1   := "Kuch na karein. BUY tab banegi: " + engNm + " candle " + str.tostring(stP, format.mintick) + " ke UPAR band ho." + (useDf and not dPrevUp ? "\n(aur 1D rukh bhi UPAR ho - abhi NEECHE hai)" : "")
+        t2   := na(rdEst) or rdEst <= 0 ? "-" : "BUY bane to (andaza): " + f_lot(rdEst)
+        t3   := na(rdEst) ? "-" : "BUY bane to SL entry se ~$" + str.tostring(rdEst, "0.00") + " neeche (andaza - ATR ke saath badalta)"
+        t4   := "nahi hoga"
+        t6   := "Rukh NEECHE hai. Is qaide mein SELL nahi (test mein SELL fail).\nGirti market mein BUY lena = nuqsan."
+    else if eDir > 0
+        t1   := "Kuch na karein. Rukh UPAR hai lekin palta pehle ho chuka - der se BUY nahi.\nPehle neeche palte ga, phir agla UPAR ka palta = BUY."
+        t6   := "Qaida sirf PALTE par entry deta hai. Beech raste ki entry ka test nahi hua."
+    else
+        gWord := "INTEZAR"
+        t1   := "Data load ho raha hai."
+    table.cell(tg, 0, 0, gWord, text_color = color.white, bgcolor = color.new(wC, 0), text_size = size.large, text_halign = text.align_center)
+    table.cell(tg, 1, 0, "JAS rehnuma u2  |  engine " + engNm + "  |  sirf BUY" + (qtyZero ? "  |  tester LOT 0" : ""), text_color = fg2, text_size = gz, text_halign = text.align_left)
+    f_grow(1, "Kya karein", t1, fg2, gz)
+    f_grow(2, "Lot (aap ka)", t2, fg2, gz)
+    f_grow(3, "SL", t3, cOr, gz)
+    f_grow(4, "TP", t4, fg2, gz)
+    f_grow(5, "Nishan", t5, cMu, gz)
+    f_grow(6, "Kyun", t6, cMu, gz)
+    f_grow(7, "Agla dekhna", nxTx, fg2, gz)
