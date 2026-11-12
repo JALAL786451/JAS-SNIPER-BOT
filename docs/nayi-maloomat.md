@@ -2,6 +2,7 @@
 Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh | baat | user ka jawab).
 
 | Tareekh | Baat | User |
+| 12 Nov (57vi #2) | MQL5 Algo Forge (MetaEditor ke andar Git): har version khud save, 'kahin aur bana m8.4' wala masla khatam; abhi sirf batana, lagana user ki marzi | - |
 |---|---|---|
 | 7 Nov | SIGNUM MCP (3rd-party backtest connector; 25 chart x 7 strategy = overfitting khatra) - user ne khud SS dikhaya | jaan liya |
 | 7 Nov | MT5 report (xlsx/zip) Claude seedha parh leta hai - SS ki jagah report do = poora hisaab (6517 ticket) | - |

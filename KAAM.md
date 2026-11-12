@@ -52,7 +52,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
-| K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | 57vi: user ne kaha "deta hoon" - file ka intezar |
+| K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | 57vi #2 (12 Nov): user phir "deta hoon" - .mq5 + zip ka intezar |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
 | K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | user "haan" qaide par baqi |
