@@ -257,3 +257,8 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - Exness HMR periods kya? (10 Nov, 55vi) -> khabar ke aas paas leverage kam (High Margin Requirement); waqt SERVER (UTC), PKT = +5. 17:30-18:31 = 10-Year auction 11 PM PKT. Margin level 90k% par asar nahi.
 - MT5 alarm vs TV "News Wed 18:30"? (10 Nov, 55vi) -> MT5 = asli calendar (sahi); TV j3.2 = andaza (har din 8:30 NY = 6:30 PM PKT), asli calendar nahi.
 - Exness "Close all" khirki? (10 Nov, 55vi) -> CANCEL; profitable/Sell band = BUY 3.91 nangi (gold -$100 = -39,100), Buy/losing band = SELL nangi; aadha band sab se khatarnak.
+- Claude Fable reset / Full reset? (12 Nov, 56vi) -> Fable reset 17 Nov 12:59 PM tak dabao warna ZAYA (khud nahi hota); faida sirf hafte ke khud reset (Itwar 2 AM) se PEHLE. Full reset = sab 0, 11 Dec tak, mushkil waqt ke liye. Reset ek dafa bharta hai, Dec tak muft nahi.
+- JasMauqa popup 15 min kyun? (12 Nov, 56vi) -> InpWaitMin: popup ki barish rokna + sochne ka waqt; 15 min jawab na = NO. Screen par 5 theek, sote waqt 15. E ka alag InpEWaitMin 60.
+- N popup nuqsan wala (-18.56)? (12 Nov, 56vi) -> wasooli se mehngi BUY kam; NET + equity wahi (nuqsan pehle se tha, sirf pakka). YES theek, NO bhi bila nuqsan.
+- Saari BUY band karke neeche dobara kholein? (12 Nov, 56vi) -> NAHI: beech mein SELL nangi (6.99 lot = $1 par 699), $54 uchhal = equity khatam; bari lot joa. Tala-band mein girna nuqsan nahi deta.
+- MT5 Bid line rang? (12 Nov, 56vi) -> F8 > Colors > Bid line = Yellow/Aqua; template EA wale chart par nahi.

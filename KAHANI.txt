@@ -170,8 +170,9 @@ KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-
 -> 31-10 "faisle aap" = sirf FTMO setting, purane demo DELETE (Kachhua USOIL +372 tha) -> #62 share, #69 oil FAIL -> bank -> #73 BTC idea.
   6 Nov (46vi): TV Naqsha+5EA j3.1 bold chalti price label. JasMauqa m7.6 LIVE: NET = BUY-SELL, profit split,
     'agar sare profit close' -> NET + hedge (sirf hisaab; YES = sirf popup ka kaam). Lot 0.88 -> 5.13 barhi (BANK yaad).
+10-12 | 56vi: m8.3 popup N +4.04 / N -18.56 YES; reset samjhaye (Fable 17 Nov zaya, Full 11 Dec); user ke paas m8.4 (repo mein nahi); gold 3978 NET 0 P/L -34,063 equity 37,805 WASOOLI 9237 | BUY 6.99 band + neeche dobara = NAHI | KYUN: nangi SELL 6.99 = $54 uchhal par account khatam, NET hadd 0.80
 
-4. ABHI (10 Nov 2026, 55vi chat ke baad; khule kaam = KAAM.md; LIVE JasMauqa m8.3 BTC+gold (AUTO NAHI, LOG file, N/E naye, Algo OFF raat); hafta = docs/hafta-4-10-nov.md)  [MT5 ka asli haal = TRADING.md sec 0]
+4. ABHI (12 Nov 2026, 56vi chat ke baad; khule kaam = KAAM.md; LIVE JasMauqa m8.4 user ke paas (repo m8.3, file maango) BTC+gold (AUTO NAHI, LOG file, N/E naye, Algo OFF raat); hafta = docs/hafta-4-10-nov.md)  [MT5 ka asli haal = TRADING.md sec 0]
 DEMO 472716649 (Trial16, STANDARD USD $2153.25, 0 khuli, SS 4 Nov; XAG SELL kis ne kholi = History Comment/Magic SS baqi; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
 FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu (4 Nov 09:01: i6 2 BUY + t5 gold BUY, kul +$262):
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR

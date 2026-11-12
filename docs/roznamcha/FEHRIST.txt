@@ -2,12 +2,11 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-09  (9 kaam)
-   - Naqsha: LIVE 253687618 gold+BTC m7.7 SS (equity 38,995.64)
-   - sawal-jawab: PC Claude band/kholna
-   - claude-code-19: #19 Claude Code on the web = haan (cloud chats)
+2026-11-10  (53 kaam)
+   - Chat khatam 52vi: K3 gold M1, JasMauqa m7.8 + m7.9 AUTO-B (pehli jori +59); agla K1 D:\JAS
+   - 54vi: m8.2 chart par
+   - 56vi: N -18.56 salah
 
-2026-11-10  (57 kaam)
-   - JasMauqa m7.9: sote waqt AUTO (A/B Close By khud), jawab na aaye = NO dobara nahi
-   - Chat khatam 53vi: JasMauqa m8.0 + m8.1 LOG, Exness PDF, wasooli 871.90; agla popup + m8.2 
-   - 55vi: m8.3 dono chart par
+2026-11-12  (2 kaam)
+   - 56vi: reset samjhaya
+   - 56vi: gold 3978 sawal, salah

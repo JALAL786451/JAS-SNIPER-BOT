@@ -1853,3 +1853,15 @@ pehli AUTO jori gold +59.00 (01:07 server). Gold + BTC NET ~0 (tala-band), equit
 Sawal-jawab: breakeven, t5 TP/SL, PC Claude band/khol, push (user ke phone par sirf Exness app), Claude Code course 19 (`docs/claude-code-19.md`).
 User 10 Nov: naya EA version se PEHLE haal (SS) + ijazat poochho. GitHub red ❌ (python-package-conda.yml) 10 Nov DELETE HUA - (namoona, environment.yml
 nahi) - delete ki ijazat user se BAQI. **AGLA (53vi):** K1 (D:\JAS_DRIVE.bat + schtasks SS) -> raat ki AUTO joriyan History se -> K4 qaide user "haan".
+
+## TRADING sec 5 se (56vi chat ne hataya)
+**54vi chat (10 Nov)** - **JasMauqa m8.2** BANA (user "haan"): A SIRF nuqsan wali bari lot (dhaal SELL 3.31 nahi), A/B bara pehle, label fix.
+Dono chart ✅ InpA=true, BTC InpStep 1000, Algo ON. Popups: gold B +48.08 YES, BTC B YES, BTC C +164 NO. WASOOLI 1237.35, balance 64,342.79,
+equity ~38,560, gold NET +0.20, margin level 90,263% (khatra nahi). GitHub namoona workflow DELETE HUA (user haan). C band = input 1 InpMinFaida 999999.
+Hafte ka poora khulasa: `docs/hafta-4-10-nov.md` (PC Claude, Fable 5.2 usage 16 Nov tak - user ko samjhana, FTMO BF abhi nahi).
+**AGLA (55vi):** subah gold+BTC `_waqiat.txt` (raat ke popup) -> hisaab; user ko Fable 5.2 usage samjhao; phir K1 / K4.
+**53vi chat (10 Nov)** - LIVE gold: subah BUY 2.50@4117.416 (user) = aadha nuqsan; m7.9 ko user ne "ajeeb" kaha -> **m8.0** (AUTO HATA, A = bari BUY/SELL
+Close By, WASOOLI panel) + **m8.1** (LOG `MQL5\Files\JasMauqa_<sym>.txt` + `_waqiat.txt`; user file chat mein upload karta) F7 ✅ dono chart (file naam
+`JsMouqaEA script.mq5`). Joriyan YES: A +116.50 (2.50 jori), B ... -> **WASOOLI 871.90**, balance 64,394. CPI: Algo OFF, dhaal NET +0.09 -> gold -38 = sirf ~-485.
+Gold chart **InpA=false** (A dhaal 3.31 kaat raha tha; gold 4117+ par true). Exness PDF -> `tools/exness_pdf.py`: chhoti lot +32,687, bari SELL -36,932.
+User: jawab CHHOTA. **AGLA (54vi):** popup jaanch (B YES, C NO) + log file se haal; m8.2 ijazat (A sirf nuqsan wali bari lot / bara nateeja pehle, label m8.0 fix); phir K1/K4.
