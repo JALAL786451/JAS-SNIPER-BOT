@@ -44,6 +44,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 
 - 56vi: gold popup N SELL 0.03@4110.051 + BUY 0.05@4108.705 = +4.04, NET +0.21 wahi -> salah YES. Popup ki "NAYI SELL 3.86 hedge" line = MAT (sirf likhai).
 - 56vi: N -18.56 (SELL 0.03@4108.755 + BUY 0.10@4114.943 ka 0.03) = wasooli se mehngi BUY kam, NET/equity wahi -> salah YES theek (NO bhi bila nuqsan). Bid line rang: Yellow/Aqua (F8 > Colors).
+- 56vi (12 Nov) usage SS: hafta 69%, Fable 100%, 2 reset: Fable reset (17 Nov 12:59 PM tak, warna ZAYA - khud nahi hota) + Full reset (11 Dec tak). Hafta khud Itwar 15 Nov 2 AM. Salah: Fable reset Itwar 2 AM se PEHLE dabao jab K4/K5 shuru; Full reset sambhal ke.
 
 - 10 Nov PDF (31 Oct-10 Nov, LIVE): band kul +12,967 (gold +10,226, BTC +2,741). GOLD chhoti lot (<=0.10) BUY +26,417 + SELL +6,270 = +32,687; bari SELL -36,932, bari BUY +14,471. Khuli gold -20,882: BUY 2.50@4117.416 akeli -10,893, BUY 0.35/0.20x3 @4124-4143 -5,913, SELL 3.31@4063.571 -3,480 (dhaal). Sab se oonchi SELL 4110.845 < bari BUY -> A abhi nahi. `tools/exness_pdf.py`.
 
