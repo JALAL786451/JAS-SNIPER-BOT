@@ -16,3 +16,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 10 Nov (54vi) | MQL5\Files ki 4 file select > right-click > Send to > Compressed (zip) = ek attach; Claude zip khud kholta. FTMO BF 2026 abhi elaan nahi (10 Nov check) | - |
 | 10 Nov (55vi) | MT5 Toolbox (Ctrl+T) > Calendar tab = news MT5 ke andar (sirf 3-bail/high filter), website ki zaroorat nahi; khabar se pehle Algo/popup faisla | - |
 | 10 Nov (56vi) | Phone MT5 app mein bhi Close By hai: Trade tab > ticket daba ke rakho > Close > type "Close by" -> ulti ticket chuno (PC na ho to jori phone se) | - |
+| 12 Nov (57vi) | MetaEditor Navigator > file par right-click > "Open Folder" = .mq5 ka folder seedha khulta (chat mein attach asaan). FTMO BF 2026: 12 Nov tak elaan NAHI | - |
