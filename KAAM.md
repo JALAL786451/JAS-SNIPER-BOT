@@ -53,6 +53,8 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 
 - 58vi (15 Nov) FTMO demo report: balance 99,378.34, equity 99,241.81; khuli t5 US500 2.13 + USTEC 0.36 (dono SL ke saath); i6 band +153.96, t5 band -782.78. Sab qaide ke mutabiq, koi galti nahi.
 
+- 58vi (15 Nov, user): Fable K4 ka status Claude KHUD har ~1 ghante bataye (send_later), user ko baar baar poochhna na pare.
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
