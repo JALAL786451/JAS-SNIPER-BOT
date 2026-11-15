@@ -262,3 +262,4 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - N popup nuqsan wala (-18.56)? (12 Nov, 56vi) -> wasooli se mehngi BUY kam; NET + equity wahi (nuqsan pehle se tha, sirf pakka). YES theek, NO bhi bila nuqsan.
 - Saari BUY band karke neeche dobara kholein? (12 Nov, 56vi) -> NAHI: beech mein SELL nangi (6.99 lot = $1 par 699), $54 uchhal = equity khatam; bari lot joa. Tala-band mein girna nuqsan nahi deta.
 - MT5 Bid line rang? (12 Nov, 56vi) -> F8 > Colors > Bid line = Yellow/Aqua; template EA wale chart par nahi.
+- Tablet (Galaxy Tab A9) WiFi 'connected without internet'? (15 Nov, 57vi) -> HAL: Settings > General management > Date and time > Automatic ON. Na ho to: Private DNS Off, WiFi Forget, MAC = Phone MAC, Reset network settings.
