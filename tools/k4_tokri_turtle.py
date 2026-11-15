@@ -673,7 +673,9 @@ def cmd_chunao(argv):
         print(f"  dict: {v}")
 
 
-CHUNA = {}     # CHUNAO ke baad yahan likha jata hai (cmd_chunao ka nateeja) - imtihan isi par
+# CHUNAO ka nateeja (15 Nov 2026, `chunao F0`): 324 mein se 0 variant nafe mein, 0 ahl, 253 account khatam.
+# Q-c ke mutabiq "sab se kam nuqsan" wala -> IMTIHAN isi EK par, EK dafa. (K4 = FAIL shart 2 par pehle hi.)
+CHUNA = {'F0': {'T': (20, 10), 'a': 'iii', 'b': 'close', 'c2': 1, 'step': 200, 'tp': 200}}
 
 
 def cmd_imtihan(argv):
@@ -701,6 +703,171 @@ def cmd_imtihan(argv):
         print('   saada saal: ' + ' '.join(f"{y}:{p:+.0f}" for y, p in sd['Y']))
 
 
+# ---------------------------------------------------------------- sanity / hasas / waqiat / log
+def cmd_sanity(argv):
+    """Bachao 5: purana nateeja dobara. (1) purana sim jaisa tha; (2) naya engine tk2 = 4H Supertrend rukh."""
+    build()
+    out = subprocess.run([sys.executable, str(ROOT / 'tools/tokri_asli.py')], capture_output=True, text=True).stdout
+    rows = [ln.split('|')[1].split() for ln in out.splitlines() if '|' in ln and not ln.startswith('mode')]
+    blown = sum(1 for r in rows if int(r[6]) != 0)
+    print(f"purana sim (tools/tokri_asli.py, H1 2005-26, $1000): {len(rows)} variant, account khatam {blown} | 44vi chat ka nateeja: 240/240")
+    D = Data()
+    for nm, kw in (('38,000 USC', {}), ('100,000 USC', dict(eq0=100_000 * USC))):
+        w = run2(D, 'ST4H', 'chunao', **kw)
+        print(f"naya engine tk2 (4H Supertrend, Step$2 TP$1) CHUNAO 2009-17, {nm}: {fmt(w)} | pehli hadd {ts(w['first'])} khatam {ts(w['blown'])} | CLOSE ALL {w['nbc']} dafa")
+    H = Data('h1')
+    for nm, rk in (('tk2 4H Supertrend', 'ST4H'), ('Turtle 55/20 close a-i', 'T55_20_close')):
+        w = worst([run(H, rk, ('2005-01-01', '2009-01-01'), path=pth, barsec=3600) for pth in (0, 1)])
+        print(f"EXTRA H1 2005-2008 (kaccha - H1 ke andar raasta andaza) {nm}: {fmt(w)} | pehli hadd {ts(w['first'])} khatam {ts(w['blown'])}")
+
+
+def cmd_hasas(argv):
+    """Chune hue variant par: kharcha, swap, raasta, 1 din der, 10 sec, data, shuru equity, chhoti hadd."""
+    build()
+    D = Data()
+    v = CHUNA['F0']
+    rk, kw = vrukh(v), vkw(v)
+    tests = [('MAIN (bura raasta)', D, rk, {}),
+             ('spread $0.35', D, rk, dict(sp=35)),
+             ('swap tester jaisa (BUY -0.51 USC/0.01/raat, Budh 3x)', D, rk, dict(swapl=51)),
+             ('rukh 1 din aur der se (lookahead jaanch)', D, vrukh(v, 1), {}),
+             ('10 second waqfa 0', D, rk, dict(minsec=0)),
+             ('10 second waqfa 60', D, rk, dict(minsec=60)),
+             ('shuru 100,000 USC (hadd 10,000)', D, rk, dict(eq0=100_000 * USC)),
+             ('hadd ke baad hamesha STOP (pehli hadd tak)', D, rk, dict(restart=0)),
+             ('CHHOTA: bhari lot bhi 0.01', D, rk, dict(uh=1)),
+             ('CHHOTA: max 10 lots', D, rk, dict(maxt=10)),
+             ('CHHOTA: hadd 5% / bardasht 2.5%', D, rk, dict(hadd=EQ0 * 5 // 100, bard=EQ0 * 25 // 1000))]
+    for daur in ('chunao', 'imtihan'):
+        print(f"\n--- {daur.upper()} : {vname(v)} ---")
+        for nm, d, r, extra in tests:
+            k = dict(kw)
+            k.update(extra)
+            w = run2(d, r, daur, **k)
+            print(f"{nm:52}: {fmt(w)} | pehli hadd {ts(w['first'])[:10]} khatam {ts(w['blown'])[:10]}")
+        for pth, nm in ((0, 'O-H-L-C'), (1, 'O-L-H-C'), (2, 'rang (sabz O-L-H-C / laal O-H-L-C)'), (3, 'ulta rang')):
+            print(f"raasta {nm:44}: {fmt(brief(run(D, rk, daur, path=pth, **kw)))}")
+    for src, nm in (('saaf', 'histdata ke mashkook candle kaat kar'), ('q2015', '2015 = QDM (Dukascopy)')):
+        d2 = Data(src)
+        print(f"data {nm:47}: {fmt(run2(d2, rk, 'chunao', **kw))}  (CHUNAO)")
+
+
+WAQIAT = [('2013 crash (Apr-Jun 2013)', '2013-04-01', '2013-07-01'), ('Mar 2020 (Feb-Apr 2020)', '2020-02-15', '2020-04-15'),
+          ('2022 (poora saal)', '2022-01-01', '2023-01-01'), ('2025 (poora saal)', '2025-01-01', '2026-01-01'),
+          ('2026 (Jan - 5 Nov)', '2026-01-01', '2027-01-01')]
+
+
+def cmd_waqiat(argv):
+    """Bachao 9 + 10: har bara waqia ALAG run (naya 38,000, khali tokri), aur har saal alag (lots/din)."""
+    build()
+    D = Data()
+    v = CHUNA['F0']
+    rk, kw = vrukh(v), vkw(v)
+    base = f"T{v['T'][0]}_{v['T'][1]}_{v['b']}"
+    R = np.fromfile(rukh_file(D, base), dtype=np.int8)
+    print(f"=== BARE WAQIAT (har ek alag run, 38,000 USC se) : {vname(v)} ===")
+    for nm, a, b in WAQIAT:
+        i0, i1 = D.span((a, b))
+        px = f"gold {D.o[i0] / 100:.0f} -> {D.c[i1 - 1] / 100:.0f} (kam {D.l[i0:i1].min() / 100:.0f}, zyada {D.h[i0:i1].max() / 100:.0f})"
+        days = np.unique(D.di[i0:i1])
+        rd = R[D.dy.i0.values[days]]
+        print(f"\n{nm}: {px} | Turtle rukh din: UP {(rd == 1).sum()} DOWN {(rd == -1).sum()} koi nahi {(rd == 0).sum()}")
+        w = run2(D, rk, (a, b), **kw)
+        k = run2(D, 'ST4H', (a, b))
+        sd = saada(D, base, (a, b))
+        print(f"   Turtle tokri : {fmt(w)} | pehli hadd {ts(w['first'])[:10]}")
+        print(f"   tk2-4H       : {fmt(k)} | pehli hadd {ts(k['first'])[:10]}")
+        print(f"   saada 0.02   : nafa {sd['nafa']:+7.2f}%  girawat {sd['dd']:5.2f}%  trades {sd['lots']}")
+    print("\n=== SAAL-BA-SAAL ALAG (har saal naya 38,000, khali tokri) + fixed Step ka asar (bachao 10) ===")
+    print('saal | gold close | din range $ | Turtle tokri: nafa% hadd lots/din zyada-lots | tk2-4H: nafa% hadd lots/din | saada nafa%')
+    for y in range(2009, 2027):
+        a, b = f'{y}-01-01', f'{y + 1}-01-01'
+        i0, i1 = D.span((a, b))
+        if i1 <= i0:
+            continue
+        days = np.unique(D.di[i0:i1])
+        dr = ((D.dy.H - D.dy.L).values[days] / 100).mean()
+        w = run2(D, rk, (a, b), **kw)
+        k = run2(D, 'ST4H', (a, b))
+        sd = saada(D, base, (a, b))
+        mx = max(r['maxn'] for r in w['raw'])
+        print(f"{y} | {D.c[i1 - 1] / 100:7.0f} | {dr:6.1f} | {w['nafa']:+7.1f}% {w['hadd']:3d} {w['lots'] / len(days):6.1f} {mx:3d} | {k['nafa']:+7.1f}% {k['hadd']:3d} {k['lots'] / len(days):6.1f} | {sd['nafa']:+6.2f}%")
+
+
+def baskets(path):
+    """engine log -> {basket: [events]}"""
+    bk = {}
+    for ln in open(path):
+        a = ln.split()
+        if a[0] == 'O':
+            e = dict(k='O', t=int(a[1]), dir=int(a[2]), u=int(a[3]), open=int(a[4]), bid=int(a[5]), n=int(a[6]), bk=int(a[7]), rk=int(a[8]), seq=int(a[9]))
+        else:
+            e = dict(k='C', t=int(a[1]), kind=a[2], dir=int(a[3]), u=int(a[4]), open=int(a[5]), bid=int(a[6]), pl=int(a[7]), bal=int(a[8]), n=int(a[9]), bk=int(a[10]), seq=int(a[11]))
+        bk.setdefault(e['bk'], []).append(e)
+    return bk
+
+
+def cmd_log(argv):
+    """Bachao 6: 3 basket ka poora log (ek jeet, ek hadd, ek lamba) + haath ka hisaab (engine se alag)."""
+    build()
+    D = Data()
+    v = CHUNA['F0']
+    daur = argv[0] if argv else 'chunao'
+    i0, i1 = D.span(daur)
+    lg = CACHE / 'k4_log.txt'
+    p = dict(BASE)
+    p.update(vkw(v))
+    subprocess.run([str(EXE), str(D.bars), str(rukh_file(D, vrukh(v))), f'i0={i0}', f'i1={i1}', f'eq0={EQ0}', f'bard={EQ0 * 5 // 100}',
+                    f'hadd={EQ0 * 10 // 100}', f'log={lg}'] + [f'{k}={x}' for k, x in p.items()], capture_output=True, text=True, check=True)
+    bk = baskets(lg)
+    info = []
+    for b, ev in bk.items():
+        cl = [e for e in ev if e['k'] == 'C']
+        op = [e for e in ev if e['k'] == 'O']
+        if len(cl) != len(op):
+            continue                                            # daur ke aakhir mein khuli reh gayi
+        info.append(dict(b=b, n=len(op), pl=sum(e['pl'] for e in cl), dur=ev[-1]['t'] - ev[0]['t'], hadd=any(e['kind'] == 'H' for e in cl),
+                         ca=any(e['kind'] == 'B' for e in cl)))
+    df = pd.DataFrame(info)
+    print(f"{vname(v)} | {daur}: tokri (khali se khali tak) {len(df)}; jeet {(df.pl > 0).sum()}, haar {(df.pl <= 0).sum()}, hadd par khatam {df.hadd.sum()}, CLOSE ALL se {df.ca.sum()}")
+    print(f"lots fi tokri: darmiyana {df.n.median():.0f}, 90% {df.n.quantile(.9):.0f}, zyada {df.n.max()} | muddat ghante: darmiyana {df.dur.median() / 3600:.2f}, zyada {df.dur.max() / 3600:.0f}")
+    print(f"kul P/L jeet wali {df.pl[df.pl > 0].sum() / USC:+.0f} USC, haar wali {df.pl[df.pl <= 0].sum() / USC:+.0f} USC")
+    win = df[(df.pl > 0) & (df.n >= 4) & (df.n <= 8) & ~df.hadd]
+    pick = [('JEET (chhoti tokri)', int(win.iloc[len(win) // 2].b) if len(win) else int(df[df.pl > 0].iloc[0].b))]
+    if df.hadd.any():
+        hd = df[df.hadd]
+        pick.append(('AAKHRI HADD', int(hd.sort_values('n').iloc[0].b)))
+    pick.append(('LAMBI (sab se zyada waqt, hadd ke baghair)', int(df[~df.hadd].sort_values('dur').iloc[-1].b)))
+    tix = pd.Index(D.t)
+    for nm, b in pick:
+        ev = bk[b]
+        print(f"\n--- {nm}: tokri #{b}, {len([e for e in ev if e['k'] == 'O'])} lots, {ts(ev[0]['t'])} -> {ts(ev[-1]['t'])} UTC ---")
+        opens = {e['seq']: e for e in ev if e['k'] == 'O'}
+        tot, bad, shown = 0, 0, 0
+        for e in ev:
+            j = int(np.searchsorted(D.t, e['t'], side='right')) - 1          # us waqt ki M1 candle
+            inbar = (D.l[j] <= e['bid'] <= D.h[j]) or e['bid'] == D.o[j] or (e['k'] == 'C' and e['kind'] == 'T')
+            if e['k'] == 'C':
+                o = opens[e['seq']]
+                # haath ka hisaab: BUY = (band bid - khuli ask) x unit ; SELL = (khuli bid - band ask) x unit ; TP = TP qeemat par
+                cp = (o['open'] + o['dir'] * p['tp']) if e['kind'] == 'T' else (e['bid'] if o['dir'] > 0 else e['bid'] + p['sp'])
+                hand = o['u'] * (cp - o['open']) * o['dir']
+                tot += e['pl']
+                bad += (hand != e['pl']) or not inbar
+            if shown < 60 or e is ev[-1]:
+                shown += 1
+                side = 'BUY ' if e['dir'] > 0 else 'SELL'
+                if e['k'] == 'O':
+                    print(f"  {ts(e['t'])[5:]} KHULI {side} {e['u'] / 100:.2f} @ {e['open'] / 100:.2f} (bid {e['bid'] / 100:.2f}) rukh {e['rk']:+d} khuli lots {e['n']}")
+                else:
+                    kind = {'T': 'TP', 'B': 'CLOSE ALL', 'H': 'AAKHRI HADD', 'R': 'rukh palta (c2)'}[e['kind']]
+                    print(f"  {ts(e['t'])[5:]} BAND  {side} {e['u'] / 100:.2f} khuli {e['open'] / 100:.2f} -> {cp / 100:.2f} = {e['pl'] / USC:+.2f} USC ({kind}) balance {e['bal'] / USC:.2f}")
+            elif shown == 60:
+                shown += 1
+                print(f"  ... ({len(ev) - 61} aur line) ...")
+        print(f"  tokri ka kul = {tot / USC:+.2f} USC | haath ke hisaab se farq / candle se bahar: {bad} line")
+
+
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     if cmd == 'data':
@@ -711,5 +878,7 @@ if __name__ == '__main__':
         cmd_chunao(sys.argv[2:])
     elif cmd == 'imtihan':
         cmd_imtihan(sys.argv[2:])
+    elif cmd in ('sanity', 'hasas', 'waqiat', 'log'):
+        globals()['cmd_' + cmd](sys.argv[2:])
     else:
         print(__doc__)
