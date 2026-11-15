@@ -62,6 +62,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 59vi (15 Nov) SS: **e2 TRADE CHALU** (BTCUSDm H4, demo 474832446, Algo ON). GBPUSD nayi SELL 'market khulte hi' (Itwar, market band). Agla: Somwar SS/report - GBPUSD SELL ~0.14 SL 1.33849 khuli ya nahi.
 - 60vi (16 Nov) SS 22:20 server (demo 474832446, balance 99,378.34 equity 99,241.81, khuli sirf t5 US500 2.13 + USTEC 0.36): e2 TRADE CHALU, EA ki trade 0. **GBPUSD SELL NAHI khulegi** - panel 'radar: SELL 1 din - EA ke paas nahi' (signal Jumerat ki candle ka tha; weekend par Juma ki candle 'chalti' gini gayi is liye 'nayi - market khulte hi' GALAT dikha; qaida = sirf aakhri band candle ka signal). Gold SELL 3852.301 se neeche D1 close par (0.3 ATR door), chandi 48.612 (0.0 ATR) = qareeb. Label bug sudhar (e3) ijazat BAQI. USD hadd faisla baqi.
 - 60vi (16 Nov) user: "koi nayi strategy jo 4 EA ko support kare, FTMO jaldi + perfectly pass". Jawab: bina test koi EA nahi; 3 ummeedwar (N1 global index reversal non-US, N2 chutti non-US B2, N3 BTC/ETH trend B4), salah N1 pehle; qaida pehle likh kar TALAASH/IMTIHAN. User ki 'haan' BAQI.
+- 60vi (16 Nov) user: "N1 se pehle kitabon (researched/tested) se strategy - agents se discuss, mujhe batao, phir tajziya, phir test". 3 agent chale -> `docs/research/kitab-16nov.md`. Nateeja: Double 7 (Connors), 12-mahine momentum (Antonacci), wahi-mahina seasonality (JF 2016). Salah: Double 7 pehle (#102), phir N1. User ki 'haan' BAQI.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
