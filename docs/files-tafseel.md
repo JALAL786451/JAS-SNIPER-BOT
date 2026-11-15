@@ -99,7 +99,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/ftmo_imkaan.py` | FTMO imkaan f2 (27 Oct; f2 = --jaal har system ka alag risk: IBS 2% + Kachhua 0.25% = 36m mein 59% pass, 5% fail; 60m mein 81% / 7%): Monte Carlo FTMO 2-step (P1 10%, P2 5%, din 5%, kul 10%, min 4 din), presets ibs / kachhua / --system, faida SE ke saath. Pehla nateeja: tokri 0.5% = dono pass 47%, ~18 mahine |
 | `indicators/jas_tf_live.pine` | JAS TF LIVE l2: har TF (1m-1M) ki CHALTI candle ka haal (rang, chal, range, kahan, body, baqi waqt) - past kuch nahi, sirf dekhna |
 | `indicators/jas_aaina.pine` | JAS AAINA a18 (21 Oct): a15 (AGLI record + P/L spread ke baad) + chart khaali (saaya, labels, LGB, S/R, qareebi, ABHI, Record default BAND). a16 khichdi hata di. Test: `strategies/jas_aaina_test.pine` t2 = FAIL |
-| `JasTideRadarEA.mq5` | Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
+| `JasTideRadarEA.mq5` | **e2 (15 Nov): FTMO #101 - 12 market, 0.25% of 100k, FTMO pehra, magic 20261115** (e1 = git a1b1c2e se pehle). Kachhua (Tide 1) ek chart se kai market. Magic 20261009 (gold wale 9) aur 20261018 (commodity 6) |
 | `JasRsi2EA.mq5` | Connors RSI(2), US500/USTEC/US30, magic 20261012 |
 | `JasIbsEA.mq5` | **i6** (1 Nov, judge 3 ke baad): faisla 16:15 NY (din ki candle 16:15 par kati, M15), restart theek, $100k base, pehra poore account - judge replay: Python se trade bilkul same |
 

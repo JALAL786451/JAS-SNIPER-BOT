@@ -57,6 +57,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - Fable K4 chat (15 Nov, user): **gold par tokri BAND** (Fable ki rai: bina SL tokri gold par pass mumkin nahi; sirf range wali forex jori par ~20-30%, data nahi, test nahi). User: FTMO ke liye "sync wale instruments ki strategy" poochhi -> jawab = #53 (JasTrend 4H XAU/XAG/US500/USTEC 0.75% + IBS US500/USTEC 1%, pehle se demo par). User: **demo chalne dein**; nayi chat mein isi (FTMO mansooba #53) par baat.
 - 59vi (15 Nov): user: "11 mahine bohat hain, tez kaise ho?" -> jawab: muft raftar nahi (naya market ~0.5-1 mahina, risk 1.5x = #77 18 fail); salah = Kachhua e1 0.25% demo par (K7, #101 median 10.6->10.2). User jawab BAQI.
 - 59vi (15 Nov): user: "3 EA tested, breach nahi, bas guzara; Kachhua FTMO par test nahi hua? strategy hain hi nahi, mehnat bekaar?" -> jawab: Kachhua FTMO par test HUA (#100 akela 67/0 median 22.1 = trend se sust; #101 saath 85/0 median 10.2). Strategy hain (15 ASLI PASS / 101) magar edge patla = sust; mehnat bekaar nahi.
+- 59vi (15 Nov): user: "Kachhua bhi lagana hai, FTMO rules follow kare" + "risk barhaye bina behtareen nateeja?" -> **JasTideRadarEA e2 BANA** (12 market #101, 0.25% of 100k, FTMO pehra poora account, magic 20261115, gold+silver ek slot, USD hadd 3 rakhi (test mein nahi thi - user chahe to 0), InpTrade default false). F7 + demo 474832446 BAQI. Jawab: risk ke bina sirf (1) Kachhua (2) naye tested idea (har ek ~0.5-1 mahina) (3) $ barhana = bara / zyada account (% wahi).
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
@@ -67,7 +68,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K4 | Tokri + Turtle 55/20 rukh test | user 9 Nov | **HUA 15 Nov: FAIL** (Fable, `docs/k4-tokri-turtle.md`; Claude ne IMTIHAN dobara chalaya = wahi number). 324/324 variant IMTIHAN mein account khatam; saada 0.02 Turtle +4-7.5% (9 saal). Rukh ghaib se 100% sahi ho tab bhi tk2 tokri fail = dhaancha ka masla. K5 NAHI. |
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |
-| K7 | Faisle: Kachhua e1 0.25% FTMO demo? B1 ya B2 pehle? | PDF hafta 1 | user se poochna |
+| K7 | Kachhua **e2** 0.25% FTMO demo 474832446 par (user haan 15 Nov); B1 ya B2 pehle? | PDF hafta 1 | e2 bana - user F7 + chart SS BAQI |
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 
 ## Hue (aakhri 5)
