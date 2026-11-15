@@ -4,7 +4,7 @@
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | **balance 99,494.00, equity 100,053.90 (+559.90 khuli)** | JasIbsEA i6 (US500m D1), JasTrendEA t5 (XAUUSDm H4), JasKhirkiEA k2 (DE30m D1) | ON; **i6 US500 BUY 2.81 BAND 9 Nov 21:16 @7557.57 (IBS 0.90 > 0.80) = +584.73 (~+0.59R)**; i6 band 3, jeet 2, kul +0.15R; intezar IBS < 0.2. khuli 2: t5 XAU 0.03 @4001.869 SL 3755.378 (+417.90, +0.57R), XAG 0.02 @51.996 SL 45.881 (+142.00, +0.23R); target baqi 9946, aaj farsh 94909; k2 0; margin level 58150% | 9 Nov SS #3 (FTMO VIEW v1.1) |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | **balance 99,378.34, equity 99,241.81 (-136.53 khuli)** (shuru 100k se -621.66) | JasIbsEA i6 (US500m+USTECm D1), JasTrendEA t5 (XAU/XAG/US500/USTEC H4), JasKhirkiEA k2 (DE30m D1) | ON; khuli 2 (t5): US500 BUY 2.13 @7562.35 SL 7210.48 (-31.35, risk ~750) + USTEC BUY 0.36 @28170.41 SL 26138.98 (-105.18, risk ~731); band: i6 3 (+565.66, USTEC SL -996.43, +584.73 = +153.96), t5 3 (XAU +47.83, XAG -168.20, US500 -662.41 = -782.78), DIV +7.16; target baqi 10,622, aaj farsh ~94,378; k2 0; ML 37,808% | 15 Nov report 21:04 (user PNG, 58vi) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0; XAG SELL 0.05 (2 Nov, SL khali = hamara EA nahi) user ne 3 Nov band +153.25; Magic/Comment SS baqi (purana: `docs/purana-haal.md`) | ON | 4 Nov SS |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **9 Nov SS (52vi): equity 38,995.64; balance ~50,975 (equity + khula nuqsan)**; GOLD P/L -8540.80: BUY 35 tk 3.75 lot avg 4091.183 / SELL 17 tk 3.74 avg 4068.458, NET +0.01 (nuqsan TALA-BAND, price se nahi badalta), gold 4139; BARI LOT 6 tk (max 3.31); popup B pair +210.61, C +349. BTC P/L -3438.86: BUY 75 tk 2.81 avg 75660.29 / SELL 7 tk 2.50 avg 74401.88, NET BUY +0.31, BTC 74767, breakeven 85860 | JasMauqa **m8.3** (55vi 10 Nov raat: F7 ✅ dono chart, Algo OFF raat, gold 4032 equity 38,821 NET +0.21 WASOOLI 1760.23; m8.2 16:43 server SS: balance 64,342.79, equity ~38,560, gold NET +0.20, WASOOLI 1237.35, ML 90,263%, InpA true dono, BTC InpStep 1000; pehle m8.1 15:21: equity 39,194, balance 64,394, gold BUY 3.98 avg 4121.3 / SELL 3.79 avg 4067.8 NET +0.19, BTC NET +0.04, tk 133, WASOOLI 871.90, gold InpA=false); purana: m7.8 (F7 0 error, 9 Nov; m7.9 AUTO-B F7 ✅ 10 Nov dono chart par, AUTO OFF); 10 Nov SS: equity 39,012.07, gold P/L -10,060 NET +0.02, BTC -3,442 NET +0.01, tk 119; XAUUSDc H4 + BTCUSDc H4; BTC SS #2: equity 39,049.70, BTC P/L -3441.69, BUY 65 tk 3.13 / SELL 12 tk 3.12 = NET +0.01 (ab BTC bhi TALA-BAND), bari lot 5 tk max 2.40, gold NET -0.01, margin level 655196%; RUKH: gold 4H UP, BTC 4H DOWN, dono 'nayi BUY nahi - intezar'; tickets 134/200; margin level 282987% | **ON** (YES/NO popup) | 9 Nov SS (52vi) |
 
@@ -62,15 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**56vi chat (10-12 Nov)** - m8.3 popup: N +4.04 YES, N -18.56 (wasooli se mehngi BUY kam, NET/equity wahi) YES theek. Usage: Fable reset 17 Nov tak (warna zaya), Full reset 11 Dec tak; hafta khud Itwar 2 AM. InpWaitMin 5 OK (screen par).
-12 Nov SS: user ke paas **m8.4** (repo mein m8.3 - m8.4 kahin aur bana, file BAQI), gold 3978, NET 0, P/L -34,063, equity 37,805, WASOOLI 9237. User: "BUY 6.99 band, neeche dobara?" -> NAHI (SELL 6.99 nangi = $54 = equity khatam).
-**AGLA (57vi):** user se m8.4 ki .mq5 file maango (repo mein daalo) + gold/BTC 4 file zip; phir K4/K5 (Fable reset Itwar 15 Nov 2 AM se pehle dabao agar bara kaam).
-**55vi chat (10 Nov)** - Files hisaab: gold B YES 13 + aur -> **WASOOLI gold 1760.23 + BTC 65.80**, equity ~38,820, gold NET **+0.21** (NET ROK 0.20 par - nayi BUY nahi).
-User ka sawal "bojh BUY 2.50@4117.416 + SELL 3.31@4063.571 kam ho?" -> hisaab: Close By 2.50 = -13,461.25, SELL 3.31 + upar wali BUY = sab nuqsan; SACH: koi jori equity nahi badalti,
-nayi 0.01 BUY + jori = NET +0.01. Fable 5.2 se mashwara (draft `docs/fable-mashwara-m83.md`, aam claude.ai chat) -> **JasMauqa m8.3** (N = NET wahi jori, E = BUY 2.50 + dhaal 0.05 barabar
-market band, dhaal min 0.89, budget = WASOOLI). Claude sudhar: N/E hamesha A/B ke baad (warna B +87.55 ka SELL N +3.17 kha jata). F7 ✅ dono chart (BTC LADDER 1000, gold 25), Algo OFF raat (user).
-Popup tarteeb: B YES, N YES theek, E marzi (~-269, equity wahi), C NO. Fable reset Cancel - bara kaam mein limit khatam ho tab, 17 Nov 12:59 PM tak. Exness HMR list = server time (UTC), PKT +5.
-**AGLA (56vi):** subah gold+BTC 4 file (zip) -> raat/subah ke popup (B/N/E) ka hisaab; m8.3 ka pehla E/N nateeja jaancho; phir K4/K5 (Fable 17 Nov se pehle).
+**57vi chat (12-15 Nov)** - K0 file (m8.4 .mq5 + gold/BTC zip) NAHI aayi - abhi baqi. Tablet WiFi: date/time auto = hal. Rehnuma r1 (Fable, branch fish-demo-trend-1h)
+= t5 ka hi qaida; Python `tools/rehnuma_1d_test.py` gold 2010-26: t5 +26.6R/girawat 7.3R vs 1D filter +25.3R/5.4R -> **user: t5 hi chalne dein** (EA badla NAHI).
+Hafte ki limit (Fable bhi) Itwar 15 Nov 2 AM khud reset. **K4 FABLE ko diya:** hukm `docs/k4-fable-hukm.md` (PASS qaida pehle, CHUNAO 2009-17 / IMTIHAN 2018-26, 10 bachao, saada 0.02 muqabla),
+session_013jF6yZMBMXKybDkBuqxcdm (max effort), nateeja branch `claude/k4-tokri-turtle` -> `docs/k4-tokri-turtle.md`.
+**AGLA (58vi):** Fable K4 nateeja JAANCHO (get_session / branch; sec 6 checklist, sanity tk2, saada muqabla) -> user ko PASS/FAIL table; K5 sirf PASS + user ijazat. K0 file jab user de.
+**56vi chat** -> `docs/purana-haal.md` (grep "56vi").
+**55vi chat** -> `docs/purana-haal.md` (grep "55vi").
 **54vi chat** -> `docs/purana-haal.md` (grep "54vi").
 **53vi chat** -> `docs/purana-haal.md` (grep "53vi").
 **52vi chat** -> `docs/purana-haal.md` (grep "52vi").

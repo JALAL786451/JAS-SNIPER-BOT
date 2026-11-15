@@ -51,13 +51,17 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 
 - 10 Nov PDF (31 Oct-10 Nov, LIVE): band kul +12,967 (gold +10,226, BTC +2,741). GOLD chhoti lot (<=0.10) BUY +26,417 + SELL +6,270 = +32,687; bari SELL -36,932, bari BUY +14,471. Khuli gold -20,882: BUY 2.50@4117.416 akeli -10,893, BUY 0.35/0.20x3 @4124-4143 -5,913, SELL 3.31@4063.571 -3,480 (dhaal). Sab se oonchi SELL 4110.845 < bari BUY -> A abhi nahi. `tools/exness_pdf.py`.
 
+- 58vi (15 Nov) FTMO demo report: balance 99,378.34, equity 99,241.81; khuli t5 US500 2.13 + USTEC 0.36 (dono SL ke saath); i6 band +153.96, t5 band -782.78. Sab qaide ke mutabiq, koi galti nahi.
+
+- 58vi (15 Nov, user): Fable K4 ka status Claude KHUD har ~1 ghante bataye (send_later), user ko baar baar poochhna na pare.
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
-| K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | 57vi #2 (12 Nov): user phir "deta hoon" - .mq5 + zip ka intezar |
+| K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | 57vi (15 Nov): file NAHI aayi - jab user de |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
-| K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | user "haan" qaide par baqi |
+| K4 | Tokri + Turtle 55/20 rukh test | user 9 Nov | **HUA 15 Nov: FAIL** (Fable, `docs/k4-tokri-turtle.md`; Claude ne IMTIHAN dobara chalaya = wahi number). 324/324 variant IMTIHAN mein account khatam; saada 0.02 Turtle +4-7.5% (9 saal). Rukh ghaib se 100% sahi ho tab bhi tk2 tokri fail = dhaancha ka masla. K5 NAHI. |
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |
 | K7 | Faisle: Kachhua e1 0.25% FTMO demo? B1 ya B2 pehle? | PDF hafta 1 | user se poochna |
