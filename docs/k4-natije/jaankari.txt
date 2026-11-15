@@ -1,0 +1,12 @@
+=== IMTIHAN 2018..2026 | F0 ke sab 324 variant - SIRF JAANKARI | 177s ===
+nafa > 0: 0 | ahl jaisa (4 shart): 0 | account khatam: 324 | hadd kabhi nahi: 0
+nafa %: sab se bura -101.0, darmiyana -100.0, sab se acha -99.9 | hadd ginti: kam 10, darmiyana 29, zyada 79
+    T20/10 a-ii touch c1 Step$2 TP$1: nafa -99.9% girawat 100.0% hadd 32 musbat 0/9 khatam 2024-07-25 13:54
+    T40/20 a-ii close c2 Step$1.5 TP$0.5: nafa -99.9% girawat 100.0% hadd 17 musbat 0/9 khatam 2022-03-15 05:56
+    T40/20 a-iii touch c1 Step$2 TP$1: nafa -99.9% girawat 100.1% hadd 35 musbat 0/9 khatam 2023-12-03 23:20
+    T40/20 a-iii close c1 Step$2 TP$2: nafa -99.9% girawat 100.1% hadd 45 musbat 0/9 khatam 2024-11-25 23:43
+    T20/10 a-ii close c1 Step$2 TP$0.5: nafa -100.0% girawat 100.2% hadd 31 musbat 0/9 khatam 2025-01-10 10:19
+
+real	2m58.396s
+user	10m16.463s
+sys	1m21.778s

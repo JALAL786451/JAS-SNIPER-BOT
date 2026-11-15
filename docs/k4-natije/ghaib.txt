@@ -1,0 +1,22 @@
+
+--- CHUNAO : rukh GHAIB se (lookahead jaan boojh kar) ---
+ghaib: aaj ka din kis taraf band hoga   | tk2 Step$2 TP$1   : nafa   -63.5%  girawat  82.1%  hadd  34 (4saal mein 26)  musbat 3/9  lots   68770 | pehli hadd 2009-10-08 khatam -
+ghaib: aaj ka din kis taraf band hoga   | Step$2 TP$2 + c2  : nafa  +159.9%  girawat  11.0%  hadd   4 (4saal mein  4)  musbat 9/9  lots   63766 | pehli hadd 2011-08-22 khatam -
+ghaib: aaj ka din kis taraf band hoga   | saada 0.02 lot     : nafa  +111.8%  girawat   0.4%  trades 1166
+ghaib: agle 5 din kis taraf             | tk2 Step$2 TP$1   : nafa   -35.7%  girawat  53.9%  hadd  29 (4saal mein 22)  musbat 5/9  lots   64321 | pehli hadd 2009-11-04 khatam -
+ghaib: agle 5 din kis taraf             | Step$2 TP$2 + c2  : nafa   +42.8%  girawat  23.2%  hadd  11 (4saal mein  9)  musbat 7/9  lots   53391 | pehli hadd 2009-12-01 khatam -
+ghaib: agle 5 din kis taraf             | saada 0.02 lot     : nafa   +56.5%  girawat   0.8%  trades 414
+ghaib: agle 20 din kis taraf            | tk2 Step$2 TP$1   : nafa   -59.4%  girawat  78.4%  hadd  31 (4saal mein 24)  musbat 4/9  lots   64038 | pehli hadd 2009-11-04 khatam -
+ghaib: agle 20 din kis taraf            | Step$2 TP$2 + c2  : nafa    -2.0%  girawat  34.8%  hadd  19 (4saal mein 17)  musbat 5/9  lots   47422 | pehli hadd 2009-11-04 khatam -
+ghaib: agle 20 din kis taraf            | saada 0.02 lot     : nafa   +26.8%  girawat   0.8%  trades 216
+
+--- IMTIHAN : rukh GHAIB se (lookahead jaan boojh kar) ---
+ghaib: aaj ka din kis taraf band hoga   | tk2 Step$2 TP$1   : nafa  -100.0%  girawat 100.0%  hadd  56 (4saal mein 39)  musbat 0/9  lots  116242  ACCOUNT KHATAM | pehli hadd 2018-07-19 khatam 2025-10-17
+ghaib: aaj ka din kis taraf band hoga   | Step$2 TP$2 + c2  : nafa  +329.9%  girawat  24.7%  hadd  66 (4saal mein 65)  musbat 9/9  lots  199744 | pehli hadd 2020-03-13 khatam -
+ghaib: aaj ka din kis taraf band hoga   | saada 0.02 lot     : nafa  +218.2%  girawat   0.8%  trades 1210
+ghaib: agle 5 din kis taraf             | tk2 Step$2 TP$1   : nafa  -100.2%  girawat 100.1%  hadd  51 (4saal mein 37)  musbat 1/9  lots  104615  ACCOUNT KHATAM | pehli hadd 2018-08-02 khatam 2025-10-17
+ghaib: agle 5 din kis taraf             | Step$2 TP$2 + c2  : nafa  -101.2%  girawat 100.7%  hadd  90 (4saal mein 85)  musbat 5/9  lots  142819  ACCOUNT KHATAM | pehli hadd 2020-03-16 khatam 2026-06-10
+ghaib: agle 5 din kis taraf             | saada 0.02 lot     : nafa   +97.4%  girawat   1.9%  trades 460
+ghaib: agle 20 din kis taraf            | tk2 Step$2 TP$1   : nafa  -100.0%  girawat 100.0%  hadd  41 (4saal mein 26)  musbat 0/9  lots   79137  ACCOUNT KHATAM | pehli hadd 2018-08-13 khatam 2025-04-06
+ghaib: agle 20 din kis taraf            | Step$2 TP$2 + c2  : nafa  -100.0%  girawat 100.1%  hadd  53 (4saal mein 40)  musbat 4/9  lots   77572  ACCOUNT KHATAM | pehli hadd 2020-01-08 khatam 2025-10-21
+ghaib: agle 20 din kis taraf            | saada 0.02 lot     : nafa   +58.8%  girawat   2.5%  trades 249

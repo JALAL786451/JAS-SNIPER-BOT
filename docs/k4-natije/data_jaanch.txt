@@ -1,0 +1,125 @@
+hist2009: 276109 candle, DST ke ghair-mojood/dohre waqt 0
+hist2010: 346196 candle, DST ke ghair-mojood/dohre waqt 0
+hist2011: 352266 candle, DST ke ghair-mojood/dohre waqt 0
+hist2012: 354797 candle, DST ke ghair-mojood/dohre waqt 0
+hist2013: 355160 candle, DST ke ghair-mojood/dohre waqt 0
+hist2014: 351606 candle, DST ke ghair-mojood/dohre waqt 0
+hist2015: 351666 candle, DST ke ghair-mojood/dohre waqt 0
+hist2016: 353415 candle, DST ke ghair-mojood/dohre waqt 0
+hist2017: 352360 candle, DST ke ghair-mojood/dohre waqt 0
+hist2018: 353778 candle, DST ke ghair-mojood/dohre waqt 0
+qdm2019: 353349 candle
+qdm2020: 355495 candle
+qdm2021-24: 1417839 candle
+qdm2025: 354435 candle
+qdm2026: 299709 candle
+kul 6228180 -> dohre waqt hata kar 6228180
+hist2009: 276109 candle, DST ke ghair-mojood/dohre waqt 0
+hist2010: 346196 candle, DST ke ghair-mojood/dohre waqt 0
+hist2011: 352266 candle, DST ke ghair-mojood/dohre waqt 0
+hist2012: 354797 candle, DST ke ghair-mojood/dohre waqt 0
+hist2013: 355160 candle, DST ke ghair-mojood/dohre waqt 0
+hist2014: 351606 candle, DST ke ghair-mojood/dohre waqt 0
+hist2015: 351666 candle, DST ke ghair-mojood/dohre waqt 0
+hist2016: 353415 candle, DST ke ghair-mojood/dohre waqt 0
+hist2017: 352360 candle, DST ke ghair-mojood/dohre waqt 0
+hist2018: 353778 candle, DST ke ghair-mojood/dohre waqt 0
+qdm2019: 353349 candle
+qdm2020: 355495 candle
+qdm2021-24: 1417839 candle
+qdm2025: 354435 candle
+qdm2026: 299709 candle
+kul 6228180 -> dohre waqt hata kar 6228180
+
+M1: 2009-03-15 21:00:00+00:00 -> 2026-11-04 23:58:00+00:00, 6228180 candle | H1 Dukascopy: 2003-05-05 01:00:00+00:00 -> 2026-10-27 23:00:00+00:00
+
+== 1. WAQT ZONE: M1 (UTC mein badalne ke baad) ghante ki candle vs Dukascopy H1 (UTC), har saal ==
+saal  ghante  ausat|dClose|$  95%|dClose|  M1high-H1high>$3  H1low-M1low>$3
+2009   4062   0.417       0.99         3               0
+2010   5155   0.266       0.51         1               0
+2011   5625   0.100       0.29         2              11
+2012   5853   0.093       0.21         1               2
+2013   5843   0.095       0.18         2               1
+2014   5768   0.093       0.16         3               0
+2015   5802   0.043       0.12         0               0
+2016   5880   0.072       0.23         1               0
+2017   5871   0.075       0.17         0               0
+2018   5896   0.063       0.12         1               1
+2019   5881   0.000       0.00         0               0
+2020   5922   0.000       0.00         0               0
+2021   5905   0.000       0.00         0               0
+2022   5907   0.000       0.00         0               0
+2023   5878   0.000       0.00         0               0
+2024   5925   0.000       0.00         0               0
+2025   5900   0.000       0.00         0               0
+2026   4856   0.000       0.00         0               0
+March/April/Oct/Nov ke dinon mein sab se bara ausat |dClose| (5 din): [('2009-04-19', 1.17), ('2009-03-22', 1.18), ('2009-03-15', 1.2), ('2009-03-25', 1.31), ('2014-04-06', 1.47)]
+
+== 2. JOR (saal badalne par gap / overlap) ==
+hist2009 aakhri 2009-12-31 21:58:00+00:00 C=1096.50 | hist2010 pehli 2010-01-03 23:00:00+00:00 O=1098.45 | waqfa 73.0 ghante, qeemat farq +1.95
+hist2010 aakhri 2010-12-31 19:58:00+00:00 C=1418.83 | hist2011 pehli 2011-01-02 23:00:00+00:00 O=1418.15 | waqfa 51.0 ghante, qeemat farq -0.68
+hist2011 aakhri 2011-12-30 21:58:00+00:00 C=1564.90 | hist2012 pehli 2012-01-02 23:03:00+00:00 O=1568.55 | waqfa 73.1 ghante, qeemat farq +3.65
+hist2012 aakhri 2012-12-31 21:58:00+00:00 C=1674.95 | hist2013 pehli 2013-01-01 22:00:00+00:00 O=1674.90 | waqfa 24.0 ghante, qeemat farq -0.05
+hist2013 aakhri 2013-12-31 20:59:00+00:00 C=1204.19 | hist2014 pehli 2014-01-01 23:04:00+00:00 O=1204.30 | waqfa 26.1 ghante, qeemat farq +0.11
+hist2014 aakhri 2014-12-31 21:58:00+00:00 C=1184.18 | hist2015 pehli 2015-01-01 23:01:00+00:00 O=1184.13 | waqfa 25.1 ghante, qeemat farq -0.05
+hist2015 aakhri 2015-12-31 21:58:00+00:00 C=1061.14 | hist2016 pehli 2016-01-03 23:01:00+00:00 O=1066.30 | waqfa 73.0 ghante, qeemat farq +5.16
+hist2016 aakhri 2016-12-30 21:48:00+00:00 C=1151.17 | hist2017 pehli 2017-01-02 23:01:00+00:00 O=1150.67 | waqfa 73.2 ghante, qeemat farq -0.50
+hist2017 aakhri 2017-12-29 21:58:00+00:00 C=1302.46 | hist2018 pehli 2018-01-01 23:01:00+00:00 O=1302.34 | waqfa 73.0 ghante, qeemat farq -0.12
+hist2018 aakhri 2018-12-31 21:58:00+00:00 C=1282.30 | qdm2019 pehli 2019-01-01 23:00:00+00:00 O=1282.30 | waqfa 25.0 ghante, qeemat farq +0.00
+qdm2019 aakhri 2019-12-31 21:59:00+00:00 C=1516.92 | qdm2020 pehli 2020-01-01 23:00:00+00:00 O=1518.77 | waqfa 25.0 ghante, qeemat farq +1.85
+qdm2020 aakhri 2020-12-31 21:59:00+00:00 C=1897.76 | qdm2021-24 pehli 2021-01-03 23:00:00+00:00 O=1905.00 | waqfa 73.0 ghante, qeemat farq +7.24
+qdm2021-24 aakhri 2024-12-31 21:58:00+00:00 C=2624.26 | qdm2025 pehli 2025-01-01 23:00:00+00:00 O=2625.10 | waqfa 25.0 ghante, qeemat farq +0.84
+qdm2025 aakhri 2025-12-31 21:58:00+00:00 C=4318.68 | qdm2026 pehli 2026-01-01 23:00:00+00:00 O=4323.70 | waqfa 25.0 ghante, qeemat farq +5.02
+
+== 3. DIN: har session din ki candle ginti; ghaib din (Peer-Jumma jis din M1 nahi) ==
+session din 4562; ghaib kaam ke din 42: ['2009-12-25', '2010-01-01', '2011-12-26', '2012-01-02', '2012-12-25', '2013-01-01', '2013-12-25', '2014-01-01', '2014-12-25', '2015-01-01', '2015-12-25', '2016-01-01', '2016-03-25', '2016-12-26', '2017-01-02', '2017-04-14', '2017-12-25', '2018-01-01', '2018-03-30', '2018-12-25', '2019-01-01', '2019-04-19', '2019-12-25', '2020-01-01', '2020-04-10', '2020-12-25', '2021-01-01', '2021-04-02', '2021-12-24', '2022-04-15', '2022-12-26', '2023-01-02', '2023-04-07', '2023-12-25', '2024-01-01', '2024-03-29', '2024-12-25', '2025-01-01', '2025-04-18', '2025-12-25', '2026-01-01', '2026-04-03']
+chhote din (<600 candle) 9: [('2009-04-10', 283), ('2010-12-24', 80), ('2011-04-22', 171), ('2012-04-06', 254), ('2013-03-29', 45), ('2014-04-18', 15), ('2014-06-02', 115), ('2015-04-03', 56), ('2026-11-05', 59)]
+saal-ba-saal: din, ausat candle/din, ausat M1 range $, ausat din range $, aakhri close
+2009: 208 din,   1327, M1 0.336, din  17.31, close 1096.50
+2010: 260 din,   1332, M1 0.355, din  18.64, close 1418.83
+2011: 259 din,   1360, M1 0.580, din  29.48, close 1564.90
+2012: 259 din,   1370, M1 0.437, din  22.48, close 1674.95
+2013: 259 din,   1371, M1 0.451, din  25.25, close 1204.19
+2014: 259 din,   1358, M1 0.301, din  16.51, close 1184.18
+2015: 259 din,   1358, M1 0.298, din  15.78, close 1061.14
+2016: 258 din,   1370, M1 0.372, din  18.27, close 1151.17
+2017: 257 din,   1371, M1 0.266, din  12.45, close 1302.46
+2018: 258 din,   1371, M1 0.245, din  12.32, close 1282.30
+2019: 258 din,   1370, M1 0.304, din  15.49, close 1516.92
+2020: 259 din,   1373, M1 0.708, din  30.76, close 1897.76
+2021: 258 din,   1373, M1 0.508, din  23.90, close 1829.06
+2022: 258 din,   1375, M1 0.557, din  25.71, close 1823.46
+2023: 257 din,   1373, M1 0.478, din  23.81, close 2062.69
+2024: 259 din,   1374, M1 0.690, din  33.08, close 2624.26
+2025: 258 din,   1374, M1 1.370, din  60.84, close 4318.68
+2026: 219 din,   1369, M1 2.629, din 118.88, close 4064.76
+
+== 4. Din ke andar waqfe (> 15 min, roz ke 17-18 NY waqfe aur weekend ke ilawa) ==
+kul waqfe >15min 4802, aam (roz/weekend) 5423, ajeeb 268
+saal ke hisaab se ajeeb waqfe (ginti, kul ghante): {2009: (30, 25.3), 2010: (36, 41.8), 2011: (40, 40.3), 2012: (36, 30.3), 2013: (20, 40.4), 2014: (7, 78.9), 2015: (11, 43.4), 2016: (11, 31.3), 2017: (12, 33.0), 2018: (7, 58.4), 2019: (12, 56.6), 2020: (5, 25.1), 2021: (6, 30.4), 2022: (7, 26.2), 2023: (7, 27.2), 2024: (9, 54.1), 2025: (8, 49.9), 2026: (4, 14.1)}
+
+== 5. AJEEB CANDLE: M1 range sab se bari 12 + C->O chhalang sab se bari 8 (weekend ke ilawa) ==
+  2026-01-29 15:27:00+00:00  O 5257.38 H 5260.26 L 5126.14 C 5132.30  range 134.12  qdm2026
+  2026-01-29 15:28:00+00:00  O 5120.90 H 5211.70 L 5098.77 C 5168.70  range 112.93  qdm2026
+  2026-01-29 15:30:00+00:00  O 5188.80 H 5257.02 L 5169.30 C 5226.81  range 87.72  qdm2026
+  2026-09-04 12:30:00+00:00  O 4470.48 H 4471.30 L 4389.15 C 4401.65  range 82.15  qdm2026
+  2026-01-29 15:31:00+00:00  O 5227.16 H 5251.98 L 5175.98 C 5183.82  range 76.00  qdm2026
+  2026-02-02 01:10:00+00:00  O 4653.96 H 4658.96 L 4583.10 C 4584.34  range 75.86  qdm2026
+  2026-01-29 15:29:00+00:00  O 5177.80 H 5201.13 L 5131.30 C 5188.80  range 69.83  qdm2026
+  2026-03-24 11:01:00+00:00  O 4441.64 H 4441.86 L 4373.05 C 4390.62  range 68.81  qdm2026
+  2026-02-11 13:30:00+00:00  O 5080.51 H 5085.77 L 5018.00 C 5022.24  range 67.77  qdm2026
+  2026-01-30 08:33:00+00:00  O 5127.16 H 5131.23 L 5064.20 C 5064.20  range 67.03  qdm2026
+  2026-02-02 01:09:00+00:00  O 4710.44 H 4712.25 L 4646.08 C 4653.96  range 66.17  qdm2026
+  2026-01-29 15:26:00+00:00  O 5304.38 H 5304.44 L 5241.39 C 5256.77  range 63.05  qdm2026
+  chhalang 2011-09-07 04:22:00+00:00  37.38$ (waqfa 1 min) hist2011
+  chhalang 2026-05-26 22:02:00+00:00  35.72$ (waqfa 2 min) qdm2026
+  chhalang 2026-03-01 23:05:00+00:00  34.13$ (waqfa 2 min) qdm2026
+  chhalang 2026-05-26 22:00:00+00:00  30.84$ (waqfa 61 min) qdm2026
+  chhalang 2025-04-22 22:00:00+00:00  30.56$ (waqfa 61 min) qdm2025
+  chhalang 2026-02-09 23:10:00+00:00  26.30$ (waqfa 1 min) qdm2026
+  chhalang 2021-08-08 23:03:00+00:00  23.14$ (waqfa 5 min) qdm2021-24
+  chhalang 2026-02-01 23:19:00+00:00  22.47$ (waqfa 1 min) qdm2026
+weekend/chhutti gap: 922; ausat |gap| $3.05; sab se bare: [('2025-05-11', -51.54), ('2026-06-14', 55.33), ('2026-04-19', -61.72), ('2026-02-01', -77.52), ('2026-03-01', 94.78), ('2026-04-12', -111.94)]
+
+== 6. histdata 2015 vs QDM 2015 (do alag zariye, wahi saal) ==
+mushtarik candle 351295 (hist 351666, qdm 353844); ausat |dClose| $0.036; 99% $0.15

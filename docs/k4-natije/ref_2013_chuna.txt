@@ -1,0 +1,3 @@
+2013-01-01..2014-01-01 T20_10_close_fill  {'neut': 2, 'c2': 1, 'step': 200, 'tp': 200, 'path': 0}: engine eq 39532.00 lots 6505 tp 6328 basket 10 hadd 3 c2 44 dd 19.173% | hawala eq 39532.00 lots 6505 tp 6328 basket 10 hadd 3 c2 44 dd 19.173% | log 12981/12981 line BARABAR | number BARABAR | 2.5s / 348s
+2013-01-01..2014-01-01 T20_10_close_fill  {'neut': 2, 'c2': 1, 'step': 200, 'tp': 200, 'path': 1}: engine eq 38414.72 lots 6024 tp 5878 basket 7 hadd 3 c2 22 dd 12.513% | hawala eq 38414.72 lots 6024 tp 5878 basket 7 hadd 3 c2 22 dd 12.513% | log 12019/12019 line BARABAR | number BARABAR | 0.3s / 347s
+NATEEJA: engine = hawala (sab barabar)

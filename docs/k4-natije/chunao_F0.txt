@@ -1,0 +1,25 @@
+
+=== CHUNAO 2009-06..2017 | khandan F0: tk2 jaisa (K4 ka FAISLA) | 324 variant x 2 raasta | 259s ===
+nafa > 0: 0 | ahl (Q-c): 0 | account khatam: 253 | hadd kabhi nahi: 0 | CLOSE ALL kabhi chala: 132
+nafa %: sab se bura -101.5, darmiyana -100.0, sab se acha -34.9 | hadd ginti: kam 9, darmiyana 21, zyada 45
+  T    ke hisaab se darmiyana nafa%: 20/10: -100.0 (hadd 20)  40/20: -100.0 (hadd 21)  55/20: -100.0 (hadd 20)
+  a    ke hisaab se darmiyana nafa%: i: -100.0 (hadd 21)  ii: -100.0 (hadd 19)  iii: -100.0 (hadd 22)
+  b    ke hisaab se darmiyana nafa%: close: -100.0 (hadd 20)  touch: -100.0 (hadd 21)
+  c    ke hisaab se darmiyana nafa%: 1: -100.0 (hadd 27)  2: -100.0 (hadd 16)
+  step ke hisaab se darmiyana nafa%: 1.5: -100.0 (hadd 21)  2.0: -100.0 (hadd 20)  3.0: -100.0 (hadd 20)
+  tp   ke hisaab se darmiyana nafa%: 0.5: -100.0 (hadd 16)  1.0: -100.0 (hadd 21)  2.0: -92.1 (hadd 25)
+  behtareen 8 (nafa ke hisaab se):
+    T20/10 a-iii close c2 Step$2 TP$2: nafa -34.9% girawat 49.5% hadd 18 (4saal 15) musbat 3/9 khatam -
+    T20/10 a-ii close c2 Step$2 TP$2: nafa -42.8% girawat 47.1% hadd 11 (4saal 10) musbat 3/9 khatam -
+    T20/10 a-ii touch c2 Step$2 TP$2: nafa -48.4% girawat 53.6% hadd 13 (4saal 11) musbat 2/9 khatam -
+    T20/10 a-ii close c1 Step$2 TP$2: nafa -49.1% girawat 60.7% hadd 29 (4saal 21) musbat 3/9 khatam -
+    T20/10 a-i close c2 Step$2 TP$2: nafa -49.5% girawat 52.9% hadd 15 (4saal 13) musbat 3/9 khatam -
+    T20/10 a-ii touch c1 Step$3 TP$2: nafa -50.2% girawat 68.2% hadd 23 (4saal 18) musbat 4/9 khatam -
+    T55/20 a-ii touch c2 Step$3 TP$2: nafa -51.4% girawat 52.2% hadd 11 (4saal 11) musbat 1/9 khatam -
+    T20/10 a-iii touch c2 Step$2 TP$2: nafa -52.7% girawat 53.9% hadd 18 (4saal 15) musbat 1/9 khatam -
+CHUNA HUA (koi nafa>0 nahi - sab se kam nuqsan): T20/10 a-iii close c2 Step$2 TP$2 -> nafa   -34.9%  girawat  49.5%  hadd  18 (4saal mein 15)  musbat 3/9  lots   42974
+  dict: {'T': (20, 10), 'a': 'iii', 'b': 'close', 'c2': 1, 'step': 200, 'tp': 200}
+
+real	4m20.199s
+user	7m55.094s
+sys	1m6.867s

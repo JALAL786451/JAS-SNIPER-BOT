@@ -1,0 +1,40 @@
+
+--- CHUNAO : T20/10 a-iii close c2 Step$2 TP$2 ---
+MAIN (bura raasta)                                  : nafa   -34.9%  girawat  49.5%  hadd  18 (4saal mein 15)  musbat 3/9  lots   42974 | pehli hadd 2009-11-04 khatam -
+spread $0.35                                        : nafa   -66.8%  girawat  67.7%  hadd  20 (4saal mein 17)  musbat 2/9  lots   41282 | pehli hadd 2009-11-04 khatam -
+swap tester jaisa (BUY -0.51 USC/0.01/raat, Budh 3x): nafa   -85.3%  girawat  85.9%  hadd  19 (4saal mein 16)  musbat 1/9  lots   42457 | pehli hadd 2009-11-04 khatam -
+rukh 1 din aur der se (lookahead jaanch)            : nafa   -42.7%  girawat  52.8%  hadd  21 (4saal mein 17)  musbat 4/9  lots   43753 | pehli hadd 2009-11-04 khatam -
+10 second waqfa 0                                   : nafa   -40.1%  girawat  52.5%  hadd  18 (4saal mein 15)  musbat 4/9  lots   43302 | pehli hadd 2009-11-04 khatam -
+10 second waqfa 60                                  : nafa   -34.2%  girawat  45.8%  hadd  17 (4saal mein 14)  musbat 3/9  lots   42579 | pehli hadd 2009-11-04 khatam -
+shuru 100,000 USC (hadd 10,000)                     : nafa   -17.9%  girawat  20.3%  hadd   1 (4saal mein  1)  musbat 3/9  lots   31186 | pehli hadd 2013-06-20 khatam -
+hadd ke baad hamesha STOP (pehli hadd tak)          : nafa    -7.5%  girawat   8.3%  hadd   1 (4saal mein  1)  musbat 0/9  lots    1149 | pehli hadd 2009-11-04 khatam -
+CHHOTA: bhari lot bhi 0.01                          : nafa   -23.4%  girawat  41.8%  hadd  10 (4saal mein  9)  musbat 3/9  lots   42835 | pehli hadd 2009-11-04 khatam -
+CHHOTA: max 10 lots                                 : nafa   -22.2%  girawat  25.7%  hadd   1 (4saal mein  1)  musbat 3/9  lots   11352 | pehli hadd 2013-06-26 khatam -
+CHHOTA: hadd 5% / bardasht 2.5%                     : nafa  -100.6%  girawat 100.6%  hadd  58 (4saal mein 58)  musbat 0/9  lots   30924  ACCOUNT KHATAM | pehli hadd 2009-09-17 khatam 2013-07-21
+raasta O-H-L-C                                     : nafa   -34.9%  girawat  45.4%  hadd  17 (4saal mein 15)  musbat 3/9  lots   41749
+raasta O-L-H-C                                     : nafa   -21.1%  girawat  49.5%  hadd  18 (4saal mein 15)  musbat 4/9  lots   42974
+raasta rang (sabz O-L-H-C / laal O-H-L-C)          : nafa    -3.6%  girawat  35.2%  hadd  13 (4saal mein 10)  musbat 5/9  lots   42477
+raasta ulta rang                                   : nafa   -24.0%  girawat  43.3%  hadd  15 (4saal mein 13)  musbat 4/9  lots   41834
+
+--- IMTIHAN : T20/10 a-iii close c2 Step$2 TP$2 ---
+MAIN (bura raasta)                                  : nafa  -100.0%  girawat 100.0%  hadd  38 (4saal mein 28)  musbat 1/9  lots   59076  ACCOUNT KHATAM | pehli hadd 2019-07-18 khatam 2025-05-12
+spread $0.35                                        : nafa  -100.0%  girawat 100.0%  hadd  26 (4saal mein 26)  musbat 1/9  lots   38511  ACCOUNT KHATAM | pehli hadd 2019-07-18 khatam 2024-05-10
+swap tester jaisa (BUY -0.51 USC/0.01/raat, Budh 3x): nafa  -100.0%  girawat 100.1%  hadd  22 (4saal mein 21)  musbat 0/9  lots   34429  ACCOUNT KHATAM | pehli hadd 2018-08-16 khatam 2023-03-20
+rukh 1 din aur der se (lookahead jaanch)            : nafa  -100.1%  girawat 100.2%  hadd  42 (4saal mein 29)  musbat 1/9  lots   57384  ACCOUNT KHATAM | pehli hadd 2019-07-18 khatam 2025-04-17
+10 second waqfa 0                                   : nafa  -100.0%  girawat 100.0%  hadd  31 (4saal mein 24)  musbat 1/9  lots   50536  ACCOUNT KHATAM | pehli hadd 2019-07-18 khatam 2025-02-11
+10 second waqfa 60                                  : nafa  -100.0%  girawat 100.1%  hadd  27 (4saal mein 23)  musbat 1/9  lots   48360  ACCOUNT KHATAM | pehli hadd 2019-07-18 khatam 2024-11-20
+shuru 100,000 USC (hadd 10,000)                     : nafa  -100.0%  girawat 100.6%  hadd  13 (4saal mein 13)  musbat 2/9  lots   54940  ACCOUNT KHATAM | pehli hadd 2024-10-21 khatam 2026-01-29
+hadd ke baad hamesha STOP (pehli hadd tak)          : nafa    -0.6%  girawat   7.9%  hadd   1 (4saal mein  1)  musbat 1/9  lots    2882 | pehli hadd 2019-07-18 khatam -
+CHHOTA: bhari lot bhi 0.01                          : nafa  -100.0%  girawat 100.0%  hadd  23 (4saal mein 18)  musbat 1/9  lots   56488  ACCOUNT KHATAM | pehli hadd 2019-07-18 khatam 2025-05-20
+CHHOTA: max 10 lots                                 : nafa  -100.3%  girawat 100.3%  hadd  12 (4saal mein 12)  musbat 3/9  lots   16228  ACCOUNT KHATAM | pehli hadd 2025-04-01 khatam 2026-02-02
+CHHOTA: hadd 5% / bardasht 2.5%                     : nafa  -100.0%  girawat 100.0%  hadd  87 (4saal mein 74)  musbat 2/9  lots   50726  ACCOUNT KHATAM | pehli hadd 2018-08-13 khatam 2024-05-23
+raasta O-H-L-C                                     : nafa   -99.9%  girawat 100.0%  hadd  38 (4saal mein 28)  musbat 1/9  lots   59076  ACCOUNT KHATAM
+raasta O-L-H-C                                     : nafa  -100.0%  girawat 100.0%  hadd  28 (4saal mein 23)  musbat 1/9  lots   43704  ACCOUNT KHATAM
+raasta rang (sabz O-L-H-C / laal O-H-L-C)          : nafa  -100.0%  girawat 100.0%  hadd  35 (4saal mein 24)  musbat 1/9  lots   56868  ACCOUNT KHATAM
+raasta ulta rang                                   : nafa  -100.1%  girawat 100.6%  hadd  25 (4saal mein 24)  musbat 1/9  lots   41394  ACCOUNT KHATAM
+data histdata ke mashkook candle kaat kar           : nafa   -37.5%  girawat  49.0%  hadd  17 (4saal mein 15)  musbat 3/9  lots   43256  (CHUNAO)
+data 2015 = QDM (Dukascopy)                         : nafa   -34.6%  girawat  49.5%  hadd  18 (4saal mein 15)  musbat 3/9  lots   42966  (CHUNAO)
+
+real	1m19.347s
+user	1m9.849s
+sys	0m9.113s

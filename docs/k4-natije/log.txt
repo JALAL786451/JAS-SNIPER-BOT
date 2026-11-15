@@ -1,0 +1,142 @@
+T20/10 a-iii close c2 Step$2 TP$2 | chunao: tokri (khali se khali tak) 88; jeet 67, haar 21, hadd par khatam 17, CLOSE ALL se 57
+lots fi tokri: darmiyana 3, 90% 1663, zyada 3637 | muddat ghante: darmiyana 3.05, zyada 9530
+kul P/L jeet wali +21418 USC, haar wali -32471 USC
+
+--- JEET (chhoti tokri): tokri #1, 3 lots, 2009-05-31 22:00 -> 2009-06-01 01:16 UTC ---
+  05-31 22:00 KHULI BUY  0.02 @ 978.49 (bid 978.25) rukh +1 khuli lots 1
+  05-31 22:52 KHULI SELL 0.01 @ 976.37 (bid 976.37) rukh +1 khuli lots 2
+  06-01 01:12 KHULI BUY  0.02 @ 979.61 (bid 979.37) rukh +1 khuli lots 3
+  06-01 01:16 BAND  BUY  0.02 khuli 979.61 -> 980.19 = +1.16 USC (CLOSE ALL) balance 38001.16
+  06-01 01:16 BAND  SELL 0.01 khuli 976.37 -> 980.43 = -4.06 USC (CLOSE ALL) balance 37997.10
+  06-01 01:16 BAND  BUY  0.02 khuli 978.49 -> 980.19 = +3.40 USC (CLOSE ALL) balance 38000.50
+  tokri ka kul = +0.50 USC | haath ke hisaab se farq / candle se bahar: 0 line
+
+--- AAKHRI HADD: tokri #37, 263 lots, 2011-09-22 21:00 -> 2011-09-23 17:06 UTC ---
+  09-22 21:00 KHULI BUY  0.02 @ 1740.02 (bid 1739.78) rukh +1 khuli lots 1
+  09-22 21:03 KHULI SELL 0.01 @ 1737.90 (bid 1737.90) rukh +1 khuli lots 2
+  09-22 21:14 KHULI SELL 0.01 @ 1735.78 (bid 1735.78) rukh +1 khuli lots 3
+  09-22 21:14 BAND  SELL 0.01 khuli 1737.90 -> 1735.90 = +2.00 USC (TP) balance 27215.47
+  09-22 22:00 KHULI BUY  0.02 @ 1737.90 (bid 1737.66) rukh +1 khuli lots 3
+  09-22 22:05 BAND  BUY  0.02 khuli 1737.90 -> 1739.90 = +4.00 USC (TP) balance 27219.47
+  09-22 22:06 KHULI BUY  0.02 @ 1741.14 (bid 1740.90) rukh +1 khuli lots 3
+  09-22 22:11 BAND  BUY  0.02 khuli 1740.02 -> 1742.02 = +4.00 USC (TP) balance 27223.47
+  09-22 22:15 KHULI SELL 0.01 @ 1739.02 (bid 1739.02) rukh +1 khuli lots 3
+  09-22 22:57 KHULI BUY  0.02 @ 1742.26 (bid 1742.02) rukh +1 khuli lots 4
+  09-22 23:07 KHULI SELL 0.01 @ 1740.14 (bid 1740.14) rukh +1 khuli lots 5
+  09-23 00:13 BAND  BUY  0.02 khuli 1741.14 -> 1743.14 = +4.00 USC (TP) balance 27227.47
+  09-23 00:13 KHULI BUY  0.02 @ 1743.38 (bid 1743.14) rukh +1 khuli lots 5
+  09-23 00:18 BAND  BUY  0.02 khuli 1742.26 -> 1744.26 = +4.00 USC (TP) balance 27231.47
+  09-23 00:35 KHULI BUY  0.02 @ 1745.50 (bid 1745.26) rukh +1 khuli lots 5
+  09-23 00:35 BAND  BUY  0.02 khuli 1743.38 -> 1745.38 = +4.00 USC (TP) balance 27235.47
+  09-23 00:46 KHULI SELL 0.01 @ 1743.38 (bid 1743.38) rukh +1 khuli lots 5
+  09-23 00:59 KHULI BUY  0.02 @ 1746.62 (bid 1746.38) rukh +1 khuli lots 6
+  09-23 01:00 BAND  BUY  0.02 khuli 1745.50 -> 1747.50 = +4.00 USC (TP) balance 27239.47
+  09-23 01:01 KHULI BUY  0.02 @ 1748.74 (bid 1748.50) rukh +1 khuli lots 6
+  09-23 01:01 BAND  BUY  0.02 khuli 1746.62 -> 1748.62 = +4.00 USC (TP) balance 27243.47
+  09-23 01:08 KHULI BUY  0.02 @ 1750.86 (bid 1750.62) rukh +1 khuli lots 6
+  09-23 01:08 BAND  BUY  0.02 khuli 1748.74 -> 1750.74 = +4.00 USC (TP) balance 27247.47
+  09-23 01:14 KHULI BUY  0.02 @ 1752.98 (bid 1752.74) rukh +1 khuli lots 6
+  09-23 01:14 BAND  BUY  0.02 khuli 1750.86 -> 1752.86 = +4.00 USC (TP) balance 27251.47
+  09-23 01:16 KHULI BUY  0.02 @ 1755.10 (bid 1754.86) rukh +1 khuli lots 6
+  09-23 01:16 BAND  BUY  0.02 khuli 1752.98 -> 1754.98 = +4.00 USC (TP) balance 27255.47
+  09-23 01:18 KHULI SELL 0.01 @ 1752.98 (bid 1752.98) rukh +1 khuli lots 6
+  09-23 01:33 KHULI SELL 0.01 @ 1750.86 (bid 1750.86) rukh +1 khuli lots 7
+  09-23 01:33 BAND  SELL 0.01 khuli 1752.98 -> 1750.98 = +2.00 USC (TP) balance 27257.47
+  09-23 01:38 KHULI SELL 0.01 @ 1748.74 (bid 1748.74) rukh +1 khuli lots 7
+  09-23 01:38 BAND  SELL 0.01 khuli 1750.86 -> 1748.86 = +2.00 USC (TP) balance 27259.47
+  09-23 01:40 KHULI SELL 0.01 @ 1746.62 (bid 1746.62) rukh +1 khuli lots 7
+  09-23 01:40 BAND  SELL 0.01 khuli 1748.74 -> 1746.74 = +2.00 USC (TP) balance 27261.47
+  09-23 01:43 KHULI BUY  0.02 @ 1748.74 (bid 1748.50) rukh +1 khuli lots 7
+  09-23 01:51 KHULI SELL 0.01 @ 1745.50 (bid 1745.50) rukh +1 khuli lots 8
+  09-23 01:51 BAND  SELL 0.01 khuli 1746.62 -> 1744.62 = +2.00 USC (TP) balance 27263.47
+  09-23 02:17 KHULI BUY  0.02 @ 1747.62 (bid 1747.38) rukh +1 khuli lots 8
+  09-23 02:32 KHULI SELL 0.01 @ 1744.38 (bid 1744.38) rukh +1 khuli lots 9
+  09-23 02:45 KHULI BUY  0.02 @ 1746.50 (bid 1746.26) rukh +1 khuli lots 10
+  09-23 03:29 BAND  SELL 0.01 khuli 1745.50 -> 1743.50 = +2.00 USC (TP) balance 27265.47
+  09-23 03:30 KHULI SELL 0.01 @ 1742.26 (bid 1742.26) rukh +1 khuli lots 10
+  09-23 03:30 BAND  SELL 0.01 khuli 1744.38 -> 1742.38 = +2.00 USC (TP) balance 27267.47
+  09-23 04:37 BAND  SELL 0.01 khuli 1743.38 -> 1741.38 = +2.00 USC (TP) balance 27269.47
+  09-23 04:38 BAND  SELL 0.01 khuli 1742.26 -> 1740.26 = +2.00 USC (TP) balance 27271.47
+  09-23 04:44 BAND  SELL 0.01 khuli 1740.14 -> 1738.14 = +2.00 USC (TP) balance 27273.47
+  09-23 04:44 KHULI SELL 0.01 @ 1737.90 (bid 1737.90) rukh +1 khuli lots 7
+  09-23 04:48 BAND  SELL 0.01 khuli 1739.02 -> 1737.02 = +2.00 USC (TP) balance 27275.47
+  09-23 04:48 BAND  SELL 0.01 khuli 1737.90 -> 1735.90 = +2.00 USC (TP) balance 27277.47
+  09-23 04:49 KHULI SELL 0.01 @ 1736.66 (bid 1736.66) rukh +1 khuli lots 6
+  09-23 04:57 KHULI SELL 0.01 @ 1734.54 (bid 1734.54) rukh +1 khuli lots 7
+  09-23 05:00 KHULI BUY  0.02 @ 1736.66 (bid 1736.42) rukh +1 khuli lots 8
+  09-23 05:08 BAND  SELL 0.01 khuli 1736.66 -> 1734.66 = +2.00 USC (TP) balance 27279.47
+  09-23 05:09 BAND  SELL 0.01 khuli 1735.78 -> 1733.78 = +2.00 USC (TP) balance 27281.47
+  09-23 05:09 KHULI SELL 0.01 @ 1733.42 (bid 1733.42) rukh +1 khuli lots 7
+  09-23 05:12 KHULI BUY  0.02 @ 1735.54 (bid 1735.30) rukh +1 khuli lots 8
+  09-23 05:30 BAND  SELL 0.01 khuli 1734.54 -> 1732.54 = +2.00 USC (TP) balance 27283.47
+  09-23 05:30 KHULI SELL 0.01 @ 1732.30 (bid 1732.30) rukh +1 khuli lots 8
+  09-23 05:31 BAND  SELL 0.01 khuli 1733.42 -> 1731.42 = +2.00 USC (TP) balance 27285.47
+  09-23 05:31 KHULI SELL 0.01 @ 1730.18 (bid 1730.18) rukh +1 khuli lots 8
+  ... (465 aur line) ...
+  09-23 17:06 BAND  BUY  0.02 khuli 1748.74 -> 1635.75 = -225.98 USC (AAKHRI HADD) balance 24097.05
+  tokri ka kul = -3116.42 USC | haath ke hisaab se farq / candle se bahar: 0 line
+
+--- LAMBI (sab se zyada waqt, hadd ke baghair): tokri #65, 3341 lots, 2013-10-01 21:15 -> 2014-11-02 23:01 UTC ---
+  10-01 21:15 KHULI SELL 0.02 @ 1284.08 (bid 1284.08) rukh -1 khuli lots 1
+  10-01 22:00 KHULI BUY  0.01 @ 1287.34 (bid 1287.10) rukh -1 khuli lots 2
+  10-01 22:05 KHULI BUY  0.01 @ 1289.46 (bid 1289.22) rukh -1 khuli lots 3
+  10-01 22:12 BAND  BUY  0.01 khuli 1287.34 -> 1289.34 = +2.00 USC (TP) balance 25747.79
+  10-01 23:40 KHULI SELL 0.02 @ 1287.34 (bid 1287.34) rukh -1 khuli lots 3
+  10-02 00:13 KHULI SELL 0.02 @ 1285.22 (bid 1285.22) rukh -1 khuli lots 4
+  10-02 00:13 BAND  SELL 0.02 khuli 1287.34 -> 1285.34 = +4.00 USC (TP) balance 25751.79
+  10-02 00:16 BAND  SELL 0.02 khuli 1285.22 -> 1283.22 = +4.00 USC (TP) balance 25755.79
+  10-02 00:16 KHULI SELL 0.02 @ 1282.96 (bid 1282.96) rukh -1 khuli lots 3
+  10-02 00:19 BAND  SELL 0.02 khuli 1284.08 -> 1282.08 = +4.00 USC (TP) balance 25759.79
+  10-02 00:19 KHULI SELL 0.02 @ 1280.84 (bid 1280.84) rukh -1 khuli lots 3
+  10-02 00:19 BAND  SELL 0.02 khuli 1282.96 -> 1280.96 = +4.00 USC (TP) balance 25763.79
+  10-02 00:19 KHULI SELL 0.02 @ 1278.72 (bid 1278.72) rukh -1 khuli lots 3
+  10-02 00:20 BAND  SELL 0.02 khuli 1280.84 -> 1278.84 = +4.00 USC (TP) balance 25767.79
+  10-02 00:24 KHULI BUY  0.01 @ 1280.84 (bid 1280.60) rukh -1 khuli lots 3
+  10-02 00:50 KHULI BUY  0.01 @ 1282.96 (bid 1282.72) rukh -1 khuli lots 4
+  10-02 00:50 BAND  BUY  0.01 khuli 1280.84 -> 1282.84 = +2.00 USC (TP) balance 25769.79
+  10-02 01:02 KHULI BUY  0.01 @ 1285.08 (bid 1284.84) rukh -1 khuli lots 4
+  10-02 01:02 BAND  BUY  0.01 khuli 1282.96 -> 1284.96 = +2.00 USC (TP) balance 25771.79
+  10-02 01:59 KHULI BUY  0.01 @ 1287.20 (bid 1286.96) rukh -1 khuli lots 4
+  10-02 01:59 BAND  BUY  0.01 khuli 1285.08 -> 1287.08 = +2.00 USC (TP) balance 25773.79
+  10-02 02:00 BAND  BUY  0.01 khuli 1287.20 -> 1289.20 = +2.00 USC (TP) balance 25775.79
+  10-02 02:00 KHULI BUY  0.01 @ 1288.58 (bid 1288.34) rukh -1 khuli lots 3
+  10-02 02:40 KHULI BUY  0.01 @ 1290.70 (bid 1290.46) rukh -1 khuli lots 4
+  10-02 02:40 BAND  BUY  0.01 khuli 1288.58 -> 1290.58 = +2.00 USC (TP) balance 25777.79
+  10-02 02:40 BAND  BUY  0.01 khuli 1289.46 -> 1291.46 = +2.00 USC (TP) balance 25779.79
+  10-02 02:40 KHULI BUY  0.01 @ 1292.82 (bid 1292.58) rukh -1 khuli lots 3
+  10-02 02:40 BAND  BUY  0.01 khuli 1290.70 -> 1292.70 = +2.00 USC (TP) balance 25781.79
+  10-02 02:40 KHULI SELL 0.02 @ 1290.70 (bid 1290.70) rukh -1 khuli lots 3
+  10-02 07:14 KHULI SELL 0.02 @ 1288.58 (bid 1288.58) rukh -1 khuli lots 4
+  10-02 07:14 BAND  SELL 0.02 khuli 1290.70 -> 1288.70 = +4.00 USC (TP) balance 25785.79
+  10-02 07:15 KHULI SELL 0.02 @ 1286.46 (bid 1286.46) rukh -1 khuli lots 4
+  10-02 07:15 BAND  SELL 0.02 khuli 1288.58 -> 1286.58 = +4.00 USC (TP) balance 25789.79
+  10-02 07:46 KHULI BUY  0.01 @ 1288.58 (bid 1288.34) rukh -1 khuli lots 4
+  10-02 07:58 KHULI BUY  0.01 @ 1290.70 (bid 1290.46) rukh -1 khuli lots 5
+  10-02 07:58 BAND  BUY  0.01 khuli 1288.58 -> 1290.58 = +2.00 USC (TP) balance 25791.79
+  10-02 08:00 BAND  BUY  0.01 khuli 1290.70 -> 1292.70 = +2.00 USC (TP) balance 25793.79
+  10-02 08:00 KHULI BUY  0.01 @ 1293.94 (bid 1293.70) rukh -1 khuli lots 4
+  10-02 08:00 KHULI SELL 0.02 @ 1291.82 (bid 1291.82) rukh -1 khuli lots 5
+  10-02 08:58 BAND  BUY  0.01 khuli 1292.82 -> 1294.82 = +2.00 USC (TP) balance 25795.79
+  10-02 08:58 KHULI BUY  0.01 @ 1295.06 (bid 1294.82) rukh -1 khuli lots 5
+  10-02 09:00 BAND  BUY  0.01 khuli 1293.94 -> 1295.94 = +2.00 USC (TP) balance 25797.79
+  10-02 09:03 KHULI BUY  0.01 @ 1297.18 (bid 1296.94) rukh -1 khuli lots 5
+  10-02 09:03 BAND  BUY  0.01 khuli 1295.06 -> 1297.06 = +2.00 USC (TP) balance 25799.79
+  10-02 09:07 KHULI SELL 0.02 @ 1295.06 (bid 1295.06) rukh -1 khuli lots 5
+  10-02 09:31 KHULI SELL 0.02 @ 1292.94 (bid 1292.94) rukh -1 khuli lots 6
+  10-02 09:31 BAND  SELL 0.02 khuli 1295.06 -> 1293.06 = +4.00 USC (TP) balance 25803.79
+  10-02 09:45 KHULI BUY  0.01 @ 1295.06 (bid 1294.82) rukh -1 khuli lots 6
+  10-02 12:15 BAND  BUY  0.01 khuli 1295.06 -> 1297.06 = +2.00 USC (TP) balance 25805.79
+  10-02 12:15 KHULI BUY  0.01 @ 1298.30 (bid 1298.06) rukh -1 khuli lots 6
+  10-02 12:15 BAND  BUY  0.01 khuli 1297.18 -> 1299.18 = +2.00 USC (TP) balance 25807.79
+  10-02 12:15 KHULI BUY  0.01 @ 1300.45 (bid 1300.21) rukh -1 khuli lots 6
+  10-02 12:15 BAND  BUY  0.01 khuli 1298.30 -> 1300.30 = +2.00 USC (TP) balance 25809.79
+  10-02 12:15 KHULI SELL 0.02 @ 1298.33 (bid 1298.33) rukh -1 khuli lots 6
+  10-02 12:15 BAND  SELL 0.02 khuli 1298.33 -> 1296.33 = +4.00 USC (TP) balance 25813.79
+  10-02 12:15 KHULI SELL 0.02 @ 1296.07 (bid 1296.07) rukh -1 khuli lots 6
+  10-02 12:15 KHULI BUY  0.01 @ 1298.19 (bid 1297.95) rukh -1 khuli lots 7
+  10-02 12:21 BAND  BUY  0.01 khuli 1298.19 -> 1300.19 = +2.00 USC (TP) balance 25815.79
+  10-02 12:21 KHULI BUY  0.01 @ 1301.57 (bid 1301.33) rukh -1 khuli lots 7
+  10-02 12:21 BAND  BUY  0.01 khuli 1300.45 -> 1302.45 = +2.00 USC (TP) balance 25817.79
+  ... (6621 aur line) ...
+  11-02 23:01 BAND  BUY  0.01 khuli 1302.46 -> 1170.21 = -132.25 USC (rukh palta (c2)) balance 28229.53
+  tokri ka kul = +2483.74 USC | haath ke hisaab se farq / candle se bahar: 0 line
