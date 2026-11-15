@@ -19,3 +19,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 10 Nov (56vi) | Phone MT5 app mein bhi Close By hai: Trade tab > ticket daba ke rakho > Close > type "Close by" -> ulti ticket chuno (PC na ho to jori phone se) | - |
 | 12 Nov (57vi) | MetaEditor Navigator > file par right-click > "Open Folder" = .mq5 ka folder seedha khulta (chat mein attach asaan). FTMO BF 2026: 12 Nov tak elaan NAHI | - |
 | 15 Nov (58vi) | Fable K4 session ko phone/PC par khud live dekh sakte: claude.ai/code/session_013jF6yZMBMXKybDkBuqxcdm (kaam ki har line). FTMO BF 2026: 15 Nov ftmo.com par offer NAHI | - |
+| 15 Nov (59vi) | MT5 investor (read-only) password: Tools > Options > Server > Change > 'investor password' - is se demo sirf DEKHA ja sakta (trade nahi); phone MT5 par isi se FTMO demo 474832446 ki nigrani, EA wale PC ko chherna nahi parta | - |
