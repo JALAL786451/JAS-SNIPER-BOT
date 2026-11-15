@@ -59,6 +59,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 59vi (15 Nov): user: "3 EA tested, breach nahi, bas guzara; Kachhua FTMO par test nahi hua? strategy hain hi nahi, mehnat bekaar?" -> jawab: Kachhua FTMO par test HUA (#100 akela 67/0 median 22.1 = trend se sust; #101 saath 85/0 median 10.2). Strategy hain (15 ASLI PASS / 101) magar edge patla = sust; mehnat bekaar nahi.
 - 59vi (15 Nov): user: "Kachhua bhi lagana hai, FTMO rules follow kare" + "risk barhaye bina behtareen nateeja?" -> **JasTideRadarEA e2 BANA** (12 market #101, 0.25% of 100k, FTMO pehra poora account, magic 20261115, gold+silver ek slot, USD hadd 3 rakhi (test mein nahi thi - user chahe to 0), InpTrade default false). F7 + demo 474832446 BAQI. Jawab: risk ke bina sirf (1) Kachhua (2) naye tested idea (har ek ~0.5-1 mahina) (3) $ barhana = bara / zyada account (% wahi).
 - 59vi (15 Nov) SS: **e2 F7 ✅, chart BTCUSDm H4 par (demo 474832446, balance 99,378)**, SIRF DIKHANA; 12/12 market mile (suffix m), pehra chalu (target 110000, din farsh 95378). Radar: GBPUSD nayi SELL 0.14 SL 1.33849 (trade chalu hota to khulti); EUR SELL / JPY, CHF BUY purane = EA nahi leta. Agla: InpTrade=true + SS.
+- 59vi (15 Nov) SS: **e2 TRADE CHALU** (BTCUSDm H4, demo 474832446, Algo ON). GBPUSD nayi SELL 'market khulte hi' (Itwar, market band). Agla: Somwar SS/report - GBPUSD SELL ~0.14 SL 1.33849 khuli ya nahi.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
@@ -69,7 +70,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K4 | Tokri + Turtle 55/20 rukh test | user 9 Nov | **HUA 15 Nov: FAIL** (Fable, `docs/k4-tokri-turtle.md`; Claude ne IMTIHAN dobara chalaya = wahi number). 324/324 variant IMTIHAN mein account khatam; saada 0.02 Turtle +4-7.5% (9 saal). Rukh ghaib se 100% sahi ho tab bhi tk2 tokri fail = dhaancha ka masla. K5 NAHI. |
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |
-| K7 | Kachhua **e2** 0.25% FTMO demo 474832446 par (user haan 15 Nov); B1 ya B2 pehle? | PDF hafta 1 | e2 F7 ✅ chart par SIRF DIKHANA (15 Nov SS); InpTrade=true BAQI |
+| K7 | Kachhua **e2** 0.25% FTMO demo 474832446 par (user haan 15 Nov); B1 ya B2 pehle? | PDF hafta 1 | **HUA 15 Nov:** e2 TRADE CHALU (BTCUSDm H4); pehli trade (GBPUSD SELL) Somwar dekho |
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 
 ## Hue (aakhri 5)
