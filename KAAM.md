@@ -54,6 +54,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 58vi (15 Nov) FTMO demo report: balance 99,378.34, equity 99,241.81; khuli t5 US500 2.13 + USTEC 0.36 (dono SL ke saath); i6 band +153.96, t5 band -782.78. Sab qaide ke mutabiq, koi galti nahi.
 
 - 58vi (15 Nov, user): Fable K4 ka status Claude KHUD har ~1 ghante bataye (send_later), user ko baar baar poochhna na pare.
+- Fable K4 chat (15 Nov, user): **gold par tokri BAND** (Fable ki rai: bina SL tokri gold par pass mumkin nahi; sirf range wali forex jori par ~20-30%, data nahi, test nahi). User: FTMO ke liye "sync wale instruments ki strategy" poochhi -> jawab = #53 (JasTrend 4H XAU/XAG/US500/USTEC 0.75% + IBS US500/USTEC 1%, pehle se demo par). User: **demo chalne dein**; nayi chat mein isi (FTMO mansooba #53) par baat.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |

@@ -62,6 +62,8 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**Fable K4 chat (15 Nov, session_013jF6yZ...)** - K4 FAIL (`docs/k4-tokri-turtle.md`). User: **gold par tokri BAND**, K5 nahi. FTMO sawal -> jawab #53 (demo par chalu); user: demo chalne dein.
+**AGLA (nayi chat):** FTMO mansooba #53 par baat (user ka mauzu); demo 474832446 ka naya SS aaye to hisaab; K0 file (m8.4) abhi baqi.
 **57vi chat (12-15 Nov)** - K0 file (m8.4 .mq5 + gold/BTC zip) NAHI aayi - abhi baqi. Tablet WiFi: date/time auto = hal. Rehnuma r1 (Fable, branch fish-demo-trend-1h)
 = t5 ka hi qaida; Python `tools/rehnuma_1d_test.py` gold 2010-26: t5 +26.6R/girawat 7.3R vs 1D filter +25.3R/5.4R -> **user: t5 hi chalne dein** (EA badla NAHI).
 Hafte ki limit (Fable bhi) Itwar 15 Nov 2 AM khud reset. **K4 FABLE ko diya:** hukm `docs/k4-fable-hukm.md` (PASS qaida pehle, CHUNAO 2009-17 / IMTIHAN 2018-26, 10 bachao, saada 0.02 muqabla),

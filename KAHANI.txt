@@ -174,7 +174,8 @@ KACHHUA (kyun aaya, kyun gaya): gold 1D 459 tr (8-10) -> 9 mkt Radar TV PASS (9-
 
 15-11 | 57vi: Rehnuma r1 = t5 ka qaida; Python t5 vs 1D filter (tools/rehnuma_1d_test.py) | user: t5 hi chalne dein | KYUN: filter aadhi trades, kul R kam (girawat kam)
 15-11 | 57vi: K4 (Tokri + Turtle 55/20) FABLE alag session ko (docs/k4-fable-hukm.md, max effort, branch claude/k4-tokri-turtle) | nateeja Claude jaanchega | KYUN: user 'ek dafa mein final, afsos na ho'
-4. ABHI (15 Nov 2026, 57vi chat ke baad; khule kaam = KAAM.md; K4 Fable session chal raha (nateeja jaancho); LIVE JasMauqa m8.4 user ke paas (repo m8.3, file maango); t5 waisa hi)  [MT5 ka asli haal = TRADING.md sec 0]
+15-11 | Fable K4 chat: K4 = FAIL (324 variant, IMTIHAN sab account khatam; rukh perfect ho tab bhi) | user: gold par tokri BAND, K5 nahi | FTMO sync strategy = wahi #53, demo chalne dein | KYUN: tokri jeet $1-2 / haar $130, gold wapas nahi aata | docs/k4-tokri-turtle.md
+4. ABHI (15 Nov 2026, 57vi chat ke baad; khule kaam = KAAM.md; K4 HUA = FAIL, gold par tokri BAND (user); agla mauzu FTMO mansooba #53 (demo chalu); LIVE JasMauqa m8.4 user ke paas (repo m8.3, file maango); t5 waisa hi)  [MT5 ka asli haal = TRADING.md sec 0]
 DEMO 472716649 (Trial16, STANDARD USD $2153.25, 0 khuli, SS 4 Nov; XAG SELL kis ne kholi = History Comment/Magic SS baqi; MT5 naqsha TRADING.md sec 0): JasIbsCentEA c1 US500m D1 | 20261102 | US500+USTEC $10 x 1.5x 3 qadam, $800 stop.
 FTMO talaash 83/0 par RUKI (user). FTMO DEMO 474832446 chalu (4 Nov 09:01: i6 2 BUY + t5 gold BUY, kul +$262):
   JasTrendEA t5  | XAUUSDm H4 | 20261029 | XAU XAG US500 USTEC, 0.75%, SL 6 ATR
