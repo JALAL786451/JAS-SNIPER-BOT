@@ -1815,6 +1815,8 @@ Trade ka hisaab Dukascopy H1 (2012+) par (Yahoo ke purane High/Low khali = SL ke
 **TALAASH** entry < 2019: PASS = kul >= 100 tr, Exp - 2SE(cluster) > 0, saal (kul R) musbat > 50%. BUY / SELL alag sirf maloomat (long/short barabar = aam tezi khud kat jati).
 **IMTIHAN** 2019+ EK dafa, bina tabdeeli: kul >= 30 tr, Exp - 2SE(cluster) > 0 = ASLI PASS. Phir FTMO jor alag koshish (#101 ka tareeqa). Ginti +1.
 Maloom kamzori: short index CFD par dividend katauti shamil nahi (long par milti = taqreeban barabar); EU50 ki history 2007 se (2017 mein shamil).
+**Data shart (nateeja dekhne se PEHLE jori - sehat jaanch mein H1 data 2012-14 mein khali jagah mili, ek trade 22 tareekh ko khul rahi thi):** market us mahine tabhi layak jab H1 mein is mahine
+aur pichhle mahine >= 15 session din hon aur pehla din tareekh <= 4 ho.
 
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)
