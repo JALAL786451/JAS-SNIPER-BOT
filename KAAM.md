@@ -56,6 +56,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 58vi (15 Nov, user): Fable K4 ka status Claude KHUD har ~1 ghante bataye (send_later), user ko baar baar poochhna na pare.
 - Fable K4 chat (15 Nov, user): **gold par tokri BAND** (Fable ki rai: bina SL tokri gold par pass mumkin nahi; sirf range wali forex jori par ~20-30%, data nahi, test nahi). User: FTMO ke liye "sync wale instruments ki strategy" poochhi -> jawab = #53 (JasTrend 4H XAU/XAG/US500/USTEC 0.75% + IBS US500/USTEC 1%, pehle se demo par). User: **demo chalne dein**; nayi chat mein isi (FTMO mansooba #53) par baat.
 - 59vi (15 Nov): user: "11 mahine bohat hain, tez kaise ho?" -> jawab: muft raftar nahi (naya market ~0.5-1 mahina, risk 1.5x = #77 18 fail); salah = Kachhua e1 0.25% demo par (K7, #101 median 10.6->10.2). User jawab BAQI.
+- 59vi (15 Nov): user: "3 EA tested, breach nahi, bas guzara; Kachhua FTMO par test nahi hua? strategy hain hi nahi, mehnat bekaar?" -> jawab: Kachhua FTMO par test HUA (#100 akela 67/0 median 22.1 = trend se sust; #101 saath 85/0 median 10.2). Strategy hain (15 ASLI PASS / 101) magar edge patla = sust; mehnat bekaar nahi.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
