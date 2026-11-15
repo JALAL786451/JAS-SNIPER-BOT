@@ -240,6 +240,13 @@ def rukh_file(D, name):
         return f
     if name == 'ST4H':
         r = st4h_states(D)
+    elif name.startswith('GHAIB'):                              # JAAN BOOJH KAR lookahead: sirf tashkhees (cmd_ghaib)
+        k = int(name[5:])                                       # is din se k din baad ka close, pichhle close ke muqable
+        c = D.dy.C.values.astype(np.int64)
+        nd = len(c)
+        fut = c[np.minimum(np.arange(nd) + k - 1, nd - 1)]
+        st = np.sign(fut - np.r_[c[0], c[:-1]]).astype(np.int8)  # st[d] = din d ka "sahi" rukh
+        r = st[D.di].astype(np.int8)
     else:
         p = name.split('_')
         n_in, n_out, mode = int(p[0][1:]), int(p[1]), p[2]
@@ -588,7 +595,10 @@ def cmd_ref(argv):
              ('T20_10_close_fill', dict(neut=2, c2=1, path=0, step=150, tp=50)), ('ST4H', dict(path=1, step=300, tp=200)),
              ('T40_20_close', dict(neut=1, c2=0, path=1, mode=1, sp=35)), ('T55_20_close', dict(neut=1, c2=1, path=0, bmode=1)),
              ('T40_20_touch_fill', dict(neut=2, c2=0, path=1, notp=1)), ('T20_10_touch', dict(neut=1, c2=1, path=2, bmode=1, mode=1, minsec=0))]
-    if os.environ.get('K4_REF'):
+    if os.environ.get('K4_REF') == 'chuna':                     # chuna hua variant khud, dono raaste
+        v = CHUNA['F0']
+        tests = [(vrukh(v), dict(vkw(v), path=0)), (vrukh(v), dict(vkw(v), path=1))]
+    elif os.environ.get('K4_REF'):
         tests = [tests[int(x)] for x in os.environ['K4_REF'].split(',')]
     ok = True
     for rukh, kw in tests:
@@ -716,8 +726,9 @@ def cmd_sanity(argv):
         w = run2(D, 'ST4H', 'chunao', **kw)
         print(f"naya engine tk2 (4H Supertrend, Step$2 TP$1) CHUNAO 2009-17, {nm}: {fmt(w)} | pehli hadd {ts(w['first'])} khatam {ts(w['blown'])} | CLOSE ALL {w['nbc']} dafa")
     H = Data('h1')
-    for nm, rk in (('tk2 4H Supertrend', 'ST4H'), ('Turtle 55/20 close a-i', 'T55_20_close')):
-        w = worst([run(H, rk, ('2005-01-01', '2009-01-01'), path=pth, barsec=3600) for pth in (0, 1)])
+    v = CHUNA['F0']
+    for nm, rk, kw in (('tk2 4H Supertrend', 'ST4H', {}), ('Turtle 55/20 close a-i', 'T55_20_close', {}), ('chuna hua ' + vname(v), vrukh(v), vkw(v))):
+        w = worst([run(H, rk, ('2005-01-01', '2009-01-01'), path=pth, barsec=3600, **kw) for pth in (0, 1)])
         print(f"EXTRA H1 2005-2008 (kaccha - H1 ke andar raasta andaza) {nm}: {fmt(w)} | pehli hadd {ts(w['first'])} khatam {ts(w['blown'])}")
 
 
@@ -792,6 +803,53 @@ def cmd_waqiat(argv):
         sd = saada(D, base, (a, b))
         mx = max(r['maxn'] for r in w['raw'])
         print(f"{y} | {D.c[i1 - 1] / 100:7.0f} | {dr:6.1f} | {w['nafa']:+7.1f}% {w['hadd']:3d} {w['lots'] / len(days):6.1f} {mx:3d} | {k['nafa']:+7.1f}% {k['hadd']:3d} {k['lots'] / len(days):6.1f} | {sd['nafa']:+6.2f}%")
+
+
+def cmd_jaankari(argv):
+    """Baqi F0 variant IMTIHAN mein - SIRF JAANKARI (chunao isi se nahi hua; hukm sec 5)."""
+    build()
+    D = Data()
+    t0 = time.time()
+    res = grid(D, 'F0', 'imtihan')
+    df = table(res, CACHE / 'imtihan_jaankari_F0.csv')
+    print(f"=== IMTIHAN 2018..2026 | F0 ke sab {len(res)} variant - SIRF JAANKARI | {time.time() - t0:.0f}s ===")
+    print(f"nafa > 0: {(df.nafa > 0).sum()} | ahl jaisa (4 shart): {df.ahl.sum()} | account khatam: {(df.khatam != '-').sum()} | hadd kabhi nahi: {(df.hadd == 0).sum()}")
+    print(f"nafa %: sab se bura {df.nafa.min():.1f}, darmiyana {df.nafa.median():.1f}, sab se acha {df.nafa.max():.1f} | hadd ginti: kam {df.hadd.min()}, darmiyana {df.hadd.median():.0f}, zyada {df.hadd.max()}")
+    for _, x in df.sort_values('nafa', ascending=False).head(5).iterrows():
+        print(f"    T{x['T']} a-{x['a']} {x['b']} c{x['c']} Step${x['step']:g} TP${x['tp']:g}: nafa {x['nafa']:+.1f}% girawat {x['girawat']:.1f}% hadd {x['hadd']} musbat {x['musbat']}/{x['saal']} khatam {x['khatam']}")
+
+
+def cmd_tashreeh(argv):
+    """Paisa kahan se aaya / kahan gaya: TP ki kamai vs AAKHRI HADD, lots ka jamna, margin (bachao 8)."""
+    build()
+    D = Data()
+    v = CHUNA['F0']
+    for daur in ('chunao', 'imtihan'):
+        print(f"\n--- {daur.upper()} ---")
+        for nm, rk, kw in (('Turtle tokri (chuna hua)', vrukh(v), vkw(v)), ('tk2-4H (Step$2 TP$1)', 'ST4H', {})):
+            for pth in (0, 1):
+                r = run(D, rk, daur, path=pth, **kw)
+                u = lambda x: x / USC
+                print(f"{nm} raasta {pth}: lots {r['lots']} | TP {r['ntp']} dafa = {u(r['sumtp']):+.0f} USC | AAKHRI HADD {r['nstop']} dafa = {u(r['sumstop']):+.0f} USC | "
+                      f"CLOSE ALL {r['nbc']} dafa = {u(r['sumbc']):+.0f} | rukh palte par band (c2) {r['nc2']} lots = {u(r['sumc2']):+.0f} | aakhir mein khula {u(r['fl']):+.0f} ({r['nend']} lots) | kul {u(r['net']):+.0f} USC")
+                print(f"      waqt: {r['barsmaxt'] / r['barsin'] * 100:.0f}% candle par 30 lots poori, {r['barsbard'] / r['barsin'] * 100:.0f}% par BARDASHT (nayi lot band) | zyada se zyada {r['maxn']} lots, {r['maxg'] / 100:.2f} lot kul, net {r['maxabsn'] / 100:.2f} lot | "
+                      f"sab se bura khula {u(r['minfl']):.0f} USC | margin 1:200 par zyada se zyada {u(r['maxnot']) / 200:.0f} USC, kam se kam margin level {r['minml'] * 100:.0f}%")
+
+
+def cmd_ghaib(argv):
+    """TASHKHEES (K4 ka faisla NAHI): rukh agar GHAIB se bilkul sahi ho (aaj ka / agle 5 / 20 din ka rukh pehle se pata)
+    to tk2 tokri bachti hai? Ye kisi bhi rukh-ishare ki OOPARI HADD hai - asal mein mumkin nahi."""
+    build()
+    D = Data()
+    v = CHUNA['F0']
+    for daur in ('chunao', 'imtihan'):
+        print(f"\n--- {daur.upper()} : rukh GHAIB se (lookahead jaan boojh kar) ---")
+        for k, nm in ((1, 'aaj ka din kis taraf band hoga'), (5, 'agle 5 din kis taraf'), (20, 'agle 20 din kis taraf')):
+            for lab, kw in (('tk2 Step$2 TP$1', {}), ('Step$2 TP$2 + c2', dict(step=v['step'], tp=v['tp'], c2=1))):
+                w = run2(D, f'GHAIB{k}', daur, **kw)
+                print(f"ghaib: {nm:32} | {lab:18}: {fmt(w)} | pehli hadd {ts(w['first'])[:10]} khatam {ts(w['blown'])[:10]}")
+            sd = saada(D, f'GHAIB{k}', daur)
+            print(f"ghaib: {nm:32} | saada 0.02 lot     : nafa {sd['nafa']:+7.1f}%  girawat {sd['dd']:5.1f}%  trades {sd['lots']}")
 
 
 def baskets(path):
@@ -878,7 +936,7 @@ if __name__ == '__main__':
         cmd_chunao(sys.argv[2:])
     elif cmd == 'imtihan':
         cmd_imtihan(sys.argv[2:])
-    elif cmd in ('sanity', 'hasas', 'waqiat', 'log'):
+    elif cmd in ('sanity', 'hasas', 'waqiat', 'log', 'jaankari', 'tashreeh', 'ghaib'):
         globals()['cmd_' + cmd](sys.argv[2:])
     else:
         print(__doc__)

@@ -1,0 +1,51 @@
+=== BARE WAQIAT (har ek alag run, 38,000 USC se) : T20/10 a-iii close c2 Step$2 TP$2 ===
+
+2013 crash (Apr-Jun 2013): gold 1598 -> 1234 (kam 1180, zyada 1604) | Turtle rukh din: UP 0 DOWN 62 koi nahi 3
+   Turtle tokri : nafa   -12.7%  girawat  19.5%  hadd   3 (4saal mein  3)  musbat 0/1  lots    2837 | pehli hadd 2013-04-15
+   tk2-4H       : nafa   -16.7%  girawat  20.8%  hadd   3 (4saal mein  3)  musbat 0/1  lots    4244 | pehli hadd 2013-04-15
+   saada 0.02   : nafa   +1.70%  girawat  0.86%  trades 1
+
+Mar 2020 (Feb-Apr 2020): gold 1582 -> 1726 (kam 1451, zyada 1748) | Turtle rukh din: UP 22 DOWN 16 koi nahi 3
+   Turtle tokri : nafa    -1.8%  girawat  12.0%  hadd   3 (4saal mein  3)  musbat 0/1  lots    4142 | pehli hadd 2020-03-12
+   tk2-4H       : nafa   -10.5%  girawat  14.8%  hadd   4 (4saal mein  4)  musbat 0/1  lots    7509 | pehli hadd 2020-03-06
+   saada 0.02   : nafa   -0.35%  girawat  1.25%  trades 3
+
+2022 (poora saal): gold 1829 -> 1823 (kam 1615, zyada 2070) | Turtle rukh din: UP 116 DOWN 59 koi nahi 83
+   Turtle tokri : nafa   -13.8%  girawat  25.7%  hadd   5 (4saal mein  5)  musbat 0/1  lots    8152 | pehli hadd 2022-02-24
+   tk2-4H       : nafa   -30.5%  girawat  34.1%  hadd   8 (4saal mein  8)  musbat 0/1  lots   14984 | pehli hadd 2022-02-21
+   saada 0.02   : nafa   +0.66%  girawat  1.08%  trades 7
+
+2025 (poora saal): gold 2625 -> 4319 (kam 2614, zyada 4550) | Turtle rukh din: UP 141 DOWN 20 koi nahi 97
+   Turtle tokri : nafa  -100.1%  girawat 100.1%  hadd  25 (4saal mein 25)  musbat 0/1  lots   20709  ACCOUNT KHATAM | pehli hadd 2025-01-16
+   tk2-4H       : nafa  -100.0%  girawat 100.0%  hadd  26 (4saal mein 26)  musbat 0/1  lots   41912  ACCOUNT KHATAM | pehli hadd 2025-01-16
+   saada 0.02   : nafa   +0.29%  girawat  5.03%  trades 10
+
+2026 (Jan - 5 Nov): gold 4324 -> 4065 (kam 3869, zyada 5597) | Turtle rukh din: UP 92 DOWN 127 koi nahi 0
+   Turtle tokri : nafa  -100.3%  girawat 100.3%  hadd  57 (4saal mein 57)  musbat 0/1  lots   61667  ACCOUNT KHATAM | pehli hadd 2026-01-06
+   tk2-4H       : nafa  -100.0%  girawat 100.0%  hadd  21 (4saal mein 21)  musbat 0/1  lots   30335  ACCOUNT KHATAM | pehli hadd 2026-01-05
+   saada 0.02   : nafa   +5.24%  girawat  5.90%  trades 4
+
+=== SAAL-BA-SAAL ALAG (har saal naya 38,000, khali tokri) + fixed Step ka asar (bachao 10) ===
+saal | gold close | din range $ | Turtle tokri: nafa% hadd lots/din zyada-lots | tk2-4H: nafa% hadd lots/din | saada nafa%
+2009 |    1096 |   17.0 |    -5.0%   1   13.6  30 |   -15.1%   3   27.0 |  +0.13%
+2010 |    1419 |   18.6 |   -15.5%   1   15.7  30 |    -4.6%   3   32.9 |  -0.20%
+2011 |    1565 |   29.5 |   -22.7%   8   44.1  30 |   -44.2%  11   73.6 |  +1.33%
+2012 |    1675 |   22.5 |   -11.1%   3   22.8  30 |   -13.7%   5   41.3 |  +0.27%
+2013 |    1204 |   25.2 |    +1.1%   3   25.1  30 |   -31.9%   7   43.2 |  +0.82%
+2014 |    1184 |   16.5 |    -6.6%   1   13.3  30 |   -11.6%   3   21.9 |  -0.52%
+2015 |    1061 |   15.8 |    +5.9%   0   11.9  30 |   -12.4%   3   19.1 |  +0.15%
+2016 |    1151 |   18.3 |    -8.6%   2   17.3  30 |   -13.0%   4   31.5 |  -0.37%
+2017 |    1302 |   12.5 |   -15.5%   0   10.5  30 |    -8.0%   2   13.8 |  -0.55%
+2018 |    1282 |   12.3 |    +4.6%   0    7.7  30 |    -3.9%   1   15.0 |  +0.51%
+2019 |    1517 |   15.5 |    -3.4%   1   12.2  30 |    -7.8%   3   26.6 |  +0.62%
+2020 |    1898 |   30.8 |    -7.9%   8   52.7  30 |   -62.7%  14   83.0 |  -1.61%
+2021 |    1829 |   23.9 |   -35.3%   5   29.4  30 |   -38.9%   8   52.7 |  -0.73%
+2022 |    1823 |   25.7 |   -13.8%   5   31.6  30 |   -30.5%   8   58.1 |  +0.66%
+2023 |    2063 |   23.8 |   -11.4%   3   25.9  30 |   -43.2%   8   44.9 |  -0.29%
+2024 |    2624 |   33.1 |   -38.0%   9   45.6  30 |   -26.1%  10   86.8 |  -0.72%
+2025 |    4319 |   60.8 |  -100.1%  25   80.3  30 |  -100.0%  26  162.4 |  +0.29%
+2026 |    4065 |  118.9 |  -100.3%  57  281.6  30 |  -100.0%  21  138.5 |  +5.24%
+
+real	0m29.460s
+user	0m18.664s
+sys	0m10.757s

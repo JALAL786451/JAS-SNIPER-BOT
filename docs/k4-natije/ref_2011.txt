@@ -1,0 +1,6 @@
+2011-01-01..2012-01-01 T55_20_touch       {'neut': 2, 'c2': 1, 'path': 1}: engine eq 30528.54 lots 15627 tp 15353 basket 0 hadd 6 c2 80 dd 30.928% | hawala eq 30528.54 lots 15627 tp 15353 basket 0 hadd 6 c2 80 dd 30.928% | log 31225/31225 line BARABAR | number BARABAR | 0.3s / 367s
+2011-01-01..2012-01-01 T55_20_close       {'neut': 1, 'c2': 1, 'path': 0, 'bmode': 1}: engine eq 27960.76 lots 26578 tp 23417 basket 524 hadd 2 c2 104 dd 28.124% | hawala eq 27960.76 lots 26578 tp 23417 basket 524 hadd 2 c2 104 dd 28.124% | log 53137/53137 line BARABAR | number BARABAR | 0.4s / 338s
+NATEEJA: engine = hawala (sab barabar)
+2011-01-01..2012-01-01 T20_10_close_fill  {'neut': 2, 'c2': 1, 'path': 0, 'step': 150, 'tp': 50}: engine eq 9511.41 lots 36988 tp 36522 basket 0 hadd 11 c2 137 dd 82.503% | hawala eq 9511.41 lots 36988 tp 36522 basket 0 hadd 11 c2 137 dd 82.503% | log 73947/73947 line BARABAR | number BARABAR | 0.4s / 483s
+2011-01-01..2012-01-01 T40_20_touch_fill  {'neut': 2, 'c2': 0, 'path': 1, 'notp': 1}: engine eq 36804.86 lots 2604 tp 0 basket 444 hadd 0 c2 0 dd 6.112% | hawala eq 36804.86 lots 2604 tp 0 basket 444 hadd 0 c2 0 dd 6.112% | log 5178/5178 line BARABAR | number BARABAR | 0.2s / 400s
+NATEEJA: engine = hawala (sab barabar)

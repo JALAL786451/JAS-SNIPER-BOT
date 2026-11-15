@@ -1,0 +1,20 @@
+
+--- CHUNAO ---
+Turtle tokri (chuna hua) raasta 0: lots 41749 | TP 40329 dafa = +120478 USC | AAKHRI HADD 17 dafa = -64603 USC | CLOSE ALL 57 dafa = +137 | rukh palte par band (c2) 817 lots = -67686 | aakhir mein khula -1596 (21 lots) | kul -13269 USC
+      waqt: 31% candle par 30 lots poori, 13% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.60 lot kul, net 0.60 lot | sab se bura khula -3801 USC | margin 1:200 par zyada se zyada 514 USC, kam se kam margin level 4610%
+Turtle tokri (chuna hua) raasta 1: lots 42974 | TP 41557 dafa = +124184 USC | AAKHRI HADD 18 dafa = -68562 USC | CLOSE ALL 62 dafa = +157 | rukh palte par band (c2) 779 lots = -62334 | aakhir mein khula -1481 (20 lots) | kul -8036 USC
+      waqt: 29% candle par 30 lots poori, 12% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.59 lot kul, net 0.58 lot | sab se bura khula -3958 USC | margin 1:200 par zyada se zyada 500 USC, kam se kam margin level 4710%
+tk2-4H (Step$2 TP$1) raasta 0: lots 45289 | TP 44541 dafa = +66939 USC | AAKHRI HADD 27 dafa = -102646 USC | CLOSE ALL 0 dafa = +0 | rukh palte par band (c2) 0 lots = +0 | aakhir mein khula -2324 (29 lots) | kul -38030 USC
+      waqt: 25% candle par 30 lots poori, 23% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.59 lot kul, net 0.57 lot | sab se bura khula -3840 USC | margin 1:200 par zyada se zyada 521 USC, kam se kam margin level 170%
+tk2-4H (Step$2 TP$1) raasta 1: lots 50979 | TP 50181 dafa = +75564 USC | AAKHRI HADD 29 dafa = -110270 USC | CLOSE ALL 0 dafa = +0 | rukh palte par band (c2) 0 lots = +0 | aakhir mein khula -3465 (29 lots) | kul -38171 USC
+      waqt: 25% candle par 30 lots poori, 22% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.59 lot kul, net 0.57 lot | sab se bura khula -3865 USC | margin 1:200 par zyada se zyada 542 USC, kam se kam margin level 440%
+
+--- IMTIHAN ---
+Turtle tokri (chuna hua) raasta 0: lots 59076 | TP 57226 dafa = +171534 USC | AAKHRI HADD 38 dafa = -144407 USC | CLOSE ALL 76 dafa = +199 | rukh palte par band (c2) 641 lots = -61837 | aakhir mein khula -3469 (22 lots) | kul -37980 USC
+      waqt: 30% candle par 30 lots poori, 16% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.60 lot kul, net 0.60 lot | sab se bura khula -3801 USC | margin 1:200 par zyada se zyada 961 USC, kam se kam margin level 210%
+Turtle tokri (chuna hua) raasta 1: lots 43704 | TP 42112 dafa = +125998 USC | AAKHRI HADD 28 dafa = -106411 USC | CLOSE ALL 85 dafa = +210 | rukh palte par band (c2) 618 lots = -54770 | aakhir mein khula -3013 (27 lots) | kul -37986 USC
+      waqt: 28% candle par 30 lots poori, 13% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.59 lot kul, net 0.58 lot | sab se bura khula -3806 USC | margin 1:200 par zyada se zyada 674 USC, kam se kam margin level 170%
+tk2-4H (Step$2 TP$1) raasta 0: lots 45102 | TP 44366 dafa = +66450 USC | AAKHRI HADD 27 dafa = -102606 USC | CLOSE ALL 0 dafa = +0 | rukh palte par band (c2) 0 lots = +0 | aakhir mein khula -1847 (19 lots) | kul -38003 USC
+      waqt: 20% candle par 30 lots poori, 20% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.60 lot kul, net 0.57 lot | sab se bura khula -3800 USC | margin 1:200 par zyada se zyada 569 USC, kam se kam margin level 60%
+tk2-4H (Step$2 TP$1) raasta 1: lots 60437 | TP 59531 dafa = +89366 USC | AAKHRI HADD 33 dafa = -125406 USC | CLOSE ALL 0 dafa = +0 | rukh palte par band (c2) 0 lots = +0 | aakhir mein khula -2075 (23 lots) | kul -38115 USC
+      waqt: 23% candle par 30 lots poori, 16% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.59 lot kul, net 0.57 lot | sab se bura khula -3800 USC | margin 1:200 par zyada se zyada 588 USC, kam se kam margin level 20%

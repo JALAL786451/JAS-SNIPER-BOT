@@ -1,0 +1,63 @@
+
+=== CHUNAO 2009-06..2017 | khandan F1: CLOSE ALL = tokri ka kul hisaab (jaankari) | 324 variant x 2 raasta | 239s ===
+nafa > 0: 0 | ahl (Q-c): 0 | account khatam: 262 | hadd kabhi nahi: 0 | CLOSE ALL kabhi chala: 324
+nafa %: sab se bura -101.0, darmiyana -100.0, sab se acha -32.3 | hadd ginti: kam 4, darmiyana 12, zyada 16
+  T    ke hisaab se darmiyana nafa%: 20/10: -100.0 (hadd 11)  40/20: -100.0 (hadd 12)  55/20: -100.0 (hadd 12)
+  a    ke hisaab se darmiyana nafa%: i: -100.0 (hadd 11)  ii: -100.0 (hadd 10)  iii: -100.0 (hadd 12)
+  b    ke hisaab se darmiyana nafa%: close: -100.0 (hadd 12)  touch: -100.0 (hadd 12)
+  c    ke hisaab se darmiyana nafa%: 1: -100.0 (hadd 13)  2: -100.0 (hadd 9)
+  step ke hisaab se darmiyana nafa%: 1.5: -100.0 (hadd 12)  2.0: -100.0 (hadd 12)  3.0: -100.0 (hadd 10)
+  tp   ke hisaab se darmiyana nafa%: 0.5: -100.0 (hadd 11)  1.0: -100.0 (hadd 12)  2.0: -100.0 (hadd 11)
+  behtareen 8 (nafa ke hisaab se):
+    T40/20 a-i touch c1 Step$3 TP$2: nafa -32.3% girawat 42.8% hadd 7 (4saal 6) musbat 2/9 khatam -
+    T40/20 a-i close c1 Step$3 TP$2: nafa -39.5% girawat 46.0% hadd 8 (4saal 7) musbat 1/9 khatam -
+    T55/20 a-i close c1 Step$3 TP$2: nafa -40.9% girawat 51.4% hadd 8 (4saal 8) musbat 2/9 khatam -
+    T40/20 a-iii touch c1 Step$3 TP$2: nafa -49.5% girawat 56.5% hadd 10 (4saal 9) musbat 1/9 khatam -
+    T20/10 a-ii touch c1 Step$3 TP$2: nafa -50.5% girawat 57.1% hadd 9 (4saal 7) musbat 1/9 khatam -
+    T40/20 a-ii close c2 Step$3 TP$2: nafa -56.1% girawat 57.1% hadd 4 (4saal 4) musbat 0/9 khatam -
+    T20/10 a-ii touch c2 Step$3 TP$2: nafa -56.7% girawat 56.9% hadd 4 (4saal 4) musbat 0/9 khatam -
+    T40/20 a-ii close c1 Step$3 TP$2: nafa -57.6% girawat 63.8% hadd 10 (4saal 8) musbat 1/9 khatam -
+CHUNA HUA (koi nafa>0 nahi - sab se kam nuqsan): T40/20 a-i   touch c1 Step$3 TP$2 -> nafa   -32.3%  girawat  42.8%  hadd   7 (4saal mein  6)  musbat 2/9  lots   43685
+  dict: {'T': (40, 20), 'a': 'i', 'b': 'touch', 'c2': 0, 'step': 300, 'tp': 200}
+
+=== CHUNAO 2009-06..2017 | khandan F2: lot ka TP nahi, sirf CLOSE ALL (jaankari) | 108 variant x 2 raasta | 48s ===
+nafa > 0: 31 | ahl (Q-c): 0 | account khatam: 0 | hadd kabhi nahi: 103 | CLOSE ALL kabhi chala: 108
+nafa %: sab se bura -62.1, darmiyana -22.7, sab se acha 3.6 | hadd ginti: kam 0, darmiyana 0, zyada 2
+  T    ke hisaab se darmiyana nafa%: 20/10: -24.6 (hadd 0)  40/20: -13.9 (hadd 0)  55/20: -17.9 (hadd 0)
+  a    ke hisaab se darmiyana nafa%: i: -13.0 (hadd 0)  ii: -24.7 (hadd 0)  iii: -18.5 (hadd 0)
+  b    ke hisaab se darmiyana nafa%: close: -23.5 (hadd 0)  touch: -17.9 (hadd 0)
+  c    ke hisaab se darmiyana nafa%: 1: +0.1 (hadd 0)  2: -35.9 (hadd 0)
+  step ke hisaab se darmiyana nafa%: 1.5: -15.4 (hadd 0)  2.0: -24.1 (hadd 0)  3.0: -19.1 (hadd 0)
+  tp   ke hisaab se darmiyana nafa%: 1.0: -22.7 (hadd 0)
+  behtareen 8 (nafa ke hisaab se):
+    T20/10 a-i close c1 Step$2 TP$1: nafa +3.6% girawat 7.8% hadd 0 (4saal 0) musbat 3/9 khatam -
+    T55/20 a-iii touch c1 Step$3 TP$1: nafa +2.2% girawat 4.3% hadd 0 (4saal 0) musbat 1/9 khatam -
+    T55/20 a-ii close c1 Step$3 TP$1: nafa +1.9% girawat 4.3% hadd 0 (4saal 0) musbat 1/9 khatam -
+    T55/20 a-ii close c1 Step$2 TP$1: nafa +1.8% girawat 5.5% hadd 0 (4saal 0) musbat 2/9 khatam -
+    T55/20 a-iii close c1 Step$3 TP$1: nafa +1.8% girawat 4.3% hadd 0 (4saal 0) musbat 1/9 khatam -
+    T55/20 a-ii touch c1 Step$3 TP$1: nafa +1.0% girawat 4.3% hadd 0 (4saal 0) musbat 1/9 khatam -
+    T55/20 a-i close c1 Step$1.5 TP$1: nafa +0.9% girawat 0.8% hadd 0 (4saal 0) musbat 1/9 khatam -
+    T40/20 a-i close c1 Step$1.5 TP$1: nafa +0.8% girawat 1.3% hadd 0 (4saal 0) musbat 1/9 khatam -
+CHUNA HUA (koi ahl nahi - nafa>0 mein behtareen): T55/20 a-i   close c1 Step$1.5 TP$1 -> nafa    +0.9%  girawat   0.7%  hadd   0 (4saal mein  0)  musbat 1/9  lots    2362
+  dict: {'T': (55, 20), 'a': 'i', 'b': 'close', 'c2': 0, 'step': 150, 'tp': 100}
+
+=== CHUNAO 2009-06..2017 | khandan F3: ULTA mode - high SELL / low BUY (jaankari) | 324 variant x 2 raasta | 151s ===
+nafa > 0: 2 | ahl (Q-c): 0 | account khatam: 224 | hadd kabhi nahi: 0 | CLOSE ALL kabhi chala: 152
+nafa %: sab se bura -100.9, darmiyana -100.0, sab se acha 22.9 | hadd ginti: kam 7, darmiyana 24, zyada 48
+  T    ke hisaab se darmiyana nafa%: 20/10: -100.0 (hadd 22)  40/20: -100.0 (hadd 24)  55/20: -100.0 (hadd 24)
+  a    ke hisaab se darmiyana nafa%: i: -100.0 (hadd 24)  ii: -100.0 (hadd 22)  iii: -100.0 (hadd 27)
+  b    ke hisaab se darmiyana nafa%: close: -100.0 (hadd 24)  touch: -100.0 (hadd 23)
+  c    ke hisaab se darmiyana nafa%: 1: -100.0 (hadd 29)  2: -100.0 (hadd 20)
+  step ke hisaab se darmiyana nafa%: 1.5: -100.0 (hadd 25)  2.0: -100.0 (hadd 26)  3.0: -78.5 (hadd 21)
+  tp   ke hisaab se darmiyana nafa%: 0.5: -100.0 (hadd 21)  1.0: -100.0 (hadd 25)  2.0: -84.2 (hadd 28)
+  behtareen 8 (nafa ke hisaab se):
+    T20/10 a-i touch c1 Step$3 TP$2: nafa +22.9% girawat 27.6% hadd 20 (4saal 16) musbat 5/9 khatam -
+    T20/10 a-i touch c1 Step$3 TP$1: nafa +12.5% girawat 24.3% hadd 20 (4saal 15) musbat 3/9 khatam -
+    T40/20 a-ii touch c1 Step$3 TP$2: nafa -5.8% girawat 33.8% hadd 21 (4saal 16) musbat 3/9 khatam -
+    T20/10 a-i close c1 Step$3 TP$1: nafa -15.6% girawat 42.0% hadd 23 (4saal 18) musbat 5/9 khatam -
+    T40/20 a-ii touch c1 Step$3 TP$1: nafa -16.2% girawat 39.4% hadd 21 (4saal 16) musbat 3/9 khatam -
+    T20/10 a-ii close c1 Step$3 TP$2: nafa -17.6% girawat 45.3% hadd 23 (4saal 18) musbat 4/9 khatam -
+    T20/10 a-i close c1 Step$3 TP$2: nafa -18.2% girawat 48.8% hadd 24 (4saal 20) musbat 4/9 khatam -
+    T40/20 a-i touch c1 Step$2 TP$2: nafa -21.4% girawat 54.9% hadd 38 (4saal 30) musbat 4/9 khatam -
+CHUNA HUA (koi ahl nahi - nafa>0 mein behtareen): T20/10 a-i   touch c1 Step$3 TP$2 -> nafa   +22.9%  girawat  27.6%  hadd  20 (4saal mein 16)  musbat 5/9  lots   30622
+  dict: {'T': (20, 10), 'a': 'i', 'b': 'touch', 'c2': 0, 'step': 300, 'tp': 200}
