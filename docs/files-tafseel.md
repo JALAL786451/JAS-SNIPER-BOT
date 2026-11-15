@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `docs/k4-fable-hukm.md` - 57vi: Fable ko K4 (Tokri + Turtle 55/20 rukh) ka mukammal hukm: data, PASS qaida pehle, 10 bachao, jaanch, branch claude/k4-tokri-turtle.
 - `tools/rehnuma_1d_test.py` - 57vi: gold 4H Supertrend t5 vs Rehnuma 1D filter (2003-26, kharcha+swap); filter = aadhi trades, behtar R/trade, kam girawat, kul R kam.
 - `docs/fable-mashwara-m83.md` - Fable 5.2 se gold bojh (SELL 3.31 / BUY 2.50) ka mashwara draft (55vi, 10 Nov).
 - `docs/hafta-4-10-nov.md` - hafta 4-10 Nov khulasa (LIVE m8.2, FTMO demo, PC Claude, Fable 5.2 usage) - nayi chat pehle parhe.
