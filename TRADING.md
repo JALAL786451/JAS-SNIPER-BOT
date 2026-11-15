@@ -62,13 +62,12 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**59vi chat (15 Nov)** - user: "FTMO 11 mahine bohat, trades kam, guzara; risk barhaye bina behtar?" -> jawab: muft raftar nahi; Kachhua jorna (#101) + naye tested idea + pass ke baad $ barhana.
+**JasTideRadarEA e2** bana (12 market, 0.25% of 100k, FTMO pehra, magic 20261115, USD hadd 3 rakhi), F7 ✅, demo 474832446 BTCUSDm H4 par **TRADE CHALU** (SS). GBPUSD nayi SELL "market khulte hi" (~0.14 lot, SL 1.33849).
+**AGLA (60vi):** market Somwar 16 Nov 4 AM PKT khuli - user se Trade tab SS / report: GBPUSD SELL (aur gold/chandi SELL) sahi lot + SL + comment ke saath khuli? Phir: USD hadd 3 ya 0 (user faisla), research list B1-B7 (pre-FOMC pehla) test ki ijazat, ~20 Nov FTMO Black Friday check. K0 file (m8.4) baqi.
 **Fable K4 chat (15 Nov, session_013jF6yZ...)** - K4 FAIL (`docs/k4-tokri-turtle.md`). User: **gold par tokri BAND**, K5 nahi. FTMO sawal -> jawab #53 (demo par chalu); user: demo chalne dein.
 **AGLA (nayi chat):** FTMO mansooba #53 par baat (user ka mauzu); demo 474832446 ka naya SS aaye to hisaab; K0 file (m8.4) abhi baqi.
-**57vi chat (12-15 Nov)** - K0 file (m8.4 .mq5 + gold/BTC zip) NAHI aayi - abhi baqi. Tablet WiFi: date/time auto = hal. Rehnuma r1 (Fable, branch fish-demo-trend-1h)
-= t5 ka hi qaida; Python `tools/rehnuma_1d_test.py` gold 2010-26: t5 +26.6R/girawat 7.3R vs 1D filter +25.3R/5.4R -> **user: t5 hi chalne dein** (EA badla NAHI).
-Hafte ki limit (Fable bhi) Itwar 15 Nov 2 AM khud reset. **K4 FABLE ko diya:** hukm `docs/k4-fable-hukm.md` (PASS qaida pehle, CHUNAO 2009-17 / IMTIHAN 2018-26, 10 bachao, saada 0.02 muqabla),
-session_013jF6yZMBMXKybDkBuqxcdm (max effort), nateeja branch `claude/k4-tokri-turtle` -> `docs/k4-tokri-turtle.md`.
-**AGLA (58vi):** Fable K4 nateeja JAANCHO (get_session / branch; sec 6 checklist, sanity tk2, saada muqabla) -> user ko PASS/FAIL table; K5 sirf PASS + user ijazat. K0 file jab user de.
+**57vi chat** -> `docs/purana-haal.md` (grep "57vi").
 **56vi chat** -> `docs/purana-haal.md` (grep "56vi").
 **55vi chat** -> `docs/purana-haal.md` (grep "55vi").
 **54vi chat** -> `docs/purana-haal.md` (grep "54vi").

@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-10  (38 kaam)
-   - nayi maloomat: Fable 16 Nov; KAAM: ADP+CPI waqt
-   - 55vi: Fable reset salah KAAM.md mein
+2026-11-10  (31 kaam)
+   - 54vi: gold log dekha, m8.2 samjhaya
+   - 55vi: Exness close-all khirki salah
    - 56vi: N -18.56 salah
 
 2026-11-12  (5 kaam)
@@ -12,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - 56vi chat khatam: TRADING sec 5, KAHANI, sawal-jawab, roznamcha, KAAM
    - 57vi #2: shuru, K0 file intezar, nayi maloomat (Algo Forge)
 
-2026-11-15  (18 kaam)
+2026-11-15  (25 kaam)
    - 57vi: tablet WiFi jawab sawal-jawab mein
-   - 58vi: K4 Fable abhi chal raha, nayi maloomat
-   - K4: jaanch ka record - engine vs hawala 1 mahina x 8 variant (sab barabar)
+   - K4: engine + data jaanch + qaida PEHLE se (CHUNAO chalane se pehle)
+   - 59vi: e2 TRADE CHALU demo 474832446 (user SS); TRADING sec 0 + 6-7

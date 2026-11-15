@@ -6,6 +6,6 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | Din | Commits | File | Pehla / aakhri kaam |
 |---|---|---|---|
 | Sep 2026 tak | 0 | `pehle-2026-09.md` | shuru se 30 Sep tak |
-| 2026-11-10 | 38 | `2026-11-10.md` | nayi maloomat: Fable 16 Nov; KAAM: ADP+CPI waqt / 56vi: N -18.56 salah |
+| 2026-11-10 | 31 | `2026-11-10.md` | 54vi: gold log dekha, m8.2 samjhaya / 56vi: N -18.56 salah |
 | 2026-11-12 | 5 | `2026-11-12.md` | 56vi: reset samjhaya / 57vi #2: shuru, K0 file intezar, nayi maloomat (Algo Forge) |
-| 2026-11-15 | 18 | `2026-11-15.md` | 57vi: tablet WiFi jawab sawal-jawab mein / K4: jaanch ka record - engine vs hawala 1 mahina x 8 variant |
+| 2026-11-15 | 25 | `2026-11-15.md` | 57vi: tablet WiFi jawab sawal-jawab mein / 59vi: e2 TRADE CHALU demo 474832446 (user SS); TRADING sec 0 |

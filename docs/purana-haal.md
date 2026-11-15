@@ -1877,3 +1877,10 @@ Popup tarteeb: B YES, N YES theek, E marzi (~-269, equity wahi), C NO. Fable res
 **56vi chat (10-12 Nov)** - m8.3 popup: N +4.04 YES, N -18.56 (wasooli se mehngi BUY kam, NET/equity wahi) YES theek. Usage: Fable reset 17 Nov tak (warna zaya), Full reset 11 Dec tak; hafta khud Itwar 2 AM. InpWaitMin 5 OK (screen par).
 12 Nov SS: user ke paas **m8.4** (repo mein m8.3 - m8.4 kahin aur bana, file BAQI), gold 3978, NET 0, P/L -34,063, equity 37,805, WASOOLI 9237. User: "BUY 6.99 band, neeche dobara?" -> NAHI (SELL 6.99 nangi = $54 = equity khatam).
 **AGLA (57vi):** user se m8.4 ki .mq5 file maango (repo mein daalo) + gold/BTC 4 file zip; phir K4/K5 (Fable reset Itwar 15 Nov 2 AM se pehle dabao agar bara kaam).
+
+## 57vi chat (TRADING.md sec 5 se, 15 Nov)
+**57vi chat (12-15 Nov)** - K0 file (m8.4 .mq5 + gold/BTC zip) NAHI aayi - abhi baqi. Tablet WiFi: date/time auto = hal. Rehnuma r1 (Fable, branch fish-demo-trend-1h)
+= t5 ka hi qaida; Python `tools/rehnuma_1d_test.py` gold 2010-26: t5 +26.6R/girawat 7.3R vs 1D filter +25.3R/5.4R -> **user: t5 hi chalne dein** (EA badla NAHI).
+Hafte ki limit (Fable bhi) Itwar 15 Nov 2 AM khud reset. **K4 FABLE ko diya:** hukm `docs/k4-fable-hukm.md` (PASS qaida pehle, CHUNAO 2009-17 / IMTIHAN 2018-26, 10 bachao, saada 0.02 muqabla),
+session_013jF6yZMBMXKybDkBuqxcdm (max effort), nateeja branch `claude/k4-tokri-turtle` -> `docs/k4-tokri-turtle.md`.
+**AGLA (58vi):** Fable K4 nateeja JAANCHO (get_session / branch; sec 6 checklist, sanity tk2, saada muqabla) -> user ko PASS/FAIL table; K5 sirf PASS + user ijazat. K0 file jab user de.
