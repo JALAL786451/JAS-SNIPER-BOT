@@ -57,7 +57,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | 57vi (15 Nov): file NAHI aayi - jab user de |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
-| K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | 15 Nov: FABLE session_013jF6yZMBMXKybDkBuqxcdm (max effort) chal raha, hukm `docs/k4-fable-hukm.md`, nateeja branch `claude/k4-tokri-turtle` -> Claude jaanchega |
+| K4 | Tokri + Turtle 55/20 rukh test (55 din toot = rukh, 20 din ulti toot = khatam; rukh 0.02 / doosri 0.01) | user 9 Nov | 15 Nov: FABLE session_013jF6yZMBMXKybDkBuqxcdm (max effort) chal raha, hukm `docs/k4-fable-hukm.md`, nateeja branch `claude/k4-tokri-turtle` -> Claude jaanchega. 58vi (15 Nov 15:50 UTC): Fable ABHI CHAL raha (7 min pehle shuru) |
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |
 | K7 | Faisle: Kachhua e1 0.25% FTMO demo? B1 ya B2 pehle? | PDF hafta 1 | user se poochna |
