@@ -89,6 +89,8 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - QDM se 34 ek saath file se? -> NAHI: QDM "Free version" (SS 29 Oct), bahar se file se nahi chalta; wahi kaam JAS_DATA_BG kar raha (har instrument D:\JAS_DATA\<naam>). Dono saath = Dukascopy zyada rokta. QDM mein M1: USA500/USATECH 2012-2026, XAU/XAG 2003-2026 (29 Oct).
 - Mashhoor kitab wala naya? -> #45 Connors Double 7s (US500+USTEC daily, sirf BUY): TALAASH +0.20R, IMTIHAN +0.054R = ASLI PASS magar kamzor; IBS se milana baqi (29 Oct).
 - Double 7 ka EA banayein? -> NAHI: 77% entries IBS/RSI2 (demo par) ke saath, mel 0.5-0.6 = nakal; naya khandaan chahiye (29 Oct).
+- Double 7 non-US index (DE30, UK100, FR40, EU50, JP225, AUS200, HK50) par? -> #102 TALAASH FAIL (336 tr +0.052R, Exp-2SE -0.043, drift 1.24x, sara faida 2017) - nahi (16 Nov).
+- Kitabon / champion traders se nayi strategy? -> `docs/research/kitab-16nov.md` (3 agent): Double 7 (#45 nakal, #102 fail), 12-mahine momentum, wahi-mahina seasonality; Turtles = Kachhua; Unger = kai chhote system (16 Nov).
 - User ki 4 PDF (10 Most Profitable, 9 Advanced, Day Trading Guide, Swing Guide)? -> zyada tar pehle FAIL wali / penny stock / exit saaf nahi; #46 squeeze+NR7 test = FAIL (29 Oct).
 - PDF "Introduction to Trading System Development" (WPI student project)? -> trend (S/R toot) + MA crossover har stock par optimize (= curve-fit, #18 FAIL); kaam ki baat "system of systems" = kai sabit EA mila kar, hamara mansooba yahi (29 Oct). Day Trading Guide dobara aayi (wahi file).
 - Data tez kaise? -> QDM (free) GUI: faltu symbol hata kar 26 tick > Update selected = saal ba saal tez (30 Oct 02:33 chal pada); JAS_DATA_BG band (Dukascopy rok). Agla: QDM Export H1 -> zip -> GitHub data/duka/H1 (30 Oct).

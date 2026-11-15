@@ -1798,6 +1798,11 @@ SL = entry - 3 x ATR14[i] (RMA; H1 low <= SL -> SL, gap = open). 1R = 3 x ATR14[
 **IMTIHAN** 2019+ EK dafa, bina tabdeeli: kul >= 30 tr, Exp - 2SE(cluster) > 0, D7 % >= 2 x drift = ASLI PASS.
 ASLI PASS ho to: i6 / k2 se milana (entry +-1 din, roz ka mel) + FTMO jor ALAG koshish (#103, #101 ka tareeqa: CHUNAO 2012-18 risk 0.10 / 0.25 / 0.50, IMTIHAN ek dafa). Ginti +1.
 Pehle se pata (imandari): #51 K2 (IBS) inhi market par TALAASH ausat +0.004R (sirf JPN +0.085R); #14 IBS 10 index kinare par FAIL. Double 7 zyada der pakarta = alag ho sakta.
+**Koshish #102 TALAASH (16 Nov, entry < 2019, swap 0) = FAIL -> IMTIHAN NAHI khola, idea band:** KUL 336 tr (4.7/mahina), jeet 71%, **Exp +0.052R** (SE 0.034, cluster 0.048, 156 hafte),
+**Exp-2SE(cluster) -0.043** (saada SE se bhi -0.016), bina kharcha +0.064R, ausat 6.4 din. Index 6/7 musbat (DE +0.096, EU +0.084, FR +0.069, HK +0.061, JP +0.047, UK +0.025, AUS -0.001),
+(market x saal) 20/38, saal: 2012 +3.1, 2013 +4.5, 2014 -0.6, 2015 +1.8, 2016 -1.3, **2017 +23.2, 2018 -13.1** (sara faida ek saal). **D7 +0.226% vs drift +0.182% = 1.24x (< 2x)**.
+Code jaanch: wahi function US500 / USTEC par #45 ki ginti HUBAHU (83 / 80 tr). Sabaq: non-US index par "girawat par khareed" (IBS #14 / #51, ab Double 7) ka faida = aam tezi, timing nahi;
+kitab ka 80% jeet SL ke saath 71% aur ausat chhota. Is khandaan ko non-US index par dobara NAHI (N1 reversal isi khandaan ka = imkaan kam).
 
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)

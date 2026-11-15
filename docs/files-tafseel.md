@@ -61,6 +61,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/JAS_M1ZIP.bat` | m1 (31 Oct): QDM M1 export (ek CSV har symbol) ko saal ba saal tod kar zip -> M1_UPLOAD; GitHub page data/qdm/M1 khulta hai (#37 noise boundary ke liye) |
 | `tools/jlaw_mea_test.py` | #43 (29 Oct): J Law multiple edge (toot + kam volume pullback level/EMA20 par, sirf BUY) daily + 4H, 4 market - FAIL |
 | `tools/jj_fair_price_test.py` | #44 (29 Oct): JJ Simon fair price 1m USTEC (session open continuation + reversion, 38/25) - FAIL |
+| `tools/double7_102.py` | #102 (16 Nov): Double 7s 7 non-US index tokri, swap 0, cluster SE + drift jaanch = TALAASH FAIL (336 tr +0.052R, drift 1.24x) |
 | `tools/double7_test.py` | #45 (29 Oct): Connors Double 7s daily (SMA200 upar, 7 din ki kam close BUY, 7 din ki zyada close band, SL 3 ATR) - ASLI PASS kamzor |
 | `tools/squeeze_nr7_test.py` | #46 (29 Oct): Bollinger squeeze + NR7 toot daily + 4H, BUY+SELL, SMA20 exit - FAIL |
 | `tools/tokri47.py` | #47 (31 Oct): 28 market 4H JAS Trend + pehra (group max 2, kul 3%) + FTMO; `edge` / `ftmo` - edge TALAASH FAIL | `--tf D1` = #48 FAIL.
