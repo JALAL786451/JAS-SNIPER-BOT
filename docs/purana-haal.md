@@ -1787,6 +1787,17 @@ median < #68 (isi run). #69 / #76 wala tareeqa. Ginti +1.
 **+Tide 0.25% 69 / 0 / 15, median 15.5** · 0.50% 66 / 8 (2/6) / 10, 12.3 -> **chuni Tide risk 0.25%**.
 **Koshish #101 IMTIHAN 2019-01..2026-10 (EK dafa, 5 Nov, Tide 0.25%) = PASS (chhota faida):** 94 challenge: #68 83 / 0 / 11, median 10.6 -> **#68 + Kachhua 12 @0.25%: 85 / 0 / 9, median 10.2**.
 Fail 0 wahi, +2 pass, ~0.4 mahina jaldi. CHUNAO mein faida bara tha (median 27.6 -> 15.5) - 2019+ tezi mein #68 khud tez. FTMO jor ke qabil (bank mein, user faisla).
+**Koshish #102 qaida (16 Nov, 60vi chat, user "HAAN DOUBLE 7" - kitab research `docs/research/kitab-16nov.md` ke baad; test se PEHLE, badalna mana) - Connors DOUBLE 7s NON-US INDEX TOKRI, swap 0 (`tools/double7_102.py`):**
+#45 (US500 + USTEC, kamzor PASS, IBS ki nakal = EA nahi) ka qaida BILKUL wahi, sirf market naye (jahan i6 nahi chalta): 7 index (k2 khirki wale) DEUIDXEUR, GBRIDXGBP, FRAIDXEUR, EUSIDXEUR,
+JPNIDXJPY, AUSIDXAUD, HKGIDXHKD (`data/duka/H1/JAS_ZIP`, H1 -> daily NY 17:00). Sirf BUY, har market ek position.
+BUY: close[i] > SMA200[i] aur close[i] = pichhle 7 din (i samet) ki sab se kam close -> open[i+1]. Band: close[j] = 7 din ki sab se zyada close -> open[j+1].
+SL = entry - 3 x ATR14[i] (RMA; H1 low <= SL -> SL, gap = open). 1R = 3 x ATR14[i]. Kharcha 0.02%/taraf (KCOST, khirki jaisa), **swap 0** (FTMO swap-free).
+**SE = hafta-wari cluster** (ek hafte mein khuli sab market ki trades ek guchha - DE / FR / EU ek saath chalte, alag alag ginna = jhoota yaqeen).
+**Drift** (har market, usi daur ka) = bara wala [aam din % (open->open), SMA200-upar din %] x trade ke din. D7 % = kharche ke baad ausat % har trade.
+**TALAASH** entry < 2019: PASS = kul >= 100 tr, Exp - 2SE(cluster) > 0, >= 5/7 index Exp > 0, (market x saal) musbat > 50%, D7 % >= 2 x drift.
+**IMTIHAN** 2019+ EK dafa, bina tabdeeli: kul >= 30 tr, Exp - 2SE(cluster) > 0, D7 % >= 2 x drift = ASLI PASS.
+ASLI PASS ho to: i6 / k2 se milana (entry +-1 din, roz ka mel) + FTMO jor ALAG koshish (#103, #101 ka tareeqa: CHUNAO 2012-18 risk 0.10 / 0.25 / 0.50, IMTIHAN ek dafa). Ginti +1.
+Pehle se pata (imandari): #51 K2 (IBS) inhi market par TALAASH ausat +0.004R (sirf JPN +0.085R); #14 IBS 10 index kinare par FAIL. Double 7 zyada der pakarta = alag ho sakta.
 
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)
