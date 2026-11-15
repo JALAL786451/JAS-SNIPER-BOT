@@ -1817,6 +1817,10 @@ Trade ka hisaab Dukascopy H1 (2012+) par (Yahoo ke purane High/Low khali = SL ke
 Maloom kamzori: short index CFD par dividend katauti shamil nahi (long par milti = taqreeban barabar); EU50 ki history 2007 se (2017 mein shamil).
 **Data shart (nateeja dekhne se PEHLE jori - sehat jaanch mein H1 data 2012-14 mein khali jagah mili, ek trade 22 tareekh ko khul rahi thi):** market us mahine tabhi layak jab H1 mein is mahine
 aur pichhle mahine >= 15 session din hon aur pehla din tareekh <= 4 ho.
+**Koshish #103 TALAASH (16 Nov, 2013-07..2018-12, swap 0) = FAIL -> IMTIHAN NAHI khola, idea band:** KUL 396 tr (66 mahine, 6/mahina), jeet 49%, **Exp -0.024R** (SE 0.047, cluster 0.055),
+**Exp-2SE(cluster) -0.133, bina kharcha bhi -0.015R** = koi asar nahi. BUY 198 tr +0.052R (aam tezi), SELL 198 tr -0.100R. Saal musbat 2/6: 2013 -5.2, 2014 -10.3, 2015 -8.7, 2016 +2.8,
+2017 +14.1, 2018 -2.1. Sehat jaanch: har mahine 6 trade, koi entry mahine ke beech nahi, ranking sirf pichhle saal. Sabaq: 12 market ki chhoti tokri mein "wahi mahina" ranking = shor
+(paper hazaron share par tha); long/short ne aam tezi kaat di to kuch bacha hi nahi. Calendar khandaan mein sirf chutti (#59) aur khirki (#68) bache.
 
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)

@@ -91,6 +91,7 @@ Har jawab 1-2 line. Naya pakka jawab mile to yahan EK line jodo (lafz | jawab | 
 - Double 7 ka EA banayein? -> NAHI: 77% entries IBS/RSI2 (demo par) ke saath, mel 0.5-0.6 = nakal; naya khandaan chahiye (29 Oct).
 - Double 7 non-US index (DE30, UK100, FR40, EU50, JP225, AUS200, HK50) par? -> #102 TALAASH FAIL (336 tr +0.052R, Exp-2SE -0.043, drift 1.24x, sara faida 2017) - nahi (16 Nov).
 - Kitabon / champion traders se nayi strategy? -> `docs/research/kitab-16nov.md` (3 agent): Double 7 (#45 nakal, #102 fail), 12-mahine momentum, wahi-mahina seasonality; Turtles = Kachhua; Unger = kai chhote system (16 Nov).
+- Wahi-mahina seasonality (har mahine top 3 BUY / bottom 3 SELL, 12 market)? -> #103 TALAASH FAIL (396 tr -0.024R, kharche se pehle bhi minus, saal 2/6) - nahi (16 Nov).
 - User ki 4 PDF (10 Most Profitable, 9 Advanced, Day Trading Guide, Swing Guide)? -> zyada tar pehle FAIL wali / penny stock / exit saaf nahi; #46 squeeze+NR7 test = FAIL (29 Oct).
 - PDF "Introduction to Trading System Development" (WPI student project)? -> trend (S/R toot) + MA crossover har stock par optimize (= curve-fit, #18 FAIL); kaam ki baat "system of systems" = kai sabit EA mila kar, hamara mansooba yahi (29 Oct). Day Trading Guide dobara aayi (wahi file).
 - Data tez kaise? -> QDM (free) GUI: faltu symbol hata kar 26 tick > Update selected = saal ba saal tez (30 Oct 02:33 chal pada); JAS_DATA_BG band (Dukascopy rok). Agla: QDM Export H1 -> zip -> GitHub data/duka/H1 (30 Oct).
