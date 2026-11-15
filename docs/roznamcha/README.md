@@ -6,5 +6,6 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | Din | Commits | File | Pehla / aakhri kaam |
 |---|---|---|---|
 | Sep 2026 tak | 0 | `pehle-2026-09.md` | shuru se 30 Sep tak |
-| 2026-11-10 | 53 | `2026-11-10.md` | Chat khatam 52vi: K3 gold M1, JasMauqa m7.8 + m7.9 AUTO-B (p / 56vi: N -18.56 salah |
-| 2026-11-12 | 2 | `2026-11-12.md` | 56vi: reset samjhaya / 56vi: gold 3978 sawal, salah |
+| 2026-11-10 | 46 | `2026-11-10.md` | sawal-jawab: PC Claude, effort medium / 56vi: N -18.56 salah |
+| 2026-11-12 | 5 | `2026-11-12.md` | 56vi: reset samjhaya / 57vi #2: shuru, K0 file intezar, nayi maloomat (Algo Forge) |
+| 2026-11-15 | 8 | `2026-11-15.md` | 57vi: tablet WiFi jawab sawal-jawab mein / 57vi: K4 Fable session shuru |

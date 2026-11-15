@@ -1865,3 +1865,15 @@ Close By, WASOOLI panel) + **m8.1** (LOG `MQL5\Files\JasMauqa_<sym>.txt` + `_waq
 `JsMouqaEA script.mq5`). Joriyan YES: A +116.50 (2.50 jori), B ... -> **WASOOLI 871.90**, balance 64,394. CPI: Algo OFF, dhaal NET +0.09 -> gold -38 = sirf ~-485.
 Gold chart **InpA=false** (A dhaal 3.31 kaat raha tha; gold 4117+ par true). Exness PDF -> `tools/exness_pdf.py`: chhoti lot +32,687, bari SELL -36,932.
 User: jawab CHHOTA. **AGLA (54vi):** popup jaanch (B YES, C NO) + log file se haal; m8.2 ijazat (A sirf nuqsan wali bari lot / bara nateeja pehle, label m8.0 fix); phir K1/K4.
+
+
+## TRADING sec 5 se hataya (57vi chat, 15 Nov)
+**55vi chat (10 Nov)** - Files hisaab: gold B YES 13 + aur -> **WASOOLI gold 1760.23 + BTC 65.80**, equity ~38,820, gold NET **+0.21** (NET ROK 0.20 par - nayi BUY nahi).
+User ka sawal "bojh BUY 2.50@4117.416 + SELL 3.31@4063.571 kam ho?" -> hisaab: Close By 2.50 = -13,461.25, SELL 3.31 + upar wali BUY = sab nuqsan; SACH: koi jori equity nahi badalti,
+nayi 0.01 BUY + jori = NET +0.01. Fable 5.2 se mashwara (draft `docs/fable-mashwara-m83.md`, aam claude.ai chat) -> **JasMauqa m8.3** (N = NET wahi jori, E = BUY 2.50 + dhaal 0.05 barabar
+market band, dhaal min 0.89, budget = WASOOLI). Claude sudhar: N/E hamesha A/B ke baad (warna B +87.55 ka SELL N +3.17 kha jata). F7 ✅ dono chart (BTC LADDER 1000, gold 25), Algo OFF raat (user).
+Popup tarteeb: B YES, N YES theek, E marzi (~-269, equity wahi), C NO. Fable reset Cancel - bara kaam mein limit khatam ho tab, 17 Nov 12:59 PM tak. Exness HMR list = server time (UTC), PKT +5.
+**AGLA (56vi):** subah gold+BTC 4 file (zip) -> raat/subah ke popup (B/N/E) ka hisaab; m8.3 ka pehla E/N nateeja jaancho; phir K4/K5 (Fable 17 Nov se pehle).
+**56vi chat (10-12 Nov)** - m8.3 popup: N +4.04 YES, N -18.56 (wasooli se mehngi BUY kam, NET/equity wahi) YES theek. Usage: Fable reset 17 Nov tak (warna zaya), Full reset 11 Dec tak; hafta khud Itwar 2 AM. InpWaitMin 5 OK (screen par).
+12 Nov SS: user ke paas **m8.4** (repo mein m8.3 - m8.4 kahin aur bana, file BAQI), gold 3978, NET 0, P/L -34,063, equity 37,805, WASOOLI 9237. User: "BUY 6.99 band, neeche dobara?" -> NAHI (SELL 6.99 nangi = $54 = equity khatam).
+**AGLA (57vi):** user se m8.4 ki .mq5 file maango (repo mein daalo) + gold/BTC 4 file zip; phir K4/K5 (Fable reset Itwar 15 Nov 2 AM se pehle dabao agar bara kaam).

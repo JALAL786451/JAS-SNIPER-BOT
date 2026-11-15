@@ -62,15 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**56vi chat (10-12 Nov)** - m8.3 popup: N +4.04 YES, N -18.56 (wasooli se mehngi BUY kam, NET/equity wahi) YES theek. Usage: Fable reset 17 Nov tak (warna zaya), Full reset 11 Dec tak; hafta khud Itwar 2 AM. InpWaitMin 5 OK (screen par).
-12 Nov SS: user ke paas **m8.4** (repo mein m8.3 - m8.4 kahin aur bana, file BAQI), gold 3978, NET 0, P/L -34,063, equity 37,805, WASOOLI 9237. User: "BUY 6.99 band, neeche dobara?" -> NAHI (SELL 6.99 nangi = $54 = equity khatam).
-**AGLA (57vi):** user se m8.4 ki .mq5 file maango (repo mein daalo) + gold/BTC 4 file zip; phir K4/K5 (Fable reset Itwar 15 Nov 2 AM se pehle dabao agar bara kaam).
-**55vi chat (10 Nov)** - Files hisaab: gold B YES 13 + aur -> **WASOOLI gold 1760.23 + BTC 65.80**, equity ~38,820, gold NET **+0.21** (NET ROK 0.20 par - nayi BUY nahi).
-User ka sawal "bojh BUY 2.50@4117.416 + SELL 3.31@4063.571 kam ho?" -> hisaab: Close By 2.50 = -13,461.25, SELL 3.31 + upar wali BUY = sab nuqsan; SACH: koi jori equity nahi badalti,
-nayi 0.01 BUY + jori = NET +0.01. Fable 5.2 se mashwara (draft `docs/fable-mashwara-m83.md`, aam claude.ai chat) -> **JasMauqa m8.3** (N = NET wahi jori, E = BUY 2.50 + dhaal 0.05 barabar
-market band, dhaal min 0.89, budget = WASOOLI). Claude sudhar: N/E hamesha A/B ke baad (warna B +87.55 ka SELL N +3.17 kha jata). F7 ✅ dono chart (BTC LADDER 1000, gold 25), Algo OFF raat (user).
-Popup tarteeb: B YES, N YES theek, E marzi (~-269, equity wahi), C NO. Fable reset Cancel - bara kaam mein limit khatam ho tab, 17 Nov 12:59 PM tak. Exness HMR list = server time (UTC), PKT +5.
-**AGLA (56vi):** subah gold+BTC 4 file (zip) -> raat/subah ke popup (B/N/E) ka hisaab; m8.3 ka pehla E/N nateeja jaancho; phir K4/K5 (Fable 17 Nov se pehle).
+**57vi chat (12-15 Nov)** - K0 file (m8.4 .mq5 + gold/BTC zip) NAHI aayi - abhi baqi. Tablet WiFi: date/time auto = hal. Rehnuma r1 (Fable, branch fish-demo-trend-1h)
+= t5 ka hi qaida; Python `tools/rehnuma_1d_test.py` gold 2010-26: t5 +26.6R/girawat 7.3R vs 1D filter +25.3R/5.4R -> **user: t5 hi chalne dein** (EA badla NAHI).
+Hafte ki limit (Fable bhi) Itwar 15 Nov 2 AM khud reset. **K4 FABLE ko diya:** hukm `docs/k4-fable-hukm.md` (PASS qaida pehle, CHUNAO 2009-17 / IMTIHAN 2018-26, 10 bachao, saada 0.02 muqabla),
+session_013jF6yZMBMXKybDkBuqxcdm (max effort), nateeja branch `claude/k4-tokri-turtle` -> `docs/k4-tokri-turtle.md`.
+**AGLA (58vi):** Fable K4 nateeja JAANCHO (get_session / branch; sec 6 checklist, sanity tk2, saada muqabla) -> user ko PASS/FAIL table; K5 sirf PASS + user ijazat. K0 file jab user de.
+**56vi chat** -> `docs/purana-haal.md` (grep "56vi").
+**55vi chat** -> `docs/purana-haal.md` (grep "55vi").
 **54vi chat** -> `docs/purana-haal.md` (grep "54vi").
 **53vi chat** -> `docs/purana-haal.md` (grep "53vi").
 **52vi chat** -> `docs/purana-haal.md` (grep "52vi").

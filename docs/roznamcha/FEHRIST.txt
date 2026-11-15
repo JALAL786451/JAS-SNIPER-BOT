@@ -2,11 +2,17 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-10  (53 kaam)
-   - Chat khatam 52vi: K3 gold M1, JasMauqa m7.8 + m7.9 AUTO-B (pehli jori +59); agla K1 D:\JAS
-   - 54vi: m8.2 chart par
+2026-11-10  (46 kaam)
+   - sawal-jawab: PC Claude, effort medium
+   - 54vi: C band tareeqa
    - 56vi: N -18.56 salah
 
-2026-11-12  (2 kaam)
+2026-11-12  (5 kaam)
    - 56vi: reset samjhaya
-   - 56vi: gold 3978 sawal, salah
+   - 56vi chat khatam: TRADING sec 5, KAHANI, sawal-jawab, roznamcha, KAAM
+   - 57vi #2: shuru, K0 file intezar, nayi maloomat (Algo Forge)
+
+2026-11-15  (8 kaam)
+   - 57vi: tablet WiFi jawab sawal-jawab mein
+   - 57vi: K4/K5 salah, usage reset
+   - 57vi: K4 Fable session shuru

@@ -264,3 +264,4 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - MT5 Bid line rang? (12 Nov, 56vi) -> F8 > Colors > Bid line = Yellow/Aqua; template EA wale chart par nahi.
 - Tablet (Galaxy Tab A9) WiFi 'connected without internet'? (15 Nov, 57vi) -> HAL: Settings > General management > Date and time > Automatic ON. Na ho to: Private DNS Off, WiFi Forget, MAC = Phone MAC, Reset network settings.
 - Rehnuma 1D filter behtar ya t5? (15 Nov, 57vi) -> gold 2010-26: t5 +26.6R (girawat 7.3R, 329 tr), filter +25.3R (5.4R, 139 tr); filter = sukoon, t5 = zyada kamai. t5 na badlo; filter haath ki trade ke liye. `tools/rehnuma_1d_test.py`.
+- K4 Fable se andar hi karwa sakte? (15 Nov, 57vi) -> HAAN: alag Fable cloud session (create_session, model fable, alag branch) + hukm-nama file; nateeja Claude jaanchta. Chhota kaam = subagent.
