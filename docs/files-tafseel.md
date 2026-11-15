@@ -3,6 +3,9 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `docs/k4-tokri-turtle.md` - K4 NATEEJA (Fable, 15 Nov): Tokri tk2 + Turtle rukh = FAIL (CHUNAO 0/324 nafe mein, IMTIHAN 324/324 account khatam); kacche output + CSV `docs/k4-natije/`.
+- `tools/k4_tokri_turtle.py` + `tools/k4_tokri_turtle.c` - K4 engine (tk2 Work() lafz-ba-lafz, cent-int, M1 2009-26) + chunao / imtihan / hasas / waqiat / ghaib / log / ref (Python hawala se jaanch).
+- `tools/k4_data.py` - gold M1 2009-2026 jorna + jaanch (histdata = NY waqt DST ke SAATH, QDM = UTC; gap / bad tick / H1 se mel).
 - `docs/k4-fable-hukm.md` - 57vi: Fable ko K4 (Tokri + Turtle 55/20 rukh) ka mukammal hukm: data, PASS qaida pehle, 10 bachao, jaanch, branch claude/k4-tokri-turtle.
 - `tools/rehnuma_1d_test.py` - 57vi: gold 4H Supertrend t5 vs Rehnuma 1D filter (2003-26, kharcha+swap); filter = aadhi trades, behtar R/trade, kam girawat, kul R kam.
 - `docs/fable-mashwara-m83.md` - Fable 5.2 se gold bojh (SELL 3.31 / BUY 2.50) ka mashwara draft (55vi, 10 Nov).

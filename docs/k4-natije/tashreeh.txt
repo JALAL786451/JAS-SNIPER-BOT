@@ -18,3 +18,43 @@ tk2-4H (Step$2 TP$1) raasta 0: lots 45102 | TP 44366 dafa = +66450 USC | AAKHRI 
       waqt: 20% candle par 30 lots poori, 20% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.60 lot kul, net 0.57 lot | sab se bura khula -3800 USC | margin 1:200 par zyada se zyada 569 USC, kam se kam margin level 60%
 tk2-4H (Step$2 TP$1) raasta 1: lots 60437 | TP 59531 dafa = +89366 USC | AAKHRI HADD 33 dafa = -125406 USC | CLOSE ALL 0 dafa = +0 | rukh palte par band (c2) 0 lots = +0 | aakhir mein khula -2075 (23 lots) | kul -38115 USC
       waqt: 23% candle par 30 lots poori, 16% par BARDASHT (nayi lot band) | zyada se zyada 30 lots, 0.59 lot kul, net 0.57 lot | sab se bura khula -3800 USC | margin 1:200 par zyada se zyada 588 USC, kam se kam margin level 20%
+
+--- AAKHRI HADD ki qism: rukh SAHI tha (halki 0.01 taraf phansi) ya GHALAT (bhari 0.02 taraf phansi) ---
+chuna hua | chunao raasta 0: kul 17 | rukh sahi: 9 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 8 (ausat 25 lots, net 0.50 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | chunao raasta 1: kul 18 | rukh sahi: 8 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 10 (ausat 25 lots, net 0.46 lot) | 3,850 USC se bari 1 [('2011-08-25 09:03', -3958)] | waqfe ke baad pehli candle par 0
+chuna hua | imtihan raasta 0: kul 38 | rukh sahi: 20 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 18 (ausat 24 lots, net 0.49 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | imtihan raasta 1: kul 28 | rukh sahi: 13 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 15 (ausat 26 lots, net 0.51 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2013 raasta 0: kul 3 | rukh sahi: 2 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 1 (ausat 28 lots, net 0.56 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2013 raasta 1: kul 3 | rukh sahi: 2 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 1 (ausat 25 lots, net 0.50 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2020 raasta 0: kul 3 | rukh sahi: 0 | rukh ghalat: 3 (ausat 25 lots, net 0.51 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2020 raasta 1: kul 3 | rukh sahi: 0 | rukh ghalat: 3 (ausat 25 lots, net 0.51 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2022 raasta 0: kul 5 | rukh sahi: 3 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 2 (ausat 28 lots, net 0.56 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2022 raasta 1: kul 5 | rukh sahi: 3 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 2 (ausat 28 lots, net 0.57 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2025 raasta 0: kul 22 | rukh sahi: 8 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 14 (ausat 25 lots, net 0.49 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2025 raasta 1: kul 25 | rukh sahi: 10 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 15 (ausat 26 lots, net 0.51 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+chuna hua | 2026 raasta 0: kul 32 | rukh sahi: 16 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 16 (ausat 21 lots, net 0.42 lot) | 3,850 USC se bari 1 [('2026-03-01 23:00', -5991)] | waqfe ke baad pehli candle par 1
+chuna hua | 2026 raasta 1: kul 57 | rukh sahi: 24 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 33 (ausat 23 lots, net 0.44 lot) | 3,850 USC se bari 2 [('2026-03-01 23:00', -4390), ('2026-04-12 22:00', -4370)] | waqfe ke baad pehli candle par 2
+Turtle 55/20 close a-i c1 Step$2 TP$1 | chunao raasta 0: kul 23 | rukh sahi: 11 (ausat 27 lots, net 0.30 lot) | rukh ghalat: 7 (ausat 24 lots, net 0.49 lot) | 3,850 USC se bari 1 [('2012-01-17 07:33', -3885)] | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | chunao raasta 1: kul 22 | rukh sahi: 8 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 7 (ausat 27 lots, net 0.53 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | imtihan raasta 0: kul 39 | rukh sahi: 26 (ausat 28 lots, net 0.31 lot) | rukh ghalat: 6 (ausat 26 lots, net 0.51 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | imtihan raasta 1: kul 37 | rukh sahi: 18 (ausat 28 lots, net 0.31 lot) | rukh ghalat: 9 (ausat 26 lots, net 0.53 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2013 raasta 0: kul 3 | rukh sahi: 2 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 1 (ausat 26 lots, net 0.52 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2013 raasta 1: kul 3 | rukh sahi: 2 (ausat 28 lots, net 0.28 lot) | rukh ghalat: 1 (ausat 24 lots, net 0.48 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2020 raasta 0: kul 2 | rukh sahi: 0 | rukh ghalat: 1 (ausat 24 lots, net 0.48 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2020 raasta 1: kul 3 | rukh sahi: 0 | rukh ghalat: 1 (ausat 23 lots, net 0.46 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2022 raasta 0: kul 5 | rukh sahi: 3 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 1 (ausat 25 lots, net 0.50 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2022 raasta 1: kul 9 | rukh sahi: 5 (ausat 28 lots, net 0.29 lot) | rukh ghalat: 3 (ausat 27 lots, net 0.55 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2025 raasta 0: kul 20 | rukh sahi: 11 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 5 (ausat 26 lots, net 0.52 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2025 raasta 1: kul 22 | rukh sahi: 12 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 9 (ausat 26 lots, net 0.52 lot) | 3,850 USC se bari 0 | waqfe ke baad pehli candle par 0
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2026 raasta 0: kul 24 | rukh sahi: 11 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 12 (ausat 20 lots, net 0.41 lot) | 3,850 USC se bari 1 [('2026-03-01 23:00', -5841)] | waqfe ke baad pehli candle par 1
+Turtle 55/20 close a-i c1 Step$2 TP$1 | 2026 raasta 1: kul 25 | rukh sahi: 7 (ausat 29 lots, net 0.29 lot) | rukh ghalat: 17 (ausat 23 lots, net 0.45 lot) | 3,850 USC se bari 1 [('2026-03-01 23:00', -4635)] | waqfe ke baad pehli candle par 1
+
+--- margin (chuna hua, har saal alag) ---
+2011 raasta 0: zyada 30 lots (0.58 lot); margin 1:2000 = 51 USC, 1:200 = 514 USC | kam se kam equity 26,096 USC, margin level (1:200) kam se kam 5,660%
+2011 raasta 1: zyada 30 lots (0.59 lot); margin 1:2000 = 50 USC, 1:200 = 500 USC | kam se kam equity 26,117 USC, margin level (1:200) kam se kam 6,070%
+2020 raasta 0: zyada 30 lots (0.59 lot); margin 1:2000 = 54 USC, 1:200 = 544 USC | kam se kam equity 32,222 USC, margin level (1:200) kam se kam 7,160%
+2020 raasta 1: zyada 30 lots (0.59 lot); margin 1:2000 = 56 USC, 1:200 = 560 USC | kam se kam equity 33,642 USC, margin level (1:200) kam se kam 6,720%
+2025 raasta 0: zyada 30 lots (0.60 lot); margin 1:2000 = 102 USC, 1:200 = 1,017 USC | kam se kam equity -25 USC, margin level (1:200) kam se kam 0%
+2025 raasta 1: zyada 30 lots (0.60 lot); margin 1:2000 = 104 USC, 1:200 = 1,043 USC | kam se kam equity -1 USC, margin level (1:200) kam se kam -0%
+2026 raasta 0: zyada 30 lots (0.59 lot); margin 1:2000 = 151 USC, 1:200 = 1,506 USC | kam se kam equity -122 USC, margin level (1:200) kam se kam -10%
+2026 raasta 1: zyada 30 lots (0.60 lot); margin 1:2000 = 155 USC, 1:200 = 1,551 USC | kam se kam equity -16 USC, margin level (1:200) kam se kam 10%

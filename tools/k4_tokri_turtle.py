@@ -11,6 +11,8 @@ Ye sirf user ke tareeqe (METHOD.md / tokri_naqsha Q14-Q22) ka TEST hai - kisi EA
   python3 tools/k4_tokri_turtle.py jaankari      # baqi variant imtihan mein (sirf jaankari)
   python3 tools/k4_tokri_turtle.py hasas         # kharcha / swap / raasta / 1 din der / waghaira
   python3 tools/k4_tokri_turtle.py waqiat        # 2013, Mar 2020, 2022, 2025-26 + saal-ba-saal lots/din
+  python3 tools/k4_tokri_turtle.py tashreeh      # paisa kahan gaya (TP vs hadd), hadd rukh sahi/ghalat par, gap, margin
+  python3 tools/k4_tokri_turtle.py ghaib         # tashkhees: rukh GHAIB se perfect ho tab? (jaan boojh kar lookahead)
   python3 tools/k4_tokri_turtle.py log           # 3 basket ka log (jeet, hadd, lamba)
 
 === QAIDA PEHLE SE (nateeja dekhne se PEHLE likha; badalna MANA) ===
@@ -834,6 +836,7 @@ def cmd_tashreeh(argv):
                       f"CLOSE ALL {r['nbc']} dafa = {u(r['sumbc']):+.0f} | rukh palte par band (c2) {r['nc2']} lots = {u(r['sumc2']):+.0f} | aakhir mein khula {u(r['fl']):+.0f} ({r['nend']} lots) | kul {u(r['net']):+.0f} USC")
                 print(f"      waqt: {r['barsmaxt'] / r['barsin'] * 100:.0f}% candle par 30 lots poori, {r['barsbard'] / r['barsin'] * 100:.0f}% par BARDASHT (nayi lot band) | zyada se zyada {r['maxn']} lots, {r['maxg'] / 100:.2f} lot kul, net {r['maxabsn'] / 100:.2f} lot | "
                       f"sab se bura khula {u(r['minfl']):.0f} USC | margin 1:200 par zyada se zyada {u(r['maxnot']) / 200:.0f} USC, kam se kam margin level {r['minml'] * 100:.0f}%")
+    cmd_tashreeh2(D, v)
 
 
 def cmd_ghaib(argv):
@@ -850,6 +853,32 @@ def cmd_ghaib(argv):
                 print(f"ghaib: {nm:32} | {lab:18}: {fmt(w)} | pehli hadd {ts(w['first'])[:10]} khatam {ts(w['blown'])[:10]}")
             sd = saada(D, f'GHAIB{k}', daur)
             print(f"ghaib: {nm:32} | saada 0.02 lot     : nafa {sd['nafa']:+7.1f}%  girawat {sd['dd']:5.1f}%  trades {sd['lots']}")
+
+
+def cmd_tashreeh2(D, v):
+    """Har AAKHRI HADD: nuqsan kis taraf ki lots se (net lot rukh ke ulat = rukh SAHI tha, halki taraf phansi), gap, margin."""
+    dt = np.diff(D.t, prepend=D.t[0])
+    print("\n--- AAKHRI HADD ki qism: rukh SAHI tha (halki 0.01 taraf phansi) ya GHALAT (bhari 0.02 taraf phansi) ---")
+    for nm, rk, kw in (('chuna hua', vrukh(v), vkw(v)), ('Turtle 55/20 close a-i c1 Step$2 TP$1', 'T55_20_close', dict(neut=1))):
+        for daur in ('chunao', 'imtihan') + tuple((a, b) for _, a, b in WAQIAT):
+            for pth in (0, 1):
+                r = run(D, rk, daur, path=pth, **kw)
+                sahi = [h for h in r['H'] if h['rk'] != 0 and np.sign(h['N']) == -h['rk']]
+                ghalat = [h for h in r['H'] if h['rk'] != 0 and np.sign(h['N']) == h['rk']]
+                gap = [h for h in r['H'] if h['loss'] < -HADD_BARI]
+                wk = sum(1 for h in r['H'] if h['t'] in D.t and dt[int(np.searchsorted(D.t, h['t']))] > 3600)
+                f = lambda x: f"{len(x)} (ausat {np.mean([h['n'] for h in x]):.0f} lots, net {np.mean([abs(h['N']) for h in x]) / 100:.2f} lot)" if x else '0'
+                print(f"{nm} | {daur if isinstance(daur, str) else daur[0][:4]} raasta {pth}: kul {len(r['H'])} | rukh sahi: {f(sahi)} | rukh ghalat: {f(ghalat)} | "
+                      f"3,850 USC se bari {len(gap)}{' ' + str([(ts(h['t']), round(h['loss'] / USC)) for h in gap]) if gap else ''} | waqfe ke baad pehli candle par {wk}")
+    print("\n--- margin (chuna hua, har saal alag) ---")
+    for y in (2011, 2020, 2025, 2026):
+        for pth in (0, 1):
+            r = run(D, vrukh(v), (f'{y}-01-01', f'{y + 1}-01-01'), path=pth, **vkw(v))
+            print(f"{y} raasta {pth}: zyada {r['maxn']} lots ({r['maxg'] / 100:.2f} lot); margin 1:2000 = {r['maxnot'] / USC / 2000:,.0f} USC, 1:200 = {r['maxnot'] / USC / 200:,.0f} USC | "
+                  f"kam se kam equity {r['mineq'] / USC:,.0f} USC, margin level (1:200) kam se kam {r['minml'] * 100:,.0f}%")
+
+
+HADD_BARI = 3850 * USC
 
 
 def baskets(path):
@@ -896,7 +925,6 @@ def cmd_log(argv):
         hd = df[df.hadd]
         pick.append(('AAKHRI HADD', int(hd.sort_values('n').iloc[0].b)))
     pick.append(('LAMBI (sab se zyada waqt, hadd ke baghair)', int(df[~df.hadd].sort_values('dur').iloc[-1].b)))
-    tix = pd.Index(D.t)
     for nm, b in pick:
         ev = bk[b]
         print(f"\n--- {nm}: tokri #{b}, {len([e for e in ev if e['k'] == 'O'])} lots, {ts(ev[0]['t'])} -> {ts(ev[-1]['t'])} UTC ---")
