@@ -1803,6 +1803,18 @@ Pehle se pata (imandari): #51 K2 (IBS) inhi market par TALAASH ausat +0.004R (si
 (market x saal) 20/38, saal: 2012 +3.1, 2013 +4.5, 2014 -0.6, 2015 +1.8, 2016 -1.3, **2017 +23.2, 2018 -13.1** (sara faida ek saal). **D7 +0.226% vs drift +0.182% = 1.24x (< 2x)**.
 Code jaanch: wahi function US500 / USTEC par #45 ki ginti HUBAHU (83 / 80 tr). Sabaq: non-US index par "girawat par khareed" (IBS #14 / #51, ab Double 7) ka faida = aam tezi, timing nahi;
 kitab ka 80% jeet SL ke saath 71% aur ausat chhota. Is khandaan ko non-US index par dobara NAHI (N1 reversal isi khandaan ka = imkaan kam).
+**Koshish #103 qaida (16 Nov, 60vi chat, user "HAAN SEASONALITY"; test se PEHLE, badalna mana) - WAHI-MAHINA SEASONALITY long/short tokri, swap 0 (`tools/season103.py`):**
+Saboot: Keloharju / Linnainmaa / Nyberg "Return Seasonalities" (J. Finance 2016; country index + commodity mein bhi). Pehle kabhi test nahi (grep kiya).
+**Market 12:** US500, USTEC, US30 | DE30, UK100, FR40, EU50 | JP225, AUS200, HK50 | XAUUSD, XAGUSD (4 group). Forex / tel NAHI (paper mein nahi / roll ka masla).
+**Ranking (mahine M ke shuru se pehle, sirf pichhle SAAL):** score = pichhle (zyada se zyada 20, kam se kam 10) saal ke ISI calendar mahine ke return ka ausat / unhi saalon ke sab mahana
+return ka SD. Mahana return = mahine ki aakhri close / pichhle mahine ki aakhri close - 1. Index ki history Yahoo cash index (`data/yahoo/D1.zip`, `tools/yahoo_d1.py`), gold/chandi Dukascopy H1 (2003+).
+**Trade:** sab se oonche 3 score = BUY, sab se neeche 3 = SELL (sirf relative); ek group se ek taraf max 2; sirf woh market jin ka score ho aur H1 data mein >= 25 pichhle din hon; 6 se kam = mahina chhoro.
+Entry = mahine ke pehle session din (NY 17:00) ki pehli H1 open; band = mahine ke aakhri session din ki aakhri H1 close. SL = entry -/+ 3 x ATR20 (daily, RMA; H1 low/high <= SL -> SL, gap = open);
+SL ke baad us mahine dobara nahi. 1R = 3 x ATR20. Har market ek position. Kharcha har taraf: 0.75 x Exness spread (#99 `SPREAD`: XAU, XAG, US500, USTEC), baqi 0.02% (KCOST). **Swap 0.**
+Trade ka hisaab Dukascopy H1 (2012+) par (Yahoo ke purane High/Low khali = SL ke liye nakara). SE = mahina-wari cluster (ek mahine ki 6 trades ek guchha).
+**TALAASH** entry < 2019: PASS = kul >= 100 tr, Exp - 2SE(cluster) > 0, saal (kul R) musbat > 50%. BUY / SELL alag sirf maloomat (long/short barabar = aam tezi khud kat jati).
+**IMTIHAN** 2019+ EK dafa, bina tabdeeli: kul >= 30 tr, Exp - 2SE(cluster) > 0 = ASLI PASS. Phir FTMO jor alag koshish (#101 ka tareeqa). Ginti +1.
+Maloom kamzori: short index CFD par dividend katauti shamil nahi (long par milti = taqreeban barabar); EU50 ki history 2007 se (2017 mein shamil).
 
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)
