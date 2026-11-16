@@ -27,6 +27,8 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 60vi (16 Nov) nateeja: kitab research (3 agent, `docs/research/kitab-16nov.md`) + champion jaiza; **#102 Double 7 non-US, #103 wahi-mahina seasonality, #104 12-mahine momentum = teeno TALAASH FAIL**. Kitabi list khatam; N1 / volatility breakout = imkaan kam. Lamba daily data `data/yahoo/D1.zip`.
 - 60vi: user "aap ke test Opus 5.5 ki copy, apni performance nahi" -> Claude ki apni tajweez A + B; **user: "A aur B haan" (nayi chat mein)**.
 
+- **USER KA ASAL MAQSAD (16 Nov, 61vi, K6 par):** "jis tarha mein trade leta hoon uska EA ban jaye" - gold / BTC files isi liye di thein. Takleef: jaldi mein 1 ki jagah 2 lot, SELL ki jagah BUY (ya ulta); rukh ka pata nahi chalta; kaam lamba, intezar nahi hota, thak kar loss. Chahta: EA jo hisaab se lare aur aakhir mein profit par nikle. Claude ka jawab: poora auto "larne wala" 2 dafa test mein fail (tk2 240/240, K4 324/324); tajweez = NAYI file "darban" (ghalat click pakre: dohri lot / ulta rukh / hadd se bari lot -> popup YES = band) - user ki ijazat ka intezar.
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
