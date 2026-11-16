@@ -64,6 +64,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `docs/k10-demo-milaan.md` + `data/demo_474832446/` | K10 (16 Nov): demo 474832446 History report vs test - hissa 1 (lot, waqt, SL, kharcha) sahi; hissa 2 signal milaan ke liye MT5 H1 bars baqi |
 | `tools/JAS_K10_DATA.bat` | d1 (16 Nov): QDM screen ke baghair (qdmcli) USA500, USATECH, XAUUSD, XAGUSD update + M1 export 1 Oct 2026 se -> Desktop\JAS_K10\JAS_K10_M1.zip (QDM UI "Electron is not running" par band ho rahi thi) |
 | `JasLarai.mq5` | j1 (16 Nov, user "han pls"): m8.4 ki bunyad + A / B jori KHUD + C KHUD (NET na barhe) + W) DEEWAR (ulti lot, default OFF, magic 20261116) + X) DOHRI LOT popup. Log `JasLarai_<sym>.txt`. F7 baqi, pehle demo |
+| `JasMauqa_m85.mq5` | m8.5 (16 Nov, user "YES par equity kitni barhegi"): m8.4 + popup mein Balance / Equity pehle -> baad + farq (Close By = sirf spread jitni). Trade qaida wahi. F7 baqi |
 | `JasMauqa_m84.mq5` | m8.4 (11 Nov, user ke paas tha; 16 Nov chat mein paste kiya - harf ba harf): NET >= InpNetCap par N / E pehle, NET hadd se upar B band + C sirf BUY. LIVE 253687618 par yahi chal raha. `JasMauqa.mq5` = m8.3 |
 | `tools/milaan_k10.py` | K10 (16 Nov): demo 474832446 ki trades vs Python signal (i6, t5) US500 + USTEC - QDM M1 1 Oct-15 Nov par; 7 / 8 mili |
 | `tools/jor105.py` | K9 (16 Nov): jor #101 ka tajziya CHUNAO 2012-18 - har EA ka hissa, mel, bure din, ek-EA-nikaal challenge; nateeja `docs/k9-jor-tajziya.md` |

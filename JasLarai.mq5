@@ -1,5 +1,6 @@
 //+------------------------------------------------------------------+
-//|  JAS LARAI   -   build j1  (16 Nov 2026)                          |
+//|  JAS LARAI   -   build j2  (16 Nov 2026)                          |
+//|  j2 = popup mein Balance aur Equity pehle -> baad + farq (m8.5). |
 //|  Bunyad: JasMauqa m8.4 (JasMauqa_m84.mq5 - us ki tareekh wahin).  |
 //|  User 16 Nov: "EA bohot saari lots mein ghus kar profit wali     |
 //|  lots close kare, jori profit mein close kare, aur loss ko       |
@@ -22,11 +23,11 @@
 //|  nahi. Sirf chart ke symbol par. Pehle DEMO.                     |
 //+------------------------------------------------------------------+
 #property copyright "JAS"
-#property version   "1.00"
+#property version   "1.01"
 
 #include <Trade\Trade.mqh>
 
-#define S_BUILD "j1"
+#define S_BUILD "j2"
 
 input double InpMinFaida = 20.0;   // C) Ticket ka faida kam az kam (USC)
 input double InpMinJori  = 5.0;    // A/B) Jori (Close By) ka nateeja kam az kam (USC)
@@ -238,6 +239,7 @@ void PopShow(string title, string body, bool ask)
       else if(StringFind(ln[i], "LIVE") >= 0)                                 { f = "Arial Black"; c = clrTomato; }
       else if(StringFind(ln[i], "Profit") == 0 || StringFind(ln[i], "Result") == 0 || StringFind(ln[i], "DONE") >= 0) { f = "Arial Black"; z = fs + 2; c = clrLime; }
       else if(StringFind(ln[i], "FAIL") >= 0 || StringFind(ln[i], "OFF") >= 0) { f = "Arial Black"; c = clrTomato; }
+      else if(StringFind(ln[i], "Equity") == 0 || StringFind(ln[i], "Balance") == 0) { f = "Arial Black"; c = clrYellow; }
       else if(StringFind(ln[i], "NET") == 0 || StringFind(ln[i], "Tickets") == 0) c = clrAqua;
       PopTx("JM_P_L" + IntegerToString(i), x0 + 20, y, ln[i], f, z, c);
       y += lh;
@@ -310,6 +312,16 @@ void AutoDo(int kind, ulong t1, ulong t2, double v, string nm)
    if(ok) GlobalVariableSet(WKey(), Wasool() + v);
    gAutoNext = TimeCurrent() + (ok ? MathMax(5, InpAutoSec) : 300);   // FAIL = 5 minute ruk
   }
+
+// POPUP ke liye: ticket ke lot hisse ka abhi ka P/L (equity ka farq nikalne ke liye)
+double PnlShare(ulong t, double lot)
+  {
+   if(!PositionSelectByTicket(t)) return(0);
+   double vv = PositionGetDouble(POSITION_VOLUME);
+   if(vv <= 0) return(0);
+   return((PositionGetDouble(POSITION_PROFIT) + PositionGetDouble(POSITION_SWAP)) * MathMin(lot, vv) / vv);
+  }
+double TVol(ulong t) { if(!PositionSelectByTicket(t)) return(0); return(PositionGetDouble(POSITION_VOLUME)); }
 
 string Px(double v) { return(DoubleToString(v, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS))); }
 string M(double v)  { return(DoubleToString(v, 2)); }
@@ -916,6 +928,11 @@ void Run()
                         Desc(t1), dLot, "SELL", M(v), net, net + dLot);
    else
       d += StringFormat("%s\n\nClose at market\nProfit: +%s\nTickets: %d -> %d\nNET change hifazat ke andar\n", Desc(t1), M(v), tk, tk - 1);
+   // YES ke baad balance / equity kitni: Close By mein equity sirf spread jitni barhti hai (nafa pehle se equity mein gina hua),
+   // market par band (C / D / E) mein equity wahi. Balance = nateeja jitna.
+   double balNow = AccountInfoDouble(ACCOUNT_BALANCE), eqD = 0;
+   if(kind == 1) { double mv = MathMin(TVol(t1), TVol(t2)); eqD = v - (PnlShare(t1, mv) + PnlShare(t2, mv)); }
+   d += StringFormat("Balance %s -> %s  (%s)\nEquity %s -> ~%s  (%s)\n", M(balNow), M(balNow + v), Sg(v), M(eq), M(eq + eqD), Sg(eqD));
    if(InpPush) SendNotification(StringFormat("JAS LARAI %s: %s %s - YES/NO on MT5", _Symbol, nm, Sg(v)));
    gPend = kind; gP1 = t1; gP2 = t2; gPLot = (kind == 4) ? eLot : dLot; gPNm = nm; gPV = v; gPVb = eVb;
    LogEv(StringFormat("POPUP %s  #%I64u + #%I64u  = %s  (NET %+.2f)", nm, t1, t2, Sg(v), net));   // m8.1
