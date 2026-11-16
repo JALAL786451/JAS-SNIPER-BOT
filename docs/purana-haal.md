@@ -1822,6 +1822,18 @@ aur pichhle mahine >= 15 session din hon aur pehla din tareekh <= 4 ho.
 2017 +14.1, 2018 -2.1. Sehat jaanch: har mahine 6 trade, koi entry mahine ke beech nahi, ranking sirf pichhle saal. Sabaq: 12 market ki chhoti tokri mein "wahi mahina" ranking = shor
 (paper hazaron share par tha); long/short ne aam tezi kaat di to kuch bacha hi nahi. Calendar khandaan mein sirf chutti (#59) aur khirki (#68) bache.
 
+**Koshish #104 qaida (16 Nov, 60vi chat, user "HAAN MOMENTUM"; test se PEHLE, badalna mana) - 12-MAHINE MOMENTUM (mahana), Kachhua ke 12 market, swap 0 (`tools/mom104.py`):**
+Saboot: Antonacci "Dual Momentum" (absolute momentum), Faber "Ivy Portfolio", Moskowitz / Ooi / Pedersen 2012. Purana #4 TSMOM (13 Oct) sirf MT5 2021-24 par tha (data chhota) = ye lamba data.
+**Market 12 (#99 wale, wahi kharcha 0.75 x Exness spread har taraf):** XAU, XAG, US500, USTEC, LIGHT, BRENT, BTC = SIRF BUY; EURUSD, GBPUSD, USDJPY, USDCHF, AUDUSD = BUY + SELL (#47 ka riwaj).
+Daily = H1 se NY 17:00. Mahine ki aakhri close par: mom = close / 12 mahine pehle ki mahana-aakhri close - 1. mom > 0 -> BUY chahiye; mom < 0 -> forex mein SELL, baqi mein kuch nahi.
+Chahiye wala rukh khula na ho -> agle session ki pehli H1 open par kholo (ulta khula ho to wahin band karke). Khula rukh wahi = pakre raho. SL = entry -/+ 3 x ATR20 (daily, RMA), sarakta NAHI
+(H1 low/high <= SL -> SL, gap = open); SL ke baad agle mahine ke aakhir tak nayi nahi (shart baqi ho to phir khulti). 1R = 3 x ATR20. Har market ek position. **Swap 0.**
+**Data shart:** mahina tabhi mana jab H1 mein >= 15 session din; market us mahine se shuru jis ke baad koi khali mahina nahi (US500 / USTEC 2013-06 se). Data ke aakhir par khuli trade aakhri close par gini.
+Trade apni entry ki tareekh se ginti (TALAASH entry < 2019, chahe band 2019 mein ho). SE = entry-mahina cluster.
+**Drift (sirf-BUY market):** ausat % har trade (kharche ke baad) >= 2 x (market ka aam din % open->open, usi daur ka x pakre din).
+**TALAASH** entry < 2019: PASS = kul >= 100 tr, Exp - 2SE(cluster) > 0, (>= 5 tr wale) market >= 60% Exp > 0, saal (kul R, entry saal) musbat > 50%, drift shart.
+**IMTIHAN** 2019+ EK dafa: kul >= 30 tr, Exp - 2SE(cluster) > 0, drift shart = ASLI PASS. Phir Kachhua / t5 se milana + FTMO jor alag koshish. Ginti +1.
+Pehle se pata (imandari): #98 Kachhua sirf-BUY x 9 index drift par FAIL; Kachhua SELL 2019+ -0.10R; ye Kachhua se ~0.7 milta (agent) = pass ho to bhi faida chhota.
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)
 **45vi chat (6 Nov)** - Tokri tk2 sim (`tools/tokri_asli.py/.c`): gold H1 2005-26 $1000, 240 variant + M1 2009-18 = SAB account khatam.
