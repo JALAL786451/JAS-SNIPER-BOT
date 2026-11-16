@@ -28,7 +28,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
-| **K11** | `JasMauqa_m85.mq5` (LIVE, m8.4 ki jagah, InpWReset false) + `JasLarai.mq5` j2 (demo 472716649: deewar OFF, phir InpWall true + popup) | **user ka F7 SS baqi** (dono cloud mein compile nahi) -> error theek (nayi build, usi file mein) |
+| **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | j2 demo par lagane ka SS baqi; LIVE equity 75.8k ka farq user se poochha |
 | **R2** | `indicators/jas_gold_rehnuma_r2.pine` (r1 + design + chhota BUY idea 1H + SELL ittila; naap `tools/rehnuma_r2_test.py`) | **user ka TV compile SS baqi** (gold 15m / 1H chart) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
 | K7 | Kachhua e2 demo 474832446 | pehli asli trade (chandi / gold SELL) ka SS aaye to milaan (k2 bhi) |
