@@ -34,7 +34,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
-| K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | **16 Nov (61vi): 4 LOG file aayin** (`data/live_253687618/mauqa_20261116/`: gold + BTC panel / tickets + waqiat). m8.4 ki **.mq5 ab bhi baqi** (nayi EA is par banegi) |
+| K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | **16 Nov (61vi): 4 LOG file aayin** (`data/live_253687618/mauqa_20261116/`: gold + BTC panel / tickets + waqiat). **m8.4 .mq5 bhi aa gayi** (user ne chat mein paste ki) -> `JasMauqa_m84.mq5` (nayi file; `JasMauqa.mq5` m8.3 nahi chhera). **K0 HUA.** |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
 | K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | **HUA (pehle se):** #99 / #101 ke Kachhua 12 market mein US500 + USTEC shamil hain, e2 demo par chal raha (16 Nov, 61vi jaanch) |
 | K4 | Tokri + Turtle 55/20 rukh test | user 9 Nov | **HUA 15 Nov: FAIL** (Fable, `docs/k4-tokri-turtle.md`; Claude ne IMTIHAN dobara chalaya = wahi number). 324/324 variant IMTIHAN mein account khatam; saada 0.02 Turtle +4-7.5% (9 saal). Rukh ghaib se 100% sahi ho tab bhi tk2 tokri fail = dhaancha ka masla. K5 NAHI. |
