@@ -1834,6 +1834,12 @@ Trade apni entry ki tareekh se ginti (TALAASH entry < 2019, chahe band 2019 mein
 **TALAASH** entry < 2019: PASS = kul >= 100 tr, Exp - 2SE(cluster) > 0, (>= 5 tr wale) market >= 60% Exp > 0, saal (kul R, entry saal) musbat > 50%, drift shart.
 **IMTIHAN** 2019+ EK dafa: kul >= 30 tr, Exp - 2SE(cluster) > 0, drift shart = ASLI PASS. Phir Kachhua / t5 se milana + FTMO jor alag koshish. Ginti +1.
 Pehle se pata (imandari): #98 Kachhua sirf-BUY x 9 index drift par FAIL; Kachhua SELL 2019+ -0.10R; ye Kachhua se ~0.7 milta (agent) = pass ho to bhi faida chhota.
+**Koshish #104 TALAASH (16 Nov, entry 2004-05..2018-12, swap 0) = FAIL -> IMTIHAN NAHI khola, idea band:** KUL 204 tr (1.2/mahina), jeet 26%, **Exp +0.128R magar SE 0.202 (cluster 0.208)**,
+**Exp-2SE(cluster) -0.288**, bina kharcha +0.135R, ausat 111 din pakra. Market musbat 5/9 (shart 60%): XAU +1.36R (15 tr), USDJPY +1.03R (25), USTEC +0.77 (6), XAG +0.34 (20), US500 +0.29 (5) |
+EURUSD -0.17 (42), GBPUSD -0.16 (39), USDCHF -0.38 (41), LIGHT -0.52 (5), BRENT -0.03 (4), BTC -0.52 (2), AUD 0 tr (data khali 2021 tak). Sirf-BUY 57 tr +0.515R, forex BUY 77 tr -0.158R,
+forex SELL 70 tr +0.128R. Saal 8/15 (2004 +15.1, 2009 +11.9, 2012 +14.0, 2017 -10.5). **Sirf-BUY: +4.13% har trade vs drift +5.43% = 0.76x (< 2x)** = "pakre rehne" se bhi kam.
+Sehat jaanch (nateeja se pehle): takraao 0, der se entry 0, SL sahi. Sabaq: mahana 12-mahine momentum mein trade bohat kam aur lambi (jeet 26%, do market sara faida) = saabit nahi hota;
+sone ka faida 2004-12 ki tezi thi. Kachhua (D1 10/5) isi khandaan ka behtar roop hai - mazeed sust trend qaida NAHI.
 
 ## TRADING sec 5 se hataya (48vi chat, 9 Nov)
 **45vi chat (6 Nov)** - Tokri tk2 sim (`tools/tokri_asli.py/.c`): gold H1 2005-26 $1000, 240 variant + M1 2009-18 = SAB account khatam.

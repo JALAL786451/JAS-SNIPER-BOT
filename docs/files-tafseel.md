@@ -61,6 +61,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/JAS_M1ZIP.bat` | m1 (31 Oct): QDM M1 export (ek CSV har symbol) ko saal ba saal tod kar zip -> M1_UPLOAD; GitHub page data/qdm/M1 khulta hai (#37 noise boundary ke liye) |
 | `tools/jlaw_mea_test.py` | #43 (29 Oct): J Law multiple edge (toot + kam volume pullback level/EMA20 par, sirf BUY) daily + 4H, 4 market - FAIL |
 | `tools/jj_fair_price_test.py` | #44 (29 Oct): JJ Simon fair price 1m USTEC (session open continuation + reversion, 38/25) - FAIL |
+| `tools/mom104.py` | #104 (16 Nov): 12-mahine momentum mahana (Antonacci / Faber), Kachhua 12 market, SL 3 ATR20, swap 0 = TALAASH FAIL (204 tr +0.128R, Exp-2SE -0.288, drift 0.76x) |
 | `tools/season103.py` | #103 (16 Nov): wahi-mahina seasonality long/short (12 market, top 3 BUY / bottom 3 SELL, SL 3 ATR20, swap 0) = TALAASH FAIL (396 tr -0.024R) |
 | `tools/yahoo_d1.py` | 16 Nov: Yahoo se 10 cash index ka lamba daily OHLC -> `data/yahoo/D1.zip` (1970/90 se; purane High/Low khali = sirf mahana close ke liye); `load_d1(naam)` |
 | `tools/double7_102.py` | #102 (16 Nov): Double 7s 7 non-US index tokri, swap 0, cluster SE + drift jaanch = TALAASH FAIL (336 tr +0.052R, drift 1.24x) |
