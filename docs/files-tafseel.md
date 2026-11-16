@@ -63,6 +63,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/jj_fair_price_test.py` | #44 (29 Oct): JJ Simon fair price 1m USTEC (session open continuation + reversion, 38/25) - FAIL |
 | `docs/k10-demo-milaan.md` + `data/demo_474832446/` | K10 (16 Nov): demo 474832446 History report vs test - hissa 1 (lot, waqt, SL, kharcha) sahi; hissa 2 signal milaan ke liye MT5 H1 bars baqi |
 | `tools/JAS_K10_DATA.bat` | d1 (16 Nov): QDM screen ke baghair (qdmcli) USA500, USATECH, XAUUSD, XAGUSD update + M1 export 1 Oct 2026 se -> Desktop\JAS_K10\JAS_K10_M1.zip (QDM UI "Electron is not running" par band ho rahi thi) |
+| `tools/milaan_k10.py` | K10 (16 Nov): demo 474832446 ki trades vs Python signal (i6, t5) US500 + USTEC - QDM M1 1 Oct-15 Nov par; 7 / 8 mili |
 | `tools/jor105.py` | K9 (16 Nov): jor #101 ka tajziya CHUNAO 2012-18 - har EA ka hissa, mel, bure din, ek-EA-nikaal challenge; nateeja `docs/k9-jor-tajziya.md` |
 | `tools/taqseem105.py` | #105 (16 Nov): jor #101 ki behtar taqseem usi kul risk 8.80% mein = CHUNAO FAIL (abhi wali theek) |
 | `tools/mom104.py` | #104 (16 Nov): 12-mahine momentum mahana (Antonacci / Faber), Kachhua 12 market, SL 3 ATR20, swap 0 = TALAASH FAIL (204 tr +0.128R, Exp-2SE -0.288, drift 0.76x) |

@@ -21,10 +21,20 @@ Report: `data/demo_474832446/ReportHistory_20261115.xlsx` (user, 15 Nov 21:04 se
 - **Ek position per EA per market:** sahi. US500 par i6 + t5 ek saath BUY (4-5 Nov) = K9 wala hi khatra (din ki hadd), 5 Nov ko dono ka nuqsan ek din: -662 + -996 = -1.66%.
 - Nateeja ab tak: i6 +0.15R (3 trade, 2 jeet; test jeet 71%), t5 -1.10R (3 band, 1 jeet; test jeet 39%) = 6 trade, ittefaq ki hadd mein.
 
-## Hissa 2 - signal ka milaan (16 Nov: jitna repo ke data se ho saka)
-Sab branch dekhi (31) - market data sirf isi branch mein. Aakhri tareekh: USTEC M1 5 Nov, XAU M1 4 Nov, US500 M1 30 Oct, XAU/XAG/US500/USTEC H1 27 Oct. (H1 27 Oct tak + M1 se bana H1.)
-| Demo trade | Python (Dukascopy) | Demo (Exness) | Faisla |
-|---|---|---|---|
-| #3 t5 XAU BUY | 4 Nov 06:00, SL fasla 246.23 | 4 Nov 06:01, SL fasla 246.49 | **BILKUL MILA** (wahi mombatti, SL fasla 0.1% farq; qeemat 4.3 farq = broker) |
-| #2 i6 USTEC BUY | 29 Oct se khuli (EA demo par 1 Nov ko laga), SL 5 Nov 14:00 = -1R | 2 Nov 21:16 khuli, SL 5 Nov 23:18 = -1R | rukh + nateeja wahi; entry ka din alag (EA baad mein laga) = seedha milaan nahi |
-Baqi 6 trade (US500 x4, XAG, USTEC 11 Nov) = data nahi (US500 30 Oct, XAG 27 Oct par khatam). User se QDM update (4 symbol, 16 Nov tak) ya MT5 Export Bars chahiye.
+## Hissa 2 - signal ka milaan (HUA 16 Nov, 7 / 8 trade) - `python3 tools/milaan_k10.py`
+Data: user ne QDM (qdmcli) se USA500IDXUSD + USATECHIDXUSD M1 1 Oct - 15 Nov diya (`data/demo_474832446/QDM_M1_20261001_1115.zip`); sona repo ke M1 (4 Nov tak) se.
+| # | Demo trade | Python (Dukascopy) | Demo (Exness) | Faisla |
+|---|---|---|---|---|
+| 1 | i6 US500 2 Nov | 2 Nov IBS 0.12 = BUY, 3xATR 259.1; band 4 Nov (IBS 0.95) | 2 Nov 21:16, fasla 263.0; band 4 Nov 21:16 | **MILA** (Python 29 Oct se trade mein tha - EA 1 Nov ko laga; signal ka din, SL fasla, band ka din wahi) |
+| 2 | i6 USTEC 2 Nov | 2 Nov IBS 0.16 = BUY, 3xATR 1755.7; SL 5 Nov | 2 Nov 21:16, fasla 1779.3; SL 5 Nov 23:18 | **MILA** (wahi wajah; fasla 1.3% farq) |
+| 3 | t5 XAU 4 Nov | 4 Nov 06:00, fasla 246.2 | 4 Nov 06:01, fasla 246.5 | **BILKUL MILA** (band hona: data 4 Nov tak) |
+| 4 | t5 XAG 4 Nov | data 27 Oct tak | 4 Nov 10:00 | **BAQI** (MT5 XAGUSDm Export Bars chahiye) |
+| 5 | t5 US500 4 Nov | 4 Nov 14:00 @7658.7, fasla 306.6 -> 5 Nov 18:00, -0.86R | 4 Nov 14:01 @7659.3, fasla 310.4 -> 5 Nov 18:01, -0.89R | **BILKUL MILA** |
+| 6 | i6 US500 5 Nov | 5 Nov @7346.2, fasla 353.7 -> 9 Nov @7553.5, +0.59R | 5 Nov 21:16 @7349.5, fasla 354.8 -> 9 Nov 21:16 @7557.6, +0.59R | **BILKUL MILA** |
+| 7 | t5 US500 10 Nov | 10 Nov 02:00 @7559.7, fasla 351.0 (khuli) | 10 Nov 02:01 @7562.4, fasla 351.9 (khuli) | **BILKUL MILA** |
+| 8 | t5 USTEC 11 Nov | 11 Nov 06:00 @28150.0, fasla 2023.0 (khuli) | 11 Nov 06:01 @28170.4, fasla 2031.4 (khuli) | **BILKUL MILA** |
+
+- **Ulta bhi sahi:** 1 Nov ke baad Python ka koi US500 / USTEC signal aisa nahi jo demo mein na ho, aur demo ki koi trade aisi nahi jo Python mein na ho.
+- Qeemat ka farq (2-20 point) = broker (Exness vs Dukascopy); R mein farq 0.00-0.03.
+- Sabaq: EA beech mein lagne se pehli IBS trade test se alag din khulti (test purani trade mein hota) - ghalti nahi.
+- QDM: screen Smart App Control ne roki (`QuantDataManager_ui.exe`, publisher nahi); `qdmcli.exe` seedha kholo -> `-symbol action=list`, `-data action=update symbols=USA500IDXUSD`, `-data action=export ...`. Symbol naam BINA nuqte / slash (USA500IDXUSD, USATECHIDXUSD).

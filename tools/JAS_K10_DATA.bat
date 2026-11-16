@@ -1,5 +1,5 @@
 @echo off
-:: JAS_K10_DATA d1 (16 Nov 2026) - K10 demo milaan ke liye: QDM ki screen KHOLE BAGHAIR (qdmcli) 4 symbol update + M1 export (1 Oct 2026 se aaj) + ek zip.
+:: JAS_K10_DATA d2 (16 Nov 2026; d1 mein symbol naam galat the) - K10 demo milaan ke liye: QDM ki screen KHOLE BAGHAIR (qdmcli) 4 symbol update + M1 export (1 Oct 2026 se aaj) + ek zip.
 :: QDM ki screen band honi chahiye. Nateeja: Desktop\JAS_K10\JAS_K10_M1.zip  -> chat mein attach karein.
 set QDM=C:\QuantDataManager125
 if not exist "%QDM%\qdmcli.exe" set QDM=C:\QuantDataManager
@@ -13,8 +13,8 @@ if not exist "%QDM%\qdmcli.exe" (
 cd /d "%QDM%"
 if not exist "%OUT%\csv" mkdir "%OUT%\csv"
 set LOG=%OUT%\log.txt
-echo JAS_K10_DATA d1 %date% %time% > "%LOG%"
-for %%S in (USA500.IDX/USD USATECH.IDX/USD XAUUSD XAGUSD) do (
+echo JAS_K10_DATA d2 %date% %time% > "%LOG%"
+for %%S in (USA500IDXUSD USATECHIDXUSD) do (
   echo [update + export] %%S  ^(kuch minute lag sakte^)
   "%QDM%\qdmcli.exe" -data action=update symbols=%%S >> "%LOG%" 2>&1
   "%QDM%\qdmcli.exe" -data action=export symbols=%%S timeframe=M1 datefrom=2026.10.01 %FMT% outputdir=%OUT%\csv >> "%LOG%" 2>&1
