@@ -28,6 +28,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - 60vi: user "aap ke test Opus 5.5 ki copy, apni performance nahi" -> Claude ki apni tajweez A + B; **user: "A aur B haan" (nayi chat mein)**.
 
 - **USER KA ASAL MAQSAD (16 Nov, 61vi, K6 par):** "jis tarha mein trade leta hoon uska EA ban jaye" - gold / BTC files isi liye di thein. Takleef: jaldi mein 1 ki jagah 2 lot, SELL ki jagah BUY (ya ulta); rukh ka pata nahi chalta; kaam lamba, intezar nahi hota, thak kar loss. Chahta: EA jo hisaab se lare aur aakhir mein profit par nikle. Claude ka jawab: poora auto "larne wala" 2 dafa test mein fail (tk2 240/240, K4 324/324); tajweez = NAYI file "darban" (ghalat click pakre: dohri lot / ulta rukh / hadd se bari lot -> popup YES = band) - user ki ijazat ka intezar.
+- **USER NE KHUD WAZAHAT KI (16 Nov, 61vi):** EA aisa ho jo bohot saari khuli lots mein ghus kar (1) profit wali lots band kare, (2) jori profit mein band kare, (3) loss ke khilaf DEEWAR ki soorat mein ulti lot KHOLE (= hedge; user ne khud naam le kar maanga). Claude: 1 + 2 JasMauqa mein popup se hain; 3 naya (ab tak "nayi lot NAHI"). Nayi file (JasMauqa na chhero) - is ke liye m8.4 file (K0) + gold / BTC ka abhi ka SS + user ki "haan" chahiye. Deewar nuqsan ROKTI hai, wapas nahi lati; wasooli sirf jori se.
 
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
