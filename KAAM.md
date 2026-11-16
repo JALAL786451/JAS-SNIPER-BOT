@@ -20,6 +20,8 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 - Data user ne diya: US500 / USTEC M1 2012-26 + gold M1 (QDM). Kitabi ideas #102-104 FAIL (list khatam).
 - **TOKEN BACHAT (user 16 Nov "haan"):** nayi chat KHUD nahi khulti (user kholta, "TRADING" likhta); shuru mein sirf hook; chat khatam = halki rasm (CLAUDE.md). Rozmarra kaam sasta model, Fable sirf mushkil kaam.
 
+- **User ki hasrat (16 Nov raat, 62vi):** "3 mahine se 3 EA meri hasrat ke hisab se nahi bane - tasalli hai, magar expectation tak nahi pohncha". Chahiye: (1) FTMO ke mahine kam karne wala extraordinary EA, (2) BUY / SELL ka pro level Pine idea, (3) mere tareeqe wala TESTED fighting EA (fishing lots, bohot si BUY / SELL mein perfect fighter). SS 11:30 PM (usage reset) ke baad.
+
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
