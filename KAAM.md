@@ -32,6 +32,8 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 - LIVE 16 Nov 06:14 server (log): balance 86,766.39, equity 38,765.53; gold BUY 7.27 / SELL 7.27 NET 0, -20,944 (dhaal SELL 3.70 @4057.76, bari BUY 2.50 @4117.42); BTC BUY 2.90 avg 75,482 / SELL 2.88 avg 66,171 NET +0.02, -27,060 (deewar SELL 2.83 @66,173 14 Nov = BUY se ~9,300 neeche lagi). Tickets 166 / 200. User ne +5976 wala popup 06:19 par NO kiya.
 - **JasLarai j1 (16 Nov, 61vi, user "han pls"):** nayi file `JasLarai.mq5` = m8.4 + (1) A / B jori KHUD, (2) C KHUD sirf jab NET na barhe, (3) DEEWAR (InpWall default OFF; fasla gold 15 / BTC 1000; NET se zyada kabhi nahi), (4) DOHRI LOT popup. KHUD ki hadd InpAutoMax 1000 (bara = popup). **j2 (16 Nov):** popup mein Balance / Equity pehle -> baad. `JasMauqa_m85.mq5` (nayi file) = m8.4 + yahi line, LIVE ke liye (user ne maanga). **F7 SS baqi (dono) -> j2 demo 472716649.** Cloud mein compile nahi hua.
 
+- **Rehnuma r2 (16 Nov, 62vi, user: "design professional + SELL idea + chhoti TF BUY idea"):** NAYI file `indicators/jas_gold_rehnuma_r2.pine` (r1 nahi chhera). Asal qaida wahi (4H, sirf BUY) + rukh patti / badal / risk dabba + CHHOTA BUY idea (1H palta + 4H upar, SL 3 ATR; Python 2003-18 +0.199R, 2019-26 +0.329R) + SELL sirf ITTILA (naap FAIL: 4H SELL 2019-26 -15.6R, 1H SELL -32.7R). `tools/rehnuma_r2_test.py`. **TV compile SS baqi.**
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
