@@ -2,8 +2,9 @@
 
 MetaTrader 5 EAs aur TradingView Pine scripts (gold, index, commodity) - user Jalal ke liye.
 
-**Har nayi chat (user likhe "TRADING"):** ye branch ab GitHub ki default hai - fetch/checkout NAHI,
-PEHLE `KAAM.md` (hook dikhata; user ki har nayi baat USI waqt yahan), phir `KAHANI.txt` (poori kahani, ~16 KB) phir `TRADING.md`, sec 5 = agla kaam. KAHANI dobara BANANA MANA - har chat khatam par sirf Sec 3 mein 2-5 line + Sec 4 update. Kaam isi branch par commit + push (user, qaide, pichli chat, agla kaam) - baqi `grep` se.
+**Har nayi chat (user KHUD kholta aur "TRADING" likhta hai):** ye branch GitHub ki default hai - fetch/checkout NAHI.
+Hook MT5 table + `KAAM.md` + `TRADING.md` sec 5 KHUD dikhata hai = KAAFI: pehle jawab mein table + agla kaam seedha, user ko 0 se
+batana na pare. `KAHANI.txt` / poori `TRADING.md` NA parho (user 16 Nov, token) - purani baat sirf `grep`. User ki har nayi baat USI waqt `KAAM.md` mein.
 Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
 **Token bachao (reply se PEHLE):** sawal purana lage to pehle `grep -i <lafz> docs/sawal-jawab.md` - mile to wahi
 jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; pata na ho to kaho aur ijazat lo (ek din).
@@ -16,12 +17,10 @@ jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; 
   Purana haal `docs/purana-haal.md`, sabaq ke number `docs/sabaq-tafseel.md`.
 - Nayi file bane to uski ek line `docs/files-tafseel.md` ki "chhoti list" mein (yahan nahi).
 - ~15 message ho jayein to Claude KHUD kahe: "chat lambi ho gayi - 'chat khatam' likhein, nayi chat sasti".
-- **Chat khatam** (user kahe, ya ~15-20 message): `TRADING.md` sec 9 ki list - sec 5 naya (<=8 KB), naye jawab
-  `docs/sawal-jawab.md`, `python3 tools/roznamcha.py`, commit + push (default branch bhi). Har chat yahi kare.
-  Push ke FAURAN baad (user 17 Oct) nayi chat ABHI kholo - schedule NAHI. `create_session`: source_url
-  `https://github.com/JALAL786451/JAS-SNIPER-BOT`, source_revision ye branch, prompt sirf "TRADING" NAHI (28 Oct: akela lafz
-  "background notice" samjha, kaam nahi kiya) balke: "Jalal ki nayi TRADING chat (pichli chat ne kholi). CLAUDE.md + TRADING.md
-  parho, sec 5 ka agla kaam seedha shuru karo: <kaam ek line>". User ko fallback bhi do (TRADING.md upar wala lamba message).
+- **Chat khatam (HALKI, user 16 Nov "haan"):** `KAAM.md` (khule kaam taza, <=4 KB) + `TRADING.md` sec 5 (2-5 line, agla kaam) +
+  naya jawab ho to `docs/sawal-jawab.md` EK line + `python3 tools/roznamcha.py` + EK commit + push (ye branch = default). Bas.
+  `KAHANI.txt` sirf jab user kahe "poora hisaab" (Sec 3 mein 2-5 line + Sec 4; dobara BANANA MANA).
+  **Nayi chat KHUD NAHI kholni** (`create_session` / schedule NAHI) - user khud kholta hai; usse sirf kaho: nayi chat mein "TRADING" likhein.
 - Agent / workflow sirf jab user naam le kar maange; hafte ki limit 50%+ ho to bilkul nahi.
 - **BANK yaad dilao (user 1 Nov):** `docs/bank.md` - FTMO pass, real account, trade barhana ya naya jor ki baat par user ko KHUD batao.
 - **FTMO offer yaad dilao (user 1 Nov):** jab bhi FTMO khareedne / challenge / fees ki baat ho, aur har November (Black Friday) / December (New Year) wali chat mein, ftmo.com par chalu offer KHUD check karke batao. Paise sirf ftmo.com checkout par; code se qeemat waqai kam ho tab.

@@ -2,7 +2,7 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-16  (13 kaam)
-   - K10 hissa 1: demo 474832446 History report vs test - lot, waqt, SL, kharcha sahi (docs/k10
-   - KAAM: user ka asal maqsad (K6) - apne tareeqe ka EA; ghalat click, rukh, thakan; darban ta
-   - JasMauqa m8.5 (nayi file) + JasLarai j2: popup mein Balance / Equity pehle -> baad + farq 
+2026-11-16  (3 kaam)
+   - 61vi chat khatam: K9 + K10 HUA, #105 FAIL, JasLarai j2 + JasMauqa m8.5 (F7 baqi); sec 5, K
+   - Rehnuma r2 (nayi file): design + chhota BUY idea (1H, 4H upar) + SELL ittila; Python naap 
+   - KAAM: token shikayat + tajweez (user 16 Nov)

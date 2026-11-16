@@ -62,12 +62,10 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**61vi chat (16 Nov)** - **K9 HUA:** jor #101 tajziya (`docs/k9-jor-tajziya.md`): hissa i6 45% / e2 28% / t5 23% / k2 4%, mel <= 0.22, rokta + raftar dono t5, din ki hadd ka khatra sirf t5 + i6 US index ek saath (4 Jan 2016 -4.37%). **#105 behtar taqseem = CHUNAO FAIL** (IMTIHAN nahi khola) -> abhi wali theek, demo par kuch na badlein.
-**K10 HUA:** demo 474832446 ki 8 / 8 trade Python signal se mili (`docs/k10-demo-milaan.md`, `tools/milaan_k10.py`). QDM ki screen Smart App Control ne roki -> `qdmcli.exe` seedha (symbol USA500IDXUSD / USATECHIDXUSD); chandi MT5 Export Bars se.
-**User ka ASAL maqsad (K6):** "jis tarha trade leta hoon uska EA" - profit lots + jori khud band, loss par DEEWAR (ulti lot; user ne khud maanga), dohri lot pakre. m8.4 `.mq5` + 4 log aaye (K0 HUA; `JasMauqa_m84.mq5`, `data/live_253687618/mauqa_20261116/`).
-**Nayi files (F7 BAQI, cloud mein compile nahi):** `JasLarai.mq5` **j2** (m8.4 + A / B jori KHUD + C KHUD jab NET na barhe + W) DEEWAR default OFF + X) DOHRI LOT popup; KHUD ki hadd InpAutoMax 1000) -> demo 472716649. `JasMauqa_m85.mq5` (m8.4 + popup mein Balance / Equity pehle -> baad) -> LIVE, user ne maanga.
-LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.02, tala-band ~-48,000, tk 167 / 200. Claude: jori (A / B) YES be-khatar (equity sirf spread jitni barhti), C (profit ticket) NA lein (deewar toot-ti).
-**AGLA (62vi):** K11 = user se F7 SS (m8.5 + JasLarai j2) -> error theek -> j2 demo par imtihan (deewar OFF, phir popup ke saath), m8.5 LIVE par m8.4 ki jagah (InpWReset false). ~20 Nov FTMO Black Friday check. Demo 474832446: e2 / k2 ki pehli trade aaye to milaan.
+**62vi chat (16 Nov)** - **Rehnuma r2** (user: design professional + SELL idea + chhoti TF BUY idea): NAYI file `indicators/jas_gold_rehnuma_r2.pine` (r1 nahi chhera; pinecheck saaf, **TV compile SS baqi**). Naap `tools/rehnuma_r2_test.py` (gold H1 2003-26): 1H BUY jab 4H upar (SL 3 ATR) 2003-18 +0.199R / 2019-26 +0.329R = idea (demo pehle, risk alag 0.25%); 4H SELL -15.6R, 1H SELL -32.7R = FAIL, sirf ittila.
+**Token bachat (user "haan"):** hook chhota (13.8 -> 7.3 KB, resume par nahi), KAAM 9 -> 3 KB (purana `docs/purana-haal.md`), KAHANI / poori TRADING shuru mein NAHI, chat khatam halki, nayi chat KHUD nahi khulti. Branches: 32 hain, sab 1 July ke baad ki; mitane se token nahi bachte - user ne nahi mitwayin.
+**AGLA (63vi):** K11 = user ka F7 SS (`JasMauqa_m85.mq5` + `JasLarai.mq5` j2) -> error theek -> j2 demo 472716649 (deewar OFF, phir popup), m8.5 LIVE par m8.4 ki jagah (InpWReset false). R2 = TV compile SS. ~20 Nov FTMO Black Friday check.
+**61vi chat** -> `docs/purana-haal.md` (grep "61vi").
 **60vi chat** -> `docs/purana-haal.md` (grep "60vi").
 **59vi chat** -> `docs/purana-haal.md` (grep "59vi").
 **58vi / Fable K4 chat** -> `docs/purana-haal.md` (grep "Fable K4").
@@ -98,11 +96,8 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 105 koshish (**#105 jor #101 ki behtar taqseem (usi kul risk 8.80%) = CHUNAO FAIL** (83 ummeedwar, koi behtar nahi; abhi wali theek; `docs/k9-jor-tajziya.md`, 16 Nov); **#104 12-mahine momentum mahana (Kachhua 12 market) = TALAASH FAIL** (204 tr +0.128R, Exp-2SE -0.288, drift 0.76x; `tools/mom104.py`, 16 Nov); **#103 wahi-mahina seasonality long/short 12 market = TALAASH FAIL** (396 tr -0.024R, bina kharcha -0.015R, saal 2/6; `tools/season103.py`, 16 Nov); **#102 Double 7 non-US index tokri (7 index, swap 0) = TALAASH FAIL** (336 tr +0.052R, Exp-2SE cluster -0.043, drift 1.24x; `tools/double7_102.py`, 16 Nov); **#101 FTMO #68 + Kachhua 12 @0.25% swap 0 = PASS** (2019+ 85/0 med 10.2 vs #68 83/0 med 10.6; 2012-18 med 27.6 -> 15.5); #100 Trend vs Tide = trend jeeta, **#99 Kachhua 12 swap 0 = ASLI PASS patla**, #88-98 FAIL (tafseel `docs/purana-haal.md`)). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
-## 9. Chat ke aakhir mein (ye file zinda rahe)
-0. `KAHANI.txt` Sec 3 mein is chat ki 2-5 line + Sec 4 (ABHI) update (dobara mat banao, user 1 Nov).
-
-- Sec 5 "PICHLI CHAT" naya likho (2-4 line: kya hua, agla kaam, "D" baqi ya nahi); kaam badla to sec 6-7.
-- Naya pakka sabaq -> `docs/trading-pakki.md` sec 4 mein EK line, poore number `docs/sabaq-tafseel.md`.
-- Naya pakka jawab -> `docs/sawal-jawab.md` mein EK line. Phir `python3 tools/roznamcha.py` (din ki file + FEHRIST.txt).
-- Ye file 8 KB se lambi ho to purana hissa `docs/purana-haal.md` mein. `docs/files-tafseel.md` ki chhoti list mein nayi
-  file ki ek line. Commit + push - apni branch AUR default `claude/jas-desk-v3-0110-yu3w2h` dono par.
+## 9. Chat ke aakhir mein (HALKI rasm - user 16 Nov "haan", token bachat)
+- `KAAM.md` khule kaam taza + sec 5 "PICHLI CHAT" naya (2-5 line: kya hua, agla kaam). Naya jawab -> `docs/sawal-jawab.md` EK line.
+- `python3 tools/roznamcha.py`, EK commit + push (ye branch = default). Nayi chat KHUD NAHI kholni - user kholta hai.
+- Sirf "poora hisaab" par: `KAHANI.txt` Sec 3 (2-5 line) + Sec 4; naya sabaq `docs/trading-pakki.md` sec 4 EK line; sec 6-7.
+- Ye file 8 KB se lambi ho to purana hissa `docs/purana-haal.md` mein. Nayi file ki ek line `docs/files-tafseel.md` mein.
