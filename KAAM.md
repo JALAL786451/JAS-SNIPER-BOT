@@ -32,10 +32,10 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 |---|---|---|---|
 | K0 | m8.4 (user ke paas, repo mein nahi) .mq5 maango + gold/BTC 4 file zip -> popup hisaab | user 10-12 Nov | 57vi (15 Nov): file NAHI aayi - jab user de |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`), Windows roz khud pull (0 token). Cloud chat D: seedha nahi parh sakti (Remote Control folder list khali) -> GitHub = pul | user 9 Nov: "D drive, nayi chat wahan se" | user SBS kar raha |
-| K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | baqi - qaida pehle likho |
+| K2 | Tide (Kachhua) FTMO mein: US500/USTEC par test (M1 data isi liye) | user 9 Nov | **HUA (pehle se):** #99 / #101 ke Kachhua 12 market mein US500 + USTEC shamil hain, e2 demo par chal raha (16 Nov, 61vi jaanch) |
 | K4 | Tokri + Turtle 55/20 rukh test | user 9 Nov | **HUA 15 Nov: FAIL** (Fable, `docs/k4-tokri-turtle.md`; Claude ne IMTIHAN dobara chalaya = wahi number). 324/324 variant IMTIHAN mein account khatam; saada 0.02 Turtle +4-7.5% (9 saal). Rukh ghaib se 100% sahi ho tab bhi tk2 tokri fail = dhaancha ka masla. K5 NAHI. |
 | K5 | Tokri EA tk2 "perfect": F7 0 error -> demo 472716649 (LIVE nahi) | user: "EA her soorat chahiye" | baqi |
-| K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | baqi |
+| K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | user haan 7 Nov | **AGLA** (61vi: K9 + K10 ke baad Claude ki salah; user ki haan ka intezar) |
 | K7 | Kachhua **e2** 0.25% FTMO demo 474832446 par | PDF hafta 1 | **HUA 15-16 Nov:** TRADE CHALU, 16 Nov SS = trade 0 sahi; pehli asli trade (chandi / gold SELL) ka SS baqi |
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 | **K9** | **A: 4 EA ke jor ka tajziya** - har EA ka mahana hissa, aapas ka mel, kaun raftar deta / rokta (CHUNAO 2012-18 par, IMTIHAN na chhero); phir USI kul risk ke andar behtar taqseem ka test (qaida pehle). Kisi EA ka risk % badle = user ki saaf ijazat | user 16 Nov "A aur B haan" | **HUA 16 Nov (61vi):** tajziya `docs/k9-jor-tajziya.md`; #105 taqseem = CHUNAO FAIL, abhi wali theek, kuch na badlein |
