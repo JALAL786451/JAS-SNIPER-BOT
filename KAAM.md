@@ -39,7 +39,7 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 | K7 | Kachhua **e2** 0.25% FTMO demo 474832446 par | PDF hafta 1 | **HUA 15-16 Nov:** TRADE CHALU, 16 Nov SS = trade 0 sahi; pehli asli trade (chandi / gold SELL) ka SS baqi |
 | K8 | TV Store update ho to robocopy dobara (TV Bridge) | 50vi | jab update aaye |
 | **K9** | **A: 4 EA ke jor ka tajziya** - har EA ka mahana hissa, aapas ka mel, kaun raftar deta / rokta (CHUNAO 2012-18 par, IMTIHAN na chhero); phir USI kul risk ke andar behtar taqseem ka test (qaida pehle). Kisi EA ka risk % badle = user ki saaf ijazat | user 16 Nov "A aur B haan" | **HUA 16 Nov (61vi):** tajziya `docs/k9-jor-tajziya.md`; #105 taqseem = CHUNAO FAIL, abhi wali theek, kuch na badlein |
-| **K10** | **B: demo vs test milaan** - demo 474832446 ki asli trades (History report / SS user se) ko Python signal se milana (i6, t5, e2, k2) | user 16 Nov | **HUA 16 Nov (61vi): 7 / 8 trade Python se MILI** (lot, waqt, SL, signal; `docs/k10-demo-milaan.md`, `tools/milaan_k10.py`). Baqi sirf t5 XAG 4 Nov (MT5 XAGUSDm Export Bars aaye to). QDM screen Smart App Control ne roki - qdmcli seedha chalti (symbol USA500IDXUSD / USATECHIDXUSD) |
+| **K10** | **B: demo vs test milaan** - demo 474832446 ki asli trades (History report / SS user se) ko Python signal se milana (i6, t5, e2, k2) | user 16 Nov | **HUA 16 Nov (61vi): 8 / 8 trade Python se MILI** (lot, waqt, SL, signal; `docs/k10-demo-milaan.md`, `tools/milaan_k10.py`). QDM screen Smart App Control ne roki - qdmcli seedha chalti (symbol USA500IDXUSD / USATECHIDXUSD) |
 
 ## Hue (aakhri 5)
 - 10 Nov (52vi): K3 gold M1 saaf; K10 m7.8 TALA-BAND; K11 m7.9 AUTO sirf B jori, pehli +59.00; K9 m7.7.
