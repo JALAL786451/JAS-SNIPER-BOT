@@ -61,6 +61,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 | `tools/JAS_M1ZIP.bat` | m1 (31 Oct): QDM M1 export (ek CSV har symbol) ko saal ba saal tod kar zip -> M1_UPLOAD; GitHub page data/qdm/M1 khulta hai (#37 noise boundary ke liye) |
 | `tools/jlaw_mea_test.py` | #43 (29 Oct): J Law multiple edge (toot + kam volume pullback level/EMA20 par, sirf BUY) daily + 4H, 4 market - FAIL |
 | `tools/jj_fair_price_test.py` | #44 (29 Oct): JJ Simon fair price 1m USTEC (session open continuation + reversion, 38/25) - FAIL |
+| `tools/jor105.py` | K9 (16 Nov): jor #101 ka tajziya CHUNAO 2012-18 - har EA ka hissa, mel, bure din, ek-EA-nikaal challenge; nateeja `docs/k9-jor-tajziya.md` |
+| `tools/taqseem105.py` | #105 (16 Nov): jor #101 ki behtar taqseem usi kul risk 8.80% mein = CHUNAO FAIL (abhi wali theek) |
 | `tools/mom104.py` | #104 (16 Nov): 12-mahine momentum mahana (Antonacci / Faber), Kachhua 12 market, SL 3 ATR20, swap 0 = TALAASH FAIL (204 tr +0.128R, Exp-2SE -0.288, drift 0.76x) |
 | `tools/season103.py` | #103 (16 Nov): wahi-mahina seasonality long/short (12 market, top 3 BUY / bottom 3 SELL, SL 3 ATR20, swap 0) = TALAASH FAIL (396 tr -0.024R) |
 | `tools/yahoo_d1.py` | 16 Nov: Yahoo se 10 cash index ka lamba daily OHLC -> `data/yahoo/D1.zip` (1970/90 se; purane High/Low khali = sirf mahana close ke liye); `load_d1(naam)` |

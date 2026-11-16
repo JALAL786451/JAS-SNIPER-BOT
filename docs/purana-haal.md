@@ -2001,3 +2001,6 @@ sirf woh jin ka kul risk <= 8.80%. **CHUNAO 2012-2018** (84 challenge, har mahin
 (worst - din-shuru balance) abhi wale (-4.37%) se bura NAHI, (4) median mahine < 15.5 (abhi). Behtareen = kam median, phir zyada pass, phir kam kul risk. Koi nahi = FAIL (abhi wali taqseem hi theek).
 **IMTIHAN 2019-01..2026-10 EK dafa** (sirf chuni taqseem vs #101 isi run): PASS = fail 0, pass >= #101, median < #101. Ginti +1. PASS bhi ho to demo par tabdeeli SIRF user ki saaf ijazat se
 (kisi EA ka risk % barhta ho to khaas tor par); purane EA ki file nahi badalti - sirf input.
+**Koshish #105 CHUNAO 2012-2018 (16 Nov, 61vi) = FAIL (IMTIHAN nahi khola):** 83 ummeedwar, koi bhi abhi wali taqseem (0.75 / 1.0 / 0.15 / 0.25: 69 / 0 / 15, median 15.5, bura din -4.37%) se shart par behtar nahi.
+Qareeb tareen 0.625 / 1.25 / 0.15 / 0.25 = 69/0 med 15.2 magar bura din -4.54 -> rad. Tajziya (`docs/k9-jor-tajziya.md`): hissa i6 45% / e2 28% / t5 23% / k2 4%; mel sab <= 0.22; rokta t5 (manfi mahine -1.04 of -1.44), raftar bhi t5;
+bina i6 12 fail; din ki hadd ka khatra sirf t5 + i6 US index ek saath (4 Jan 2016 -4.37%). **Abhi wali taqseem theek, demo par kuch na badlein.**
