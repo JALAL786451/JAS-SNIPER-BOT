@@ -2,22 +2,7 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-10  (24 kaam)
-   - 54vi: C NO
-   - 55vi: Fable mashwara draft
-   - 56vi: N -18.56 salah
-
-2026-11-12  (5 kaam)
-   - 56vi: reset samjhaya
-   - 56vi chat khatam: TRADING sec 5, KAHANI, sawal-jawab, roznamcha, KAAM
-   - 57vi #2: shuru, K0 file intezar, nayi maloomat (Algo Forge)
-
-2026-11-15  (38 kaam)
-   - 57vi: tablet WiFi jawab sawal-jawab mein
-   - 59vi: nayi maloomat (investor password)
-   - 60vi: demo SS #2 (market khuli) - e2 trade 0 sahi, t5 2 khuli; TRADING sec 0 + KAAM
-
-2026-11-16  (3 kaam)
-   - Koshish #104 qaida (12-mahine momentum, Kachhua 12 market, swap 0) - test se pehle
-   - Koshish #104 12-mahine momentum = TALAASH FAIL (204 tr +0.128R, Exp-2SE -0.288, drift 0.76
-   - 60vi: user sawal (Opus vs Fable, apni performance) - jawab + 2 tajweez (KAAM)
+2026-11-16  (13 kaam)
+   - K10 hissa 1: demo 474832446 History report vs test - lot, waqt, SL, kharcha sahi (docs/k10
+   - KAAM: user ka asal maqsad (K6) - apne tareeqe ka EA; ghalat click, rukh, thakan; darban ta
+   - JasMauqa m8.5 (nayi file) + JasLarai j2: popup mein Balance / Equity pehle -> baad + farq 

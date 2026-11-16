@@ -62,11 +62,13 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**60vi chat (16 Nov)** - demo 474832446 SS x2: e2 TRADE CHALU, trade 0 = sahi (GBPUSD SELL purana signal tha, weekend label galat dikha; qaida theek). t5 2 khuli (US500, USTEC).
-User: "nayi strategy jo 4 EA ko support kare" -> kitab research 3 agent (`docs/research/kitab-16nov.md`) + champion jaiza -> **#102 Double 7 non-US, #103 seasonality, #104 12-mahine momentum = teeno TALAASH FAIL** (IMTIHAN nahi khola). Kitabi list khatam.
-User: "aap ke test Opus 5.5 ki copy" -> Claude ki apni tajweez A (4 EA ke jor ka tajziya + usi kul risk mein behtar taqseem) + B (demo vs test milaan). **User: "A aur B haan", nayi chat mein.**
-**USER HIDAYAT (16 Nov):** purane EA / Pine mein KOI tabdeeli nahi (apni jagah rahein); naya kaam nayi files mein; nayi chat Fable 5.2 par, commit Fable 5.2 ke naam se (Co-Authored-By line). e3 label sudhar NAHI.
-**AGLA (61vi):** K9 = A pehle (CHUNAO 2012-18 par tajziya: har EA ka mahana %, mel, kaun rokta; `tools/ftmo101.py` ka dhaancha; IMTIHAN 2019+ sirf EK dafa pehle se likhe qaide par; kisi EA ka risk % barhe = user ki saaf ijazat), phir K10 = B (user se demo History report). Demo ka naya SS aaye (chandi / gold SELL) to lot + SL jaancho. ~20 Nov FTMO Black Friday check. K0 file (m8.4) baqi.
+**61vi chat (16 Nov)** - **K9 HUA:** jor #101 tajziya (`docs/k9-jor-tajziya.md`): hissa i6 45% / e2 28% / t5 23% / k2 4%, mel <= 0.22, rokta + raftar dono t5, din ki hadd ka khatra sirf t5 + i6 US index ek saath (4 Jan 2016 -4.37%). **#105 behtar taqseem = CHUNAO FAIL** (IMTIHAN nahi khola) -> abhi wali theek, demo par kuch na badlein.
+**K10 HUA:** demo 474832446 ki 8 / 8 trade Python signal se mili (`docs/k10-demo-milaan.md`, `tools/milaan_k10.py`). QDM ki screen Smart App Control ne roki -> `qdmcli.exe` seedha (symbol USA500IDXUSD / USATECHIDXUSD); chandi MT5 Export Bars se.
+**User ka ASAL maqsad (K6):** "jis tarha trade leta hoon uska EA" - profit lots + jori khud band, loss par DEEWAR (ulti lot; user ne khud maanga), dohri lot pakre. m8.4 `.mq5` + 4 log aaye (K0 HUA; `JasMauqa_m84.mq5`, `data/live_253687618/mauqa_20261116/`).
+**Nayi files (F7 BAQI, cloud mein compile nahi):** `JasLarai.mq5` **j2** (m8.4 + A / B jori KHUD + C KHUD jab NET na barhe + W) DEEWAR default OFF + X) DOHRI LOT popup; KHUD ki hadd InpAutoMax 1000) -> demo 472716649. `JasMauqa_m85.mq5` (m8.4 + popup mein Balance / Equity pehle -> baad) -> LIVE, user ne maanga.
+LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.02, tala-band ~-48,000, tk 167 / 200. Claude: jori (A / B) YES be-khatar (equity sirf spread jitni barhti), C (profit ticket) NA lein (deewar toot-ti).
+**AGLA (62vi):** K11 = user se F7 SS (m8.5 + JasLarai j2) -> error theek -> j2 demo par imtihan (deewar OFF, phir popup ke saath), m8.5 LIVE par m8.4 ki jagah (InpWReset false). ~20 Nov FTMO Black Friday check. Demo 474832446: e2 / k2 ki pehli trade aaye to milaan.
+**60vi chat** -> `docs/purana-haal.md` (grep "60vi").
 **59vi chat** -> `docs/purana-haal.md` (grep "59vi").
 **58vi / Fable K4 chat** -> `docs/purana-haal.md` (grep "Fable K4").
 **57vi chat** -> `docs/purana-haal.md` (grep "57vi").

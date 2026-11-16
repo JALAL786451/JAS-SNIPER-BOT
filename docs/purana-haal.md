@@ -2004,3 +2004,10 @@ sirf woh jin ka kul risk <= 8.80%. **CHUNAO 2012-2018** (84 challenge, har mahin
 **Koshish #105 CHUNAO 2012-2018 (16 Nov, 61vi) = FAIL (IMTIHAN nahi khola):** 83 ummeedwar, koi bhi abhi wali taqseem (0.75 / 1.0 / 0.15 / 0.25: 69 / 0 / 15, median 15.5, bura din -4.37%) se shart par behtar nahi.
 Qareeb tareen 0.625 / 1.25 / 0.15 / 0.25 = 69/0 med 15.2 magar bura din -4.54 -> rad. Tajziya (`docs/k9-jor-tajziya.md`): hissa i6 45% / e2 28% / t5 23% / k2 4%; mel sab <= 0.22; rokta t5 (manfi mahine -1.04 of -1.44), raftar bhi t5;
 bina i6 12 fail; din ki hadd ka khatra sirf t5 + i6 US index ek saath (4 Jan 2016 -4.37%). **Abhi wali taqseem theek, demo par kuch na badlein.**
+
+**TRADING sec 5 se hataya (61vi) - 60vi chat:**
+**60vi chat (16 Nov)** - demo 474832446 SS x2: e2 TRADE CHALU, trade 0 = sahi (GBPUSD SELL purana signal tha, weekend label galat dikha; qaida theek). t5 2 khuli (US500, USTEC).
+User: "nayi strategy jo 4 EA ko support kare" -> kitab research 3 agent (`docs/research/kitab-16nov.md`) + champion jaiza -> **#102 Double 7 non-US, #103 seasonality, #104 12-mahine momentum = teeno TALAASH FAIL** (IMTIHAN nahi khola). Kitabi list khatam.
+User: "aap ke test Opus 5.5 ki copy" -> Claude ki apni tajweez A (4 EA ke jor ka tajziya + usi kul risk mein behtar taqseem) + B (demo vs test milaan). **User: "A aur B haan", nayi chat mein.**
+**USER HIDAYAT (16 Nov):** purane EA / Pine mein KOI tabdeeli nahi (apni jagah rahein); naya kaam nayi files mein; nayi chat Fable 5.2 par, commit Fable 5.2 ke naam se (Co-Authored-By line). e3 label sudhar NAHI.
+**AGLA (61vi):** K9 = A pehle (CHUNAO 2012-18 par tajziya: har EA ka mahana %, mel, kaun rokta; `tools/ftmo101.py` ka dhaancha; IMTIHAN 2019+ sirf EK dafa pehle se likhe qaide par; kisi EA ka risk % barhe = user ki saaf ijazat), phir K10 = B (user se demo History report). Demo ka naya SS aaye (chandi / gold SELL) to lot + SL jaancho. ~20 Nov FTMO Black Friday check. K0 file (m8.4) baqi.
