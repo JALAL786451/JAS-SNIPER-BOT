@@ -157,6 +157,7 @@ MT5 ka **Close By** karta hai (spread nahi, beech ka khatra nahi).
 
 - **Live history (5 Nov):** 18-8..5-11 6246 tk -36%: BUY +135k, 0.01 SELL -3k, BARI SELL (0.25-4 lot) -152k upar jaate gold mein. Dhaal chhoti (0.01) = user ka apna qaida Q7.
 - Swap 0 (FTMO swap-free) par Kachhua 12 market ASLI PASS (#99 patla); akele Trend behtar (#100), magar #68 ke saath 0.25% jor fail 0 aur susat daur mein ~1 saal tez (#101). Kharcha/swap faisla badal deta hai - asli shart se naapo.
+- Kitabi idea 3/3 FAIL (#102 Double 7 non-US, #103 wahi-mahina seasonality, #104 12-mahine momentum; 16 Nov): non-US index dip-buy = aam tezi, 12 market ki seasonality = shor, mahana momentum = kam trade. Naye signal nahi - maujooda 4 EA ka JOR behtar karo. Salah se PEHLE grep (#45 bhool gaya tha).
 
 ## 5. Mere tools
 

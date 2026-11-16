@@ -6,7 +6,7 @@ MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user 
 |---|---|---|---|---|---|---|
 | 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | **balance 99,380.91, equity 99,463.63 (+82.72 khuli)** (shuru 100k se -619.09) | JasIbsEA i6 (US500m+USTECm D1), JasTrendEA t5 (XAU/XAG/US500/USTEC H4), JasKhirkiEA k2 (DE30m D1), **JasTideRadarEA e2 (BTCUSDm H4, 15 Nov TRADE CHALU)** | ON; khuli 2 (t5): US500 BUY 2.13 @7562.35 SL 7210.48 (+71.48, +0.10R) + USTEC BUY 0.36 @28170.41 SL 26138.98 (+11.24, +0.02R); e2 trade 0 (Juma ki candle par koi naya signal nahi; gold SELL 3852.301 / chandi SELL 48.465 se neeche D1 close par); band: i6 3 (+565.66, USTEC SL -996.43, +584.73 = +153.96), t5 3 (XAU +47.83, XAG -168.20, US500 -662.41 = -782.78), DIV +7.16; target baqi 10,536, aaj (16 Nov CET) farsh 95,381; k2 0; ML 37,808% | 16 Nov SS ~4-5 AM PKT (60vi, FTMO VIEW + e2 panel) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0; XAG SELL 0.05 (2 Nov, SL khali = hamara EA nahi) user ne 3 Nov band +153.25; Magic/Comment SS baqi (purana: `docs/purana-haal.md`) | ON | 4 Nov SS |
-| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **9 Nov SS (52vi): equity 38,995.64; balance ~50,975 (equity + khula nuqsan)**; GOLD P/L -8540.80: BUY 35 tk 3.75 lot avg 4091.183 / SELL 17 tk 3.74 avg 4068.458, NET +0.01 (nuqsan TALA-BAND, price se nahi badalta), gold 4139; BARI LOT 6 tk (max 3.31); popup B pair +210.61, C +349. BTC P/L -3438.86: BUY 75 tk 2.81 avg 75660.29 / SELL 7 tk 2.50 avg 74401.88, NET BUY +0.31, BTC 74767, breakeven 85860 | JasMauqa **m8.3** (55vi 10 Nov raat: F7 ✅ dono chart, Algo OFF raat, gold 4032 equity 38,821 NET +0.21 WASOOLI 1760.23; m8.2 16:43 server SS: balance 64,342.79, equity ~38,560, gold NET +0.20, WASOOLI 1237.35, ML 90,263%, InpA true dono, BTC InpStep 1000; pehle m8.1 15:21: equity 39,194, balance 64,394, gold BUY 3.98 avg 4121.3 / SELL 3.79 avg 4067.8 NET +0.19, BTC NET +0.04, tk 133, WASOOLI 871.90, gold InpA=false); purana: m7.8 (F7 0 error, 9 Nov; m7.9 AUTO-B F7 ✅ 10 Nov dono chart par, AUTO OFF); 10 Nov SS: equity 39,012.07, gold P/L -10,060 NET +0.02, BTC -3,442 NET +0.01, tk 119; XAUUSDc H4 + BTCUSDc H4; BTC SS #2: equity 39,049.70, BTC P/L -3441.69, BUY 65 tk 3.13 / SELL 12 tk 3.12 = NET +0.01 (ab BTC bhi TALA-BAND), bari lot 5 tk max 2.40, gold NET -0.01, margin level 655196%; RUKH: gold 4H UP, BTC 4H DOWN, dono 'nayi BUY nahi - intezar'; tickets 134/200; margin level 282987% | **ON** (YES/NO popup) | 9 Nov SS (52vi) |
+| 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **12 Nov SS (56vi): equity 37,804.88; gold BUY 6.99 / SELL 6.99 = NET 0 (tala-band), P/L -34,063, tk 152, WASOOLI 9237.32** (pehle 9 Nov: equity 38,995.64; purani tafseel `docs/purana-haal.md` grep "TRADING sec 0 se hataya (60vi") | JasMauqa **m8.4** user ke paas (repo mein m8.3; file K0 baqi), XAUUSDc + BTCUSDc | **ON** (YES/NO popup) | 12 Nov SS (56vi) |
 
 **Nayi chat ka message (copy-paste):**
 sirf `TRADING` (ye branch 14 Oct se GitHub default - nayi chat seedha yahin khulti hai).
@@ -62,23 +62,18 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**59vi chat (15 Nov)** - user: "FTMO 11 mahine bohat, trades kam, guzara; risk barhaye bina behtar?" -> jawab: muft raftar nahi; Kachhua jorna (#101) + naye tested idea + pass ke baad $ barhana.
-**JasTideRadarEA e2** bana (12 market, 0.25% of 100k, FTMO pehra, magic 20261115, USD hadd 3 rakhi), F7 ✅, demo 474832446 BTCUSDm H4 par **TRADE CHALU** (SS). GBPUSD nayi SELL "market khulte hi" (~0.14 lot, SL 1.33849).
-**AGLA (60vi):** market Somwar 16 Nov 4 AM PKT khuli - user se Trade tab SS / report: GBPUSD SELL (aur gold/chandi SELL) sahi lot + SL + comment ke saath khuli? Phir: USD hadd 3 ya 0 (user faisla), research list B1-B7 (pre-FOMC pehla) test ki ijazat, ~20 Nov FTMO Black Friday check. K0 file (m8.4) baqi.
-**Fable K4 chat (15 Nov, session_013jF6yZ...)** - K4 FAIL (`docs/k4-tokri-turtle.md`). User: **gold par tokri BAND**, K5 nahi. FTMO sawal -> jawab #53 (demo par chalu); user: demo chalne dein.
-**AGLA (nayi chat):** FTMO mansooba #53 par baat (user ka mauzu); demo 474832446 ka naya SS aaye to hisaab; K0 file (m8.4) abhi baqi.
+**60vi chat (16 Nov)** - demo 474832446 SS x2: e2 TRADE CHALU, trade 0 = sahi (GBPUSD SELL purana signal tha, weekend label galat dikha; qaida theek). t5 2 khuli (US500, USTEC).
+User: "nayi strategy jo 4 EA ko support kare" -> kitab research 3 agent (`docs/research/kitab-16nov.md`) + champion jaiza -> **#102 Double 7 non-US, #103 seasonality, #104 12-mahine momentum = teeno TALAASH FAIL** (IMTIHAN nahi khola). Kitabi list khatam.
+User: "aap ke test Opus 5.5 ki copy" -> Claude ki apni tajweez A (4 EA ke jor ka tajziya + usi kul risk mein behtar taqseem) + B (demo vs test milaan). **User: "A aur B haan", nayi chat mein.**
+**USER HIDAYAT (16 Nov):** purane EA / Pine mein KOI tabdeeli nahi (apni jagah rahein); naya kaam nayi files mein; nayi chat Fable 5.2 par, commit Fable 5.2 ke naam se (Co-Authored-By line). e3 label sudhar NAHI.
+**AGLA (61vi):** K9 = A pehle (CHUNAO 2012-18 par tajziya: har EA ka mahana %, mel, kaun rokta; `tools/ftmo101.py` ka dhaancha; IMTIHAN 2019+ sirf EK dafa pehle se likhe qaide par; kisi EA ka risk % barhe = user ki saaf ijazat), phir K10 = B (user se demo History report). Demo ka naya SS aaye (chandi / gold SELL) to lot + SL jaancho. ~20 Nov FTMO Black Friday check. K0 file (m8.4) baqi.
+**59vi chat** -> `docs/purana-haal.md` (grep "59vi").
+**58vi / Fable K4 chat** -> `docs/purana-haal.md` (grep "Fable K4").
 **57vi chat** -> `docs/purana-haal.md` (grep "57vi").
 **56vi chat** -> `docs/purana-haal.md` (grep "56vi").
 **55vi chat** -> `docs/purana-haal.md` (grep "55vi").
 **54vi chat** -> `docs/purana-haal.md` (grep "54vi").
 **53vi chat** -> `docs/purana-haal.md` (grep "53vi").
-**52vi chat** -> `docs/purana-haal.md` (grep "52vi").
-**51vi chat** -> `docs/purana-haal.md` (grep "51vi").
-**50vi chat** -> `docs/purana-haal.md` (grep "50vi").
-**49vi chat** -> `docs/purana-haal.md` (grep "49vi").
-**48vi chat** -> `docs/purana-haal.md` (grep "48vi").
-**47vi chat** -> `docs/purana-haal.md` (grep "47vi").
-**46vi chat** -> `docs/purana-haal.md` (grep "46vi").
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
@@ -98,7 +93,7 @@ US500m + USTECm, $10 risk x martingale 1.5x 3 qadam, $800 stop (hamesha, GV `JAS
 
 ## 8. Koshish ginti (poori line `docs/purana-haal.md`, grep "Koshish ginti 2 Nov")
 
-104 koshish (**#104 12-mahine momentum mahana (Kachhua 12 market) = TALAASH FAIL** (204 tr +0.128R, Exp-2SE -0.288, drift 0.76x; `tools/mom104.py`, 16 Nov); **#103 wahi-mahina seasonality long/short 12 market = TALAASH FAIL** (396 tr -0.024R, bina kharcha -0.015R, saal 2/6; `tools/season103.py`, 16 Nov); **#102 Double 7 non-US index tokri (7 index, swap 0) = TALAASH FAIL** (336 tr +0.052R, Exp-2SE cluster -0.043, drift 1.24x; `tools/double7_102.py`, 16 Nov); **#101 FTMO #68 + Kachhua 12 @0.25% swap 0 = PASS** (2019+ 85/0 med 10.2 vs #68 83/0 med 10.6; 2012-18 med 27.6 -> 15.5); **#100 FTMO Trend vs Tide swap 0 = TREND JEETA** (2019+ 81/0 med 17.4 vs Tide 0.5% 67/0 med 22.1); **#99 Kachhua 12 market SWAP 0 = ASLI PASS patla** (TALAASH Exp-2SE +0.024, IMTIHAN +0.010, forex 2019+ minus; `tools/ftmo99.py`); #88-95 recovery 0/9; **#96 commodity jor FAIL, #97 Gao pilot FAIL, #85 C2 TV FAIL 0/9, #98 Kachhua BUY x 9 index FAIL (drift)**, `docs/purana-haal.md`). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
+104 koshish (**#104 12-mahine momentum mahana (Kachhua 12 market) = TALAASH FAIL** (204 tr +0.128R, Exp-2SE -0.288, drift 0.76x; `tools/mom104.py`, 16 Nov); **#103 wahi-mahina seasonality long/short 12 market = TALAASH FAIL** (396 tr -0.024R, bina kharcha -0.015R, saal 2/6; `tools/season103.py`, 16 Nov); **#102 Double 7 non-US index tokri (7 index, swap 0) = TALAASH FAIL** (336 tr +0.052R, Exp-2SE cluster -0.043, drift 1.24x; `tools/double7_102.py`, 16 Nov); **#101 FTMO #68 + Kachhua 12 @0.25% swap 0 = PASS** (2019+ 85/0 med 10.2 vs #68 83/0 med 10.6; 2012-18 med 27.6 -> 15.5); #100 Trend vs Tide = trend jeeta, **#99 Kachhua 12 swap 0 = ASLI PASS patla**, #88-98 FAIL (tafseel `docs/purana-haal.md`)). ASLI PASS: 6 Kachhua commodity, 15 IBS S&P, 26 Supertrend tokri, 27/34 JasTrend 4H, 45 Double 7s (kamzor), 49/53/68 FTMO mansooba (83/0),
 52 USTEC IBS, 59 chutti (bank), 67 khirki, 76 BTC (bank), **81 IBS + martingale cent**. Baqi FAIL. Faida daily + 4H TOKRI par; 1m-15m par spread edge kha jata.
 
 ## 9. Chat ke aakhir mein (ye file zinda rahe)

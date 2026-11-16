@@ -276,3 +276,6 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - FTMO tez kaise, risk barhaye bina? (15 Nov) -> muft raftar nahi: naya tested EA ~0.5-1 mahina, risk 1.5x = #77 18 fail; hal = Kachhua e2 jorna (#101 median 10.6->10.2) + naye idea test + pass ke baad bara/zyada account ($ barhta, % wahi).
 - Kachhua FTMO par test hua? (15 Nov) -> haan: #100 akela @0.5% 67/0 median 22.1 (trend 17.4 se sust), #101 #68 ke saath @0.25% 85/0 median 10.2. EA = JasTideRadarEA e2 (magic 20261115), demo 474832446 par 15 Nov se.
 - k2 (Khirki) ki 0 trade? (15 Nov) -> galti nahi; sirf US chutti ki khirki mein, pehli ~24 Nov.
+- GBPUSD SELL "market khulte hi" kyun nahi khuli? (16 Nov) -> signal Jumerat ki candle ka tha; weekend par Juma ki candle chalti gini gayi to "nayi" dikha, market khuli to 1 din purana = EA nahi leta (qaida: sirf aakhri band candle). Sirf label ki galti.
+- Opus Fable 5.2 se advance hai? Claude ki apni performance? (16 Nov) -> nahi, Fable darja upar; magar model se market ka edge nahi banta (behtar model = kam galti, sakht jaanch). Test ka qaida jaan boojh kar wahi. Apni tajweez: A jor ka tajziya, B demo vs test milaan - user "haan".
+- Purane EA badlein? (16 Nov) -> NAHI (user): purane EA apni jagah, naya kaam nayi files mein, commit Fable 5.2 ke naam se.

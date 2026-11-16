@@ -21,3 +21,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 15 Nov (58vi) | Fable K4 session ko phone/PC par khud live dekh sakte: claude.ai/code/session_013jF6yZMBMXKybDkBuqxcdm (kaam ki har line). FTMO BF 2026: 15 Nov ftmo.com par offer NAHI | - |
 | 15 Nov (59vi) | MT5 investor (read-only) password: Tools > Options > Server > Change > 'investor password' - is se demo sirf DEKHA ja sakta (trade nahi); phone MT5 par isi se FTMO demo 474832446 ki nigrani, EA wale PC ko chherna nahi parta | - |
 | 16 Nov (60vi) | MT5 Trade tab par right-click > Columns > 'Comment' ON = har khuli trade ke saath EA ka naam (t5 / i6 / e2) SS mein nazar aata; Magic ke liye ticket par mouse rakho (tooltip) | - |
+| 16 Nov (60vi) | FTMO Black Friday 2026: 16 Nov tak koi pakka elaan NAHI (web search; pichhle saal BF 2025 = 20% aur New Year sale 20% 3 Jan 2026 tak - 3rd-party sites, ftmo.com par tasdeeq zaroori). ~20-27 Nov dobara dekho | - |

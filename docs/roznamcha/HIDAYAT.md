@@ -8,6 +8,7 @@ Nayi hidayat mile to yahan EK line jodo (lafz | hidayat | tareekh). Purani hiday
 
 | Lafz | Hidayat | Kab |
 |---|---|---|
+| purane EA / Fable | Purane EA aur Pine (t5, i6, k2, e2, JasMauqa, sab .mq5 / .pine) mein KOI tabdeeli nahi - repo mein apni jagah rahein. Naya kaam NAYI files mein; chat Fable 5.2 par, commit Fable 5.2 ke naam se (Co-Authored-By line). | 16 Nov |
 | zabaan | Roman Urdu, chhota aur saaf, hamesha "aap" (tu/tera kabhi nahi). Misaal + table, lambi tehreer nahi. | pehle |
 | SBS / D | Ek waqt ek qadam; user har qadam ke baad "D" likhta hai. Pehle poochho (naqsha), phir file. | pehle |
 | faisle | A/B/C mat poochho - Claude khud mashwara le, bataye kya aur kyun, sirf AGLA EK QADAM. Sawal sirf paisa / account / na-palatne wali cheez par. | 8 Oct |
