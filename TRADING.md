@@ -64,6 +64,7 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 **62vi chat (16 Nov)** - **Rehnuma r2** (user: design professional + SELL idea + chhoti TF BUY idea): NAYI file `indicators/jas_gold_rehnuma_r2.pine` (r1 nahi chhera; pinecheck saaf, **TV compile SS baqi**). Naap `tools/rehnuma_r2_test.py` (gold H1 2003-26): 1H BUY jab 4H upar (SL 3 ATR) 2003-18 +0.199R / 2019-26 +0.329R = idea (demo pehle, risk alag 0.25%); 4H SELL -15.6R, 1H SELL -32.7R = FAIL, sirf ittila.
 **Token bachat (user "haan"):** hook chhota (13.8 -> 7.3 KB, resume par nahi), KAAM 9 -> 3 KB (purana `docs/purana-haal.md`), KAHANI / poori TRADING shuru mein NAHI, chat khatam halki, nayi chat KHUD nahi khulti. Branches: 32 hain, sab 1 July ke baad ki; mitane se token nahi bachte - user ne nahi mitwayin.
+**Test (17 Nov raat, user "haan"):** #3 DEEWAR asli LIVE trades par FAIL (-12.8k USC bura, girawat 27k -> 47k, 426 ticket) -> InpWall OFF; #2 Rehnuma r2 jor 2019-26 +35.2% girawat 7.6% (saaf, dheema).
 **AGLA (63vi):** K11 = user ka F7 SS (`JasMauqa_m85.mq5` + `JasLarai.mq5` j2) -> error theek -> j2 demo 472716649 (deewar OFF, phir popup), m8.5 LIVE par m8.4 ki jagah (InpWReset false). R2 = TV compile SS. ~20 Nov FTMO Black Friday check.
 **61vi chat** -> `docs/purana-haal.md` (grep "61vi").
 **60vi chat** -> `docs/purana-haal.md` (grep "60vi").

@@ -22,6 +22,9 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 
 - **User ki hasrat (16 Nov raat, 62vi):** "3 mahine se 3 EA meri hasrat ke hisab se nahi bane - tasalli hai, magar expectation tak nahi pohncha". Chahiye: (1) FTMO ke mahine kam karne wala extraordinary EA, (2) BUY / SELL ka pro level Pine idea, (3) mere tareeqe wala TESTED fighting EA (fishing lots, bohot si BUY / SELL mein perfect fighter). SS 11:30 PM (usage reset) ke baad.
 
+- **TEST #3 HUA (17 Nov, 62vi): DEEWAR FAIL** aap ki asli LIVE gold trades (18 Aug - 5 Nov) par (`tools/larai_deewar_test.py`): asal -19,884 USC, deewar ke saath -32,720 (12,836 bura); sab se bari girawat 27,142 -> 47,265; 158 deewar, ek waqt 426 ticket (hadd 200). Gold ki $15 ulti-seedhi chaal mein deewar har dafa nuqsan pakka karti. => `InpWall` OFF hi rahe; JasLarai sirf jori / C / dohri lot (equity par asar nahi) ke liye.
+- **TEST #2 HUA (17 Nov): Rehnuma r2** 4H 0.75% + 1H idea 0.25% (`tools/rehnuma_r2_jor.py`): 2003-18 kul +41.3% girawat 9.5%; 2019-26 +35.2% girawat 7.6%, bura mahina -2.1%; 1H idea SL 2 / 3 / 4 ATR teeno plus (mazboot). Dono akele bhi barabar (~+17-20%). Saal ~+4-5% (gold sirf) = pass jaldi nahi karata, magar saaf.
+
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
