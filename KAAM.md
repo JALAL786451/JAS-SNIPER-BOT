@@ -34,6 +34,8 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 
 - **Rehnuma r2 (16 Nov, 62vi, user: "design professional + SELL idea + chhoti TF BUY idea"):** NAYI file `indicators/jas_gold_rehnuma_r2.pine` (r1 nahi chhera). Asal qaida wahi (4H, sirf BUY) + rukh patti / badal / risk dabba + CHHOTA BUY idea (1H palta + 4H upar, SL 3 ATR; Python 2003-18 +0.199R, 2019-26 +0.329R) + SELL sirf ITTILA (naap FAIL: 4H SELL 2019-26 -15.6R, 1H SELL -32.7R). `tools/rehnuma_r2_test.py`. **TV compile SS baqi.**
 
+- **Token shikayat (user 16 Nov, 62vi):** "chat push + nayi chat khulne par token bohot jaldi khatam". Naap: shuru mein hook 13.8 KB + KAHANI 31.5 KB + KAAM 9 KB + TRADING 11 KB (~60 KB). Claude ki tajweez (user ki haan baqi): KAHANI har chat NAHI (sirf grep), KAAM ~3 KB, nayi chat KHUD na khule, rozmarra kaam sasta model.
+
 ## Khule kaam (tarteeb = user ki marzi; upar wala pehle)
 | # | Kaam | Kyun (user) | Haal |
 |---|---|---|---|
