@@ -24,7 +24,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 
 - **64vi sabaq (17 Nov):** SELL 11 market FAIL; YouTube / ICT / 15m idea sab FAIL (`docs/research/`); Kachhua 12 market + 0.25% = sab se behtar (FTMO sim 0 fail); risk ki aakhri had 0.45 (us se upar faida nahi). Naya video = Gemini khulasa paste -> save + test. Weekly limit 50%+ = agent nahi.
 
-- **LIVE report 18 Nov 03:09 (67vi):** gold SELL 3.70 @4057.762 (+76,999) ke NEECHE BUY 37 tk = **3.15 lot** (avg 4047.217, -62,307); upar BUY 22 tk = 3.22 lot (-86,975). Kul gold BUY 6.37 / SELL 6.26; equity 75,783 USC.
+- **LIVE report 18 Nov 03:09 (67vi):** gold SELL 3.70 @4057.762 (+76,999) ke NEECHE BUY 37 tk = **3.15 lot** (avg 4047.217, -62,307); upar BUY 22 tk = 3.22 lot (-86,975). Kul gold BUY 6.37 / SELL 6.26; equity 75,783 USC. User plan: SELL 3.70 se 3.15 neeche wali BUY Close By, phir neeche EK bari BUY (size baqi; Claude ne khatra hisab diya).
 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
