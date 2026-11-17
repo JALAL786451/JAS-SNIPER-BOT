@@ -62,19 +62,9 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**62vi chat (16 Nov)** - **Rehnuma r2** (user: design professional + SELL idea + chhoti TF BUY idea): NAYI file `indicators/jas_gold_rehnuma_r2.pine` (r1 nahi chhera; pinecheck saaf, **TV compile SS baqi**). Naap `tools/rehnuma_r2_test.py` (gold H1 2003-26): 1H BUY jab 4H upar (SL 3 ATR) 2003-18 +0.199R / 2019-26 +0.329R = idea (demo pehle, risk alag 0.25%); 4H SELL -15.6R, 1H SELL -32.7R = FAIL, sirf ittila.
-**Token bachat (user "haan"):** hook chhota (13.8 -> 7.3 KB, resume par nahi), KAAM 9 -> 3 KB (purana `docs/purana-haal.md`), KAHANI / poori TRADING shuru mein NAHI, chat khatam halki, nayi chat KHUD nahi khulti. Branches: 32 hain, sab 1 July ke baad ki; mitane se token nahi bachte - user ne nahi mitwayin.
-**Test (17 Nov raat, user "haan"):** #3 DEEWAR asli LIVE trades par FAIL (-12.8k USC bura, girawat 27k -> 47k, 426 ticket) -> InpWall OFF; #2 Rehnuma r2 jor 2019-26 +35.2% girawat 7.6% (saaf, dheema).
-**AGLA (63vi):** K11 = user ka F7 SS (`JasMauqa_m85.mq5` + `JasLarai.mq5` j2) -> error theek -> j2 demo 472716649 (deewar OFF, phir popup), m8.5 LIVE par m8.4 ki jagah (InpWReset false). R2 = TV compile SS. ~20 Nov FTMO Black Friday check.
-**61vi chat** -> `docs/purana-haal.md` (grep "61vi").
-**60vi chat** -> `docs/purana-haal.md` (grep "60vi").
-**59vi chat** -> `docs/purana-haal.md` (grep "59vi").
-**58vi / Fable K4 chat** -> `docs/purana-haal.md` (grep "Fable K4").
-**57vi chat** -> `docs/purana-haal.md` (grep "57vi").
-**56vi chat** -> `docs/purana-haal.md` (grep "56vi").
-**55vi chat** -> `docs/purana-haal.md` (grep "55vi").
-**54vi chat** -> `docs/purana-haal.md` (grep "54vi").
-**53vi chat** -> `docs/purana-haal.md` (grep "53vi").
+**63vi chat (17 Nov)** - T1: t5 (JasTrendEA) Forward 1/3 gold H4 2019-26: 7/7 mult plus dono hisson mein (3.0 curve-fit NAHI), magar 2019-24 sirf +1.8%, forward +12% (gold ki chaal). R2 TV par chal raha (error nahi). **PC Claude jur gaya:** PowerShell `cd D:\JAS` -> `claude.cmd` (Pro login, Sonnet, manual); TV Bridge se Pine kaam NAHI (token).
+**Ghalti theek:** is chat ke commits naye branch par gaye thay, default (`claude/jas-desk-v3-0110-yu3w2h`) par NAHI -> nayi chat ko samajh nahi aayi; aakhir mein default par fast-forward kiya.
+**AGLA (64vi):** K11 = 472716649 kisi MT5 par login NAHI (c1 bhi band) -> 3rd MT5 `C:\MT5_DEMO2` install + 472716649 login SS -> j2 (InpWall false). Phir T1 US500m H4 forward. ~20 Nov FTMO Black Friday.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
