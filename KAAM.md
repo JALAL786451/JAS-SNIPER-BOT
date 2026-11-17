@@ -29,6 +29,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | # | Kaam | Haal |
 |---|---|---|
 | **K20/K21** | HUA: t5 US = market tezi (edge 0) magar nikaalne se FTMO fail aate (V1/V2/V3 sab FAIL) -> jor #101 waise hi. **Nazar: US500 D1 < SMA200 ho to KHUD batao** (17 Nov SS: SPX 7329.6 < SMA200 7353.95, candle band nahi hui; faisla sirf 3 D1 close neeche par) | `docs/khud-nazar.md` sec 5-6 |
+| **K22** | Fable 5.2 se AZAD jaanch (4 EA + instruments + qaide) - brief `docs/fable-jaanch.md`; Fable 11 Dec tak | user: nayi chat, model Fable, "docs/fable-jaanch.md wala kaam karo" |
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
