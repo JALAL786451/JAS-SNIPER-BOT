@@ -34,5 +34,6 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | K7 | Kachhua e2 demo 474832446 | **PEHLI TRADE MILI 17 Nov:** XAG SELL 0.01 @47.148 SL 51.560 = Python (16 Nov close 47.175 < 10 din ka low 48.465 [13 Nov], Itwar Monday mein; SL C+2 ATR 51.485, farq 0.075 = chhote data ka ATR seed; lot 0.01 = $221 <= $250). Data `data/demo_474832446/XAGUSDm_D1_*.csv`. k2 ki pehli trade ka intezar |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`) | user SBS kar raha |
 | K5 | Tokri EA tk2 demo par | ruka (user: tokri band) |
+| T1 | Forward optimization (17 Nov, user ne Tester khola): JasTrendEA gold H4, InpEntryLen 10-40, Forward 1/3 - sirf jaanch, EA nahi badalna | user ka SS (Optimization + Forward Results) baqi |
 | K8 | TV Store update ho to robocopy dobara | jab update aaye |
 | FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
