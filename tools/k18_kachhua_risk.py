@@ -2,7 +2,7 @@
 """K18 (64vi, 17 Nov 2026) - user "haan 0.35": Kachhua 12 market risk 0.25% vs 0.35% (#68 wahi), FTMO #101 simulator.
 QAIDA (pehle likha): 0.35 behtar SIRF agar dono daur (2012-18, 2019-26) mein fail 0 rahe AUR pass median mahine kam hon.
 Sirf TEST - EA (e2 InpRiskPct 0.25) mein koi tabdeeli nahi; badalna user ki alag ijazat se.
-  python3 tools/k18_kachhua_risk.py
+  python3 tools/k18_kachhua_risk.py [0.25 0.45 ...]   # risk list (khaali = 0.25 0.35)
 """
 import sys
 from pathlib import Path
@@ -42,7 +42,7 @@ def main():
     for lab, starts, end in (('2012-18', pd.date_range('2012-01-01', '2018-12-01', freq='MS', tz='UTC'),
                               pd.Timestamp('2019-01-01', tz='UTC').value),
                              ('2019-26', pd.date_range('2019-01-01', '2026-10-01', freq='MS', tz='UTC'), grid[-1] + 1)):
-        for rk in (0.25, 0.35):
+        for rk in [float(x) for x in sys.argv[1:]] or (0.25, 0.35):
             sy = [(0.75, trend, {}), (1.0, ibs, {}), (0.15, kh, {}), (rk, td, tmap)]
             res = [run_cost(mk, sy, s0.value, end, grid, cetday, cost) for s0 in starts]
             ps, f1, f2, ad, med = summary(res)
