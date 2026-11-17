@@ -29,6 +29,26 @@ intezar. Mera itna nuqsan trading par nahi hoga jitna testing par." -> Qaida `CL
    **buy-and-hold se muqabla**; (c) jor mein **ek waqt ek taraf ek group** ka kul risk + bura din (2019+ par bhi, sirf CHUNAO nahi).
 8. IMTIHAN data kitni dafa dekha - ginti likho; 3+ dafa = woh IMTIHAN nahi. Aakhri asli imtihan ab **demo (forward)** hai.
 
-## 4. Agla (user ki haan par, K20)
+## 4. K20 (user: "khud karein") - HUA, neeche sec 5
 Chaar EA (t5, i6, k2, e2) par J1-J4 dobara: cluster SE, buy-and-hold muqabla, US index group ka kul risk. Purane EA mein tabdeeli NAHI -
 sirf naap; tabdeeli chahiye ho to naya version (ijazat ke baad).
+
+Durusti: user ka "16" = **i6** tha (t5 aur i6 ke instrument same), 16 Nov nahi.
+
+## 5. K20 NATEEJA (17 Nov, `python3 tools/k20_jhol.py`, 9 sec; CHUNAO jor105 se bilkul mila = hisaab sahi)
+ExpR = R per trade (kharcha samet). "Exp-drift" = market ki aam chaal (buy-and-hold) nikaal kar asli edge.
+
+| EA | Mizaj | IMTIHAN 2019-26 ExpR | cluster Exp-2SE | **Exp-drift** (CHUNAO / IMTIHAN) | Matlab |
+|---|---|---|---|---|---|
+| t5 | **sirf BUY** (code mein SELL hai hi nahi) | +0.137 | +0.067 | **-0.005 / +0.027** | munafa taqreeban sara market ki tezi ka |
+| t5 US hissa | US500+USTEC | +0.090 | +0.009 | **-0.029 / -0.024** | US par t5 ka apna edge = 0 (dono daur manfi) |
+| t5 MET hissa | XAU+XAG | +0.193 | +0.075 | +0.016 / +0.088 | CHUNAO mein ExpR -0.016 tha; daur badalta hai |
+| i6 | sirf BUY | +0.075 | +0.034 | **+0.039 / +0.038** | chhota magar dono daur SAME = asli edge |
+| k2 | sirf BUY | +0.077 | +0.053 | **+0.022 / +0.057** | sab se saaf edge (risk 0.15 chhota) |
+| e2 | BUY+SELL | +0.086 | -0.010 | +0.040 / +0.015 | patla; US hissa drift ka, MET behtar |
+
+- **J1 (cluster):** asar chhota (t5 +0.074 -> +0.067, i6 +0.041 -> +0.034). Bara jhol nahi.
+- **J2 (buy-and-hold): SAB SE BARA JHOL.** t5 ka PASS asal mein "4H upar ho to US index / gold khareedo" = market ki tezi. Market 2019-26 jaisa upar na jaye to t5 ka faida khatam; US par t5 i6 ka hi daao dohrata hai bina apne edge ke.
+- **J4 (US group):** jab US par trade khuli ho to 80% waqt 2+ (sab BUY), max SL-risk ek saath **3.50%** (t5 0.75 x2 + i6 1 x2). Bura din: 2012-18 sirf 1 (-4.37%, 4 Jan 2016), 2019-26 sab se bura -2.56% (3 Feb 2025). FTMO 5% kabhi nahi chhua.
+- **J3:** IMTIHAN 2019+ 5+ dafa dekha = ab sirf demo forward asli imtihan.
+- **Faisla user ka (purane EA mein tabdeeli NAHI, ijazat):** (a) kuch na badlo, demo chalne do; (b) naya jor test: t5 sirf XAU/XAG ya t5 US par aadha risk - sakht shart ke saath (nateeja dekh kar chunna = sakht imtihan zaroori).
