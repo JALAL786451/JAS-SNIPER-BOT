@@ -2,7 +2,8 @@
 """64vi (17 Nov 2026) - K13 TEST (a): SELL sirf girawat ke daur mein.
 4H Supertrend(10,3) neeche palte = SELL, SIRF jab pichla D1 close < D1 SMA200 (gate). SL 6 ATR (t5 jaisa), exit = ST wapas upar.
 BUY side (t5) muqable ke liye: bina gate aur D1 > SMA200 gate. Kharcha 0.03% har taraf; SELL swap 0 (swap-free).
-  python3 tools/k13_sell_regime_test.py
+  python3 tools/k13_sell_regime_test.py            # (a) gold / US500 / USTEC / XAG
+  python3 tools/k13_sell_regime_test.py EURUSD LIGHTCMDUSD   # (b) data/duka (kharcha 0.03% = forex par sakht)
 """
 import sys
 from pathlib import Path
@@ -15,8 +16,24 @@ from ftmo_test import load, session_day  # noqa: E402
 import rehnuma_r2_test as r2  # noqa: E402
 
 
+DUKA = Path(__file__).resolve().parent.parent / 'data' / 'duka' / 'H1' / 'JAS_ZIP'
+
+
+def load_any(sym):
+    """(a) ftmo zip; (b) data/duka/H1/JAS_ZIP/<sym>_H1.zip (QDM ki zaroorat nahi)."""
+    zp = DUKA / f'{sym}_H1.zip'
+    if not zp.exists():
+        return load(sym)
+    import zipfile, io
+    with zipfile.ZipFile(zp) as z:
+        df = pd.read_csv(io.BytesIO(z.read(z.namelist()[0])), dtype={'Date': str, 'Time': str})
+    df['t'] = pd.to_datetime(df['Date'] + df['Time'], format='%Y%m%d%H:%M:%S', utc=True)
+    df = df[df['High'] > df['Low']]  # band bazar ki flat candles hatao
+    return df[['t', 'Open', 'High', 'Low', 'Close']].sort_values('t').drop_duplicates('t').reset_index(drop=True)
+
+
 def h4_and_gate(sym):
-    h1 = load(sym)
+    h1 = load_any(sym)
     day = session_day(h1['t'])
     blk = ((h1['t'].dt.tz_convert('America/New_York') + pd.Timedelta(hours=7)).dt.hour // 4).values
     key = pd.Series(list(zip(day.values, blk)))
@@ -44,7 +61,7 @@ def line(t, lo, hi):
 
 
 def main():
-    for sym in ('XAUUSD', 'US500', 'USTEC', 'XAGUSD'):
+    for sym in sys.argv[1:] or ('XAUUSD', 'US500', 'USTEC', 'XAGUSD'):
         h4, g_dn, g_up = h4_and_gate(sym)
         y0 = str(h4['t'].dt.year.iloc[0])
         print(f'\n== {sym} 4H ({y0}-2026) | pehla hissa <2019 | doosra 2019-26 ==')
