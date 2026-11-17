@@ -2085,3 +2085,4 @@ Kaam ho jaye -> "HUA" + tareekh, agli chat mein neeche "Hue" mein. Chhota rakho 
 LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.02, tala-band ~-48,000, tk 167 / 200. Claude: jori (A / B) YES be-khatar (equity sirf spread jitni barhti), C (profit ticket) NA lein (deewar toot-ti).
 **AGLA (62vi):** K11 = user se F7 SS (m8.5 + JasLarai j2) -> error theek -> j2 demo par imtihan (deewar OFF, phir popup ke saath), m8.5 LIVE par m8.4 ki jagah (InpWReset false). ~20 Nov FTMO Black Friday check. Demo 474832446: e2 / k2 ki pehli trade aaye to milaan.
 
+- 17 Nov (63vi): K1 HUA - D:\JAS clone (PC Claude se); K12 PC Claude repo ke saath chala - KAAM se hataya
