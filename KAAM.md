@@ -31,7 +31,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | j2 demo par lagane ka SS baqi; LIVE +$400 deposit (17 Nov). User naya demo chahta - salah: 472716649 hi kaafi (gold chart alag) |
 | **R2** | `indicators/jas_gold_rehnuma_r2.pine` (r1 + design + chhota BUY idea 1H + SELL ittila; naap `tools/rehnuma_r2_test.py`) | **user ka TV compile SS baqi** (gold 15m / 1H chart) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
-| K7 | Kachhua e2 demo 474832446 | **PEHLI TRADE AAYI 17 Nov:** XAG SELL 0.01 @47.148 SL 51.560 (lot hisaab sahi). Python milaan baqi (chandi D1 16 Nov tak data chahiye - MT5 Export Bars). k2 ki pehli trade ka intezar |
+| K7 | Kachhua e2 demo 474832446 | **PEHLI TRADE MILI 17 Nov:** XAG SELL 0.01 @47.148 SL 51.560 = Python (16 Nov close 47.175 < 10 din ka low 48.465 [13 Nov], Itwar Monday mein; SL C+2 ATR 51.485, farq 0.075 = chhote data ka ATR seed; lot 0.01 = $221 <= $250). Data `data/demo_474832446/XAGUSDm_D1_*.csv`. k2 ki pehli trade ka intezar |
 | K1 | D:\JAS = GitHub ka copy (`tools/JAS_DRIVE.bat`) | user SBS kar raha |
 | K5 | Tokri EA tk2 demo par | ruka (user: tokri band) |
 | K8 | TV Store update ho to robocopy dobara | jab update aaye |
