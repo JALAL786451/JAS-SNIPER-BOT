@@ -37,5 +37,6 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | **K19** | Kachhua Naqsha Pine (j3.2 jaisa) | **k1 BANA 17 Nov** `indicators/jas_kachhua_naqsha.pine` (j3.2 nahi chhua), pinecheck saaf. Agla: user TV par paste (gold 4H / 1D) + SS; error ho to k1.1 |
 | K21 | User ka diya "Gold 1H Sweep + FVG + BreakEven" Pine strategy test (65vi) | **FAIL 17 Nov**: FVG ON = 0 trade (sweep + FVG ek candle par mumkin nahi); FVG OFF = 110 tr 7 saal, -0.03R, BUY ghata; swing 12/20 bhi minus. `tools/k21_sweep_fvg_1h_test.py` |
 | K22 | Gemini mashwara: London ORB + 2.5 ATR fade gold | **FAIL 17 Nov** (1975 tr -0.06R / 1840 tr -0.13R) `tools/k22_london_orb_fade_test.py` |
+| K23 | TSMOM 4H script (Donchian 40/20 + EMA200) G1-G10 jaiza | Darwaza par ADHA: G6 FAIL (= t5 / e2 jaisa), #13 Kachhua 4H pehle FAIL. Test NAHI (user ki haan baqi) |
 | K8 | TV Store update ho to robocopy dobara | jab update aaye |
 | FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
