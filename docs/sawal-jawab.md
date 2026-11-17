@@ -292,4 +292,4 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - BUY + SELL dono wala naya EA (64vi)? -> K13: 4H ST SELL sirf D1<SMA200 par 11 market (gold, US500, USTEC, XAG, 5 forex, 2 oil) FAIL; BUY+SELL pehle se e2 Kachhua. Data data/duka (QDM nahi) (17 Nov).
 - YouTube trader ki strategy kaise test? (64vi) -> Gemini mein video link -> rules Urdu -> yahan paste -> save + test. Pehla: Umar Ashraf Morning Top (K14) FAIL, docs/research/umar-ashraf-morning-top.md (17 Nov).
 - e2 Kachhua ko zyada market (30+) par? (64vi) -> K17 FAIL: naye 21 market -0.04R (7/21 plus); FTMO 2012-18 mein 10 fail (12 market par 0), 2019-26 koi faida nahi. 12 hi rahein (17 Nov).
-- Kachhua (e2) ka risk 0.35%? (64vi) -> K18 FAIL: 0.35 aur 0.45 dono par 2012-18 mein 5 fail (0.25 par 0); 0.45 = ~2.7 / 1.9 mahine jaldi; 0.49 = 6 fail, 0.45 se koi faida nahi. 0.25 hi (17 Nov).
+- Kachhua (e2) ka risk 0.35%? (64vi) -> K18 FAIL: 0.35 aur 0.45 dono par 2012-18 mein 5 fail (0.25 par 0); 0.45 = ~2.7 / 1.9 mahine jaldi; 0.49 = 6 fail, 0.45 se koi faida nahi; 0.20 = 0 fail magar 2.6 mahine dheema. 0.25 hi (17 Nov).
