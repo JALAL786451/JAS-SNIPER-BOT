@@ -27,7 +27,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
-| **K22 (PEHLE)** | **Fable 5.2 AZAD jaanch** (4 EA + instruments + qaide): brief `docs/fable-jaanch.md`. Fable reset Itwar 22 Nov 2 AM (PK), 11 Dec tak. **Chat Fable par ho to user ke "TRADING" ke baad bina pooche seedha yahi kaam shuru** | user: model Fable + "TRADING" (bas) |
+| **K22 (PEHLE)** | **Fable 5.2 AZAD jaanch** (4 EA + instruments + qaide): brief `docs/fable-jaanch.md`. Hafta 60% (17 Nov SS), reset Itwar 22 Nov 2 AM; tab tak sirf chhote kaam (Sonnet). **'Full reset' muft EK dafa, 11 Dec 3 AM tak = BACHA ke rakho**: Fable jaanch beech mein limit khatam ho tab dabao. **Chat Fable par ho to user ke "TRADING" ke baad bina pooche seedha yahi kaam shuru** | user: model Fable + "TRADING" (bas) |
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
