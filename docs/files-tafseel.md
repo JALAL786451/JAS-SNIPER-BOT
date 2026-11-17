@@ -5,6 +5,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
 - `tools/k13_sell_regime_test.py` - K13 (64vi): 4H ST SELL sirf D1<SMA200, (a) gold/US500/USTEC/XAG + (b) argv forex/oil data/duka - dono FAIL
 - `tools/k14_morning_top_test.py` - K14 (64vi): Umar Ashraf Morning Top (gap down SELL 9:30-10:30) US500/USTEC M1 - FAIL
+- `tools/k15_orb15_index_test.py` - K15 (64vi): Andrea Cimi 15m ORB US500/USTEC M1 2012-26 - FAIL
+- `docs/research/andrea-cimi-orderflow.md` - us video ka Gemini khulasa + test nateeja
 - `docs/research/umar-ashraf-morning-top.md` - us video ka Gemini khulasa + test nateeja
 - `docs/k4-tokri-turtle.md` - K4 NATEEJA (Fable, 15 Nov): Tokri tk2 + Turtle rukh = FAIL (CHUNAO 0/324 nafe mein, IMTIHAN 324/324 account khatam); kacche output + CSV `docs/k4-natije/`.
 - `tools/k4_tokri_turtle.py` + `tools/k4_tokri_turtle.c` - K4 engine (tk2 Work() lafz-ba-lafz, cent-int, M1 2009-26) + chunao / imtihan / hasas / waqiat / ghaib / log / ref (Python hawala se jaanch).
