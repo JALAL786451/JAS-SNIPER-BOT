@@ -2,17 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-15  (5 kaam)
-   - 60vi: user sawal 'mayoos?' - jawab (KAAM)
-   - #103: data shart (mukammal mahina) + tool - nateeja dekhne se pehle
-   - 60vi: demo SS #2 (market khuli) - e2 trade 0 sahi, t5 2 khuli; TRADING sec 0 + KAAM
-
-2026-11-16  (27 kaam)
-   - Koshish #104 qaida (12-mahine momentum, Kachhua 12 market, swap 0) - test se pehle
-   - KAAM: user ki wazahat - EA profit lots + jori band kare aur loss par deewar (ulti lot) kho
+2026-11-16  (13 kaam)
+   - TRADING sec 0: LIVE 253687618 16 Nov SS (equity 38,763.76, NET 0, tk 166, popup A +5976.18
+   - Rehnuma r2 (nayi file): design + chhota BUY idea (1H, 4H upar) + SELL ittila; Python naap 
    - LIVE: user ne ~$400 deposit kiye (17 Nov)
 
-2026-11-17  (35 kaam)
+2026-11-17  (48 kaam)
    - FTMO demo 17 Nov report: balance 98,853.77; e2 pehli trade XAG SELL 0.01; i6 US500 BUY 2.5
-   - sawal-jawab: nayi chat sahi kaise kholein
-   - K20: Gold 15M SMC BOS strategy verify - FAIL
+   - K15: Andrea Cimi ORB 15m test - FAIL
+   - fable-jaanch: e2 file naam

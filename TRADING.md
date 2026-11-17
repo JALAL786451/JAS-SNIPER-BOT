@@ -62,9 +62,8 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**64vi chat (17 Nov)** - Research (agent NAHI, limit 55%): SELL 11 market FAIL (K13); YouTube Umar Ashraf / Andrea Cimi + user ka 15m SMC BOS FAIL, ICT lecture = soch (`docs/research/`); Kachhua 33 market FAIL (10 fail), risk 0.20-0.49 test: **0.25 hi behtar (FTMO sim 0 fail, 15.5 / 10.2 mahine)**, had 0.45. Naya: `indicators/jas_kachhua_naqsha.pine` k1 (j3.2 jaisi shakal, Kachhua D1 BUY+SELL), pinecheck saaf.
-Tareeqa chala: YouTube -> Gemini khulasa paste -> save + test (sasta). Data `data/duka/H1` (QDM block ki zaroorat nahi).
-**AGLA (65vi):** K19 = user TV par Kachhua Naqsha k1 paste + SS (error ho to k1.1). K11 (3rd MT5 `C:\MT5_DEMO2` + 472716649 + j2). ~20 Nov FTMO Black Friday.
+**66vi chat (17 Nov)** - FTMO demo History: i6 +153.96 (2/3), t5 -1,310.16 (1/5). User: KHUD NAZAR qaida (CLAUDE.md + trading-pakki 6-8, `docs/khud-nazar.md`). K20: ASLI PASS ke jhol - t5 US = market tezi (edge 0), i6 / k2 asli; K21: t5 bina US / aadha US / bina t5 sab FAIL -> jor #101 waise hi. SPX 17 Nov SMA200 se neeche (1 din).
+**AGLA (67vi):** **K22 = Fable 5.2 AZAD jaanch** (`docs/fable-jaanch.md`) - Fable chat mein "TRADING" ke baad seedha shuru (Fable reset Itwar 22 Nov 2 AM). US500 D1 SMA200 ginti (3 close). K19, K11, ~20 Nov FTMO BF.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

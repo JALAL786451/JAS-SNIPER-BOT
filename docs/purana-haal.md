@@ -2090,3 +2090,11 @@ LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.0
 - 17 Nov (64vi) KAAM se hataya: K13 BUY+SELL EA - SELL 11 market FAIL ((a) gold/US500/USTEC/XAG D1<SMA200, (b) 5 forex + 2 oil; `tools/k13_sell_regime_test.py`); BUY+SELL = e2 hi.
 - 17 Nov (64vi) KAAM se hataya: K14 Umar Ashraf Morning Top FAIL (-0.19 / -0.30R), K15 Andrea Cimi ORB 15m FAIL, K16 Guardeer ICT lecture = soch (qaide nahi), K20 user ka Gold 15M SMC BOS FAIL (asli kharcha -0.091R, 7/8 saal minus). Khulase `docs/research/`.
 - 17 Nov (64vi) KAAM se hataya: K17 Kachhua 33 market FAIL (2012-18 10 fail vs 12 mkt 0); K18 Kachhua risk: 0.20 = 0 fail magar 2.6 mahine dheema; 0.35 / 0.45 / 0.49 = 2012-18 5 / 5 / 6 fail; 0.25 hi (0 fail, 15.5 / 10.2 mahine).
+
+**KAAM se hataya (17 Nov, 66vi):**
+| **K20/K21** | HUA: t5 US = market tezi (edge 0) magar nikaalne se FTMO fail aate (V1/V2/V3 sab FAIL) -> jor #101 waise hi. **Nazar: US500 D1 < SMA200 ho to KHUD batao** (17 Nov SS: SPX 7329.6 < SMA200 7353.95, candle band nahi hui; faisla sirf 3 D1 close neeche par) | `docs/khud-nazar.md` sec 5-6 |
+- **64vi sabaq (17 Nov):** SELL 11 market FAIL; YouTube / ICT / 15m idea sab FAIL (`docs/research/`); Kachhua 12 market + 0.25% = sab se behtar (FTMO sim 0 fail); risk ki aakhri had 0.45 (us se upar faida nahi). Naya video = Gemini khulasa paste -> save + test. Weekly limit 50%+ = agent nahi.
+
+| K5 | Tokri EA tk2 demo par | ruka (user: tokri band) |
+| K8 | TV Store update ho to robocopy dobara | jab update aaye |
+| K12 | PC Claude: PowerShell `cd D:\JAS` -> `claude.cmd`, pehle `git pull`; D:\JAS mein faltu file NAHI | MT5 test ke liye ALAG `C:\MT5_TEST` |
