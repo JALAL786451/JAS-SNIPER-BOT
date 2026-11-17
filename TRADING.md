@@ -62,9 +62,9 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**63vi chat (17 Nov)** - T1: t5 (JasTrendEA) Forward 1/3 gold H4 2019-26: 7/7 mult plus dono hisson mein (3.0 curve-fit NAHI), magar 2019-24 sirf +1.8%, forward +12% (gold ki chaal). R2 TV par chal raha (error nahi). **PC Claude jur gaya:** PowerShell `cd D:\JAS` -> `claude.cmd` (Pro login, Sonnet, manual); TV Bridge se Pine kaam NAHI (token).
-**Ghalti theek:** is chat ke commits naye branch par gaye thay, default (`claude/jas-desk-v3-0110-yu3w2h`) par NAHI -> nayi chat ko samajh nahi aayi; aakhir mein default par fast-forward kiya.
-**AGLA (64vi):** K11 = 472716649 kisi MT5 par login NAHI (c1 bhi band) -> 3rd MT5 `C:\MT5_DEMO2` install + 472716649 login SS -> j2 (InpWall false). Phir T1 US500m H4 forward. ~20 Nov FTMO Black Friday.
+**64vi chat (17 Nov)** - Research (agent NAHI, limit 55%): SELL 11 market FAIL (K13); YouTube Umar Ashraf / Andrea Cimi + user ka 15m SMC BOS FAIL, ICT lecture = soch (`docs/research/`); Kachhua 33 market FAIL (10 fail), risk 0.20-0.49 test: **0.25 hi behtar (FTMO sim 0 fail, 15.5 / 10.2 mahine)**, had 0.45. Naya: `indicators/jas_kachhua_naqsha.pine` k1 (j3.2 jaisi shakal, Kachhua D1 BUY+SELL), pinecheck saaf.
+Tareeqa chala: YouTube -> Gemini khulasa paste -> save + test (sasta). Data `data/duka/H1` (QDM block ki zaroorat nahi).
+**AGLA (65vi):** K19 = user TV par Kachhua Naqsha k1 paste + SS (error ho to k1.1). K11 (3rd MT5 `C:\MT5_DEMO2` + 472716649 + j2). ~20 Nov FTMO Black Friday.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

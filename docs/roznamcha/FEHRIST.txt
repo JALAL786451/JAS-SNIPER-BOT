@@ -2,9 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-15  (20 kaam)
-   - Fable K4 chat khatam: gold par tokri BAND (user), FTMO sawal -> #53, agla = nayi chat
-   - 60vi: user nayi strategy maang - 3 ummeedwar (KAAM)
+2026-11-15  (5 kaam)
+   - 60vi: user sawal 'mayoos?' - jawab (KAAM)
+   - #103: data shart (mukammal mahina) + tool - nateeja dekhne se pehle
    - 60vi: demo SS #2 (market khuli) - e2 trade 0 sahi, t5 2 khuli; TRADING sec 0 + KAAM
 
 2026-11-16  (27 kaam)
@@ -12,7 +12,7 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - KAAM: user ki wazahat - EA profit lots + jori band kare aur loss par deewar (ulti lot) kho
    - LIVE: user ne ~$400 deposit kiye (17 Nov)
 
-2026-11-17  (16 kaam)
+2026-11-17  (35 kaam)
    - FTMO demo 17 Nov report: balance 98,853.77; e2 pehli trade XAG SELL 0.01; i6 US500 BUY 2.5
-   - KAAM: K12 SBS diya
-   - KAAM: K11 - 472716649 kisi MT5 par login nahi (17 Nov SS)
+   - sawal-jawab: nayi chat sahi kaise kholein
+   - K20: Gold 15M SMC BOS strategy verify - FAIL

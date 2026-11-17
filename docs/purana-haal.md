@@ -2086,3 +2086,7 @@ LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.0
 **AGLA (62vi):** K11 = user se F7 SS (m8.5 + JasLarai j2) -> error theek -> j2 demo par imtihan (deewar OFF, phir popup ke saath), m8.5 LIVE par m8.4 ki jagah (InpWReset false). ~20 Nov FTMO Black Friday check. Demo 474832446: e2 / k2 ki pehli trade aaye to milaan.
 
 - 17 Nov (63vi): K1 HUA - D:\JAS clone (PC Claude se); K12 PC Claude repo ke saath chala - KAAM se hataya
+- 17 Nov (64vi) KAAM se hataya: TEST #3 deewar FAIL (`tools/larai_deewar_test.py`, asli LIVE gold trades par deewar 12,836 USC bura, InpWall OFF) + TEST #2 Rehnuma r2 (2003-18 +41.3% DD 9.5%, 2019-26 +35.2% DD 7.6%).
+- 17 Nov (64vi) KAAM se hataya: K13 BUY+SELL EA - SELL 11 market FAIL ((a) gold/US500/USTEC/XAG D1<SMA200, (b) 5 forex + 2 oil; `tools/k13_sell_regime_test.py`); BUY+SELL = e2 hi.
+- 17 Nov (64vi) KAAM se hataya: K14 Umar Ashraf Morning Top FAIL (-0.19 / -0.30R), K15 Andrea Cimi ORB 15m FAIL, K16 Guardeer ICT lecture = soch (qaide nahi), K20 user ka Gold 15M SMC BOS FAIL (asli kharcha -0.091R, 7/8 saal minus). Khulase `docs/research/`.
+- 17 Nov (64vi) KAAM se hataya: K17 Kachhua 33 market FAIL (2012-18 10 fail vs 12 mkt 0); K18 Kachhua risk: 0.20 = 0 fail magar 2.6 mahine dheema; 0.35 / 0.45 / 0.49 = 2012-18 5 / 5 / 6 fail; 0.25 hi (0 fail, 15.5 / 10.2 mahine).
