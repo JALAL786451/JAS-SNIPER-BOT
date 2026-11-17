@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `docs/khud-nazar.md` - 66vi (17 Nov): khud dekhi baatein (t5+i6 US index takrao, sab BUY), ASLI PASS ke 4 jhol (J1-J4), naya qaida 6-8, K20.
 - `tools/k13_sell_regime_test.py` - K13 (64vi): 4H ST SELL sirf D1<SMA200, (a) gold/US500/USTEC/XAG + (b) argv forex/oil data/duka - dono FAIL
 - `tools/k14_morning_top_test.py` - K14 (64vi): Umar Ashraf Morning Top (gap down SELL 9:30-10:30) US500/USTEC M1 - FAIL
 - `tools/k15_orb15_index_test.py` - K15 (64vi): Andrea Cimi 15m ORB US500/USTEC M1 2012-26 - FAIL
