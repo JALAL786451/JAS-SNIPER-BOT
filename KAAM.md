@@ -36,5 +36,6 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | K5 | Tokri EA tk2 demo par | ruka (user: tokri band) |
 | K12 | **PC Claude + repo JUR GAYA (17 Nov):** PowerShell `cd D:\JAS` -> `claude.cmd` (Sonnet 5.5, Claude Pro login, manual mode, TRADING = table aaya). Har dafa pehle `git pull`. Stop hook D:\JAS ki badli files khud push karta - wahan faltu file NAHI | agla: MT5 test ke liye ALAG `C:\MT5_TEST` (LIVE wala MT5 kabhi nahi) |
 | T1 | t5 Forward jaanch **HUI 17 Nov** (gold H4 2019-26, Forward 1/3, mult 2.0-5.0): 7 mein se 7 dono hisson mein PLUS, koi cliff nahi = 3.0 curve-fit NAHI. Magar pehla 2/3 (2019-mid 2024) kamzor: 3.0 sirf +1.8% (DD 7%); forward (mid 2024-26) +12% DD 1.9% = munafa gold ki bari chaal se. 3.0 hi rahe | agla: wahi test US500m H4 (t5 ka demo nuqsan US500 / USTEC par) - user ki marzi |
+| K13 | **User 17 Nov (64vi):** naya EA jo BUY + SELL dono le, FTMO qaide wahi (t5/i6/k2/e2 jaise). Research agent ki madad - user ne naam le kar poocha | agent sirf user ki haan + hafte ki limit <50% par; pehle SELL ke purane FAIL (#17/#24/#73) dekhna |
 | K8 | TV Store update ho to robocopy dobara | jab update aaye |
 | FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
