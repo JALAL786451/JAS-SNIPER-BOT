@@ -294,3 +294,4 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - e2 Kachhua ko zyada market (30+) par? (64vi) -> K17 FAIL: naye 21 market -0.04R (7/21 plus); FTMO 2012-18 mein 10 fail (12 market par 0), 2019-26 koi faida nahi. 12 hi rahein (17 Nov).
 - Kachhua (e2) ka risk 0.35%? (64vi) -> K18 FAIL: 0.35 aur 0.45 dono par 2012-18 mein 5 fail (0.25 par 0); 0.45 = ~2.7 / 1.9 mahine jaldi; 0.49 = 6 fail, 0.45 se koi faida nahi; 0.20 = 0 fail magar 2.6 mahine dheema. 0.25 hi (17 Nov).
 - 'Gold 15M Non-Repainting SMC Strategy' (BOS pivot 12 + EMA200, 2.5R) theek hai? (64vi) -> repaint nahi magar K20 FAIL: gold M1 2019-26 1851 tr, bina kharcha -0.007R, asli -0.091R; script ka kharcha 4x kam, 2% equity = notional (17 Nov).
+- Koshish jaari ya band? -> jaari jab tak PASS (user 13 Oct), magar har naya idea pehle G1-G10 darwaza + user 'test karo'; intraday gold (SMC/FVG/ORB/fade) sab FAIL (17 Nov, K21-K22).

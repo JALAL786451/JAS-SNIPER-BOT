@@ -62,9 +62,8 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**64vi chat (17 Nov)** - Research (agent NAHI, limit 55%): SELL 11 market FAIL (K13); YouTube Umar Ashraf / Andrea Cimi + user ka 15m SMC BOS FAIL, ICT lecture = soch (`docs/research/`); Kachhua 33 market FAIL (10 fail), risk 0.20-0.49 test: **0.25 hi behtar (FTMO sim 0 fail, 15.5 / 10.2 mahine)**, had 0.45. Naya: `indicators/jas_kachhua_naqsha.pine` k1 (j3.2 jaisi shakal, Kachhua D1 BUY+SELL), pinecheck saaf.
-Tareeqa chala: YouTube -> Gemini khulasa paste -> save + test (sasta). Data `data/duka/H1` (QDM block ki zaroorat nahi).
-**AGLA (65vi):** K19 = user TV par Kachhua Naqsha k1 paste + SS (error ho to k1.1). K11 (3rd MT5 `C:\MT5_DEMO2` + 472716649 + j2). ~20 Nov FTMO Black Friday.
+**65vi chat (17 Nov)** - 3 user / Gemini idea test: K21 Gold 1H Sweep+FVG (FVG ON = 0 trade), K22 London ORB + 2.5 ATR fade (1975 / 1840 tr, minus) = FAIL; K23 TSMOM 4H script = G6 FAIL (t5/e2 jaisa), test nahi. **User faisla: KAAM.md PEHLI line = test se pehle G1-G10 darwaza; koshish jaari magar sirf darwaze se.** 474832446 21:44: equity 98,564 (i6 US500 -268).
+**AGLA (66vi):** K19 = Kachhua Naqsha k1 TV paste + SS. K11 (3rd MT5 `C:\MT5_DEMO2` + 472716649 + j2). ~20 Nov FTMO Black Friday. CLAUDE.md 3.6 KB -> ~2 KB (user ki haan par).
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
