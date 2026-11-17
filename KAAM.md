@@ -10,6 +10,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 4. KAHANI.txt / poori TRADING.md NA parho - hook kaafi hai; purani baat sirf `grep`.
 
 ## Pakki baatein (bhoolna mana)
+- **KHUD NAZAR (17 Nov):** har report / SS par bina pooche khatre + takrao + backtest se farq KHUD batao aur samjhao (t5+i6 US index wala sabaq).
 - **Purane EA / Pine mein KOI tabdeeli NAHI** (user 16 Nov) - naya kaam NAYI file mein. Naya version banane se pehle ijazat + abhi ka haal (SS).
 - Risk hadd khud se NAHI barhana. Backtest -> demo -> live. LIVE par deewar / KHUD wala EA abhi NAHI (pehle demo).
 - FTMO: swap-free milta (email 5 Nov); khareedne se pehle "Swing 2-Step 100k par?" likhwana baqi. FundingPips = hamare EA wahan NAHI (EA mana). EA plan sirf FTMO.
