@@ -8,7 +8,7 @@ Fable ke paas 11 Dec tak. Ek hi chat mein poora; agent / workflow NAHI (limit). 
    (warna jaanch azad nahi rahti). Purane PASS ke number sirf `docs/trading-pakki.md` 1-NAYA qaida se lo.
 2. **Code ki jaanch (bug dhoondo, tabdeeli NAHI):** 4 EA jo FTMO demo 474832446 par chal rahe:
    t5 = `JasTrendEA.mq5` (4H Supertrend, sirf BUY, XAU/XAG/US500/USTEC, 0.75%), i6 = `JasIbsEA.mq5` (IBS, US500+USTEC, 1%),
-   k2 = `JasKhirkiEA.mq5` (non-US index khirki, 0.15%), e2 = Kachhua (BUY+SELL 12 market, 0.25%).
+   k2 = `JasKhirkiEA.mq5` (non-US index khirki, 0.15%), e2 = `JasTideRadarEA.mq5` Kachhua (BUY+SELL 12 market, 0.25%).
    Python model: `tools/ftmo_test.py`, `ftmo_4h.py`, `ftmo68.py`, `ftmo99.py`, `ftmo53_asli.py` (FTMO sim), `jor105.py`.
    Dekho: look-ahead (aaj ke close se aaj trade), entry/exit qeemat, kharcha, SL, slot / ek market ek trade, FTMO din-hadd hisaab, MQL5 vs Python farq.
 3. **Qaidon ki jaanch:** TALAASH / IMTIHAN / ASLI PASS (`docs/trading-pakki.md` 1-NAYA 1-8). Kya ye shart ittefaqi PASS rok sakti hai?
