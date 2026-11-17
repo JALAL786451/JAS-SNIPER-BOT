@@ -59,3 +59,15 @@ Challenge sim (run_cost, swap 0): CHUNAO 2012-18 (84) aur 2019+ (sab mahine) don
 **PASS shart (teeno ek saath, DONO daur):** (1) fail <= V0 ka fail; (2) median mahine <= V0 + 2; (3) girte market ka imtihan:
 2022 (US -20%) + 2015-16 + 2018 Q4 ka kul P/L (mustaqil $100k) V0 se behtar ya barabar. Ek se zyada PASS = kam fail, phir kam mahine.
 Koi PASS nahi = V0 hi rahe (demo waise hi). PASS = naya version banane ki ijazat user se, phir demo (purana EA nahi chhuna).
+
+### K21 NATEEJA (`python3 tools/k21_jor.py`, 58 sec) = **koi PASS NAHI -> V0 (jor #101) hi rahe**
+| Jor | CHUNAO pass/fail/adhoora, median | 2019+ pass/fail/adhoora, median | Girte daur % (2015-16, 2018Q4, 2022) | Shart |
+|---|---|---|---|---|
+| V0 abhi | 69 / 0 / 15, 15.5 | 85 / 0 / 9, 10.2 | -0.1, +4.1, -0.8 = +3.1 | - |
+| V1 t5 sirf XAU/XAG | 62 / **6** / 16, **23.0** | 85 / 0 / 9, 12.7 | +7.6 | FAIL (fail 6) |
+| V2 t5 US aadha | 68 / **3** / 13, **19.5** | 85 / 0 / 9, 11.2 | +5.4 | FAIL (fail 3) |
+| V3 bina t5 | 46 / 0 / 38, **21.0** | 80 / 0 / 14, 22.7 | +5.1 | FAIL (median) |
+
+**Sabaq:** t5 ka US hissa apna edge nahi rakhta, magar **market ki tezi hi FTMO target tak le jati hai** - nikaalo to fail aate / mahine barhte.
+Girte market mein V0 sab se kamzor (+3.1 vs +5-7.6). = t5 US = jaan boojh kar liya hua "market tezi ka daao".
+**KHUD NAZAR qaida:** US500 D1 close SMA200 se NEECHE jaye (lamba girta market) to Claude har chat mein KHUD bataye - tab t5 US ka khatra asli; tab hi V2 jaisa faisla dobara (user ki haan).

@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `tools/k21_jor.py` - K21 (66vi): jor #101 vs t5 sirf XAU/XAG / US aadha / bina t5 (challenge 2012-18 + 2019+, girte daur) - sab FAIL, V0 rahe.
 - `tools/k20_jhol.py` - K20 (66vi): J1 cluster SE, J2 buy-and-hold (drift) muqabla, J4 US group risk + bure din - t5 US = 0 edge, i6/k2 asli.
 - `docs/khud-nazar.md` - 66vi (17 Nov): khud dekhi baatein (t5+i6 US index takrao, sab BUY), ASLI PASS ke 4 jhol (J1-J4), naya qaida 6-8, K20.
 - `tools/k13_sell_regime_test.py` - K13 (64vi): 4H ST SELL sirf D1<SMA200, (a) gold/US500/USTEC/XAG + (b) argv forex/oil data/duka - dono FAIL
