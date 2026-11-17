@@ -40,5 +40,6 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | K14 | Umar Ashraf "Morning Top" (YouTube, Gemini khulasa) | **TEST HUA 64vi: FAIL** US500 / USTEC M1 2012-26 sab minus (-0.19 se -0.30R); tape wala hissa test nahi ho sakta. `docs/research/umar-ashraf-morning-top.md`. Naya video = Gemini khulasa paste (tareeqa chalta) |
 | K15 | Andrea Cimi order flow (YouTube, Gemini) | **TEST HUA 64vi: FAIL** - ORB 15m US500/USTEC 2012-26 ~0 ya minus; failed auction pehle #38 FAIL; momentum = asli volume chahiye. `docs/research/andrea-cimi-orderflow.md` |
 | K16 | Guardeer ICT lecture 11 (Gemini) | save; qaide nahi = soch; SMC pehle 6+ dafa FAIL. Premium/discount 4H gold test sirf user ki haan |
+| K17 | User 17 Nov (64vi) naraz: YouTube sab FAIL, 'koi to trading ka mahir hoga?' -> salah: asli saabit edge = trend following kai market (CTA / Turtles); e2 Kachhua ko 30+ market (data/duka) par portfolio test | user ki haan ka intezar (agent ya khud) |
 | K8 | TV Store update ho to robocopy dobara | jab update aaye |
 | FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
