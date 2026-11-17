@@ -12,6 +12,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 - `tools/k18_kachhua_risk.py` - K18 (64vi): Kachhua risk 0.25 vs 0.35 FTMO - 0.35 par 2012-18 mein 5 fail = FAIL
 - `indicators/jas_kachhua_naqsha.pine` - **k1 (64vi, 17 Nov)**: Kachhua (e2) D1 BUY+SELL ka Naqsha, j3.2 jaisi shakal (zones/rukh/news j3.2 se copy, khulasa table, khuli trade dabba, AGLI andaza, daayen Python hisaab 12 market + TV live). pinecheck saaf; TV compile user SS baqi
 - `tools/k20_smc15_bos_test.py` - K20 (64vi): user ka Gold 15M SMC BOS strategy (pivot 12, EMA200, 2 ATR, 2.5R, 07-20 UTC) gold M1 2019-26 - FAIL
+- `tools/k21_sweep_fvg_1h_test.py` - K21 (65vi): user ka Gold 1H Sweep + FVG + BE Pine strategy, gold M1 2019-26 -> 1H - FAIL (FVG ON = 0 trade)
 - `docs/research/umar-ashraf-morning-top.md` - us video ka Gemini khulasa + test nateeja
 - `docs/k4-tokri-turtle.md` - K4 NATEEJA (Fable, 15 Nov): Tokri tk2 + Turtle rukh = FAIL (CHUNAO 0/324 nafe mein, IMTIHAN 324/324 account khatam); kacche output + CSV `docs/k4-natije/`.
 - `tools/k4_tokri_turtle.py` + `tools/k4_tokri_turtle.c` - K4 engine (tk2 Work() lafz-ba-lafz, cent-int, M1 2009-26) + chunao / imtihan / hasas / waqiat / ghaib / log / ref (Python hawala se jaanch).
