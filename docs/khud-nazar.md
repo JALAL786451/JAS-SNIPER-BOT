@@ -52,3 +52,10 @@ ExpR = R per trade (kharcha samet). "Exp-drift" = market ki aam chaal (buy-and-h
 - **J4 (US group):** jab US par trade khuli ho to 80% waqt 2+ (sab BUY), max SL-risk ek saath **3.50%** (t5 0.75 x2 + i6 1 x2). Bura din: 2012-18 sirf 1 (-4.37%, 4 Jan 2016), 2019-26 sab se bura -2.56% (3 Feb 2025). FTMO 5% kabhi nahi chhua.
 - **J3:** IMTIHAN 2019+ 5+ dafa dekha = ab sirf demo forward asli imtihan.
 - **Faisla user ka (purane EA mein tabdeeli NAHI, ijazat):** (a) kuch na badlo, demo chalne do; (b) naya jor test: t5 sirf XAU/XAG ya t5 US par aadha risk - sakht shart ke saath (nateeja dekh kar chunna = sakht imtihan zaroori).
+
+## 6. K21 (user "B", 17 Nov) - naya jor t5 ke bina US / aadha US - SHART TEST SE PEHLE (badalna MANA)
+Ummeedwar: V1 = t5 sirf XAU+XAG 0.75; V2 = t5 XAU/XAG 0.75 + US 0.375; V3 = bina t5. Muqabla V0 = jor #101 abhi. Baqi (i6 1, k2 0.15, e2 0.25) wahi.
+Challenge sim (run_cost, swap 0): CHUNAO 2012-18 (84) aur 2019+ (sab mahine) dono par.
+**PASS shart (teeno ek saath, DONO daur):** (1) fail <= V0 ka fail; (2) median mahine <= V0 + 2; (3) girte market ka imtihan:
+2022 (US -20%) + 2015-16 + 2018 Q4 ka kul P/L (mustaqil $100k) V0 se behtar ya barabar. Ek se zyada PASS = kam fail, phir kam mahine.
+Koi PASS nahi = V0 hi rahe (demo waise hi). PASS = naya version banane ki ijazat user se, phir demo (purana EA nahi chhuna).
