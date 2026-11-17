@@ -23,3 +23,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 16 Nov (60vi) | MT5 Trade tab par right-click > Columns > 'Comment' ON = har khuli trade ke saath EA ka naam (t5 / i6 / e2) SS mein nazar aata; Magic ke liye ticket par mouse rakho (tooltip) | - |
 | 16 Nov (60vi) | FTMO Black Friday 2026: 16 Nov tak koi pakka elaan NAHI (web search; pichhle saal BF 2025 = 20% aur New Year sale 20% 3 Jan 2026 tak - 3rd-party sites, ftmo.com par tasdeeq zaroori). ~20-27 Nov dobara dekho | - |
 | 16 Nov (61vi) | MT5 History tab par right-click > Report > HTML = poori trade history ek file (Magic + Comment samet) - SS se behtar, chat mein attach. FTMO BF 2026: 16 Nov ftmo.com par offer / BF page NAHI (404) | - |
+| 17 Nov (63vi) | MT5 Strategy Tester > Settings > 'Forward' = 1/3 ya 1/4: tester data ka aakhri hissa ALAG (unseen) rakh kar khud check karta; optimize kiya EA wahan bhi plus ho tabhi bharosa (curve-fit pakarne ka asaan tareeqa) | - |
