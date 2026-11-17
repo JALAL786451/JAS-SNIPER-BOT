@@ -17,6 +17,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 - **User ka ASAL maqsad (16 Nov):** "jis tarha mein trade leta hoon uska EA" - profit lots + jori khud band, loss par DEEWAR (ulti lot, user ne khud maanga), dohri lot pakre. Poora auto 2 dafa fail (tk2, K4). Deewar nuqsan ROKTI hai, wapas nahi lati.
 - LIVE 253687618 (16 Nov): m8.4 chal raha; equity ~38,770, gold BUY 7.29 / SELL 7.27, BTC NET +0.02, tala-band ~-48,000, tk 167 / 200. Jori (A / B) YES be-khatar; C (profit ticket) NA lein.
 - FTMO demo 474832446 (16 Nov): t5 US500 + USTEC BUY khuli; e2 TRADE CHALU, trade 0 (gold SELL 3852.301 / chandi SELL 48.465 se neeche D1 close par).
+- **PC Claude + TV Bridge se Pine / chart ka kaam NAHI** (user 17 Nov: bohot token) - TV ka kaam user khud + SS.
 - Data user ne diya: US500 / USTEC M1 2012-26 + gold M1 (QDM). Kitabi ideas #102-104 FAIL (list khatam).
 - **TOKEN BACHAT (user 16 Nov "haan"):** nayi chat KHUD nahi khulti (user kholta, "TRADING" likhta); shuru mein sirf hook; chat khatam = halki rasm (CLAUDE.md). Rozmarra kaam sasta model, Fable sirf mushkil kaam.
 
@@ -29,7 +30,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | # | Kaam | Haal |
 |---|---|---|
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | j2 demo par lagane ka SS baqi; LIVE +$400 deposit (17 Nov). User naya demo chahta - salah: 472716649 hi kaafi (gold chart alag) |
-| **R2** | `indicators/jas_gold_rehnuma_r2.pine` (r1 + design + chhota BUY idea 1H + SELL ittila; naap `tools/rehnuma_r2_test.py`) | **user ka TV compile SS baqi** (gold 15m / 1H chart) |
+| R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
 | K7 | Kachhua e2 demo 474832446 | **PEHLI TRADE MILI 17 Nov:** XAG SELL 0.01 @47.148 SL 51.560 = Python (16 Nov close 47.175 < 10 din ka low 48.465 [13 Nov], Itwar Monday mein; SL C+2 ATR 51.485, farq 0.075 = chhote data ka ATR seed; lot 0.01 = $221 <= $250). Data `data/demo_474832446/XAGUSDm_D1_*.csv`. k2 ki pehli trade ka intezar |
 | K5 | Tokri EA tk2 demo par | ruka (user: tokri band) |
