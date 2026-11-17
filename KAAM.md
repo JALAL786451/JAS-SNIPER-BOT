@@ -29,7 +29,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
-| **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | j2 demo par lagane ka SS baqi; LIVE +$400 deposit (17 Nov). User naya demo chahta - salah: 472716649 hi kaafi (gold chart alag) |
+| **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
 | K7 | Kachhua e2 demo 474832446 | **PEHLI TRADE MILI 17 Nov:** XAG SELL 0.01 @47.148 SL 51.560 = Python (16 Nov close 47.175 < 10 din ka low 48.465 [13 Nov], Itwar Monday mein; SL C+2 ATR 51.485, farq 0.075 = chhote data ka ATR seed; lot 0.01 = $221 <= $250). Data `data/demo_474832446/XAGUSDm_D1_*.csv`. k2 ki pehli trade ka intezar |
