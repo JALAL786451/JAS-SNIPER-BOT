@@ -62,9 +62,9 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**64vi chat (17 Nov)** - Research (agent NAHI, limit 55%): SELL 11 market FAIL (K13); YouTube Umar Ashraf / Andrea Cimi + user ka 15m SMC BOS FAIL, ICT lecture = soch (`docs/research/`); Kachhua 33 market FAIL (10 fail), risk 0.20-0.49 test: **0.25 hi behtar (FTMO sim 0 fail, 15.5 / 10.2 mahine)**, had 0.45. Naya: `indicators/jas_kachhua_naqsha.pine` k1 (j3.2 jaisi shakal, Kachhua D1 BUY+SELL), pinecheck saaf.
-Tareeqa chala: YouTube -> Gemini khulasa paste -> save + test (sasta). Data `data/duka/H1` (QDM block ki zaroorat nahi).
-**AGLA (65vi):** K19 = user TV par Kachhua Naqsha k1 paste + SS (error ho to k1.1). K11 (3rd MT5 `C:\MT5_DEMO2` + 472716649 + j2). ~20 Nov FTMO Black Friday.
+**67vi chat (18 Nov)** - LIVE: SELL 3.70 ke neeche BUY 3.15 lot (Close By ~+3,322 USC), net +0.18. Zones #105z FAIL (sirf naqsha); Tide gold SELL #106s FAIL (1833-2026, Exp-2SE -0.152). #107g PASS: Tide 1D BUY + 4H t5 BUY gold (2003-18 +23.5%, 2019+ +20.8%, 0.5% har BUY). **JAS GOLD g1** (`indicators/jas_gold_g1.pine`) TV par chal gayi (zones = engine level, SELL mat lo).
+User: "chat lambi" ka zikr baar baar NAHI.
+**AGLA (68vi):** g1 par nazar - pehla BUY ishara SS; K11 (3rd MT5 + j2); ~20 Nov FTMO Black Friday.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

@@ -2,17 +2,17 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-15  (5 kaam)
-   - 60vi: user sawal 'mayoos?' - jawab (KAAM)
-   - #103: data shart (mukammal mahina) + tool - nateeja dekhne se pehle
-   - 60vi: demo SS #2 (market khuli) - e2 trade 0 sahi, t5 2 khuli; TRADING sec 0 + KAAM
-
-2026-11-16  (27 kaam)
-   - Koshish #104 qaida (12-mahine momentum, Kachhua 12 market, swap 0) - test se pehle
-   - KAAM: user ki wazahat - EA profit lots + jori band kare aur loss par deewar (ulti lot) kho
+2026-11-16  (12 kaam)
+   - LIVE 253687618: JasMauqa m8.4 ki 4 log file (16 Nov) + KAAM haal
+   - KAAM: token shikayat + tajweez (user 16 Nov)
    - LIVE: user ne ~$400 deposit kiye (17 Nov)
 
-2026-11-17  (35 kaam)
+2026-11-17  (42 kaam)
    - FTMO demo 17 Nov report: balance 98,853.77; e2 pehli trade XAG SELL 0.01; i6 US500 BUY 2.5
-   - sawal-jawab: nayi chat sahi kaise kholein
-   - K20: Gold 15M SMC BOS strategy verify - FAIL
+   - K13 test (b) forex/oil: SELL FAIL
+   - KAAM: close-by sahi hisab + 0.11 lock
+
+2026-11-18  (15 kaam)
+   - KAAM: 18 Nov LIVE SS
+   - Tide SELL naap s1 (#106s) gold 1D: BUY/SELL 4 daur + PASS/FAIL
+   - KAAM: JAS GOLD g1 TV par chal gayi
