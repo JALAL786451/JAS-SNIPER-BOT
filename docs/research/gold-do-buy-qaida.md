@@ -59,5 +59,20 @@ Gold SELL #106s mein FAIL hua, is liye SELL hamesha "mat lo".
 - Dono engine ke 2019+ ke nateeje pehle alag alag dekhe ja chuke hain: #34, #106s, Rehnuma r2.
 - S3 jaisa 1D **Supertrend** filter (EMA nahi) `tools/rehnuma_1d_test.py` mein pehle dekha gaya tha: aadhi trades, behtar R / trade, kul R kam.
 
-## NATEEJA
-(neeche, `python3 tools/gold_do_buy.py` ke baad)
+## NATEEJA (18 Nov, `python3 tools/gold_do_buy.py`)
+T ki trades Python pine_engine se hoo-ba-hoo mili (88 / 54).
+
+| Daur | Engine | Trade | Exp R (-2SE) | Kul % (0.5% risk) | Girawat | Bura mahina |
+|---|---|---|---|---|---|---|
+| 2003-18 | T Tide 1D | 88 | +0.219 (-0.044) | +9.6% | 2.8% | -0.77% |
+| 2003-18 | F 4H t5 | 282 | +0.099 (+0.005) | +13.9% | 3.7% | -0.74% |
+| 2003-18 | **DONO** | 370 | **+0.127 (+0.033)** | **+23.5%** | 4.6% | -1.11% |
+| 2019-aaj | T Tide 1D | 54 | +0.321 (-0.130) | +8.7% | 2.1% | -0.52% |
+| 2019-aaj | F 4H t5 | 154 | +0.157 (+0.008) | +12.1% | 3.6% | -0.79% |
+| 2019-aaj | **DONO** | 208 | **+0.200 (+0.039)** | **+20.8%** | 4.9% | -0.97% |
+
+- **S1 PASS** (TALAASH aur IMTIHAN dono): script mein DONO BUY.
+- **S2:** T ke khule dinon mein F bhi 89% (2003-18) / 82% (2019+) khula tha. Mahana corr +0.40 / +0.45.
+  - 50% se zyada = qaide ke mutabiq: "dono khule = kul risk 1 trade jitna (har ek aadha)".
+- **S3 FAIL** (TALAASH farq +0.053 = +0.58 SE, shart 2 SE): 4H ke liye 1D EMA zone sirf ittila.
+  - Galti ka iqrar: pehle run mein code ne S3 ka IMTIHAN number bhi chhap diya tha (+0.30 SE), jo qaide ke khilaf tha. Faisla sirf TALAASH FAIL par hai. Code durust kar diya (ab IMTIHAN nahi chalta).
