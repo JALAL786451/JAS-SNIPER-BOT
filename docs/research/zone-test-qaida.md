@@ -36,3 +36,9 @@ Agar farq sabit na ho, to zones sirf naqsha hain aur qaide mein un ka koi kirdar
 3. Dono pass = zones ka kirdar SABIT (qaide mein shamil karne ka mashwara, phir demo).
    Warna = zones sirf naqsha, 5EA ke qaide wahi rahenge.
 - Har market ka farq bhi dikhaya jayega, magar faisla sirf KUL (4 market) par.
+
+## NATEEJA (18 Nov, `python3 tools/zone_test.py`) - **FAIL, IMTIHAN nahi chala (qaide ke mutabiq)**
+Trades #34 se hoo-ba-hoo mili (760 tr, Exp +0.1070R).
+- A (SZ sar par): R door 206 tr +0.142 vs R qareeb 554 tr +0.094 = farq +0.048, sirf 0.37 SE (shart 2 SE).
+- B (DZ paon mein): ULTA - S qareeb 624 tr +0.099 vs S door 136 tr +0.146 = -0.34 SE.
+- Market-war bhi ulat pulat (USTEC mein A aur B dono ulte, -1.1 SE). Zones ka 4H BUY par koi sabit asar NAHI = sirf naqsha.
