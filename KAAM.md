@@ -26,6 +26,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 
 - **LIVE report 18 Nov 03:09 (67vi):** gold SELL 3.70 @4057.762 (+76,999) ke NEECHE BUY 37 tk = **3.15 lot** (avg 4047.217, -62,307); upar BUY 22 tk = 3.22 lot (-86,975). Kul gold BUY 6.37 / SELL 6.26; equity 75,783 USC. User plan: SELL 3.70 se 3.15 neeche wali BUY Close By, phir neeche EK bari BUY (size baqi; Claude ne khatra hisab diya). Close By sahi nateeja ~+3,322 USC (pehle 14,690 ghalat kaha). User soch: pehle SELL lock = net 0. 18 Nov SS: BUY 6.40 / SELL 6.22 = net +0.18 (lock ab 0.18), equity 75,219.84, gold 3799.9, margin level 204,736%, stop out 0%.
 - 18 Nov: naya Exness demo #17000740869 ($750, browser). EA browser par nahi; MT5 desktop (C:\MT5_DEMO2 portable) mein login = K11 ka option. Pine sirf TV par.
+- 18 Nov: user sawal - Naqsha zones (S/R, SZ/DZ) accuracy? Jawab: test nahi hue (script line 32), #36 AOI fail; sirf naqsha / SL jagah. Test sirf user 'test karo' par.
 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
