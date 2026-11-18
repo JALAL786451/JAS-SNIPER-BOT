@@ -29,7 +29,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
-| **K21** | JAS GOLD g1 BANA (`indicators/jas_gold_g1.pine`): Tide 1D BUY + 4H t5 BUY (#107g PASS), zones = engine level, SELL mat lo, lot = kul risk/2 (default 1% = test) | Agla: user TV gold 4H par paste + SS (error ho to g1.1), phir demo par nazar |
+| **K21** | JAS GOLD g1 (`indicators/jas_gold_g1.pine`) **TV par CHAL GAYI 18 Nov SS** (OANDA:XAUUSD 4H, error nahi): Tide 1D BUY + 4H t5 BUY (#107g), zones = engine level, SELL mat lo. 18 Nov haal: INTEZAR, dono BUY MAT LO (1D EMA50<200, 4H neeche), gold 3737 | Agla: nazar - pehla BUY ishara aaye to SS; demo pehle |
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
