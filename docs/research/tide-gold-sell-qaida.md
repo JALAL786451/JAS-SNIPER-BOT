@@ -41,5 +41,16 @@ Ye qaida likhne se PEHLE 2003-26 ka Dukascopy naap dekh liya gaya tha (Python, `
 - Nayi maloomat sirf 2002 se pehle ka hissa degi (1970-2001).
 - TV ke 2002-18 / 2019+ number upar wale ke qareeb aane chahiye (data source alag: OANDA vs Dukascopy). Bohot farq ho to pehle engine jaancho, faisla baad mein.
 
-## NATEEJA
-(user ke TV SS ke baad yahan)
+## NATEEJA (18 Nov, user TV SS, OANDA:XAUUSD 1D, data 1833 se) - **SELL FAIL**
+| Daur | BUY tr | BUY Exp | BUY kul | SELL tr | SELL jeet | SELL Exp | SELL SE | SELL kul |
+|---|---|---|---|---|---|---|---|---|
+| 1980 se pehle | 69 | +2.637 | +182.0 | 9 | 56% | +0.852 | 0.515 | +7.7 |
+| 1980-2001 | 66 | -0.147 | -9.7 | 113 | 32% | -0.042 | 0.109 | -4.7 |
+| 2002-2018 | 104 | +0.292 | +30.4 | 35 | 40% | +0.123 | 0.200 | +4.3 |
+| 2019-aaj | 55 | +0.376 | +20.7 | 9 | 22% | -0.239 | 0.179 | -2.2 |
+| KUL | 294 | +0.760 | +223.3 | 166 | 34% | +0.031 | 0.091 | +5.1 |
+| 1980-2001 BAHAR | 228 | +1.022 | +233.0 | 53 | 40% | +0.186 | 0.165 | +9.8 |
+- Shart 1 HAAN (166), **Shart 2 NAHI (Exp-2SE -0.152)**, Shart 3 HAAN (+0.186 / 53) => **SELL FAIL: gold script mein SELL sirf ittila, trade sirf BUY.**
+- Engine jaanch: 2002-18 / 2019+ Python (Dukascopy) ke qareeb (BUY 104 vs 88*, SELL 35 vs 34, 9 vs 8; Exp ek hi taraf) = engine theek. *TV mein 2002 bhi shamil.
+- Sabaq: gold ke 21 saal girte daur (1980-2001) mein bhi SELL manfi (113 tr -0.042) = gold par Tide SELL ka edge NAHI.
+- BUY bhi 1980-2001 mein manfi (-9.7R): BUY "har daur plus" nahi; pakka hissa 2002+ (+0.29 / +0.38). 1980 se pehle ka +2.6R purana / patla data (1833 se, 1971 tak qeemat bandhi) = bharosa kam.
