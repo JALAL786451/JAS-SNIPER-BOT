@@ -24,13 +24,12 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 
 - **64vi sabaq (17 Nov):** SELL 11 market FAIL; YouTube / ICT / 15m idea sab FAIL (`docs/research/`); Kachhua 12 market + 0.25% = sab se behtar (FTMO sim 0 fail); risk ki aakhri had 0.45 (us se upar faida nahi). Naya video = Gemini khulasa paste -> save + test. Weekly limit 50%+ = agent nahi.
 
-- **LIVE report 18 Nov 03:09 (67vi):** gold SELL 3.70 @4057.762 (+76,999) ke NEECHE BUY 37 tk = **3.15 lot** (avg 4047.217, -62,307); upar BUY 22 tk = 3.22 lot (-86,975). Kul gold BUY 6.37 / SELL 6.26; equity 75,783 USC. User plan: SELL 3.70 se 3.15 neeche wali BUY Close By, phir neeche EK bari BUY (size baqi; Claude ne khatra hisab diya). Close By sahi nateeja ~+3,322 USC (pehle 14,690 ghalat kaha). User soch: pehle SELL lock = net 0. 18 Nov SS: BUY 6.40 / SELL 6.22 = net +0.18 (lock ab 0.18), equity 75,219.84, gold 3799.9, margin level 204,736%, stop out 0%.
-- 18 Nov: naya Exness demo #17000740869 ($750, browser). EA browser par nahi; MT5 desktop (C:\MT5_DEMO2 portable) mein login = K11 ka option. Pine sirf TV par.
-- 18 Nov: zones test #105z FAIL (`tools/zone_test.py`): A +0.37 SE, B ulta -0.34 SE (shart 2 SE) = zones sirf naqsha, 5EA qaide wahi.
+- **18 Nov (67vi):** LIVE gold SELL 3.70 @4057.762 ke neeche BUY 3.15 lot (37 tk); Close By = ~+3,322 USC; 18 Nov SS net +0.18 (lock = SELL 0.18), equity 75,219. Naya Exness demo #17000740869 (browser; EA sirf MT5 desktop). Zones #105z FAIL = sirf naqsha. **Chat lambi ka zikr baar baar NAHI (user: mind divert).**
 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
+| **K21** | Gold EK script: Tide 1D BUY+SELL tasdeeq (Rehnuma r2 = sirf BUY). SELL naap #106s `indicators/jas_tide_sell_naap.pine` s1 | user TV OANDA:XAUUSD 1D paste + SS -> qaida `docs/research/tide-gold-sell-qaida.md` se PASS/FAIL, phir gold script |
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
