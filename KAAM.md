@@ -35,6 +35,6 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | K12 | PC Claude: PowerShell `cd D:\JAS` -> `claude.cmd`, pehle `git pull`; D:\JAS mein faltu file NAHI | MT5 test ke liye ALAG `C:\MT5_TEST` |
 | T1 | t5 Forward gold H4 HUI (3.0 curve-fit NAHI, munafa 2024-26 ki chaal se) | agla: wahi US500m H4 - user ki marzi |
 | **K19** | Kachhua Naqsha Pine (j3.2 jaisa) | **k1 BANA 17 Nov** `indicators/jas_kachhua_naqsha.pine` (j3.2 nahi chhua), pinecheck saaf. Agla: user TV par paste (gold 4H / 1D) + SS; error ho to k1.1 |
-| K20 | JAS GOLD g1 (Pine 18 Nov, 67vi, file is branch par NAHI) - `ok4H` shart: 15m/1H/1D par sirf '4H CHART LAGAYEN!' | g1 ko na chhuen; 15m-1D chahiye to NAYI g2 (4H engine request.security '240'; 1D chart par sirf Tide) - user ki haan baqi |
+| K20 | JAS GOLD g2 BANA 18 Nov `indicators/jas_gold_g2.pine` (g1 bhi save, nahi chhua) | user TV gold par paste 15m / 1H / 4H / 1D + SS; error ho to g2.1 |
 | K8 | TV Store update ho to robocopy dobara | jab update aaye |
 | FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
