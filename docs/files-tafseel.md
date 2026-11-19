@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `tools/gold_khamosh_sahara.py` - 70vi (19 Nov): gold g3.1 1D khamosh daur (2013-16, 2018-19, 2022, 2026) mein 4 EA ka % (#101 engine, e2 metal ek trade) - naya test nahi
 - `indicators/jas_gold_g3_1.pine` - g3.1 (19 Nov): g3 + dabba default BAND + ABHI label DZ se upar (TV par g3 chal gayi, SS)
 - `indicators/jas_gold_g4.pine` - g4 (19 Nov, 69vi): g3.1 qaida wahi + SMC Coach v2 ka SIRF ittila (Teacher, MTF dashboard, Entry/SL/TP dabba, BOS/FVG/LGB, score); pinecheck saaf, TV SS baqi.
 - `indicators/jas_gold_g3.pine` - g3 (68vi, 19 Nov): g2 (branch gifted-bardeen) + CHART PAR SZ/DZ patti + naam, 4H/EMA label, qeemat ke paas FAISLA, dabba ON/OFF. Qaide wahi (#107g)
