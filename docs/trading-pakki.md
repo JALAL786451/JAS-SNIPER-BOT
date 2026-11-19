@@ -48,6 +48,9 @@ User: "koshish jaari rahegi jab tak PASS na aaye". Qaida:
 4b. **TradingView (lamba daily data) par (13 Oct):** TALAASH = data shuru se 2018, IMTIHAN = 2019 se aaj (ek dafa). MT5 Exness par wahi 2021-24 / 2025-aaj (Exness data 2021 se; index ka Sep 2025 se).
 4c. **Ek market chunna (13 Oct, user ka sawal + #15):** TALAASH mein nateeja dekh kar market chunna jaiz, magar tab IMTIHAN SAKHT: Exp - 2SE > 0 (sirf Exp > 0 nahi). Isi tarah IBS S&P ASLI PASS hua.
 5. 2025-26 gold ki bari tezi ka daur hai - IMTIHAN par sirf BUY wala idea ittefaq se acha lag sakta hai; BUY/SELL alag dekhna.
+6. **(17 Nov, user - PRIORITY) EA ka mizaj + market ka intikhab HAMESHA nazar mein:** har EA / jor ka mizaj card (BUY/SELL, TF, market, kitni der khuli, kis EA ke saath kaunsa market sanjha) demo se pehle; har report par Claude KHUD takrao bataye. Tafseel `docs/khud-nazar.md`.
+7. **(17 Nov) ASLI PASS ke jhol band:** mile hue market (US500+USTEC, XAU+XAG) = din ka ek cluster (SE); sirf-BUY idea ka buy-and-hold se muqabla; jor mein ek waqt ek taraf ek group ka kul risk + bura din 2019+ par bhi.
+8. **(17 Nov) IMTIHAN ginti:** IMTIHAN data kitni dafa dekha likho; 3+ dafa = IMTIHAN nahi raha - aakhri imtihan demo (forward).
 
 ## 1a. Maqsad aur dil ki baat (11 Oct raat)
 

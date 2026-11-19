@@ -9,6 +9,8 @@ Roman Urdu, chhota aur saaf, "aap". Hamesha backtest -> demo -> live.
 **Token bachao (reply se PEHLE):** sawal purana lage to pehle `grep -i <lafz> docs/sawal-jawab.md` - mile to wahi
 jawab, aur kuch nahi parho. Na mile to `docs/roznamcha/FEHRIST.txt` se tareekh; pata na ho to kaho aur ijazat lo (ek din).
 
+**KHUD NAZAR (user 17 Nov, sab se ahem):** har report / SS / test par bina pooche "Khud dekhi baatein" do: khatra, EA ka aapas mein takrao, backtest se farq, ajeeb cheez - kyun + kya karein. EA ka mizaj + market ka intikhab HAMESHA nazar mein (`docs/khud-nazar.md`). User ka miss = saal ka nuqsan.
+
 ## Usage bachao
 
 - Ye file har message ke saath load hoti hai - **chhoti rakho** (~2 KB). Haal / nateeje / file list yahan NAHI.
