@@ -26,3 +26,6 @@ Claude andaza (pehle): 1H par kharcha ~0.1R / trade -> A FAIL ~90%, B FAIL ~85%.
 ## IMTIHAN B gold (user 19 Nov "test karo", TALAASH FAIL ke bawajood - user ka faisla) - shart PEHLE
 Sirf gold, B wahi qaida, 2019-01-01 se aaj tak, ek dafa. Faisla kharcha 0.03%: n >= 30 aur Exp > 0. Ittila: 0.015%, bina kharcha, saal-wise.
 IMTIHAN PASS = Pine ittila (trade nahi) + demo qaida baad mein; FAIL = B band. Is ke baad 2019+ data B ke liye "dekha hua" - B mein tabdeeli kar ke dobara test MANA.
+### IMTIHAN NATEEJA (19 Nov) - **B FAIL**
+gold 2019-2026-10: 248 tr, jeet 16.9%, Exp **-0.204R** (SE 0.056), kul -50.7R; 0.015% -0.143R; bina kharcha **-0.082R**.
+Saal: 2019 2 tr -0.8R | 2021 89 -18.4R | 2022 106 -19.3R | 2023 4 -1.5R | 2026 47 -10.6R (2026 ki bari girawat mein bhi manfi). B band, dobara NAHI.
