@@ -2092,3 +2092,51 @@ LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.0
 - 17 Nov (64vi) KAAM se hataya: K17 Kachhua 33 market FAIL (2012-18 10 fail vs 12 mkt 0); K18 Kachhua risk: 0.20 = 0 fail magar 2.6 mahine dheema; 0.35 / 0.45 / 0.49 = 2012-18 5 / 5 / 6 fail; 0.25 hi (0 fail, 15.5 / 10.2 mahine).
 
 - 18 Nov (67vi) KAAM se hataya: R2 Rehnuma r2 (TV chal rahi, ab JAS GOLD g1); K5 tokri tk2 (ruka); K8 TV Store robocopy (jab update).
+
+## KAAM se hataya 19 Nov (69vi, user 'haan KAAM.md chhota karo, kuch zaya na ho') - POORA purana KAAM.md neeche, harf ba harf
+```
+# KAAM - Jalal ka EK register (har nayi chat ko hook KHUD dikhata hai)
+
+**TEST SE PEHLE HAMESHA (user 17 Nov, 65vi):** koshish JAARI jab tak PASS (user 13 Oct) - magar har naya idea pehle G1-G10 darwaza (`docs/research/test-se-pehle-shartein.md`: factor saboot, daily/4H, t5/i6/k2 se alag, kharcha, qaida pehle likha, chances) + user "test karo". Darwaze ke baghair test NAHI. Pehle `grep` purani koshish (dobara test NAHI). PASS wale (#68, Kachhua 12, #81) demo par pakke karo; K6 user ka tareeqa.
+
+JAWAB CHHOTA (user 10 Nov). User kuch bhi bataye (faisla, khabar) -> USI jawab mein yahan EK line, chat khatam ka intezar NAHI.
+Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 KB se lambi NA ho.** Purana: `grep "KAAM se hataya" docs/purana-haal.md`.
+
+## Pehle jawab mein KHUD (user ko 0 se batana na pare - user 16 Nov)
+1. MT5 naqsha table (upar hook mein) - user tasdeeq.
+2. Neeche "Khule kaam" se AGLA kaam khud batao + salah ("kya karein?" mat poochho).
+3. 1 nayi maloomat (`docs/nayi-maloomat.md` mein na ho; bata kar wahan likho).
+4. KAHANI.txt / poori TRADING.md NA parho - hook kaafi hai; purani baat sirf `grep`.
+
+## Pakki baatein (bhoolna mana)
+- **US500 D1 SMA200 nazar (66vi):** 17 Nov SS SPX 7329.6 < 7353.95 (1 din); 3 D1 close neeche = t5 US aadha (V2) ki baat user se.
+- **KHUD NAZAR (17 Nov):** har report / SS par bina pooche khatre + takrao + backtest se farq KHUD batao aur samjhao (t5+i6 US index wala sabaq).
+- **Purane EA / Pine mein KOI tabdeeli NAHI** (user 16 Nov) - naya kaam NAYI file mein. Naya version banane se pehle ijazat + abhi ka haal (SS).
+- Risk hadd khud se NAHI barhana. Backtest -> demo -> live. LIVE par deewar / KHUD wala EA abhi NAHI (pehle demo).
+- FTMO: swap-free milta (email 5 Nov); khareedne se pehle "Swing 2-Step 100k par?" likhwana baqi. FundingPips = hamare EA wahan NAHI (EA mana). EA plan sirf FTMO.
+- User faisle (15 Nov): t5 hi chalne dein (1D filter nahi); gold par tokri BAND, K5 tab tak nahi; demo chalne dein. #105: 4 EA ki taqseem na badlein.
+- **User ka ASAL maqsad (16 Nov):** "jis tarha mein trade leta hoon uska EA" - profit lots + jori khud band, loss par DEEWAR (ulti lot, user ne khud maanga), dohri lot pakre. Poora auto 2 dafa fail (tk2, K4). Deewar nuqsan ROKTI hai, wapas nahi lati.
+- LIVE 253687618: m8.5 chal raha (haal = hook table). Jori (A / B) YES be-khatar; C (profit ticket) NA lein.
+- **PC Claude + TV Bridge se Pine / chart ka kaam NAHI** (user 17 Nov: bohot token) - TV ka kaam user khud + SS.
+- Data user ne diya: US500 / USTEC M1 2012-26 + gold M1 (QDM). Kitabi ideas #102-104 FAIL (list khatam).
+- **TOKEN BACHAT (user 16 Nov "haan"):** nayi chat KHUD nahi khulti (user kholta, "TRADING" likhta); shuru mein sirf hook; chat khatam = halki rasm (CLAUDE.md). Rozmarra kaam sasta model, Fable sirf mushkil kaam.
+
+- **User ki hasrat (16 Nov raat, 62vi):** "3 mahine se 3 EA meri hasrat ke hisab se nahi bane - tasalli hai, magar expectation tak nahi pohncha". Chahiye: (1) FTMO ke mahine kam karne wala extraordinary EA, (2) BUY / SELL ka pro level Pine idea, (3) mere tareeqe wala TESTED fighting EA (fishing lots, bohot si BUY / SELL mein perfect fighter). SS 11:30 PM (usage reset) ke baad.
+
+- **64vi sabaq (17 Nov):** SELL 11 market FAIL; YouTube / ICT / 15m idea sab FAIL (`docs/research/`); Kachhua 12 market + 0.25% = sab se behtar (FTMO sim 0 fail); risk ki aakhri had 0.45 (us se upar faida nahi). Naya video = Gemini khulasa paste -> save + test. Weekly limit 50%+ = agent nahi.
+
+- **18 Nov (67vi):** LIVE gold SELL 3.70 @4057.762 ke neeche BUY 3.15 lot (37 tk); Close By = ~+3,322 USC; 18 Nov SS net +0.18 (lock = SELL 0.18), equity 75,219. Naya Exness demo #17000740869 (browser; EA sirf MT5 desktop). Zones #105z FAIL = sirf naqsha. **Chat lambi ka zikr baar baar NAHI (user: mind divert).**
+
+## Khule kaam (upar wala pehle)
+| # | Kaam | Haal |
+|---|---|---|
+| **K21** | JAS GOLD **g3** (`indicators/jas_gold_g3.pine`, 19 Nov): g2 (doosri chat, branch gifted-bardeen: 15m-4H + 1D) + chart par SZ/DZ patti + naam. User: zones chart par likhe hon | **g3.1 TV par CHAL GAYI 19 Nov SS - user khush ("bohot help")**. Ye hi gold ki script. Agla: nazar - pehla "ABHI: BUY" aaye to SS, demo pehle |
+| **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
+| K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
+| K7 | Kachhua e2 demo 474832446 | 2 khuli (19 Nov 11:05): XAG SELL 0.01 +84 + AUDUSD SELL 0.24 +54, lot sahi (0.25%). k2 ki pehli trade ka intezar |
+| K12 | PC Claude: PowerShell `cd D:\JAS` -> `claude.cmd`, pehle `git pull`; D:\JAS mein faltu file NAHI | MT5 test ke liye ALAG `C:\MT5_TEST` |
+| T1 | t5 Forward gold H4 HUI (3.0 curve-fit NAHI, munafa 2024-26 ki chaal se) | agla: wahi US500m H4 - user ki marzi |
+| **K19** | Kachhua Naqsha Pine (j3.2 jaisa) | **k1 BANA 17 Nov** `indicators/jas_kachhua_naqsha.pine` (j3.2 nahi chhua), pinecheck saaf. Agla: user TV par paste (gold 4H / 1D) + SS; error ho to k1.1 |
+| FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
+```
+| **K22 (PEHLE)** | **Fable 5.2 AZAD jaanch** (4 EA + instruments + qaide): brief `docs/fable-jaanch.md`. Hafta 60% (17 Nov SS), reset Itwar 22 Nov 2 AM; tab tak sirf chhote kaam (Sonnet). **'Full reset' muft EK dafa, 11 Dec 3 AM tak = BACHA ke rakho**: Fable jaanch beech mein limit khatam ho tab dabao. **Chat Fable par ho to user ke "TRADING" ke baad bina pooche seedha yahi kaam shuru** | user: model Fable + "TRADING" (bas) |

@@ -64,7 +64,7 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 **68vi chat (19 Nov)** - JAS GOLD **g3** (g2 + chart par SZ/DZ patti + naam) -> **g3.1** (`indicators/jas_gold_g3_1.pine`: dabba default band, ABHI label zone se upar) TV par CHAL GAYI, user khush. Branch `gifted-bardeen` (g2 + 19 Nov report) is branch mein MILA di.
 (67vi: zones #105z FAIL, Tide gold SELL #106s FAIL, #107g Tide 1D BUY + 4H t5 BUY PASS.)
-**AGLA (69vi):** g3.1 par nazar - pehla "ABHI: BUY" SS (demo pehle); KAAM.md ~4 KB tak chhota; K11; FTMO Black Friday ftmo.com check.
+**AGLA (69vi):** g3.1 par nazar - pehla "ABHI: BUY" SS (demo pehle); K11; FTMO Black Friday ftmo.com check. **ITWAR 22 Nov ke baad YAAD DILAO: Fable 5.2 se 4 EA ki AZAD jaanch (`docs/fable-jaanch.md`, KAAM.md "FABLE")**. (69vi: 65-68vi ki bikhri branches + 66vi Fable kaam default par mila diye, save.sh theek, KAAM 3 KB.)
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
