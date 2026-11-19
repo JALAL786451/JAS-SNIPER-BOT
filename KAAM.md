@@ -29,7 +29,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
-| **K21** | JAS GOLD g1 (`indicators/jas_gold_g1.pine`) **TV par CHAL GAYI 18 Nov SS** (OANDA:XAUUSD 4H, error nahi): Tide 1D BUY + 4H t5 BUY (#107g), zones = engine level, SELL mat lo. 18 Nov haal: INTEZAR, dono BUY MAT LO (1D EMA50<200, 4H neeche), gold 3737 | Agla: nazar - pehla BUY ishara aaye to SS; demo pehle |
+| **K21** | JAS GOLD **g3** (`indicators/jas_gold_g3.pine`, 19 Nov): g2 (doosri chat, branch gifted-bardeen: 15m-4H + 1D) + chart par SZ/DZ patti + naam. User: zones chart par likhe hon | Agla: user TV paste + SS (error ho to g3.1). Note: gifted-bardeen branch alag chali - milana baqi |
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
 | K7 | Kachhua e2 demo 474832446 | PEHLI TRADE 17 Nov: XAG SELL 0.01 @47.148 SL 51.560 (= Python). k2 ki pehli trade ka intezar |

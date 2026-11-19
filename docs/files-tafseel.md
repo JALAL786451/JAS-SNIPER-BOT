@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `indicators/jas_gold_g3.pine` - g3 (68vi, 19 Nov): g2 (branch gifted-bardeen) + CHART PAR SZ/DZ patti + naam, 4H/EMA label, qeemat ke paas FAISLA, dabba ON/OFF. Qaide wahi (#107g)
 - `indicators/jas_gold_g1.pine` - g1 (67vi): JAS GOLD - sirf gold 4H chart; Tide 1D BUY + 4H t5 BUY (#107g PASS), zones = engine ke level (10 din high R, Tide SL S, 4H ST, 1D EMA), SELL MAT LO, lot = kul risk / 2. TV compile baqi
 - `tools/gold_do_buy.py` - #107g (67vi): gold Tide 1D BUY + 4H t5 BUY ek saath (S1 PASS, S2 overlap ~85%, S3 EMA zone FAIL); qaida + nateeja `docs/research/gold-do-buy-qaida.md`
 - `indicators/jas_tide_sell_naap.pine` - s1 (67vi, #106s): Tide radar r3 engine gold 1D par, BUY/SELL 4 daur alag + SELL PASS/FAIL (qaida `docs/research/tide-gold-sell-qaida.md`)
