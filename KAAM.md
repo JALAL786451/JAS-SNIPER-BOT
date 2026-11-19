@@ -30,7 +30,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | R2 | Rehnuma r2 | **TV par CHAL RAHA (17 Nov SS, XAUUSD 4h, error nahi)** - ab sirf nazar; 1H BUY idea demo pehle |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
-| K7 | Kachhua e2 demo 474832446 | PEHLI TRADE 17 Nov: XAG SELL 0.01 @47.148 SL 51.560 (= Python). k2 ki pehli trade ka intezar |
+| K7 | Kachhua e2 demo 474832446 | 2 khuli (19 Nov report): XAG SELL 0.01 +84 + AUDUSD SELL 0.24 +54, dono lot sahi (0.25%). k2 ki pehli trade ka intezar |
 | K5 | Tokri EA tk2 demo par | ruka (user: tokri band) |
 | K12 | PC Claude: PowerShell `cd D:\JAS` -> `claude.cmd`, pehle `git pull`; D:\JAS mein faltu file NAHI | MT5 test ke liye ALAG `C:\MT5_TEST` |
 | T1 | t5 Forward gold H4 HUI (3.0 curve-fit NAHI, munafa 2024-26 ki chaal se) | agla: wahi US500m H4 - user ki marzi |
