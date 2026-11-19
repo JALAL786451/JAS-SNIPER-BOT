@@ -4,7 +4,7 @@
 MT5 ko hamesha TITLE BAR ke account number se bulao ("pehla/doosra" NAHI - user ne naam nahi rakhe). Yahan na ho = "pata nahi", andaza NAHI.
 | Title bar account | Server | Qism | Balance | EA (chart) | Algo (ON/OFF) | Pakka |
 |---|---|---|---|---|---|---|
-| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | **19 Nov report 11:05: balance 98,857.78, equity 98,877.25** (shuru 100k se -1,142.22; DIV +14.31 kul) | i6, t5, k2, e2 (BTCUSDm H4) | ON; khuli 3: **i6 US500 BUY 2.52 @7427.02 SL 7030.07** (-118.49) + **e2 XAG SELL 0.01 @47.148 SL 51.560** (+84.20) + **e2 DOOSRI: AUDUSD SELL 0.24 @0.67114 SL 0.68136** (19 Nov 00:00, "TD 20261118", +53.76; lot sahi: $245 = 0.25%); band kul (8 trade): i6 +153.96, t5 -1,310.16; target baqi ~11,140; k2 0 | 19 Nov History report (67vi) |
+| 474832446 | Exness-MT5Trial15 | FTMO demo, Standard USD | **19 Nov report 00:58: balance 98,855.40, equity 98,715.66** (shuru 100k se -1,144.60; floating -139.74) | i6, t5, k2, e2 (BTCUSDm H4) | ON; khuli 2: **i6 US500 BUY 2.52 @7427.02 SL 7030.07 (abhi 7327.58, -250.59)** + **e2 XAG SELL 0.01 @47.148 SL 51.560 (abhi 44.931, +110.85)**; 17 Nov ke baad koi trade band NAHI, nayi NAHI; band kul 8 trade: jeet 3 / haar 5, PF 0.51, net -1,156.20, sab se bari girawat 1.71%; k2 0 trade | 19 Nov History report (65vi) |
 | 472716649 | Exness-MT5Trial16 | demo **Standard USD (CENT NAHI)** | balance = equity 2,153.25, khuli 0 | JasIbsCentEA c1 (US500m D1), band trade 0; XAG SELL 0.05 (2 Nov, SL khali = hamara EA nahi) user ne 3 Nov band +153.25; Magic/Comment SS baqi (purana: `docs/purana-haal.md`) | ON | 4 Nov SS |
 | 253687618 | Exness-MT5Real34 | LIVE Standard Cent (USC), swap-free | **17 Nov SS (62vi): EQUITY 75,830.77 (user ne ~$400 = ~40,000 USC deposit kiye, 17 Nov); gold BUY 6.46 (68 tk, avg 4081.653) / SELL 6.39 (19 tk, avg 4027.691) NET +0.07, P/L -36,214.20 (WASOOLI +15,233.48 = pehle -20.9k ka hi hissa balance mein), gold 3856.1, tk 166 / 200; BTC NET -0.00; popup A +31.80 / B +148.96 / N +4.70 / E 0.05 / C +1297.50 (SELL = NO)** | **JasMauqa m8.5 CHART PAR (K11 LIVE hissa HUA)**; `JasLarai1_EA` Navigator mein (compile hua lagta) | **ON** (YES/NO popup) | 17 Nov SS (62vi) |
 
@@ -62,9 +62,9 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**64vi chat (17 Nov)** - Research (agent NAHI, limit 55%): SELL 11 market FAIL (K13); YouTube Umar Ashraf / Andrea Cimi + user ka 15m SMC BOS FAIL, ICT lecture = soch (`docs/research/`); Kachhua 33 market FAIL (10 fail), risk 0.20-0.49 test: **0.25 hi behtar (FTMO sim 0 fail, 15.5 / 10.2 mahine)**, had 0.45. Naya: `indicators/jas_kachhua_naqsha.pine` k1 (j3.2 jaisi shakal, Kachhua D1 BUY+SELL), pinecheck saaf.
-Tareeqa chala: YouTube -> Gemini khulasa paste -> save + test (sasta). Data `data/duka/H1` (QDM block ki zaroorat nahi).
-**AGLA (65vi):** K19 = user TV par Kachhua Naqsha k1 paste + SS (error ho to k1.1). K11 (3rd MT5 `C:\MT5_DEMO2` + 472716649 + j2). ~20 Nov FTMO Black Friday.
+**68vi chat (19 Nov)** - JAS GOLD **g3** (g2 + chart par SZ/DZ patti + naam) -> **g3.1** (`indicators/jas_gold_g3_1.pine`: dabba default band, ABHI label zone se upar) TV par CHAL GAYI, user khush. Branch `gifted-bardeen` (g2 + 19 Nov report) is branch mein MILA di.
+(67vi: zones #105z FAIL, Tide gold SELL #106s FAIL, #107g Tide 1D BUY + 4H t5 BUY PASS.)
+**AGLA (69vi):** g3.1 par nazar - pehla "ABHI: BUY" SS (demo pehle); KAAM.md ~4 KB tak chhota; K11; FTMO Black Friday ftmo.com check.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 

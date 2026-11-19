@@ -1,0 +1,202 @@
+//@version=6
+// JAS TIDE SELL NAAP  (build s1, Pine v6, 18 Nov 2026)  -  Koshish #106s, qaida: docs/research/tide-gold-sell-qaida.md
+// ============================================================================
+//  User (18 Nov): "Tide BUY aur SELL dono ka hai? gold par SELL ka lamba data test."
+//  Ye script TRADE NAHI karti, sirf naap. OANDA:XAUUSD 1D chart par lagayen (poori history).
+//
+//  ENGINE = indicators/jas_tide_radar.pine r3 ka f_tide() HOO-BA-HOO (purani file nahi chhedi):
+//   rukh D1 EMA50/200, naali 10 toot (band candle), SL 2 x ATR14, 5 candle ka sarakta SL,
+//   rukh palte / close SL ke paar = band, ATR >= 0.25%, kharcha 0.005% har taraf, 2R aadhi NAHI.
+//   Farq sirf ye: request.security nahi - chart ki apni candles; har candle par PICHHLI band candle
+//   ka hisaab ([1] / [2] wahi offsets) = repaint nahi.
+//  Table: BUY aur SELL alag, 4 daur (entry ka saal): <1980 | 1980-2001 | 2002-2018 | 2019+,
+//   aur qaida file ki 3 shartein -> SELL PASS / FAIL khud. Settings badalna MANA (qaida).
+// ============================================================================
+indicator("JAS Tide SELL Naap s1", shorttitle = "JAS Tide SELL s1", overlay = true, max_bars_back = 500)
+
+BUILD = "s1"
+
+grQ = "1 · Qawaid (Tide radar r3 jaise - MAT BADLEIN, qaida file)"
+entryLen  = input.int(10, "Naali: kitni candle ka high/low", minval = 3, maxval = 200, group = grQ, display = display.none)
+exitLen   = input.int(5, "SL sarakna: kitni candle", minval = 2, maxval = 100, group = grQ, display = display.none)
+atrLen    = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+atrMult   = input.float(2.0, "Shuru ka SL (x ATR)", minval = 0.5, step = 0.1, group = grQ, display = display.none)
+emaFLen   = input.int(50, "Rukh EMA fast", minval = 2, group = grQ, display = display.none)
+emaSLen   = input.int(200, "Rukh EMA slow", minval = 3, group = grQ, display = display.none)
+minAtrPct = input.float(0.25, "Kam az kam ATR (% qeemat ka)", minval = 0, step = 0.05, group = grQ, display = display.none)
+costPct   = input.float(0.005, "Kharcha (% har taraf)", minval = 0, step = 0.001, group = grQ, display = display.none)
+
+grV = "2 · Dikhawa"
+panelPos = input.string("Top Right", "Table ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = grV, display = display.none)
+panelSz  = input.string("Small", "Table ka font", options = ["Tiny", "Small", "Normal"], group = grV, display = display.none)
+
+// daur ki hadd (qaida file - input NAHI, taake ghumai na ja sake)
+Y1 = 1980
+Y2 = 2002
+Y3 = 2019
+
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Top Right" ? position.top_right : s == "Bottom Left" ? position.bottom_left : position.bottom_right
+PSZ = panelSz == "Tiny" ? size.tiny : panelSz == "Normal" ? size.normal : size.small
+f_daur(int y) => y < Y1 ? 0 : y < Y2 ? 1 : y < Y3 ? 2 : 3
+
+// ============================================================================
+//  ENGINE (radar r3 f_tide jaisa) - ta.* sab upar (Pine v6)
+// ============================================================================
+atrA = ta.atr(atrLen)
+hbA  = ta.highest(high, entryLen)
+lbA  = ta.lowest(low, entryLen)
+hxA  = ta.highest(high, exitLen)
+lxA  = ta.lowest(low, exitLen)
+efA  = ta.ema(close, emaFLen)
+esA  = ta.ema(close, emaSLen)
+
+// pichhli (BAND) candle aur us waqt ke level - radar wale offsets
+o1 = open[1]
+h1 = high[1]
+l1 = low[1]
+c1 = close[1]
+a1 = atrA[1]
+hb = hbA[2]
+lb = lbA[2]
+hx = hxA[2]
+lx = lxA[2]
+ef = efA[2]
+es = esA[2]
+
+var int   d   = 0
+var float e   = na
+var float r   = na
+var float sl  = na
+var int   eY  = na
+var int   firstY = na
+if bar_index == 0
+    firstY := year(time)
+
+// [0..3] = BUY daur, [4..7] = SELL daur
+var array<float> sN  = array.new<float>(8, 0.0)
+var array<float> sR  = array.new<float>(8, 0.0)
+var array<float> sR2 = array.new<float>(8, 0.0)
+var array<float> sW  = array.new<float>(8, 0.0)
+
+bool  cl  = false
+bool  atC = false
+float px  = na
+if d != 0 and not na(c1)
+    // candle ke andar SL (gap ho to open par)
+    if d == 1 and l1 <= sl
+        px := o1 < sl ? o1 : sl
+        cl := true
+    else if d == -1 and h1 >= sl
+        px := o1 > sl ? o1 : sl
+        cl := true
+    // close par: D1 rukh palta
+    if not cl and not na(ef) and not na(es) and (d == 1 ? ef < es : ef > es)
+        px  := c1
+        cl  := true
+        atC := true
+    // close par: SL aage, close peeche ho to band
+    if not cl
+        sl := d == 1 ? math.max(sl, nz(lx, sl)) : math.min(sl, nz(hx, sl))
+        if (d == 1 and c1 <= sl) or (d == -1 and c1 >= sl)
+            px  := c1
+            cl  := true
+            atC := true
+if cl
+    rr = d * (px - e) / r - 2.0 * costPct / 100.0 * e / r
+    k = (d == 1 ? 0 : 4) + f_daur(eY)
+    sN.set(k, sN.get(k) + 1)
+    sR.set(k, sR.get(k) + rr)
+    sR2.set(k, sR2.get(k) + rr * rr)
+    if rr > 0
+        sW.set(k, sW.get(k) + 1)
+    d := 0
+if d == 0 and not atC and not na(c1) and not na(a1) and a1 > 0 and not na(hb) and not na(lb)
+    bull = not na(ef) and not na(es) and ef > es
+    bear = not na(ef) and not na(es) and ef < es
+    live = a1 / c1 * 100.0 >= minAtrPct
+    buy  = c1 > hb and bull and live
+    sell = c1 < lb and bear and live
+    if buy or sell
+        d  := buy ? 1 : -1
+        e  := c1
+        r  := atrMult * a1
+        sl := c1 - d * r
+        eY := year(time[1])
+
+// ============================================================================
+//  TABLE (aakhri candle par)
+// ============================================================================
+f_ex(float n, float s) => n > 0 ? s / n : na
+f_se(float n, float s, float s2) => n > 1 ? math.sqrt(math.max(0.0, (s2 - s * s / n) / (n - 1))) / math.sqrt(n) : na
+f_num(float x, string f) => na(x) ? "-" : (x > 0 ? "+" : "") + str.tostring(x, f)
+f_col(float x) => na(x) ? color.gray : x > 0 ? color.new(#26a69a, 0) : color.new(#ef5350, 0)
+
+// ek qatar: idx list ka jor
+f_sum(array<int> ix) =>
+    float n = 0.0
+    float s = 0.0
+    float s2 = 0.0
+    float w = 0.0
+    for i in ix
+        n += sN.get(i)
+        s += sR.get(i)
+        s2 += sR2.get(i)
+        w += sW.get(i)
+    [n, s, s2, w]
+
+var table tb = table.new(f_pos(panelPos), 9, 14, bgcolor = color.new(#131722, 10), border_width = 1, border_color = color.new(#434651, 0))
+cTx = color.new(#d1d4dc, 0)
+cHd = color.new(#2a2e39, 0)
+
+f_row(int row, string name, array<int> ixB, array<int> ixS) =>
+    [nB, sB, s2B, wB] = f_sum(ixB)
+    [nS, sS, s2S, wS] = f_sum(ixS)
+    exB = f_ex(nB, sB)
+    exS = f_ex(nS, sS)
+    seS = f_se(nS, sS, s2S)
+    table.cell(tb, 0, row, name, text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, row, str.tostring(nB, "0"), text_color = cTx, text_size = PSZ)
+    table.cell(tb, 2, row, f_num(exB, "0.000"), text_color = f_col(exB), text_size = PSZ)
+    table.cell(tb, 3, row, f_num(sB, "0.0"), text_color = f_col(sB), text_size = PSZ)
+    table.cell(tb, 4, row, str.tostring(nS, "0"), text_color = cTx, text_size = PSZ)
+    table.cell(tb, 5, row, nS > 0 ? str.tostring(100.0 * wS / nS, "0") + "%" : "-", text_color = cTx, text_size = PSZ)
+    table.cell(tb, 6, row, f_num(exS, "0.000"), text_color = f_col(exS), text_size = PSZ)
+    table.cell(tb, 7, row, na(seS) ? "-" : str.tostring(seS, "0.000"), text_color = cTx, text_size = PSZ)
+    table.cell(tb, 8, row, f_num(sS, "0.0"), text_color = f_col(sS), text_size = PSZ)
+    [nS, exS, seS]
+
+if barstate.islast
+    table.clear(tb, 0, 0, 8, 13)
+    table.cell(tb, 0, 0, "JAS TIDE SELL NAAP " + BUILD, text_color = cTx, bgcolor = cHd, text_size = PSZ)
+    table.merge_cells(tb, 0, 0, 4, 0)
+    table.cell(tb, 5, 0, syminfo.ticker + (timeframe.isdaily ? " 1D" : " - 1D CHART LAGAYEN!") + " · data " + str.tostring(firstY, "0") + " se", text_color = timeframe.isdaily ? cTx : color.new(#ff9800, 0), bgcolor = cHd, text_size = PSZ)
+    table.merge_cells(tb, 5, 0, 8, 0)
+    hdr = array.from("Daur (entry)", "BUY tr", "BUY Exp R", "BUY kul R", "SELL tr", "SELL jeet", "SELL Exp R", "SELL SE", "SELL kul R")
+    for i = 0 to 8
+        table.cell(tb, i, 1, hdr.get(i), text_color = cTx, bgcolor = cHd, text_size = PSZ)
+    [n2x, e2x, s2x] = f_row(2, "1980 se pehle", array.from(0), array.from(4))
+    [n3x, e3x, s3x] = f_row(3, "1980-2001 (girta daur)", array.from(1), array.from(5))
+    [n4x, e4x, s4x] = f_row(4, "2002-2018", array.from(2), array.from(6))
+    [n5x, e5x, s5x] = f_row(5, "2019-aaj", array.from(3), array.from(7))
+    [nS, exS, seS] = f_row(6, "KUL", array.from(0, 1, 2, 3), array.from(4, 5, 6, 7))
+    [nO, exO, seO] = f_row(7, "1980-2001 ke BAHAR", array.from(0, 2, 3), array.from(4, 6, 7))
+    ok1 = nS >= 60
+    ok2 = not na(exS) and not na(seS) and exS - 2 * seS > 0
+    ok3 = nO >= 30 and not na(exO) and exO > 0
+    okC = color.new(#26a69a, 0)
+    noC = color.new(#ef5350, 0)
+    table.cell(tb, 0, 8, "SHART 1: SELL kul >= 60", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, 8, str.tostring(nS, "0") + (ok1 ? "  HAAN" : "  NAHI"), text_color = ok1 ? okC : noC, text_size = PSZ)
+    table.merge_cells(tb, 1, 8, 8, 8)
+    table.cell(tb, 0, 9, "SHART 2: SELL Exp - 2SE > 0", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, 9, (na(exS) or na(seS) ? "-" : f_num(exS - 2 * seS, "0.000")) + (ok2 ? "  HAAN" : "  NAHI"), text_color = ok2 ? okC : noC, text_size = PSZ)
+    table.merge_cells(tb, 1, 9, 8, 9)
+    table.cell(tb, 0, 10, "SHART 3: bahar Exp > 0, n >= 30", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, 10, f_num(exO, "0.000") + " / " + str.tostring(nO, "0") + (ok3 ? "  HAAN" : "  NAHI"), text_color = ok3 ? okC : noC, text_size = PSZ)
+    table.merge_cells(tb, 1, 10, 8, 10)
+    okAll = ok1 and ok2 and ok3 and timeframe.isdaily
+    table.cell(tb, 0, 11, "FAISLA (qaida pehle se)", text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, 11, okAll ? "SELL PASS - gold script SELL bhi trade" : "SELL FAIL - SELL sirf ittila, trade sirf BUY", text_color = cTx, bgcolor = okAll ? okC : noC, text_size = PSZ)
+    table.merge_cells(tb, 1, 11, 8, 11)
+    table.cell(tb, 0, 12, "Sirf naap, trade nahi. Python 2003-26: BUY 88/54 tr, SELL 34/8 tr (qaida file).", text_color = color.gray, text_size = size.tiny, text_halign = text.align_left)
+    table.merge_cells(tb, 0, 12, 8, 12)

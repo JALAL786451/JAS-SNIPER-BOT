@@ -2090,3 +2090,5 @@ LIVE 16 Nov: equity ~38,770, gold BUY 7.29 / SELL 7.27 (NET +0.02), BTC NET +0.0
 - 17 Nov (64vi) KAAM se hataya: K13 BUY+SELL EA - SELL 11 market FAIL ((a) gold/US500/USTEC/XAG D1<SMA200, (b) 5 forex + 2 oil; `tools/k13_sell_regime_test.py`); BUY+SELL = e2 hi.
 - 17 Nov (64vi) KAAM se hataya: K14 Umar Ashraf Morning Top FAIL (-0.19 / -0.30R), K15 Andrea Cimi ORB 15m FAIL, K16 Guardeer ICT lecture = soch (qaide nahi), K20 user ka Gold 15M SMC BOS FAIL (asli kharcha -0.091R, 7/8 saal minus). Khulase `docs/research/`.
 - 17 Nov (64vi) KAAM se hataya: K17 Kachhua 33 market FAIL (2012-18 10 fail vs 12 mkt 0); K18 Kachhua risk: 0.20 = 0 fail magar 2.6 mahine dheema; 0.35 / 0.45 / 0.49 = 2012-18 5 / 5 / 6 fail; 0.25 hi (0 fail, 15.5 / 10.2 mahine).
+
+- 18 Nov (67vi) KAAM se hataya: R2 Rehnuma r2 (TV chal rahi, ab JAS GOLD g1); K5 tokri tk2 (ruka); K8 TV Store robocopy (jab update).

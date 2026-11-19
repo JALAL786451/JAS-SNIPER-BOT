@@ -3,6 +3,12 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `indicators/jas_gold_g3_1.pine` - g3.1 (19 Nov): g3 + dabba default BAND + ABHI label DZ se upar (TV par g3 chal gayi, SS)
+- `indicators/jas_gold_g3.pine` - g3 (68vi, 19 Nov): g2 (branch gifted-bardeen) + CHART PAR SZ/DZ patti + naam, 4H/EMA label, qeemat ke paas FAISLA, dabba ON/OFF. Qaide wahi (#107g)
+- `indicators/jas_gold_g1.pine` - g1 (67vi): JAS GOLD - sirf gold 4H chart; Tide 1D BUY + 4H t5 BUY (#107g PASS), zones = engine ke level (10 din high R, Tide SL S, 4H ST, 1D EMA), SELL MAT LO, lot = kul risk / 2. TV compile baqi
+- `tools/gold_do_buy.py` - #107g (67vi): gold Tide 1D BUY + 4H t5 BUY ek saath (S1 PASS, S2 overlap ~85%, S3 EMA zone FAIL); qaida + nateeja `docs/research/gold-do-buy-qaida.md`
+- `indicators/jas_tide_sell_naap.pine` - s1 (67vi, #106s): Tide radar r3 engine gold 1D par, BUY/SELL 4 daur alag + SELL PASS/FAIL (qaida `docs/research/tide-gold-sell-qaida.md`)
+- `tools/zone_test.py` - #105z (67vi): Naqsha+5EA zones (S/R = SZ/DZ, Pine j3.2 jaise) ka #34 4H tokri par asar - FAIL; qaida + nateeja `docs/research/zone-test-qaida.md`
 - `tools/k13_sell_regime_test.py` - K13 (64vi): 4H ST SELL sirf D1<SMA200, (a) gold/US500/USTEC/XAG + (b) argv forex/oil data/duka - dono FAIL
 - `tools/k14_morning_top_test.py` - K14 (64vi): Umar Ashraf Morning Top (gap down SELL 9:30-10:30) US500/USTEC M1 - FAIL
 - `tools/k15_orb15_index_test.py` - K15 (64vi): Andrea Cimi 15m ORB US500/USTEC M1 2012-26 - FAIL
@@ -10,6 +16,8 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 - `docs/research/guardeer-ict-lecture11.md` - Guardeer ICT lecture 11 Gemini khulasa + purane SMC test (sab FAIL)
 - `tools/k17_kachhua33.py` - K17 (64vi): e2 Kachhua 12 vs 33 market (edge + FTMO #101 simulator) - 33 FAIL, 12 hi behtar
 - `tools/k18_kachhua_risk.py` - K18 (64vi): Kachhua risk 0.25 vs 0.35 FTMO - 0.35 par 2012-18 mein 5 fail = FAIL
+- `indicators/jas_gold_g1.pine` - **g1 (67vi, 18 Nov)**: gold rehnuma, Tide 1D BUY + 4H Supertrend BUY (#107g), zones, SELL MAT LO; SIRF 4H chart. User ki paste se save
+- `indicators/jas_gold_g2.pine` - **g2 (18 Nov)**: g1 ke wahi qaide, 4H engine request.security '240' -> 1m-4H chart par poora, 1D par sirf Tide. pinecheck saaf; TV SS baqi
 - `indicators/jas_kachhua_naqsha.pine` - **k1 (64vi, 17 Nov)**: Kachhua (e2) D1 BUY+SELL ka Naqsha, j3.2 jaisi shakal (zones/rukh/news j3.2 se copy, khulasa table, khuli trade dabba, AGLI andaza, daayen Python hisaab 12 market + TV live). pinecheck saaf; TV compile user SS baqi
 - `tools/k20_smc15_bos_test.py` - K20 (64vi): user ka Gold 15M SMC BOS strategy (pivot 12, EMA200, 2 ATR, 2.5R, 07-20 UTC) gold M1 2019-26 - FAIL
 - `docs/research/umar-ashraf-morning-top.md` - us video ka Gemini khulasa + test nateeja
