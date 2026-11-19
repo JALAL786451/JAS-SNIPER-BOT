@@ -32,7 +32,7 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | **K21** | JAS GOLD **g3** (`indicators/jas_gold_g3.pine`, 19 Nov): g2 (doosri chat, branch gifted-bardeen: 15m-4H + 1D) + chart par SZ/DZ patti + naam. User: zones chart par likhe hon | **g3.1 TV par CHAL GAYI 19 Nov SS - user khush ("bohot help")**. Ye hi gold ki script. Agla: nazar - pehla "ABHI: BUY" aaye to SS, demo pehle |
 | **K11** | m8.5 LIVE par **HUA 17 Nov** (SS: chart par m8.5). `JasLarai` j2 = Navigator mein `JasLarai1_EA` -> demo 472716649 par lagana, **deewar OFF** (test #3 fail) | **17 Nov SS: PC par sirf 2 MT5 khule (474832446 FTMO demo + 253687618 LIVE); 472716649 KISI par login NAHI** (= c1 bhi nahi chal raha). Salah: 3rd MT5 alag folder C:\MT5_DEMO2 mein 472716649 login + j2; purane 2 MT5 mein login KABHI na badlein (un ke EA naye account par chalne lagen) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha, test nahi) | K11 ke baad; user ki haan |
-| K7 | Kachhua e2 demo 474832446 | PEHLI TRADE 17 Nov: XAG SELL 0.01 @47.148 SL 51.560 (= Python). k2 ki pehli trade ka intezar |
+| K7 | Kachhua e2 demo 474832446 | 2 khuli (19 Nov 11:05): XAG SELL 0.01 +84 + AUDUSD SELL 0.24 +54, lot sahi (0.25%). k2 ki pehli trade ka intezar |
 | K12 | PC Claude: PowerShell `cd D:\JAS` -> `claude.cmd`, pehle `git pull`; D:\JAS mein faltu file NAHI | MT5 test ke liye ALAG `C:\MT5_TEST` |
 | T1 | t5 Forward gold H4 HUI (3.0 curve-fit NAHI, munafa 2024-26 ki chaal se) | agla: wahi US500m H4 - user ki marzi |
 | **K19** | Kachhua Naqsha Pine (j3.2 jaisa) | **k1 BANA 17 Nov** `indicators/jas_kachhua_naqsha.pine` (j3.2 nahi chhua), pinecheck saaf. Agla: user TV par paste (gold 4H / 1D) + SS; error ho to k1.1 |
