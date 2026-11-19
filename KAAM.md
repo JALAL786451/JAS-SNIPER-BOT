@@ -12,6 +12,7 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 - **User 19 Nov (naraz, haq par):** branch / setting ka masla user ko NA samjhao, NA settings baar baar badlo - Claude khud chup-chaap theek kare. Chat ke aakhir mein kaam default (`jas-desk-v3`) par pohncha ho, ye Claude KHUD check kare.
 - Purane EA / Pine mein tabdeeli NAHI - naya kaam NAYI file; risk hadd khud NAHI barhana; backtest -> demo -> live.
 - Naya idea = pehle G1-G10 darwaza (`docs/research/test-se-pehle-shartein.md`) + user "test karo"; purani koshish `grep` (dobara NAHI).
+- **User 19 Nov:** test SIRF usi market par jo user kahe (gold kaha = sirf gold). Silver / doosra market jaanch ke liye khud NA jorna - pehle poochhna.
 - FTMO: swap-free; khareedne se pehle "Swing 2-Step 100k?" likhwana. FundingPips par EA NAHI. EA plan sirf FTMO.
 - 4 EA ki taqseem / jor #101 waise hi (K21 66vi: bina US sab FAIL). Gold tokri BAND. t5 chalne dein.
 - ASAL maqsad: user ke tareeqe wala fighting EA (profit lots + jori band, DEEWAR, dohri lot). Hasrat (16 Nov): FTMO jaldi wala EA + pro BUY/SELL Pine + tested fighter.
