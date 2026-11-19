@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `indicators/jas_gold_g3_3_2.pine` - g3.3.2 (19 Nov, 70vi): g3.3.1 + SIRF ABHI label screen ki khali jagah mein (SZ/DZ/4H/EMA label se na takraye); qaida / sahara WAHI
 - `indicators/jas_gold_g3_3_1.pine` - g3.3.1 (19 Nov, 70vi): g3.2 + gold sahara (4H BUY sirf 1D Supertrend upar, "rok" nishan) + ABHI label me sahara / chup din; bara dabba NAHI
 - `indicators/jas_gold_g3_3.pine` - g3.3 (19 Nov, 70vi) [user REJECT - bara dabba, g3.3.1 use karein]: g3.2 + SAHARA dabba (gold Tide 1D chup ho to din + e2 Kachhua ke 11 market ka haal, radar r3 f_tide jyon ka tyon, metal slot + USD hadd 3); gold qaida WAHI
 - `indicators/jas_gold_g3_2.pine` - g3.2 (19 Nov, 70vi): g3.1 + SIRF hari S lakeer plot.style_steplinebr (khali din jorne wali jhooti lakeer khatam); qaida WAHI
