@@ -12,7 +12,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - K13 test (b) forex/oil: SELL FAIL
    - KAAM: close-by sahi hisab + 0.11 lock
 
-2026-11-18  (15 kaam)
+2026-11-18  (21 kaam)
    - KAAM: 18 Nov LIVE SS
-   - Tide SELL naap s1 (#106s) gold 1D: BUY/SELL 4 daur + PASS/FAIL
-   - KAAM: JAS GOLD g1 TV par chal gayi
+   - KAAM: user wazahat gold script zones
+   - TRADING: 474832446 haal 19 Nov report
+
+2026-11-19  (3 kaam)
+   - JAS GOLD g3: chart par SZ/DZ patti + naam (g2 par)
+   - JAS GOLD g3.1: dabba default band, ABHI label zone se upar
+   - KAAM: g3.1 TV par chal gayi, user khush

@@ -62,9 +62,9 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**67vi chat (18 Nov)** - LIVE: SELL 3.70 ke neeche BUY 3.15 lot (Close By ~+3,322 USC), net +0.18. Zones #105z FAIL (sirf naqsha); Tide gold SELL #106s FAIL (1833-2026, Exp-2SE -0.152). #107g PASS: Tide 1D BUY + 4H t5 BUY gold (2003-18 +23.5%, 2019+ +20.8%, 0.5% har BUY). **JAS GOLD g1** (`indicators/jas_gold_g1.pine`) TV par chal gayi (zones = engine level, SELL mat lo).
-User: "chat lambi" ka zikr baar baar NAHI.
-**AGLA (68vi):** g1 par nazar - pehla BUY ishara SS; K11 (3rd MT5 + j2); ~20 Nov FTMO Black Friday.
+**68vi chat (19 Nov)** - JAS GOLD **g3** (g2 + chart par SZ/DZ patti + naam) -> **g3.1** (`indicators/jas_gold_g3_1.pine`: dabba default band, ABHI label zone se upar) TV par CHAL GAYI, user khush. Branch `gifted-bardeen` (g2 + 19 Nov report) is branch mein MILA di.
+(67vi: zones #105z FAIL, Tide gold SELL #106s FAIL, #107g Tide 1D BUY + 4H t5 BUY PASS.)
+**AGLA (69vi):** g3.1 par nazar - pehla "ABHI: BUY" SS (demo pehle); KAAM.md ~4 KB tak chhota; K11; FTMO Black Friday ftmo.com check.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
