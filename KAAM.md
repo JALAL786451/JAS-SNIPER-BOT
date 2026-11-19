@@ -23,7 +23,7 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | # | Kaam | Haal |
 |---|---|---|
 | **FABLE** | **YAAD DILAO - ITWAR 22 Nov ke baad:** Fable 5.2 se 4 EA (t5, i6, k2, e2) + instruments + qaidon ki AZAD jaanch. Brief `docs/fable-jaanch.md` | Hafta reset Itwar 22 Nov 2 AM. User: nayi chat, model **Fable 5.2**, "TRADING", phir "docs/fable-jaanch.md wala kaam karo" -> Fable chat ho to bina pooche seedha yahi. **'Full reset' muft EK dafa, 11 Dec 3 AM tak = BACHA ke** (sirf jaanch beech limit khatam ho tab) |
-| **K21g** | JAS GOLD g3.1 (`indicators/jas_gold_g3_1.pine`) TV par chal rahi, user khush | Nazar: pehla "ABHI: BUY" aaye to SS, demo pehle |
+| **K21g** | JAS GOLD g3.1 (`indicators/jas_gold_g3_1.pine`) TV par chal rahi, user khush | Nazar: pehla "ABHI: BUY" aaye to SS, demo pehle. 19 Nov D1 SS: R label galat-fehmi (EMA50<200 par breakout bhi BUY nahi) + labels upar-neeche; theek g4 mein (user haan) |
 | **K24** | JAS GOLD **g4** `indicators/jas_gold_g4.pine` (user "A" 19 Nov): g3.1 qaida wahi + SMC Coach sirf ittila | pinecheck saaf; user TV paste (gold 15m/1H/4H) + SS; error = g4.1 |
 | **K11** | j2 (`JasLarai1_EA`) demo 472716649 par, deewar OFF | 3rd MT5 `C:\MT5_DEMO2` (/portable) + 472716649 login; purane 2 MT5 ka login KABHI na badlein |
 | SMA | US500 D1 SMA200: 17 Nov 1 close neeche | 3 D1 close neeche = t5 US aadha (V2) ki baat user se |
