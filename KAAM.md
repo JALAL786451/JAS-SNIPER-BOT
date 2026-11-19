@@ -9,6 +9,7 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 5. KAHANI.txt / poori TRADING.md NA parho; purani baat sirf `grep`. "Chat lambi" ka zikr baar baar NAHI.
 
 ## Pakki baatein (bhoolna mana)
+- **User 19 Nov (naraz, haq par):** branch / setting ka masla user ko NA samjhao, NA settings baar baar badlo - Claude khud chup-chaap theek kare. Chat ke aakhir mein kaam default (`jas-desk-v3`) par pohncha ho, ye Claude KHUD check kare.
 - Purane EA / Pine mein tabdeeli NAHI - naya kaam NAYI file; risk hadd khud NAHI barhana; backtest -> demo -> live.
 - Naya idea = pehle G1-G10 darwaza (`docs/research/test-se-pehle-shartein.md`) + user "test karo"; purani koshish `grep` (dobara NAHI).
 - FTMO: swap-free; khareedne se pehle "Swing 2-Step 100k?" likhwana. FundingPips par EA NAHI. EA plan sirf FTMO.
