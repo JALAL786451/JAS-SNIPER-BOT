@@ -2140,3 +2140,9 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | FTMO | ~20 Nov Black Friday offer ftmo.com par check (`docs/bank.md` yaad dilao) | tareekh par |
 ```
 | **K22 (PEHLE)** | **Fable 5.2 AZAD jaanch** (4 EA + instruments + qaide): brief `docs/fable-jaanch.md`. Hafta 60% (17 Nov SS), reset Itwar 22 Nov 2 AM; tab tak sirf chhote kaam (Sonnet). **'Full reset' muft EK dafa, 11 Dec 3 AM tak = BACHA ke rakho**: Fable jaanch beech mein limit khatam ho tab dabao. **Chat Fable par ho to user ke "TRADING" ke baad bina pooche seedha yahi kaam shuru** | user: model Fable + "TRADING" (bas) |
+
+
+## KAAM se hataya (69vi, 19 Nov)
+| IPO | 19 Nov: user ne TV par "Anthropic IPO" ad dikhaya - jawab: EA/FTMO ke kaam ka NAHI (naya share, data nahi, FTMO par nahi) | sirf khabar |
+| SELL? | 19 Nov: #108r D1, #109s 4H, #110s 1H A/B sab FAIL; user ke kehne par B gold IMTIHAN 2019+ bhi FAIL (-0.204R, bina kharcha -0.082R, 2026 girawat mein bhi -10.6R). Gold SELL band | ho gaya |
+| DAUR11 | 19 Nov research agent (SIRF SELL) -> C-M1 month-end SELL 8 index #111m TEST = FAIL (0.03% par +0.008R, 3/8; bina kharcha 7/8 magar +0.024R). SELL research khatam | ho gaya |

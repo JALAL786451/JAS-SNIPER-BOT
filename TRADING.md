@@ -62,9 +62,10 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**68vi chat (19 Nov)** - JAS GOLD **g3** (g2 + chart par SZ/DZ patti + naam) -> **g3.1** (`indicators/jas_gold_g3_1.pine`: dabba default band, ABHI label zone se upar) TV par CHAL GAYI, user khush. Branch `gifted-bardeen` (g2 + 19 Nov report) is branch mein MILA di.
-(67vi: zones #105z FAIL, Tide gold SELL #106s FAIL, #107g Tide 1D BUY + 4H t5 BUY PASS.)
-**AGLA (69vi):** g3.1 par nazar - pehla "ABHI: BUY" SS (demo pehle); K11; FTMO Black Friday ftmo.com check. **ITWAR 22 Nov ke baad YAAD DILAO: Fable 5.2 se 4 EA ki AZAD jaanch (`docs/fable-jaanch.md`, KAAM.md "FABLE")**. (69vi: 65-68vi ki bikhri branches + 66vi Fable kaam default par mila diye, save.sh theek, KAAM 3 KB.)
+**69vi chat (19 Nov)** - SELL ka din: gold SELL #108r (D1 rally), #109s (4H EMA20/50 + EMA50), #110s (1H A + B D1 filter, B IMTIHAN 2019+ -0.204R) sab FAIL;
+research agent daur 11 (`docs/research/daur11-sell-agent.md`) -> C-M1 month-end index SELL #111m FAIL (bina kharcha 7/8 musbat magar ~0.02R). SELL research KHATAM.
+LIVE 253687618 m8.5 SS: Algo OFF (only status), P/L -41,918 tala-band, BUY 46 tk / SELL 15 tk 4.75 lot, tk 142/200. Qaida naya: test sirf user ke market par (silver khud NAHI).
+**AGLA (70vi):** g3.1 "ABHI: BUY" SS; K24 g4 TV paste; FTMO Black Friday ftmo.com check (~20 Nov); LIVE Algo OFF jaan boojh kar? **ITWAR 22 Nov ke baad YAAD DILAO: Fable 5.2 se 4 EA ki AZAD jaanch (`docs/fable-jaanch.md`)**.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
