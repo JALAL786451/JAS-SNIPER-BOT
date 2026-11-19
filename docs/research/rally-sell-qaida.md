@@ -19,3 +19,11 @@ G3 D1, SL 2 ATR, 0.25% risk HAAN. G4 XAU Exness + FTMO HAAN. G5 gold 53 (<100) N
 G6 t5 gold BUY ke ulat = mel kam HAAN (silver: e2 Kachhua XAG SELL se mel). G7 swap 0, spread chhota HAAN. G8 ye file HAAN.
 G9 sirf girte daur mein ~3-5 trade / saal - chhota faida. G10 P(TALAASH) ~20%, P(IMTIHAN | TALAASH) ~50%, P(FTMO behtar) ~5%.
 User ne G5 NAHI ke bawajood "test karo" kaha (19 Nov) - test hua, faisla upar wale qaide par.
+
+## NATEEJA (19 Nov, Python, TALAASH 2003-2018) - **FAIL**
+| Market | tr | jeet | Exp | -2SE | kul |
+|---|---|---|---|---|---|
+| gold | 53 | 15.1% | -0.146R | -0.319 | -7.7R |
+| silver | 82 | 15.9% | -0.054R | -0.239 | -4.5R |
+- Exit: gold 52 / 53 "close > EMA50" (ausat -0.13R), 1 SL. Engine theek - rally EMA50 ke upar hi band hoti rahi.
+- IMTIHAN (2019+) dekha NAHI. Sabaq: gold par SELL ka 6vi alag shakal (breakout #106s, ST K13, #24/#17, #73, rally #108r) bhi manfi = gold SELL band, dobara NAHI.
