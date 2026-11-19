@@ -14,3 +14,13 @@ Data `data/yahoo/D1.zip` (price index, dividend nahi). Ginti (bina nateeja) TALA
 PASS par hi IMTIHAN 2019+ ek dafa: tokri Exp > 0 aur >= 5/8 musbat.
 Dono PASS bhi ho to demo se PEHLE: FTMO + Exness index short par dividend kat-ta hai ya nahi (SS). Kat-ta ho = idea khatam.
 Chances (agent): P(TALAASH) ~0.30, P(IMTIHAN | TALAASH) ~0.20.
+
+## NATEEJA (19 Nov, Python, TALAASH 1990-2018) - **FAIL**
+| Kharcha | Trade Exp | Tokri / mahina Exp | -2SE | Musbat market |
+|---|---|---|---|---|
+| 0.03% (faisla) | +0.008R | +0.0085R | -0.050 | 3/8 |
+| 2x | -0.008R | -0.0075R | -0.066 | 3/8 |
+| bina kharcha | +0.024R | +0.0245R | -0.034 | 7/8 |
+Market (0.03%): US30 +0.059, UK100 +0.038, DE30 +0.028, FR40 -0.002, EU50 -0.007, JP225 -0.010, AUS200 -0.017, HK50 -0.032.
+- Asar asli lagta hai (bina kharcha 7/8 musbat) magar bohot chhota (~0.02R) - kharcha kha jata. Agent ka andaza (net ~0.01-0.02R, t < 2) sahi nikla.
+- IMTIHAN dekha NAHI. C-M1 band, dobara NAHI. Dividend sawal ki zaroorat nahi rahi.

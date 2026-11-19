@@ -8,6 +8,7 @@ Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.
 - `indicators/jas_gold_g3.pine` - g3 (68vi, 19 Nov): g2 (branch gifted-bardeen) + CHART PAR SZ/DZ patti + naam, 4H/EMA label, qeemat ke paas FAISLA, dabba ON/OFF. Qaide wahi (#107g)
 - `indicators/jas_gold_g1.pine` - g1 (67vi): JAS GOLD - sirf gold 4H chart; Tide 1D BUY + 4H t5 BUY (#107g PASS), zones = engine ke level (10 din high R, Tide SL S, 4H ST, 1D EMA), SELL MAT LO, lot = kul risk / 2. TV compile baqi
 - `tools/gold_do_buy.py` - #107g (67vi): gold Tide 1D BUY + 4H t5 BUY ek saath (S1 PASS, S2 overlap ~85%, S3 EMA zone FAIL); qaida + nateeja `docs/research/gold-do-buy-qaida.md`
+- `tools/cm1_sell111.py` + `docs/research/cm1-sell-qaida.md` - #111m (69vi): C-M1 month-end SELL 8 index - TALAASH FAIL
 - `docs/research/daur11-sell-agent.md` - 69vi research agent SIRF SELL: C-M1 month-end SELL 8 index (~6%), baqi rad
 - `tools/sell1h110.py` + `docs/research/sell-1h-qaida.md` - #110s (69vi): gold 1H SELL A (EMA20/50) + B (D1 EMA50<200 filter) - dono FAIL
 - `tools/sell4h109.py` + `docs/research/sell-4h-qaida.md` - #109s (69vi): gold 4H SELL EMA20/50 + sirf EMA50 - dono TALAASH FAIL
