@@ -1,5 +1,5 @@
 //@version=6
-// JAS GOLD g4  (build g4, Pine v6, 19 Nov 2026)  -  g4 = g3.1 (NAHI chhua, BUY qaida HARF BA HARF wahi) + SMC Coach Pro v2 (user paste, v5) ka
+// JAS GOLD g4  (build g4.1, Pine v6, 19 Nov 2026; g4.1 = g4 ka naam-typo smcOn -> smOn theek, TV error CE10272)  -  g4 = g3.1 (NAHI chhua, BUY qaida HARF BA HARF wahi) + SMC Coach Pro v2 (user paste, v5) ka
 //  SIRF ITTILA hissa (user 19 Nov, 69vi, salah "A"): Teacher panel (BUY kyun / kya kami), MTF dashboard 1m-1W, engine BUY par
 //  Entry / SL / TP1-3 dabba + R:R + lot, BOS / CHOCH / FVG / LGB nishan, SMC score + halka "smc" ishara.
 //  SMC ka koi hissa BUY ka faisla NAHI karta: LGB / FVG / 15m BOS / pivot zones gold par pehle FAIL (#19, #105z, K20). SELL MAT LO (#106s).
@@ -32,9 +32,9 @@
 //  Farq Python se: Tide entry Python mein daily close par; yahan ishara agle din ki pehli 4H candle par aata hai.
 //  Aage ki guarantee NAHI. Pehle demo.
 // ============================================================================
-indicator("JAS Gold g4", shorttitle = "JAS GOLD g4", overlay = true, max_labels_count = 150, max_boxes_count = 60, max_lines_count = 100)
+indicator("JAS Gold g4.1", shorttitle = "JAS GOLD g4.1", overlay = true, max_labels_count = 150, max_boxes_count = 60, max_lines_count = 100)
 
-BUILD = "g4"
+BUILD = "g4.1"
 
 grQ = "1 · Qaida (test #107g jaisa - MAT BADLEIN)"
 stLen  = input.int(10, "4H Supertrend ATR length", minval = 2, group = grQ, display = display.none)
@@ -341,7 +341,7 @@ if barstate.islast and showTbl
 //  Upar ka g3.1 qaida (FAISLA) is hisse se bilkul alag hai - yahan sirf samajh ke liye.
 // ############################################################################
 grS = "4 · SMC ittila (SMC Coach v2) - TEST NAHI, faisla NAHI"
-smcOn   = input.bool(true, "SMC ittila ON", group = grS, display = display.none)
+smOn    = input.bool(true, "SMC ittila ON", group = grS, display = display.none)
 pivLR   = input.int(3, "Swing pivot L/R", minval = 1, group = grS, display = display.none)
 smClose = input.bool(true, "BOS / CHOCH: CLOSE swing ke paar", group = grS, display = display.none)
 showBos = input.bool(true, "BOS / CHOCH nishan (B / C)", group = grS, display = display.none)
