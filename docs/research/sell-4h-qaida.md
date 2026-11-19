@@ -11,3 +11,13 @@ Ginti (bina nateeja): V1 gold 718 / silver 797 TALAASH; V2 gold 841 / silver 927
 ## PASS (TALAASH < 2019), har variant alag - SAKHT (gold SELL ki 7vi koshish, 2 variant)
 gold n >= 100, gold Exp > 0, gold Exp - 2.5SE > 0, silver Exp > 0. PASS par hi IMTIHAN 2019+ ek dafa: gold Exp > 0 aur silver Exp > 0.
 FAIL dono = gold SELL EMA wale sab band. PASS = Pine ittila + demo qaida; t5 (gold 4H BUY) se takrao ka hal pehle (ek market ek position).
+
+## NATEEJA (19 Nov, Python, TALAASH 2003-2018) - **DONO FAIL**
+| Variant | Market | tr | jeet | Exp | -2.5SE | kul | bina kharcha |
+|---|---|---|---|---|---|---|---|
+| V1 EMA20/50 | gold | 718 | 21.0% | -0.006R | -0.108 | -4.1R | +0.049R |
+| V1 EMA20/50 | silver | 797 | 19.6% | -0.054R | -0.144 | -43.4R | -0.027R |
+| V2 EMA50 | gold | 841 | 19.5% | -0.046R | -0.142 | -38.5R | +0.008R |
+| V2 EMA50 | silver | 927 | 16.3% | -0.053R | -0.142 | -49.0R | -0.026R |
+- IMTIHAN dekha NAHI. V1 gold bina kharcha +0.049R = kharcha (~0.055R / trade) jitna hi - asli edge nahi; silver dono manfi.
+- Sabaq: gold SELL 8 shaklein (D1 + 4H, breakout / ST / rally / EMA20/50 / EMA50) FAIL. Gold SELL band - dobara NAHI.
