@@ -22,3 +22,7 @@ Claude andaza (pehle): 1H par kharcha ~0.1R / trade -> A FAIL ~90%, B FAIL ~85%.
 - B gold sab se qareeb: D1 filter ne kharche se pehle ka faida 0.034 -> 0.127R kiya. Magar 0.015% par bhi sirf ~1.1 SE (2.5 chahiye), silver bilkul ulta (-0.134R), aur ye gold SELL ki 10vi shakal = itna "acha" ek shor se bhi aa jata hai.
 - Pehle se likhi shart (0.015% par musbat = demo spread naapo) lagu hoti hai, magar asli spread se bhi 2.5SE paar nahi hoga -> demo NAHI. IMTIHAN dekha NAHI.
 - Sabaq: chhoti TF par kharcha faisla karta hai; D1 rukh ka filter madad karta hai. Gold SELL band (10 shaklein).
+
+## IMTIHAN B gold (user 19 Nov "test karo", TALAASH FAIL ke bawajood - user ka faisla) - shart PEHLE
+Sirf gold, B wahi qaida, 2019-01-01 se aaj tak, ek dafa. Faisla kharcha 0.03%: n >= 30 aur Exp > 0. Ittila: 0.015%, bina kharcha, saal-wise.
+IMTIHAN PASS = Pine ittila (trade nahi) + demo qaida baad mein; FAIL = B band. Is ke baad 2019+ data B ke liye "dekha hua" - B mein tabdeeli kar ke dobara test MANA.
