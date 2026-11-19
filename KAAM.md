@@ -1,5 +1,7 @@
 # KAAM - Jalal ka EK register (har nayi chat ko hook KHUD dikhata hai)
 
+**TEST SE PEHLE HAMESHA (user 17 Nov, 65vi):** koshish JAARI jab tak PASS (user 13 Oct) - magar har naya idea pehle G1-G10 darwaza (`docs/research/test-se-pehle-shartein.md`: factor saboot, daily/4H, t5/i6/k2 se alag, kharcha, qaida pehle likha, chances) + user "test karo". Darwaze ke baghair test NAHI. Pehle `grep` purani koshish (dobara test NAHI). PASS wale (#68, Kachhua 12, #81) demo par pakke karo; K6 user ka tareeqa.
+
 JAWAB CHHOTA (user 10 Nov). User kuch bhi bataye (faisla, khabar) -> USI jawab mein yahan EK line, chat khatam ka intezar NAHI.
 Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 KB se lambi NA ho.** Purana: `grep "KAAM se hataya" docs/purana-haal.md`.
 
