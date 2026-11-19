@@ -34,4 +34,4 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | FTMO | ~20 Nov Black Friday ftmo.com check (`docs/bank.md`) | kal |
 | LIVE | 18 Nov: gold SELL 3.70 ke neeche BUY 3.15 (Close By ~+3,322 USC); demo #17000740869 (browser) | haal = hook table |
 | IPO | 19 Nov: user ne TV par "Anthropic IPO" ad dikhaya - jawab: EA/FTMO ke kaam ka NAHI (naya share, data nahi, FTMO par nahi) | sirf khabar |
-| SELL? | 19 Nov: #108r D1 rally-SELL FAIL + #109s 4H EMA20/50 (gold -0.006R) + 4H EMA50 (-0.046R) FAIL. Gold SELL 8 shaklein FAIL - band | ho gaya |
+| SELL? | 19 Nov: #108r D1 + #109s 4H (EMA20/50, EMA50) + #110s 1H (A user, B D1 filter) sab FAIL. B gold 0.015% par +0.062R magar 1.1 SE, silver ulta. Gold SELL 10 shaklein band | ho gaya |
