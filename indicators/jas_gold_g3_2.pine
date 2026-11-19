@@ -1,0 +1,332 @@
+//@version=6
+// JAS GOLD g3.2  (build g3.2, Pine v6, 19 Nov 2026)  -  g3.2 = g3.1 (NAHI chhua) + SIRF EK tabdeeli: hari "S / DZ: Tide sarakta SL" lakeer plot.style_steplinebr (user 19 Nov SS: 2012-16 jhooti seedhi lakeer - stepline khali (na) din jor deti thi). Qaida / nishan / alert / lot WAHI.
+// (purana:) JAS GOLD g3.1  (build g3.1, Pine v6, 19 Nov 2026)  -  g3.1 = g3 (NAHI chhua) + dabba default BAND + 'ABHI' label zone se upar (user SS: dabba labels dhak raha, ABHI label DZ par chadh raha)
+// (purana:) JAS GOLD g3  -  sirf GOLD, chart 1m-4H (poora) ya 1D (sirf Tide). Trade NAHI karti, sirf rehnumai.
+//  g3 = g2 (branch claude/gifted-bardeen-ksr97o, NAHI chhua) + CHART PAR ZONES KE NAAM (user 19 Nov: 'DZ/SZ, S/R chart par
+//  likhe hon, imagine na karna pare'): SZ / DZ patti (box) + daayen label, 4H lakeer + EMA ke label, qeemat ke paas FAISLA,
+//  dabba band karne ka option. Hisaab / qaide g2 jaise - koi naya zone NAHI.
+//  g2 = g1 (indicators/jas_gold_g1.pine, NAHI chhua) ke WAHI qaide + WAHI inputs. Farq sirf: 4H engine ab chart ki
+//  candles ke bajaye HAMESHA 4H data (request.security "240") se -> 15m / 1H / 4H par wahi BUY / SL / zone.
+//  1D chart par sirf Tide 1D + zones + EMA (4H engine 1D candle mein chhup jata). User 18 Nov: "haan g2 bana dein".
+// ============================================================================
+//  User (18 Nov, 67vi): "sirf gold ki script - BUY ki tasdeeq, zones / S-R bataein BUY mat lo / SELL mat lo,
+//  aur zones ASLI PASS ke saath math hon."  Qaida + nateeja: docs/research/gold-do-buy-qaida.md (#107g),
+//  docs/research/tide-gold-sell-qaida.md (#106s). Python: tools/gold_do_buy.py.
+//
+//  DO BUY ENGINE (dono test PASS #107g, 2003-18 aur 2019+):
+//   T) Tide 1D BUY (Kachhua): daily close > pichhle 10 din ka high, 1D EMA50 > EMA200, ATR14 >= 0.25%.
+//      SL 2 x ATR14, har din pichhle 5 din ke low tak sarakta. Band: SL / EMA50 < EMA200 / close < sarakta SL.
+//   F) 4H BUY (t5): Supertrend(10,3) 4H upar mude -> agli open BUY, SL 6 x ATR10, neeche mude -> agli open band.
+//  ZONES = inhi engine ke apne level (koi alag / untested zone NAHI - purane pivot zones #105z FAIL):
+//   R / SZ = 10 din ka high (Tide BUY ka toot) | S / DZ = Tide ka sarakta SL | 4H Supertrend lakeer |
+//   Bara zone = 1D EMA50/200: Tide ke liye ROK (qaida), 4H ke liye sirf ittila (#107g S3 FAIL).
+//  SELL = hamesha "SELL MAT LO" (gold SELL #106s FAIL + 6 aur test FAIL).
+//  RISK (#107g S2: dono ~85% din saath khule): har BUY ka lot = aap ka KUL risk / 2. Akela = aadha, dono = poora.
+//   Default kul 1.0% = test jaisa (0.5% har engine). Risk badalna sirf aap ka faisla.
+//  REPAINT NAHI: Tide = pichhla BAND din ([1] + lookahead_on). 4H = pichhli BAND 4H candle ([1] + lookahead_on), ishara agli 4H open par.
+//  Farq Python se: Tide entry Python mein daily close par; yahan ishara agle din ki pehli 4H candle par aata hai.
+//  Aage ki guarantee NAHI. Pehle demo.
+// ============================================================================
+indicator("JAS Gold g3.2", shorttitle = "JAS GOLD g3.2", overlay = true, max_labels_count = 100, max_boxes_count = 20)
+
+BUILD = "g3.2"
+
+grQ = "1 · Qaida (test #107g jaisa - MAT BADLEIN)"
+stLen  = input.int(10, "4H Supertrend ATR length", minval = 2, group = grQ, display = display.none)
+stMult = input.float(3.0, "4H Supertrend multiplier", minval = 0.5, step = 0.1, group = grQ, display = display.none)
+fSlM   = input.float(6.0, "4H BUY: SL = kitne x ATR(4H)", minval = 0.5, step = 0.5, group = grQ, display = display.none)
+tEnt   = input.int(10, "Tide: kitne din ka high toote", minval = 3, group = grQ, display = display.none)
+tExit  = input.int(5, "Tide: SL kitne din ke low tak sarke", minval = 2, group = grQ, display = display.none)
+tAtrL  = input.int(14, "Tide: ATR length", minval = 2, group = grQ, display = display.none)
+tSlM   = input.float(2.0, "Tide: SL = kitne x ATR(1D)", minval = 0.5, step = 0.1, group = grQ, display = display.none)
+emaF   = input.int(50, "1D EMA fast", minval = 2, group = grQ, display = display.none)
+emaS   = input.int(200, "1D EMA slow", minval = 3, group = grQ, display = display.none)
+minAtr = input.float(0.25, "Tide: kam az kam ATR (% qeemat)", minval = 0, step = 0.05, group = grQ, display = display.none)
+
+grA = "2 · Aap ka account (lot ke liye)"
+myBal  = input.float(100000, "Balance (cent account = USC, dollar = $)", minval = 1, group = grA, display = display.none)
+myRisk = input.float(1.0, "KUL risk % (dono BUY mila kar; har BUY = iska aadha)", minval = 0.05, step = 0.05, group = grA, display = display.none)
+myTZ   = input.string("Asia/Karachi", "Waqt (PKT = Asia/Karachi)", group = grA, display = display.none)
+
+grV = "3 · Dikhawa"
+showR   = input.bool(true, "R / SZ lakeer (10 din high = Tide BUY toot)", group = grV, display = display.none)
+showS   = input.bool(true, "S / DZ lakeer (Tide ka sarakta SL)", group = grV, display = display.none)
+showST  = input.bool(true, "4H Supertrend lakeer", group = grV, display = display.none)
+showEMA = input.bool(true, "1D EMA50 / EMA200 (bara zone)", group = grV, display = display.none)
+showMk  = input.bool(true, "BUY / BAND ke nishan", group = grV, display = display.none)
+tPos    = input.string("Top Right", "Dabbe ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = grV, display = display.none)
+tSize   = input.string("Small", "Dabbe ki likhai", options = ["Tiny", "Small", "Normal"], group = grV, display = display.none)
+showZone = input.bool(true, "CHART PAR zones (patti) + naam (SZ / DZ / 4H / EMA)", group = grV, display = display.none)
+zMot    = input.float(0.10, "Patti ki aadhi motai (x din ka ATR)", minval = 0.02, step = 0.02, group = grV, display = display.none)
+showTbl = input.bool(false, "Daayen dabba (table) - entry / SL / lot dekhne ke liye ON", group = grV, display = display.none)
+alertOn = input.bool(true, "Alert (TV mein 'Any alert() function call')", group = grV, display = display.none)
+
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Bottom Right" ? position.bottom_right : s == "Bottom Left" ? position.bottom_left : s == "Middle Right" ? position.middle_right : position.top_right
+PSZ = tSize == "Tiny" ? size.tiny : tSize == "Normal" ? size.normal : size.small
+cUp = color.new(#26a69a, 0)
+cDn = color.new(#ef5350, 0)
+cTx = color.new(#d1d4dc, 0)
+cHd = color.new(#2a2e39, 0)
+cMu = color.new(#787b86, 0)
+cOr = color.new(#ff9800, 0)
+
+tfSec  = timeframe.in_seconds()
+ok4H   = timeframe.isintraday and tfSec <= 14400 and 14400 % tfSec == 0   // 4H engine: 1m..4H (4H ko poora baantne wali TF)
+okTide = ok4H or (timeframe.isdaily and timeframe.multiplier == 1)       // Tide: upar wali + 1D
+okGold = str.contains(syminfo.ticker, "XAU") or str.contains(syminfo.ticker, "GOLD")
+stdTk  = ticker.standard(syminfo.tickerid)
+
+// ============================================================================
+//  T) TIDE 1D BUY - daily candles par (radar r3 / tools/gold_do_buy.py tide_buy jaisa), pichhla BAND din
+// ============================================================================
+f_tideD() =>
+    a   = ta.atr(tAtrL)
+    hb  = ta.highest(high, tEnt)
+    lb  = ta.lowest(low, tExit)
+    ef  = ta.ema(close, emaF)
+    es  = ta.ema(close, emaS)
+    var int   d  = 0
+    var float e  = na
+    var float r  = na
+    var float sl = na
+    var int   eT = na
+    bool sig = false
+    bool ex  = false
+    bool atC = false
+    if d == 1
+        if low <= sl
+            ex := true
+        else if not na(ef[1]) and not na(es[1]) and ef[1] < es[1]
+            ex  := true
+            atC := true
+        else
+            sl := math.max(sl, nz(lb[1], sl))
+            if close <= sl
+                ex  := true
+                atC := true
+        if ex
+            d := 0
+    if d == 0 and not atC and not na(a) and a > 0 and not na(hb[1]) and not na(ef[1]) and not na(es[1])
+        if close > hb[1] and ef[1] > es[1] and a / close * 100.0 >= minAtr
+            d   := 1
+            e   := close
+            r   := tSlM * a
+            sl  := close - r
+            eT  := time
+            sig := true
+    bull = ef > es
+    [d[1], e[1], sl[1], r[1], eT[1], sig[1], ex[1], hb[1], lb[1], bull[1], a[1], ef[1], es[1]]
+
+[tD, tE, tSl, tR, tET, tSig, tEx, tHb, tLb, tBull, tA, tEf, tEs] = request.security(stdTk, "D", f_tideD(), lookahead = barmerge.lookahead_on)
+
+tOpen  = nz(tD) == 1
+tNewD  = nz(ta.change(time("D"))) != 0
+tNew   = tSig and tOpen                    // kal ke close par Tide BUY bani (poora aaj dabbe mein)
+tBand  = tEx                               // kal Tide BUY band hui
+tNewMk  = tNewD and tNew                   // nishan / alert sirf din ki pehli candle
+tBandMk = tNewD and tBand
+tSlNow = tOpen ? tSl : na                  // aaj ka asal SL
+tSlNext = tOpen ? math.max(tSl, nz(tLb, tSl)) : na   // aaj close ke baad sarak kar
+
+// ============================================================================
+//  F) 4H BUY (t5) - HAMESHA 4H data se, pichhli BAND 4H candle ([1] + lookahead_on = repaint nahi)
+// ============================================================================
+f_st4() =>
+    [l, d] = ta.supertrend(stMult, stLen)
+    a = ta.atr(stLen)
+    [l[1], d[1] < 0, d[2] < 0, a[1]]
+
+[stL, up4, up4p, atr4] = request.security(stdTk, "240", f_st4(), lookahead = barmerge.lookahead_on)
+new4H  = nz(ta.change(time("240"))) != 0
+flipUp = up4 and not up4p                  // pichhli band 4H candle par Supertrend upar mura
+
+var bool  fIn   = false
+var bool  fBuy4 = false                    // is 4H candle ki open par BUY hui
+var bool  fBnd4 = false                    // is 4H candle mein BAND hui
+var float fEn   = na
+var float fRd   = na
+var float fSl   = na
+var int   fEntT = na
+bool fOpened = false
+bool fClosed = false
+if ok4H
+    // (1) nayi 4H candle = pichhli band 4H candle ka faisla, isi open par (g1 jaisa)
+    if new4H
+        fBuy4 := false
+        fBnd4 := false
+        bool px = fIn and not up4
+        bool pb = flipUp and not fIn and nz(atr4) > 0
+        if px
+            fIn     := false
+            fClosed := true
+            fBnd4   := true
+        if pb and not fIn
+            fIn     := true
+            fEn     := open
+            fRd     := fSlM * atr4
+            fSl     := open - fRd
+            fEntT   := time
+            fOpened := true
+            fBuy4   := true
+    // (2) SL - har chart candle par (4H candle ke andar jaisa)
+    if fIn and low <= fSl
+        fIn     := false
+        fClosed := true
+        fBnd4   := true
+fPB = fBuy4 and fIn                        // ABHI BUY (is 4H candle)
+fPX = fBnd4 and not fIn                    // ABHI BAND (is 4H candle)
+
+// ============================================================================
+//  LOT: 1.00 lot = 100 oz -> $1 hile to 100 ikai (cent = USC, dollar = $). Har BUY = KUL risk / 2.
+// ============================================================================
+halfRisk = myRisk / 2.0
+f_lot(float rd) =>
+    string out = "-"
+    if not na(rd) and rd > 0
+        float raw  = myBal * halfRisk / 100.0 / (rd * 100.0)
+        float lots = math.floor(raw / 0.01 + 1e-9) * 0.01
+        float use  = math.max(lots, 0.01)
+        float pct  = use * 100.0 * rd / myBal * 100.0
+        out := str.tostring(use, "0.00") + " lot (" + str.tostring(pct, "0.0#") + "%" + (lots >= 0.01 ? ")" : ", 0.01 bhi zyada!)")
+    out
+f_px(float x) => na(x) ? "-" : str.tostring(x, format.mintick)
+f_r(float x) => na(x) ? "-" : str.tostring(x, "+0.00;-0.00") + "R"
+
+// ============================================================================
+//  CHART: zones (engine ke apne level) + nishan
+// ============================================================================
+plot(showR and okTide ? tHb : na, "R / SZ: 10 din high (Tide BUY toot)", color = color.new(#ef5350, 30), linewidth = 2, style = plot.style_stepline)
+plot(showS and okTide and tOpen ? tSlNow : na, "S / DZ: Tide sarakta SL", color = color.new(#26a69a, 20), linewidth = 2, style = plot.style_steplinebr)
+plot(showST and ok4H ? stL : na, "4H Supertrend", color = up4 ? color.new(#26a69a, 40) : color.new(#ef5350, 40), linewidth = 1, style = plot.style_stepline)
+plot(showEMA and okTide ? tEf : na, "1D EMA50", color = color.new(#ffb300, 30), linewidth = 1, style = plot.style_stepline)
+plot(showEMA and okTide ? tEs : na, "1D EMA200", color = color.new(#42a5f5, 30), linewidth = 1, style = plot.style_stepline)
+plotshape(showMk and ok4H and fOpened, "4H BUY", style = shape.triangleup, location = location.belowbar, color = cUp, size = size.tiny, text = "4H", textcolor = cUp)
+plotshape(showMk and ok4H and fClosed, "4H BAND", style = shape.xcross, location = location.abovebar, color = cMu, size = size.tiny)
+plotshape(showMk and okTide and tNewMk, "Tide BUY", style = shape.labelup, location = location.belowbar, color = color.new(#1565c0, 0), size = size.tiny, text = "1D", textcolor = color.white)
+plotshape(showMk and okTide and tBandMk, "Tide BAND", style = shape.labeldown, location = location.abovebar, color = color.new(#5d4037, 0), size = size.tiny, text = "1D x", textcolor = color.white)
+
+// ============================================================================
+//  ALERT (sirf band data se - nayi 4H candle / naye din ki pehli chart candle)
+// ============================================================================
+if alertOn and okGold
+    if ok4H and fOpened
+        alert("JAS GOLD g3.2: 4H BUY (Supertrend upar mura) | open " + f_px(fEn) + " | SL " + f_px(fSl) + " | lot " + f_lot(fRd), alert.freq_once_per_bar)
+    if ok4H and fClosed
+        alert("JAS GOLD g3.2: 4H BUY BAND (Supertrend neeche / SL) ~" + f_px(close), alert.freq_once_per_bar)
+    if okTide and tNewMk
+        alert("JAS GOLD g3.2: Tide 1D BUY (kal close " + f_px(tE) + " > 10 din high) | SL " + f_px(tSl) + " | lot " + f_lot(tR), alert.freq_once_per_bar)
+    if okTide and tBandMk
+        alert("JAS GOLD g3.2: Tide 1D BUY BAND (kal)", alert.freq_once_per_bar)
+
+// ============================================================================
+//  DABBA
+// ============================================================================
+// ============================================================================
+//  CHART PAR ZONES + NAAM (g3) - sirf engine ke apne level
+// ============================================================================
+var box   bxR  = na
+var box   bxS  = na
+var label lbR  = na
+var label lbS  = na
+var label lb4  = na
+var label lbE5 = na
+var label lbE2 = na
+var label lbNw = na
+f_lbl(int x, float y, string t, color bg) =>
+    label.new(x, y, t, xloc = xloc.bar_time, style = label.style_label_left, color = bg, textcolor = color.white, size = PSZ)
+if barstate.islast
+    box.delete(bxR)
+    box.delete(bxS)
+    label.delete(lbR)
+    label.delete(lbS)
+    label.delete(lb4)
+    label.delete(lbE5)
+    label.delete(lbE2)
+    label.delete(lbNw)
+    if showZone and okTide
+        int   msB = timeframe.in_seconds() * 1000
+        int   xL  = time - 40 * msB
+        int   xR  = time + 8 * msB
+        float hz  = nz(tA) * zMot
+        if not na(tHb)
+            bxR := box.new(xL, tHb + hz, xR, tHb - hz, xloc = xloc.bar_time, border_color = color.new(#ef5350, 30), bgcolor = color.new(#ef5350, 80))
+            lbR := f_lbl(xR, tHb, "SZ / R  " + f_px(tHb) + "\n10 din high: is ke UPAR daily close = Tide BUY" + (close < tHb ? "\nqeemat neeche = BUY abhi NAHI" : ""), color.new(#c62828, 10))
+        float sLv = tOpen ? tSlNow : tLb
+        if not na(sLv)
+            bxS := box.new(xL, sLv + hz, xR, sLv - hz, xloc = xloc.bar_time, border_color = color.new(#26a69a, 30), bgcolor = color.new(#26a69a, 80))
+            lbS := f_lbl(xR, sLv, tOpen ? "DZ / S  " + f_px(sLv) + "\nTide SL: is ke NEECHE = Tide BUY BAND" : "DZ / S  " + f_px(sLv) + "\n5 din low (ittila): " + (close < sLv ? "qeemat NEECHE = kamzor, BUY MAT LO" : "is ke neeche = kamzori"), color.new(#00796b, 10))
+        if ok4H and showST and not na(stL)
+            lb4 := f_lbl(xR, stL, (up4 ? "4H lakeer  " : "4H mor  ") + f_px(stL) + (up4 ? "\n4H close NEECHE = 4H BUY band" : "\n4H close UPAR = 4H BUY"), color.new(#6a1b9a, 10))
+        if showEMA and not na(tEs)
+            lbE2 := f_lbl(xR, tEs, "1D EMA200  " + f_px(tEs) + (tBull ? "\nEMA50 upar = BUY ijazat" : "\nEMA50 neeche = BUY MAT LO (Tide)"), color.new(#1565c0, 10))
+        if showEMA and not na(tEf)
+            lbE5 := f_lbl(xR, tEf, "1D EMA50  " + f_px(tEf), color.new(#b8860b, 10))
+        bool nowBuy = (ok4H and fPB) or tNew
+        bool nowIn  = (ok4H and fIn) or tOpen
+        float yNw = not na(sLv) and math.abs(close - sLv) < nz(tA) * 0.6 ? math.max(close, sLv) + nz(tA) * 0.6 : close
+        lbNw := label.new(time + 2 * msB, yNw, (nowBuy ? "ABHI: BUY ✅" : nowIn ? "ABHI: BUY CHALU" : "ABHI: INTEZAR ⏳ - BUY MAT LO") + "\nSELL MAT LO (gold)", xloc = xloc.bar_time, style = label.style_label_left, color = nowBuy ? cUp : nowIn ? color.new(#1565c0, 0) : color.new(#5d606b, 0), textcolor = color.white, size = PSZ)
+
+var table tb = table.new(f_pos(tPos), 3, 15, bgcolor = color.new(#131722, 8), border_width = 1, border_color = color.new(#434651, 0))
+if barstate.islast
+    table.clear(tb, 0, 0, 2, 14)
+if barstate.islast and showTbl
+    table.cell(tb, 0, 0, "JAS GOLD " + BUILD, text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, 0, (okGold ? syminfo.ticker : syminfo.ticker + " - GOLD NAHI!") + (ok4H ? " · " + timeframe.period + " (4H engine 4H data se)" : okTide ? " · 1D: sirf Tide" : " · 15m-4H ya 1D CHART LAGAYEN!") + " · test #107g", text_color = okTide and okGold ? cTx : cOr, bgcolor = cHd, text_size = PSZ)
+    table.merge_cells(tb, 1, 0, 2, 0)
+    if okTide
+        // ---- FAISLA ----
+        bool buyNow = fPB or tNew
+        bool anyIn  = fIn or tOpen
+        string fz = buyNow ? "BUY ✅ ABHI" : anyIn ? "BUY CHALU (khuli trade rakho)" : "INTEZAR ⏳ - abhi naya BUY nahi"
+        color fzC = buyNow ? cUp : anyIn ? color.new(#1565c0, 0) : color.new(#5d606b, 0)
+        string why = ""
+        if fPB
+            why := "4H Supertrend upar mura - is 4H candle ki open " + f_px(fEn) + " par BUY. "
+        if tNew
+            why += "Tide: kal ka daily close 10 din ke high ke upar band hua. "
+        if not buyNow and not anyIn
+            why := (not tBull ? "1D EMA50 < EMA200 = Tide ke liye BUY MAT LO. " : "Tide: daily close > " + f_px(tHb) + " ($" + str.tostring(tHb - close, "0.0") + " door) par BUY. ") + (not ok4H ? "4H engine: 15m-4H chart par." : up4 ? "4H upar hai magar trade nahi (SL laga tha) - agle mor ka intezar." : "4H: close > " + f_px(stL) + " (Supertrend) ho to mor.")
+        if not buyNow and anyIn
+            why := (tOpen ? "Tide khuli (SL " + f_px(tSlNow) + "). " : "") + (fIn ? "4H khuli (SL " + f_px(fSl) + "). " : "") + (fIn and tOpen ? "Dono khule = kul risk " + str.tostring(myRisk, "0.0#") + "%." : "")
+        table.cell(tb, 0, 1, "FAISLA", text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 1, fz, text_color = color.white, bgcolor = fzC, text_size = PSZ)
+        table.merge_cells(tb, 1, 1, 2, 1)
+        table.cell(tb, 0, 2, "Kyun", text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 2, why, text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.merge_cells(tb, 1, 2, 2, 2)
+        // ---- engine ----
+        table.cell(tb, 0, 3, "", bgcolor = cHd, text_size = PSZ)
+        table.cell(tb, 1, 3, "Tide 1D BUY", text_color = cTx, bgcolor = cHd, text_size = PSZ)
+        table.cell(tb, 2, 3, "4H BUY (t5)", text_color = cTx, bgcolor = cHd, text_size = PSZ)
+        string tH = tNew ? "ABHI BUY (kal close)" : tOpen ? "KHULI" : not tBull ? "BUY MAT LO (1D rukh neeche)" : "intezar (toot nahi)"
+        string fH = not ok4H ? "sirf 15m-4H chart par" : fPB ? "ABHI BUY (is 4H open)" : fPX ? "ABHI BAND (is 4H candle)" : fIn ? "KHULI" : up4 ? "intezar (agla mor)" : "BUY MAT LO (4H neeche)"
+        table.cell(tb, 0, 4, "Haal", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 4, tH, text_color = tOpen ? cUp : not tBull ? cDn : cMu, text_size = PSZ)
+        table.cell(tb, 2, 4, fH, text_color = fPB or fIn ? cUp : up4 ? cMu : cDn, text_size = PSZ)
+        table.cell(tb, 0, 5, "Entry", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 5, tOpen ? f_px(tE) + " · " + str.format_time(tET, "dd MMM", myTZ) : "-", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 2, 5, fIn ? f_px(fEn) + " · " + str.format_time(fEntT, "dd MMM HH:mm", myTZ) : "-", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 6, "SL", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 6, tOpen ? f_px(tSlNow) + " → close ke baad " + f_px(tSlNext) : "bane to ~$" + str.tostring(tSlM * tA, "0") + " neeche", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 2, 6, not ok4H ? "-" : fIn ? f_px(fSl) : "bane to ~$" + str.tostring(fSlM * atr4, "0") + " neeche", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 7, "Lot (kul risk / 2)", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 7, f_lot(tOpen ? tR : tSlM * tA), text_color = cTx, text_size = PSZ)
+        table.cell(tb, 2, 7, ok4H ? f_lot(fIn ? fRd : fSlM * atr4) : "-", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 8, "Abhi", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 8, tOpen ? f_r((close - tE) / tR) : "-", text_color = tOpen and close > tE ? cUp : tOpen ? cDn : cMu, text_size = PSZ)
+        table.cell(tb, 2, 8, fIn ? f_r((close - fEn) / fRd) : "-", text_color = fIn and close > fEn ? cUp : fIn ? cDn : cMu, text_size = PSZ)
+        // ---- zones (engine ke apne level) ----
+        table.cell(tb, 0, 9, "R / SZ (BUY toot)", text_color = cDn, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 9, f_px(tHb) + " (10 din high)" + (close < tHb ? " - neeche = BUY abhi nahi" : ""), text_color = cTx, text_size = PSZ)
+        table.cell(tb, 2, 9, not ok4H or up4 ? "-" : f_px(stL) + " paar = mor", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 10, "S / DZ (band)", text_color = cUp, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 10, tOpen ? f_px(tSlNow) + " neeche = Tide band" : f_px(tLb) + " (5 din low, ittila)", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 2, 10, ok4H and up4 ? f_px(stL) + " neeche = 4H band" : "-", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 11, "Bara zone 1D EMA", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 11, tBull ? "UPAR = BUY ijazat" : "NEECHE = BUY MAT LO", text_color = tBull ? cUp : cDn, text_size = PSZ)
+        table.cell(tb, 2, 11, tBull ? "upar (ittila)" : "neeche - sirf ittila (rok test FAIL)", text_color = tBull ? cUp : cOr, text_size = PSZ)
+        table.cell(tb, 0, 12, "SELL", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 12, "SELL MAT LO - gold par SELL test FAIL (#106s)", text_color = cDn, text_size = PSZ)
+        table.merge_cells(tb, 1, 12, 2, 12)
+    table.cell(tb, 0, 13, "Test #107g (0.5% har BUY): 2003-18 +23.5%, 2019+ +20.8%, girawat < 5%. Aage ki zamanat nahi - pehle demo.", text_color = cMu, text_size = size.tiny, text_halign = text.align_left)
+    table.merge_cells(tb, 0, 13, 2, 13)
