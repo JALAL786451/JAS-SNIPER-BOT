@@ -23,7 +23,7 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | # | Kaam | Haal |
 |---|---|---|
 | **FABLE** | **User 19 Nov: Fable mehnga; magar 4 EA (t5 4/5 haar, i6) ki tasdeeq isi se - Itwar reminder WAHI.** YAAD DILAO 22 Nov ke baad: Fable 5.2 se 4 EA (t5, i6, k2, e2) + instruments + qaidon ki AZAD jaanch. Brief `docs/fable-jaanch.md` | Hafta reset Itwar 22 Nov 2 AM. User: nayi chat, model **Fable 5.2**, "TRADING", phir "docs/fable-jaanch.md wala kaam karo" -> Fable chat ho to bina pooche seedha yahi. **'Full reset' muft EK dafa, 11 Dec 3 AM tak = BACHA ke** (sirf jaanch beech limit khatam ho tab) |
-| **K21g** | JAS GOLD **g3.2** `indicators/jas_gold_g3_2.pine` (user "haan g3.2" 19 Nov) = g3.1 + hari S lakeer steplinebr (2012-16 jhooti lakeer khatam), baqi WAHI | user TV paste + SS (2013-16 D par hari lakeer na ho); error = g3.2.1. 7 mahine chup = bug NAHI, sahara e2>i6>k2, t5 nahi (sawal-jawab) |
+| **K21g** | JAS GOLD **g3.3** `indicators/jas_gold_g3_3.pine` (user 19 Nov: gap ka sahara script mein) = g3.2 (hari lakeer hal) + SAHARA dabba: gold 1D kitne din chup + e2 ke 11 market (radar r3 engine jyon ka tyon) | user TV paste + SS; jaanch: dabba = FTMO demo e2 (XAG SELL + AUDUSD SELL); error = g3.3.1. 7 mahine chup = bug NAHI (sawal-jawab) |
 | **K24** | JAS GOLD **g4** `indicators/jas_gold_g4.pine` (user "A" 19 Nov): g3.1 qaida wahi + SMC Coach sirf ittila | pinecheck saaf; user TV paste (gold 15m/1H/4H) + SS; error = g4.1 |
 | **K11** | j2 (`JasLarai1_EA`) demo 472716649 par, deewar OFF | 3rd MT5 `C:\MT5_DEMO2` (/portable) + 472716649 login; purane 2 MT5 ka login KABHI na badlein |
 | SMA | US500 D1 SMA200: 17 Nov 1 close neeche | 3 D1 close neeche = t5 US aadha (V2) ki baat user se |
