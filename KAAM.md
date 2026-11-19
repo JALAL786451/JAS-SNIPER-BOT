@@ -33,3 +33,4 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | K12 | PC Claude: `cd D:\JAS` -> `git pull` -> `claude.cmd`; MT5 test `C:\MT5_TEST` | - |
 | FTMO | ~20 Nov Black Friday ftmo.com check (`docs/bank.md`) | kal |
 | LIVE | 18 Nov: gold SELL 3.70 ke neeche BUY 3.15 (Close By ~+3,322 USC); demo #17000740869 (browser) | haal = hook table |
+| IPO | 19 Nov: user ne TV par "Anthropic IPO" ad dikhaya - jawab: EA/FTMO ke kaam ka NAHI (naya share, data nahi, FTMO par nahi) | sirf khabar |
