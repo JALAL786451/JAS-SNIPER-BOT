@@ -62,6 +62,8 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
+**72vi chat (20 Nov)** - sirf sawal: Default vs Auto environment (dono ek, sirf Default mojood). Nayi maloomat (setup script) save. AGLA wahi neeche wala.
+
 **71vi chat (20 Nov)** - g3.3.2 TV ✅ (4H + 1D + zoom SS): labels theek, g3.3.3 NAHI. SS ko pichhle tests se milaya = 100% mila (#107g, gold SELL 6 FAIL,
 sahara 'rok' ~4 Nov, 1D chup 261 din vs 2013-16 38 / 2018-19 9.7 mahine, e2 chup-daur sahara demo par +627). Demo 9 band: US index -2,036 / metal -120, EA 8/8 test jaisa.
 User naraz (haq par): Claude ne 2 dafa baat ghalat samjhi (SS par EA tajzia). Ilaj: KAAM 'ABHI KA MAQSAD' + shak ho to EK chhota sawal. FTMO BF 20 Nov ftmo.com offer NAHI.

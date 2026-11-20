@@ -2,17 +2,12 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-17  (3 kaam)
-   - 65vi chat khatam: K21-K23 FAIL, test se pehle darwaza KAAM pehli line
-   - Chat khatam 66vi: K22 Fable jaanch pehle, KAAM taza
-   - Usage 60%, full reset bachao (66vi)
-
-2026-11-19  (42 kaam)
-   - save.sh: chat khud commit kare tab bhi default branch par push (65-68vi wala masla)
-   - 69vi chat khatam: SELL tests (#108r-#111m) FAIL, KAAM + TRADING sec 5 taza
+2026-11-19  (38 kaam)
+   - JAS GOLD g4: g3.1 qaida wahi + SMC Coach v2 sirf ittila (Teacher, MTF dashboard, TP dabba)
+   - K21g: g3.1 aakhri 1D x (3 Mar 2026) data se tasdeeq - bug nahi
    - KAAM chhota
 
-2026-11-20  (11 kaam)
+2026-11-20  (12 kaam)
    - FTMO demo 20 Nov report: i6 US500 SL -1000, e2 3 SELL +627 (BTC nayi)
-   - 70vi chat khatam: g3.3.1 gold sahara + g3.3.2, demo 20 Nov, TRADING sec 5 + roznamcha
-   - KAAM: ABHI KA MAQSAD hissa (nayi chat track par shuru ho)
+   - auto-save (Stop hook): 2026-11-20 18:53 UTC
+   - 71vi chat khatam: g3.3.2 TV tasdeeq + tests milaan, KAAM ABHI KA MAQSAD, TRADING sec 5 + r

@@ -6,6 +6,5 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | Din | Commits | File | Pehla / aakhri kaam |
 |---|---|---|---|
 | Sep 2026 tak | 0 | `pehle-2026-09.md` | shuru se 30 Sep tak |
-| 2026-11-17 | 3 | `2026-11-17.md` | 65vi chat khatam: K21-K23 FAIL, test se pehle darwaza KAAM p / Usage 60%, full reset bachao (66vi) |
-| 2026-11-19 | 42 | `2026-11-19.md` | save.sh: chat khud commit kare tab bhi default branch par pu / KAAM chhota |
-| 2026-11-20 | 11 | `2026-11-20.md` | FTMO demo 20 Nov report: i6 US500 SL -1000, e2 3 SELL +627 ( / KAAM: ABHI KA MAQSAD hissa (nayi chat track par shuru ho) |
+| 2026-11-19 | 38 | `2026-11-19.md` | JAS GOLD g4: g3.1 qaida wahi + SMC Coach v2 sirf ittila (Tea / KAAM chhota |
+| 2026-11-20 | 12 | `2026-11-20.md` | FTMO demo 20 Nov report: i6 US500 SL -1000, e2 3 SELL +627 ( / 71vi chat khatam: g3.3.2 TV tasdeeq + tests milaan, KAAM ABH |
