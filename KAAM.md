@@ -26,11 +26,11 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | **K21g** | JAS GOLD **g3.3.1** `indicators/jas_gold_g3_3_1.pine` = g3.2 + GOLD SAHARA: 4H BUY sirf jab 1D Supertrend upar (rehnuma_1d_test: chup daur bina -0.3/-2.8/-0.2/-1.5R, filter +5.5/+0.6/+0.8/0) + ABHI 2 line. g3.3 dabba REJECT (user) | g3.3.1 TV ✅ (rok 4 Nov). **g3.3.2** `jas_gold_g3_3_2.pine` = sirf ABHI label khali jagah (labels par chadh raha tha) - user TV + SS; error = g3.3.3 |
 | **K24** | JAS GOLD **g4** `indicators/jas_gold_g4.pine` (user "A" 19 Nov): g3.1 qaida wahi + SMC Coach sirf ittila | pinecheck saaf; user TV paste (gold 15m/1H/4H) + SS; error = g4.1 |
 | **K11** | j2 (`JasLarai1_EA`) demo 472716649 par, deewar OFF | 3rd MT5 `C:\MT5_DEMO2` (/portable) + 472716649 login; purane 2 MT5 ka login KABHI na badlein |
-| SMA | US500 D1 SMA200: 17 Nov 1 close neeche; 20 Nov US500 ~7,030 (i6 SL) | user se US500 D1 SS (SMA200) - 3+ close neeche = V2 baat (K21 V2 FAIL tha) |
-| K7 | e2 Kachhua demo 474832446 | 20 Nov: e2 3 SELL +627 (XAG, AUD, BTC nayi); i6 US500 SL -1,000; XAG SL Peer ~50.78 sarakna chahiye (na sarke = EA log) |
+| SMA | US500 D1 SMA200: 17 Nov 1 close neeche; 20 Nov US500 ~7,030 (i6 SL) | user se US500 D1 SS (SMA200) - 3+ close neeche = V2 baat (K21 V2 FAIL) |
+| K7 | e2 Kachhua demo 474832446 | 20 Nov: e2 3 SELL +627 (XAG, AUD, BTC nayi); i6 US500 SL -1,000; XAG SL Peer ~50.78 sarakna chahiye (na = EA log) |
 | K19 | Kachhua Naqsha k1 `indicators/jas_kachhua_naqsha.pine` | user TV paste + SS (error = k1.1) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha) | K11 ke baad, user ki haan |
 | T1 | t5 Forward gold H4 hua | agla US500m H4 - user ki marzi |
-| K12 | PC Claude: `cd D:\JAS` -> `git pull` -> `claude.cmd`; MT5 test `C:\MT5_TEST` | - |
+| K12 | PC Claude: `cd D:\JAS` -> `git pull` -> `claude.cmd`; test `C:\MT5_TEST` | - |
 | FTMO | ~20 Nov Black Friday ftmo.com check (`docs/bank.md`) | kal |
-| LIVE | 18 Nov: gold SELL 3.70 ke neeche BUY 3.15 (Close By ~+3,322 USC); demo #17000740869 (browser) | haal = hook table |
+| LIVE | 18 Nov: gold SELL 3.70 neeche BUY 3.15 (Close By ~+3,322 USC) | haal = hook table |
