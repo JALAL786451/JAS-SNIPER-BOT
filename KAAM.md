@@ -8,6 +8,10 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 4. Har report / SS par **KHUD NAZAR**: khatra, EA takrao, backtest se farq - bina pooche (`docs/khud-nazar.md`).
 5. KAHANI.txt / poori TRADING.md NA parho; purani baat sirf `grep`. "Chat lambi" ka zikr baar baar NAHI.
 
+## ABHI KA MAQSAD (user 20 Nov: baat track par aate hi chat mehngi - is liye Claude USI waqt yahan 2-3 line likhe, nayi chat yahin se shuru)
+- Gold script g3.3.2 = tests se 100% mili (71vi). User SS ka matlab: script ko PICHHLE TESTS se milao (EA / demo NAHI jab tak user na kahe).
+- Agla: pehla 'ABHI: BUY' SS. Claude ghalti 71vi: SS par EA tajzia shuru kiya - dobara NAHI.
+
 ## Pakki baatein (bhoolna mana)
 - **User 19 Nov (naraz, haq par):** branch / setting ka masla user ko NA samjhao, NA settings baar baar badlo - Claude khud chup-chaap theek kare. Chat ke aakhir mein kaam default (`jas-desk-v3`) par pohncha ho, ye Claude KHUD check kare.
 - Purane EA / Pine mein tabdeeli NAHI - naya kaam NAYI file; risk hadd khud NAHI barhana; backtest -> demo -> live.
