@@ -6,7 +6,6 @@ Lambi kahani `docs/purana-haal.md` mein (grep tareekh se). Is folder ki files si
 | Din | Commits | File | Pehla / aakhri kaam |
 |---|---|---|---|
 | Sep 2026 tak | 0 | `pehle-2026-09.md` | shuru se 30 Sep tak |
-| 2026-11-17 | 44 | `2026-11-17.md` | KAAM: K11 - 472716649 kisi MT5 par login nahi (17 Nov SS) / KAAM: close-by sahi hisab + 0.11 lock |
-| 2026-11-18 | 21 | `2026-11-18.md` | KAAM: 18 Nov LIVE SS / TRADING: 474832446 haal 19 Nov report |
-| 2026-11-19 | 48 | `2026-11-19.md` | JAS GOLD g3: chart par SZ/DZ patti + naam (g2 par) / KAAM chhota |
-| 2026-11-20 | 5 | `2026-11-20.md` | FTMO demo 20 Nov report: i6 US500 SL -1000, e2 3 SELL +627 ( / fable-jaanch: Itwar yaad-dihani ki setting + 70vi ke naye ka |
+| 2026-11-17 | 3 | `2026-11-17.md` | 65vi chat khatam: K21-K23 FAIL, test se pehle darwaza KAAM p / Usage 60%, full reset bachao (66vi) |
+| 2026-11-19 | 42 | `2026-11-19.md` | save.sh: chat khud commit kare tab bhi default branch par pu / KAAM chhota |
+| 2026-11-20 | 11 | `2026-11-20.md` | FTMO demo 20 Nov report: i6 US500 SL -1000, e2 3 SELL +627 ( / KAAM: ABHI KA MAQSAD hissa (nayi chat track par shuru ho) |

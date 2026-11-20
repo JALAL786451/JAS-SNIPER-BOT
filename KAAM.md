@@ -10,7 +10,7 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 
 ## ABHI KA MAQSAD (user 20 Nov: baat track par aate hi chat mehngi - is liye Claude USI waqt yahan 2-3 line likhe, nayi chat yahin se shuru)
 - Gold script g3.3.2 = tests se 100% mili (71vi). User SS ka matlab: script ko PICHHLE TESTS se milao (EA / demo NAHI jab tak user na kahe).
-- Agla: pehla 'ABHI: BUY' SS. Claude ghalti 71vi: SS par EA tajzia shuru kiya - dobara NAHI.
+- User SS / sawal ka matlab pakka na ho to EK chhota sawal poochho, andaze se lamba jawab NAHI.
 
 ## Pakki baatein (bhoolna mana)
 - **User 19 Nov (naraz, haq par):** branch / setting ka masla user ko NA samjhao, NA settings baar baar badlo - Claude khud chup-chaap theek kare. Chat ke aakhir mein kaam default (`jas-desk-v3`) par pohncha ho, ye Claude KHUD check kare.
@@ -26,16 +26,13 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 ## Khule kaam (upar wala pehle)
 | # | Kaam | Haal |
 |---|---|---|
-| **FABLE** | **User 19 Nov: Fable mehnga; magar 4 EA (t5 4/5 haar, i6) ki tasdeeq isi se - Itwar reminder WAHI.** YAAD DILAO 22 Nov ke baad: Fable 5.2 se 4 EA (t5, i6, k2, e2) + instruments + qaidon ki AZAD jaanch. `docs/fable-jaanch.md` | Hafta reset Itwar 22 Nov 2 AM. User: nayi chat, model **Fable 5.2**, "TRADING", phir "docs/fable-jaanch.md wala kaam karo" -> Fable chat ho to bina pooche seedha yahi. **'Full reset' muft EK dafa, 11 Dec 3 AM tak = BACHA ke** (sirf jaanch beech limit khatam ho tab) |
-| **K21g** | JAS GOLD **g3.3.1** `indicators/jas_gold_g3_3_1.pine` = g3.2 + GOLD SAHARA: 4H BUY sirf jab 1D Supertrend upar (rehnuma_1d_test: chup daur bina -0.3/-2.8/-0.2/-1.5R, filter +5.5/+0.6/+0.8/0) + ABHI 2 line. g3.3 dabba REJECT | g3.3.1 TV ✅ (rok 4 Nov). **g3.3.2 TV ✅ 20 Nov** (ABHI khali jagah theek; 2013-16 1D chup sahi). User 20 Nov zoom SS: labels theek, g3.3.3 ki zaroorat NAHI (sirf DZ/S ki pehli line '4H mor' ke neeche, chhota). g3.3.2 = gold ki chalti script; SS tests (#107g, #106s SELL FAIL, sahara, chup daur) se 100% mila. AGLA: pehla 'ABHI: BUY' aaye to SS (demo pehle) |
+| **FABLE** | 22 Nov 2 AM ke baad YAAD DILAO: Fable 5.2 se 4 EA (t5, i6, k2, e2) + instruments + qaidon ki AZAD jaanch (`docs/fable-jaanch.md`). User: Fable mehnga magar yahi | User: nayi chat, model Fable 5.2, "TRADING", phir "docs/fable-jaanch.md wala kaam karo". 'Full reset' muft EK dafa 11 Dec tak BACHA ke |
+| **K21g** | JAS GOLD **g3.3.2** `indicators/jas_gold_g3_3_2.pine` = gold ki chalti script (g3.3.1 sahara + ABHI khali jagah) | **TV ✅ 20 Nov**, labels theek, tests se 100% mili. AGLA: pehla 'ABHI: BUY' SS (demo pehle) |
 | **K24** | JAS GOLD **g4** `indicators/jas_gold_g4.pine` (user "A" 19 Nov): g3.1 qaida wahi + SMC Coach sirf ittila | pinecheck saaf; user TV paste (gold 15m/1H/4H) + SS; error = g4.1 |
 | **K11** | j2 (`JasLarai1_EA`) demo 472716649 par, deewar OFF | 3rd MT5 `C:\MT5_DEMO2` (/portable) + 472716649 login; purane 2 MT5 ka login KABHI na badlein |
-| SMA | US500 D1 SMA200: 17 Nov 1 close neeche; 20 Nov US500 ~7,030 (i6 SL) | user se US500 D1 SS (SMA200) - 3+ close neeche = V2 baat (K21 V2 FAIL) |
-| TAJ | User 20 Nov (71vi): pichhli chats + code ki ghaltiyan ka tajzia. Nateeja: demo 9 band = US index -2,036 / metal -120; EA code demo se 8/8 mila (bug nahi), ghalti = design (sab BUY, US par t5+i6 dohra, t5 bina 1D sahara) + test jhol J1-J4 | user faisla: t5 US + SMA200 filter test (pehle grep) ya Fable 22 Nov tak ruko |
+| SMA | US500 D1 SMA200 (EA kaam, script nahi): 17 Nov 1 close neeche, 20 Nov ~7,030 | jab user chahe SS; 3+ close neeche = V2 baat |
+| TAJ | 71vi: demo 9 band = US index -2,036 / metal -120; EA 8/8 test se mile (bug nahi); ghalti = design (sab BUY, US t5+i6 dohra) | user faisla: t5 US + SMA200 filter test (naya) ya Fable tak ruko |
 | K7 | e2 Kachhua demo 474832446 | 20 Nov: e2 3 SELL +627 (XAG, AUD, BTC nayi); i6 US500 SL -1,000; XAG SL Peer ~50.78 sarakna chahiye (na = EA log) |
 | K19 | Kachhua Naqsha k1 `indicators/jas_kachhua_naqsha.pine` | user TV paste + SS (error = k1.1) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha) | K11 ke baad, user ki haan |
-| T1 | t5 Forward gold H4 hua | agla US500m H4 - user ki marzi |
-| K12 | PC Claude: `cd D:\JAS` -> `git pull` -> `claude.cmd`; test `C:\MT5_TEST` | - |
-| FTMO | ~20 Nov Black Friday ftmo.com check (`docs/bank.md`) | kal |
-| LIVE | 18 Nov: gold SELL 3.70 neeche BUY 3.15 (Close By ~+3,322 USC) | haal = hook table |
+| FTMO | Black Friday: 20 Nov ftmo.com par offer NAHI | 24-27 Nov dobara (`docs/bank.md`) |

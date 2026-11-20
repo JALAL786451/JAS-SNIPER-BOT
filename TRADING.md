@@ -62,10 +62,10 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**70vi chat (19-20 Nov)** - gold script ka din: g3.1 "7 mahine chup" = bug NAHI (SELL design mein nahi, 4H D par chhupa, 1D pehle bhi 2013-16 ~38 mahine chup);
-g3.2 (hari S lakeer steplinebr) -> g3.3 (11 market dabba, user REJECT) -> **g3.3.1 = gold SAHARA: 4H BUY sirf 1D Supertrend upar** (rehnuma_1d_test: chup daur -0.3/-2.8/-0.2/-1.5R -> +5.5/+0.6/+0.8/0) TV ✅ -> **g3.3.2** ABHI label khali jagah.
-Sahara hisaab `tools/gold_khamosh_sahara.py` (e2 > i6 > k2, t5 nahi). Demo 20 Nov: bal 97,858.52, i6 US500 SL -1,000, e2 3 SELL +627 (BTC nayi). Fable reminder setting `docs/fable-jaanch.md` mein likhi.
-**AGLA (71vi):** g3.3.2 TV SS (4H + 1D); US500 D1 SS SMA200 (3+ close neeche = V2 baat, khud-nazar sec 6); Peer XAG SL ~50.78 sarka?; k2 pehli ~24 Nov; FTMO Black Friday ftmo.com; **ITWAR 22 Nov 2:05 AM reminder -> Fable 5.2 jaanch**.
+**71vi chat (20 Nov)** - g3.3.2 TV ✅ (4H + 1D + zoom SS): labels theek, g3.3.3 NAHI. SS ko pichhle tests se milaya = 100% mila (#107g, gold SELL 6 FAIL,
+sahara 'rok' ~4 Nov, 1D chup 261 din vs 2013-16 38 / 2018-19 9.7 mahine, e2 chup-daur sahara demo par +627). Demo 9 band: US index -2,036 / metal -120, EA 8/8 test jaisa.
+User naraz (haq par): Claude ne 2 dafa baat ghalat samjhi (SS par EA tajzia). Ilaj: KAAM 'ABHI KA MAQSAD' + shak ho to EK chhota sawal. FTMO BF 20 Nov ftmo.com offer NAHI.
+**AGLA (72vi):** pehla 'ABHI: BUY' SS; **ITWAR 22 Nov 2 AM ke baad Fable 5.2 jaanch**; FTMO BF 24-27 Nov; US500 SMA200 SS sirf user chahe.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
