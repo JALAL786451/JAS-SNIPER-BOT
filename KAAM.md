@@ -27,6 +27,7 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | **K24** | JAS GOLD **g4** `indicators/jas_gold_g4.pine` (user "A" 19 Nov): g3.1 qaida wahi + SMC Coach sirf ittila | pinecheck saaf; user TV paste (gold 15m/1H/4H) + SS; error = g4.1 |
 | **K11** | j2 (`JasLarai1_EA`) demo 472716649 par, deewar OFF | 3rd MT5 `C:\MT5_DEMO2` (/portable) + 472716649 login; purane 2 MT5 ka login KABHI na badlein |
 | SMA | US500 D1 SMA200: 17 Nov 1 close neeche; 20 Nov US500 ~7,030 (i6 SL) | user se US500 D1 SS (SMA200) - 3+ close neeche = V2 baat (K21 V2 FAIL) |
+| TAJ | User 20 Nov (71vi): pichhli chats + code ki ghaltiyan ka tajzia. Nateeja: demo 9 band = US index -2,036 / metal -120; EA code demo se 8/8 mila (bug nahi), ghalti = design (sab BUY, US par t5+i6 dohra, t5 bina 1D sahara) + test jhol J1-J4 | user faisla: t5 US + SMA200 filter test (pehle grep) ya Fable 22 Nov tak ruko |
 | K7 | e2 Kachhua demo 474832446 | 20 Nov: e2 3 SELL +627 (XAG, AUD, BTC nayi); i6 US500 SL -1,000; XAG SL Peer ~50.78 sarakna chahiye (na = EA log) |
 | K19 | Kachhua Naqsha k1 `indicators/jas_kachhua_naqsha.pine` | user TV paste + SS (error = k1.1) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha) | K11 ke baad, user ki haan |
