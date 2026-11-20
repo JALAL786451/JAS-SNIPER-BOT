@@ -3,6 +3,7 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `indicators/jas_btc_b1.pine` - b1 (21 Nov, 73vi): BTC script, g3.3.2 ki shakal; qaida Kachhua 1D BUY+SELL (e2 / #76), 4H engine NAHI, lot 1 lot = 1 BTC, risk 0.25%
 - `indicators/jas_gold_g3_3_2.pine` - g3.3.2 (19 Nov, 70vi): g3.3.1 + SIRF ABHI label screen ki khali jagah mein (SZ/DZ/4H/EMA label se na takraye); qaida / sahara WAHI
 - `indicators/jas_gold_g3_3_1.pine` - g3.3.1 (19 Nov, 70vi): g3.2 + gold sahara (4H BUY sirf 1D Supertrend upar, "rok" nishan) + ABHI label me sahara / chup din; bara dabba NAHI
 - `indicators/jas_gold_g3_3.pine` - g3.3 (19 Nov, 70vi) [user REJECT - bara dabba, g3.3.1 use karein]: g3.2 + SAHARA dabba (gold Tide 1D chup ho to din + e2 Kachhua ke 11 market ka haal, radar r3 f_tide jyon ka tyon, metal slot + USD hadd 3); gold qaida WAHI
