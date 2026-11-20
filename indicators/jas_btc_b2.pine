@@ -1,0 +1,290 @@
+//@version=6
+// JAS BTC b2  (build b2, Pine v6, 21 Nov 2026)  -  b2 = b1.1 ki shakal (labels / zones / ABHI / alert / dabba WAHI) + QAIDA K2
+// (Turtle 20/10 + EMA). User 21 Nov: "strategy pehle Python par test kar ke us ke baad script ... reality based".
+// Test: tools/btc_k25.py + docs/research/btc-k25-qaida.md (qaida test se PEHLE likha; 5 umeedwar, K2 chuna + IMTIHAN PASS kamzor).
+// ============================================================================
+//  QAIDA K2 (1D, BTC, din 00:00 UTC = TradingView jaisa):
+//   BUY : daily close > pichhle 20 din ka high, kal ka 1D EMA50 > EMA200, ATR14 >= 0.25% qeemat.
+//   SELL: daily close < pichhle 20 din ka low,  kal ka 1D EMA50 < EMA200, ATR14 >= 0.25% qeemat.
+//   SL 2 x ATR14. Har din sarakta: BUY = pichhle 10 din ka low, SELL = pichhle 10 din ka high (sirf trade ke haq mein).
+//   Band: SL chhua / EMA rukh ulta / daily close sarakte SL ke paar. TP NAHI.
+//  TEST (kharcha 0.05% + swap 20%/saal): 2015-18 18 trade +2.48R (R:DD 24.6) | 2019-26 43 trade +0.84R (+-0.37), jeet 47%,
+//   kul +36.1R, girawat 3.8R, ausat 21 din. K0 (10/5, e2 EA) 2019+: 77 trade +0.52R. Farq shor ke andar = kamzor PASS.
+//  "Jaldi" wale (EMA rok hatana, 1D Supertrend) test mein der KAM NAHI karte, faida aadha, girawat dugni - is liye NAHI.
+//  Har trend qaida chaal ka ~50% pakarta; der se aana is ki keemat hai.
+//  e2 EA BTC par abhi 10/5 chalata hai -> b2 aur e2 kabhi alag ishara denge.
+//  LOT: 1.00 lot = 1 BTC. Default 0.25%. REPAINT NAHI ([1] + lookahead_on). Aage ki zamanat NAHI - pehle demo.
+// ============================================================================
+indicator("JAS BTC b2", shorttitle = "JAS BTC b2", overlay = true, max_labels_count = 100, max_boxes_count = 20)
+
+BUILD = "b2"
+
+grQ = "1 · Qaida (K2 Turtle 20/10, test btc_k25 jaisa - MAT BADLEIN)"
+tEnt   = input.int(20, "Kitne din ka high / low toote", minval = 3, group = grQ, display = display.none)
+tExit  = input.int(10, "SL kitne din ke low / high tak sarke", minval = 2, group = grQ, display = display.none)
+tAtrL  = input.int(14, "ATR length", minval = 2, group = grQ, display = display.none)
+tSlM   = input.float(2.0, "SL = kitne x ATR(1D)", minval = 0.5, step = 0.1, group = grQ, display = display.none)
+emaF   = input.int(50, "1D EMA fast", minval = 2, group = grQ, display = display.none)
+emaS   = input.int(200, "1D EMA slow", minval = 3, group = grQ, display = display.none)
+minAtr = input.float(0.25, "Kam az kam ATR (% qeemat)", minval = 0, step = 0.05, group = grQ, display = display.none)
+
+grA = "2 · Account (lot)"
+myBal  = input.float(100000, "Balance (cent account = USC, dollar = $)", minval = 1, group = grA, display = display.none)
+myRisk = input.float(0.25, "Risk % har trade (e2 EA = 0.25)", minval = 0.05, step = 0.05, group = grA, display = display.none)
+ctSize = input.float(1.0, "1.00 lot = kitne BTC (Exness / FTMO = 1)", minval = 0.0001, group = grA, display = display.none)
+myTZ   = input.string("Asia/Karachi", "Waqt (PKT = Asia/Karachi)", group = grA, display = display.none)
+
+grV = "3 · Dikhawa"
+showR   = input.bool(true, "R / SZ lakeer (20 din high = BUY toot)", group = grV, display = display.none)
+showS   = input.bool(true, "S / DZ lakeer (20 din low = SELL toot)", group = grV, display = display.none)
+showSL  = input.bool(true, "Khuli trade ka sarakta SL", group = grV, display = display.none)
+showEMA = input.bool(true, "1D EMA50 / EMA200 (bara zone)", group = grV, display = display.none)
+showMk  = input.bool(true, "BUY / SELL / BAND ke nishan", group = grV, display = display.none)
+tPos    = input.string("Top Right", "Dabbe ki jagah", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = grV, display = display.none)
+tSize   = input.string("Small", "Dabbe ki likhai", options = ["Tiny", "Small", "Normal"], group = grV, display = display.none)
+showZone = input.bool(true, "CHART PAR zones (patti) + naam (SZ / DZ / SL / EMA)", group = grV, display = display.none)
+zMot    = input.float(0.10, "Patti ki aadhi motai (x din ka ATR)", minval = 0.02, step = 0.02, group = grV, display = display.none)
+showTbl = input.bool(false, "Daayen dabba (table) - entry / SL / lot dekhne ke liye ON", group = grV, display = display.none)
+alertOn = input.bool(true, "Alert (TV mein 'Any alert() function call')", group = grV, display = display.none)
+
+f_pos(s) => s == "Top Left" ? position.top_left : s == "Bottom Right" ? position.bottom_right : s == "Bottom Left" ? position.bottom_left : s == "Middle Right" ? position.middle_right : position.top_right
+PSZ = tSize == "Tiny" ? size.tiny : tSize == "Normal" ? size.normal : size.small
+cUp = color.new(#26a69a, 0)
+cDn = color.new(#ef5350, 0)
+cTx = color.new(#d1d4dc, 0)
+cHd = color.new(#2a2e39, 0)
+cMu = color.new(#787b86, 0)
+cOr = color.new(#ff9800, 0)
+
+tfSec  = timeframe.in_seconds()
+max_bars_back(time, 1500)
+max_bars_back(high, 1500)
+max_bars_back(low, 1500)
+okTF  = (timeframe.isintraday and tfSec <= 14400) or (timeframe.isdaily and timeframe.multiplier == 1)   // 1m..4H + 1D
+okBtc = str.contains(syminfo.ticker, "BTC") or str.contains(syminfo.ticker, "XBT")
+stdTk = ticker.standard(syminfo.tickerid)
+nD    = str.tostring(tEnt)
+
+// ============================================================================
+//  KACHHUA 1D BUY + SELL - daily candles par (kachhua_trades jaisa), pichhla BAND din
+// ============================================================================
+f_kD() =>
+    a   = ta.atr(tAtrL)
+    hb  = ta.highest(high, tEnt)
+    lb  = ta.lowest(low, tEnt)
+    hx  = ta.highest(high, tExit)
+    lx  = ta.lowest(low, tExit)
+    ef  = ta.ema(close, emaF)
+    es  = ta.ema(close, emaS)
+    var int   d  = 0
+    var float e  = na
+    var float r  = na
+    var float sl = na
+    var int   eT = na
+    int  sig = 0
+    int  ex  = 0
+    bool atC = false
+    if d != 0
+        bool hit = d == 1 ? low <= sl : high >= sl
+        bool flip = not na(ef[1]) and not na(es[1]) and (d == 1 ? ef[1] < es[1] : ef[1] > es[1])
+        if hit
+            ex := d
+        else if flip
+            ex  := d
+            atC := true
+        else
+            sl := d == 1 ? math.max(sl, nz(lx[1], sl)) : math.min(sl, nz(hx[1], sl))
+            if d == 1 ? close <= sl : close >= sl
+                ex  := d
+                atC := true
+        if ex != 0
+            d := 0
+    if d == 0 and not atC and not na(a) and a > 0 and not na(hb[1]) and not na(lb[1]) and not na(ef[1]) and not na(es[1])
+        bool live = a / close * 100.0 >= minAtr
+        if close > hb[1] and ef[1] > es[1] and live
+            d := 1
+        else if close < lb[1] and ef[1] < es[1] and live
+            d := -1
+        if d != 0
+            e   := close
+            r   := tSlM * a
+            sl  := close - d * r
+            eT  := time
+            sig := d
+    [d[1], e[1], sl[1], r[1], eT[1], sig[1], ex[1], hb[1], lb[1], hx[1], lx[1], ef[1] > es[1], a[1], ef[1], es[1]]
+
+[kD, kE, kSl, kR, kET, kSig, kEx, kHb, kLb, kHx, kLx, kBull, kA, kEf, kEs] = request.security(stdTk, "D", f_kD(), lookahead = barmerge.lookahead_on)
+
+kDir   = nz(kD)                              // 1 = BUY khuli, -1 = SELL khuli, 0 = koi nahi
+kOpen  = kDir != 0
+newD   = nz(ta.change(time("D"))) != 0
+kNew   = nz(kSig) != 0 and kOpen             // kal ke close par nayi trade bani
+kNewMk  = newD and kNew                      // nishan / alert sirf din ki pehli candle
+kBandMk = newD and nz(kEx) != 0
+kSlNow  = kOpen ? kSl : na
+kSlNext = kDir == 1 ? math.max(kSl, nz(kLx, kSl)) : kDir == -1 ? math.min(kSl, nz(kHx, kSl)) : na   // aaj close ke baad
+var int lastX = na                           // aakhri band (kitne din se chup)
+if okTF and kBandMk
+    lastX := time
+
+// ============================================================================
+//  LOT: 1.00 lot = ctSize BTC -> $1 harkat par ctSize ikai
+// ============================================================================
+f_lot(float rd) =>
+    string out = "-"
+    if not na(rd) and rd > 0
+        float raw  = myBal * myRisk / 100.0 / (rd * ctSize)
+        float lots = math.floor(raw / 0.01 + 1e-9) * 0.01
+        float use  = math.max(lots, 0.01)
+        float pct  = use * ctSize * rd / myBal * 100.0
+        out := str.tostring(use, "0.00") + " lot (" + str.tostring(pct, "0.0#") + "%" + (lots >= 0.01 ? ")" : ", 0.01 bhi zyada!)")
+    out
+f_px(float x) => na(x) ? "-" : str.tostring(x, format.mintick)
+f_r(float x) => na(x) ? "-" : str.tostring(x, "+0.00;-0.00") + "R"
+f_dir(int d) => d == 1 ? "BUY" : d == -1 ? "SELL" : "-"
+
+// ============================================================================
+//  CHART: zones (qaide ke apne level) + nishan
+// ============================================================================
+plot(showR and okTF ? kHb : na, "R / SZ: din high (BUY toot)", color = color.new(#ef5350, 30), linewidth = 2, style = plot.style_stepline)
+plot(showS and okTF ? kLb : na, "S / DZ: din low (SELL toot)", color = color.new(#26a69a, 30), linewidth = 2, style = plot.style_stepline)
+plot(showSL and okTF and kOpen ? kSlNow : na, "Sarakta SL", color = color.new(#ff9800, 10), linewidth = 2, style = plot.style_steplinebr)
+plot(showEMA and okTF ? kEf : na, "1D EMA50", color = color.new(#ffb300, 30), linewidth = 1, style = plot.style_stepline)
+plot(showEMA and okTF ? kEs : na, "1D EMA200", color = color.new(#42a5f5, 30), linewidth = 1, style = plot.style_stepline)
+plotshape(showMk and okTF and kNewMk and kDir == 1, "BUY", style = shape.labelup, location = location.belowbar, color = cUp, size = size.tiny, text = "BUY", textcolor = color.white)
+plotshape(showMk and okTF and kNewMk and kDir == -1, "SELL", style = shape.labeldown, location = location.abovebar, color = cDn, size = size.tiny, text = "SELL", textcolor = color.white)
+plotshape(showMk and okTF and kBandMk, "BAND", style = shape.xcross, location = location.abovebar, color = cMu, size = size.tiny, text = "x", textcolor = cMu)
+
+// ============================================================================
+//  ALERT (sirf band din se - naye din ki pehli chart candle)
+// ============================================================================
+if alertOn and okBtc and okTF
+    if kNewMk
+        alert("JAS BTC b2: " + f_dir(kDir) + " (kal close " + f_px(kE) + ") | SL " + f_px(kSl) + " | lot " + f_lot(kR), alert.freq_once_per_bar)
+    if kBandMk
+        alert("JAS BTC b2: " + f_dir(nz(kEx)) + " BAND (kal)", alert.freq_once_per_bar)
+
+// ============================================================================
+//  CHART PAR ZONES + NAAM + ABHI label
+//  (b1.1 se) level labels neeche se upar rakhe jate hain - takrayein to upar wala khisak jata hai (patti asal level par
+//  rehti hai, label mein qeemat likhi). EMA50 + EMA200 EK label. ABHI label inke beech khali jagah mein.
+// ============================================================================
+var box   bxR  = na
+var box   bxS  = na
+var label lbNw = na
+var array<label> lbA = array.new<label>()
+f_lbl(int x, float y, string t, color bg) =>
+    label.new(x, y, t, xloc = xloc.bar_time, style = label.style_label_left, color = bg, textcolor = color.white, size = PSZ)
+if barstate.islast
+    box.delete(bxR)
+    box.delete(bxS)
+    label.delete(lbNw)
+    for l in lbA
+        label.delete(l)
+    lbA.clear()
+    if showZone and okTF
+        int   msB = timeframe.in_seconds() * 1000
+        int   xL  = time - 40 * msB
+        int   xR  = time + 8 * msB
+        float hz  = nz(kA) * zMot
+        // (1) level + likhai jama karo
+        array<float>  lY = array.new<float>()
+        array<string> lT = array.new<string>()
+        array<color>  lC = array.new<color>()
+        if not na(kHb)
+            bxR := box.new(xL, kHb + hz, xR, kHb - hz, xloc = xloc.bar_time, border_color = color.new(#ef5350, 30), bgcolor = color.new(#ef5350, 80))
+            lY.push(kHb)
+            lT.push("SZ / R  " + f_px(kHb) + (kDir == -1 ? "\n" + nD + " din high (ittila)" : kBull ? "\nUPAR daily close = BUY" : "\n" + nD + " din high - BUY MAT LO (EMA50 neeche)"))
+            lC.push(color.new(#c62828, 10))
+        if not na(kLb)
+            bxS := box.new(xL, kLb + hz, xR, kLb - hz, xloc = xloc.bar_time, border_color = color.new(#26a69a, 30), bgcolor = color.new(#26a69a, 80))
+            lY.push(kLb)
+            lT.push("DZ / S  " + f_px(kLb) + (kDir != 0 ? "\n" + nD + " din low (ittila)" : not kBull ? "\nNEECHE daily close = SELL" : "\n" + nD + " din low - SELL MAT LO (EMA50 upar)"))
+            lC.push(color.new(#00796b, 10))
+        if showSL and kOpen
+            lY.push(kSlNow)
+            lT.push(f_dir(kDir) + " SL  " + f_px(kSlNow) + (kDir == 1 ? "\nNEECHE = BUY BAND" : "\nUPAR = SELL BAND"))
+            lC.push(color.new(#e65100, 10))
+        if showEMA and not na(kEs) and not na(kEf)
+            lY.push((kEf + kEs) / 2.0)
+            lT.push("1D EMA50 " + f_px(kEf) + " / EMA200 " + f_px(kEs) + (kBull ? "\n50 upar = sirf BUY" : "\n50 neeche = sirf SELL"))
+            lC.push(color.new(#1565c0, 10))
+        // (2) screen ki hadd (dikhti candles + levels) -> ek line ki unchai ka andaza
+        float vLo = low
+        float vHi = high
+        for i = 0 to 1499
+            if i > bar_index or na(time[i]) or time[i] < chart.left_visible_bar_time
+                break
+            vLo := math.min(vLo, low[i])
+            vHi := math.max(vHi, high[i])
+        for lv in lY
+            vLo := math.min(vLo, lv)
+            vHi := math.max(vHi, lv)
+        float uL = (vHi - vLo) / 30.0
+        // (3) neeche se upar: har label pichhle ke upar se kam az kam uski aadhi + apni aadhi unchai door
+        array<float> pY = array.new<float>()
+        array<float> pH = array.new<float>()
+        float topPrev = na
+        if lY.size() > 0
+            array<int> ix = array.sort_indices(lY, order.ascending)
+            for j in ix
+                float y  = lY.get(j)
+                float hh = (str.split(lT.get(j), "\n").size() + 0.8) * uL / 2.0
+                if not na(topPrev)
+                    y := math.max(y, topPrev + hh)
+                topPrev := y + hh
+                pY.push(y)
+                pH.push(hh)
+                lbA.push(f_lbl(xR, y, lT.get(j), lC.get(j)))
+        // (4) ABHI label: qeemat ke qareeb tar khali jagah, kisi label se na takraye
+        string tNw = kNew ? "ABHI: " + f_dir(kDir) + " ✅" : kOpen ? "ABHI: " + f_dir(kDir) + " CHALU (khuli rakho)" : "ABHI: INTEZAR ⏳ - naya sauda MAT LO"
+        string tWy = kOpen ? "\nulti taraf MAT LO" : kBull ? "\nRukh UPAR: sirf BUY" : "\nRukh NEECHE: sirf SELL"
+        string tCh = not kOpen and not na(lastX) ? "\nQaida chup " + str.tostring(math.floor((timenow - lastX) / 86400000.0)) + " din" : ""
+        float hN = (str.split(tNw + tWy + tCh, "\n").size() + 0.8) * uL / 2.0
+        float yNw = close
+        for k = 0 to 80
+            float yc = close + (k % 2 == 0 ? -1.0 : 1.0) * math.ceil(k / 2.0) * uL * 0.5
+            bool  ok = yc - hN >= vLo and yc + hN <= vHi
+            if ok and pY.size() > 0
+                for m = 0 to pY.size() - 1
+                    if math.abs(yc - pY.get(m)) < hN + pH.get(m)
+                        ok := false
+            if ok
+                yNw := yc
+                break
+        color  cNw = kNew ? (kDir == 1 ? cUp : cDn) : kOpen ? color.new(#1565c0, 0) : color.new(#5d606b, 0)
+        lbNw := label.new(time + 2 * msB, yNw, tNw + tWy + tCh, xloc = xloc.bar_time, style = label.style_label_left, color = cNw, textcolor = color.white, size = PSZ)
+// ============================================================================
+//  DABBA (table) - default BAND
+// ============================================================================
+var table tb = table.new(f_pos(tPos), 2, 11, bgcolor = color.new(#131722, 8), border_width = 1, border_color = color.new(#434651, 0))
+if barstate.islast
+    table.clear(tb, 0, 0, 1, 10)
+if barstate.islast and showTbl
+    table.cell(tb, 0, 0, "JAS BTC " + BUILD, text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+    table.cell(tb, 1, 0, (okBtc ? syminfo.ticker : syminfo.ticker + " - BTC NAHI!") + (okTF ? " · " + timeframe.period + " · K2 20/10 1D · test btc_k25" : " · 1m-4H ya 1D CHART LAGAYEN!"), text_color = okTF and okBtc ? cTx : cOr, bgcolor = cHd, text_size = PSZ)
+    if okTF
+        string fz = kNew ? f_dir(kDir) + " ✅ ABHI" : kOpen ? f_dir(kDir) + " CHALU (khuli trade rakho)" : "INTEZAR ⏳ - abhi naya sauda nahi"
+        color fzC = kNew ? (kDir == 1 ? cUp : cDn) : kOpen ? color.new(#1565c0, 0) : color.new(#5d606b, 0)
+        string why = kNew ? (kDir == 1 ? "Kal ka daily close " + nD + " din ke high ke UPAR band hua (EMA50 > EMA200)." : "Kal ka daily close " + nD + " din ke low ke NEECHE band hua (EMA50 < EMA200).") : kOpen ? f_dir(kDir) + " khuli, SL roz sarakta. TP nahi." : kBull ? "Rukh upar: daily close > " + f_px(kHb) + " ($" + str.tostring(kHb - close, "0") + " door) = BUY. SELL MAT LO." : "Rukh neeche: daily close < " + f_px(kLb) + " ($" + str.tostring(close - kLb, "0") + " door) = SELL. BUY MAT LO."
+        table.cell(tb, 0, 1, "FAISLA", text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 1, fz, text_color = color.white, bgcolor = fzC, text_size = PSZ)
+        table.cell(tb, 0, 2, "Kyun", text_color = cTx, bgcolor = cHd, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 2, why, text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 0, 3, "Entry", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 3, kOpen ? f_dir(kDir) + " " + f_px(kE) + " · " + str.format_time(kET, "dd MMM", myTZ) : "-", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 4, "SL", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 4, kOpen ? f_px(kSlNow) + " → close ke baad " + f_px(kSlNext) : "bane to ~$" + str.tostring(tSlM * kA, "0") + " door", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 5, "Lot (" + str.tostring(myRisk, "0.0#") + "%)", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 5, f_lot(kOpen ? kR : tSlM * kA), text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 6, "Abhi", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        float rNow = kOpen ? kDir * (close - kE) / kR : na
+        table.cell(tb, 1, 6, f_r(rNow), text_color = na(rNow) ? cMu : rNow > 0 ? cUp : cDn, text_size = PSZ)
+        table.cell(tb, 0, 7, "R / SZ (BUY toot)", text_color = cDn, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 7, f_px(kHb) + " (" + nD + " din high)", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 8, "S / DZ (SELL toot)", text_color = cUp, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 8, f_px(kLb) + " (" + nD + " din low)", text_color = cTx, text_size = PSZ)
+        table.cell(tb, 0, 9, "Bara zone 1D EMA", text_color = cTx, text_size = PSZ, text_halign = text.align_left)
+        table.cell(tb, 1, 9, kBull ? "EMA50 UPAR = sirf BUY" : "EMA50 NEECHE = sirf SELL", text_color = kBull ? cUp : cDn, text_size = PSZ)
+    table.cell(tb, 0, 10, "Test K2 BTC: 2015-18 18 tr +2.48R · 2019-26 43 tr +0.84R (jeet 47%, girawat 3.8R). Zamanat nahi - pehle demo.", text_color = cMu, text_size = size.tiny, text_halign = text.align_left)
+    table.merge_cells(tb, 0, 10, 1, 10)

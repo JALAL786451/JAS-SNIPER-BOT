@@ -308,3 +308,4 @@ Ek hi price (BID/ASK alag nahi) = spread alag se jodo (asli: US500 0.40, USTEC 1
 - g3.3.2 SS ka matlab? (20 Nov, 71vi) -> script ko PICHHLE TESTS se milao (EA nahi): #107g, SELL 6 FAIL, sahara rok, chup daur - sab mila, bug nahi; agla pehla 'ABHI: BUY' SS.
 - Environment picker mein Default aur Auto dono kyun? (20 Nov, 72vi) -> Default = asal cloud environment (account mein sirf yahi EK); Auto = 'app khud chune' hukam, abhi Default hi chalata hai. Dono ek jaise; Auto rehne dein. Maloomat repo files (branch) se aati hai, environment se NAHI.
 | g3.3.2 'S / DZ: Tide sarakta SL' + Ø | Hari seedhi-seerhi lakeer = Tide BUY ka sarakta SL (5 din low). Ø = abhi Tide BUY khula NAHI, is liye lakeer khali; BUY khulay to qeemat dikhegi. Neeche band = BUY band | 20 Nov |
+| BTC BUY/SELL der se, jaldi kyun nahi | K25 test: EMA rok hatana / 1D Supertrend der kam NAHI karte (15-18%), faida aadha, girawat dugni. Har trend qaida ~50% chaal pakarta. Chuna K2 20/10 (b2) | 21 Nov |
