@@ -2,12 +2,9 @@ JAS-SNIPER-BOT - TAREEKH KI FEHRIST (Notepad ke liye)
 Har din: kitne kaam + chand khaas kaam. Tafseel: docs/roznamcha/<tareekh>.md
 Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
 
-2026-11-16  (1 kaam)
-   - LIVE: user ne ~$400 deposit kiye (17 Nov)
-
-2026-11-17  (60 kaam)
-   - FTMO demo 17 Nov report: balance 98,853.77; e2 pehli trade XAG SELL 0.01; i6 US500 BUY 2.5
-   - K18: risk 0.49 bhi FAIL
+2026-11-17  (44 kaam)
+   - KAAM: K11 - 472716649 kisi MT5 par login nahi (17 Nov SS)
+   - K21: Gold 1H Sweep+FVG+BE strategy test - FAIL
    - KAAM: close-by sahi hisab + 0.11 lock
 
 2026-11-18  (21 kaam)
@@ -15,7 +12,12 @@ Nayi chat: user ijazat de to EK DIN peechhe dekho, phir poochho.
    - KAAM: user wazahat gold script zones
    - TRADING: 474832446 haal 19 Nov report
 
-2026-11-19  (27 kaam)
+2026-11-19  (48 kaam)
    - JAS GOLD g3: chart par SZ/DZ patti + naam (g2 par)
-   - KAAM: gold SELL sawal (19 Nov)
-   - #111m C-M1 month-end SELL FAIL
+   - Research daur 11: SELL-only (C-M1 long shot)
+   - KAAM chhota
+
+2026-11-20  (5 kaam)
+   - FTMO demo 20 Nov report: i6 US500 SL -1000, e2 3 SELL +627 (BTC nayi)
+   - KAAM < 4 KB
+   - fable-jaanch: Itwar yaad-dihani ki setting + 70vi ke naye kaagaz repo mein likhe
