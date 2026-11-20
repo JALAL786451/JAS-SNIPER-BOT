@@ -21,3 +21,16 @@ Fable ke paas 11 Dec tak. Ek hi chat mein poora; agent / workflow NAHI (limit). 
 - Purane EA / Pine mein KOI tabdeeli NAHI; risk hadd NAHI barhani; grid / martingale / hedge NAHI.
 - Nateeja `docs/fable-jaanch-nateeja.md` mein: (a) bug list (sangeen pehle), (b) har EA: bharosa haan / shak / nahi + wajah,
   (c) qaide ki kamzori + behtar qaida, (d) user ke liye 5-line khulasa Roman Urdu mein. Phir EK commit + push.
+
+## Yaad-dihani ki SETTING (scheduled task - repo ke bahar chalti hai, yahan sirf likha hai)
+- Naam: **"Fable reset - K22 jaanch yaad"**, id `trig_01WQ6xUWyy2M3ej1MVJFbZom`, Claude ne 17 Nov (66vi) lagaya, EK dafa chalegi.
+- Waqt: **Itwar 22 Nov 2026, 2:05 AM PKT** (21 Nov 21:05 UTC) - hafte ki limit reset (2 AM) ke foran baad, purani chat mein.
+- Matan: "Fable 5.2 ab reset ho gaya. Nayi chat kholein, model Fable 5.2 chunein, 'TRADING' likhein - K22 (ye file) khud shuru."
+- Badalna / band karna ho to Claude chat mein kahein (scheduled task update / delete) - user ki ijazat se.
+- User 19 Nov (70vi): Fable mehnga; magar 4 EA (t5 4/5 haar, i6) ki tasdeeq isi se - reminder WAHI rahe.
+
+## 70vi (19-20 Nov) ke naye kaagaz - sirf hidayat 6 (aakhir) mein milane ke liye, pehle NA kholo
+- Demo report 20 Nov: `data/demo_474832446/ReportHistory_20261120.xlsx` (t5 5 band 1 jeet -1,310; i6 4 band 2 jeet -846; e2 3 SELL khuli +627).
+- Gold 1D chup daur mein 4 EA: `tools/gold_khamosh_sahara.py` (e2 > i6 > k2 sahara, t5 har daur manfi); `docs/sawal-jawab.md` 19 Nov lines.
+- US500 17 Nov se D1 SMA200 ke neeche (khud-nazar sec 6 ka qaida: t5 US ka khatra asli) - V2 test FAIL tha; is par apni raye do.
+- Paisa bachao: jo hisaab upar ke kaagaz mein hai wo DOBARA na chalao, sirf milao.
