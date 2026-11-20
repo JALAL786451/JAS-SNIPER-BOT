@@ -44,3 +44,8 @@ Imaandari: K2 aur K0 ka farq shor ke andar (SE 0.37 / 0.23); BTC akela = trade k
 **User ki shikayat ka jawab:** "jaldi" wale (K1 bina EMA, K4 Supertrend) entry ki der KAM NAHI karte (der 15-18% vs K0 15%), trade dugne, Exp aadha, girawat dugni.
 Har trend qaida chaal ka ~50% hi pakarta (pakra% 47-52). Haqeeqat: der se aana + aadha pakarna = trend ka mizaj; bari trade (K2: 21 din, K3: 40 din) se faida.
 Agla: script b2 = K2 (20/10). e2 EA BTC par abhi K0 (10/5) - b2 aur e2 kabhi alag ishara denge (EA badalna = alag faisla, user se).
+
+### Baad ki MALOOMAT (21 Nov, user SS: "Aug BUY aur Nov SELL miss") - DEKHA HUA data, PASS NAHI kehla sakta
+K2 20/10 BINA EMA: 2015-18 29 tr +1.74R kul +50.3 DD 2.0 | 2019-26 86 tr +0.56R kul +47.9 DD 7.2 (EMA wala 43 tr +0.84R kul +36.1 DD 3.8).
+Bina EMA 2026: Aug 20 BUY 69,271 -> Sep 11 76,211 +2.16R pakarta (EMA wala miss), magar Jan / Mar / Jul / Sep 4 jhoote -0.35..-1R.
+Matlab: EMA rok = mor (V) par der / miss, magar chop mein bachao. Faisla user ka; naya saaf data nahi bacha -> sirf demo se pata chalega.
