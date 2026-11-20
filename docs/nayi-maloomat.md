@@ -33,3 +33,4 @@ Har chat: 1-3 nayi kaam ki baat user ko KHUD batao, phir yahan ek line (tareekh 
 | 19 Nov (70vi) | MT5 Tools > Options > Expert Advisors > 'Disable algorithmic trading when the account has been changed' tick = galti se login badle to EA ghalat account par trade na kare (3 MT5, K11) | - |
 | 20 Nov (71vi) | MT5 Toolbox > Experts tab > right-click > Open = har din ki EA log file (e2 ne SL sarkaya ya nahi, bina SS) | - |
 | 20 Nov (72vi) | Cloud environment ki setup script: har nayi chat shuru hote hi khud chalti hai (tools install waghaira). Abhi zaroorat NAHI | - |
+| 20 Nov (73vi) | TradingView Alert: g3.3.2 chart par Alt+A > Condition = 'JAS GOLD g3.3.2' + 'Any alert() function call' (agar script mein alert ho) -> 'ABHI: BUY' aate hi phone TV app par khabar; SS ka intezar nahi | - |
