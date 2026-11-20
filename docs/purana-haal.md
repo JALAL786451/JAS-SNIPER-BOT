@@ -2148,3 +2148,5 @@ Kaam ho jaye -> qatar hata do, ek line `docs/purana-haal.md` mein. **Ye file ~4 
 | DAUR11 | 19 Nov research agent (SIRF SELL) -> C-M1 month-end SELL 8 index #111m TEST = FAIL (0.03% par +0.008R, 3/8; bina kharcha 7/8 magar +0.024R). SELL research khatam | ho gaya |
 - KAAM se hataya 20 Nov (71vi): K12 PC Claude: `cd D:\JAS` -> `git pull` -> `claude.cmd`; test `C:\MT5_TEST`. LIVE 18 Nov: gold SELL 3.70 neeche BUY 3.15 (Close By ~+3,322 USC).
 - KAAM se hataya 20 Nov (71vi): T1 t5 Forward gold H4 hua; agla US500m H4 - user ki marzi.
+
+- KAAM se hataya (21 Nov, 73vi): K25 BTC script b1 / b1.1 / b2 + Python test `docs/research/btc-k25-qaida.md` - user: 'theek nahi ho raha, chhor dein' (mor par der = EMA rok; bina EMA dekha data). BAND, dobara sirf user kahe.
