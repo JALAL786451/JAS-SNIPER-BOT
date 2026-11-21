@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS EMA 50/200 — 4H  (build f2, Pine v6)
+//  JAS EMA 50/200 — 4H  (build f3, Pine v6)
 //  21 Nov 2026 - Python test (XAUUSD, 4H, 10 saal: 21 Nov 2016 - 4 Nov 2026)
 //  ke har trade ko TradingView par dohrane ke liye. TradingView 4H par kayi saal
 //  ki history deta hai, is liye yahan poora nateeja parakha ja sakta hai.
@@ -16,12 +16,14 @@
 //  PYTHON NATEEJA (4H, 10 saal): +159%, sab se bari girawat -17.3%, 44 trades,
 //  PF 3.64, jeet ki dar 34%, sab se bara ek trade nuqsan -2.6%. Buy&hold: +236%, girawat -30%.
 //  f2 (21 Nov): chart ke kone mein 'AAJ KA FAISLA' panel - BUY chalu / flat / ishara, stop, EMA faasla, candle band hone mein kitne ghantay.
+//  f3 (21 Nov): panel mein 2 aur market (USATECH, USA500 - OANDA:NAS100USD / SPX500USD, input se badlein) ka BUY zone / ishara.
+//     NOTE: strategy ke trade sirf is chart ke symbol par; doosre market ke liye us ka alag 4H chart + yehi script lagayen.
 //  Pichle 4 trade jo TradingView mein milne chahiye (taareekh chart ke waqt ke hisab se
 //  thori aage peechhe ho sakti hai, qeemat thori alag ho sakti hai):
 //    11 Jul 2025 BUY ~3358 -> 30 Jul stop ~3297   |  5 Aug 2025 BUY ~3377 -> 19 Aug ~3316
 //    25 Aug 2025 BUY ~3366 -> 19 Mar 2026 ~4727   |  7 Aug 2026 BUY ~4252 -> 15 Sep ~4303
 // ============================================================================
-strategy("JAS EMA 50/200 4H f2", shorttitle = "JAS EMA 4H f2", overlay = true,
+strategy("JAS EMA 50/200 4H f3", shorttitle = "JAS EMA 4H f3", overlay = true,
      initial_capital         = 10000,
      default_qty_type        = strategy.percent_of_equity,
      default_qty_value       = 100,
@@ -31,7 +33,7 @@ strategy("JAS EMA 50/200 4H f2", shorttitle = "JAS EMA 4H f2", overlay = true,
      calc_on_every_tick      = false,
      process_orders_on_close = false)
 
-BUILD = "f2"
+BUILD = "f3"
 
 grQ    = "Qaida (mat badlein)"
 fastL  = input.int(50, "Tez EMA", group = grQ, minval = 2, display = display.none)
@@ -73,7 +75,25 @@ bgcolor(strategy.position_size > 0 ? color.new(color.green, 92) : na)
 alertcondition(buySig, "JAS EMA BUY", "JAS EMA 4H: BUY ishara (agli candle ke open par)")
 alertcondition(dnX, "JAS EMA band", "JAS EMA 4H: EMA ulta - BUY band karein")
 
-var table info = table.new(position.top_right, 1, 8, bgcolor = color.new(color.black, 15), frame_width = 1)
+grM   = "Doosre markets (sirf panel mein dikhte hain)"
+showM = input.bool(true, "Doosre markets ka panel dikhayen", group = grM)
+sym2  = input.symbol("OANDA:NAS100USD", "Market 2 (USATECH)", group = grM)
+sym3  = input.symbol("OANDA:SPX500USD", "Market 3 (USA500)", group = grM)
+
+f_mm(fL, sL) =>
+    f  = ta.ema(close, fL)
+    s_ = ta.ema(close, sL)
+    [f, s_, ta.barssince(ta.crossover(f, s_)), ta.barssince(ta.crossunder(f, s_))]
+
+f_txt(f, s_, bu, bd) =>
+    bd == 0 ? "BUY BAND ishara" : bu == 0 ? "BUY ISHARA (agli candle par)" : f > s_ ? "BUY zone (" + str.tostring(bu) + " candle se)" : "Flat (EMA neeche)"
+
+[f2, s2, bu2, bd2] = request.security(sym2, timeframe.period, f_mm(fastL, slowL), lookahead = barmerge.lookahead_off)
+[f3, s3, bu3, bd3] = request.security(sym3, timeframe.period, f_mm(fastL, slowL), lookahead = barmerge.lookahead_off)
+nm2 = array.get(str.split(sym2, ":"), array.size(str.split(sym2, ":")) - 1)
+nm3 = array.get(str.split(sym3, ":"), array.size(str.split(sym3, ":")) - 1)
+
+var table info = table.new(position.top_right, 1, 11, bgcolor = color.new(color.black, 15), frame_width = 1)
 if barstate.islast
     inUp   = emaF > emaS
     gapPct = (emaF - emaS) / emaS * 100
@@ -94,3 +114,7 @@ if barstate.islast
     table.cell(info, 0, 5, "EMA faasla (50 vs 200): " + str.tostring(gapPct, "#.##") + "%" + (inUp ? " (50 oopar)" : " (50 neeche)"), text_color = color.white, text_size = size.small)
     table.cell(info, 0, 6, "Is candle ke band hone mein: " + str.tostring(hrsLeft, "#.#") + " ghantay", text_color = color.white, text_size = size.small)
     table.cell(info, 0, 7, "History: " + str.tostring(bar_index + 1) + " candle, " + str.format_time(firstT, "dd MMM yyyy") + " se", text_color = color.gray, text_size = size.tiny)
+    if showM
+        table.cell(info, 0, 8, "--- doosre markets (panel) ---", text_color = color.gray, text_size = size.tiny)
+        table.cell(info, 0, 9, nm2 + ": " + f_txt(f2, s2, bu2, bd2), text_color = color.white, text_size = size.small)
+        table.cell(info, 0, 10, nm3 + ": " + f_txt(f3, s3, bu3, bd3), text_color = color.white, text_size = size.small)
