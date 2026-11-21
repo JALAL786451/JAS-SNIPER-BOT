@@ -1,0 +1,81 @@
+//@version=6
+// ============================================================================
+//  JAS EMA 50/200 — 4H  (build f1, Pine v6)
+//  21 Nov 2026 - Python test (XAUUSD, 4H, 10 saal: 21 Nov 2016 - 4 Nov 2026)
+//  ke har trade ko TradingView par dohrane ke liye. TradingView 4H par kayi saal
+//  ki history deta hai, is liye yahan poora nateeja parakha ja sakta hai.
+//
+//  QAWAID (Python test jaise - test ke dauran mat badlein), XAUUSD 4H:
+//   1) EMA(50) neeche se EMA(200) ke oopar kate = BUY (agli candle ke open par)
+//   2) EMA(50) oopar se EMA(200) ke neeche kate = BUY band (SELL NAHI)
+//   3) ATR stop = entry se 4 x ATR(14) neeche (ATR signal wali candle ka). Stop lagne ke
+//      baad dobara BUY tab hi jab EMA pehle ulta aur phir seedha cross kare
+//   4) Ek waqt sirf EK position; sirf BUY. Koi grid, martingale, hedging, averaging nahi
+//   5) Kharcha $0.25 har taraf = $0.50 har trade; 100% equity (1x), jama hota hua
+//
+//  PYTHON NATEEJA (4H, 10 saal): +159%, sab se bari girawat -17.3%, 44 trades,
+//  PF 3.64, jeet ki dar 34%, sab se bara ek trade nuqsan -2.6%. Buy&hold: +236%, girawat -30%.
+//  Pichle 4 trade jo TradingView mein milne chahiye (taareekh chart ke waqt ke hisab se
+//  thori aage peechhe ho sakti hai, qeemat thori alag ho sakti hai):
+//    11 Jul 2025 BUY ~3358 -> 30 Jul stop ~3297   |  5 Aug 2025 BUY ~3377 -> 19 Aug ~3316
+//    25 Aug 2025 BUY ~3366 -> 19 Mar 2026 ~4727   |  7 Aug 2026 BUY ~4252 -> 15 Sep ~4303
+// ============================================================================
+strategy("JAS EMA 50/200 4H f1", shorttitle = "JAS EMA 4H f1", overlay = true,
+     initial_capital         = 10000,
+     default_qty_type        = strategy.percent_of_equity,
+     default_qty_value       = 100,
+     pyramiding              = 0,
+     commission_type         = strategy.commission.cash_per_contract,
+     commission_value        = 0.25,
+     calc_on_every_tick      = false,
+     process_orders_on_close = false)
+
+BUILD = "f1"
+
+grQ    = "Qaida (mat badlein)"
+fastL  = input.int(50, "Tez EMA", group = grQ, minval = 2, display = display.none)
+slowL  = input.int(200, "Sust EMA", group = grQ, minval = 3, display = display.none)
+atrK   = input.float(4.0, "ATR stop (0 = band)", group = grQ, minval = 0.0, step = 0.5, display = display.none)
+atrLen = input.int(14, "ATR lambai", group = grQ, minval = 1, display = display.none)
+
+emaF  = ta.ema(close, fastL)
+emaS  = ta.ema(close, slowL)
+atrV  = ta.atr(atrLen)
+upX   = ta.crossover(emaF, emaS)
+dnX   = ta.crossunder(emaF, emaS)
+is4h  = timeframe.in_seconds() == 14400
+warm  = bar_index >= slowL
+
+var float atrEntry = na
+var int   firstT   = na
+if na(firstT)
+    firstT := time
+
+buySig = upX and warm and strategy.position_size == 0
+if buySig
+    atrEntry := atrV
+    strategy.entry("Buy", strategy.long)
+
+if dnX and strategy.position_size > 0
+    strategy.close("Buy", comment = "EMA ulta")
+
+if atrK > 0 and not na(atrEntry) and (buySig or strategy.position_size > 0)
+    strategy.exit("ATR SL", from_entry = "Buy", loss = atrK * atrEntry / syminfo.mintick)
+
+stopLvl = (atrK > 0 and strategy.position_size > 0 and not na(atrEntry)) ? strategy.position_avg_price - atrK * atrEntry : na
+
+plot(emaF, "EMA tez", color = color.new(color.orange, 0), linewidth = 2)
+plot(emaS, "EMA sust", color = color.new(color.blue, 0), linewidth = 2)
+plot(stopLvl, "ATR stop", color = color.new(color.red, 0), style = plot.style_linebr, linewidth = 2)
+bgcolor(strategy.position_size > 0 ? color.new(color.green, 92) : na)
+
+alertcondition(buySig, "JAS EMA BUY", "JAS EMA 4H: BUY ishara (agli candle ke open par)")
+alertcondition(dnX, "JAS EMA band", "JAS EMA 4H: EMA ulta - BUY band karein")
+
+var table info = table.new(position.top_right, 1, 4, bgcolor = color.new(color.black, 20), frame_width = 1)
+if barstate.islast
+    hal = not warm ? "WARMUP: " + str.tostring(slowL - bar_index) + " candle baqi" : strategy.position_size > 0 ? "BUY chalu - entry " + str.tostring(strategy.position_avg_price, "#.##") + (na(stopLvl) ? "" : ", stop " + str.tostring(stopLvl, "#.##")) : "Flat - BUY ke ishare ka intezar"
+    table.cell(info, 0, 0, "JAS EMA 50/200 4H " + BUILD, text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 1, is4h ? "TF theek (4H)" : "GHALAT TF - 4H chart kholen", text_color = is4h ? color.lime : color.red, text_size = size.small)
+    table.cell(info, 0, 2, "History: " + str.tostring(bar_index + 1) + " candle, " + str.format_time(firstT, "dd MMM yyyy") + " se", text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 3, hal, text_color = color.yellow, text_size = size.small)
