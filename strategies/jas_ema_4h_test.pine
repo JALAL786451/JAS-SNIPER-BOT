@@ -1,6 +1,6 @@
 //@version=6
 // ============================================================================
-//  JAS EMA 50/200 — 4H  (build f3, Pine v6)
+//  JAS EMA 50/200 — 4H  (build f4, Pine v6)
 //  21 Nov 2026 - Python test (XAUUSD, 4H, 10 saal: 21 Nov 2016 - 4 Nov 2026)
 //  ke har trade ko TradingView par dohrane ke liye. TradingView 4H par kayi saal
 //  ki history deta hai, is liye yahan poora nateeja parakha ja sakta hai.
@@ -18,12 +18,13 @@
 //  f2 (21 Nov): chart ke kone mein 'AAJ KA FAISLA' panel - BUY chalu / flat / ishara, stop, EMA faasla, candle band hone mein kitne ghantay.
 //  f3 (21 Nov): panel mein 2 aur market (USATECH, USA500 - OANDA:NAS100USD / SPX500USD, input se badlein) ka BUY zone / ishara.
 //     NOTE: strategy ke trade sirf is chart ke symbol par; doosre market ke liye us ka alag 4H chart + yehi script lagayen.
+//  f4 (21 Nov): neeche daayen alag table - har symbol ke total BUY trades + saal mein kitne (history jitni chart par load hai utni).
 //  Pichle 4 trade jo TradingView mein milne chahiye (taareekh chart ke waqt ke hisab se
 //  thori aage peechhe ho sakti hai, qeemat thori alag ho sakti hai):
 //    11 Jul 2025 BUY ~3358 -> 30 Jul stop ~3297   |  5 Aug 2025 BUY ~3377 -> 19 Aug ~3316
 //    25 Aug 2025 BUY ~3366 -> 19 Mar 2026 ~4727   |  7 Aug 2026 BUY ~4252 -> 15 Sep ~4303
 // ============================================================================
-strategy("JAS EMA 50/200 4H f3", shorttitle = "JAS EMA 4H f3", overlay = true,
+strategy("JAS EMA 50/200 4H f4", shorttitle = "JAS EMA 4H f4", overlay = true,
      initial_capital         = 10000,
      default_qty_type        = strategy.percent_of_equity,
      default_qty_value       = 100,
@@ -33,7 +34,7 @@ strategy("JAS EMA 50/200 4H f3", shorttitle = "JAS EMA 4H f3", overlay = true,
      calc_on_every_tick      = false,
      process_orders_on_close = false)
 
-BUILD = "f3"
+BUILD = "f4"
 
 grQ    = "Qaida (mat badlein)"
 fastL  = input.int(50, "Tez EMA", group = grQ, minval = 2, display = display.none)
@@ -80,41 +81,70 @@ showM = input.bool(true, "Doosre markets ka panel dikhayen", group = grM)
 sym2  = input.symbol("OANDA:NAS100USD", "Market 2 (USATECH)", group = grM)
 sym3  = input.symbol("OANDA:SPX500USD", "Market 3 (USA500)", group = grM)
 
+// har market: EMA, cross ke baad kitni candle, total BUY ginti (har oopar cross = ek trade), history ka pehla waqt
 f_mm(fL, sL) =>
     f  = ta.ema(close, fL)
     s_ = ta.ema(close, sL)
-    [f, s_, ta.barssince(ta.crossover(f, s_)), ta.barssince(ta.crossunder(f, s_))]
+    var int n  = 0
+    var int t0 = na
+    if na(t0)
+        t0 := time
+    if ta.crossover(f, s_) and bar_index >= sL
+        n += 1
+    [f, s_, ta.barssince(ta.crossover(f, s_)), ta.barssince(ta.crossunder(f, s_)), n, t0, time]
 
 f_txt(f, s_, bu, bd) =>
-    bd == 0 ? "BUY BAND ishara" : bu == 0 ? "BUY ISHARA (agli candle par)" : f > s_ ? "BUY zone (" + str.tostring(bu) + " candle se)" : "Flat (EMA neeche)"
+    bd == 0 ? "BAND ishara" : bu == 0 ? "BUY ISHARA" : f > s_ ? "BUY zone" : "Flat"
 
-[f2, s2, bu2, bd2] = request.security(sym2, timeframe.period, f_mm(fastL, slowL), lookahead = barmerge.lookahead_off)
-[f3, s3, bu3, bd3] = request.security(sym3, timeframe.period, f_mm(fastL, slowL), lookahead = barmerge.lookahead_off)
+f_yrs(t0, t1) => math.max((t1 - t0) / 31557600000.0, 0.01)
+
+[f2, s2, bu2, bd2, n2, a2, e2] = request.security(sym2, timeframe.period, f_mm(fastL, slowL), lookahead = barmerge.lookahead_off)
+[f3, s3, bu3, bd3, n3, a3, e3] = request.security(sym3, timeframe.period, f_mm(fastL, slowL), lookahead = barmerge.lookahead_off)
 nm2 = array.get(str.split(sym2, ":"), array.size(str.split(sym2, ":")) - 1)
 nm3 = array.get(str.split(sym3, ":"), array.size(str.split(sym3, ":")) - 1)
 
-var table info = table.new(position.top_right, 1, 11, bgcolor = color.new(color.black, 15), frame_width = 1)
+var table info = table.new(position.top_right, 1, 7, bgcolor = color.new(color.black, 10), frame_width = 1)
+var table mkt  = table.new(position.bottom_right, 4, 5, bgcolor = color.new(color.black, 10), frame_width = 1)
 if barstate.islast
     inUp   = emaF > emaS
     gapPct = (emaF - emaS) / emaS * 100
     hrsLeft = math.max(0.0, (time_close - timenow) / 3600000.0)
     pnlPct = strategy.position_size > 0 ? (close / strategy.position_avg_price - 1) * 100 : na
     faisla = not warm ? "WARMUP: " + str.tostring(slowL - bar_index) + " candle baqi"
-         : buySig ? "BUY ISHARA: agli 4H candle ke open par BUY karein"
-         : (dnX and strategy.position_size > 0) ? "EMA ULTA HUA: agli candle ke open par BUY BAND karein"
-         : strategy.position_size > 0 ? "BUY chalu hai - rakhein, kuch nahi karna"
-         : inUp ? "Aaj kuch nahi karna (EMA oopar hai, naye BUY cross ka intezar)"
-         : "Aaj kuch nahi karna - flat rahein (EMA neeche hai)"
+         : buySig ? "BUY ISHARA: agli candle par BUY karein"
+         : (dnX and strategy.position_size > 0) ? "EMA ULTA: agli candle par BUY BAND karein"
+         : strategy.position_size > 0 ? "BUY chalu hai - rakhein"
+         : inUp ? "Aaj kuch nahi karna (naye BUY cross ka intezar)"
+         : "Aaj kuch nahi karna - flat rahein"
     faislaCol = (buySig or (dnX and strategy.position_size > 0)) ? color.lime : color.yellow
-    table.cell(info, 0, 0, "JAS EMA 50/200 4H " + BUILD, text_color = color.white, text_size = size.small)
-    table.cell(info, 0, 1, is4h ? "TF theek (4H)" : "GHALAT TF - 4H chart kholen", text_color = is4h ? color.lime : color.red, text_size = size.small)
-    table.cell(info, 0, 2, "AAJ KA FAISLA: " + faisla, text_color = faislaCol, text_size = size.normal)
-    table.cell(info, 0, 3, strategy.position_size > 0 ? "Entry " + str.tostring(strategy.position_avg_price, "#.##") + " | ab " + str.tostring(pnlPct, "#.##") + "%" : "Koi position nahi", text_color = color.white, text_size = size.small)
-    table.cell(info, 0, 4, na(stopLvl) ? "ATR stop: band / position nahi" : "ATR stop " + str.tostring(stopLvl, "#.##") + " (qeemat se " + str.tostring((close - stopLvl) / close * 100, "#.##") + "% neeche)", text_color = color.white, text_size = size.small)
-    table.cell(info, 0, 5, "EMA faasla (50 vs 200): " + str.tostring(gapPct, "#.##") + "%" + (inUp ? " (50 oopar)" : " (50 neeche)"), text_color = color.white, text_size = size.small)
-    table.cell(info, 0, 6, "Is candle ke band hone mein: " + str.tostring(hrsLeft, "#.#") + " ghantay", text_color = color.white, text_size = size.small)
-    table.cell(info, 0, 7, "History: " + str.tostring(bar_index + 1) + " candle, " + str.format_time(firstT, "dd MMM yyyy") + " se", text_color = color.gray, text_size = size.tiny)
+    table.cell(info, 0, 0, "JAS EMA 50/200 4H " + BUILD + (is4h ? "" : "  GHALAT TF - 4H kholen"), text_color = is4h ? color.white : color.red, text_size = size.small)
+    table.cell(info, 0, 1, "FAISLA: " + faisla, text_color = faislaCol, text_size = size.small)
+    table.cell(info, 0, 2, strategy.position_size > 0 ? "Entry " + str.tostring(strategy.position_avg_price, "#.##") + " | ab " + str.tostring(pnlPct, "#.##") + "%" : "Koi position nahi", text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 3, na(stopLvl) ? "ATR stop: nahi" : "ATR stop " + str.tostring(stopLvl, "#.##") + " (" + str.tostring((close - stopLvl) / close * 100, "#.##") + "% neeche)", text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 4, "EMA faasla: " + str.tostring(gapPct, "#.##") + "%" + (inUp ? " (50 oopar)" : " (50 neeche)"), text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 5, "Candle band hone mein: " + str.tostring(hrsLeft, "#.#") + " ghantay", text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 6, "History: " + str.tostring(bar_index + 1) + " candle, " + str.format_time(firstT, "dd MMM yyyy") + " se", text_color = color.gray, text_size = size.tiny)
+    // --- sab symbols ki ginti ---
+    yrs1 = f_yrs(firstT, time)
+    trades1 = strategy.closedtrades + (strategy.position_size > 0 ? 1 : 0)
+    table.cell(mkt, 0, 0, "Symbol", text_color = color.gray, text_size = size.small)
+    table.cell(mkt, 1, 0, "Haal", text_color = color.gray, text_size = size.small)
+    table.cell(mkt, 2, 0, "Trades", text_color = color.gray, text_size = size.small)
+    table.cell(mkt, 3, 0, "Saal mein", text_color = color.gray, text_size = size.small)
+    table.cell(mkt, 0, 1, syminfo.ticker, text_color = color.white, text_size = size.small)
+    table.cell(mkt, 1, 1, strategy.position_size > 0 ? "BUY chalu" : (buySig ? "BUY ISHARA" : inUp ? "BUY zone" : "Flat"), text_color = color.yellow, text_size = size.small)
+    table.cell(mkt, 2, 1, str.tostring(trades1), text_color = color.white, text_size = size.small)
+    table.cell(mkt, 3, 1, str.tostring(trades1 / yrs1, "#.#") + " (" + str.tostring(yrs1, "#.#") + " saal)", text_color = color.white, text_size = size.small)
     if showM
-        table.cell(info, 0, 8, "--- doosre markets (panel) ---", text_color = color.gray, text_size = size.tiny)
-        table.cell(info, 0, 9, nm2 + ": " + f_txt(f2, s2, bu2, bd2), text_color = color.white, text_size = size.small)
-        table.cell(info, 0, 10, nm3 + ": " + f_txt(f3, s3, bu3, bd3), text_color = color.white, text_size = size.small)
+        table.cell(mkt, 0, 2, nm2, text_color = color.white, text_size = size.small)
+        table.cell(mkt, 1, 2, f_txt(f2, s2, bu2, bd2), text_color = color.yellow, text_size = size.small)
+        table.cell(mkt, 2, 2, str.tostring(n2), text_color = color.white, text_size = size.small)
+        table.cell(mkt, 3, 2, str.tostring(n2 / f_yrs(a2, e2), "#.#") + " (" + str.tostring(f_yrs(a2, e2), "#.#") + " saal)", text_color = color.white, text_size = size.small)
+        table.cell(mkt, 0, 3, nm3, text_color = color.white, text_size = size.small)
+        table.cell(mkt, 1, 3, f_txt(f3, s3, bu3, bd3), text_color = color.yellow, text_size = size.small)
+        table.cell(mkt, 2, 3, str.tostring(n3), text_color = color.white, text_size = size.small)
+        table.cell(mkt, 3, 3, str.tostring(n3 / f_yrs(a3, e3), "#.#") + " (" + str.tostring(f_yrs(a3, e3), "#.#") + " saal)", text_color = color.white, text_size = size.small)
+        table.cell(mkt, 0, 4, "KUL", text_color = color.lime, text_size = size.small)
+        table.cell(mkt, 1, 4, "", text_color = color.lime, text_size = size.small)
+        table.cell(mkt, 2, 4, str.tostring(trades1 + n2 + n3), text_color = color.lime, text_size = size.small)
+        table.cell(mkt, 3, 4, str.tostring(trades1 / yrs1 + n2 / f_yrs(a2, e2) + n3 / f_yrs(a3, e3), "#.#"), text_color = color.lime, text_size = size.small)
