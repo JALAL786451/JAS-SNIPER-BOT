@@ -3,6 +3,8 @@
 Pehle ye table CLAUDE.md mein tha (har message ke saath ~14k tokens). Ab CLAUDE.md mein har file ki ek line hai; poori tareekh yahan. Har chat mein NAHI parhni - sirf zarurat par grep.
 
 ## Files ki chhoti list (13 Oct tak CLAUDE.md mein thi; ab yahan - ek line har file)
+- `strategies/jas_ema_4h_test.pine` - f2 (21 Nov): gold 4H EMA 50/200 sirf BUY + 4 ATR stop; Python 10 saal +159%, DD -17.3%, 44 trade; TV par 4 saal (2023-) +106% milaya; 'AAJ KA FAISLA' panel
+- `strategies/jas_ema_15m_test.pine` - e1 (21 Nov): 15M EMA 400/1600 sirf BUY (Python 17.6 saal +238%); TV 15M par sirf 1-2 saal history = sirf mawazna, faisla nahi
 - `indicators/jas_btc_b2.pine` - b2 (21 Nov, 73vi): b1.1 shakal + qaida K2 Turtle 20/10+EMA (Python `tools/btc_k25.py` chuna, IMTIHAN PASS kamzor)
 - `tools/btc_k25.py` + `docs/research/btc-k25-qaida.md` - K25 (21 Nov): BTC 5 qaide (10/5, bina EMA, 20/10, 55/20, 1D ST) TALAASH 2015-18 / IMTIHAN 2019-26
 - `indicators/jas_btc_b1_1.pine` - b1.1 (21 Nov, 73vi): b1 + SIRF labels ek doosre par nahi charhte (neeche se upar khiskao), EMA50/200 ek label; qaida WAHI
