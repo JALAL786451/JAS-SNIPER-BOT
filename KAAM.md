@@ -30,10 +30,10 @@ Jawab CHHOTA. User ki har nayi baat USI jawab mein yahan EK line. Kaam ho -> qat
 | **K21g** | JAS GOLD **g3.3.2** `indicators/jas_gold_g3_3_2.pine` = gold ki chalti script | **TV ✅ 20 Nov**, tests se 100% mili. AGLA: pehla 'ABHI: BUY' SS (demo pehle) |
 | **K24** | JAS GOLD **g4** `indicators/jas_gold_g4.pine` (user "A" 19 Nov): g3.1 qaida wahi + SMC Coach sirf ittila | pinecheck saaf; user TV paste (gold 15m/1H/4H) + SS; error = g4.1 |
 | **K11** | j2 (`JasLarai1_EA`) demo 472716649 par, deewar OFF | 3rd MT5 `C:\MT5_DEMO2` (/portable) + 472716649 login; purane 2 MT5 ka login KABHI na badlein |
-| SMA | US500 D1 SMA200 (EA kaam, script nahi): 17 Nov 1 close neeche, 20 Nov ~7,030 | jab user chahe SS; 3+ close neeche = V2 baat |
+| SMA | US500 D1 SMA200 (EA kaam, script nahi): 17 Nov 1 close neeche, 20 Nov ~7,030 | user chahe to SS; 3+ close neeche = V2 |
 | TAJ | 71vi: demo 9 band = US index -2,036 / metal -120; EA 8/8 test se mile; ghalti = design (sab BUY) | user faisla: t5 US + SMA200 filter test ya Fable tak ruko |
 | K7 | e2 Kachhua demo 474832446 | 21 Nov 01:50: e2 3 SELL +677; XAG SL 51.56 - Peer 23 Nov ~50.78 sarakna chahiye (na = EA log); i6 SL 7,030 = SMA200 |
 | K19 | Kachhua Naqsha k1 `indicators/jas_kachhua_naqsha.pine` | user TV paste + SS (error = k1.1) |
 | K6 | LIVE report se user ka asli tareeqa (naqsha) | K11 ke baad, user ki haan |
 | EMA5 | 5th EA? EMA 50/200 4H BUY (XAU+USTEC), t5 se mel 0.5-0.6 (`docs/research/ema-21nov/`) | demo-only ya Fable tak ruko |
-| FTMO | Black Friday: 20 Nov ftmo.com par offer NAHI | 24-27 Nov dobara (`docs/bank.md`) |
+| FTMO | Black Friday: 20 Nov offer NAHI | 24-27 Nov dobara (`docs/bank.md`) |
