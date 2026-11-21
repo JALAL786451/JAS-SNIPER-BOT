@@ -34,7 +34,7 @@ Fable ke paas 11 Dec tak. Ek hi chat mein poora; agent / workflow NAHI (limit). 
 - Gold 1D chup daur mein 4 EA: `tools/gold_khamosh_sahara.py` (e2 > i6 > k2 sahara, t5 har daur manfi); `docs/sawal-jawab.md` 19 Nov lines.
 - US500 17 Nov se D1 SMA200 ke neeche (khud-nazar sec 6 ka qaida: t5 US ka khatra asli) - V2 test FAIL tha; is par apni raye do.
 - Paisa bachao: jo hisaab upar ke kaagaz mein hai wo DOBARA na chalao, sirf milao.
-- **72vi (21 Nov) EMA 50/200 4H + "roz 1 trade" jaanch:** `docs/research/ema-21nov/README.md` (+ `code/`, `data/`). **Fable ke liye sawal (hidayat 6 mein, pehle NA kholo):**
+- **74vi (21 Nov) EMA 50/200 4H + "roz 1 trade" jaanch:** `docs/research/ema-21nov/README.md` (+ `code/`, `data/`). **Fable ke liye sawal (hidayat 6 mein, pehle NA kholo):**
   (a) kya EMA 50/200 4H sirf BUY (XAU + USATECH) t5 ka dohra hai (G6: corr 0.46-0.62, ~60% waqt wahi BUY) - 5th EA banana chahiye ya nahi?
   (b) US index par t5 + i6 + (5th) = 4-5 BUY ek din - khatra.
   (c) ~1,500+ tests ke baad "roz 1 trade koi edge nahi" ka nateeja aur multiple-testing ki raye; (d) FTMO P1 10% ke liye 9% CAGR / DD -22% wala basket kitna kamzor.

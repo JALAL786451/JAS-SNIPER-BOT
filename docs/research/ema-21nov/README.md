@@ -1,4 +1,4 @@
-# EMA 50/200 4H + "roz 1 trade" jaanch - 21 Nov 2026 (72vi, Claude Sonnet 5.5)
+# EMA 50/200 4H + "roz 1 trade" jaanch - 21 Nov 2026 (74vi, Claude Sonnet 5.5)
 **Fable ke liye: PEHLE NA KHOLO** (azad jaanch khatam hone ke BAAD hidayat 6 mein milane ke liye). Data/code yahin `code/` `data/`.
 Sab Python, kharcha 2 bp (gold $0.50), qaida har test se pehle tay. TV ka data OANDA, mera Dukascopy/histdata/QDM - farq mumkin.
 

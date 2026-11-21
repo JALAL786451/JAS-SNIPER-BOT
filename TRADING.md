@@ -62,12 +62,10 @@ Doosre demo bhi delete (31 Oct). EA wale chart ke saath live par login kabhi nah
 
 ## 5. PICHLI CHAT (har chat ke aakhir mein sirf ye hissa naya likho)
 
-**72vi chat (20 Nov)** - sirf sawal: Default vs Auto environment (dono ek, sirf Default mojood). Nayi maloomat (setup script) save. AGLA wahi neeche wala.
-
-**71vi chat (20 Nov)** - g3.3.2 TV ✅ (4H + 1D + zoom SS): labels theek, g3.3.3 NAHI. SS ko pichhle tests se milaya = 100% mila (#107g, gold SELL 6 FAIL,
-sahara 'rok' ~4 Nov, 1D chup 261 din vs 2013-16 38 / 2018-19 9.7 mahine, e2 chup-daur sahara demo par +627). Demo 9 band: US index -2,036 / metal -120, EA 8/8 test jaisa.
-User naraz (haq par): Claude ne 2 dafa baat ghalat samjhi (SS par EA tajzia). Ilaj: KAAM 'ABHI KA MAQSAD' + shak ho to EK chhota sawal. FTMO BF 20 Nov ftmo.com offer NAHI.
-**AGLA (72vi):** pehla 'ABHI: BUY' SS; **ITWAR 22 Nov 2 AM ke baad Fable 5.2 jaanch**; FTMO BF 24-27 Nov; US500 SMA200 SS sirf user chahe.
+**74vi chat (21 Nov)** - EMA test: gold 4H 10 saal -> **EMA 50/200 sirf BUY + 4 ATR stop** (Python +159%, DD -17.3%, 44 trade; TV 2023- par +110.6% mila, f2 ✅). 15M 17.6 saal: 400/1600 BUY +238%.
+35 market: trend portfolio girawat aadhi par munafa kam; XAU+USATECH 9.1% DD -22.6% (~8 trade/saal). **"Roz 1 trade" 1,500+ test (gold, 35 market, ML, NFP/FOMC) = koi edge NAHI.** Pine f4 (faisla panel + 3 symbol trade ginti) `strategies/jas_ema_4h_test.pine`, TV ✅.
+5th EA sawal: t5 se mel corr 0.46-0.62 (G6) -> abhi NAHI; demo-only ya Fable tak. Sab `docs/research/ema-21nov/README.md`; Fable file mein hawala (pehle NA kholo).
+**AGLA (75vi):** **ITWAR 22 Nov 2 AM ke baad Fable 5.2 jaanch** (+ EMA sawal hidayat 6 mein); 5th EA user faisla; pehla 'ABHI: BUY' SS; FTMO BF 24-27 Nov.
 
 ## 6-7. Demo (1 Nov): SIRF FTMO DEMO 474832446 chalu (user SS ✅)
 
