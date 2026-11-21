@@ -1,0 +1,69 @@
+//@version=6
+// ============================================================================
+//  JAS EMA 400/1600 — 15M TEST  (build e1, Pine v6)
+//  21 Nov 2026 - Python test (XAUUSD, 15M, 2009-2026) ko TradingView par parakhne ke liye.
+//
+//  QAWAID (Python test jaise - test ke dauran mat badlein):
+//   1) EMA(400) neeche se EMA(1600) ke oopar kate = BUY (agli candle ke open par)
+//   2) EMA(400) oopar se EMA(1600) ke neeche kate = BUY band (SELL NAHI)
+//   3) Ek waqt sirf EK position; sirf BUY
+//   4) Kharcha: $0.25 har taraf = $0.50 har trade (spread + slippage), 1x qeemat (100% equity)
+//   5) ATR stop pehle BAND (0) - Python test mein stop nahi tha. 4H test ka mashwara: 4 ATR
+//
+//  Python nateeja (15M, 2009-2026): +238%, sab se bari girawat -21.5%, 153 trades,
+//  PF 1.96, jeet ki dar ~32%. Buy&hold usi muddat mein +337%.
+//
+//  Koi grid, martingale, hedging ya averaging nahi. Ye sirf naap hai.
+// ============================================================================
+strategy("JAS EMA 400/1600 Test (15m) e1", shorttitle = "JAS EMA Test e1", overlay = true,
+     initial_capital         = 10000,
+     default_qty_type        = strategy.percent_of_equity,
+     default_qty_value       = 100,
+     pyramiding              = 0,
+     commission_type         = strategy.commission.cash_per_contract,
+     commission_value        = 0.25,
+     calc_on_every_tick      = false,
+     process_orders_on_close = false)
+
+BUILD = "e1"
+
+grQ    = "Qaida (mat badlein)"
+fastL  = input.int(400, "Tez EMA", group = grQ, minval = 2, display = display.none)
+slowL  = input.int(1600, "Sust EMA", group = grQ, minval = 3, display = display.none)
+atrK   = input.float(0.0, "ATR stop (0 = band, 4 = 4 ATR)", group = grQ, minval = 0.0, step = 0.5, display = display.none)
+atrLen = input.int(14, "ATR lambai", group = grQ, minval = 1, display = display.none)
+
+emaF  = ta.ema(close, fastL)
+emaS  = ta.ema(close, slowL)
+atrV  = ta.atr(atrLen)
+upX   = ta.crossover(emaF, emaS)
+dnX   = ta.crossunder(emaF, emaS)
+
+var float atrEntry = na
+var int   firstT   = na
+if na(firstT)
+    firstT := time
+
+// slow EMA ko itni candle chahiye; pehle warmup mein trade nahi
+warm = bar_index >= slowL
+
+if upX and warm and strategy.position_size == 0
+    atrEntry := atrV
+    strategy.entry("Buy", strategy.long)
+
+if dnX and strategy.position_size > 0
+    strategy.close("Buy", comment = "EMA ulta")
+
+if atrK > 0 and strategy.position_size > 0 and not na(atrEntry)
+    strategy.exit("ATR SL", "Buy", stop = strategy.position_avg_price - atrK * atrEntry)
+
+plot(emaF, "EMA tez", color = color.new(color.orange, 0), linewidth = 2)
+plot(emaS, "EMA sust", color = color.new(color.blue, 0), linewidth = 2)
+bgcolor(strategy.position_size > 0 ? color.new(color.green, 92) : na)
+
+// kitni history load hui - 17 saal ke liye ~420,000 candle chahiye, TradingView aam taur par 10k-40k deta hai
+var table info = table.new(position.top_right, 1, 3, bgcolor = color.new(color.black, 20), frame_width = 1)
+if barstate.islast
+    table.cell(info, 0, 0, "JAS EMA Test " + BUILD, text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 1, "History: " + str.tostring(bar_index + 1) + " candle, " + str.format_time(firstT, "dd MMM yyyy") + " se", text_color = color.white, text_size = size.small)
+    table.cell(info, 0, 2, warm ? "EMA tayyar" : "WARMUP: " + str.tostring(slowL - bar_index) + " candle baqi", text_color = warm ? color.lime : color.yellow, text_size = size.small)
